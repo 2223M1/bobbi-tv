@@ -1,0 +1,462 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog">
+  <coordinates>
+    <left>0</left>
+    <top>0</top>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+  <animation effect="fade" start="0" end="100" time="140" condition="!Skin.HasSetting(BobiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="100" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <width>1920</width>
+      <height>1080</height>
+      <texture background="true">$INFO[Window().Property(info.fanart)]</texture>
+      <aspectratio>scale</aspectratio>
+    </control>
+    <control type="image">
+      <width>1920</width>
+      <height>1080</height>
+      <texture>am6b/backdrop.png</texture>
+    </control>
+    <control type="image">
+      <left>430</left>
+      <top>120</top>
+      <width>1060</width>
+      <height>840</height>
+      <texture border="36">am6b/panel.png</texture>
+    </control>
+    <control type="image">
+      <left>540</left>
+      <top>212</top>
+      <width>120</width>
+      <height>120</height>
+      <texture>am6b/spinner-ring.png</texture>
+      <animation effect="rotate" center="auto" start="0" end="360" time="900" loop="true" condition="!Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+    </control>
+    <control type="label" id="13001">
+      <left>700</left>
+      <top>204</top>
+      <width>650</width>
+      <height>58</height>
+      <font>font28_title</font>
+      <label>$INFO[Window().Property(search_heading)]</label>
+      <textcolor>FFF5F5F1</textcolor>
+    </control>
+    <control type="label">
+      <left>704</left>
+      <top>264</top>
+      <width>650</width>
+      <height>30</height>
+      <font>font11</font>
+      <label>$INFO[Window().Property(search_subheading)]</label>
+      <textcolor>FFE50914</textcolor>
+    </control>
+    <control type="label">
+      <left>704</left>
+      <top>306</top>
+      <width>650</width>
+      <height>32</height>
+      <font>font12</font>
+      <label>$INFO[Window().Property(search_hint)]</label>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="progress" id="13002">
+      <left>610</left>
+      <top>355</top>
+      <width>700</width>
+      <height>12</height>
+      <texturebg border="6">am6b/progress-bg.png</texturebg>
+      <midtexture border="6">am6b/progress-fill.png</midtexture>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>390</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_0_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_0_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_0_status)]</label>
+        <textcolor>$INFO[Window().Property(task_0_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_0_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>432</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_1_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_1_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_1_status)]</label>
+        <textcolor>$INFO[Window().Property(task_1_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_1_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>474</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_2_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_2_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_2_status)]</label>
+        <textcolor>$INFO[Window().Property(task_2_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_2_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>516</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_3_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_3_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_3_status)]</label>
+        <textcolor>$INFO[Window().Property(task_3_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_3_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>558</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_4_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_4_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_4_status)]</label>
+        <textcolor>$INFO[Window().Property(task_4_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_4_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>600</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_5_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_5_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_5_status)]</label>
+        <textcolor>$INFO[Window().Property(task_5_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_5_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>642</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_6_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_6_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_6_status)]</label>
+        <textcolor>$INFO[Window().Property(task_6_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_6_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>684</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_7_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_7_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_7_status)]</label>
+        <textcolor>$INFO[Window().Property(task_7_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_7_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>726</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_8_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_8_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_8_status)]</label>
+        <textcolor>$INFO[Window().Property(task_8_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_8_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="group">
+      <left>610</left>
+      <top>768</top>
+      <width>700</width>
+      <height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_9_name))</visible>
+      <control type="label">
+        <width>390</width>
+        <height>38</height>
+        <font>font11</font>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_9_name)]</label>
+        <textcolor>FFF5F5F1</textcolor>
+      </control>
+      <control type="label">
+        <left>400</left>
+        <width>180</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_9_status)]</label>
+        <textcolor>$INFO[Window().Property(task_9_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>590</left>
+        <width>100</width>
+        <height>38</height>
+        <font>font11</font>
+        <align>right</align>
+        <aligny>center</aligny>
+        <label>$INFO[Window().Property(task_9_results)]</label>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <control type="label">
+      <left>610</left>
+      <top>826</top>
+      <width>470</width>
+      <height>38</height>
+      <font>font13</font>
+      <label>$INFO[Window().Property(search_results_count)]</label>
+      <textcolor>FFF5F5F1</textcolor>
+    </control>
+    <control type="label">
+      <left>1080</left>
+      <top>826</top>
+      <width>230</width>
+      <height>38</height>
+      <font>font12</font>
+      <align>right</align>
+      <label>$INFO[Window().Property(search_progress_text)]</label>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="button" id="13004">
+      <left>1090</left>
+      <top>880</top>
+      <width>220</width>
+      <height>56</height>
+      <label>取消搜索</label>
+      <font>font12</font>
+      <align>center</align>
+      <aligny>center</aligny>
+      <texturefocus border="28">am6b/pill-focus.png</texturefocus>
+      <texturenofocus border="28">am6b/pill.png</texturenofocus>
+      <textcolor>FFFFFFFF</textcolor>
+      <focusedcolor>FFFFFFFF</focusedcolor>
+      <onup>13004</onup>
+      <ondown>13004</ondown>
+      <onleft>13004</onleft>
+      <onright>13004</onright>
+    </control>
+  </controls>
+  <defaultcontrol>13004</defaultcontrol>
+</window>

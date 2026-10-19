@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="false">20</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="FF080808">am6b/white.png</texture>
+    </control>
+    <control type="group">
+      <left>1560</left>
+      <top>45</top>
+      <width>158</width>
+      <height>48</height>
+      <description>BobiCompactWordmark</description>
+      <control type="image">
+        <left>0</left>
+        <top>10</top>
+        <width>3</width>
+        <height>27</height>
+        <texture colordiffuse="FFE50924">am6b/white.png</texture>
+      </control>
+      <control type="label">
+        <left>14</left>
+        <top>0</top>
+        <width>80</width>
+        <height>48</height>
+        <label>波比</label>
+        <font>BobiLogo</font>
+        <textcolor>FFF4F4F5</textcolor>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>97</left>
+        <top>1</top>
+        <width>52</width>
+        <height>48</height>
+        <label>TV</label>
+        <font>BobiLogoLatin</font>
+        <textcolor>FFE50924</textcolor>
+        <aligny>center</aligny>
+      </control>
+    </control>
+    <control type="label">
+      <left>98</left>
+      <top>139</top>
+      <width>1450</width>
+      <height>70</height>
+      <label>文件管理</label>
+      <font>BobiHero</font>
+      <textcolor>FFF4F4F5</textcolor>
+    </control>
+    <control type="image">
+      <left>98</left>
+      <top>267</top>
+      <width>802</width>
+      <height>702</height>
+      <texture colordiffuse="FF161616" border="18">am6b/cinema/rounded.png</texture>
+    </control>
+    <control type="label" id="101">
+      <left>122</left>
+      <top>285</top>
+      <width>754</width>
+      <height>48</height>
+      <label />
+      <font>font12</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="list" id="20">
+      <left>116</left>
+      <top>367</top>
+      <width>766</width>
+      <height>564</height>
+      <onleft>20</onleft>
+      <onright>21</onright>
+      <onup>20</onup>
+      <ondown>20</ondown>
+      <scrolltime>180</scrolltime>
+      <itemlayout width="766" height="68">
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>766</width>
+          <height>62</height>
+          <texture colordiffuse="00161616" border="12">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="image">
+          <left>17</left>
+          <top>11</top>
+          <width>40</width>
+          <height>40</height>
+          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
+        </control>
+        <control type="label">
+          <left>78</left>
+          <top>4</top>
+          <width>668</width>
+          <height>54</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>font12</font>
+          <textcolor>FFB3B3B3</textcolor>
+          <aligny>center</aligny>
+        </control>
+      </itemlayout>
+      <focusedlayout width="766" height="68">
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>766</width>
+          <height>62</height>
+          <visible>Control.HasFocus(20)</visible>
+          <texture colordiffuse="FF404040" border="12">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="image">
+          <left>17</left>
+          <top>11</top>
+          <width>40</width>
+          <height>40</height>
+          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
+        </control>
+        <control type="label">
+          <left>78</left>
+          <top>4</top>
+          <width>668</width>
+          <height>54</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>font12</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <aligny>center</aligny>
+        </control>
+      </focusedlayout>
+    </control>
+    <control type="image">
+      <left>1018</left>
+      <top>267</top>
+      <width>802</width>
+      <height>702</height>
+      <texture colordiffuse="FF161616" border="18">am6b/cinema/rounded.png</texture>
+    </control>
+    <control type="label" id="102">
+      <left>1042</left>
+      <top>285</top>
+      <width>754</width>
+      <height>48</height>
+      <label />
+      <font>font12</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="list" id="21">
+      <left>1036</left>
+      <top>367</top>
+      <width>766</width>
+      <height>564</height>
+      <onleft>20</onleft>
+      <onright>21</onright>
+      <onup>21</onup>
+      <ondown>21</ondown>
+      <scrolltime>180</scrolltime>
+      <itemlayout width="766" height="68">
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>766</width>
+          <height>62</height>
+          <texture colordiffuse="00161616" border="12">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="image">
+          <left>17</left>
+          <top>11</top>
+          <width>40</width>
+          <height>40</height>
+          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
+        </control>
+        <control type="label">
+          <left>78</left>
+          <top>4</top>
+          <width>668</width>
+          <height>54</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>font12</font>
+          <textcolor>FFB3B3B3</textcolor>
+          <aligny>center</aligny>
+        </control>
+      </itemlayout>
+      <focusedlayout width="766" height="68">
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>766</width>
+          <height>62</height>
+          <visible>Control.HasFocus(21)</visible>
+          <texture colordiffuse="FF404040" border="12">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="image">
+          <left>17</left>
+          <top>11</top>
+          <width>40</width>
+          <height>40</height>
+          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
+        </control>
+        <control type="label">
+          <left>78</left>
+          <top>4</top>
+          <width>668</width>
+          <height>54</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>font12</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <aligny>center</aligny>
+        </control>
+      </focusedlayout>
+    </control>
+    <control type="label">
+      <left>100</left>
+      <top>1005</top>
+      <width>1710</width>
+      <height>35</height>
+      <label>左右键切换面板 · 长按打开文件操作 · 返回键回到上一级</label>
+      <font>font10</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+  </controls>
+</window>

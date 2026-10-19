@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <depth>DepthOSD</depth>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="fade" start="0" end="100" time="160" />
+    <effect type="slide" start="-48,0" end="0,0" time="200" tween="cubic" easing="out" />
+  </animation>
+  <animation effect="fade" start="100" end="0" time="120" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1840</width><height>1080</height>
+      <texture colordiffuse="E60A0B0E">bobi/white.png</texture>
+    </control>
+    <control type="image">
+      <left>1840</left><top>0</top><width>80</width><height>1080</height>
+      <texture colordiffuse="E60A0B0E" flipx="true">bobi/fade-right.png</texture>
+    </control>
+    <control type="label">
+      <left>96</left><top>72</top><width>1200</width><height>56</height>
+      <label>信号信息</label>
+      <font>Head40</font><textcolor>text</textcolor><aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>96</left><top>124</top><width>1600</width><height>36</height>
+      <label>$VAR[PlayerTitle]   ·   返回 关闭</label>
+      <font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny>
+    </control>
+    <control type="grouplist">
+      <left>96</left><top>176</top><width>800</width><height>888</height>
+      <orientation>vertical</orientation><itemgap>2</itemgap><usecontrolcoords>true</usecontrolcoords>
+        <control type="label"><width>800</width><height>64</height><label>视频</label><font>Head30</font><textcolor>accent_text</textcolor><aligny>bottom</aligny></control>
+        <control type="image"><width>800</width><height>12</height><texture /></control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(videowidth))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>分辨率</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(videowidth)]$INFO[Player.Process(videoheight),×,]$INFO[Player.Process(videoscantype), ,]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(videofps))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>帧率</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(videofps),, fps]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(VideoPlayer.VideoCodec)</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>编码</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[VideoPlayer.VideoCodec]$INFO[Player.Process(video.bit.depth),  ·  , bit]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(videodecoder))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>解码器</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(videodecoder)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(amlogic.pixformat))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>像素格式</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(amlogic.pixformat)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(videodar))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>画面比例</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(videodar)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(video.live.mibit.rate))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>码率</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.live.mibit.rate),, Mbps]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(video.queue.level))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>解码队列</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.queue.level),,%]$INFO[Player.Process(video.queue.data.level),  ·  数据 ,%]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="label"><width>800</width><height>64</height><label>HDR 与杜比视界</label><font>Head30</font><textcolor>accent_text</textcolor><aligny>bottom</aligny></control>
+        <control type="image"><width>800</width><height>12</height><texture /></control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(video.source.hdr.type))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>片源类型</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$VAR[BobiSourceHDR]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(video.hdr.type))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>输出类型</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.hdr.type)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>Integer.IsGreater(Player.Process(video.dovi.profile),0)</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>杜比视界</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>Profile $INFO[Player.Process(video.dovi.profile)]$INFO[Player.Process(video.dovi.meta.version),  ·  CM ,]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>Integer.IsGreater(Player.Process(video.dovi.profile),0)</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>L1 亮度</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.dovi.l1.min.nits),最小 , nits]$INFO[Player.Process(video.dovi.l1.avg.nits),  ·  平均 , nits]$INFO[Player.Process(video.dovi.l1.max.nits),  ·  最大 , nits]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>String.IsEqual(Player.Process(video.dovi.has.l5),1)</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>L5 黑边</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.dovi.l5.top.offset),上 ,]$INFO[Player.Process(video.dovi.l5.bottom.offset),  下 ,]$INFO[Player.Process(video.dovi.l5.left.offset),  左 ,]$INFO[Player.Process(video.dovi.l5.right.offset),  右 ,]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>Integer.IsGreater(Player.Process(video.dovi.profile),0)</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>L6 / MaxCLL</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.dovi.l6.max.cll),MaxCLL , nits]$INFO[Player.Process(video.dovi.l6.max.fall),  ·  MaxFALL , nits]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEqual(Player.Process(video.hdr.type),SDR) + !String.IsEmpty(Player.Process(video.hdr.max.lum))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>母版亮度</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.hdr.min.lum),, ]$INFO[Player.Process(video.hdr.max.lum),– , nits]$INFO[Player.Process(video.hdr.colour.primaries),  ·  ,]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEqual(Player.Process(video.hdr.type),SDR) + !String.IsEmpty(Player.Process(video.hdr.max.cll))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>MaxCLL / FALL</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(video.hdr.max.cll),,]$INFO[Player.Process(video.hdr.max.fall), / , nits]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(amlogic.eoft_gamut))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>EOTF / 色域</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(amlogic.eoft_gamut)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+    </control>
+    <control type="grouplist">
+      <left>980</left><top>176</top><width>800</width><height>888</height>
+      <orientation>vertical</orientation><itemgap>2</itemgap><usecontrolcoords>true</usecontrolcoords>
+        <control type="label"><width>800</width><height>64</height><label>音频</label><font>Head30</font><textcolor>accent_text</textcolor><aligny>bottom</aligny></control>
+        <control type="image"><width>800</width><height>12</height><texture /></control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(VideoPlayer.AudioCodec)</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>编码</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$VAR[AudioCodecLabel]$INFO[Player.Process(audiochannels),  ·  ,]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(audiosamplerate))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>采样</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(audiosamplerate),, Hz]$INFO[Player.Process(audiobitspersample),  ·  , bit]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(audiodecoder))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>解码器</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(audiodecoder)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(audio.live.kibit.rate))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>码率</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(audio.live.kibit.rate),, kbps]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>Player.HasVideo</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>字幕</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$VAR[SubtitleLabel]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="label"><width>800</width><height>64</height><label>输出与系统</label><font>Head30</font><textcolor>accent_text</textcolor><aligny>bottom</aligny></control>
+        <control type="image"><width>800</width><height>12</height><texture /></control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Player.Process(amlogic.displaymode))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>显示模式</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.Process(amlogic.displaymode)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>Player.HasVideo</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>渲染帧率</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[System.FPS,, fps]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>Player.HasVideo</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>缓存</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Player.CacheLevel,,%]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>Player.HasVideo</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>CPU</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[System.CPUUsage]$INFO[System.CPUTemperature,  ·  ,]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+        <control type="group">
+          <width>800</width><height>40</height>
+          <visible>!String.IsEmpty(Skin.String(netspeed))</visible>
+          <control type="label"><left>0</left><top>0</top><width>220</width><height>40</height><label>网速</label><font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny></control>
+          <control type="label"><left>232</left><top>0</top><width>568</width><height>40</height><label>$INFO[Skin.String(netspeed)]</label><font>Label24</font><textcolor>text</textcolor><aligny>center</aligny></control>
+        </control>
+    </control>
+  </controls>
+</window>

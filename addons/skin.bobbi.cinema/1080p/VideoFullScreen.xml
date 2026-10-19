@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol>-</defaultcontrol>
+  <controls>
+    <!-- Kodi core: view mode / zoom / pixel ratio feedback -->
+    <control type="group" id="0">
+      <left>96</left><top>64</top><width>900</width><height>160</height>
+      <visible>!Window.IsActive(videoosd)</visible>
+      <control type="image">
+        <left>0</left><top>0</top><width>900</width><height>160</height>
+        <texture colordiffuse="panel" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="label" id="10">
+        <left>32</left><top>20</top><width>836</width><height>40</height>
+        <font>Label28</font><textcolor>text</textcolor>
+      </control>
+      <control type="label" id="11">
+        <left>32</left><top>60</top><width>836</width><height>40</height>
+        <font>Meta24</font><textcolor>text2</textcolor>
+      </control>
+      <control type="label" id="12">
+        <left>32</left><top>100</top><width>836</width><height>40</height>
+        <font>Meta24</font><textcolor>text2</textcolor>
+      </control>
+    </control>
+    <!-- numeric seek entry -->
+    <control type="group">
+      <visible>!String.IsEmpty(Player.SeekNumeric) + !Window.IsActive(seekbar)</visible>
+      <left>1424</left><top>64</top>
+      <control type="image">
+        <left>0</left><top>0</top><width>400</width><height>96</height>
+        <texture colordiffuse="panel" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="label">
+        <left>0</left><top>0</top><width>400</width><height>96</height>
+        <label>$INFO[Player.SeekNumeric]</label>
+        <font>Head40</font><textcolor>text</textcolor><align>center</align><aligny>center</aligny>
+      </control>
+    </control>
+    <!-- Info strip -->
+    <control type="group">
+      <visible>Player.ShowInfo + !Window.IsActive(videoosd) + !Window.IsActive(seekbar) + !Window.IsActive(1144) + !Window.IsActive(1145)</visible>
+      <animation type="Visible" condition="!Skin.HasSetting(BobiReduceMotion)"><effect type="fade" start="0" end="100" time="160" /><effect type="slide" start="0,24" end="0,0" time="200" tween="cubic" easing="out" /></animation>
+      <animation effect="fade" start="100" end="0" time="140" type="Hidden" condition="!Skin.HasSetting(BobiReduceMotion)" />
+      <include content="OSDScrim"><param name="top">560</param></include>
+      <include content="OSDTitle"><param name="top">740</param></include>
+      <include content="OSDProgress"><param name="top">874</param></include>
+      <control type="label">
+        <left>96</left><top>950</top><width>1728</width><height>36</height>
+        <label>[COLOR text3]字幕[/COLOR]  $VAR[SubtitleLabel]      [COLOR text3]音轨[/COLOR]  $VAR[AudioLabel]</label>
+        <font>Meta24</font><textcolor>text2</textcolor>
+      </control>
+      <control type="label">
+        <left>96</left><top>996</top><width>1728</width><height>32</height>
+        <label>确认 打开控制栏   ·   信息 收起</label>
+        <font>Meta22</font><textcolor>text3</textcolor>
+      </control>
+    </control>
+    <!-- buffering -->
+    <control type="group">
+      <visible>Player.Caching</visible>
+      <include>FadeVisible</include>
+      <left>1600</left><top>64</top>
+      <control type="image">
+        <left>0</left><top>0</top><width>224</width><height>72</height>
+        <texture colordiffuse="panel" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="image">
+        <left>20</left><top>16</top><width>40</width><height>40</height>
+        <texture colordiffuse="accent">bobi/spinner.png</texture>
+        <animation effect="rotate" end="-360" center="40,36" time="900" loop="true" condition="Player.Caching">Conditional</animation>
+      </control>
+      <control type="label">
+        <left>72</left><top>0</top><width>140</width><height>72</height>
+        <label>$INFO[Player.CacheLevel,缓冲 ,%]</label>
+        <font>Label24</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+  </controls>
+</window>

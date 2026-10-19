@@ -1,0 +1,14 @@
+<addon id="script.module.bobbi.core" name="AM6B Shared Core" version="0.1.0" provider-name="AM6B local adaptation">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1" />
+    <import addon="script.module.requests" version="2.25.1" />
+  </requires>
+  <extension point="xbmc.python.module" library="lib" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">AM6B 资源身份、云任务、字幕字体与播放归属共享核心</summary>
+    <summary lang="en_GB">Shared AM6B resource identity and preparation policies</summary>
+    <description lang="en_GB">Extracted existing policies with one implementation and unchanged persistent identity semantics. No service auto-start, skin or playback entry point.</description>
+    <license>GPL-3.0; see LICENSE and THIRD-PARTY notices</license>
+    <platform>all</platform>
+  </extension>
+</addon>

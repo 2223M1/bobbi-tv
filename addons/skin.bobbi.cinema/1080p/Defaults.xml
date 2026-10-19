@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <default type="image">
+    <left>0</left>
+    <top>0</top>
+    <texture />
+  </default>
+  <default type="label">
+    <label />
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+  </default>
+  <default type="fadelabel">
+    <left>120</left>
+    <top>90</top>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+  </default>
+  <default type="button">
+    <width>450</width>
+    <height>63</height>
+    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="togglebutton">
+    <left>210</left>
+    <top>251</top>
+    <width>30</width>
+    <height>30</height>
+    <texturefocus>am6b/icon-up-focus.png</texturefocus>
+    <texturenofocus>am6b/icon-up.png</texturenofocus>
+    <alttexturefocus>am6b/icon-down-focus.png</alttexturefocus>
+    <alttexturenofocus>am6b/icon-down.png</alttexturenofocus>
+    <textcolor>white</textcolor>
+    <label />
+    <font>font13</font>
+    <disabledcolor>grey3</disabledcolor>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="textbox">
+    <left>330</left>
+    <top>333</top>
+    <width>615</width>
+    <height>320</height>
+    <align>left</align>
+    <textcolor>white</textcolor>
+    <font>font13</font>
+  </default>
+  <default type="progress">
+    <left>150</left>
+    <top>488</top>
+    <texturebg border="9,13,9,13">am6b/progress-bg.png</texturebg>
+    <lefttexture />
+    <midtexture border="9,13,9,13">am6b/progress-fill.png</midtexture>
+    <righttexture />
+    <overlaytexture />
+  </default>
+  <default type="spincontrol">
+    <left>495</left>
+    <top>189</top>
+    <textureup>am6b/icon-up.png</textureup>
+    <texturedown>am6b/icon-down.png</texturedown>
+    <textureupdisabled colordiffuse="40FFFFFF">am6b/icon-up.png</textureupdisabled>
+    <texturedowndisabled colordiffuse="40FFFFFF">am6b/icon-down.png</texturedowndisabled>
+    <textureupfocus>am6b/icon-up-focus.png</textureupfocus>
+    <texturedownfocus>am6b/icon-down-focus.png</texturedownfocus>
+    <align>right</align>
+    <width>50</width>
+    <height>33</height>
+    <font>font13</font>
+    <reverse>yes</reverse>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <subtype>text</subtype>
+    <textoffsetx>-8</textoffsetx>
+    <textoffsety>0</textoffsety>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="spincontrolex">
+    <left>795</left>
+    <top>240</top>
+    <width>450</width>
+    <height>63</height>
+    <spinwidth>50</spinwidth>
+    <spinheight>33</spinheight>
+    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturenofocus />
+    <textureup>am6b/icon-up.png</textureup>
+    <texturedown>am6b/icon-down.png</texturedown>
+    <textureupdisabled colordiffuse="40FFFFFF">am6b/icon-up.png</textureupdisabled>
+    <texturedowndisabled colordiffuse="40FFFFFF">am6b/icon-down.png</texturedowndisabled>
+    <textureupfocus>am6b/icon-up-focus.png</textureupfocus>
+    <texturedownfocus>am6b/icon-down-focus.png</texturedownfocus>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <reverse>yes</reverse>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="radiobutton">
+    <left>450</left>
+    <top>300</top>
+    <width>450</width>
+    <height>63</height>
+    <radiowidth>36</radiowidth>
+    <radioheight>36</radioheight>
+    <textureradioonfocus>am6b/radio-on.png</textureradioonfocus>
+    <textureradioonnofocus>am6b/radio-on.png</textureradioonnofocus>
+    <textureradioofffocus>am6b/radio-off.png</textureradioofffocus>
+    <textureradiooffnofocus>am6b/radio-off.png</textureradiooffnofocus>
+    <textureradioondisabled colordiffuse="40FFFFFF">am6b/radio-on.png</textureradioondisabled>
+    <textureradiooffdisabled colordiffuse="40FFFFFF">am6b/radio-off.png</textureradiooffdisabled>
+    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <font>font11</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="colorbutton">
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>450</width>
+    <height>63</height>
+    <colorwidth>130</colorwidth>
+    <colorheight>76</colorheight>
+    <texturecolormask>color-button-box.png</texturecolormask>
+    <texturecolordisabledmask colordiffuse="40FFFFFF">color-button-box.png</texturecolordisabledmask>
+    <texturefocus />
+    <texturenofocus />
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey2</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="selectbutton">
+    <left>735</left>
+    <top>503</top>
+    <width>450</width>
+    <height>75</height>
+    <label />
+    <font>font12</font>
+    <texturefocus />
+    <texturenofocus />
+    <texturebg>am6b/button-focus.png</texturebg>
+    <textureleft>scroll-left.png</textureleft>
+    <textureleftfocus>scroll-left-focus.png</textureleftfocus>
+    <textureright>scroll-right.png</textureright>
+    <texturerightfocus>scroll-right-focus.png</texturerightfocus>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <aligny>center</aligny>
+  </default>
+  <default type="slider">
+    <controloffsetx>75</controloffsetx>
+    <controloffsety>0</controloffsety>
+    <orientation>horizontal</orientation>
+  </default>
+  <default type="sliderex">
+    <height>53</height>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <sliderwidth>150</sliderwidth>
+    <sliderheight>20</sliderheight>
+    <texturesliderbar>osd_slider_bg.png</texturesliderbar>
+    <texturesliderbardisabled colordiffuse="black">osd_slider_bg.png</texturesliderbardisabled>
+    <textureslidernib>osd_slider_nibNF.png</textureslidernib>
+    <textureslidernibfocus>osd_slider_nib.png</textureslidernibfocus>
+    <font>font12</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+  </default>
+  <default type="mover">
+    <left>90</left>
+    <top>288</top>
+    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+  </default>
+  <default type="resize">
+    <left>90</left>
+    <top>288</top>
+    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+  </default>
+  <default type="edit">
+    <left>450</left>
+    <top>300</top>
+    <width>450</width>
+    <height>63</height>
+    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <invalidcolor>invalid</invalidcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+</includes>

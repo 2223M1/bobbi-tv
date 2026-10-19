@@ -1,0 +1,276 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <variable name="TitlePrimary">
+    <value condition="!String.IsEmpty(ListItem.Property(Bobi.Title.zh))">$INFO[ListItem.Property(Bobi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.TVShowTitle)">$INFO[ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.zh))">$INFO[ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.Title)">$INFO[ListItem.Title]</value>
+    <value>$INFO[ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary">
+    <value condition="!String.IsEmpty(ListItem.Property(Bobi.Title.en)) + !String.IsEqual(ListItem.Property(Bobi.Title.en),ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(ListItem.Property(Bobi.Title.en),ListItem.TVShowTitle) + !String.IsEqual(ListItem.Property(Bobi.Title.en),ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(Bobi.Title.en),ListItem.Title)">$INFO[ListItem.Property(Bobi.Title.en)]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.TVShowTitle) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Title)">$INFO[ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(ListItem.OriginalTitle) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(ListItem.OriginalTitle,ListItem.TVShowTitle) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Title)">$INFO[ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.TVShowTitle) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Title)">$INFO[ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Label2,ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(ListItem.Label2,ListItem.TVShowTitle) + !String.IsEqual(ListItem.Label2,ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Label2,ListItem.Title) + !String.IsEqual(ListItem.Label2,ListItem.Label)">$INFO[ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel">
+    <value condition="!String.IsEmpty(ListItem.Property(Bobi.SeasonName)) + !String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,0)">第$INFO[ListItem.Season]季 · $INFO[ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(Bobi.SeasonName))">$INFO[ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="String.IsEqual(ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,-1)">第$INFO[ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel">
+    <value condition="!String.IsEmpty(ListItem.Episode) + !String.IsEqual(ListItem.Episode,-1)">第$INFO[ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle">
+    <value condition="String.IsEqual(ListItem.DBType,episode) + !String.IsEmpty(ListItem.Title) + !String.IsEqual(ListItem.Title,ListItem.TVShowTitle) + ![String.StartsWith(ListItem.Title,第) + String.EndsWith(ListItem.Title,集)]">$INFO[ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep">
+    <value condition="String.IsEqual(ListItem.DBType,episode) + !String.IsEmpty(ListItem.Title) + !String.IsEqual(ListItem.Title,ListItem.TVShowTitle) + ![String.StartsWith(ListItem.Title,第) + String.EndsWith(ListItem.Title,集)]">   $INFO[ListItem.Title]</value>
+  </variable>
+  <variable name="TitlePrimary_9810">
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(Bobi.Title.zh))">$INFO[Container(9810).ListItem.Property(Bobi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.TVShowTitle)">$INFO[Container(9810).ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9810).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Title)">$INFO[Container(9810).ListItem.Title]</value>
+    <value>$INFO[Container(9810).ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary_9810">
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(Bobi.Title.en)) + !String.IsEqual(Container(9810).ListItem.Property(Bobi.Title.en),Container(9810).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(Bobi.Title.en),Container(9810).ListItem.TVShowTitle) + !String.IsEqual(Container(9810).ListItem.Property(Bobi.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(Bobi.Title.en),Container(9810).ListItem.Title)">$INFO[Container(9810).ListItem.Property(Bobi.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.en)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.TVShowTitle) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Title)">$INFO[Container(9810).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.OriginalTitle) + !String.IsEqual(Container(9810).ListItem.OriginalTitle,Container(9810).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9810).ListItem.OriginalTitle,Container(9810).ListItem.TVShowTitle) + !String.IsEqual(Container(9810).ListItem.OriginalTitle,Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.OriginalTitle,Container(9810).ListItem.Title)">$INFO[Container(9810).ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.original)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.TVShowTitle) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Title)">$INFO[Container(9810).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Label2) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.TVShowTitle) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Title) + !String.IsEqual(Container(9810).ListItem.Label2,Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel_9810">
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(Bobi.SeasonName)) + !String.IsEmpty(Container(9810).ListItem.Season) + !String.IsEqual(Container(9810).ListItem.Season,0)">第$INFO[Container(9810).ListItem.Season]季 · $INFO[Container(9810).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(Bobi.SeasonName))">$INFO[Container(9810).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="String.IsEqual(Container(9810).ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Season) + !String.IsEqual(Container(9810).ListItem.Season,-1)">第$INFO[Container(9810).ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel_9810">
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Episode) + !String.IsEqual(Container(9810).ListItem.Episode,-1)">第$INFO[Container(9810).ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle_9810">
+    <value condition="String.IsEqual(Container(9810).ListItem.DBType,episode) + !String.IsEmpty(Container(9810).ListItem.Title) + !String.IsEqual(Container(9810).ListItem.Title,Container(9810).ListItem.TVShowTitle) + ![String.StartsWith(Container(9810).ListItem.Title,第) + String.EndsWith(Container(9810).ListItem.Title,集)]">$INFO[Container(9810).ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep_9810">
+    <value condition="String.IsEqual(Container(9810).ListItem.DBType,episode) + !String.IsEmpty(Container(9810).ListItem.Title) + !String.IsEqual(Container(9810).ListItem.Title,Container(9810).ListItem.TVShowTitle) + ![String.StartsWith(Container(9810).ListItem.Title,第) + String.EndsWith(Container(9810).ListItem.Title,集)]">   $INFO[Container(9810).ListItem.Title]</value>
+  </variable>
+  <variable name="TitlePrimary_9820">
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(Bobi.Title.zh))">$INFO[Container(9820).ListItem.Property(Bobi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.TVShowTitle)">$INFO[Container(9820).ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9820).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Title)">$INFO[Container(9820).ListItem.Title]</value>
+    <value>$INFO[Container(9820).ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary_9820">
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(Bobi.Title.en)) + !String.IsEqual(Container(9820).ListItem.Property(Bobi.Title.en),Container(9820).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(Bobi.Title.en),Container(9820).ListItem.TVShowTitle) + !String.IsEqual(Container(9820).ListItem.Property(Bobi.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(Bobi.Title.en),Container(9820).ListItem.Title)">$INFO[Container(9820).ListItem.Property(Bobi.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.en)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.TVShowTitle) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Title)">$INFO[Container(9820).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.OriginalTitle) + !String.IsEqual(Container(9820).ListItem.OriginalTitle,Container(9820).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9820).ListItem.OriginalTitle,Container(9820).ListItem.TVShowTitle) + !String.IsEqual(Container(9820).ListItem.OriginalTitle,Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.OriginalTitle,Container(9820).ListItem.Title)">$INFO[Container(9820).ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.original)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.TVShowTitle) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Title)">$INFO[Container(9820).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Label2) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.TVShowTitle) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Title) + !String.IsEqual(Container(9820).ListItem.Label2,Container(9820).ListItem.Label)">$INFO[Container(9820).ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel_9820">
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(Bobi.SeasonName)) + !String.IsEmpty(Container(9820).ListItem.Season) + !String.IsEqual(Container(9820).ListItem.Season,0)">第$INFO[Container(9820).ListItem.Season]季 · $INFO[Container(9820).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(Bobi.SeasonName))">$INFO[Container(9820).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="String.IsEqual(Container(9820).ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Season) + !String.IsEqual(Container(9820).ListItem.Season,-1)">第$INFO[Container(9820).ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel_9820">
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Episode) + !String.IsEqual(Container(9820).ListItem.Episode,-1)">第$INFO[Container(9820).ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle_9820">
+    <value condition="String.IsEqual(Container(9820).ListItem.DBType,episode) + !String.IsEmpty(Container(9820).ListItem.Title) + !String.IsEqual(Container(9820).ListItem.Title,Container(9820).ListItem.TVShowTitle) + ![String.StartsWith(Container(9820).ListItem.Title,第) + String.EndsWith(Container(9820).ListItem.Title,集)]">$INFO[Container(9820).ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep_9820">
+    <value condition="String.IsEqual(Container(9820).ListItem.DBType,episode) + !String.IsEmpty(Container(9820).ListItem.Title) + !String.IsEqual(Container(9820).ListItem.Title,Container(9820).ListItem.TVShowTitle) + ![String.StartsWith(Container(9820).ListItem.Title,第) + String.EndsWith(Container(9820).ListItem.Title,集)]">   $INFO[Container(9820).ListItem.Title]</value>
+  </variable>
+  <variable name="TitlePrimary_9830">
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(Bobi.Title.zh))">$INFO[Container(9830).ListItem.Property(Bobi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.TVShowTitle)">$INFO[Container(9830).ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9830).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Title)">$INFO[Container(9830).ListItem.Title]</value>
+    <value>$INFO[Container(9830).ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary_9830">
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(Bobi.Title.en)) + !String.IsEqual(Container(9830).ListItem.Property(Bobi.Title.en),Container(9830).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(Bobi.Title.en),Container(9830).ListItem.TVShowTitle) + !String.IsEqual(Container(9830).ListItem.Property(Bobi.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(Bobi.Title.en),Container(9830).ListItem.Title)">$INFO[Container(9830).ListItem.Property(Bobi.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.en)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.TVShowTitle) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Title)">$INFO[Container(9830).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.OriginalTitle) + !String.IsEqual(Container(9830).ListItem.OriginalTitle,Container(9830).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9830).ListItem.OriginalTitle,Container(9830).ListItem.TVShowTitle) + !String.IsEqual(Container(9830).ListItem.OriginalTitle,Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.OriginalTitle,Container(9830).ListItem.Title)">$INFO[Container(9830).ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.original)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.TVShowTitle) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Title)">$INFO[Container(9830).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Label2) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.TVShowTitle) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Title) + !String.IsEqual(Container(9830).ListItem.Label2,Container(9830).ListItem.Label)">$INFO[Container(9830).ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel_9830">
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(Bobi.SeasonName)) + !String.IsEmpty(Container(9830).ListItem.Season) + !String.IsEqual(Container(9830).ListItem.Season,0)">第$INFO[Container(9830).ListItem.Season]季 · $INFO[Container(9830).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(Bobi.SeasonName))">$INFO[Container(9830).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="String.IsEqual(Container(9830).ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Season) + !String.IsEqual(Container(9830).ListItem.Season,-1)">第$INFO[Container(9830).ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel_9830">
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Episode) + !String.IsEqual(Container(9830).ListItem.Episode,-1)">第$INFO[Container(9830).ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle_9830">
+    <value condition="String.IsEqual(Container(9830).ListItem.DBType,episode) + !String.IsEmpty(Container(9830).ListItem.Title) + !String.IsEqual(Container(9830).ListItem.Title,Container(9830).ListItem.TVShowTitle) + ![String.StartsWith(Container(9830).ListItem.Title,第) + String.EndsWith(Container(9830).ListItem.Title,集)]">$INFO[Container(9830).ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep_9830">
+    <value condition="String.IsEqual(Container(9830).ListItem.DBType,episode) + !String.IsEmpty(Container(9830).ListItem.Title) + !String.IsEqual(Container(9830).ListItem.Title,Container(9830).ListItem.TVShowTitle) + ![String.StartsWith(Container(9830).ListItem.Title,第) + String.EndsWith(Container(9830).ListItem.Title,集)]">   $INFO[Container(9830).ListItem.Title]</value>
+  </variable>
+  <variable name="TitlePrimary_9840">
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(Bobi.Title.zh))">$INFO[Container(9840).ListItem.Property(Bobi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.TVShowTitle)">$INFO[Container(9840).ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9840).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Title)">$INFO[Container(9840).ListItem.Title]</value>
+    <value>$INFO[Container(9840).ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary_9840">
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(Bobi.Title.en)) + !String.IsEqual(Container(9840).ListItem.Property(Bobi.Title.en),Container(9840).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(Bobi.Title.en),Container(9840).ListItem.TVShowTitle) + !String.IsEqual(Container(9840).ListItem.Property(Bobi.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(Bobi.Title.en),Container(9840).ListItem.Title)">$INFO[Container(9840).ListItem.Property(Bobi.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.en)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.TVShowTitle) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Title)">$INFO[Container(9840).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.OriginalTitle) + !String.IsEqual(Container(9840).ListItem.OriginalTitle,Container(9840).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9840).ListItem.OriginalTitle,Container(9840).ListItem.TVShowTitle) + !String.IsEqual(Container(9840).ListItem.OriginalTitle,Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.OriginalTitle,Container(9840).ListItem.Title)">$INFO[Container(9840).ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.original)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.TVShowTitle) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Title)">$INFO[Container(9840).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Label2) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.TVShowTitle) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Title) + !String.IsEqual(Container(9840).ListItem.Label2,Container(9840).ListItem.Label)">$INFO[Container(9840).ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel_9840">
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(Bobi.SeasonName)) + !String.IsEmpty(Container(9840).ListItem.Season) + !String.IsEqual(Container(9840).ListItem.Season,0)">第$INFO[Container(9840).ListItem.Season]季 · $INFO[Container(9840).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(Bobi.SeasonName))">$INFO[Container(9840).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="String.IsEqual(Container(9840).ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Season) + !String.IsEqual(Container(9840).ListItem.Season,-1)">第$INFO[Container(9840).ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel_9840">
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Episode) + !String.IsEqual(Container(9840).ListItem.Episode,-1)">第$INFO[Container(9840).ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle_9840">
+    <value condition="String.IsEqual(Container(9840).ListItem.DBType,episode) + !String.IsEmpty(Container(9840).ListItem.Title) + !String.IsEqual(Container(9840).ListItem.Title,Container(9840).ListItem.TVShowTitle) + ![String.StartsWith(Container(9840).ListItem.Title,第) + String.EndsWith(Container(9840).ListItem.Title,集)]">$INFO[Container(9840).ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep_9840">
+    <value condition="String.IsEqual(Container(9840).ListItem.DBType,episode) + !String.IsEmpty(Container(9840).ListItem.Title) + !String.IsEqual(Container(9840).ListItem.Title,Container(9840).ListItem.TVShowTitle) + ![String.StartsWith(Container(9840).ListItem.Title,第) + String.EndsWith(Container(9840).ListItem.Title,集)]">   $INFO[Container(9840).ListItem.Title]</value>
+  </variable>
+  <variable name="TitlePrimary_9850">
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(Bobi.Title.zh))">$INFO[Container(9850).ListItem.Property(Bobi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.TVShowTitle)">$INFO[Container(9850).ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9850).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Title)">$INFO[Container(9850).ListItem.Title]</value>
+    <value>$INFO[Container(9850).ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary_9850">
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(Bobi.Title.en)) + !String.IsEqual(Container(9850).ListItem.Property(Bobi.Title.en),Container(9850).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(Bobi.Title.en),Container(9850).ListItem.TVShowTitle) + !String.IsEqual(Container(9850).ListItem.Property(Bobi.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(Bobi.Title.en),Container(9850).ListItem.Title)">$INFO[Container(9850).ListItem.Property(Bobi.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.en)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.TVShowTitle) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Title)">$INFO[Container(9850).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.OriginalTitle) + !String.IsEqual(Container(9850).ListItem.OriginalTitle,Container(9850).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9850).ListItem.OriginalTitle,Container(9850).ListItem.TVShowTitle) + !String.IsEqual(Container(9850).ListItem.OriginalTitle,Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.OriginalTitle,Container(9850).ListItem.Title)">$INFO[Container(9850).ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.original)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.TVShowTitle) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Title)">$INFO[Container(9850).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Label2) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.TVShowTitle) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Title) + !String.IsEqual(Container(9850).ListItem.Label2,Container(9850).ListItem.Label)">$INFO[Container(9850).ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel_9850">
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(Bobi.SeasonName)) + !String.IsEmpty(Container(9850).ListItem.Season) + !String.IsEqual(Container(9850).ListItem.Season,0)">第$INFO[Container(9850).ListItem.Season]季 · $INFO[Container(9850).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(Bobi.SeasonName))">$INFO[Container(9850).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="String.IsEqual(Container(9850).ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Season) + !String.IsEqual(Container(9850).ListItem.Season,-1)">第$INFO[Container(9850).ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel_9850">
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Episode) + !String.IsEqual(Container(9850).ListItem.Episode,-1)">第$INFO[Container(9850).ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle_9850">
+    <value condition="String.IsEqual(Container(9850).ListItem.DBType,episode) + !String.IsEmpty(Container(9850).ListItem.Title) + !String.IsEqual(Container(9850).ListItem.Title,Container(9850).ListItem.TVShowTitle) + ![String.StartsWith(Container(9850).ListItem.Title,第) + String.EndsWith(Container(9850).ListItem.Title,集)]">$INFO[Container(9850).ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep_9850">
+    <value condition="String.IsEqual(Container(9850).ListItem.DBType,episode) + !String.IsEmpty(Container(9850).ListItem.Title) + !String.IsEqual(Container(9850).ListItem.Title,Container(9850).ListItem.TVShowTitle) + ![String.StartsWith(Container(9850).ListItem.Title,第) + String.EndsWith(Container(9850).ListItem.Title,集)]">   $INFO[Container(9850).ListItem.Title]</value>
+  </variable>
+  <variable name="TitlePrimary_9860">
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Property(Bobi.Title.zh))">$INFO[Container(9860).ListItem.Property(Bobi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.TVShowTitle)">$INFO[Container(9860).ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9860).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Title)">$INFO[Container(9860).ListItem.Title]</value>
+    <value>$INFO[Container(9860).ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary_9860">
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Property(Bobi.Title.en)) + !String.IsEqual(Container(9860).ListItem.Property(Bobi.Title.en),Container(9860).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Property(Bobi.Title.en),Container(9860).ListItem.TVShowTitle) + !String.IsEqual(Container(9860).ListItem.Property(Bobi.Title.en),Container(9860).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Property(Bobi.Title.en),Container(9860).ListItem.Title)">$INFO[Container(9860).ListItem.Property(Bobi.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Property(AM6B.Title.en)) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.en),Container(9860).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.en),Container(9860).ListItem.TVShowTitle) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.en),Container(9860).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.en),Container(9860).ListItem.Title)">$INFO[Container(9860).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.OriginalTitle) + !String.IsEqual(Container(9860).ListItem.OriginalTitle,Container(9860).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9860).ListItem.OriginalTitle,Container(9860).ListItem.TVShowTitle) + !String.IsEqual(Container(9860).ListItem.OriginalTitle,Container(9860).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9860).ListItem.OriginalTitle,Container(9860).ListItem.Title)">$INFO[Container(9860).ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Property(AM6B.Title.original)) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.original),Container(9860).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.original),Container(9860).ListItem.TVShowTitle) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.original),Container(9860).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Property(AM6B.Title.original),Container(9860).ListItem.Title)">$INFO[Container(9860).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Label2) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Property(Bobi.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.TVShowTitle) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Title) + !String.IsEqual(Container(9860).ListItem.Label2,Container(9860).ListItem.Label)">$INFO[Container(9860).ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel_9860">
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Property(Bobi.SeasonName)) + !String.IsEmpty(Container(9860).ListItem.Season) + !String.IsEqual(Container(9860).ListItem.Season,0)">第$INFO[Container(9860).ListItem.Season]季 · $INFO[Container(9860).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Property(Bobi.SeasonName))">$INFO[Container(9860).ListItem.Property(Bobi.SeasonName)]</value>
+    <value condition="String.IsEqual(Container(9860).ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Season) + !String.IsEqual(Container(9860).ListItem.Season,-1)">第$INFO[Container(9860).ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel_9860">
+    <value condition="!String.IsEmpty(Container(9860).ListItem.Episode) + !String.IsEqual(Container(9860).ListItem.Episode,-1)">第$INFO[Container(9860).ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle_9860">
+    <value condition="String.IsEqual(Container(9860).ListItem.DBType,episode) + !String.IsEmpty(Container(9860).ListItem.Title) + !String.IsEqual(Container(9860).ListItem.Title,Container(9860).ListItem.TVShowTitle) + ![String.StartsWith(Container(9860).ListItem.Title,第) + String.EndsWith(Container(9860).ListItem.Title,集)]">$INFO[Container(9860).ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep_9860">
+    <value condition="String.IsEqual(Container(9860).ListItem.DBType,episode) + !String.IsEmpty(Container(9860).ListItem.Title) + !String.IsEqual(Container(9860).ListItem.Title,Container(9860).ListItem.TVShowTitle) + ![String.StartsWith(Container(9860).ListItem.Title,第) + String.EndsWith(Container(9860).ListItem.Title,集)]">   $INFO[Container(9860).ListItem.Title]</value>
+  </variable>
+  <variable name="StageTitlePrimary">
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[TitlePrimary_9810]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[TitlePrimary_9820]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[TitlePrimary_9830]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[TitlePrimary_9840]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[TitlePrimary_9850]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9860)">$VAR[TitlePrimary_9860]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9810).NumItems,0)">$VAR[TitlePrimary_9810]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9820).NumItems,0)">$VAR[TitlePrimary_9820]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9830).NumItems,0)">$VAR[TitlePrimary_9830]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9840).NumItems,0)">$VAR[TitlePrimary_9840]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9850).NumItems,0)">$VAR[TitlePrimary_9850]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9860).NumItems,0)">$VAR[TitlePrimary_9860]</value>
+  </variable>
+  <variable name="StageTitleSecondary">
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[TitleSecondary_9810]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[TitleSecondary_9820]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[TitleSecondary_9830]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[TitleSecondary_9840]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[TitleSecondary_9850]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9860)">$VAR[TitleSecondary_9860]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9810).NumItems,0)">$VAR[TitleSecondary_9810]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9820).NumItems,0)">$VAR[TitleSecondary_9820]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9830).NumItems,0)">$VAR[TitleSecondary_9830]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9840).NumItems,0)">$VAR[TitleSecondary_9840]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9850).NumItems,0)">$VAR[TitleSecondary_9850]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9860).NumItems,0)">$VAR[TitleSecondary_9860]</value>
+  </variable>
+  <variable name="StageSeasonLabel">
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[SeasonLabel_9810]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[SeasonLabel_9820]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[SeasonLabel_9830]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[SeasonLabel_9840]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[SeasonLabel_9850]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9860)">$VAR[SeasonLabel_9860]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9810).NumItems,0)">$VAR[SeasonLabel_9810]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9820).NumItems,0)">$VAR[SeasonLabel_9820]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9830).NumItems,0)">$VAR[SeasonLabel_9830]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9840).NumItems,0)">$VAR[SeasonLabel_9840]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9850).NumItems,0)">$VAR[SeasonLabel_9850]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9860).NumItems,0)">$VAR[SeasonLabel_9860]</value>
+  </variable>
+  <variable name="StageEpisodeLabel">
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[EpisodeLabel_9810]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[EpisodeLabel_9820]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[EpisodeLabel_9830]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[EpisodeLabel_9840]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[EpisodeLabel_9850]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9860)">$VAR[EpisodeLabel_9860]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9810).NumItems,0)">$VAR[EpisodeLabel_9810]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9820).NumItems,0)">$VAR[EpisodeLabel_9820]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9830).NumItems,0)">$VAR[EpisodeLabel_9830]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9840).NumItems,0)">$VAR[EpisodeLabel_9840]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9850).NumItems,0)">$VAR[EpisodeLabel_9850]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9860).NumItems,0)">$VAR[EpisodeLabel_9860]</value>
+  </variable>
+  <variable name="StageEpisodeTitle">
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[EpisodeTitle_9810]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[EpisodeTitle_9820]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[EpisodeTitle_9830]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[EpisodeTitle_9840]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[EpisodeTitle_9850]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9860)">$VAR[EpisodeTitle_9860]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9810).NumItems,0)">$VAR[EpisodeTitle_9810]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9820).NumItems,0)">$VAR[EpisodeTitle_9820]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9830).NumItems,0)">$VAR[EpisodeTitle_9830]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9840).NumItems,0)">$VAR[EpisodeTitle_9840]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9850).NumItems,0)">$VAR[EpisodeTitle_9850]</value>
+    <value condition="String.IsEmpty(Window(Home).Property(BobiRail)) + Integer.IsGreater(Container(9860).NumItems,0)">$VAR[EpisodeTitle_9860]</value>
+  </variable>
+</includes>

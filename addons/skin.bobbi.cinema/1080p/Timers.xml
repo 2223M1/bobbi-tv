@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<timers>
+  <!-- auto-hide the OSD after 5 s without input when the skin setting is on -->
+  <timer>
+    <name>osd_autoclose</name>
+    <start reset="true">Window.IsActive(videoosd) + Window.IsTopMost(videoosd) + Skin.HasSetting(OSDAutoClose)</start>
+    <reset>Window.IsActive(videoosd) + [!Window.IsTopMost(videoosd) | !System.IdleTime(1)]</reset>
+    <stop>!Window.IsActive(videoosd) | !Skin.HasSetting(OSDAutoClose) | Integer.IsGreaterOrEqual(Skin.TimerElapsedSecs(osd_autoclose),5)</stop>
+    <onstop condition="Window.IsActive(videoosd) + Window.IsTopMost(videoosd) + Skin.HasSetting(OSDAutoClose) + System.IdleTime(5)">Dialog.Close(videoosd)</onstop>
+  </timer>
+  <!-- original auto-SDR behaviour; the inverted setting name is kept so saved values still apply -->
+  <timer>
+    <name>autovideosdr</name>
+    <start>Player.Playing + !Skin.HasSetting(autovideotosdr) + String.IsEmpty(System.SupportedHDRTypes) + !String.Contains(Player.Process(video.source.hdr.type),SDR)</start>
+    <stop>!String.Contains(Player.Process(video.source.hdr.type),SDR) + Integer.IsGreaterOrEqual(Skin.TimerElapsedSecs(autovideosdr), 1)</stop>
+    <onstop>Action(vs10.sdr)</onstop>
+  </timer>
+</timers>

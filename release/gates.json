@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "product": "bobbi-tv",
+  "version": "0.1.0",
+  "stable_release_allowed": false,
+  "public_source_allowed": true,
+  "public_alpha_allowed": true,
+  "profiles": {
+    "coreelec": {
+      "status": "public-alpha-implemented-device-unverified",
+      "clean_install": false,
+      "source_selection_playback": false,
+      "update_rollback_device": false,
+      "new_movie_and_anime": false
+    },
+    "android": {
+      "status": "public-alpha-built-device-unverified",
+      "clean_install": false,
+      "helper_engine": false,
+      "source_selection_playback": false,
+      "generic_android_device_verified": false,
+      "update_rollback_device": false,
+      "new_movie_and_anime": false
+    }
+  },
+  "remaining": [
+    "real CoreELEC and Android clean installation, individual account authorization and new-movie/new-anime playback",
+    "actual Kodi update/rollback and Android same-signature upgrade acceptance",
+    "automatic external subtitles and next-episode continuation are not part of this portable alpha",
+    "custom atomic updater remains disabled without a genuine exclusive Kodi lifecycle lease"
+  ]
+}

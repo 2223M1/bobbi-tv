@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">600</defaultcontrol>
+  <onload>Control.SetFocus(600,2)</onload>
+  <include>PanelOpen</include>
+  <depth>DepthOSD</depth>
+  <controls>
+    <control type="group">
+      <visible>![Window.IsVisible(1144) | Window.IsVisible(1145) | Window.IsVisible(1114) | Window.IsVisible(1115) | Window.IsVisible(OSDSubtitleSettings) | Window.IsVisible(OSDAudioSettings) | Window.IsVisible(OSDVideoSettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(SliderDialog)]</visible>
+      <include>FadeVisible</include>
+      <include content="OSDScrim"><param name="top">520</param></include>
+      <!-- top-right clock so the time is visible while watching -->
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>180</height>
+        <texture colordiffuse="B3000000">bobi/scrim-top.png</texture>
+      </control>
+      <control type="label">
+        <left>1424</left><top>40</top><width>400</width><height>48</height>
+        <label>$INFO[System.Time(HH:mm)]</label>
+        <font>Clock30</font><textcolor>text</textcolor><align>right</align><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>96</left><top>40</top><width>1200</width><height>48</height>
+        <label>$INFO[Player.Process(videowidth),,×]$INFO[Player.Process(videoheight)]$INFO[Player.Process(videofps),  ·  , fps]$INFO[VideoPlayer.VideoCodec,  ·  ]$INFO[Player.CacheLevel,  ·  缓冲 ,%]</label>
+        <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+        <visible>Player.Paused | Player.Caching</visible>
+      </control>
+      <include content="OSDTitle"><param name="top">680</param></include>
+      <include content="OSDProgress"><param name="top">814</param></include>
+      <!-- the seek slider sits exactly on the progress bar -->
+      <control type="slider" id="87">
+        <left>96</left><top>854</top><width>1728</width><height>32</height>
+        <action>seek</action>
+        <texturesliderbar />
+        <textureslidernib colordiffuse="00FFFFFF">bobi/dot.png</textureslidernib>
+        <textureslidernibfocus colordiffuse="focus">bobi/dot.png</textureslidernibfocus>
+        <onup>noop</onup>
+        <ondown>600</ondown>
+        <onleft>StepBack</onleft>
+        <onright>StepForward</onright>
+      </control>
+      <control type="label">
+        <left>96</left><top>890</top><width>1728</width><height>28</height>
+        <label>← → 快退 / 快进   ·   确认 跳转到此处</label>
+        <font>Meta22</font><textcolor>text3</textcolor><align>center</align>
+        <visible>Control.HasFocus(87)</visible>
+      </control>
+
+      <!-- transport row: static list so Kodi owns left/right; play is item 2 -->
+      <control type="list" id="600">
+        <left>96</left><top>924</top><width>624</width><height>88</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>0</scrolltime>
+        <onup>87</onup>
+        <ondown>noop</ondown>
+        <onleft>noop</onleft>
+        <onright>700</onright>
+        <itemlayout width="104" height="88">
+          <include content="RoundItem"><param name="list">600</param></include>
+        </itemlayout>
+        <focusedlayout width="104" height="88">
+          <include content="RoundItem"><param name="list">600</param><param name="focused">true</param></include>
+        </focusedlayout>
+        <content>
+          <item>
+            <label>上一个</label><icon>bobi/icons/prev.png</icon>
+            <property name="hint">上一章 / 上一集</property>
+            <onclick>PlayerControl(Previous)</onclick>
+          </item>
+          <item>
+            <label>后退</label><icon>bobi/icons/rewind.png</icon>
+            <property name="hint">后退 10 秒</property>
+            <onclick>Seek(-10)</onclick>
+          </item>
+          <item>
+            <label>播放</label><icon>$VAR[PlayPauseIcon]</icon>
+            <property name="hint">$VAR[PlayPauseHint]</property>
+            <onclick>PlayerControl(Play)</onclick>
+          </item>
+          <item>
+            <label>前进</label><icon>bobi/icons/forward.png</icon>
+            <property name="hint">前进 30 秒</property>
+            <onclick>Seek(30)</onclick>
+          </item>
+          <item>
+            <label>下一个</label><icon>bobi/icons/next.png</icon>
+            <property name="hint">下一章 / 下一集</property>
+            <onclick>PlayerControl(Next)</onclick>
+          </item>
+          <item>
+            <label>停止</label><icon>bobi/icons/stop.png</icon>
+            <property name="hint">停止播放并返回</property>
+            <onclick>Stop</onclick>
+          </item>
+        </content>
+      </control>
+      <control type="label">
+        <left>96</left><top>1020</top><width>624</width><height>32</height>
+        <label>$INFO[Container(600).ListItem.Property(hint)]</label>
+        <font>Meta22</font><textcolor>text2</textcolor>
+        <visible>Control.HasFocus(600)</visible>
+      </control>
+
+      <!-- tracks (wide chips) and tools (narrow chips) -->
+      <control type="list" id="700">
+        <left>776</left><top>936</top><width>684</width><height>64</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>0</scrolltime>
+        <onup>87</onup>
+        <ondown>noop</ondown>
+        <onleft>600</onleft>
+        <onright>710</onright>
+        <itemlayout width="342" height="64">
+          <include content="ChipItem"><param name="w">330</param><param name="list">700</param></include>
+        </itemlayout>
+        <focusedlayout width="342" height="64">
+          <include content="ChipItem"><param name="w">330</param><param name="list">700</param><param name="focused">true</param></include>
+        </focusedlayout>
+        <content>
+          <item>
+            <label>字幕</label><label2>$VAR[SubtitleLabel]</label2><icon>bobi/icons/subtitles.png</icon>
+            <property name="hint">当前：$VAR[SubtitleLabel]   ·   确认 选择字幕</property>
+            <onclick>SetProperty(BobiStreamReload,$INFO[System.Time(HH:mm:ss)],Home)</onclick>
+            <onclick>ActivateWindow(1144)</onclick>
+          </item>
+          <item>
+            <label>音轨</label><label2>$VAR[AudioLangLabel]</label2><icon>bobi/icons/audio.png</icon>
+            <property name="hint">当前：$VAR[AudioLangLabel]$INFO[VideoPlayer.AudioChannels, · ,ch]   ·   确认 选择音轨</property>
+            <onclick>SetProperty(BobiStreamReload,$INFO[System.Time(HH:mm:ss)],Home)</onclick>
+            <onclick>ActivateWindow(1145)</onclick>
+          </item>
+        </content>
+      </control>
+      <control type="list" id="710">
+        <left>1460</left><top>936</top><width>364</width><height>64</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>0</scrolltime>
+        <onup>87</onup>
+        <ondown>noop</ondown>
+        <onleft>700</onleft>
+        <onright>noop</onright>
+        <itemlayout width="182" height="64">
+          <include content="ChipItem"><param name="w">170</param><param name="list">710</param></include>
+        </itemlayout>
+        <focusedlayout width="182" height="64">
+          <include content="ChipItem"><param name="w">170</param><param name="list">710</param><param name="focused">true</param></include>
+        </focusedlayout>
+        <content>
+          <item>
+            <label>画面</label><icon>bobi/icons/picture.png</icon>
+            <property name="hint">缩放、比例、色彩与去隔行</property>
+            <onclick>ActivateWindow(OSDVideoSettings)</onclick>
+          </item>
+          <item>
+            <label>更多</label><icon>bobi/icons/sliders.png</icon>
+            <property name="hint">杜比视界 VS10 · 播放速度 · 书签 · 信号信息</property>
+            <onclick>ActivateWindow(1114)</onclick>
+          </item>
+        </content>
+      </control>
+      <control type="label">
+        <left>776</left><top>1020</top><width>1048</width><height>32</height>
+        <label>$VAR[OSDToolHint]</label>
+        <font>Meta22</font><textcolor>text2</textcolor><align>right</align>
+        <visible>Control.HasFocus(700) | Control.HasFocus(710)</visible>
+      </control>
+    </control>
+  </controls>
+</window>

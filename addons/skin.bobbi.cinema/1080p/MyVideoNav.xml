@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="false">50</defaultcontrol>
+  <menucontrol>9701</menucontrol>
+  <views>50</views>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <include>DirectoryHeader</include>
+    <include>DirectoryPanel</include>
+    <!-- loading / empty -->
+    <control type="group">
+      <visible>Container.IsUpdating + Integer.IsEqual(Container.NumItems,0)</visible>
+      <include content="StateBlock"><param name="y">420</param><param name="loading">true</param></include>
+    </control>
+    <control type="group">
+      <visible>!Container.IsUpdating + Integer.IsEqual(Container.NumItems,0)</visible>
+      <include content="StateBlock">
+        <param name="y">420</param>
+        <param name="empty">true</param>
+        <param name="emptytitle">这里还没有内容</param>
+        <param name="emptyhint">按 返回 回到上一页，或按 上 切换栏目</param>
+      </include>
+    </control>
+    <include content="TopBar">
+      <param name="down" value="50" />
+    </include>
+  </controls>
+</window>

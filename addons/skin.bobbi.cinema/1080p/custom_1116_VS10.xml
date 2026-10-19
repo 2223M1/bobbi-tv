@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="1116">
+  <defaultcontrol always="true">11100</defaultcontrol>
+  <depth>DepthOSD</depth>
+  <onunload condition="Player.HasVideo + !Window.IsActive(videoosd)">ActivateWindow(1114)</onunload>
+  <controls>
+    <include>DialogScrim</include>
+    <include content="SideSheet">
+      <param name="title">杜比视界 VS10</param>
+      <param name="subtitle">片源：$INFO[Player.Process(video.source.hdr.type)]   ·   选择输出格式</param>
+    </include>
+    <control type="list" id="11100">
+      <right>48</right><top>200</top><width>624</width><height>820</height>
+      <orientation>vertical</orientation>
+      <scrolltime tween="cubic" easing="out">160</scrolltime>
+      <onleft>noop</onleft><onright>noop</onright>
+      <itemlayout width="624" height="92"><include content="SheetItem"><param name="list">11100</param></include></itemlayout>
+      <focusedlayout width="624" height="92"><include content="SheetItem"><param name="list">11100</param><param name="focused">true</param></include></focusedlayout>
+      <content>
+        <item>
+          <label>保持片源格式</label><label2>不做转换</label2><icon>bobi/icons/film.png</icon>
+          <onclick>Action(vs10.original)</onclick>
+          <onclick>Dialog.Close(all)</onclick>
+          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
+        </item>
+        <item>
+          <label>转为 SDR</label><label2>$INFO[Player.Process(video.source.hdr.type)] → SDR</label2><icon>bobi/icons/picture.png</icon>
+          <onclick>Action(vs10.sdr)</onclick>
+          <onclick>Dialog.Close(all)</onclick>
+          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),HDR10) | String.Contains(Player.Process(video.source.hdr.type),Dolby Vision) | String.Contains(Player.Process(video.source.hdr.type),HLG)]</visible>
+        </item>
+        <item>
+          <label>转为 HDR10</label><label2>$INFO[Player.Process(video.source.hdr.type)] → HDR10</label2><icon>bobi/icons/hdr.png</icon>
+          <onclick>Action(vs10.hdr10)</onclick>
+          <onclick>Dialog.Close(all)</onclick>
+          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),SDR) | String.Contains(Player.Process(video.source.hdr.type),Dolby Vision)]</visible>
+        </item>
+        <item>
+          <label>转为杜比视界</label><label2>$INFO[Player.Process(video.source.hdr.type)] → Dolby Vision</label2><icon>bobi/icons/sparkle.png</icon>
+          <onclick>Action(vs10.dv)</onclick>
+          <onclick>Dialog.Close(all)</onclick>
+          <visible>!String.IsEqual(Player.Process(video.source.hdr.type.raw),2) + [String.Contains(Player.Process(video.source.hdr.type),SDR) | String.Contains(Player.Process(video.source.hdr.type),HDR10) | String.Contains(Player.Process(video.source.hdr.type),HLG)]</visible>
+        </item>
+      </content>
+    </control>
+    <control type="label">
+      <right>48</right><top>220</top><width>624</width><height>80</height>
+      <label>当前片源不支持 VS10 转换</label>
+      <font>Label28</font><textcolor>text3</textcolor>
+      <visible>String.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
+    </control>
+  </controls>
+</window>

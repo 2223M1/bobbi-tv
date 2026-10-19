@@ -1,0 +1,778 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1195">
+  <defaultcontrol>11951</defaultcontrol>
+  <onload condition="String.IsEqual(Window(Home).Property(AM6BHub),anime)">SetFocus(11951)</onload>
+  <onload condition="String.IsEqual(Window(Home).Property(AM6BHub),anime_movie)">SetFocus(11952)</onload>
+  <onload condition="String.IsEqual(Window(Home).Property(AM6BHub),tv)">SetFocus(11953)</onload>
+  <onload condition="String.IsEqual(Window(Home).Property(AM6BHub),movie)">SetFocus(11954)</onload>
+  <onload condition="String.IsEqual(Window(Home).Property(AM6BHub),history)">SetFocus(11955)</onload>
+  <onload condition="String.IsEqual(Window(Home).Property(AM6BHub),search)">SetFocus(11956)</onload>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="FF080808">am6b/white.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="B208090D">am6b/black.png</texture>
+    </control>
+    <control type="button" id="11950">
+      <right>58</right>
+      <top>50</top>
+      <width>150</width>
+      <height>58</height>
+      <font>font10</font>
+      <label>返回[CR]BACK</label>
+      <align>center</align>
+      <aligny>center</aligny>
+      <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+      <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+      <onclick>PreviousMenu</onclick>
+    </control>
+    <control type="group">
+      <visible>String.IsEqual(Window(Home).Property(AM6BHub),anime)</visible>
+      <control type="label">
+        <left>72</left>
+        <top>58</top>
+        <width>1540</width>
+        <height>52</height>
+        <font>font28_title</font>
+        <label>动漫</label>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>112</top>
+        <width>1540</width>
+        <height>24</height>
+        <font>font10</font>
+        <label>ANIME</label>
+        <textcolor>8FFFFFFF</textcolor>
+      </control>
+      <control type="panel" id="11951">
+        <left>72</left>
+        <top>170</top>
+        <width>1776</width>
+        <height>790</height>
+        <orientation>vertical</orientation>
+        <scrolltime>150</scrolltime>
+        <onleft>11951</onleft>
+        <onright>11951</onright>
+        <onup>11951</onup>
+        <ondown>11951</ondown>
+        <onback>PreviousMenu</onback>
+        <viewtype label="">list</viewtype>
+        <itemlayout width="430" height="190">
+          <control type="image">
+            <left>10</left>
+            <top>10</top>
+            <width>400</width>
+            <height>160</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>E6FFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>99FFFFFF</textcolor>
+          </control>
+        </itemlayout>
+        <focusedlayout width="430" height="190">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>408</width>
+            <height>168</height>
+            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <animation effect="zoom" start="100" end="103" time="180" center="215,90" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>D9FFFFFF</textcolor>
+          </control>
+        </focusedlayout>
+        <content>
+          <item id="1">
+            <label>本季度[CR]THIS SEASON</label>
+            <label2>当前季度全部日本动画</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Current_Quarter&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="2">
+            <label>未来七日播出[CR]AIRING NEXT 7 DAYS</label>
+            <label2>当前日期起七天内播出的日本动画</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_On_The_Air&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="3">
+            <label>年度新作[CR]RECENT THIS YEAR</label>
+            <label2>当前年份内较新的热门日本动画</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Popular_Recent&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="4">
+            <label>热门作品[CR]POPULAR</label>
+            <label2>当前热门日本动画</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Popular&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="5">
+            <label>高分动漫[CR]TOP RATED</label>
+            <label2>按评分与有效票数筛选</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Top_Rated&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="6">
+            <label>往季动画[CR]PAST SEASONS</label>
+            <label2>按首播年份回看</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Years&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="7">
+            <label>类型[CR]GENRES</label>
+            <label2>动作、科幻、日常、恋爱等</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Genres&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+          </item>
+        </content>
+      </control>
+    </control>
+    <control type="group">
+      <visible>String.IsEqual(Window(Home).Property(AM6BHub),anime_movie)</visible>
+      <control type="label">
+        <left>72</left>
+        <top>58</top>
+        <width>1540</width>
+        <height>52</height>
+        <font>font28_title</font>
+        <label>动漫电影</label>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>112</top>
+        <width>1540</width>
+        <height>24</height>
+        <font>font10</font>
+        <label>ANIME FILMS</label>
+        <textcolor>8FFFFFFF</textcolor>
+      </control>
+      <control type="panel" id="11952">
+        <left>72</left>
+        <top>170</top>
+        <width>1776</width>
+        <height>790</height>
+        <orientation>vertical</orientation>
+        <scrolltime>150</scrolltime>
+        <onleft>11952</onleft>
+        <onright>11952</onright>
+        <onup>11952</onup>
+        <ondown>11952</ondown>
+        <onback>PreviousMenu</onback>
+        <viewtype label="">list</viewtype>
+        <itemlayout width="430" height="190">
+          <control type="image">
+            <left>10</left>
+            <top>10</top>
+            <width>400</width>
+            <height>160</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>E6FFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>99FFFFFF</textcolor>
+          </control>
+        </itemlayout>
+        <focusedlayout width="430" height="190">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>408</width>
+            <height>168</height>
+            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <animation effect="zoom" start="100" end="103" time="180" center="215,90" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>D9FFFFFF</textcolor>
+          </control>
+        </focusedlayout>
+        <content>
+          <item id="1">
+            <label>最新上线[CR]NEW RELEASES</label>
+            <label2>按公开上线或发行日期倒序</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Movies_New&amp;mode=anime&amp;submode=movies&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="2">
+            <label>热门动画电影[CR]POPULAR ANIME FILMS</label>
+            <label2>当前热门日本动画电影</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Popular&amp;mode=anime&amp;submode=movies&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="3">
+            <label>年度新片[CR]RECENT THIS YEAR</label>
+            <label2>当前年份内较新的日本动画电影</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Popular_Recent&amp;mode=anime&amp;submode=movies&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="4">
+            <label>高分[CR]TOP RATED</label>
+            <label2>按评分筛选，不替代发行时间排序</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Top_Rated&amp;mode=anime&amp;submode=movies&amp;api=tmdb",return)</onclick>
+          </item>
+          <item id="5">
+            <label>类型[CR]GENRES</label>
+            <label2>动作、奇幻、科幻、日常等</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Genres&amp;mode=anime&amp;submode=movies&amp;api=tmdb",return)</onclick>
+          </item>
+        </content>
+      </control>
+    </control>
+    <control type="group">
+      <visible>String.IsEqual(Window(Home).Property(AM6BHub),tv)</visible>
+      <control type="label">
+        <left>72</left>
+        <top>58</top>
+        <width>1540</width>
+        <height>52</height>
+        <font>font28_title</font>
+        <label>电视剧</label>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>112</top>
+        <width>1540</width>
+        <height>24</height>
+        <font>font10</font>
+        <label>SERIES</label>
+        <textcolor>8FFFFFFF</textcolor>
+      </control>
+      <control type="panel" id="11953">
+        <left>72</left>
+        <top>170</top>
+        <width>1776</width>
+        <height>790</height>
+        <orientation>vertical</orientation>
+        <scrolltime>150</scrolltime>
+        <onleft>11953</onleft>
+        <onright>11953</onright>
+        <onup>11953</onup>
+        <ondown>11953</ondown>
+        <onback>PreviousMenu</onback>
+        <viewtype label="">list</viewtype>
+        <itemlayout width="430" height="190">
+          <control type="image">
+            <left>10</left>
+            <top>10</top>
+            <width>400</width>
+            <height>160</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>E6FFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>99FFFFFF</textcolor>
+          </control>
+        </itemlayout>
+        <focusedlayout width="430" height="190">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>408</width>
+            <height>168</height>
+            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <animation effect="zoom" start="100" end="103" time="180" center="215,90" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>D9FFFFFF</textcolor>
+          </control>
+        </focusedlayout>
+        <content>
+          <item id="1">
+            <label>今日播出[CR]AIRING TODAY</label>
+            <label2>按 TV 媒体类型收录的今日播出内容，包含动画剧集</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv",return)</onclick>
+          </item>
+          <item id="2">
+            <label>近期热门[CR]TRENDING</label>
+            <label2>当前热门电视剧</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=trending_week&amp;tmdb_type=tv",return)</onclick>
+          </item>
+          <item id="3">
+            <label>高分剧集[CR]TOP RATED</label>
+            <label2>按评分与有效票数筛选</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=top_rated&amp;tmdb_type=tv",return)</onclick>
+          </item>
+          <item id="4">
+            <label>动画剧集[CR]ANIMATED SERIES</label>
+            <label2>日本以外动画与其他 TV 动画内容</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=discover&amp;tmdb_type=tv&amp;with_id=True&amp;with_genres=16",return)</onclick>
+          </item>
+          <item id="5">
+            <label>电视网[CR]NETWORKS</label>
+            <label2>按电视网浏览完整 TV 类型</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=all_networks&amp;tmdb_type=tv",return)</onclick>
+          </item>
+          <item id="6">
+            <label>类型[CR]GENRES</label>
+            <label2>剧情、悬疑、喜剧、犯罪等</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv",return)</onclick>
+          </item>
+        </content>
+      </control>
+    </control>
+    <control type="group">
+      <visible>String.IsEqual(Window(Home).Property(AM6BHub),movie)</visible>
+      <control type="label">
+        <left>72</left>
+        <top>58</top>
+        <width>1540</width>
+        <height>52</height>
+        <font>font28_title</font>
+        <label>电影</label>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>112</top>
+        <width>1540</width>
+        <height>24</height>
+        <font>font10</font>
+        <label>FILMS</label>
+        <textcolor>8FFFFFFF</textcolor>
+      </control>
+      <control type="panel" id="11954">
+        <left>72</left>
+        <top>170</top>
+        <width>1776</width>
+        <height>790</height>
+        <orientation>vertical</orientation>
+        <scrolltime>150</scrolltime>
+        <onleft>11954</onleft>
+        <onright>11954</onright>
+        <onup>11954</onup>
+        <ondown>11954</ondown>
+        <onback>PreviousMenu</onback>
+        <viewtype label="">list</viewtype>
+        <itemlayout width="430" height="190">
+          <control type="image">
+            <left>10</left>
+            <top>10</top>
+            <width>400</width>
+            <height>160</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>E6FFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>99FFFFFF</textcolor>
+          </control>
+        </itemlayout>
+        <focusedlayout width="430" height="190">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>408</width>
+            <height>168</height>
+            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <animation effect="zoom" start="100" end="103" time="180" center="215,90" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>D9FFFFFF</textcolor>
+          </control>
+        </focusedlayout>
+        <content>
+          <item id="1">
+            <label>最新上线[CR]NEW RELEASES</label>
+            <label2>全部电影（含动画电影），按上线日期倒序</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=now_playing&amp;tmdb_type=movie",return)</onclick>
+          </item>
+          <item id="2">
+            <label>影院新片[CR]IN THEATRES</label>
+            <label2>近期上映电影</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=upcoming&amp;tmdb_type=movie",return)</onclick>
+          </item>
+          <item id="3">
+            <label>近期热门[CR]TRENDING</label>
+            <label2>当前热门电影</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=trending_week&amp;tmdb_type=movie",return)</onclick>
+          </item>
+          <item id="4">
+            <label>高分电影[CR]TOP RATED</label>
+            <label2>按评分与有效票数筛选</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=top_rated&amp;tmdb_type=movie",return)</onclick>
+          </item>
+          <item id="5">
+            <label>动画电影[CR]ANIMATED FILMS</label>
+            <label2>各国家与地区的动画电影</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=discover&amp;tmdb_type=movie&amp;with_id=True&amp;with_genres=16",return)</onclick>
+          </item>
+          <item id="6">
+            <label>类型 / 地区 / 年代[CR]GENRES / REGIONS / YEARS</label>
+            <label2>常规流媒体式多维筛选</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=movie",return)</onclick>
+          </item>
+        </content>
+      </control>
+    </control>
+    <control type="group">
+      <visible>String.IsEqual(Window(Home).Property(AM6BHub),history)</visible>
+      <control type="label">
+        <left>72</left>
+        <top>58</top>
+        <width>1540</width>
+        <height>52</height>
+        <font>font28_title</font>
+        <label>观看历史</label>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>112</top>
+        <width>1540</width>
+        <height>24</height>
+        <font>font10</font>
+        <label>WATCH HISTORY</label>
+        <textcolor>8FFFFFFF</textcolor>
+      </control>
+      <control type="panel" id="11955">
+        <left>72</left>
+        <top>170</top>
+        <width>1776</width>
+        <height>790</height>
+        <orientation>vertical</orientation>
+        <scrolltime>150</scrolltime>
+        <onleft>11955</onleft>
+        <onright>11955</onright>
+        <onup>11955</onup>
+        <ondown>11955</ondown>
+        <onback>PreviousMenu</onback>
+        <viewtype label="">list</viewtype>
+        <itemlayout width="430" height="190">
+          <control type="image">
+            <left>10</left>
+            <top>10</top>
+            <width>400</width>
+            <height>160</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>E6FFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>99FFFFFF</textcolor>
+          </control>
+        </itemlayout>
+        <focusedlayout width="430" height="190">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>408</width>
+            <height>168</height>
+            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <animation effect="zoom" start="100" end="103" time="180" center="215,90" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>D9FFFFFF</textcolor>
+          </control>
+        </focusedlayout>
+        <content>
+          <item id="1">
+            <label>继续观看[CR]CONTINUE WATCHING</label>
+            <label2>尚未播放完的电影与剧集</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=continue_watching_menu&amp;",return)</onclick>
+          </item>
+          <item id="2">
+            <label>电影记录[CR]FILM HISTORY</label>
+            <label2>Kodi 本地电影播放记录</label2>
+            <onclick>ActivateWindow(Videos,"special://skin/playlists/Movies_playback_history.xsp",return)</onclick>
+          </item>
+          <item id="3">
+            <label>未看完电影[CR]UNFINISHED FILMS</label>
+            <label2>电影续播列表</label2>
+            <onclick>ActivateWindow(Videos,"special://skin/playlists/inprogress_movies.xsp",return)</onclick>
+          </item>
+          <item id="4">
+            <label>未看完剧集[CR]UNFINISHED SERIES</label>
+            <label2>电视剧与动画续播列表</label2>
+            <onclick>ActivateWindow(Videos,"special://skin/playlists/inprogress_TVShows.xsp",return)</onclick>
+          </item>
+          <item id="5">
+            <label>剧集记录[CR]SERIES HISTORY</label>
+            <label2>Kodi 本地剧集播放记录</label2>
+            <onclick>ActivateWindow(Videos,"special://skin/playlists/Tvshows_playback_history.xsp",return)</onclick>
+          </item>
+        </content>
+      </control>
+    </control>
+    <control type="group">
+      <visible>String.IsEqual(Window(Home).Property(AM6BHub),search)</visible>
+      <control type="label">
+        <left>72</left>
+        <top>58</top>
+        <width>1540</width>
+        <height>52</height>
+        <font>font28_title</font>
+        <label>搜索</label>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>112</top>
+        <width>1540</width>
+        <height>24</height>
+        <font>font10</font>
+        <label>SEARCH</label>
+        <textcolor>8FFFFFFF</textcolor>
+      </control>
+      <control type="panel" id="11956">
+        <left>72</left>
+        <top>170</top>
+        <width>1776</width>
+        <height>790</height>
+        <orientation>vertical</orientation>
+        <scrolltime>150</scrolltime>
+        <onleft>11956</onleft>
+        <onright>11956</onright>
+        <onup>11956</onup>
+        <ondown>11956</ondown>
+        <onback>PreviousMenu</onback>
+        <viewtype label="">list</viewtype>
+        <itemlayout width="430" height="190">
+          <control type="image">
+            <left>10</left>
+            <top>10</top>
+            <width>400</width>
+            <height>160</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>E6FFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>99FFFFFF</textcolor>
+          </control>
+        </itemlayout>
+        <focusedlayout width="430" height="190">
+          <control type="image">
+            <left>6</left>
+            <top>6</top>
+            <width>408</width>
+            <height>168</height>
+            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <animation effect="zoom" start="100" end="103" time="180" center="215,90" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+          </control>
+          <control type="label">
+            <left>34</left>
+            <top>25</top>
+            <width>352</width>
+            <height>64</height>
+            <font>font13</font>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFFFFFFF</textcolor>
+          </control>
+          <control type="textbox">
+            <left>34</left>
+            <top>94</top>
+            <width>352</width>
+            <height>52</height>
+            <font>font10</font>
+            <label>$INFO[ListItem.Label2]</label>
+            <textcolor>D9FFFFFF</textcolor>
+          </control>
+        </focusedlayout>
+        <content>
+          <item id="1">
+            <label>全局搜索[CR]GLOBAL SEARCH</label>
+            <label2>Kodi 全局搜索</label2>
+            <onclick>RunScript(script.globalsearch)</onclick>
+          </item>
+          <item id="2">
+            <label>视频来源[CR]VIDEO SOURCES</label>
+            <label2>进入 Kodi 当前已安装的视频来源</label2>
+            <onclick>ActivateWindow(Videos,"addons://sources/video/",return)</onclick>
+          </item>
+          <item id="3">
+            <label>云端来源[CR]CLOUD SOURCES</label>
+            <label2>进入 Jacktook 已配置的云端来源</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=cloud&amp;",return)</onclick>
+          </item>
+          <item id="4">
+            <label>动漫[CR]ANIME</label>
+            <label2>动漫元数据与候选搜索</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=anime_menu&amp;",return)</onclick>
+          </item>
+          <item id="5">
+            <label>电视剧 / 电影[CR]SERIES / FILMS</label>
+            <label2>TMDb 发现与详情</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=dir_multisearch&amp;tmdb_type=None",return)</onclick>
+          </item>
+          <item id="6">
+            <label>BT 候选[CR]BT SOURCES</label>
+            <label2>Jacktook 显式候选，不自动播放</label2>
+            <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_menu&amp;",return)</onclick>
+          </item>
+        </content>
+      </control>
+    </control>
+  </controls>
+</window>

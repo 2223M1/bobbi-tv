@@ -1,0 +1,8 @@
+# China Mobile BT smart remote
+evdev:input:b0005v0416p0300*
+ KEYBOARD_KEY_c00f0=u                  #m键(改为u)
+ KEYBOARD_KEY_700cc=j                  ##键(改为j)
+ KEYBOARD_KEY_c00fc=k                  #删除键(改为k)  
+
+
+

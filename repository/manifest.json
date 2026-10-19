@@ -1,0 +1,98 @@
+{
+  "version": "0.1.0-alpha.1",
+  "channel": "public-alpha",
+  "device_verified": false,
+  "components": [
+    {
+      "id": "plugin.video.bobbi",
+      "version": "0.1.0",
+      "file": "plugin.video.bobbi/plugin.video.bobbi-0.1.0.zip",
+      "sha256": "08c074f605428fff50a61df43f4ef38791b24a19a1d986ad1aacda183fc1aa1b",
+      "bytes": 3470198
+    },
+    {
+      "id": "plugin.video.bobbi.library",
+      "version": "0.1.0",
+      "file": "plugin.video.bobbi.library/plugin.video.bobbi.library-0.1.0.zip",
+      "sha256": "94703f7d479559e34eb9de5685b39daa90bf5350cb9f84c17d3e5b9ad8b04d3e",
+      "bytes": 15366
+    },
+    {
+      "id": "repository.bobbi",
+      "version": "0.1.0",
+      "file": "repository.bobbi/repository.bobbi-0.1.0.zip",
+      "sha256": "93f86b637e3b683607fae751d5e551a375003d3d336c1ad9d4259fa42a30a9fa",
+      "bytes": 12959
+    },
+    {
+      "id": "script.bobbi.setup",
+      "version": "0.1.0",
+      "file": "script.bobbi.setup/script.bobbi.setup-0.1.0.zip",
+      "sha256": "e71d58cc6167cb8aae7e7ed6a27b2b2bbdb166e66f4fec18378141b067a2915d",
+      "bytes": 17201
+    },
+    {
+      "id": "script.bobbi.start",
+      "version": "0.1.0",
+      "file": "script.bobbi.start/script.bobbi.start-0.1.0.zip",
+      "sha256": "5f55a081598cb4da253a463ec6341c61912bcdab7f137b11b894687c8209fdf4",
+      "bytes": 13289
+    },
+    {
+      "id": "script.module.bobbi.catalog",
+      "version": "0.1.0",
+      "file": "script.module.bobbi.catalog/script.module.bobbi.catalog-0.1.0.zip",
+      "sha256": "3c1e072a3ef2a1d850d4cec18fb0bee6f4de47b86de56f663a1c2a2fff61ca58",
+      "bytes": 18861241
+    },
+    {
+      "id": "script.module.bobbi.core",
+      "version": "0.1.0",
+      "file": "script.module.bobbi.core/script.module.bobbi.core-0.1.0.zip",
+      "sha256": "078ed9dfc20af96bb0bc7ecfdc5155e7072806a1747bf63013f87cf5fcf50d8f",
+      "bytes": 302925
+    },
+    {
+      "id": "script.module.bobbi.mdsub",
+      "version": "0.1.0",
+      "file": "script.module.bobbi.mdsub/script.module.bobbi.mdsub-0.1.0.zip",
+      "sha256": "89713072dcbcce9edbab374b48d76a05068f7ee60c551c043530556aa1f31165",
+      "bytes": 139168
+    },
+    {
+      "id": "script.module.bobbi.platform",
+      "version": "0.1.0",
+      "file": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.0.zip",
+      "sha256": "bc8d0f19000d2ca724432d9e34141144627645ef4a75e824baf4394b1596d11b",
+      "bytes": 92979
+    },
+    {
+      "id": "skin.bobbi.cinema",
+      "version": "0.1.0",
+      "file": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "sha256": "eca7bbb6b3f1532e20b8d3fd82e3bc86163c46d22dae96283a185f891bbee8e1",
+      "bytes": 36709349
+    },
+    {
+      "id": "script.module.infotagger",
+      "version": "0.1.0",
+      "file": "script.module.infotagger/script.module.infotagger-0.1.0.zip",
+      "sha256": "5bc000928c4bfa1abed370fbe719519e6631c3728e8f8b46e29800406b220cab",
+      "bytes": 35416
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "version": "0.2.35",
+      "file": "script.module.jurialmunkey/script.module.jurialmunkey-0.2.35.zip",
+      "sha256": "fc59c124bffce33af5c3c20dc6fb744a407c43c4c07ae7a951e916a88ed402a8",
+      "bytes": 67959
+    },
+    {
+      "id": "script.skinvariables",
+      "version": "2.2.9",
+      "file": "script.skinvariables/script.skinvariables-2.2.9.zip",
+      "sha256": "51187dec1f45547a1ca29f55578a36cc6d4b4eca13125a490e691e4c4c56d098",
+      "bytes": 236094
+    }
+  ]
+}

@@ -1,0 +1,3324 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <include name="HomeRecentlyAddedInfo">
+    <control type="group" id="9003">
+      <depth>DepthMenu</depth>
+      <top>-100</top>
+      <animation effect="slide" start="0,0" end="0,47" time="200" tween="quadratic" easing="out" condition="[Skin.HasSetting(submenuautopop) + [ControlGroup(9001).HasFocus | [Control.IsVisible(7003) + !Control.IsVisible(7002) + [Container(9000).HasFocus(2) | Container(9000).HasFocus(10) | Container(9000).HasFocus(11) | Container(9000).HasFocus(3) | Container(9000).HasFocus(5) | Container(9000).HasFocus(16) | Container(9000).HasFocus(17) | Container(9000).HasFocus(61)]]]] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="0,47" time="180" tween="quadratic" easing="out" condition="[!Skin.HasSetting(submenuautopop) + ControlGroup(9001).HasFocus + [!Container(9000).HasFocus(2) | [Container(9000).HasFocus(2) + Skin.HasSetting(bigthumb)]]] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+      <animation effect="fade" time="180" start="100" end="0" condition="[Control.HasFocus(90031)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+      <onup>9001</onup>
+      <onright>9000</onright>
+      <onleft>9000</onleft>
+      <onup>20</onup>
+      <ondown condition="Control.IsVisible(600)">600</ondown>
+      <ondown condition="!Control.IsVisible(600)">9000</ondown>
+      <onback>9000</onback>
+      <visible>!Window.IsVisible(Favourites)</visible>
+      <include>VisibleFadeEffect</include>
+      <animation effect="fade" time="200" delay="250" condition="!Skin.HasSetting(BobiReduceMotion)">WindowOpen</animation>
+      <animation effect="fade" time="100" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+      <control type="group">
+        <left>140</left>
+        <top>155</top>
+        <onup>9001</onup>
+        <visible>Library.HasContent(Movies)</visible>
+        <visible>Container(9000).Hasfocus(10) + !Skin.HasSetting(HomepageHideRecentlyAddedVideo) + !Skin.HasSetting(HomeMenuMovieUsePlaylist) + Skin.HasSetting(HideRecentlyAddedVideo)</visible>
+        <animation effect="fade" start="100" end="0" time="180" condition="[!Control.HasFocus(8000) + Control.IsVisible(9035)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <include>VisibleFadeEffect</include>
+        <control type="image">
+          <left>-150</left>
+          <top>-175</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">dim-top.png</texture>
+          <visible>!Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8000)</visible>
+        </control>
+        <control type="image">
+          <left>-150</left>
+          <top>-175</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">am6b/black.png</texture>
+          <visible>Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8000)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>-140</left>
+          <top>-50</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>观看进行中的电影</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font16</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+        </control>
+        <control type="group">
+          <top>-10</top>
+          <control type="list" id="8000">
+            <animation effect="slide" start="0,0" end="135,0" time="0" condition="[String.IsEqual(Container(8000).NumItems,4)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="270,0" time="0" condition="[String.IsEqual(Container(8000).NumItems,3)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="405,0" time="0" condition="[String.IsEqual(Container(8000).NumItems,2)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="540,0" time="0" condition="[String.IsEqual(Container(8000).NumItems,1)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <left>0</left>
+            <top>0</top>
+            <width>1650</width>
+            <height>530</height>
+            <onleft>8000</onleft>
+            <onright>8000</onright>
+            <onback>9000</onback>
+            <onup>9001</onup>
+            <ondown>9002</ondown>
+            <viewtype label="535">list</viewtype>
+            <pagecontrol />
+            <scrolltime>180</scrolltime>
+            <orientation>Horizontal</orientation>
+            <visible>Container(9000).Hasfocus(10) + !Skin.HasSetting(HomepageHideRecentlyAddedVideo) + !Skin.HasSetting(HomeMenuMovieUsePlaylist) + Skin.HasSetting(HideRecentlyAddedVideo)</visible>
+            <itemlayout height="445" width="330">
+              <control type="group">
+                <top>10</top>
+                <control type="image">
+                  <left>15</left>
+                  <top>15</top>
+                  <width>300</width>
+                  <height>445</height>
+                  <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="image">
+                  <left>15</left>
+                  <top>31</top>
+                  <width>300</width>
+                  <height>425</height>
+                  <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>15</left>
+                  <top>478</top>
+                  <width>300</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>384</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-372</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-346</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="image">
+                  <left>253</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>253</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>253</left>
+                    <top>36</top>
+                    <width>55</width>
+                    <height>55</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  </control>
+                  <control type="label">
+                    <left>253</left>
+                    <top>36</top>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <width>55</width>
+                    <height>55</height>
+                    <font>font12_title</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-15</top>
+                    <width>330</width>
+                    <height>493</height>
+                    <aspectratio>stretch</aspectratio>
+                    <bordersize>8</bordersize>
+                    <texture background="true">$VAR[GlobalCaseVar,cdart/default/,]</texture>
+                  </control>
+                </control>
+              </control>
+            </itemlayout>
+            <focusedlayout height="445" width="330">
+              <control type="group">
+                <animation effect="zoom" start="100" end="104" time="200" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+                <animation effect="zoom" start="104" end="100" time="50" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+                <top>10</top>
+                <control type="group">
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>8</left>
+                    <top>8</top>
+                    <width>314</width>
+                    <height>459</height>
+                    <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(8000)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>300</width>
+                    <height>445</height>
+                    <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+							0<visible>Control.HasFocus(8000)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>300</width>
+                    <height>445</height>
+                    <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+							0<visible>!Control.HasFocus(8000)</visible>
+                  </control>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>5</left>
+                    <top>-8</top>
+                    <width>327</width>
+                    <height>482</height>
+                    <texture border="20">am6b/badge.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(8000)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>31</top>
+                    <width>300</width>
+                    <height>425</height>
+                    <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(8000)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>31</top>
+                    <width>300</width>
+                    <height>425</height>
+                    <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>!Control.HasFocus(8000)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>15</left>
+                  <top>478</top>
+                  <width>300</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>!Control.HasFocus(8000)</visible>
+                </control>
+                <control type="label">
+                  <left>15</left>
+                  <top>478</top>
+                  <width>300</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>Control.HasFocus(8000)</visible>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>384</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-372</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-346</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="image">
+                  <left>253</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>253</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>253</left>
+                    <top>36</top>
+                    <width>55</width>
+                    <height>55</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  </control>
+                  <control type="label">
+                    <left>253</left>
+                    <top>36</top>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <width>55</width>
+                    <height>55</height>
+                    <font>font12_title</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-15</top>
+                    <width>330</width>
+                    <height>493</height>
+                    <aspectratio>stretch</aspectratio>
+                    <bordersize>8</bordersize>
+                    <texture background="true">$VAR[GlobalCaseVar,cdart/default/,]</texture>
+                  </control>
+                </control>
+              </control>
+            </focusedlayout>
+            <content target="video" sortorder="descending" sortby="lastplayed" limit="25" browse="never">special://skin/playlists/inprogress_movies.xsp</content>
+          </control>
+          <control type="button">
+            <description>left Arrow</description>
+            <left>-60</left>
+            <top>185</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <onclick>Control.Move(8000,-1)</onclick>
+            <visible>Control.HasFocus(8000) + Container(8000).HasPrevious</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1665</left>
+            <top>185</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <onclick>Control.Move(8000,1)</onclick>
+            <visible>Control.HasFocus(8000) + Container(8000).HasNext</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+      </control>
+      <control type="group">
+        <left>0</left>
+        <top>80</top>
+        <onup>9001</onup>
+        <visible>Library.HasContent(Movies)</visible>
+        <visible>Container(9000).Hasfocus(10) + !Skin.HasSetting(HomeMenuMovieUsePlaylist) + !Skin.HasSetting(HideRecentlyAddedVideo)</visible>
+        <animation effect="fade" start="100" end="0" time="180" condition="[!Control.HasFocus(8005) + !Control.HasFocus(8004) + Control.IsVisible(9035)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <include>VisibleFadeEffect</include>
+        <control type="image">
+          <left>-10</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">dim-top.png</texture>
+          <visible>!Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8004) | Control.HasFocus(8005)</visible>
+        </control>
+        <control type="image">
+          <left>-10</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">am6b/black.png</texture>
+          <visible>Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8004) | Control.HasFocus(8005)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>-32</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>观看进行中的电影</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>!Control.HasFocus(8004)</visible>
+          <visible>!Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>-32</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>观看进行中的电影</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>Control.HasFocus(8004)</visible>
+          <visible>!Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>388</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>新加入的电影</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>!Control.HasFocus(8005)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>388</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>新加入的电影</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>Control.HasFocus(8005)</visible>
+        </control>
+        <control type="group">
+          <control type="button">
+            <description>left Arrow</description>
+            <left>25</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <onclick>Control.Move(8004,-1)</onclick>
+            <visible>Control.HasFocus(8004) + Container(8004).HasPrevious</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1855</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <onclick>Control.Move(8004,1)</onclick>
+            <visible>Control.HasFocus(8004) + Container(8004).HasNext</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+        <control type="group">
+          <top>410</top>
+          <control type="button">
+            <description>left Arrow</description>
+            <left>25</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <onclick>Control.Move(8005,-1)</onclick>
+            <visible>Control.HasFocus(8005) + Container(8005).HasPrevious</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1855</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <onclick>Control.Move(8005,1)</onclick>
+            <visible>Control.HasFocus(8005) + Container(8005).HasNext</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+      </control>
+      <control type="group">
+        <left>0</left>
+        <top>80</top>
+        <onup>9001</onup>
+        <visible>Library.HasContent(TVShows)</visible>
+        <visible>Container(9000).Hasfocus(11)</visible>
+        <animation effect="fade" start="100" end="0" time="180" condition="[!Control.HasFocus(80011) + !Control.HasFocus(8001) + !Control.HasFocus(8007) + Control.IsVisible(9036)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <include>VisibleFadeEffect</include>
+        <control type="image">
+          <left>-10</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">dim-top.png</texture>
+          <visible>!Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8001) | Control.HasFocus(80011) | Control.HasFocus(8007)</visible>
+        </control>
+        <control type="image">
+          <left>-10</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">am6b/black.png</texture>
+          <visible>Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8001) | Control.HasFocus(80011) | Control.HasFocus(8007)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>-32</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>观看进行中的剧集</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>!Control.HasFocus(8001) + !Control.HasFocus(80011)</visible>
+          <visible>!Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>-32</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>观看进行中的剧集</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>[!Skin.HasSetting(TVShowsuseposter) + Control.HasFocus(8001)] | [Skin.HasSetting(TVShowsuseposter) + Control.HasFocus(80011)]</visible>
+          <visible>!Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>388</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>新加入的剧集</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>!Control.HasFocus(8007)</visible>
+          <visible>!Skin.HasSetting(HideRecentlyAddedVideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>388</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>新加入的剧集</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>Control.HasFocus(8007)</visible>
+        </control>
+        <control type="group">
+          <top>410</top>
+          <control type="list" id="8007">
+            <animation effect="slide" start="0,0" end="146,0" time="0" condition="[String.IsEqual(Container(8007).NumItems,5)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="293,0" time="0" condition="[String.IsEqual(Container(8007).NumItems,4)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="437,0" time="0" condition="[String.IsEqual(Container(8007).NumItems,3)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="586,0" time="0" condition="[String.IsEqual(Container(8007).NumItems,2)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="730,0" time="0" condition="[String.IsEqual(Container(8007).NumItems,1)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <left>95</left>
+            <right>60</right>
+            <top>0</top>
+            <height>530</height>
+            <onleft>8007</onleft>
+            <onright>8007</onright>
+            <onback>9000</onback>
+            <onup condition="Skin.HasSetting(TVShowsuseposter)">80011</onup>
+            <onup condition="!Skin.HasSetting(TVShowsuseposter)">8001</onup>
+            <ondown>9002</ondown>
+            <viewtype label="535">list</viewtype>
+            <pagecontrol />
+            <scrolltime>180</scrolltime>
+            <orientation>Horizontal</orientation>
+            <visible>!Skin.HasSetting(HideRecentlyAddedVideo)</visible>
+            <itemlayout height="360" width="293">
+              <control type="group">
+                <top>10</top>
+                <control type="image">
+                  <left>15</left>
+                  <top>15</top>
+                  <width>240</width>
+                  <height>320</height>
+                  <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="image">
+                  <left>15</left>
+                  <top>31</top>
+                  <width>240</width>
+                  <height>300</height>
+                  <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>259</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-247</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <left>5</left>
+                    <top>-229</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>-25</left>
+                  <top>305</top>
+                  <width>244</width>
+                  <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                  <font>font8</font>
+                  <align>right</align>
+                </control>
+                <control type="image">
+                  <left>225</left>
+                  <top>305</top>
+                  <width>20</width>
+                  <height>20</height>
+                  <texture>lists/played-total.png</texture>
+                  <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+                </control>
+                <control type="image">
+                  <left>193</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>193</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>193</left>
+                    <top>36</top>
+                    <width>55</width>
+                    <height>55</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  </control>
+                  <control type="label">
+                    <left>193</left>
+                    <top>36</top>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <width>55</width>
+                    <height>55</height>
+                    <font>font12_title</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-10</top>
+                    <width>266</width>
+                    <height>357</height>
+                    <aspectratio>stretch</aspectratio>
+                    <bordersize>8</bordersize>
+                    <texture background="true">$VAR[GlobalCaseVar,cdart/default/,]</texture>
+                  </control>
+                </control>
+              </control>
+            </itemlayout>
+            <focusedlayout height="360" width="293">
+              <control type="group">
+                <top>10</top>
+                <animation effect="zoom" start="100" end="104" time="200" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+                <animation effect="zoom" start="104" end="100" time="50" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+                <control type="group">
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>8</left>
+                    <top>8</top>
+                    <width>254</width>
+                    <height>334</height>
+                    <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(8007)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>240</width>
+                    <height>320</height>
+                    <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(8007)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>240</width>
+                    <height>320</height>
+                    <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>!Control.HasFocus(8007)</visible>
+                  </control>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>8</left>
+                    <top>-4</top>
+                    <width>259</width>
+                    <height>348</height>
+                    <texture border="20">am6b/badge.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(8007)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>31</top>
+                    <width>240</width>
+                    <height>300</height>
+                    <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(8007)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>31</top>
+                    <width>240</width>
+                    <height>300</height>
+                    <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>!Control.HasFocus(8007)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>!Control.HasFocus(8007)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>Control.HasFocus(8007)</visible>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>259</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-247</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <left>5</left>
+                    <top>-228</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>-25</left>
+                  <top>305</top>
+                  <width>244</width>
+                  <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                  <font>font8</font>
+                  <align>right</align>
+                </control>
+                <control type="image">
+                  <left>225</left>
+                  <top>305</top>
+                  <width>20</width>
+                  <height>20</height>
+                  <texture>lists/played-total.png</texture>
+                  <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+                </control>
+                <control type="image">
+                  <left>193</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>193</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>193</left>
+                    <top>36</top>
+                    <width>55</width>
+                    <height>55</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  </control>
+                  <control type="label">
+                    <left>193</left>
+                    <top>36</top>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <width>55</width>
+                    <height>55</height>
+                    <font>font12_title</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-10</top>
+                    <width>266</width>
+                    <height>357</height>
+                    <aspectratio>stretch</aspectratio>
+                    <bordersize>8</bordersize>
+                    <texture background="true">$VAR[GlobalCaseVar,cdart/default/,]</texture>
+                  </control>
+                </control>
+              </control>
+            </focusedlayout>
+            <content target="video" sortorder="descending" sortby="dateadded" limit="25" browse="never">special://skin/playlists/recent_tvshows.xsp</content>
+            <onclick>ActivateWindow(videos,videodb://tvshows/titles/$INFO[ListItem.DBID]/,return)</onclick>
+          </control>
+          <control type="button">
+            <description>left Arrow</description>
+            <left>25</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <onclick>Control.Move(8007,-1)</onclick>
+            <visible>Control.HasFocus(8007) + Container(8007).HasPrevious</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1855</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <onclick>Control.Move(8007,1)</onclick>
+            <visible>Control.HasFocus(8007) + Container(8007).HasNext</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+        <control type="group">
+          <top>-10</top>
+          <control type="list" id="80011">
+            <animation effect="slide" start="0,0" end="146,0" time="0" condition="[String.IsEqual(Container(80011).NumItems,5)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="293,0" time="0" condition="[String.IsEqual(Container(80011).NumItems,4)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="437,0" time="0" condition="[String.IsEqual(Container(80011).NumItems,3)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="586,0" time="0" condition="[String.IsEqual(Container(80011).NumItems,2)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="730,0" time="0" condition="[String.IsEqual(Container(80011).NumItems,1)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <left>95</left>
+            <right>60</right>
+            <top>0</top>
+            <height>530</height>
+            <onleft>80011</onleft>
+            <onright>80011</onright>
+            <onback>9000</onback>
+            <onup>9001</onup>
+            <ondown>8007</ondown>
+            <viewtype label="535">list</viewtype>
+            <pagecontrol />
+            <scrolltime>180</scrolltime>
+            <orientation>Horizontal</orientation>
+            <visible>!Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
+            <visible>Skin.HasSetting(TVShowsuseposter)</visible>
+            <itemlayout height="360" width="293">
+              <control type="group">
+                <top>10</top>
+                <control type="image">
+                  <left>15</left>
+                  <top>15</top>
+                  <width>240</width>
+                  <height>320</height>
+                  <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="image">
+                  <left>15</left>
+                  <top>31</top>
+                  <width>240</width>
+                  <height>300</height>
+                  <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>259</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-247</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <left>5</left>
+                    <top>-229</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>-25</left>
+                  <top>305</top>
+                  <width>244</width>
+                  <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                  <font>font8</font>
+                  <align>right</align>
+                </control>
+                <control type="image">
+                  <left>225</left>
+                  <top>305</top>
+                  <width>20</width>
+                  <height>20</height>
+                  <texture>lists/played-total.png</texture>
+                  <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+                </control>
+                <control type="image">
+                  <left>193</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>193</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>193</left>
+                    <top>36</top>
+                    <width>55</width>
+                    <height>55</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  </control>
+                  <control type="label">
+                    <left>193</left>
+                    <top>36</top>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <width>55</width>
+                    <height>55</height>
+                    <font>font12_title</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-10</top>
+                    <width>266</width>
+                    <height>357</height>
+                    <aspectratio>stretch</aspectratio>
+                    <bordersize>8</bordersize>
+                    <texture background="true">$VAR[GlobalCaseVar,cdart/default/,]</texture>
+                  </control>
+                </control>
+              </control>
+            </itemlayout>
+            <focusedlayout height="360" width="293">
+              <control type="group">
+                <animation effect="zoom" start="100" end="104" time="200" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+                <animation effect="zoom" start="104" end="100" time="50" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+                <top>10</top>
+                <control type="group">
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>8</left>
+                    <top>8</top>
+                    <width>254</width>
+                    <height>334</height>
+                    <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(80011)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>240</width>
+                    <height>320</height>
+                    <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(80011)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>15</top>
+                    <width>240</width>
+                    <height>320</height>
+                    <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>!Control.HasFocus(80011)</visible>
+                  </control>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>8</left>
+                    <top>-4</top>
+                    <width>259</width>
+                    <height>348</height>
+                    <texture border="20">am6b/badge.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(80011)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>31</top>
+                    <width>240</width>
+                    <height>300</height>
+                    <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>Control.HasFocus(80011)</visible>
+                  </control>
+                  <control type="image">
+                    <left>15</left>
+                    <top>31</top>
+                    <width>240</width>
+                    <height>300</height>
+                    <texture fallback="DefaultVideoCover.png" background="true">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>!Control.HasFocus(80011)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>!Control.HasFocus(80011)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>Control.HasFocus(80011)</visible>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>259</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-247</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <left>5</left>
+                    <top>-228</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                    <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>-25</left>
+                  <top>305</top>
+                  <width>244</width>
+                  <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                  <font>font8</font>
+                  <align>right</align>
+                </control>
+                <control type="image">
+                  <left>225</left>
+                  <top>305</top>
+                  <width>20</width>
+                  <height>20</height>
+                  <texture>lists/played-total.png</texture>
+                  <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+                </control>
+                <control type="image">
+                  <left>193</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="label">
+                  <left>193</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                  <visible>Skin.HasSetting(discboxoffhome)</visible>
+                </control>
+                <control type="group">
+                  <visible>!Skin.HasSetting(discboxoffhome)</visible>
+                  <control type="image">
+                    <left>193</left>
+                    <top>36</top>
+                    <width>55</width>
+                    <height>55</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                  </control>
+                  <control type="label">
+                    <left>193</left>
+                    <top>36</top>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <width>55</width>
+                    <height>55</height>
+                    <font>font12_title</font>
+                    <label>$INFO[ListItem.Rating]</label>
+                  </control>
+                  <control type="image">
+                    <left>6</left>
+                    <top>-10</top>
+                    <width>266</width>
+                    <height>357</height>
+                    <aspectratio>stretch</aspectratio>
+                    <bordersize>8</bordersize>
+                    <texture background="true">$VAR[GlobalCaseVar,cdart/default/,]</texture>
+                  </control>
+                </control>
+              </control>
+            </focusedlayout>
+            <content target="video" sortorder="descending" sortby="lastplayed" limit="25" browse="never">videodb://inprogresstvshows/</content>
+            <onclick>ActivateWindow(videos,videodb://tvshows/titles/$INFO[ListItem.DBID]/,return)</onclick>
+          </control>
+          <control type="button">
+            <description>left Arrow</description>
+            <left>5</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <onclick>Control.Move(80011,-1)</onclick>
+            <visible>Control.HasFocus(80011) + Container(80011).HasPrevious</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1870</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <onclick>Control.Move(80011,1)</onclick>
+            <visible>Control.HasFocus(80011) + Container(80011).HasNext</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+        <control type="list" id="8001">
+          <animation effect="slide" start="0,0" end="180,0" time="0" condition="[String.IsEqual(Container(8001).NumItems,4)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+          <animation effect="slide" start="0,0" end="360,0" time="0" condition="[String.IsEqual(Container(8001).NumItems,3)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+          <animation effect="slide" start="0,0" end="540,0" time="0" condition="[String.IsEqual(Container(8001).NumItems,2)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+          <animation effect="slide" start="0,0" end="720,0" time="0" condition="[String.IsEqual(Container(8001).NumItems,1)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+          <left>60</left>
+          <top>35</top>
+          <width>1800</width>
+          <height>360</height>
+          <onleft>8001</onleft>
+          <onright>8001</onright>
+          <onback>9000</onback>
+          <onup>9001</onup>
+          <ondown>8007</ondown>
+          <viewtype label="535">list</viewtype>
+          <pagecontrol />
+          <scrolltime>180</scrolltime>
+          <orientation>Horizontal</orientation>
+          <visible>!Skin.HasSetting(HomepageHideRecentlyAddedVideo)</visible>
+          <visible>!Skin.HasSetting(TVShowsuseposter)</visible>
+          <itemlayout height="330" width="360">
+            <control type="image">
+              <description>background</description>
+              <left>0</left>
+              <top>0</top>
+              <width>360</width>
+              <height>290</height>
+              <texture colordiffuse="FF161616">am6b/white.png</texture>
+            </control>
+            <control type="image">
+              <left>15</left>
+              <top>15</top>
+              <width>330</width>
+              <height>193</height>
+              <aspectratio>stretch</aspectratio>
+              <texture background="true" fallback="defaultvideocover.png" diffuse="diffuse/landscape_w356_h200.png">$INFO[ListItem.Icon]</texture>
+              <bordertexture infill="false" border="5">am6b/button.png</bordertexture>
+              <bordersize>5</bordersize>
+            </control>
+            <control type="label">
+              <left>30</left>
+              <top>212</top>
+              <width>300</width>
+              <height>30</height>
+              <font>font10</font>
+              <textcolor>grey2</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.TVShowTitle] - $INFO[ListItem.Season,,x]$INFO[ListItem.Episode]</label>
+            </control>
+            <control type="label">
+              <left>30</left>
+              <top>238</top>
+              <width>300</width>
+              <height>30</height>
+              <font>font12</font>
+              <textcolor>white</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Title]</label>
+            </control>
+            <control type="image">
+              <left>270</left>
+              <top>10</top>
+              <width>55</width>
+              <height>55</height>
+              <aspectratio>keep</aspectratio>
+              <texture colordiffuse="blue">am6b/badge.png</texture>
+              <visible>!String.IsEmpty(ListItem.Rating)</visible>
+            </control>
+            <control type="label">
+              <left>270</left>
+              <top>10</top>
+              <align>center</align>
+              <aligny>center</aligny>
+              <width>55</width>
+              <height>55</height>
+              <font>font12_title</font>
+              <label>$INFO[ListItem.Rating]</label>
+            </control>
+            <control type="group">
+              <posx>10</posx>
+              <posy>148</posy>
+              <width>64</width>
+              <height>64</height>
+              <control type="image">
+                <left>8</left>
+                <top>-129</top>
+                <width>70</width>
+                <height>70</height>
+                <aspectratio>keep</aspectratio>
+                <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+              </control>
+              <control type="image">
+                <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+              </control>
+              <control type="image">
+                <left>19</left>
+                <right>20</right>
+                <top>19</top>
+                <bottom>20</bottom>
+                <width>24</width>
+                <height>24</height>
+                <texture>$VAR[Image_Overlay]</texture>
+              </control>
+              <control type="image">
+                <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                <aspectratio align="center" aligny="center">stretch</aspectratio>
+                <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+              </control>
+              <control type="image">
+                <left>20</left>
+                <right>20</right>
+                <top>20</top>
+                <bottom>20</bottom>
+                <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+              </control>
+            </control>
+          </itemlayout>
+          <focusedlayout height="330" width="360">
+            <control type="group">
+              <animation effect="zoom" start="100" end="104" time="200" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+              <animation effect="zoom" start="104" end="100" time="50" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+              <control type="image">
+                <description>background</description>
+                <left>0</left>
+                <top>0</top>
+                <width>360</width>
+                <height>290</height>
+                <texture colordiffuse="FF161616">am6b/white.png</texture>
+              </control>
+              <control type="image">
+                <left>6</left>
+                <top>6</top>
+                <width>348</width>
+                <height>211</height>
+                <aspectratio>stretch</aspectratio>
+                <texture infill="true" border="20">am6b/badge.png</texture>
+                <bordersize>8</bordersize>
+                <visible>Control.HasFocus(8001)</visible>
+              </control>
+              <control type="image">
+                <left>15</left>
+                <top>15</top>
+                <width>330</width>
+                <height>193</height>
+                <aspectratio>stretch</aspectratio>
+                <texture fallback="defaultvideocover.png" diffuse="diffuse/landscape_w356_h200.png">$INFO[ListItem.Icon]</texture>
+                <bordertexture infill="false" border="5">am6b/button.png</bordertexture>
+                <bordersize>5</bordersize>
+              </control>
+              <control type="label">
+                <left>30</left>
+                <top>212</top>
+                <width>300</width>
+                <height>30</height>
+                <font>font10</font>
+                <textcolor>grey2</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.TVShowTitle] - $INFO[ListItem.Season,,x]$INFO[ListItem.Episode]</label>
+              </control>
+              <control type="label">
+                <left>30</left>
+                <top>238</top>
+                <width>300</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>white</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Title]</label>
+                <visible>!Control.HasFocus(8001)</visible>
+              </control>
+              <control type="label">
+                <left>30</left>
+                <top>238</top>
+                <width>300</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Title]</label>
+                <visible>Control.HasFocus(8001)</visible>
+              </control>
+              <control type="image">
+                <left>270</left>
+                <top>10</top>
+                <width>55</width>
+                <height>55</height>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="blue">am6b/badge.png</texture>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+              </control>
+              <control type="label">
+                <left>270</left>
+                <top>10</top>
+                <align>center</align>
+                <aligny>center</aligny>
+                <width>55</width>
+                <height>55</height>
+                <font>font12_title</font>
+                <label>$INFO[ListItem.Rating]</label>
+              </control>
+              <control type="group">
+                <posx>10</posx>
+                <posy>148</posy>
+                <width>64</width>
+                <height>64</height>
+                <control type="image">
+                  <left>8</left>
+                  <top>-129</top>
+                  <width>70</width>
+                  <height>70</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                </control>
+                <control type="image">
+                  <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                </control>
+                <control type="image">
+                  <left>19</left>
+                  <right>20</right>
+                  <top>19</top>
+                  <bottom>20</bottom>
+                  <width>24</width>
+                  <height>24</height>
+                  <texture>$VAR[Image_Overlay]</texture>
+                </control>
+                <control type="image">
+                  <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                  <aspectratio align="center" aligny="center">stretch</aspectratio>
+                  <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                </control>
+                <control type="image">
+                  <left>20</left>
+                  <right>20</right>
+                  <top>20</top>
+                  <bottom>20</bottom>
+                  <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                </control>
+              </control>
+            </control>
+          </focusedlayout>
+          <content target="video" sortorder="descending" sortby="lastplayed" limit="25" browse="never">special://skin/playlists/inprogress_TVShows.xsp</content>
+        </control>
+        <control type="button">
+          <description>left Arrow</description>
+          <left>5</left>
+          <top>135</top>
+          <width>45</width>
+          <height>60</height>
+          <texturefocus>am6b/icon-left.png</texturefocus>
+          <texturenofocus>am6b/icon-left.png</texturenofocus>
+          <onclick>Control.Move(8001,-1)</onclick>
+          <visible>Control.HasFocus(8001) + Container(8001).HasPrevious</visible>
+          <include>VisibleFadeEffect</include>
+        </control>
+        <control type="button">
+          <description>right Arrow</description>
+          <left>1870</left>
+          <top>135</top>
+          <width>45</width>
+          <height>60</height>
+          <texturefocus>am6b/icon-right.png</texturefocus>
+          <texturenofocus>am6b/icon-right.png</texturenofocus>
+          <onclick>Control.Move(8001,1)</onclick>
+          <visible>Control.HasFocus(8001) + Container(8001).HasNext</visible>
+          <include>VisibleFadeEffect</include>
+        </control>
+      </control>
+      <control type="group">
+        <left>360</left>
+        <top>75</top>
+        <onup>9001</onup>
+        <visible>Library.HasContent(Music) | Library.HasContent(musicvideos)</visible>
+        <visible>[Container(9000).Hasfocus(3) + [!Skin.HasSetting(HomepageHideRecentlyAddedAlbums) | Skin.HasSetting(Homepageaddmusicvideo)]]</visible>
+        <include>VisibleFadeEffect</include>
+        <control type="image">
+          <left>-370</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">dim-top.png</texture>
+          <visible>!Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8002) | Control.HasFocus(8008) | Control.HasFocus(8009)</visible>
+        </control>
+        <control type="image">
+          <left>-370</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">am6b/black.png</texture>
+          <visible>Skin.HasSetting(dimbackground)</visible>
+          <visible>Control.HasFocus(8002) | Control.HasFocus(8008) | Control.HasFocus(8009)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>-360</left>
+          <top>-32</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>音乐视频播放记录</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>!Control.HasFocus(8008)</visible>
+          <visible>Skin.HasSetting(Homepageaddmusicvideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>-360</left>
+          <top>-32</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>音乐视频播放记录</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>Control.HasFocus(8008)</visible>
+          <visible>Skin.HasSetting(Homepageaddmusicvideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>-360</left>
+          <top>388</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>新加入的音乐视频</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>!Control.HasFocus(8009)</visible>
+          <visible>Skin.HasSetting(Homepageaddmusicvideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>-360</left>
+          <top>388</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>新加入的音乐视频</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font14</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>Control.HasFocus(8009)</visible>
+          <visible>Skin.HasSetting(Homepageaddmusicvideo)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>-360</left>
+          <top>330</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>359</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font12_title</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>Integer.IsGreater(Container(8002).NumItems,0)</visible>
+          <visible>!Skin.HasSetting(Homepageaddmusicvideo)</visible>
+        </control>
+        <control type="list" id="8002">
+          <animation effect="slide" start="0,0" end="150,0" time="0" condition="[String.IsEqual(Container(8002).NumItems,3)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+          <animation effect="slide" start="0,0" end="300,0" time="0" condition="[String.IsEqual(Container(8002).NumItems,2)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+          <animation effect="slide" start="0,0" end="450,0" time="0" condition="[String.IsEqual(Container(8002).NumItems,1)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+          <left>0</left>
+          <top>0</top>
+          <width>1200</width>
+          <height>360</height>
+          <onleft>8002</onleft>
+          <onright>8002</onright>
+          <onback>9000</onback>
+          <onup>9001</onup>
+          <ondown>9002</ondown>
+          <viewtype label="535">list</viewtype>
+          <pagecontrol />
+          <scrolltime>180</scrolltime>
+          <orientation>Horizontal</orientation>
+          <onclick>PlayMedia($INFO[ListItem.FolderPath],isdir)</onclick>
+          <visible>!Skin.HasSetting(Homepageaddmusicvideo)</visible>
+          <itemlayout height="330" width="300">
+            <control type="image">
+              <description>background</description>
+              <left>0</left>
+              <top>0</top>
+              <width>300</width>
+              <height>330</height>
+              <texture colordiffuse="FF161616">am6b/white.png</texture>
+            </control>
+            <control type="image">
+              <left>15</left>
+              <top>15</top>
+              <width>270</width>
+              <height>233</height>
+              <aspectratio>keep</aspectratio>
+              <texture fallback="DefaultAlbumCover.png" background="true">$INFO[ListItem.Art(thumb)]</texture>
+              <bordertexture infill="false" border="5">am6b/button.png</bordertexture>
+              <bordersize>5</bordersize>
+            </control>
+            <control type="label">
+              <left>15</left>
+              <top>255</top>
+              <width>270</width>
+              <height>30</height>
+              <font>font10</font>
+              <textcolor>grey2</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Artist]</label>
+            </control>
+            <control type="label">
+              <left>15</left>
+              <top>285</top>
+              <width>270</width>
+              <height>30</height>
+              <font>font12</font>
+              <textcolor>white</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Label]</label>
+            </control>
+          </itemlayout>
+          <focusedlayout height="330" width="300">
+            <control type="image">
+              <description>background</description>
+              <left>0</left>
+              <top>0</top>
+              <width>300</width>
+              <height>330</height>
+              <texture colordiffuse="FF161616">am6b/white.png</texture>
+            </control>
+            <control type="image">
+              <left>15</left>
+              <top>15</top>
+              <width>270</width>
+              <height>233</height>
+              <aspectratio>keep</aspectratio>
+              <texture fallback="DefaultAlbumCover.png" background="true">$INFO[ListItem.Art(thumb)]</texture>
+              <bordertexture infill="false" border="5">folder-focus.png</bordertexture>
+              <bordersize>5</bordersize>
+              <visible>Control.HasFocus(8002)</visible>
+            </control>
+            <control type="image">
+              <left>15</left>
+              <top>15</top>
+              <width>270</width>
+              <height>233</height>
+              <aspectratio>keep</aspectratio>
+              <texture fallback="DefaultAlbumCover.png" background="true">$INFO[ListItem.Art(thumb)]</texture>
+              <bordertexture infill="false" border="5">am6b/button.png</bordertexture>
+              <bordersize>5</bordersize>
+              <visible>!Control.HasFocus(8002)</visible>
+            </control>
+            <control type="label">
+              <left>15</left>
+              <top>255</top>
+              <width>270</width>
+              <height>30</height>
+              <font>font10</font>
+              <textcolor>grey2</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Artist]</label>
+            </control>
+            <control type="label">
+              <left>15</left>
+              <top>285</top>
+              <width>270</width>
+              <height>30</height>
+              <font>font12</font>
+              <textcolor>white</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Label]</label>
+              <visible>!Control.HasFocus(8002)</visible>
+            </control>
+            <control type="label">
+              <left>15</left>
+              <top>285</top>
+              <width>270</width>
+              <height>30</height>
+              <font>font12</font>
+              <textcolor>FFF5F5F5</textcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Label]</label>
+              <visible>Control.HasFocus(8002)</visible>
+            </control>
+          </focusedlayout>
+          <content target="music" sortby="dateadded" sortorder="descending" limit="25" browse="never">musicdb://recentlyaddedalbums</content>
+        </control>
+        <control type="button">
+          <description>left Arrow</description>
+          <left>-60</left>
+          <top>135</top>
+          <width>45</width>
+          <height>60</height>
+          <texturefocus>am6b/icon-left.png</texturefocus>
+          <texturenofocus>am6b/icon-left.png</texturenofocus>
+          <onclick>Control.Move(8002,-1)</onclick>
+          <visible>Control.HasFocus(8002) + Container(8002).HasPrevious</visible>
+          <include>VisibleFadeEffect</include>
+        </control>
+        <control type="button">
+          <description>right Arrow</description>
+          <left>1215</left>
+          <top>135</top>
+          <width>45</width>
+          <height>60</height>
+          <texturefocus>am6b/icon-right.png</texturefocus>
+          <texturenofocus>am6b/icon-right.png</texturenofocus>
+          <onclick>Control.Move(8002,1)</onclick>
+          <visible>Control.HasFocus(8002) + Container(8002).HasNext</visible>
+          <include>VisibleFadeEffect</include>
+        </control>
+        <control type="group">
+          <left>-360</left>
+          <top>0</top>
+          <control type="list" id="8008">
+            <animation effect="slide" start="0,0" end="146,0" time="0" condition="[String.IsEqual(Container(8008).NumItems,5)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="293,0" time="0" condition="[String.IsEqual(Container(8008).NumItems,4)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="437,0" time="0" condition="[String.IsEqual(Container(8008).NumItems,3)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="586,0" time="0" condition="[String.IsEqual(Container(8008).NumItems,2)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="730,0" time="0" condition="[String.IsEqual(Container(8008).NumItems,1)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <left>95</left>
+            <right>60</right>
+            <top>0</top>
+            <height>530</height>
+            <onleft>8008</onleft>
+            <onright>8008</onright>
+            <onback>9000</onback>
+            <onup>9001</onup>
+            <ondown>8009</ondown>
+            <viewtype label="535">list</viewtype>
+            <pagecontrol />
+            <scrolltime>180</scrolltime>
+            <orientation>Horizontal</orientation>
+            <visible>Skin.HasSetting(Homepageaddmusicvideo)</visible>
+            <itemlayout height="360" width="293">
+              <control type="image">
+                <left>15</left>
+                <top>15</top>
+                <width>240</width>
+                <height>320</height>
+                <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="label">
+                <left>5</left>
+                <top>345</top>
+                <width>260</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>white</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Label]</label>
+              </control>
+              <control type="group">
+                <posx>10</posx>
+                <posy>259</posy>
+                <width>84</width>
+                <height>84</height>
+                <control type="image">
+                  <left>3</left>
+                  <top>-247</top>
+                  <width>90</width>
+                  <height>90</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                </control>
+                <control type="image">
+                  <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                </control>
+                <control type="image">
+                  <left>24</left>
+                  <right>20</right>
+                  <top>25</top>
+                  <bottom>20</bottom>
+                  <width>34</width>
+                  <height>34</height>
+                  <texture>$VAR[Image_Overlay]</texture>
+                </control>
+                <control type="image">
+                  <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                  <aspectratio align="center" aligny="center">stretch</aspectratio>
+                  <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                </control>
+                <control type="image">
+                  <left>20</left>
+                  <right>20</right>
+                  <top>20</top>
+                  <bottom>20</bottom>
+                  <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                </control>
+              </control>
+              <control type="label">
+                <left>-25</left>
+                <top>305</top>
+                <width>244</width>
+                <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                <font>font8</font>
+                <align>right</align>
+              </control>
+              <control type="image">
+                <left>225</left>
+                <top>305</top>
+                <width>20</width>
+                <height>20</height>
+                <texture>lists/played-total.png</texture>
+                <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+              </control>
+              <control type="image">
+                <left>193</left>
+                <top>25</top>
+                <width>55</width>
+                <height>55</height>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="blue">am6b/badge.png</texture>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+              </control>
+              <control type="label">
+                <left>193</left>
+                <top>25</top>
+                <align>center</align>
+                <aligny>center</aligny>
+                <width>55</width>
+                <height>55</height>
+                <font>font12_title</font>
+                <label>$INFO[ListItem.Rating]</label>
+              </control>
+            </itemlayout>
+            <focusedlayout height="360" width="293">
+              <control type="group">
+                <animation effect="zoom" start="100" end="104" time="200" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+                <animation effect="zoom" start="104" end="100" time="50" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+                <control type="image">
+                  <left>8</left>
+                  <top>8</top>
+                  <width>254</width>
+                  <height>334</height>
+                  <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>Control.HasFocus(8008)</visible>
+                </control>
+                <control type="image">
+                  <left>15</left>
+                  <top>15</top>
+                  <width>240</width>
+                  <height>320</height>
+                  <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>Control.HasFocus(8008)</visible>
+                </control>
+                <control type="image">
+                  <left>15</left>
+                  <top>15</top>
+                  <width>240</width>
+                  <height>320</height>
+                  <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>!Control.HasFocus(8008)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>!Control.HasFocus(8008)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>Control.HasFocus(8008)</visible>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>259</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-247</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>-25</left>
+                  <top>305</top>
+                  <width>244</width>
+                  <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                  <font>font8</font>
+                  <align>right</align>
+                </control>
+                <control type="image">
+                  <left>225</left>
+                  <top>305</top>
+                  <width>20</width>
+                  <height>20</height>
+                  <texture>lists/played-total.png</texture>
+                  <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+                </control>
+                <control type="image">
+                  <left>193</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                </control>
+                <control type="label">
+                  <left>193</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                </control>
+              </control>
+            </focusedlayout>
+            <content target="video" sortorder="descending" sortby="lastplayed" limit="25" browse="never">special://skin/playlists/inprogressmusicvideos.xsp</content>
+          </control>
+          <control type="button">
+            <description>left Arrow</description>
+            <left>25</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <onclick>Control.Move(8008,-1)</onclick>
+            <visible>Control.HasFocus(8008) + Container(8008).HasPrevious</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1855</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <onclick>Control.Move(8008,1)</onclick>
+            <visible>Control.HasFocus(8008) + Container(8008).HasNext</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+        <control type="group">
+          <left>-360</left>
+          <top>420</top>
+          <control type="list" id="8009">
+            <animation effect="slide" start="0,0" end="146,0" time="0" condition="[String.IsEqual(Container(8009).NumItems,5)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="293,0" time="0" condition="[String.IsEqual(Container(8009).NumItems,4)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="437,0" time="0" condition="[String.IsEqual(Container(8009).NumItems,3)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="586,0" time="0" condition="[String.IsEqual(Container(8009).NumItems,2)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <animation effect="slide" start="0,0" end="730,0" time="0" condition="[String.IsEqual(Container(8009).NumItems,1)] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+            <left>95</left>
+            <right>60</right>
+            <top>0</top>
+            <height>530</height>
+            <onleft>8009</onleft>
+            <onright>8009</onright>
+            <onback>9000</onback>
+            <onup>8008</onup>
+            <ondown>9000</ondown>
+            <viewtype label="535">list</viewtype>
+            <pagecontrol />
+            <scrolltime>180</scrolltime>
+            <orientation>Horizontal</orientation>
+            <visible>Skin.HasSetting(Homepageaddmusicvideo)</visible>
+            <itemlayout height="360" width="293">
+              <control type="image">
+                <left>15</left>
+                <top>15</top>
+                <width>240</width>
+                <height>320</height>
+                <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="label">
+                <left>5</left>
+                <top>345</top>
+                <width>260</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>white</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Label]</label>
+              </control>
+              <control type="group">
+                <posx>10</posx>
+                <posy>259</posy>
+                <width>84</width>
+                <height>84</height>
+                <control type="image">
+                  <left>3</left>
+                  <top>-247</top>
+                  <width>90</width>
+                  <height>90</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                </control>
+                <control type="image">
+                  <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                </control>
+                <control type="image">
+                  <left>24</left>
+                  <right>20</right>
+                  <top>25</top>
+                  <bottom>20</bottom>
+                  <width>34</width>
+                  <height>34</height>
+                  <texture>$VAR[Image_Overlay]</texture>
+                </control>
+                <control type="image">
+                  <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                  <aspectratio align="center" aligny="center">stretch</aspectratio>
+                  <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                </control>
+                <control type="image">
+                  <left>20</left>
+                  <right>20</right>
+                  <top>20</top>
+                  <bottom>20</bottom>
+                  <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                </control>
+              </control>
+              <control type="label">
+                <left>-25</left>
+                <top>305</top>
+                <width>244</width>
+                <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                <font>font8</font>
+                <align>right</align>
+              </control>
+              <control type="image">
+                <left>225</left>
+                <top>305</top>
+                <width>20</width>
+                <height>20</height>
+                <texture>lists/played-total.png</texture>
+                <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+              </control>
+              <control type="image">
+                <left>193</left>
+                <top>25</top>
+                <width>55</width>
+                <height>55</height>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="blue">am6b/badge.png</texture>
+                <visible>!String.IsEmpty(ListItem.Rating)</visible>
+              </control>
+              <control type="label">
+                <left>193</left>
+                <top>25</top>
+                <align>center</align>
+                <aligny>center</aligny>
+                <width>55</width>
+                <height>55</height>
+                <font>font12_title</font>
+                <label>$INFO[ListItem.Rating]</label>
+              </control>
+            </itemlayout>
+            <focusedlayout height="360" width="293">
+              <control type="group">
+                <animation effect="zoom" start="100" end="104" time="200" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+                <animation effect="zoom" start="104" end="100" time="50" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+                <control type="image">
+                  <left>8</left>
+                  <top>8</top>
+                  <width>254</width>
+                  <height>334</height>
+                  <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>Control.HasFocus(8009)</visible>
+                </control>
+                <control type="image">
+                  <left>15</left>
+                  <top>15</top>
+                  <width>240</width>
+                  <height>320</height>
+                  <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>Control.HasFocus(8009)</visible>
+                </control>
+                <control type="image">
+                  <left>15</left>
+                  <top>15</top>
+                  <width>240</width>
+                  <height>320</height>
+                  <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$INFO[ListItem.Art(poster)]</texture>
+                  <aspectratio>stretch</aspectratio>
+                  <visible>!Control.HasFocus(8009)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>white</textcolor>
+                  <shadowcolor>black</shadowcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>!Control.HasFocus(8009)</visible>
+                </control>
+                <control type="label">
+                  <left>5</left>
+                  <top>345</top>
+                  <width>260</width>
+                  <height>30</height>
+                  <font>font12</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <selectedcolor>selected</selectedcolor>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <label>$INFO[ListItem.Label]</label>
+                  <visible>Control.HasFocus(8009)</visible>
+                </control>
+                <control type="group">
+                  <posx>10</posx>
+                  <posy>259</posy>
+                  <width>84</width>
+                  <height>84</height>
+                  <control type="image">
+                    <left>3</left>
+                    <top>-247</top>
+                    <width>90</width>
+                    <height>90</height>
+                    <aspectratio>keep</aspectratio>
+                    <texture>$VAR[cornerflagging,flagging/corner/,.png]</texture>
+                  </control>
+                  <control type="image">
+                    <texture colordiffuse="ff333333">$VAR[Image_Overlay_Backing,,-bg.png]</texture>
+                  </control>
+                  <control type="image">
+                    <left>24</left>
+                    <right>20</right>
+                    <top>25</top>
+                    <bottom>20</bottom>
+                    <width>34</width>
+                    <height>34</height>
+                    <texture>$VAR[Image_Overlay]</texture>
+                  </control>
+                  <control type="image">
+                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <aspectratio align="center" aligny="center">stretch</aspectratio>
+                    <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
+                  </control>
+                  <control type="image">
+                    <left>20</left>
+                    <right>20</right>
+                    <top>20</top>
+                    <bottom>20</bottom>
+                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>-25</left>
+                  <top>305</top>
+                  <width>244</width>
+                  <label>$INFO[ListItem.Property(WatchedEpisodes)]$INFO[ListItem.Property(TotalEpisodes), / ,]</label>
+                  <font>font8</font>
+                  <align>right</align>
+                </control>
+                <control type="image">
+                  <left>225</left>
+                  <top>305</top>
+                  <width>20</width>
+                  <height>20</height>
+                  <texture>lists/played-total.png</texture>
+                  <visible>String.IsEqual(ListItem.DBtype,tvshow)</visible>
+                </control>
+                <control type="image">
+                  <left>193</left>
+                  <top>25</top>
+                  <width>55</width>
+                  <height>55</height>
+                  <aspectratio>keep</aspectratio>
+                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <visible>!String.IsEmpty(ListItem.Rating)</visible>
+                </control>
+                <control type="label">
+                  <left>193</left>
+                  <top>25</top>
+                  <align>center</align>
+                  <aligny>center</aligny>
+                  <width>55</width>
+                  <height>55</height>
+                  <font>font12_title</font>
+                  <label>$INFO[ListItem.Rating]</label>
+                </control>
+              </control>
+            </focusedlayout>
+            <content target="video" sortorder="descending" sortby="dateadded" limit="25" browse="never">videodb://recentlyaddedmusicvideos/</content>
+          </control>
+          <control type="button">
+            <description>left Arrow</description>
+            <left>25</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <onclick>Control.Move(8009,-1)</onclick>
+            <visible>Control.HasFocus(8009) + Container(8009).HasPrevious</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1855</left>
+            <top>155</top>
+            <width>45</width>
+            <height>60</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <onclick>Control.Move(8009,1)</onclick>
+            <visible>Control.HasFocus(8009) + Container(8009).HasNext</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+      </control>
+      <control type="group">
+        <left>0</left>
+        <top>90</top>
+        <onup>9001</onup>
+        <visible>Container(9000).Hasfocus(2)</visible>
+        <include>VisibleFadeEffect</include>
+        <control type="image">
+          <top>-108</top>
+          <left>-10</left>
+          <width>1940</width>
+          <height>1100</height>
+          <depth>DepthBackground</depth>
+          <aspectratio>stretch</aspectratio>
+          <texture background="true">$VAR[InfoWallThumbVar]</texture>
+          <include>backgroundfade</include>
+          <fadetime>FanartCrossfadeTime</fadetime>
+          <visible>!Control.HasFocus(9000)</visible>
+          <include>Window_OpenClose_Animation</include>
+          <include>AnimatedBackgroundAnimation</include>
+          <visible>![Player.HasVideo + !Skin.HasSetting(ShowBackgroundVideo)] | [Player.HasVideo + Window.IsActive(movieinformation)]</visible>
+        </control>
+        <control type="image">
+          <left>-10</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">dim-top.png</texture>
+          <visible>!Skin.HasSetting(dimbackground)</visible>
+          <visible>Skin.HasSetting(bigthumb)</visible>
+          <visible>Control.HasFocus(8003)</visible>
+        </control>
+        <control type="image">
+          <left>-10</left>
+          <top>-100</top>
+          <width>1940</width>
+          <height>1100</height>
+          <texture border="20">am6b/black.png</texture>
+          <visible>Skin.HasSetting(dimbackground)</visible>
+          <visible>Skin.HasSetting(bigthumb)</visible>
+          <visible>Control.HasFocus(8003)</visible>
+        </control>
+        <control type="label">
+          <description>Title label</description>
+          <left>0</left>
+          <top>-45</top>
+          <height>30</height>
+          <width>1920</width>
+          <label>影视分库</label>
+          <align>center</align>
+          <aligny>center</aligny>
+          <font>font16</font>
+          <textcolor>white</textcolor>
+          <shadowcolor>black</shadowcolor>
+          <visible>Skin.HasSetting(bigthumb)</visible>
+        </control>
+        <control type="list" id="80031">
+          <animation effect="slide" start="0,0" end="0,120" time="200" delay="300" tween="quadratic" easing="out" condition="[!Skin.HasSetting(sublibrarybottom) + !ControlGroup(9001).HasFocus + !Control.HasFocus(9000) + Control.HasFocus(80031)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+          <visible>!Skin.HasSetting(smallthumb) + Skin.HasSetting(TextTitle) + !Skin.HasSetting(bigthumb)</visible>
+          <left>80</left>
+          <right>80</right>
+          <top>800</top>
+          <onback>9000</onback>
+          <height>730</height>
+          <onleft>80031</onleft>
+          <onright>80031</onright>
+          <onup>9001</onup>
+          <ondown>9002</ondown>
+          <pagecontrol />
+          <scrolltime>180</scrolltime>
+          <focusposition>2</focusposition>
+          <movement>1</movement>
+          <orientation>Horizontal</orientation>
+          <itemlayout condition="Skin.HasSetting(TextTitle) + !Skin.HasSetting(smallthumb) + !Skin.HasSetting(bigthumb)" height="360" width="251.5">
+            <control type="group">
+              <control type="image">
+                <width>250</width>
+                <height>53</height>
+                <texture colordiffuse="FF242424">am6b/white.png</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="label">
+                <height>53</height>
+                <width>250</width>
+                <textwidth>240</textwidth>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <textcolor>grey2</textcolor>
+                <label>$INFO[ListItem.Label]</label>
+              </control>
+            </control>
+          </itemlayout>
+          <focusedlayout condition="Skin.HasSetting(TextTitle) + !Skin.HasSetting(smallthumb) + !Skin.HasSetting(bigthumb)" height="360" width="251.5">
+            <control type="group">
+              <control type="image">
+                <width>250</width>
+                <height>53</height>
+                <texture colordiffuse="FF242424">am6b/white.png</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="image">
+                <width>250</width>
+                <height>53</height>
+                <texture colordiffuse="FF454545">am6b/white.png</texture>
+                <aspectratio>stretch</aspectratio>
+                <animation effect="fade" start="100" end="40" time="75" condition="[!Control.HasFocus(80031)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+              </control>
+              <control type="label">
+                <height>53</height>
+                <width>250</width>
+                <textwidth>250</textwidth>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <textcolor>white</textcolor>
+                <label>$INFO[ListItem.Label]</label>
+                <scroll>true</scroll>
+                <scrollspeed>40</scrollspeed>
+              </control>
+            </control>
+          </focusedlayout>
+          <content>favourites://</content>
+        </control>
+        <control type="list" id="80032">
+          <animation effect="slide" start="0,0" end="0,110" time="180" delay="300" tween="quadratic" easing="out" condition="[!Skin.HasSetting(sublibrarybottom) + !ControlGroup(9001).HasFocus + !Control.HasFocus(9000) + Control.HasFocus(80032)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+          <visible>!Skin.HasSetting(TextTitle) + !Skin.HasSetting(bigthumb)</visible>
+          <left>80</left>
+          <right>80</right>
+          <top>700</top>
+          <onback>9000</onback>
+          <height>730</height>
+          <onleft>80032</onleft>
+          <onright>80032</onright>
+          <onup>9001</onup>
+          <ondown>9002</ondown>
+          <pagecontrol />
+          <scrolltime>180</scrolltime>
+          <focusposition>2</focusposition>
+          <movement>1</movement>
+          <orientation>Horizontal</orientation>
+          <itemlayout condition="Skin.HasSetting(smallthumb) + !Skin.HasSetting(TextTitle) + !Skin.HasSetting(bigthumb)" height="240" width="220">
+            <control type="group">
+              <control type="image">
+                <left>15</left>
+                <top>15</top>
+                <width>192</width>
+                <height>108</height>
+                <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/landscape_w356_h200.png">$VAR[InfoWallThumbVar]</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="label">
+                <left>15</left>
+                <top>128</top>
+                <width>192</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>white</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Label]</label>
+              </control>
+            </control>
+          </itemlayout>
+          <focusedlayout condition="Skin.HasSetting(smallthumb) + !Skin.HasSetting(TextTitle) + !Skin.HasSetting(bigthumb)" height="240" width="220">
+            <control type="group">
+              <animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="102,60" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+              <animation effect="zoom" start="110" end="100" time="50" tween="sine" easing="inout" center="102,60" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+              <control type="image">
+                <left>9</left>
+                <top>9</top>
+                <width>204</width>
+                <height>120</height>
+                <texture border="20" colordiffuse="white">am6b/badge.png</texture>
+                <aspectratio>stretch</aspectratio>
+                <visible>Control.HasFocus(80032)</visible>
+              </control>
+              <control type="image">
+                <left>15</left>
+                <top>15</top>
+                <width>192</width>
+                <height>108</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="diffuse/landscape_w356_h200.png">$VAR[InfoWallThumbVar]</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="label">
+                <left>10</left>
+                <top>128</top>
+                <width>202</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Label]</label>
+                <scroll>true</scroll>
+                <scrollspeed>30</scrollspeed>
+              </control>
+            </control>
+          </focusedlayout>
+          <content>favourites://</content>
+        </control>
+        <control type="group">
+          <visible>Skin.HasSetting(smallthumb) | Skin.HasSetting(TextTitle)</visible>
+          <animation effect="slide" start="0,0" end="0,110" condition="[!Skin.HasSetting(sublibrarybottom) + Skin.HasSetting(smallthumb)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+          <animation effect="slide" start="0,0" end="0,180" condition="[!Skin.HasSetting(sublibrarybottom) + Skin.HasSetting(TextTitle)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+          <animation effect="slide" start="0,0" end="0,60" condition="[Skin.HasSetting(sublibrarybottom) + Skin.HasSetting(TextTitle)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+          <control type="button">
+            <description>left Arrow</description>
+            <left>30</left>
+            <top>750</top>
+            <width>24</width>
+            <height>32</height>
+            <texturefocus>am6b/icon-left.png</texturefocus>
+            <texturenofocus>am6b/icon-left.png</texturenofocus>
+            <visible>[Control.HasFocus(80031) + Container(80031).HasPrevious] | [Control.HasFocus(80032) + Container(80032).HasPrevious]</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="button">
+            <description>right Arrow</description>
+            <left>1866</left>
+            <top>750</top>
+            <width>24</width>
+            <height>32</height>
+            <texturefocus>am6b/icon-right.png</texturefocus>
+            <texturenofocus>am6b/icon-right.png</texturenofocus>
+            <visible>[Control.HasFocus(80031) + Container(80031).HasNext] | [Control.HasFocus(80032) + Container(80032).HasNext]</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+        </control>
+        <control type="panel" id="8003">
+          <visible>Skin.HasSetting(bigthumb) + !Skin.HasSetting(smallthumb) + !Skin.HasSetting(TextTitle)</visible>
+          <left>80</left>
+          <right>80</right>
+          <top>0</top>
+          <onback>9000</onback>
+          <height>735</height>
+          <onleft>8003</onleft>
+          <onright>8003</onright>
+          <onup>9001</onup>
+          <ondown>9002</ondown>
+          <pagecontrol />
+          <scrolltime>180</scrolltime>
+          <preloaditems>2</preloaditems>
+          <scrollout>false</scrollout>
+          <itemlayout condition="!Skin.HasSetting(postHorizontal)" height="369" width="293">
+            <control type="image">
+              <left>30</left>
+              <top>15</top>
+              <width>240</width>
+              <height>320</height>
+              <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/poster_w217_h310.png">$VAR[InfoWallThumbVar]</texture>
+              <aspectratio>stretch</aspectratio>
+            </control>
+            <control type="label">
+              <left>20</left>
+              <top>340</top>
+              <width>260</width>
+              <height>30</height>
+              <font>font12</font>
+              <textcolor>white</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Label]</label>
+            </control>
+          </itemlayout>
+          <focusedlayout condition="!Skin.HasSetting(postHorizontal)" height="369" width="293">
+            <control type="group">
+              <animation effect="zoom" start="100" end="104" time="200" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+              <animation effect="zoom" start="104" end="100" time="50" tween="sine" easing="inout" center="160,150" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+              <control type="image">
+                <left>24</left>
+                <top>10</top>
+                <width>253</width>
+                <height>330</height>
+                <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                <aspectratio>stretch</aspectratio>
+                <visible>Control.HasFocus(8003)</visible>
+              </control>
+              <control type="image">
+                <left>30</left>
+                <top>15</top>
+                <width>240</width>
+                <height>320</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="diffuse/poster_w217_h310.png">$VAR[InfoWallThumbVar]</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="label">
+                <left>20</left>
+                <top>340</top>
+                <width>260</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Label]</label>
+                <scroll>true</scroll>
+                <scrollspeed>30</scrollspeed>
+              </control>
+            </control>
+          </focusedlayout>
+          <itemlayout condition="Skin.HasSetting(postHorizontal)" height="240" width="350">
+            <control type="image">
+              <left>15</left>
+              <top>15</top>
+              <width>320</width>
+              <height>180</height>
+              <texture fallback="DefaultVideoCover.png" background="true" diffuse="diffuse/landscape_w356_h200.png">$VAR[InfoWallThumbVar]</texture>
+              <aspectratio>stretch</aspectratio>
+            </control>
+            <control type="label">
+              <left>15</left>
+              <top>204</top>
+              <width>320</width>
+              <height>30</height>
+              <font>font12</font>
+              <textcolor>white</textcolor>
+              <shadowcolor>black</shadowcolor>
+              <selectedcolor>selected</selectedcolor>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Label]</label>
+            </control>
+          </itemlayout>
+          <focusedlayout condition="Skin.HasSetting(postHorizontal)" height="240" width="350">
+            <control type="group">
+              <animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="170,120" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+              <animation effect="zoom" start="110" end="100" time="50" tween="sine" easing="inout" center="170,120" condition="!Skin.HasSetting(BobiReduceMotion)">UnFocus</animation>
+              <control type="image">
+                <left>9</left>
+                <top>9</top>
+                <width>332</width>
+                <height>192</height>
+                <texture border="20" colordiffuse="white">am6b/badge.png</texture>
+                <aspectratio>stretch</aspectratio>
+                <visible>Control.HasFocus(8003)</visible>
+              </control>
+              <control type="image">
+                <left>15</left>
+                <top>15</top>
+                <width>320</width>
+                <height>180</height>
+                <texture fallback="DefaultVideoCover.png" diffuse="diffuse/landscape_w356_h200.png">$VAR[InfoWallThumbVar]</texture>
+                <aspectratio>stretch</aspectratio>
+              </control>
+              <control type="label">
+                <left>15</left>
+                <top>204</top>
+                <width>320</width>
+                <height>30</height>
+                <font>font12</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <shadowcolor>black</shadowcolor>
+                <selectedcolor>selected</selectedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <label>$INFO[ListItem.Label]</label>
+                <scroll>true</scroll>
+                <scrollspeed>30</scrollspeed>
+              </control>
+            </control>
+          </focusedlayout>
+          <content>favourites://</content>
+        </control>
+      </control>
+      <control type="group">
+        <include>Animation_SlideIn_Dialog</include>
+        <depth>DepthMax</depth>
+        <top>60</top>
+        <left>410</left>
+        <width>1100</width>
+        <height>850</height>
+        <visible>Container(9000).Hasfocus(5)</visible>
+        <control type="group">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1100</width>
+            <height>830</height>
+            <texture colordiffuse="FF161616">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <width>1100</width>
+            <label>系统概况</label>
+            <top>16</top>
+            <left>0</left>
+            <align>center</align>
+            <font>font14</font>
+            <textcolor>FFE50914</textcolor>
+          </control>
+          <control type="image">
+            <top>10</top>
+            <left>950</left>
+            <height>50</height>
+            <width>128</width>
+            <bordersize>0</bordersize>
+            <texture>am6b/transparent.png</texture>
+          </control>
+          <control type="image">
+            <top>70</top>
+            <height>1</height>
+            <left>20</left>
+            <right>20</right>
+            <texture colordiffuse="white">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <top>90</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font12</font>
+            <left>20</left>
+            <right>20</right>
+            <textcolor>FFF5F5F5</textcolor>
+            <label>[UPPERCASE]- 系统信息 -[/UPPERCASE]</label>
+            <scroll>true</scroll>
+          </control>
+          <control type="grouplist">
+            <top>130</top>
+            <align>center</align>
+            <itemgap>20</itemgap>
+            <orientation>horizontal</orientation>
+            <control type="label">
+              <width>auto</width>
+              <height>30</height>
+              <font>font11</font>
+              <label>屏幕 : $INFO[System.ScreenResolution]</label>
+              <scroll>true</scroll>
+            </control>
+          </control>
+          <control type="label">
+            <top>160</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font11</font>
+            <left>20</left>
+            <right>20</right>
+            <label>$LOCALIZE[12390]: [LOWERCASE]$INFO[System.Uptime][/LOWERCASE]</label>
+            <scroll>true</scroll>
+          </control>
+          <control type="label">
+            <top>190</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font11</font>
+            <left>20</left>
+            <right>20</right>
+            <label>$LOCALIZE[12394]: [LOWERCASE]$INFO[System.TotalUptime][/LOWERCASE]</label>
+            <scroll>true</scroll>
+          </control>
+          <control type="grouplist">
+            <top>220</top>
+            <align>center</align>
+            <itemgap>20</itemgap>
+            <orientation>horizontal</orientation>
+            <control type="label">
+              <width>auto</width>
+              <height>30</height>
+              <font>font11</font>
+              <left>20</left>
+              <right>20</right>
+              <label>[COLOR ffFF8C00]$LOCALIZE[150]: $INFO[Network.IPAddress] [B]-[/B] 网络$INFO[Network.LinkState][/COLOR]</label>
+              <scroll>true</scroll>
+            </control>
+          </control>
+          <control type="label">
+            <top>270</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font12</font>
+            <left>20</left>
+            <right>20</right>
+            <textcolor>FFF5F5F5</textcolor>
+            <label>[UPPERCASE]- 版本信息 -[/UPPERCASE]</label>
+            <scroll>true</scroll>
+          </control>
+          <control type="grouplist">
+            <top>310</top>
+            <align>center</align>
+            <itemgap>20</itemgap>
+            <orientation>horizontal</orientation>
+            <control type="label">
+              <width>auto</width>
+              <height>30</height>
+              <font>font11</font>
+              <left>20</left>
+              <right>20</right>
+              <label>波比TV · $INFO[System.AddonVersion(skin.bobbi.cinema)]</label>
+              <scroll>true</scroll>
+            </control>
+          </control>
+          <control type="grouplist">
+            <top>340</top>
+            <align>center</align>
+            <itemgap>20</itemgap>
+            <orientation>horizontal</orientation>
+            <control type="label">
+              <width>auto</width>
+              <height>30</height>
+              <font>font11</font>
+              <left>20</left>
+              <right>20</right>
+              <label>固件 : $INFO[Skin.String(version)]   内核 : $INFO[Skin.String(BuildDate)]</label>
+              <scroll>true</scroll>
+              <visible>!String.IsEqual(Skin.String(version),Unknown) + !String.IsEmpty(Skin.String(version))</visible>
+            </control>
+            <control type="label">
+              <width>auto</width>
+              <height>30</height>
+              <font>font11</font>
+              <left>20</left>
+              <right>20</right>
+              <label>$INFO[System.KernelVersion]</label>
+              <scroll>true</scroll>
+              <visible>String.IsEqual(Skin.String(version),Unknown) | String.IsEmpty(Skin.String(version))</visible>
+            </control>
+          </control>
+          <control type="label">
+            <top>390</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font12</font>
+            <left>20</left>
+            <right>20</right>
+            <textcolor>FFF5F5F5</textcolor>
+            <label>[UPPERCASE]- 硬件信息 -[/UPPERCASE]</label>
+            <scroll>true</scroll>
+          </control>
+          <control type="grouplist">
+            <top>430</top>
+            <align>center</align>
+            <itemgap>20</itemgap>
+            <orientation>horizontal</orientation>
+            <control type="label">
+              <width>auto</width>
+              <height>30</height>
+              <font>font11</font>
+              <left>20</left>
+              <right>20</right>
+              <label>[COLOR ffFF8C00]显示端HDR模式:$INFO[System.SupportedHDRTypes][/COLOR]</label>
+              <scroll>true</scroll>
+              <visible>!String.IsEmpty(System.SupportedHDRTypes)</visible>
+            </control>
+            <control type="label">
+              <width>auto</width>
+              <align>center</align>
+              <height>30</height>
+              <font>font11</font>
+              <left>20</left>
+              <right>20</right>
+              <label>[COLOR ffFF8C00]显示端HDR模式：只支持SDR[/COLOR]</label>
+              <scroll>true</scroll>
+              <visible>String.IsEmpty(System.SupportedHDRTypes)</visible>
+            </control>
+            <control type="button" id="80005">
+              <onup>80004</onup>
+              <ondown>9000</ondown>
+              <onback>9000</onback>
+              <width>auto</width>
+              <height>28</height>
+              <font>font10</font>
+              <textcolor>black</textcolor>
+              <focusedcolor>white</focusedcolor>
+              <label>杜比视界设置</label>
+              <aspectratio>stretch</aspectratio>
+              <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+              <texturenofocus>diffuse/homebutton.png</texturenofocus>
+              <onclick>ActivateWindow(SystemSettings,coreelec)</onclick>
+            </control>
+          </control>
+          <control type="label">
+            <top>460</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font11</font>
+            <left>2</left>
+            <right>2</right>
+            <label>CPU使用 : $INFO[System.CPUUsage][B]-[/B]温度 : $INFO[System.CPUTemperature]</label>
+            <scroll>true</scroll>
+          </control>
+          <control type="progress">
+            <top>490</top>
+            <left>60</left>
+            <right>60</right>
+            <height>16</height>
+            <info>System.CPUUsage</info>
+            <scroll>true</scroll>
+          </control>
+          <control type="label">
+            <top>520</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font11</font>
+            <left>20</left>
+            <right>20</right>
+            <label>系统内存使用 : $INFO[system.memory(used)] [B]/[/B] $INFO[system.memory(total)] [B]-[/B] $INFO[system.memory(used.percent)] [LOWERCASE]$LOCALIZE[20162][/LOWERCASE]</label>
+            <scroll>true</scroll>
+            <scroll>true</scroll>
+          </control>
+          <control type="progress">
+            <top>550</top>
+            <left>60</left>
+            <right>60</right>
+            <height>16</height>
+            <info>system.memory(used)</info>
+            <scroll>true</scroll>
+          </control>
+          <control type="label">
+            <top>600</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font12</font>
+            <left>20</left>
+            <right>20</right>
+            <textcolor>FFF5F5F5</textcolor>
+            <label>[UPPERCASE]- 媒体库信息 -[/UPPERCASE]</label>
+            <scroll>true</scroll>
+          </control>
+          <control type="label">
+            <top>680</top>
+            <align>center</align>
+            <height>30</height>
+            <font>font11</font>
+            <left>20</left>
+            <right>20</right>
+            <label>您的媒体库目前是空的[CR]要在媒体库中添加个人媒体，请添加来源并对其进行刮削配置。</label>
+            <scroll>true</scroll>
+            <visible>[!Library.HasContent(movies) + !Library.HasContent(tvshows) + !Library.HasContent(music) + !Library.HasContent(musicvideos)]</visible>
+          </control>
+          <control type="grouplist">
+            <orientation>horizontal</orientation>
+            <itemgap>0</itemgap>
+            <left>0</left>
+            <right>0</right>
+            <align>justify</align>
+            <top>650</top>
+            <control type="group">
+              <width>200</width>
+              <visible>Library.HasContent(movies)</visible>
+              <control type="image">
+                <left>67</left>
+                <width>66</width>
+                <height>66</height>
+                <texture>icons/Movie.png</texture>
+              </control>
+              <control type="label">
+                <top>80</top>
+                <label>[B]$INFO[Window(Home).Property(Movies.Count),, 部$LOCALIZE[36901]][CR][COLOR ff64e535]$INFO[Window(Home).Property(Movies.Watched),$LOCALIZE[16102] : ,部][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Movies.UnWatched),$LOCALIZE[16101] : ,部][/COLOR][/B]</label>
+                <font>font10</font>
+                <align>center</align>
+                <scroll>true</scroll>
+              </control>
+            </control>
+            <control type="group">
+              <width>200</width>
+              <visible>Library.HasContent(tvshows)</visible>
+              <control type="image">
+                <left>67</left>
+                <width>66</width>
+                <height>66</height>
+                <texture>icons/TVShow.png</texture>
+              </control>
+              <control type="label">
+                <top>80</top>
+                <label>[B]$INFO[Window(Home).Property(Tvshows.Count),, 部剧][CR][COLOR ff64e535]$INFO[Window(Home).Property(Tvshows.Watched),$LOCALIZE[16102] : ,部][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Tvshows.UnWatched),$LOCALIZE[16101] : ,部][/COLOR][/B]</label>
+                <font>font10</font>
+                <align>center</align>
+                <scroll>true</scroll>
+              </control>
+            </control>
+            <control type="group">
+              <width>200</width>
+              <visible>Library.HasContent(tvshows)</visible>
+              <control type="image">
+                <left>67</left>
+                <width>66</width>
+                <height>66</height>
+                <texture>icons/TVShow.png</texture>
+              </control>
+              <control type="label">
+                <top>80</top>
+                <label>[B]$INFO[Window(Home).Property(Episodes.Count),, $LOCALIZE[20453]][CR][COLOR ff64e535]$INFO[Window(Home).Property(Episodes.Watched),$LOCALIZE[16102] : ,集][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Episodes.UnWatched),$LOCALIZE[16101] : ,集][/COLOR][/B]</label>
+                <font>font10</font>
+                <align>center</align>
+                <scroll>true</scroll>
+              </control>
+            </control>
+            <control type="group">
+              <width>200</width>
+              <visible>Library.HasContent(music)</visible>
+              <control type="image">
+                <left>67</left>
+                <width>66</width>
+                <height>66</height>
+                <texture>icons/Music.png</texture>
+              </control>
+              <control type="label">
+                <top>80</top>
+                <label>[B]$INFO[Window(Home).Property(Music.SongsCount),, $LOCALIZE[36921]][CR]$INFO[Window(Home).Property(Music.AlbumsCount),, $LOCALIZE[36919]][CR]$INFO[Window(Home).Property(Music.ArtistsCount),, $LOCALIZE[36917]][/B]</label>
+                <font>font10</font>
+                <align>center</align>
+                <scroll>true</scroll>
+              </control>
+            </control>
+            <control type="group">
+              <width>200</width>
+              <visible>Library.HasContent(musicvideos)</visible>
+              <control type="image">
+                <left>67</left>
+                <width>66</width>
+                <height>66</height>
+                <texture>icons/Music.png</texture>
+              </control>
+              <control type="label">
+                <top>80</top>
+                <label>[B]$INFO[Window(Home).Property(MusicVideos.Count),, 个$LOCALIZE[36909]][CR][COLOR ff64e535]$INFO[Window(Home).Property(MusicVideos.Watched),$LOCALIZE[16102] : ,个][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(MusicVideos.UnWatched),$LOCALIZE[16101] : ,个][/COLOR][/B]</label>
+                <font>font10</font>
+                <align>center</align>
+                <scroll>true</scroll>
+              </control>
+            </control>
+          </control>
+        </control>
+      </control>
+    </control>
+  </include>
+</includes>

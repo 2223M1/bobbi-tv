@@ -1,0 +1,13 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+build/
+dist/
+local.properties
+.gradle/
+*.keystore
+*.jks
+*.pem
+.private/
+staging/

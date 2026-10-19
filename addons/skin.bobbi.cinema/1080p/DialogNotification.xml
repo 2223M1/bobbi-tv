@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <zorder>3</zorder>
+  <coordinates><left>1184</left><top>56</top></coordinates>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="fade" start="0" end="100" time="160" />
+    <effect type="slide" start="40,0" end="0,0" time="220" tween="cubic" easing="out" />
+  </animation>
+  <animation type="WindowClose" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="fade" start="100" end="0" time="160" />
+    <effect type="slide" start="0,0" end="40,0" time="160" tween="cubic" easing="in" />
+  </animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>640</width><height>128</height>
+      <texture colordiffuse="F21E2128" border="20">bobi/r20.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>24</top><width>6</width><height>80</height>
+      <texture colordiffuse="accent">bobi/selected-bar.png</texture>
+    </control>
+    <control type="image" id="400">
+      <left>28</left><top>24</top><width>80</width><height>80</height>
+      <aspectratio>keep</aspectratio>
+    </control>
+    <control type="fadelabel" id="401">
+      <left>128</left><top>20</top><width>484</width><height>44</height>
+      <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+      <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
+    </control>
+    <control type="fadelabel" id="402">
+      <left>128</left><top>66</top><width>484</width><height>40</height>
+      <font>Meta24</font><textcolor>text2</textcolor><aligny>center</aligny>
+      <scroll>true</scroll><scrollout>false</scrollout><pauseatend>2000</pauseatend>
+    </control>
+  </controls>
+</window>

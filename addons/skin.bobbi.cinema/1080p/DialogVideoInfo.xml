@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">981</defaultcontrol>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <!-- art -->
+    <control type="image">
+      <left>480</left><top>0</top><width>1440</width><height>810</height>
+      <aspectratio>scale</aspectratio>
+      <texture background="true">$VAR[FanartImage]</texture>
+      <include>ArtFade</include>
+    </control>
+    <control type="image">
+      <left>480</left><top>0</top><width>1100</width><height>810</height>
+      <texture colordiffuse="bg">bobi/scrim-left.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>520</width><height>810</height>
+      <texture colordiffuse="bg">bobi/white.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>420</top><width>1920</width><height>420</height>
+      <texture colordiffuse="bg">bobi/scrim-bottom.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>810</top><width>1920</width><height>270</height>
+      <texture colordiffuse="bg">bobi/white.png</texture>
+    </control>
+
+    <!-- text column -->
+    <control type="group">
+      <left>96</left><top>110</top>
+      <control type="label">
+        <left>0</left><top>0</top><width>1400</width><height>36</height>
+        <label>$VAR[DetailKicker]</label>
+        <font>Label24</font><textcolor>accent_text</textcolor>
+      </control>
+      <control type="label">
+        <left>0</left><top>36</top><width>1400</width><height>96</height>
+        <label>$VAR[TitlePrimary]</label>
+        <font>Display72</font><textcolor>text</textcolor><shadowcolor>80000000</shadowcolor>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>2</left><top>132</top><width>1200</width><height>40</height>
+        <label>$VAR[TitleSecondary]</label>
+        <font>Label28</font><textcolor>text2</textcolor><aligny>center</aligny>
+      </control>
+      <!-- chips + meta -->
+      <control type="grouplist">
+        <left>2</left><top>190</top><width>1500</width><height>44</height>
+        <orientation>horizontal</orientation><itemgap>10</itemgap>
+        <usecontrolcoords>true</usecontrolcoords>
+        <include content="StageChip"><param name="id">9301</param><param name="label">$VAR[SeasonLabel]</param></include>
+        <include content="StageChip"><param name="id">9302</param><param name="label">$VAR[EpisodeLabel]</param></include>
+        <include content="StageChip"><param name="id">9303</param><param name="label">$INFO[ListItem.MPAA]</param></include>
+        <control type="image"><width>1</width><height>44</height><texture /><visible>!String.IsEmpty(ListItem.Season) | !String.IsEmpty(ListItem.MPAA)</visible></control>
+        <control type="label">
+          <width>auto</width><height>44</height>
+          <label>$INFO[ListItem.Year]$INFO[ListItem.Genre,   ·   ]$INFO[ListItem.Duration(h'小时'mm'分'),   ·   ]$INFO[ListItem.Rating,   ·   ★ ]</label>
+          <font>Label28</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <control type="label">
+        <left>2</left><top>246</top><width>1200</width><height>40</height>
+        <label>$VAR[EpisodeTitle]</label>
+        <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <!-- plot: scrolls on its own when focused -->
+      <control type="textbox" id="4">
+        <left>2</left><top>300</top><width>900</width><height>146</height>
+        <label>$INFO[ListItem.Plot]</label>
+        <font>Body28</font><textcolor>text2</textcolor>
+        <autoscroll delay="6000" time="2500" repeat="8000">false</autoscroll>
+        <pagecontrol>983</pagecontrol>
+      </control>
+      <control type="scrollbar" id="983">
+        <left>920</left><top>300</top><width>4</width><height>146</height>
+        <visible>Container(4).HasNext | Container(4).HasPrevious</visible>
+        <onleft>981</onleft><onright>981</onright><onback>SetFocus(981)</onback>
+        <onup>983</onup><ondown>983</ondown>
+        <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="66FFFFFF">bobi/white.png</texturesliderbarfocus>
+        <showonepage>false</showonepage>
+        <orientation>vertical</orientation>
+      </control>
+      <!-- credits -->
+      <control type="label">
+        <left>2</left><top>458</top><width>1200</width><height>32</height>
+        <label>$INFO[ListItem.Director,[COLOR text3]导演  [/COLOR]]$INFO[ListItem.Cast,     [COLOR text3]主演  [/COLOR]]</label>
+        <font>Meta24</font><textcolor>text2</textcolor>
+      </control>
+      <control type="label">
+        <left>2</left><top>492</top><width>1200</width><height>32</height>
+        <label>$INFO[ListItem.Property(Bobi.SourceState)]</label>
+        <font>Meta24</font><textcolor>ok</textcolor>
+      </control>
+    </control>
+
+    <!-- actions -->
+      <!-- primary: accent fill at rest so it reads as the main action; white when focused -->
+      <control type="group" id="9819">
+        <left>96</left><top>646</top>
+        <width>320</width><height>72</height>
+        <control type="button" id="981">
+          <left>0</left><top>0</top><width>320</width><height>72</height>
+          <label />
+          <texturefocus colordiffuse="focus" border="32">bobi/pill.png</texturefocus>
+          <texturenofocus colordiffuse="accent" border="32">bobi/pill.png</texturenofocus>
+          <onright condition="Integer.IsGreater(Container(9000).NumItems,0) | Control.IsVisible(11) | Control.IsVisible(7)">9000</onright>
+          <ondown>50</ondown>
+          <onup condition="Control.IsVisible(983)">983</onup>
+          <onclick condition="!String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">SendClick(8)</onclick>
+          <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + ListItem.IsFolder">ActivateWindow(Videos,"$INFO[ListItem.FilenameAndPath]",return)</onclick>
+          <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + !ListItem.IsFolder">RunPlugin("$INFO[ListItem.FilenameAndPath]")</onclick>
+          <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">Dialog.Close(movieinformation)</onclick>
+        </control>
+        <control type="image">
+          <left>32</left><top>20</top><width>32</width><height>32</height>
+          <texture colordiffuse="on_focus">$VAR[DetailPrimaryIcon]</texture>
+        </control>
+        <control type="label">
+          <left>76</left><top>0</top><width>240</width><height>72</height>
+          <label>$VAR[DetailPrimaryLabel]</label>
+          <font>Button28</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    <control type="grouplist" id="9000">
+      <left>432</left><top>646</top><width>1392</width><height>72</height>
+      <orientation>horizontal</orientation><itemgap>16</itemgap>
+      <onup condition="Control.IsVisible(983)">983</onup>
+      <ondown>50</ondown>
+      <onleft>981</onleft><onright>noop</onright>
+      <include content="TextPill"><param name="id">11</param><param name="label">预告片</param><param name="width">200</param><param name="visible">!String.IsEmpty(ListItem.Trailer)</param></include>
+      <include content="TextPill"><param name="id">7</param><param name="label">我的评分</param><param name="width">220</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+      <include content="TextPill"><param name="id">14</param><param name="label">版本</param><param name="width">160</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+      <include content="TextPill"><param name="id">6</param><param name="label">刷新资料</param><param name="width">220</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+    </control>
+    <!-- Kodi play button kept for library items (SendClick target) -->
+    <control type="button" id="8">
+      <left>-400</left><top>-400</top><width>1</width><height>1</height>
+      <label />
+      <texturefocus /><texturenofocus />
+    </control>
+
+    <!-- cast row -->
+    <control type="group">
+      <visible>Integer.IsGreater(Container(50).NumItems,0)</visible>
+      <control type="label">
+        <left>96</left><top>724</top><width>800</width><height>40</height>
+        <label>演职人员</label>
+        <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="panel" id="50">
+        <left>72</left><top>770</top><width>1848</width><height>300</height>
+        <orientation>horizontal</orientation>
+        <scrolltime tween="cubic" easing="out">180</scrolltime>
+        <onup>981</onup><ondown>noop</ondown>
+        <itemlayout width="200" height="300">
+          <include content="CastTile" />
+        </itemlayout>
+        <focusedlayout width="200" height="300">
+          <include content="CastTile"><param name="focused">Control.HasFocus(50)</param></include>
+        </focusedlayout>
+      </control>
+    </control>
+    <include content="KeyHint">
+      <param name="label">确认 $VAR[DetailPrimaryLabel]   ·   ↑ 滚动简介   ·   返回 上一页</param>
+      <param name="y">1032</param>
+      <param name="align">right</param>
+    </include>
+  </controls>
+</window>

@@ -1,0 +1,15 @@
+title = "bobbi public-source scan"
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exact Python package name in pinned tmdbv3api setup.py license evidence; not a token"
+regexTarget = "secret"
+regexes = ['''^tmdbv3api\.objs$''']
+
+[[allowlists]]
+description = "Verified SHA-256 file digests in the two explicit source inventories only"
+condition = "AND"
+paths = ['''(^|/)release/(source-inventory|kodi-vendors)\.json$''']
+regexTarget = "match"
+regexes = ['''[A-Za-z0-9_./-]+\.py": "[0-9a-f]{64}"''']

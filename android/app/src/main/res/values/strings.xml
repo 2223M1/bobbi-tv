@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">bobbi TV · 安装与后台</string>
+    <string name="channel_name">本机 BT 引擎</string>
+    <string name="stop">停止引擎</string>
+    <string name="start">2. 启动本机后台</string>
+    <string name="pair_step">02   首次使用：导出配对文件</string>
+    <string name="status_format">状态：%1$s\n%2$s%3$s</string>
+    <string name="diagnostic_format">\n诊断：%1$s</string>
+    <string name="pair">显示 Kodi 配对信息</string>
+    <string name="copy">复制配对配置</string>
+    <string name="close">关闭</string>
+    <string name="pairing_title">仅与本机 Kodi 配对</string>
+    <string name="copied">已复制；配置含控制凭据，请勿公开分享。</string>
+    <string name="preview_warning">公开测试版，尚未完成 Android 实机验收。影院在 Kodi 内运行，APK 提供安装入口与本机 BT 后台；需登录自己的账号。仅播放你有权访问的内容。</string>
+    <string name="media_boundary">控制接口需要本次安装的随机凭据。引擎仅监听本机，但上游已有媒体流与 /echo 可能不要求认证；这不是对其他本机应用的完整媒体隔离。</string>
+    <string name="foreground_explanation">由你手动启动，通知中可随时停止。不会开机自启、自动下载新引擎、启用无障碍或申请 root。切换到 Kodi 后保持运行；结束观看后请停止。</string>
+    <string name="start_rejected">系统拒绝启动后台服务；请保持助手在前台后再试。</string>
+    <string name="credentials_failed">无法读取配对凭据；本次操作没有导出信息，也没有变更引擎运行状态。</string>
+    <string name="notice">引擎：TorrServer MatriX.147，YouROK，GPL-3.0。固定来源与许可证随 APK 附带。当前仅 ARM32 / ARM64；不改画质、不转码。</string>
+    <string name="export_pairing">导出配对文件给 Kodi</string>
+    <string name="pairing_warning">此配置包含本机引擎的控制凭据。仅导入同一设备上的 Kodi，请勿公开分享或选择云端目录。通过系统文件选择器选择保存位置；导入后请删除导出的副本。</string>
+    <string name="document_unavailable">这台设备没有可用的系统文档选择器；请使用显示配对信息入口。</string>
+    <string name="export_failed">配对文件未能写入所选位置；没有自动另存到其他目录。</string>
+    <string name="export_complete">配对文件已写入你选择的位置。导入 Kodi 后请删除导出副本。</string>
+    <string name="open_kodi">4. 打开 Kodi 进入影院</string>
+    <string name="kodi_unavailable">没有找到可打开的 Kodi。助手只提供本机 BT 引擎，请先通过系统安装官方 Kodi 和 bobbi 插件。</string>
+    <string name="app_settings">打开系统应用设置</string>
+    <string name="settings_unavailable">无法直接打开设置；请使用系统设置 → 应用 → bobbi 本机助手。</string>
+</resources>

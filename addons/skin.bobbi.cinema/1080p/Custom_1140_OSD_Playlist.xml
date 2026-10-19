@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="1140">
+  <defaultcontrol always="true">6401</defaultcontrol>
+  <controls>
+    <control type="group">
+      <left>0</left>
+      <top>650</top>
+      <depth>DepthSideBlade</depth>
+      <visible>!Window.IsVisible(FileBrowser)</visible>
+      <visible>!Window.IsActive(videobookmarks)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>-550</top>
+        <width>1920</width>
+        <height>550</height>
+        <texture border="16" colordiffuse="$VAR[transselect1]">blackback95.png</texture>
+        <animation effect="slide" start="0,1080" end="0,570" time="200" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">WindowOpen</animation>
+        <animation effect="slide" start="0,570" end="0,1080" time="200" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+      </control>
+      <control type="group">
+        <animation effect="fade" delay="200" time="200" start="0" end="100" condition="!Skin.HasSetting(BobiReduceMotion)">WindowOpen</animation>
+        <animation effect="fade" time="200" start="100" end="0" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+        <control type="fixedlist" id="6401">
+          <left>10</left>
+          <top>-10</top>
+          <nested />
+          <orientation>horizontal</orientation>
+          <preloaditems>2</preloaditems>
+          <scrolltime tween="quadratic">180</scrolltime>
+          <itemlayout width="467" height="280">
+            <control type="group">
+              <left>40</left>
+              <top>40</top>
+              <control type="group">
+                <nested />
+                <width>427</width>
+                <height>240</height>
+                <control type="image">
+                  <aspectratio>stretch</aspectratio>
+                  <texture fallback="defaultvideocover.png" diffuse="diffuse/landscape_w356_h200.png">$VAR[Image_Landscape]</texture>
+                </control>
+                <control type="label">
+                  <font>font10</font>
+                  <textcolor>white</textcolor>
+                  <label>$VAR[Label_OSD_EpisodeLabel]</label>
+                  <height>20</height>
+                  <bottom>50</bottom>
+                  <textoffsetx>20</textoffsetx>
+                  <selectedcolor>blue</selectedcolor>
+                </control>
+                <control type="label">
+                  <font>font10</font>
+                  <textcolor>white</textcolor>
+                  <label>$VAR[Label_OSD_EpisodeLabel2]</label>
+                  <height>20</height>
+                  <bottom>20</bottom>
+                  <textoffsetx>20</textoffsetx>
+                  <selectedcolor>blue</selectedcolor>
+                </control>
+                <include>View_WatchedOverlay</include>
+              </control>
+            </control>
+          </itemlayout>
+          <focusedlayout width="467" height="280">
+            <control type="group">
+              <left>40</left>
+              <top>40</top>
+              <control type="group">
+                <left>0</left>
+                <top>0</top>
+                <nested />
+                <width>427</width>
+                <height>240</height>
+                <control type="image">
+                  <aspectratio>stretch</aspectratio>
+                  <texture fallback="defaultvideocover.png" diffuse="diffuse/landscape_w356_h200.png">$VAR[Image_Landscape]</texture>
+                </control>
+                <control type="image">
+                  <aspectratio>stretch</aspectratio>
+                  <texture infill="false" border="20">am6b/badge.png</texture>
+                  <visible>Control.HasFocus(6401)</visible>
+                </control>
+                <control type="label">
+                  <font>font10</font>
+                  <textcolor>white</textcolor>
+                  <label>$VAR[Label_OSD_EpisodeLabel]</label>
+                  <height>20</height>
+                  <bottom>50</bottom>
+                  <textoffsetx>20</textoffsetx>
+                  <selectedcolor>blue</selectedcolor>
+                </control>
+                <control type="label">
+                  <font>font10</font>
+                  <textcolor>white</textcolor>
+                  <label>$VAR[Label_OSD_EpisodeLabel2]</label>
+                  <height>20</height>
+                  <bottom>20</bottom>
+                  <textoffsetx>20</textoffsetx>
+                  <selectedcolor>blue</selectedcolor>
+                </control>
+                <control type="image">
+                  <left>338</left>
+                  <top>204</top>
+                  <width>64</width>
+                  <height>64</height>
+                  <texture colordiffuse="ff0091ea">$VAR[Image_Overlay_Backing,,-fo.png]</texture>
+                </control>
+                <include>View_WatchedOverlay</include>
+              </control>
+            </control>
+          </focusedlayout>
+          <include>Object_ContentDynamic</include>
+          <top>-40</top>
+          <onup>Close</onup>
+          <ondown condition="!VideoPlayer.Content(livetv)">ActivateWindow(videobookmarks)</ondown>
+          <left>-40</left>
+          <width>1900</width>
+        </control>
+        <control type="group">
+          <nested />
+          <control type="image">
+            <left>0</left>
+            <top>135</top>
+            <width>25</width>
+            <height>25</height>
+            <centerleft>-40</centerleft>
+            <centertop>50%</centertop>
+            <texture flipx="true" colordiffuse="white">am6b/icon-right.png</texture>
+            <visible>Container(6401).HasPrevious</visible>
+          </control>
+          <control type="image">
+            <left>1900</left>
+            <top>135</top>
+            <width>25</width>
+            <height>25</height>
+            <centerleft>-40</centerleft>
+            <centertop>50%</centertop>
+            <texture flipx="false" colordiffuse="white">am6b/icon-right.png</texture>
+            <visible>Container(6401).HasNext</visible>
+          </control>
+        </control>
+        <control type="grouplist">
+          <left>90</left>
+          <top>250</top>
+          <orientation>horizontal</orientation>
+          <itemgap>30</itemgap>
+          <width>1380</width>
+          <height>100</height>
+          <usecontrolcoords>true</usecontrolcoords>
+          <control type="label">
+            <top>50</top>
+            <width>1080</width>
+            <label>$VAR[Label_OSD_Episodes_Title]</label>
+            <font>font12</font>
+            <textcolor>white</textcolor>
+            <height>20</height>
+            <aligny>center</aligny>
+          </control>
+        </control>
+        <control type="group">
+          <left>80</left>
+          <top>340</top>
+          <control type="image">
+            <height>60</height>
+            <width>60</width>
+            <bordersize>2</bordersize>
+            <bordertexture colordiffuse="ffededed">diffuse/circle.png</bordertexture>
+            <texture colordiffuse="c5000000">diffuse/circle.png</texture>
+          </control>
+          <control type="image">
+            <height>60</height>
+            <width>60</width>
+            <bordersize>2</bordersize>
+            <aspectratio>stretch</aspectratio>
+            <texture diffuse="diffuse/circle.png" colordiffuse="ffededed">$VAR[Image_OSD_Episodes]</texture>
+          </control>
+          <control type="textbox">
+            <left>70</left>
+            <top>0</top>
+            <width>1360</width>
+            <label>[COLOR=ffededed][B]$INFO[Container(6401).ListItem.Season,S,]$INFO[Container(6401).ListItem.Episode,E, ]$INFO[Container(6401).ListItem.Title,, ~ ][/B][/COLOR]$INFO[Container(6401).ListItem.Plot]</label>
+            <font>font10</font>
+            <textcolor>FFE50914</textcolor>
+            <height>72</height>
+            <autoscroll time="2000" delay="2000" repeat="4000">true</autoscroll>
+          </control>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

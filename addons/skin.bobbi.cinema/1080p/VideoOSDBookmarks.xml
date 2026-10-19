@@ -1,0 +1,301 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">2</defaultcontrol>
+  <coordinates>
+    <left>360</left>
+    <top>110</top>
+  </coordinates>
+  <include>dialogeffect</include>
+  <controls>
+    <control type="group">
+      <left>-360</left>
+      <top>560</top>
+      <control type="image">
+        <left>0</left>
+        <top>-500</top>
+        <width>1920</width>
+        <height>550</height>
+        <texture border="16" colordiffuse="$VAR[transselect1]">blackback95.png</texture>
+        <animation effect="slide" start="0,1080" end="0,550" time="200" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">WindowOpen</animation>
+        <animation effect="slide" start="0,550" end="0,1080" time="50" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+      </control>
+      <control type="group">
+        <onup>close</onup>
+        <visible>Integer.IsEqual(Container(11).NumItems,0)</visible>
+        <control type="image">
+          <left>40</left>
+          <top>40</top>
+          <width>427</width>
+          <height>240</height>
+          <aspectratio>stretch</aspectratio>
+          <bordersize>8</bordersize>
+          <bordertexture border="20" colordiffuse="80000000">common/shadow-24.png</bordertexture>
+          <texture colordiffuse="1fdedede" border="20" diffuse="diffuse/landscape_w356_h200.png">common/box.png</texture>
+        </control>
+        <control type="image">
+          <width>128</width>
+          <height>128</height>
+          <left>193</left>
+          <top>100</top>
+          <texture colordiffuse="white">overlayspoiler.png</texture>
+        </control>
+      </control>
+      <control type="list" id="11">
+        <onleft>11</onleft>
+        <onright>11</onright>
+        <onup>100</onup>
+        <ondown>2</ondown>
+        <onup>close</onup>
+        <scrolltime>180</scrolltime>
+        <orientation>horizontal</orientation>
+        <itemlayout height="280" width="467">
+          <control type="group">
+            <left>40</left>
+            <top>40</top>
+            <control type="group">
+              <nested />
+              <width>427</width>
+              <height>240</height>
+              <control type="image">
+                <aspectratio>stretch</aspectratio>
+                <texture fallback="defaultvideocover.png" diffuse="diffuse/landscape_w356_h200.png">$VAR[Image_Landscape]</texture>
+              </control>
+              <control type="label">
+                <font>font10</font>
+                <textcolor>white</textcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel]</label>
+                <height>20</height>
+                <bottom>50</bottom>
+                <textoffsetx>20</textoffsetx>
+                <selectedcolor>blue</selectedcolor>
+              </control>
+              <control type="label">
+                <font>font10</font>
+                <textcolor>white</textcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel2]</label>
+                <height>20</height>
+                <bottom>20</bottom>
+                <textoffsetx>20</textoffsetx>
+                <selectedcolor>blue</selectedcolor>
+              </control>
+            </control>
+          </control>
+        </itemlayout>
+        <focusedlayout height="280" width="467">
+          <control type="group">
+            <left>40</left>
+            <top>40</top>
+            <control type="group">
+              <left>0</left>
+              <top>0</top>
+              <nested />
+              <width>427</width>
+              <height>240</height>
+              <control type="image">
+                <aspectratio>stretch</aspectratio>
+                <texture fallback="defaultvideocover.png" diffuse="diffuse/landscape_w356_h200.png">$VAR[Image_Landscape]</texture>
+              </control>
+              <control type="image">
+                <aspectratio>stretch</aspectratio>
+                <texture infill="false" border="14">am6b/badge.png</texture>
+                <visible>Control.HasFocus(11)</visible>
+              </control>
+              <control type="label">
+                <font>font10</font>
+                <textcolor>white</textcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel]</label>
+                <height>20</height>
+                <bottom>50</bottom>
+                <textoffsetx>20</textoffsetx>
+                <selectedcolor>blue</selectedcolor>
+              </control>
+              <control type="label">
+                <font>font10</font>
+                <textcolor>white</textcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel2]</label>
+                <height>20</height>
+                <bottom>20</bottom>
+                <textoffsetx>20</textoffsetx>
+                <selectedcolor>blue</selectedcolor>
+              </control>
+            </control>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="group">
+        <nested />
+        <control type="image">
+          <left>0</left>
+          <top>135</top>
+          <width>25</width>
+          <height>25</height>
+          <centerleft>-40</centerleft>
+          <centertop>50%</centertop>
+          <texture flipx="true" colordiffuse="white">am6b/icon-right.png</texture>
+          <visible>Container(6401).HasPrevious</visible>
+        </control>
+        <control type="image">
+          <left>1500</left>
+          <top>135</top>
+          <width>25</width>
+          <height>25</height>
+          <centerleft>-40</centerleft>
+          <centertop>50%</centertop>
+          <texture flipx="false" colordiffuse="white">am6b/icon-right.png</texture>
+          <visible>Container(6401).HasNext</visible>
+        </control>
+      </control>
+      <control type="grouplist">
+        <left>50</left>
+        <top>250</top>
+        <orientation>horizontal</orientation>
+        <itemgap>30</itemgap>
+        <width>1380</width>
+        <height>100</height>
+        <onup>11</onup>
+        <ondown>back</ondown>
+        <usecontrolcoords>true</usecontrolcoords>
+        <control type="label">
+          <top>50</top>
+          <width>1080</width>
+          <label>$LOCALIZE[298][COLOR=blue]  ~  [/COLOR]第$INFO[Container(11).CurrentItem , , 个 - 共有 ]$INFO[Container(11).NumItems,, 个]</label>
+          <font>font12</font>
+          <textcolor>white</textcolor>
+          <height>20</height>
+          <aligny>center</aligny>
+        </control>
+      </control>
+      <control type="grouplist">
+        <left>50</left>
+        <top>340</top>
+        <orientation>horizontal</orientation>
+        <itemgap>30</itemgap>
+        <width>300</width>
+        <height>100</height>
+        <onup>11</onup>
+        <usecontrolcoords>true</usecontrolcoords>
+        <control type="button" id="2">
+          <height>60</height>
+          <width>60</width>
+          <texturefocus flipy="true">diffuse/circle_v.png</texturefocus>
+          <texturenofocus colordiffuse="FFcccccc">diffuse/circle.png</texturenofocus>
+          <visible>Control.IsEnabled(2)</visible>
+          <nested />
+        </control>
+        <control type="group" id="9002">
+          <left>-60</left>
+          <width>0</width>
+          <control type="group">
+            <left>-20</left>
+            <top>9</top>
+            <visible>Control.IsEnabled(2)</visible>
+            <control type="image">
+              <bordersize>6</bordersize>
+              <height>40</height>
+              <width>40</width>
+              <texture colordiffuse="black">diffuse/plus.png</texture>
+              <visible>!Control.HasFocus(2)</visible>
+            </control>
+            <control type="image">
+              <bordersize>6</bordersize>
+              <height>40</height>
+              <width>40</width>
+              <texture colordiffuse="white">diffuse/plus.png</texture>
+              <visible>Control.HasFocus(2)</visible>
+            </control>
+          </control>
+        </control>
+        <control type="button" id="3">
+          <left>20</left>
+          <height>60</height>
+          <width>60</width>
+          <texturefocus flipy="true">diffuse/circle_v.png</texturefocus>
+          <texturenofocus colordiffuse="FFcccccc">diffuse/circle.png</texturenofocus>
+          <visible>Control.IsEnabled(3) + !Integer.IsEqual(Container(11).NumItems,0)</visible>
+          <nested />
+        </control>
+        <control type="group" id="9003">
+          <left>-51</left>
+          <top>0</top>
+          <width>0</width>
+          <control type="group">
+            <left>-30</left>
+            <visible>Control.IsEnabled(3) + !Integer.IsEqual(Container(11).NumItems,0)</visible>
+            <control type="image">
+              <bordersize>6</bordersize>
+              <height>53</height>
+              <width>43</width>
+              <texture colordiffuse="black">diffuse/trash-can.png</texture>
+              <visible>!Control.HasFocus(3)</visible>
+            </control>
+            <control type="image">
+              <bordersize>6</bordersize>
+              <height>55</height>
+              <width>45</width>
+              <texture colordiffuse="white">diffuse/trash-can.png</texture>
+              <visible>Control.HasFocus(3)</visible>
+            </control>
+          </control>
+        </control>
+        <control type="button" id="4">
+          <height>60</height>
+          <width>60</width>
+          <texturefocus flipy="true">diffuse/circle_v.png</texturefocus>
+          <texturenofocus colordiffuse="FFcccccc">diffuse/circle.png</texturenofocus>
+          <visible>Control.IsEnabled(4)</visible>
+          <nested />
+        </control>
+        <control type="group" id="9004">
+          <left>-30</left>
+          <width>0</width>
+          <control type="group">
+            <left>-30</left>
+            <visible>Control.IsEnabled(4)</visible>
+            <control type="image">
+              <bordersize>6</bordersize>
+              <height>60</height>
+              <width>60</width>
+              <texture colordiffuse="B3cccccc">diffuse/image.png</texture>
+              <visible>!Control.HasFocus(4)</visible>
+            </control>
+            <control type="image">
+              <bordersize>6</bordersize>
+              <height>60</height>
+              <width>60</width>
+              <texture colordiffuse="white">diffuse/image.png</texture>
+              <visible>Control.HasFocus(4)</visible>
+            </control>
+          </control>
+        </control>
+      </control>
+      <control type="group">
+        <left>210</left>
+        <top>340</top>
+        <control type="image">
+          <height>60</height>
+          <width>60</width>
+          <bordersize>2</bordersize>
+          <bordertexture colordiffuse="ffededed">diffuse/circle.png</bordertexture>
+          <texture colordiffuse="c5000000">diffuse/circle.png</texture>
+        </control>
+        <control type="image">
+          <height>60</height>
+          <width>60</width>
+          <bordersize>2</bordersize>
+          <aspectratio>stretch</aspectratio>
+          <texture diffuse="diffuse/circle.png" colordiffuse="ffededed">$VAR[Image_OSD_Bookmarks_Circle]</texture>
+        </control>
+        <control type="textbox">
+          <left>70</left>
+          <top>0</top>
+          <width>1220</width>
+          <label>[COLOR=ffededed][B]$INFO[VideoPlayer.Season,S,]$INFO[VideoPlayer.Episode,E, ]$INFO[VideoPlayer.Title,, ~ ][/B][/COLOR]$INFO[VideoPlayer.Plot]</label>
+          <font>font10</font>
+          <textcolor>FFE50914</textcolor>
+          <height>72</height>
+          <autoscroll time="2000" delay="2000" repeat="4000">true</autoscroll>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

@@ -1,0 +1,31 @@
+from xbmcgui import DialogProgressBG
+
+from ..utils.kodi.utils import ADDON_NAME, translation
+from .provider_base import ProviderListener
+
+
+class ProviderListenerDialog(ProviderListener):
+    def __init__(self, providers, method, timeout=10, silent=False):
+        super().__init__(providers, method, timeout=timeout)
+        self._total = len(providers)
+        self._count = 0
+        self._silent = silent
+        self._dialog = None if silent else DialogProgressBG()
+
+    def on_receive(self, sender):
+        self._count += 1
+        if self._dialog:
+            self._dialog.update(int(100 * self._count / self._total))
+
+    def __enter__(self):
+        ret = super().__enter__()
+        if self._dialog:
+            self._dialog.create(ADDON_NAME, translation(90660))
+        return ret
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        try:
+            return super().__exit__(exc_type, exc_val, exc_tb)
+        finally:
+            if self._dialog:
+                self._dialog.close()

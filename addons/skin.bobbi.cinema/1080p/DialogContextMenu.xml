@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">996</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="fade" start="0" end="100" time="160" />
+    <effect type="zoom" start="96" end="100" center="auto" time="180" tween="cubic" easing="out" />
+  </animation>
+  <animation effect="fade" start="100" end="0" time="120" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>-1920</left><top>-1080</top><width>5760</width><height>3240</height>
+      <texture colordiffuse="99000000">bobi/white.png</texture>
+    </control>
+    <control type="button">
+      <left>-1920</left><top>-1080</top><width>5760</width><height>3240</height>
+      <texturefocus /><texturenofocus />
+      <onclick>Action(close)</onclick>
+    </control>
+    <control type="image" id="999">
+      <left>-24</left><top>-24</top><width>648</width><height>808</height>
+      <texture colordiffuse="FF15171C" border="20">bobi/r20.png</texture>
+    </control>
+    <control type="grouplist" id="996">
+      <left>0</left><top>0</top><width>600</width>
+      <height max="760">auto</height>
+      <itemgap>4</itemgap>
+      <usecontrolcoords>true</usecontrolcoords>
+      <onleft>noop</onleft><onright>noop</onright>
+    </control>
+    <control type="button" id="1000">
+      <left>0</left><top>0</top><width>600</width><height>72</height>
+      <font>Label28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor><disabledcolor>text_disabled</disabledcolor>
+      <textoffsetx>32</textoffsetx><aligny>center</aligny>
+      <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+      <texturenofocus />
+    </control>
+  </controls>
+</window>

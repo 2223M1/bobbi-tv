@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="1114">
+  <defaultcontrol always="true">9100</defaultcontrol>
+  <depth>DepthOSD</depth>
+  <onunload condition="Player.HasVideo + !Window.IsActive(1115) + !Window.IsActive(1116) + !Window.IsActive(playerprocessinfo) + !Window.IsActive(videobookmarks) + !Window.IsActive(osdcmssettings)">ActivateWindow(videoosd)</onunload>
+  <controls>
+    <include>DialogScrim</include>
+    <include content="SideSheet">
+      <param name="title">更多</param>
+      <param name="subtitle">$VAR[PlayerTitle]</param>
+    </include>
+    <control type="list" id="9100">
+      <right>48</right><top>200</top><width>624</width><height>820</height>
+      <orientation>vertical</orientation>
+      <scrolltime tween="cubic" easing="out">160</scrolltime>
+      <onleft>noop</onleft><onright>noop</onright>
+      <itemlayout width="624" height="92"><include content="SheetItem"><param name="list">9100</param></include></itemlayout>
+      <focusedlayout width="624" height="92"><include content="SheetItem"><param name="list">9100</param><param name="focused">true</param></include></focusedlayout>
+      <content>
+        <item>
+          <label>杜比视界 VS10</label><label2>$VAR[VS10Label]</label2><icon>bobi/icons/hdr.png</icon>
+          <onclick>ActivateWindow(1116)</onclick>
+          <visible>System.Platform.Linux</visible>
+        </item>
+        <item>
+          <label>播放速度</label><label2>$VAR[TempoLabel]</label2><icon>bobi/icons/speed.png</icon>
+          <onclick>ActivateWindow(1115)</onclick>
+        </item>
+        <item>
+          <label>书签</label><label2>保存 / 跳转画面位置</label2><icon>bobi/icons/bookmark.png</icon>
+          <onclick>ActivateWindow(videobookmarks)</onclick>
+        </item>
+        <item>
+          <label>信号信息</label><label2>$VAR[ResolutionLabel]$INFO[VideoPlayer.VideoCodec,  ·  ]  ·  $VAR[HDRLabel]</label2><icon>bobi/icons/signal.png</icon>
+          <onclick>ActivateWindow(playerprocessinfo)</onclick>
+        </item>
+        <item>
+          <label>色彩管理</label><label2>3D LUT / ICC</label2><icon>bobi/icons/picture.png</icon>
+          <onclick>ActivateWindow(osdcmssettings)</onclick>
+          <visible>System.HasCMS</visible>
+        </item>
+        <item>
+          <label>光盘菜单</label><label2>蓝光 / DVD 原盘</label2><icon>bobi/icons/film.png</icon>
+          <onclick>PlayerControl(ShowVideoMenu)</onclick>
+          <visible>VideoPlayer.HasMenu</visible>
+        </item>
+        <item>
+          <label>3D 模式</label><label2>$INFO[VideoPlayer.StereoscopicMode]</label2><icon>bobi/icons/tv.png</icon>
+          <onclick>StereoMode</onclick>
+          <visible>VideoPlayer.IsStereoscopic</visible>
+        </item>
+        <item>
+          <label>调试叠加层</label><label2>实时解码、丢帧与音视频同步</label2><icon>bobi/icons/chip.png</icon>
+          <onclick>PlayerDebug</onclick>
+          <onclick>Dialog.Close(1114)</onclick>
+        </item>
+      </content>
+    </control>
+  </controls>
+</window>
