@@ -94,7 +94,10 @@ def build(destination):
     # Kodi's checksum file is a change detector, not a security signature.
     (destination / 'addons.xml.md5').write_text(hashlib.md5(raw).hexdigest(), encoding='ascii')
     (destination / 'addons.xml.sha256').write_text(hashlib.sha256(raw).hexdigest(), encoding='ascii')
-    (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+    # Unlike source inventories, this file is regenerated on Linux CI too.
+    # Explicit LF prevents Windows text translation changing its bytes.
+    with (destination / 'manifest.json').open('w', encoding='utf-8', newline='\n') as stream:
+        stream.write(json.dumps(manifest, indent=2) + '\n')
     return manifest
 
 
