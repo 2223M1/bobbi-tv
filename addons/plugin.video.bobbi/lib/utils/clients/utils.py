@@ -85,7 +85,7 @@ def build_zilean_client() -> Optional[object]:
 
 
 def build_burst_client() -> object:
-    from lib.bobbi.client import Burst
+    from lib.jacktook.client import Burst
 
     return Burst(notification)
 

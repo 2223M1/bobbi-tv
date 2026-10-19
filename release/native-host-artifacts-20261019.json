@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "release_sequence": 2026101905,
+  "status": "private-candidate; not stable rollout",
+  "components_manifest": "dist/private-components-2026101905/manifest.json",
+  "components_manifest_sha256": "60e36b83a6d373e8b52f5d9e96326bf437f62e33d39b213834359094c66fcff8",
+  "components_count": 21,
+  "kodi_upstream_commit": "a3a448d26b8d560a65655dab2cd122994dc4e146",
+  "artifacts": [
+    {
+      "platform": "windows-x64-portable",
+      "path": "dist/native/bobbi-TV-0.2.0-private.1-2026101905-windows-x64.zip",
+      "bytes": 161593757,
+      "sha256": "4f3d77a258d672f01486f61224bdcd8ad63c6b3bee1db97b430aa6d4002ec4de"
+    },
+    {
+      "platform": "windows-x64-installer",
+      "path": "dist/native/bobbi-TV-0.2.0-private.1-2026101905-windows-x64-setup.exe",
+      "bytes": 120061312,
+      "sha256": "4048dabfdd9c1be7780ad5356c0cb86e7dd0df59accf1f624368b2aa4bf30cba",
+      "authenticode_signed": false,
+      "installer_executed": true,
+      "installer_verification": "review-evidence/native-windows-installer-1905-20261019.json"
+    },
+    {
+      "platform": "android-arm64-v8a",
+      "path": "dist/native/bobbi-TV-0.2.0-private.1-2026101905-android-arm64-v8a.apk",
+      "bytes": 214661440,
+      "sha256": "885ba8359ec2bfcefd3bf44f28dad997d5d130f04f1f4b84e340ea9e04f85791",
+      "application_id": "org.bobbi.helper",
+      "version_code": 2026101905,
+      "min_sdk": 26,
+      "target_sdk": 34,
+      "signer_sha256": "ad45d2f7fceef77e5a31734ae61d8a3aadfc4db380badaa8830e3032820db6a4",
+      "frozen_component_files_verified": 1358,
+      "real_device_verified": false
+    },
+    {
+      "platform": "android-armeabi-v7a",
+      "path": "dist/native/bobbi-TV-0.2.0-private.1-2026101905-android-armeabi-v7a.apk",
+      "bytes": 208976278,
+      "sha256": "c0951ac2d0dbb74bbfbecdbc7cb520e8e4921e1923c82b5ae7b39fbf08be7f61",
+      "application_id": "org.bobbi.helper",
+      "version_code": 2026101905,
+      "min_sdk": 26,
+      "target_sdk": 34,
+      "signer_sha256": "ad45d2f7fceef77e5a31734ae61d8a3aadfc4db380badaa8830e3032820db6a4",
+      "frozen_component_files_verified": 1358,
+      "real_device_verified": false
+    }
+  ],
+  "verification": {
+    "windows_user_level_installation": "review-evidence/native-windows-installer-1905-20261019.json",
+    "windows_installed_clean_startup_prior_same_native_host": "review-evidence/native-windows-installed-startup-1902-20261019.json",
+    "windows_uninstall_preserves_profile_prior_same_native_host": "review-evidence/native-windows-uninstall-1902-20261019.json",
+    "windows_runtime_startup": "review-evidence/native-windows-startup-1905-20261019.json",
+    "windows_signed_update_roundtrip": "review-evidence/native-windows-update-roundtrip-1905-20261019.json",
+    "native_build_and_crypto": "native/build-verification.json",
+    "windows_test_profile": "isolated portable validation profile; installed/startup checks used no account; parent-controlled existing-session trial follows separately",
+    "real_playback_verified": false,
+    "android_device_install_and_hdr_audio_passthrough": "not certified"
+  },
+  "signed_components": [
+    {"profile": "coreelec", "path": "dist/private-releases/bobbi-private-2026101905-coreelec.bobbi-update.zip", "sha256": "e46dbaf4b3a582a41d27f7ffc46d53a4b0aaea9cad2c183e35fd716fc6905eb2"},
+    {"profile": "windows", "path": "dist/private-releases/bobbi-private-2026101905-windows.bobbi-update.zip", "sha256": "3e994fcc7447e3731c29251933b447447c378015a6805bdce467fdfb7d9f03cd"},
+    {"profile": "android", "path": "dist/private-releases/bobbi-private-2026101905-android.bobbi-update.zip", "sha256": "ff60d2b103d26d6191dd2622b3c1d336f2aa38794e37604e69f331b2df0ea0dc"}
+  ],
+  "native_engine_source_changed_from_2026101903": false,
+  "windows_native_binary_relinked_without_diagnostics": true,
+  "android_native_library_hashes_unchanged_from_2026101903": true,
+  "supersedes": "2026101901 through 2026101904 remain local historical evidence; only 2026101905 is the current candidate"
+}

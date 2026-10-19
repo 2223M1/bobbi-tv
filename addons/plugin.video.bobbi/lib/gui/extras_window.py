@@ -3,6 +3,7 @@ import json
 import threading
 
 import xbmcgui
+from bobbi_core.image_cache import image_url as tmdb_image_url
 
 from lib.api.fanart.fanart import get_fanart
 from lib.api.imdb.imdb_scraper import get_imdb_extras
@@ -134,11 +135,11 @@ class ExtrasWindow(BaseWindow):
                 # ── Extract images ──
                 poster_path = getattr(data, "poster_path", "")
                 if poster_path:
-                    poster = f"https://image.tmdb.org/t/p/w500{poster_path}"
+                    poster = tmdb_image_url(poster_path, 'w500')
 
                 backdrop_path = getattr(data, "backdrop_path", "")
                 if backdrop_path:
-                    fanart = f"https://image.tmdb.org/t/p/original{backdrop_path}"
+                    fanart = tmdb_image_url(backdrop_path, 'original')
 
                 if self.media_type != "movie":
                     external_ids = getattr(data, "external_ids", None)
@@ -280,7 +281,7 @@ class ExtrasWindow(BaseWindow):
 
                     profile_path = actor.get("profile_path")
                     if profile_path:
-                        thumb = f"https://image.tmdb.org/t/p/w300{profile_path}"
+                        thumb = tmdb_image_url(profile_path, 'w300')
                         li.setArt({"thumb": thumb, "icon": thumb})
                         li.setProperty("thumbnail", thumb)
 
@@ -359,7 +360,7 @@ class ExtrasWindow(BaseWindow):
 
                 poster_path = item.get("poster_path")
                 if poster_path:
-                    thumb = f"https://image.tmdb.org/t/p/w300{poster_path}"
+                    thumb = tmdb_image_url(poster_path, 'w300')
                     li.setArt({"thumb": thumb, "icon": thumb})
                     li.setProperty("thumbnail", thumb)
 
@@ -436,7 +437,7 @@ class ExtrasWindow(BaseWindow):
         if collection_poster:
             self.setProperty(
                 "more_from_collection.poster",
-                f"https://image.tmdb.org/t/p/w300{collection_poster}",
+                tmdb_image_url(collection_poster, 'w300'),
             )
 
         # Fetch collection details
@@ -468,7 +469,7 @@ class ExtrasWindow(BaseWindow):
 
             poster_path = part.get("poster_path")
             if poster_path:
-                thumb = f"https://image.tmdb.org/t/p/w300{poster_path}"
+                thumb = tmdb_image_url(poster_path, 'w300')
                 li.setArt({"thumb": thumb, "icon": thumb})
                 li.setProperty("thumbnail", thumb)
 
@@ -639,7 +640,7 @@ class ExtrasWindow(BaseWindow):
 
             poster_path = item.get("poster_path")
             if poster_path:
-                thumb = f"https://image.tmdb.org/t/p/w300{poster_path}"
+                thumb = tmdb_image_url(poster_path, 'w300')
                 li.setArt({"thumb": thumb, "icon": thumb})
                 li.setProperty("thumbnail", thumb)
 

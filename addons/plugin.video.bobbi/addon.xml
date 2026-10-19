@@ -1,4 +1,4 @@
-<addon id="plugin.video.bobbi" name="bobbi Cinema · 移植预览" version="0.1.0" provider-name="bobbi TV / Sam-Max and contributors">
+<addon id="plugin.video.bobbi" name="bobbi Cinema · 移植预览" version="0.1.4" provider-name="bobbi TV / Sam-Max and contributors">
   <requires>
     <import addon="script.module.bobbi.core" version="0.1.0" />
     <import addon="script.module.bobbi.mdsub" version="0.1.0" />
@@ -6,6 +6,7 @@
     <import addon="xbmc.python" version="3.00.0" />
     <import addon="script.module.requests" version="2.25.1" />
     <import addon="script.module.routing" version="0.2.3" />
+    <import addon="plugin.video.bobbi.torrent" version="0.1.0" optional="true" />
   <import addon="script.module.bobbi.platform" version="0.1.0" /><import addon="plugin.video.bobbi.library" version="0.1.0" /></requires>
   <extension point="xbmc.python.pluginsource" library="bobbi.py">
     <provides>video</provides>

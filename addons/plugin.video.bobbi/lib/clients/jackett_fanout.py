@@ -1,4 +1,4 @@
-"""Bounded fan-out with explicit outcomes and a killable process I/O boundary."""
+"""Bounded fan-out with explicit outcomes and streamed response ownership."""
 import time
 
 from bobbi_core.search_completion import SearchCompletion, SearchResults
@@ -7,7 +7,8 @@ from lib.clients import jackett_http
 
 
 def _fetch_batch(session, urls, budget=8.0, *, deadline=None, cancelled=None,
-                      mode='rss', max_response_bytes=4 * 1024 * 1024, request_timeout=2.0):
+                      mode='rss', max_response_bytes=4 * 1024 * 1024, request_timeout=2.0,
+                      on_response=None):
     deadline = min(deadline if deadline is not None else float('inf'),
                    time.monotonic() + min(8.0, max(0.0, float(budget))))
     receipt = new_receipt(urls)
@@ -36,6 +37,18 @@ def _fetch_batch(session, urls, budget=8.0, *, deadline=None, cancelled=None,
                 raise ValueError('Invalid HTTP terminal event')
             outcomes[ordinal] = state, response if state == 'succeeded' else None
             observe(receipt, 'terminal', row, state, reason, getattr(response, 'status_code', None))
+            if state == 'succeeded' and on_response is not None and not cancelled() and time.monotonic() < deadline:
+                # Parse a completed sibling while slower requests are still in
+                # flight. Rebinding uses actual ordinals, never arrival order.
+                observe(receipt, 'bind_responses', [item or (None, None) for item in outcomes])
+                index = sum(item is not None and item[1] is not None for item in outcomes[:ordinal])
+                observe(receipt, 'parse_start', index)
+                try:
+                    parsed = on_response(response)
+                except BaseException:
+                    observe(receipt, 'parse_end', index, exception=True)
+                    raise
+                observe(receipt, 'parse_end', index, parsed)
     except jackett_http.HTTPBatchError as error:
         transport_failed = str(error)
     except BaseException:
@@ -69,9 +82,11 @@ def _fetch_batch(session, urls, budget=8.0, *, deadline=None, cancelled=None,
 
 
 def fetch_independent(session, urls, budget=8.0, *, deadline=None, cancelled=None,
-                      mode='rss', max_response_bytes=4 * 1024 * 1024, request_timeout=2.0):
+                      mode='rss', max_response_bytes=4 * 1024 * 1024, request_timeout=2.0,
+                      on_response=None):
     return _fetch_batch(session, urls, budget, deadline=deadline, cancelled=cancelled,
-                        mode=mode, max_response_bytes=max_response_bytes, request_timeout=request_timeout)
+                        mode=mode, max_response_bytes=max_response_bytes, request_timeout=request_timeout,
+                        on_response=on_response)
 
 
 def fetch_inventory(session, url, deadline, cancelled):

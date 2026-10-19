@@ -1,0 +1,63 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "burning",
+    "operation": "picker_wait",
+    "record": {
+      "test": {
+        "title": "Burning",
+        "tmdb_id": 491584,
+        "kind": "movie",
+        "year": 2018
+      },
+      "prior_request": null,
+      "started": 2135281.233864922,
+      "home": {
+        "generation": 6,
+        "intent": 0,
+        "retired_generation": 6,
+        "observed_at": 2135281.982301243
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2135281.983040508,
+      "picker": {
+        "window": 13001,
+        "generation": 13,
+        "intent": 0,
+        "tmdb_id": 491584,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2135293.732848019,
+      "picker_idle": {
+        "passed": true,
+        "seconds": 35.073118407744914,
+        "observations": 64,
+        "picker": {
+          "window": 13001,
+          "generation": 13,
+          "intent": 0,
+          "tmdb_id": 491584,
+          "kind": "movie"
+        },
+        "query_finished": true
+      }
+    },
+    "passed": true,
+    "seconds": 35.073118407744914,
+    "observations": 64,
+    "picker": {
+      "window": 13001,
+      "generation": 13,
+      "intent": 0,
+      "tmdb_id": 491584,
+      "kind": "movie"
+    },
+    "query_finished": true
+  },
+  "diagnostic_present": false,
+  "work": "burning",
+  "operation": "picker_wait"
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="常规设置">
+        <setting id="head_mb" type="slider" label="预读开头大小 (MB)" default="4" range="4,4,256" />
+        <setting id="iso_head_mb" type="slider" label="ISO 预读开头大小 (MB)" default="16" range="4,4,256" />
+        <setting id="tail_mb" type="slider" label="预读末尾大小 (MB) [0=禁用]" default="0" range="0,4,256" />
+        <setting type="lsep" label="触发方式" />
+        <setting id="dialog_preheat" type="bool" label="长按 OK 弹窗预读（弹出上下文菜单时）" default="false" />
+        <setting id="auto_preheat" type="bool" label="自动预读（浏览停留时触发）" default="true" />
+        <setting id="resume_preheat" type="bool" label="续播预读（预读续播位置附近数据）" default="false" />
+        <setting id="debounce_sec" type="slider" label="焦点稳定后等待 (秒, 防抖)" default="0.5" range="0,0.5,5" />
+    </category>
+    <category label="高级设置">
+        <setting id="cooldown" type="slider" label="同一文件冷却时间 (秒)" default="60" range="5,5,600" />
+        <setting id="poll_ms" type="slider" label="焦点轮询间隔 (毫秒)" default="200" range="10,10,2000" />
+        <setting id="max_workers" type="slider" label="最大并发预读数" default="1" range="1,1,4" />
+        <setting type="lsep" label="路径过滤" />
+        <setting id="auto_detect_btn" type="action" label="自动检测 CD2 挂载路径" action="RunScript(service.cd2_preheat, auto_detect)" />
+        <setting id="path_prefix" type="text" label="CD2 挂载路径前缀 (逗号分隔多个)" default="" />
+        <setting id="debug_log" type="bool" label="开启调试日志" default="false" />
+    </category>
+</settings>

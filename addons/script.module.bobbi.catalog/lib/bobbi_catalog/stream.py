@@ -5,10 +5,17 @@ from urllib.parse import urlsplit
 from uuid import uuid4
 
 
-def resolve(locator, guid, title, size, media):
+def resolve(locator, guid, title, size, media, account=None):
     from bobbi_platform.runtime import call
+    from bobbi_platform.account_manager import validate_snapshot
     from bobbi_catalog.api import ShareError
-    body = dict(request_id=uuid4().hex, locator=locator, guid=guid, title=title, size=size, media=media)
+    try:
+        account = validate_snapshot(account if account is not None else call('account_status', {}),
+                                    authenticated=True)
+    except (ValueError, OSError, RuntimeError):
+        raise ShareError('login_required') from None
+    body = dict(request_id=uuid4().hex, locator=locator, guid=guid, title=title, size=size, media=media,
+                account=account)
     deadline = time.monotonic() + 2
     while time.monotonic() < deadline:
         try:

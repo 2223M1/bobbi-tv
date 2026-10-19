@@ -9,5 +9,12 @@ local.properties
 *.keystore
 *.jks
 *.pem
+# Public upstream CA bundle, pinned by release/kodi-vendors.json.
+# This is not a device/signing private key; keep every other PEM ignored.
+!third_party/addons/script.module.certifi/lib/certifi/cacert.pem
 .private/
 staging/
+# Local runtime/account state is never part of a source handoff.
+/profile/
+/profiles/
+/userdata/

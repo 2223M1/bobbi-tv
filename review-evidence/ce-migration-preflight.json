@@ -1,0 +1,348 @@
+{
+  "mode": "readonly",
+  "services": {
+    "kodi": {
+      "ActiveState": "active",
+      "MainPID": "24281",
+      "UnitFileState": "disabled"
+    },
+    "bobitv-preparation.service": {
+      "ActiveState": "active",
+      "MainPID": "21525",
+      "UnitFileState": "enabled"
+    }
+  },
+  "profiles": {
+    "plugin.video.jacktook": [
+      "bobi-direct.json",
+      "bobi-library.json",
+      "bobi-prepared.json",
+      "bobi-prepared.json.generation",
+      "database.pickle",
+      "database.pickle.lock",
+      "playback-control.sock.lock",
+      "plugin.video.jacktook.cached.sqlite",
+      "plugin.video.jacktook.cached.sqlite-shm",
+      "plugin.video.jacktook.cached.sqlite-wal",
+      "settings.xml"
+    ],
+    "script.am6b.opensubtitles": [
+      "manual-source.lock",
+      "provider.sqlite3"
+    ],
+    "script.module.am6b.qqdocs": [
+      "cache.sqlite3",
+      "last-resolution.json"
+    ],
+    "skin.am6b.cinema": [
+      "settings.xml",
+      "skin_record.xml"
+    ]
+  },
+  "addons": {
+    "plugin.video.jacktook": {
+      "version": "1.20.0+am6b.317",
+      "xml_sha256": "cf36aa60bb8cbb4f37a4c491ce95bd36e1f5fb3847f1ea550593ee4bf120ff3b"
+    },
+    "plugin.video.jacktorr": {
+      "version": "1.2.2+am6b.317",
+      "xml_sha256": "c0f32eb3923e078ffa0899c1b25fd24a52b50120d75e02c699c2f435057f4c91"
+    },
+    "resource.uisounds.am6b-modern": {
+      "version": "2026.9.6.0",
+      "xml_sha256": "4c719ec44da9b86b7ea668fc17b886a8ef227356c6da6d134da5ddd46d111a38"
+    },
+    "script.am6b.opensubtitles": {
+      "version": "1.0.0",
+      "xml_sha256": "aac4a1239dd9c0915b891c3f72c824d90f44babf9f1db676230c7bacda1ef0e7"
+    },
+    "script.module.am6b.core": {
+      "version": "1.1.15",
+      "xml_sha256": "2acb141d74d342a1b2a34197665de343038646f48bad3ea12447b4a4cb7b0aea"
+    },
+    "script.module.am6b.mdsub": {
+      "version": "1.0.0",
+      "xml_sha256": "ae24c12293682f462d9a07b5fd7a75371cd106025c61a884c83f5787b40dec94"
+    },
+    "script.module.am6b.qqdocs": {
+      "version": "1.1.2",
+      "xml_sha256": "d84a3547b89666dfaab128f486f1b426ed2570966b16ea652d4a42f4243862bd"
+    },
+    "skin.am6b.cinema": {
+      "version": "10.1.0",
+      "xml_sha256": "1a536ff6d5df05000234ae52a4914e9451183b77f059f76cfcd6b545a95dfff1"
+    }
+  },
+  "preparation": {
+    "keys": [
+      "account",
+      "cd2_endpoint",
+      "cd2_login_file",
+      "cd2_token_file",
+      "core_directory",
+      "destination",
+      "download_capability",
+      "ffprobe",
+      "font_native_directory",
+      "font_tool",
+      "jackett_api_key_file",
+      "jackett_endpoint",
+      "jacktorr_directory",
+      "plugin_directory",
+      "python_library_directory",
+      "snapshot_path",
+      "state_directory",
+      "tmdb_api_key_file",
+      "tmdb_proxy",
+      "torrserver_endpoint"
+    ],
+    "cd2_endpoint": "http://127.0.0.1:19798",
+    "cd2_token_file": "/storage/.local/share/bobitv/preparation-private/cd2-token",
+    "cd2_login_file": "/storage/.local/share/bobitv/preparation-private/cd2-login.json",
+    "destination": "/115open/云下载",
+    "ffprobe": "/storage/.local/share/bobitv/preparation-runtime/r3-20260922/ffprobe",
+    "font_tool": "/storage/.local/share/bobitv/preparation-runtime/r3-20260922/font-tools/7zzs",
+    "font_native_directory": "/storage/.kodi/media/Fonts",
+    "download_capability": "GetDownloadUrlPath",
+    "torrserver_endpoint": "http://127.0.0.1:8090",
+    "snapshot_path": "/storage/.kodi/userdata/addon_data/plugin.video.jacktook/bobi-prepared.json",
+    "tmdb_api_key_file": "/storage/.local/share/bobitv/preparation-private/tmdb-key",
+    "state_directory": "/storage/.local/share/bobitv/preparation",
+    "python_library_directory": "/storage/.local/share/bobitv/preparation-runtime/r3-20260922/python-lib",
+    "tables": [
+      "audit",
+      "dependencies",
+      "font_bindings",
+      "font_leases",
+      "font_native_links",
+      "font_objects",
+      "font_sources",
+      "leases",
+      "media_profile_refresh",
+      "next_discovery_jobs",
+      "preparation_intents",
+      "preparation_targets",
+      "prepared_bindings",
+      "prepared_playback_protection",
+      "resources",
+      "sessions",
+      "settings",
+      "sqlite_sequence",
+      "subtitle_current",
+      "subtitle_font_preparation",
+      "subtitle_objects",
+      "subtitle_preparation",
+      "subtitle_revisions",
+      "tasks"
+    ],
+    "schema_version": 2,
+    "foreign_key_errors": 0,
+    "ledger_counts": {
+      "tasks": 41,
+      "prepared_bindings": 58,
+      "resources": 58,
+      "font_objects": 38,
+      "subtitle_current": 14,
+      "preparation_intents": 145
+    },
+    "states": {
+      "tasks": {
+        "downloading": 1,
+        "mapping": 1,
+        "ready": 39
+      },
+      "preparation_intents": {
+        "accepted": 99,
+        "failed": 46
+      }
+    },
+    "direct_states": {
+      "ready": 3
+    },
+    "state_children": [
+      {
+        "name": "resources.sqlite.pre-playback-protection-v1-ac521de5c8824c3086b1db6dca8bd9dd",
+        "directory": false,
+        "bytes": 188416
+      },
+      {
+        "name": "resources.sqlite.pre-next-discovery-v1-2f3c7f78a48c4fb9b4bf87d8b8bcb15f",
+        "directory": false,
+        "bytes": 143360
+      },
+      {
+        "name": "resources.sqlite-wal",
+        "directory": false,
+        "bytes": 4132392
+      },
+      {
+        "name": "resources.sqlite.pre-extension-3bf505f5987e4004b63f56d91be38c50",
+        "directory": false,
+        "bytes": 221184
+      },
+      {
+        "name": "subtitles",
+        "directory": true,
+        "bytes": null
+      },
+      {
+        "name": "font-work",
+        "directory": true,
+        "bytes": null
+      },
+      {
+        "name": "startup-failure-69c6260cf6434a7da30e945bdca62bf9.json",
+        "directory": false,
+        "bytes": 0
+      },
+      {
+        "name": "resources.sqlite",
+        "directory": false,
+        "bytes": 7069696
+      },
+      {
+        "name": "fonts",
+        "directory": true,
+        "bytes": null
+      },
+      {
+        "name": "resources.sqlite.pre-subtitle-fonts-v1-89788491b85140a59fcf9881b3b13aa5",
+        "directory": false,
+        "bytes": 335872
+      },
+      {
+        "name": "resources.sqlite.pre-extension-2b6607267ae54a18a6d2f27dde2374cf",
+        "directory": false,
+        "bytes": 479232
+      },
+      {
+        "name": "direct.sqlite3-wal",
+        "directory": false,
+        "bytes": 0
+      },
+      {
+        "name": "torrent-file-metadata",
+        "directory": true,
+        "bytes": null
+      },
+      {
+        "name": "resources.sqlite-shm",
+        "directory": false,
+        "bytes": 32768
+      },
+      {
+        "name": "direct.sqlite3",
+        "directory": false,
+        "bytes": 20480
+      },
+      {
+        "name": "service.lock",
+        "directory": false,
+        "bytes": 0
+      },
+      {
+        "name": "resources.sqlite.pre-extension-25083a7a71ed42d49741a2cc842361f7",
+        "directory": false,
+        "bytes": 241664
+      },
+      {
+        "name": "direct.sqlite3-shm",
+        "directory": false,
+        "bytes": 32768
+      },
+      {
+        "name": "resources.sqlite.pre-extension-32ae6ca1b8c94dd59bb82db0f5c43338",
+        "directory": false,
+        "bytes": 376832
+      },
+      {
+        "name": "prepare.sock",
+        "directory": false,
+        "bytes": null
+      }
+    ],
+    "cd2_uid_available": true,
+    "legacy_scope_matches": true,
+    "cd2_runtime": {
+      "product": "CloudDrive2(CoreELEC)",
+      "version": "1.0.19 Build 26-09-20 15:04:40"
+    },
+    "sessions": [
+      {
+        "profile": "am6b-qqdocs-private",
+        "file": "115-os_linux.json",
+        "uid_matches_cd2": true,
+        "app": "os_linux"
+      }
+    ]
+  },
+  "addon_database": {
+    "name": "Addons33.db",
+    "installed_columns": [
+      [
+        0,
+        "id",
+        "INTEGER",
+        0,
+        null,
+        1
+      ],
+      [
+        1,
+        "addonID",
+        "TEXT",
+        0,
+        null,
+        0
+      ],
+      [
+        2,
+        "enabled",
+        "BOOLEAN",
+        0,
+        null,
+        0
+      ],
+      [
+        3,
+        "installDate",
+        "TEXT",
+        0,
+        null,
+        0
+      ],
+      [
+        4,
+        "lastUpdated",
+        "TEXT",
+        0,
+        null,
+        0
+      ],
+      [
+        5,
+        "lastUsed",
+        "TEXT",
+        0,
+        null,
+        0
+      ],
+      [
+        6,
+        "origin",
+        "TEXT",
+        1,
+        "''",
+        0
+      ],
+      [
+        7,
+        "disabledReason",
+        "INTEGER",
+        1,
+        "0",
+        0
+      ]
+    ]
+  }
+}

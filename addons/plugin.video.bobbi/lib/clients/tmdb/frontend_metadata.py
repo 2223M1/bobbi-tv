@@ -141,17 +141,17 @@ def _root():
 
 @contextmanager
 def _lock(name):
-    import fcntl
-    with (_root() / (name + '.lock')).open('a+b') as stream:
-        try:
-            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            yield False
-            return
-        try:
-            yield True
-        finally:
-            fcntl.flock(stream, fcntl.LOCK_UN)
+    from bobbi_platform.instance_lock import InstanceLock
+    lease = InstanceLock(_root() / (name + '.lock'))
+    try:
+        lease.acquire()
+    except (BlockingIOError, PermissionError):
+        yield False
+        return
+    try:
+        yield True
+    finally:
+        lease.close()
 
 
 def _valid_key(key):
@@ -218,15 +218,13 @@ def _fetch(key):
 
     parts = key.split(':')
     path = '/' + '/'.join(parts)
-    try:
-        result = Client(obj_cached=False)._request_obj(path, params=urlencode(dict(language='zh-CN', append_to_response='translations')), call_cached=False, add_lang=False)
-        result = result.to_dict() if hasattr(result, 'to_dict') else result
-        if not isinstance(result, dict) or (len(parts) == 2 and result.get('id') != int(parts[1])) or (len(parts) == 4 and result.get('season_number') != int(parts[3])):
-            raise ValueError('METADATA_IDENTITY')
-        return result
-    finally:
-        if Client._session is not None:
-            Client._session.close()
+    # The stateless metadata transport owns/closes each HTTP connection in
+    # fetch(). A TMDb subclass does not own a requests.Session to close here.
+    result = Client(obj_cached=False)._request_obj(path, params=urlencode(dict(language='zh-CN', append_to_response='translations')), call_cached=False, add_lang=False)
+    result = result.to_dict() if hasattr(result, 'to_dict') else result
+    if not isinstance(result, dict) or (len(parts) == 2 and result.get('id') != int(parts[1])) or (len(parts) == 4 and result.get('season_number') != int(parts[3])):
+        raise ValueError('METADATA_IDENTITY')
+    return result
 
 
 def hydrate(_params=None):

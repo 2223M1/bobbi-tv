@@ -1,0 +1,41 @@
+{
+  "receipt_exists": false,
+  "units": {
+    "kodi.service": {
+      "ActiveState": "active",
+      "MainPID": "7888",
+      "UnitFileState": "disabled"
+    },
+    "bobitv-preparation.service": {
+      "ActiveState": "inactive",
+      "MainPID": "0",
+      "UnitFileState": "disabled"
+    }
+  },
+  "new_profiles": {
+    "plugin.video.bobbi": true,
+    "script.module.bobbi.platform": true,
+    "skin.bobbi.cinema": true
+  },
+  "profile_sentinels_checked": [
+    "plugin.video.bobbi.torrent/backend.json",
+    "plugin.video.bobbi/assrt-token",
+    "plugin.video.bobbi/bobi-library.json",
+    "plugin.video.bobbi/database.pickle",
+    "plugin.video.bobbi/runtime-paths.json",
+    "plugin.video.bobbi/settings.xml",
+    "script.module.bobbi.platform/115-os_linux.json",
+    "script.module.bobbi.platform/preparation.json",
+    "skin.bobbi.cinema/settings.xml",
+    "skin.bobbi.cinema/skin_record.xml"
+  ],
+  "pending_program_journal": false,
+  "native_pids_count": 1,
+  "native_proc_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b",
+  "native_expected": true,
+  "pin_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b",
+  "masks": {
+    "kodi.service": false,
+    "bobitv-preparation.service": false
+  }
+}

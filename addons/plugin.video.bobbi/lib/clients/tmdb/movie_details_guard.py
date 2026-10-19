@@ -72,17 +72,17 @@ def get(params, identifier, legacy_identifier, cache, fetch, expires,
         # Kodi invocations have separate interpreters. File leases are striped
         # and non-destructive, matching the existing TV-detail coordination.
         if lock_root is not None:
-            import fcntl
+            from bobbi_platform.instance_lock import InstanceLock
             directory = Path(lock_root)
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             stripe = str(int(digest[:8], 16) % len(_locks))
-            lease = os.open(str(directory / stripe), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+            lease = InstanceLock(directory / stripe)
             until = monotonic() + 24
             while True:
                 try:
-                    fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    lease.acquire()
                     break
-                except BlockingIOError:
+                except (BlockingIOError, PermissionError):
                     if old is not None or monotonic() >= until:
                         report('REFRESH_IN_FLIGHT' if old is not None else 'COALESCED_REQUEST_TIMEOUT')
                         return old
@@ -124,6 +124,6 @@ def get(params, identifier, legacy_identifier, cache, fetch, expires,
     finally:
         try:
             if lease is not None:
-                os.close(lease)
+                lease.close()
         finally:
             lock.release()

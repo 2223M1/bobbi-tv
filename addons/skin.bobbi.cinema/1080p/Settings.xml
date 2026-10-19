@@ -41,8 +41,8 @@
         </item>
         <item>
           <label>找中文字幕</label><label2>播放中手动查找 · OpenSubtitles · 下载后确认加载</label2><icon>bobi/icons/film.png</icon>
-          <onclick>RunScript(script.bobbi.subtitles)</onclick>
-          <visible>System.HasAddon(script.bobbi.subtitles)</visible>
+          <onclick>RunScript(script.bobbi.opensubtitles)</onclick>
+          <visible>System.HasAddon(script.bobbi.opensubtitles)</visible>
         </item>
         <item>
           <label>媒体</label><label2>媒体库、视频源与刮削</label2><icon>bobi/icons/film.png</icon>

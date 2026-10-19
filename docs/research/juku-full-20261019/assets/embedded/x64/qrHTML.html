@@ -1,0 +1,2620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网盘登录授权 - 巨库</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/logo-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.cn">
+    <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin>
+    <link href="https://fonts.googleapis.cn/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.cn/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/static/kodi-remote.css">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-hover: #4F46E5;
+            --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #311042 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --input-focus: #6366F1;
+
+            --color-pending: #38bdf8;
+            --color-scanned: #fb923c;
+            --color-confirmed: #4ade80;
+            --color-expired: #f87171;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: #0c0f1d;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px 8px 100px;
+            position: relative;
+        }
+
+        /* Decorative Background Wrapper */
+        .bg-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Decorative Background Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: 1;
+            animation: drift 20s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: #818cf8;
+            top: -10%;
+            left: -10%;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: #db2777;
+            bottom: -10%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 30px) scale(1.1); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            background: linear-gradient(to right, #FFFFFF, #E2E8F0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* 10 大网盘横向滚动卡片样式 (紧凑型) */
+        .pan-cards-wrapper {
+            margin: 0 0 14px 0;
+            width: 100%;
+        }
+        .pan-cards-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 0 4px;
+        }
+        .pan-cards-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #F8FAFC;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .pan-cards-tip {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        .pan-grid-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 2px 2px 8px 2px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .pan-grid-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .pan-card-item {
+            flex: 0 0 76px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .pan-card-item:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .pan-card-item.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(79, 70, 229, 0.15) 100%);
+            border-color: #6366F1;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+        }
+        .pan-card-item.dragging {
+            opacity: 0.45;
+            transform: scale(0.92);
+            border-style: dashed;
+            border-color: var(--primary, #6366F1);
+        }
+        .pan-card-item.drag-over {
+            border-color: #818CF8;
+            transform: scale(1.06);
+            box-shadow: 0 0 12px rgba(129, 140, 248, 0.5);
+        }
+        .pan-card-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #A5B4FC;
+            transition: transform 0.2s ease;
+        }
+        .pan-card-item.active .pan-card-icon {
+            background: rgba(99, 102, 241, 0.25);
+            color: #818CF8;
+            transform: scale(1.06);
+        }
+        .pan-card-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: #F1F5F9;
+            margin-bottom: 3px;
+            white-space: nowrap;
+        }
+        .pan-card-status {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .pan-card-status.bound {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34D399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .pan-card-status.unbound {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94A3B8;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        /* 个人网盘文件树浏览器样式 */
+        .pan-browser-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 18px 12px;
+            margin: 0;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            width: 100%;
+        }
+        .pan-browser-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
+        }
+        .pan-browser-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #F8FAFC;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pan-browser-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pan-action-icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94A3B8;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        .pan-action-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .pan-logout-btn {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #F87171;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .pan-logout-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+        .pan-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0 4px 12px 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+        }
+        .pan-breadcrumb::-webkit-scrollbar { display: none; }
+        .pan-crumb-item {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .pan-crumb-item:hover { color: #818CF8; }
+        .pan-crumb-item.active { color: #F1F5F9; font-weight: 700; cursor: default; }
+        .pan-crumb-sep { color: rgba(255, 255, 255, 0.2); }
+
+        .pan-user-file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 2px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        .pan-user-file-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .pan-user-file-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+        }
+        .pan-user-file-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .pan-user-file-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.32);
+        }
+
+        /* 个人网盘文件搜索栏样式 */
+        .pan-search-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .pan-search-input-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0 10px;
+            height: 38px;
+            transition: all 0.2s ease;
+        }
+        .pan-search-input-wrap:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.85);
+        }
+        .pan-search-icon {
+            color: var(--text-muted);
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .pan-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #F1F5F9;
+            font-size: 13px;
+            min-width: 0;
+        }
+        .pan-search-input::placeholder {
+            color: #64748B;
+        }
+        .pan-search-clear-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: var(--text-muted);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.2s ease;
+            margin-left: 6px;
+            flex-shrink: 0;
+        }
+        .pan-search-clear-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFF;
+        }
+        .pan-search-btn {
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+            border: none;
+            color: #FFF;
+            padding: 0 14px;
+            height: 38px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .pan-search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
+        }
+        .pan-search-btn:active {
+            transform: translateY(0);
+        }
+        .pan-search-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #A5B4FC;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .pan-search-tag-close {
+            cursor: pointer;
+            color: #CBD5E1;
+            font-size: 13px;
+            line-height: 1;
+            margin-left: 4px;
+        }
+        .pan-search-tag-close:hover {
+            color: #FFF;
+        }
+
+        /* 电脑端网盘页宽屏自适应与体验升级 (移动端保持原样) */
+        @media (min-width: 768px) {
+            body {
+                padding: 30px 24px 80px;
+            }
+            .container {
+                max-width: 1280px;
+                width: 95vw;
+            }
+            .pan-cards-wrapper {
+                margin: 0 0 20px 0;
+            }
+            .pan-cards-header {
+                margin-bottom: 12px;
+                padding: 0 4px;
+            }
+            .pan-cards-title {
+                font-size: 15px;
+                gap: 8px;
+            }
+            .pan-grid-scroll {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 12px;
+                overflow-x: visible;
+                padding: 4px 2px 14px 2px;
+            }
+            .pan-card-item {
+                flex: initial;
+                width: 100%;
+                padding: 14px 8px;
+                border-radius: 16px;
+            }
+            .pan-card-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            }
+            .pan-card-icon {
+                width: 32px;
+                height: 32px;
+                margin-bottom: 6px;
+                border-radius: 10px;
+            }
+            .pan-card-name {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+            .pan-card-status {
+                font-size: 10px;
+                padding: 2px 8px;
+                border-radius: 8px;
+            }
+            .card#pan-login-panel {
+                max-width: 680px;
+                margin: 0 auto 30px auto;
+                padding: 30px 36px;
+            }
+            .pan-browser-card {
+                padding: 24px 24px;
+                border-radius: 20px;
+                margin: 0 0 30px 0;
+            }
+            .pan-browser-header {
+                padding-bottom: 16px;
+                margin-bottom: 16px;
+            }
+            .pan-browser-name {
+                font-size: 17px;
+            }
+            .pan-breadcrumb {
+                font-size: 13px;
+                padding: 0 4px 16px 4px;
+            }
+            .pan-user-file-list {
+                max-height: calc(100vh - 280px);
+                min-height: 480px;
+            }
+            .pan-user-file-item {
+                padding: 14px 18px;
+                border-radius: 14px;
+            }
+            .pan-user-file-item.clickable:hover {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(99, 102, 241, 0.35);
+                transform: translateX(4px);
+            }
+            .pan-user-file-name {
+                font-size: 14px;
+            }
+        }
+        .pan-user-file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            transition: all 0.2s ease;
+        }
+        .pan-user-file-item.clickable {
+            cursor: pointer;
+        }
+        .pan-user-file-item.clickable:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(99, 102, 241, 0.25);
+            transform: translateX(2px);
+        }
+        .pan-user-file-item.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .pan-user-file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+        .pan-user-file-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .pan-user-file-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #E2E8F0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pan-user-file-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            flex-shrink: 0;
+            padding-left: 10px;
+        }
+
+        /* Tabs Control Style */
+        .tab-container {
+            display: flex;
+            margin: 0 0 20px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 0;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        /* QR Wrapper */
+        .qr-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            background: #fff;
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .qr-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .qr-image.loading {
+            opacity: 0.1;
+        }
+
+        .qr-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            border-radius: 16px;
+        }
+
+        .qr-overlay.active {
+            opacity: 1;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(15, 23, 42, 0.1);
+            border-top: 3px solid #1e1b4b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 8px;
+        }
+
+        .spinner-large {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .overlay-text {
+            color: #1e293b;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* 115 扫码端类型横向滚动胶囊选择器 */
+        .pan115-types-wrapper {
+            margin: 0 0 16px 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 10px 10px 8px;
+            box-sizing: border-box;
+        }
+        .pan115-types-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 0 2px;
+        }
+        .pan115-types-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #F8FAFC;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .pan115-types-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 2px 2px 6px 2px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .pan115-types-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .pan115-type-chip {
+            flex: 0 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 5px 9px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .pan115-type-chip:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+            color: #F1F5F9;
+        }
+        .pan115-type-chip.active {
+            background: rgba(99, 102, 241, 0.22);
+            border-color: var(--primary);
+            color: #818cf8;
+            font-weight: 700;
+        }
+        .pan115-type-chip .recommend-badge {
+            background: rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            color: #4ade80;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 4px;
+            line-height: 1.2;
+        }
+        .pan115-type-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            padding: 0 2px;
+            line-height: 1.4;
+        }
+
+        /* 115 云下载保存目录配置条样式 */
+        .pan115-savedir-bar {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 9px 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+        .pan115-savedir-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            flex: 1;
+        }
+        .pan115-savedir-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .pan115-savedir-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .pan115-savedir-text {
+            font-size: 12px;
+            font-weight: 700;
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.15);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 140px;
+        }
+        .pan115-savedir-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .pan115-savedir-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .pan115-savedir-btn:hover {
+            background: rgba(99, 102, 241, 0.25);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #fff;
+        }
+        .pan115-savedir-btn.reset {
+            color: var(--text-muted);
+        }
+        .pan115-savedir-btn.reset:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+        }
+
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .status-badge.pending { color: var(--color-pending); background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.15); }
+        .status-badge.pending .status-dot, .status-badge.pending .status-dot::after { background-color: var(--color-pending); }
+        .status-badge.scanned { color: var(--color-scanned); background: rgba(251, 146, 60, 0.08); border-color: rgba(251, 146, 60, 0.15); }
+        .status-badge.scanned .status-dot, .status-badge.scanned .status-dot::after { background-color: var(--color-scanned); }
+        .status-badge.confirmed { color: var(--color-confirmed); background: rgba(74, 222, 128, 0.08); border-color: rgba(74, 222, 128, 0.15); }
+        .status-badge.confirmed .status-dot, .status-badge.confirmed .status-dot::after { background-color: var(--color-confirmed); }
+        .status-badge.expired { color: var(--color-expired); background: rgba(248, 113, 113, 0.08); border-color: rgba(248, 113, 113, 0.15); }
+        .status-badge.expired .status-dot, .status-badge.expired .status-dot::after { background-color: var(--color-expired); }
+
+        /* Forms Style */
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #E2E8F0;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 9px;
+            color: var(--text-muted);
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        select {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: var(--input-focus);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: var(--input-focus);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .tip-box {
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px dashed rgba(99, 102, 241, 0.15);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .tip-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #818CF8;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tip-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn:active { transform: translateY(1px); }
+        .btn:disabled { background: #334155; color: #64748B; box-shadow: none; cursor: not-allowed; }
+
+        .btn-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        .status-message {
+            margin-top: 14px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.2); color: #34D399; }
+        .status-error { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.2); color: #F87171; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toast Message */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #F8FAFC;
+            padding: 10px 18px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .toast.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Bottom Nav Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: calc(20px + env(safe-area-inset-bottom));
+            left: 20px;
+            right: 20px;
+            width: auto;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        @media (min-width: 400px) {
+            .nav-bar {
+                left: calc(50% - 190px);
+                right: auto;
+                width: 380px;
+            }
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            gap: 4px;
+            transition: all 0.3s ease;
+            width: 55px;
+            margin: 0;
+            padding: 4px 0;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            color: #6366F1;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            transition: stroke 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            stroke: #6366F1;
+            filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.6));
+        }
+
+        @media (max-height: 480px) {
+            .nav-bar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+        <!-- 顶部 10 大网盘横向滚动卡片 -->
+        <div class="pan-cards-wrapper">
+            <div class="pan-cards-header">
+                <div class="pan-cards-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#818cf8;"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+                    <span>我的云盘账户</span>
+                    <span style="font-size:11px;color:var(--text-muted);font-weight:500;margin-left:6px;opacity:0.85;">(💡长按拖动调整顺序)</span>
+                </div>
+            </div>
+            <div class="pan-grid-scroll" id="pan-cards-scroll">
+                <!-- 10 大网盘卡片由 JS 动态渲染 -->
+            </div>
+        </div>
+
+        <!-- 下半部分 1: 未登录面板 (登录与授权) -->
+        <div class="card" id="pan-login-panel" style="display: none;">
+            <div class="header">
+                <h1 id="pan-login-title">网盘登录授权</h1>
+                <p class="subtitle">选择扫码登录或手工输入凭证导入授权</p>
+            </div>
+
+            <!-- Tabs 控制 -->
+            <div class="tab-container">
+                <button class="tab-btn active" id="btn-tab-manual" onclick="switchPanLoginTab('manual')">手工凭证</button>
+                <button class="tab-btn" id="btn-tab-qr" onclick="switchPanLoginTab('qr')">扫码登录</button>
+            </div>
+
+            <!-- 扫码区块 -->
+            <div id="qr-section" style="display: none;">
+                <div class="form-group" style="margin-bottom: 20px; display: none;">
+                    <label for="qrProviderSelect">选择扫码网盘</label>
+                    <div class="select-wrapper">
+                        <select id="qrProviderSelect" onchange="onQrProviderChange()">
+                            <option value="CHINA_TELECOM">天翼云盘</option>
+                            <option value="QUARK">夸克网盘</option>
+                            <option value="ALIYUN">阿里云盘</option>
+                            <option value="UC">UC网盘</option>
+                            <option value="BAIDU">百度网盘</option>
+                            <option value="XUNLEI">迅雷网盘</option>
+                            <option value="CLOUD123">123云盘</option>
+                            <option value="CLOUD115">115网盘</option>
+                            <option value="CHINA_MOBILE">移动云盘</option>
+                            <option value="GUANGYA">光鸭云盘</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="qr-wrapper">
+                    <img id="qr-img" class="qr-image loading" src="" alt="二维码加载中">
+                    <div id="qr-overlay" class="qr-overlay">
+                        <div class="spinner"></div>
+                        <div id="overlay-msg" class="overlay-text">加载中...</div>
+                    </div>
+                </div>
+
+                <div style="text-align:center;">
+                    <div id="status-badge" class="status-badge pending">
+                        <div class="status-dot"></div>
+                        <span id="status-text">初始化中...</span>
+                    </div>
+                </div>
+
+                <!-- 115 专属扫码端类型选择器 -->
+                <div id="pan115-types-container" class="pan115-types-wrapper" style="display: none;">
+                    <div class="pan115-types-header">
+                        <span class="pan115-types-title">📱 扫码端类型 (选择不同端避免被互踢下线)</span>
+                    </div>
+                    <div id="pan115-types-chips" class="pan115-types-scroll">
+                        <!-- 动态渲染 7 个端类型 -->
+                    </div>
+                    <div id="pan115-type-desc" class="pan115-type-desc"></div>
+                </div>
+
+                <!-- 115 专属云下载保存目录配置栏 (未登录时) -->
+                <div id="pan115-savedir-login-bar" class="pan115-savedir-bar" style="display: none;">
+                    <div class="pan115-savedir-info">
+                        <span class="pan115-savedir-icon">📥</span>
+                        <span class="pan115-savedir-label">云下载保存目录:</span>
+                        <span id="pan115-savedir-login-text" class="pan115-savedir-text">云下载</span>
+                    </div>
+                    <div class="pan115-savedir-actions">
+                        <button type="button" class="pan115-savedir-btn" onclick="open115SaveDirModal()">修改目录</button>
+                        <button type="button" class="pan115-savedir-btn reset" onclick="reset115SaveDir()">恢复默认</button>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <div class="tip-title">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12 Happily"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        <span>扫码说明</span>
+                    </div>
+                    <div id="tips-text" class="tip-desc">
+                        正在请求授权二维码，请稍候...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 手工录入区块 -->
+            <div id="manual-section">
+                <form id="loginForm" onsubmit="handleManualLoginSubmit(event)">
+                    <div class="form-group" style="display: none;">
+                        <label for="providerSelect">选择网盘</label>
+                        <div class="select-wrapper">
+                            <select id="providerSelect" onchange="onManualProviderChange()">
+                                <option value="ali">阿里云盘</option>
+                                <option value="qk">夸克网盘</option>
+                                <option value="uc">UC网盘</option>
+                                <option value="bd">百度网盘</option>
+                                <option value="xl">迅雷网盘</option>
+                                <option value="123">123云盘</option>
+                                <option value="115">115网盘</option>
+                                <option value="yd">移动云盘</option>
+                                <option value="ty">天翼云盘</option>
+                                <option value="gy">光鸭云盘</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="inputLabel" for="credentialInput">凭证数据</label>
+                        <textarea id="credentialInput" placeholder="请在此处粘贴您的凭证数据..." required></textarea>
+                    </div>
+
+                    <div class="tip-box">
+                        <div class="tip-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <span>获取说明</span>
+                        </div>
+                        <div id="tipDesc" class="tip-desc">
+                            请在浏览器中打开网盘，登录后通过开发者工具（F12）获取相应凭证并复制到输入框中。
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" id="submitBtn">
+                        <div class="btn-spinner" id="btnSpinner"></div>
+                        <span id="btnText">确认提交</span>
+                    </button>
+                </form>
+
+                <div class="status-message" id="statusMsg"></div>
+            </div>
+        </div>
+
+        <!-- 下半部分 2: 已登录面板 (网盘文件树浏览器) -->
+        <div class="pan-browser-card" id="pan-file-browser" style="display: none;">
+            <div class="pan-browser-header">
+                <div class="pan-browser-name" id="pan-browser-title-text">
+                    <span>📁 阿里云盘</span>
+                </div>
+                <div class="pan-browser-actions">
+                    <button class="pan-action-icon-btn" onclick="refreshCurrentPanFiles()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        <span>刷新</span>
+                    </button>
+                    <button class="pan-logout-btn" onclick="logoutCurrentPan()">退出登录</button>
+                </div>
+            </div>
+
+            <!-- 115 专属云下载保存目录配置栏 (已登录时) -->
+            <div id="pan115-savedir-bar" class="pan115-savedir-bar" style="display: none;">
+                <div class="pan115-savedir-info">
+                    <span class="pan115-savedir-icon">📥</span>
+                    <span class="pan115-savedir-label">云下载保存目录:</span>
+                    <span id="pan115-savedir-text" class="pan115-savedir-text">云下载</span>
+                </div>
+                <div class="pan115-savedir-actions">
+                    <button type="button" class="pan115-savedir-btn" onclick="open115SaveDirModal()">修改目录</button>
+                    <button type="button" class="pan115-savedir-btn reset" onclick="reset115SaveDir()">恢复默认</button>
+                </div>
+            </div>
+
+            <!-- 搜索工具栏 -->
+            <div class="pan-search-bar" id="pan-search-bar">
+                <div class="pan-search-input-wrap">
+                    <svg class="pan-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="pan-search-input" class="pan-search-input" placeholder="在当前网盘搜索媒体文件..." oninput="handlePanSearchInput()" onkeydown="handlePanSearchKeydown(event)" />
+                    <button type="button" id="pan-search-clear-btn" class="pan-search-clear-btn" onclick="clearPanSearch()" style="display: none;" title="清空搜索">✕</button>
+                </div>
+                <button type="button" class="pan-search-btn" id="pan-search-btn" onclick="executePanSearch()">
+                    <span>搜索</span>
+                </button>
+            </div>
+
+            <!-- 面包屑导航 -->
+            <div class="pan-breadcrumb" id="pan-file-breadcrumb">
+                <!-- 面包屑路径条目 -->
+            </div>
+
+            <!-- 文件列表 -->
+            <div class="pan-user-file-list" id="pan-user-file-list">
+                <!-- 文件树动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 115 云下载保存目录设置弹窗 -->
+    <div id="pan115SaveDirModal" class="modal-backdrop" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2500; align-items: center; justify-content: center;">
+        <div class="modal-box" style="background: #181d30; border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; width: 90%; max-width: 380px; padding: 22px; box-sizing: border-box; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
+            <div style="font-size: 16px; font-weight: 700; color: #f8fafc; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                <span>📥</span><span>设置 115 云下载保存目录</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+                离线下载提交时将自动保存至该目录。若网盘中不存在该目录，将自动创建。支持单级（如 <code style="color:#818cf8;">云下载</code>）或多级路径（如 <code style="color:#818cf8;">影视/下载</code>）。留空则恢复默认。
+            </div>
+            <div style="margin-bottom: 18px;">
+                <input id="pan115SaveDirInput" type="text" placeholder="默认: 云下载" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 14px; outline: none;">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="close115SaveDirModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #cbd5e1; border-radius: 10px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;">取消</button>
+                <button type="button" onclick="save115SaveDirFromModal()" style="background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); border: none; color: #fff; border-radius: 10px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(99,102,241,0.35);">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="nav-bar">
+        <a href="/" class="nav-item" id="nav-home">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>推荐</span>
+        </a>
+        <a href="/l" class="nav-item" id="nav-lists">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>片单</span>
+        </a>
+        <a href="/c" class="nav-item" id="nav-category">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>分类</span>
+        </a>
+        <a href="/sq" class="nav-item" id="nav-share">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>广场</span>
+        </a>
+        <a href="/private" class="nav-item" id="nav-private">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+            <span>私有库</span>
+        </a>
+        <a href="/s" class="nav-item" id="nav-search">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>搜索</span>
+        </a>
+        <a href="/p" class="nav-item" id="nav-push">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>推送</span>
+        </a>
+        <a href="/qr" class="nav-item active" id="nav-pan">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span>网盘</span>
+        </a>
+    </div>
+
+    <script>
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.innerText = message;
+            toast.style.borderColor = isError ? 'rgba(239, 68, 68, 0.4)' : 'rgba(99, 102, 241, 0.4)';
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        async function sendKodiCommand(cmd, successMsg) {
+            try {
+                const res = await fetch('/api/push', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cmd: cmd, title: "遥控指令" })
+                });
+                if (res.ok) {
+                    showToast(successMsg || "指令已同步至 Kodi");
+                } else {
+                    showToast("同步到 Kodi 失败", true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("连接辅助后台出错", true);
+            }
+        }
+
+        const MANUAL_PROVIDERS = {
+            "ali": { id: "ALIYUN", name: "阿里云盘", label: "Refresh Token", placeholder: "请输入您的阿里云盘 refresh_token", tip: "请使用浏览器开发者工具，在 https://www.alipan.com 的 Application -> Local Storage 中查找 token 字段，复制其中的 refresh_token 值。" },
+            "qk": { id: "QUARK", name: "夸克网盘", label: "Cookie", placeholder: "请输入您的夸克网盘完整 Cookie", tip: "请在 https://pan.quark.cn 登录后，打开开发者工具并在 Network 中找到任意请求，在请求头中复制完整的 Cookie 字符串。" },
+            "uc": { id: "UC", name: "UC网盘", label: "Cookie", placeholder: "请输入您的 UC 网盘完整 Cookie", tip: "请在 https://drive.uc.cn 登录后，在开发者工具网络选项中，复制请求头里的 Cookie 字段。" },
+            "bd": { id: "BAIDU", name: "百度网盘", label: "BDUSS / Cookie", placeholder: "请输入您的百度网盘 BDUSS 字段或完整 Cookie", tip: "请在网页端登录后复制 BDUSS 的值，或者复制整个 Cookie 字段。" },
+            "xl": { id: "XUNLEI", name: "迅雷网盘", label: "Refresh Token", placeholder: "请输入您的迅雷网盘 refresh_token", tip: "请在迅雷网盘网页端登录后，获取 local storage 中的 refresh_token（提交后后台会自动刷新凭证）。" },
+            "123": { id: "CLOUD123", name: "123云盘", label: "Token", placeholder: "请输入您的 123 云盘 Authorization 字段值", tip: "请在登录后，获取请求头中携带的 Authorization 值（排除 Bearer 字段，只复制后面的长 Token）。" },
+            "115": { id: "CLOUD115", name: "115网盘", label: "Cookie", placeholder: "请输入您的 115 网盘完整 Cookie (形如 UID=...; CID=...)", tip: "请在网页端登录后，复制请求头里的 Cookie 字符串。确保包含 UID、CID、SEID 等关键字段。" },
+            "yd": { id: "CHINA_MOBILE", name: "移动云盘", label: "Cookie", placeholder: "请输入您的移动云盘 Cookie", tip: "请在移动云盘网页登录后，复制开发者工具网络请求中请求头的 Cookie 字符串。" },
+            "ty": { id: "CHINA_TELECOM", name: "天翼云盘", label: "Cookie", placeholder: "请输入您的天翼云盘 Cookie", tip: "请在天翼云盘网页登录后，复制开发者工具网络请求中请求头的 Cookie 字符串。" },
+            "gy": { id: "GUANGYA", name: "光鸭云盘", label: "Token", placeholder: "请输入您的光鸭云盘登录 Token", tip: "请在光鸭云盘登录后，获取对应的 Authorization 或 token 串。" }
+        };
+
+        // --- 10 大网盘保序与自定义拖拽排序支持 ---
+        const DEFAULT_PAN_ORDER = ["7", "4", "2", "3", "11", "6", "9", "8", "5", "1", "10"];
+        const PAN_ALIAS_TO_ID = {
+            "7": "7", "115": "7", "CLOUD115": "7",
+            "4": "4", "bd": "4", "BAIDU": "4",
+            "2": "2", "qk": "2", "QUARK": "2",
+            "3": "3", "uc": "3", "UC": "3",
+            "11": "11", "gy": "11", "GUANGYA": "11",
+            "6": "6", "123": "6", "CLOUD123": "6",
+            "9": "9", "ty": "9", "CHINA_TELECOM": "9",
+            "8": "8", "yd": "8", "CHINA_MOBILE": "8",
+            "5": "5", "xl": "5", "XUNLEI": "5",
+            "1": "1", "ali": "1", "ALIYUN": "1",
+            "10": "10"
+        };
+
+        let currentPanOrder = [...DEFAULT_PAN_ORDER];
+
+        async function fetchPanOrder() {
+            try {
+                const res = await fetch('/api/pan/order');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.order) && data.order.length > 0) {
+                        currentPanOrder = data.order;
+                    }
+                }
+            } catch (err) {
+                console.warn("获取网盘自定义排序失败:", err);
+            }
+        }
+
+        async function savePanOrder(newOrder) {
+            currentPanOrder = newOrder;
+            try {
+                await fetch('/api/pan/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order: newOrder })
+                });
+            } catch (err) {
+                console.error("保存网盘自定义排序失败:", err);
+            }
+        }
+
+        function getPanOrderIndex(panIdentifier) {
+            const id = PAN_ALIAS_TO_ID[panIdentifier] || panIdentifier;
+            const idx = currentPanOrder.indexOf(id);
+            return idx !== -1 ? idx : 999;
+        }
+
+        const PAN_DRIVES = [
+            { id: "7", key: "CLOUD115", alias: "115", name: "115网盘" },
+            { id: "4", key: "BAIDU", alias: "bd", name: "百度网盘" },
+            { id: "2", key: "QUARK", alias: "qk", name: "夸克网盘" },
+            { id: "3", key: "UC", alias: "uc", name: "UC网盘" },
+            { id: "11", key: "GUANGYA", alias: "gy", name: "光鸭云盘" },
+            { id: "6", key: "CLOUD123", alias: "123", name: "123云盘" },
+            { id: "9", key: "CHINA_TELECOM", alias: "ty", name: "天翼云盘" },
+            { id: "8", key: "CHINA_MOBILE", alias: "yd", name: "移动云盘" },
+            { id: "5", key: "XUNLEI", alias: "xl", name: "迅雷网盘" },
+            { id: "1", key: "ALIYUN", alias: "ali", name: "阿里云盘" }
+        ];
+
+        let panStatusMap = {};
+        let currentPanKey = "BAIDU";
+        let currentParentFileId = "";
+        let currentPathStack = [{ id: "", name: "根目录" }];
+        let activePanTabMode = "manual";
+        let currentQrProvider = 'CHINA_TELECOM';
+        let qrKey = '';
+        let pollInterval = null;
+
+        // --- 115 网盘扫码端类型支持 ---
+        const PAN115_CLIENT_TYPES = [
+            { key: "alipaymini", name: "支付宝小程序", desc: "推荐，最不易与常用设备互踢", isRecommend: true },
+            { key: "wechatmini", name: "微信小程序", desc: "微信小程序端" },
+            { key: "115android", name: "Android 客户端", desc: "115 Android 官方客户端" },
+            { key: "115ios", name: "iOS 客户端", desc: "115 iOS 官方客户端" },
+            { key: "115ipad", name: "iPad 平板端", desc: "115 iPad 平板客户端" },
+            { key: "tv", name: "电视端", desc: "115 TV 大屏 / 电视端" },
+            { key: "web", name: "网页端", desc: "115 网页端" }
+        ];
+
+        let selected115ClientType = localStorage.getItem('pan115_client_type') || 'alipaymini';
+
+        async function fetch115ClientType() {
+            try {
+                const res = await fetch('/api/pan/115/client_type');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.client_type) {
+                        selected115ClientType = data.client_type;
+                        localStorage.setItem('pan115_client_type', data.client_type);
+                    }
+                }
+            } catch (err) {
+                console.warn("获取 115 扫码端偏好失败:", err);
+            }
+        }
+
+        function render115ClientTypes() {
+            const container = document.getElementById('pan115-types-container');
+            const chips = document.getElementById('pan115-types-chips');
+            const descEl = document.getElementById('pan115-type-desc');
+            if (!container || !chips) return;
+
+            if (currentQrProvider === 'CLOUD115') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                return;
+            }
+
+            chips.innerHTML = '';
+            PAN115_CLIENT_TYPES.forEach(item => {
+                const chip = document.createElement('div');
+                chip.className = 'pan115-type-chip' + (item.key === selected115ClientType ? ' active' : '');
+                chip.innerHTML = '<span>' + item.name + '</span>' + (item.isRecommend ? '<span class="recommend-badge">推荐</span>' : '');
+                chip.onclick = () => select115ClientType(item.key);
+                chips.appendChild(chip);
+            });
+
+            const cur = PAN115_CLIENT_TYPES.find(t => t.key === selected115ClientType) || PAN115_CLIENT_TYPES[0];
+            if (descEl) {
+                descEl.innerText = cur.desc ? '说明: ' + cur.desc : '';
+            }
+        }
+
+        async function select115ClientType(key) {
+            if (selected115ClientType === key) return;
+            selected115ClientType = key;
+            localStorage.setItem('pan115_client_type', key);
+            try {
+                fetch('/api/pan/115/client_type', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ client_type: key })
+                }).catch(() => {});
+            } catch (_) {}
+            render115ClientTypes();
+            loadQrCode();
+        }
+
+        let current115SaveDir = "云下载";
+
+        async function fetch115SaveDir() {
+            try {
+                const res = await fetch('/api/pan/115/save_dir');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.save_dir) {
+                        current115SaveDir = data.save_dir;
+                    }
+                }
+            } catch (err) {
+                console.warn("获取 115 云下载保存目录失败:", err);
+            }
+            update115SaveDirUI();
+        }
+
+        function update115SaveDirUI() {
+            const browserBar = document.getElementById('pan115-savedir-bar');
+            const loginBar = document.getElementById('pan115-savedir-login-bar');
+            const textEl1 = document.getElementById('pan115-savedir-text');
+            const textEl2 = document.getElementById('pan115-savedir-login-text');
+
+            if (textEl1) textEl1.innerText = current115SaveDir;
+            if (textEl2) textEl2.innerText = current115SaveDir;
+
+            if (currentPanKey === 'CLOUD115') {
+                if (browserBar) browserBar.style.display = 'flex';
+                if (loginBar) loginBar.style.display = 'flex';
+            } else {
+                if (browserBar) browserBar.style.display = 'none';
+                if (loginBar) loginBar.style.display = 'none';
+            }
+        }
+
+        function open115SaveDirModal() {
+            const modal = document.getElementById('pan115SaveDirModal');
+            const input = document.getElementById('pan115SaveDirInput');
+            if (modal && input) {
+                input.value = current115SaveDir || "云下载";
+                modal.style.display = 'flex';
+                setTimeout(() => input.focus(), 50);
+            }
+        }
+
+        function close115SaveDirModal() {
+            const modal = document.getElementById('pan115SaveDirModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function save115SaveDirFromModal() {
+            const input = document.getElementById('pan115SaveDirInput');
+            let newDir = (input ? input.value.trim() : "") || "云下载";
+            try {
+                const res = await fetch('/api/pan/115/save_dir', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ save_dir: newDir })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    current115SaveDir = data.save_dir || newDir;
+                    update115SaveDirUI();
+                    close115SaveDirModal();
+                    showToast("115 云下载保存目录已设置为: " + current115SaveDir);
+                } else {
+                    showToast("保存失败，请稍后重试", true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("请求失败: " + err.message, true);
+            }
+        }
+
+        async function reset115SaveDir() {
+            try {
+                const res = await fetch('/api/pan/115/save_dir', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ save_dir: "云下载" })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    current115SaveDir = data.save_dir || "云下载";
+                    update115SaveDirUI();
+                    showToast("已恢复默认云下载保存目录: 云下载");
+                } else {
+                    showToast("恢复默认失败", true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("请求失败", true);
+            }
+        }
+
+        async function initPanPage() {
+            await Promise.all([fetchPanOrder(), fetch115ClientType(), fetch115SaveDir()]);
+            const params = new URLSearchParams(window.location.search);
+            const tabParam = params.get('tab');
+            let providerParam = (params.get('p') || params.get('provider') || '').toLowerCase();
+
+            const legacyMap = {
+                "aliyun": "ali", "quark": "qk", "uc": "uc", "baidu": "bd", "xunlei": "xl",
+                "cloud123": "123", "cloud115": "115", "china_mobile": "yd", "china_telecom": "ty",
+                "guangya": "gy"
+            };
+            if (legacyMap[providerParam]) {
+                providerParam = legacyMap[providerParam];
+            }
+
+            const pInfo = PAN_DRIVES.find(d => d.alias === providerParam || d.key.toLowerCase() === providerParam);
+            if (pInfo) {
+                currentPanKey = pInfo.key;
+            }
+
+            if (tabParam === 'qr') {
+                activePanTabMode = 'qr';
+            }
+
+            await fetchPanStatus();
+
+            if (!providerParam) {
+                const boundDrive = PAN_DRIVES.find(p => {
+                    const st = panStatusMap[p.key] || {};
+                    return !!(st.bound || st.token || st.logged_in);
+                });
+                if (boundDrive) {
+                    currentPanKey = boundDrive.key;
+                }
+            }
+
+            selectPanCard(currentPanKey);
+        }
+
+        async function fetchPanStatus() {
+            try {
+                const res = await fetch('/api/pan/status');
+                if (res.ok) {
+                    panStatusMap = await res.json();
+                }
+            } catch (err) {
+                console.error("拉取网盘状态列表失败:", err);
+            }
+            renderPanCards();
+        }
+
+        let isDraggingPanCard = false;
+        let dragSourceEl = null;
+
+        function onPanCardClick(e, panKey) {
+            if (isDraggingPanCard) return;
+            selectPanCard(panKey);
+        }
+
+        function renderPanCards() {
+            const container = document.getElementById('pan-cards-scroll');
+            if (!container) return;
+
+            const sortedDrives = [...PAN_DRIVES].sort((a, b) => {
+                return getPanOrderIndex(a.key) - getPanOrderIndex(b.key);
+            });
+
+            let html = '';
+            sortedDrives.forEach(p => {
+                const st = panStatusMap[p.key] || {};
+                const isBound = !!(st.bound || st.token || st.logged_in);
+                const isActive = (p.key === currentPanKey);
+                const cloudId = p.id || PAN_ALIAS_TO_ID[p.key] || p.key;
+
+                html += 
+                    '<div class="pan-card-item ' + (isActive ? 'active' : '') + '" data-pan-key="' + p.key + '" data-pan-id="' + cloudId + '" draggable="true" onclick="onPanCardClick(event, \'' + p.key + '\')">' +
+                        '<div class="pan-card-icon">' +
+                            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+                                '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>' +
+                            '</svg>' +
+                        '</div>' +
+                        '<div class="pan-card-name">' + p.name + '</div>' +
+                        '<div class="pan-card-status ' + (isBound ? 'bound' : 'unbound') + '">' +
+                            (isBound ? '已绑定' : '未登录') +
+                        '</div>' +
+                    '</div>';
+            });
+            container.innerHTML = html;
+            setupPanCardsDragAndDrop(container);
+            if (!container.dataset.wheelBound) {
+                container.dataset.wheelBound = "1";
+                container.addEventListener('wheel', function(e) {
+                    if (this.scrollWidth > this.clientWidth) {
+                        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                            e.preventDefault();
+                            this.scrollLeft += e.deltaY;
+                        }
+                    }
+                }, { passive: false });
+            }
+        }
+
+        function setupPanCardsDragAndDrop(container) {
+            let touchTimer = null;
+            let touchedEl = null;
+
+            const cards = container.querySelectorAll('.pan-card-item');
+            cards.forEach(card => {
+                // Drag & Drop for Desktop
+                card.addEventListener('dragstart', (e) => {
+                    isDraggingPanCard = true;
+                    dragSourceEl = card;
+                    card.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', card.getAttribute('data-pan-id'));
+                });
+
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (dragSourceEl && dragSourceEl !== card) {
+                        card.classList.add('drag-over');
+                    }
+                });
+
+                card.addEventListener('dragleave', () => {
+                    card.classList.remove('drag-over');
+                });
+
+                card.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    card.classList.remove('drag-over');
+                    if (dragSourceEl && dragSourceEl !== card) {
+                        const allCards = Array.from(container.querySelectorAll('.pan-card-item'));
+                        const srcIdx = allCards.indexOf(dragSourceEl);
+                        const targetIdx = allCards.indexOf(card);
+                        if (srcIdx < targetIdx) {
+                            container.insertBefore(dragSourceEl, card.nextSibling);
+                        } else {
+                            container.insertBefore(dragSourceEl, card);
+                        }
+                        updateAndSavePanOrderFromDOM(container);
+                    }
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                    cards.forEach(c => c.classList.remove('drag-over'));
+                    setTimeout(() => { isDraggingPanCard = false; }, 100);
+                });
+
+                // Touch Events for Mobile (Long-press 300ms)
+                card.addEventListener('touchstart', (e) => {
+                    touchedEl = card;
+                    touchTimer = setTimeout(() => {
+                        isDraggingPanCard = true;
+                        if (navigator.vibrate) navigator.vibrate(50);
+                        card.classList.add('dragging');
+                    }, 300);
+                }, { passive: true });
+
+                card.addEventListener('touchmove', (e) => {
+                    if (!isDraggingPanCard) {
+                        clearTimeout(touchTimer);
+                        return;
+                    }
+                    if (e.cancelable) e.preventDefault();
+                    const touch = e.touches[0];
+                    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (target) {
+                        const targetCard = target.closest('.pan-card-item');
+                        if (targetCard && targetCard !== touchedEl && targetCard.parentNode === container) {
+                            const allCards = Array.from(container.querySelectorAll('.pan-card-item'));
+                            const srcIdx = allCards.indexOf(touchedEl);
+                            const targetIdx = allCards.indexOf(targetCard);
+                            if (srcIdx < targetIdx) {
+                                container.insertBefore(touchedEl, targetCard.nextSibling);
+                            } else {
+                                container.insertBefore(touchedEl, targetCard);
+                            }
+                        }
+                    }
+                }, { passive: false });
+
+                const handleTouchEnd = () => {
+                    clearTimeout(touchTimer);
+                    if (isDraggingPanCard) {
+                        if (touchedEl) touchedEl.classList.remove('dragging');
+                        updateAndSavePanOrderFromDOM(container);
+                        setTimeout(() => { isDraggingPanCard = false; }, 100);
+                    }
+                };
+
+                card.addEventListener('touchend', handleTouchEnd);
+                card.addEventListener('touchcancel', handleTouchEnd);
+            });
+        }
+
+        function updateAndSavePanOrderFromDOM(container) {
+            const currentCards = container.querySelectorAll('.pan-card-item');
+            const newOrder = [];
+            currentCards.forEach(c => {
+                const id = c.getAttribute('data-pan-id');
+                if (id && !newOrder.includes(id)) newOrder.push(id);
+            });
+            DEFAULT_PAN_ORDER.forEach(id => {
+                if (!newOrder.includes(id)) newOrder.push(id);
+            });
+            savePanOrder(newOrder);
+        }
+
+        function selectPanCard(panKey) {
+            currentPanKey = panKey;
+            clearPanSearch(false);
+            renderPanCards();
+
+            const pInfo = PAN_DRIVES.find(d => d.key === panKey) || PAN_DRIVES[0];
+            const st = panStatusMap[panKey] || {};
+            const isBound = !!(st.bound || st.token || st.logged_in);
+
+            const loginPanel = document.getElementById('pan-login-panel');
+            const browserPanel = document.getElementById('pan-file-browser');
+
+            if (!isBound) {
+                browserPanel.style.display = 'none';
+                loginPanel.style.display = 'block';
+
+                document.getElementById('pan-login-title').innerText = pInfo.name + " - 登录授权";
+
+                const qrSelect = document.getElementById('qrProviderSelect');
+                if (qrSelect) qrSelect.value = pInfo.key;
+
+                const manualSelect = document.getElementById('providerSelect');
+                if (manualSelect) {
+                    manualSelect.value = pInfo.alias;
+                    renderManualPage(pInfo.alias);
+                }
+
+                currentQrProvider = pInfo.key;
+                if (activePanTabMode === 'qr') {
+                    switchPanLoginTab('qr');
+                } else {
+                    switchPanLoginTab('manual');
+                }
+            } else {
+                loginPanel.style.display = 'none';
+                browserPanel.style.display = 'block';
+
+                document.getElementById('pan-browser-title-text').innerHTML = 
+                    '<span>📁 ' + pInfo.name + '</span><span style="font-size:11px;color:var(--primary);margin-left:6px;">(已登录)</span>';
+
+                currentParentFileId = "";
+                currentPathStack = [{ id: "", name: "根目录" }];
+                loadUserFiles(panKey, "", currentPathStack);
+            }
+            update115SaveDirUI();
+        }
+
+        function switchPanLoginTab(tab) {
+            activePanTabMode = tab;
+            const btnQr = document.getElementById('btn-tab-qr');
+            const btnManual = document.getElementById('btn-tab-manual');
+            const qrSec = document.getElementById('qr-section');
+            const manualSec = document.getElementById('manual-section');
+
+            if (tab === 'manual') {
+                btnQr.classList.remove('active');
+                btnManual.classList.add('active');
+                qrSec.style.display = 'none';
+                manualSec.style.display = 'block';
+                
+                if (pollInterval) {
+                    clearInterval(pollInterval);
+                    pollInterval = null;
+                }
+            } else {
+                btnQr.classList.add('active');
+                btnManual.classList.remove('active');
+                qrSec.style.display = 'block';
+                manualSec.style.display = 'none';
+                
+                loadQrCode();
+            }
+        }
+
+        function onQrProviderChange() {
+            const select = document.getElementById('qrProviderSelect');
+            if (select) {
+                const targetKey = select.value;
+                if (targetKey && targetKey !== currentPanKey) {
+                    selectPanCard(targetKey);
+                } else {
+                    switchQrProvider(targetKey);
+                }
+            }
+        }
+
+        function switchQrProvider(provider) {
+            if (currentQrProvider === provider) return;
+            currentQrProvider = provider;
+            
+            const select = document.getElementById('qrProviderSelect');
+            if (select) select.value = provider;
+
+            loadQrCode();
+        }
+
+        async function loadQrCode() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+
+            render115ClientTypes();
+
+            const qrImg = document.getElementById('qr-img');
+            const qrOverlay = document.getElementById('qr-overlay');
+            const overlayMsg = document.getElementById('overlay-msg');
+            const statusBadge = document.getElementById('status-badge');
+            const statusText = document.getElementById('status-text');
+            const tipsText = document.getElementById('tips-text');
+
+            qrOverlay.classList.add('active');
+            overlayMsg.textContent = '获取二维码...';
+            qrImg.classList.add('loading');
+
+            statusBadge.className = 'status-badge pending';
+            statusText.textContent = '获取中...';
+            tipsText.textContent = '正在连接后台服务，获取最新二维码...';
+
+            try {
+                let qrUrl = '/api/qrcode?provider=' + currentQrProvider;
+                if (currentQrProvider === 'CLOUD115') {
+                    qrUrl += '&client_type=' + encodeURIComponent(selected115ClientType);
+                }
+                const res = await fetch(qrUrl);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                
+                if (!data.base64 && !data.image_url) {
+                    throw new Error('未返回二维码数据');
+                }
+
+                qrImg.src = data.base64 || data.image_url;
+                qrImg.onload = () => {
+                    qrOverlay.classList.remove('active');
+                    qrImg.classList.remove('loading');
+                };
+
+                qrKey = data.key;
+                
+                statusBadge.className = 'status-badge pending';
+                statusText.textContent = '等待扫码';
+                
+                if (currentQrProvider === 'CLOUD115') {
+                    const curType = PAN115_CLIENT_TYPES.find(t => t.key === selected115ClientType);
+                    const typeLabel = curType ? curType.name : "支付宝小程序";
+                    tipsText.textContent = '请打开手机上的【115 App】扫描此【' + typeLabel + '】二维码并进行授权。';
+                } else {
+                    const pInfo = PAN_DRIVES.find(d => d.key === currentQrProvider);
+                    const name = pInfo ? pInfo.name : "网盘";
+                    tipsText.textContent = '请打开手机上的【' + name + ' App】扫描此二维码并进行授权。';
+                }
+
+                startPolling(currentQrProvider);
+            } catch (err) {
+                console.error(err);
+                overlayMsg.textContent = '加载失败';
+                statusBadge.className = 'status-badge expired';
+                statusText.textContent = '错误';
+                tipsText.textContent = '无法加载二维码: ' + err.message + '。请确保后台服务正常启动。';
+            }
+        }
+
+        function startPolling(provider) {
+            if (pollInterval) clearInterval(pollInterval);
+            
+            pollInterval = setInterval(async () => {
+                if (!qrKey) return;
+                try {
+                    const res = await fetch('/api/qrcode/status?provider=' + provider + '&key=' + encodeURIComponent(qrKey));
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    
+                    updateStatus(data.status, provider);
+                } catch (err) {
+                    console.error('轮询出错:', err);
+                }
+            }, 3000);
+        }
+
+        function updateStatus(status, provider) {
+            const statusBadge = document.getElementById('status-badge');
+            const statusText = document.getElementById('status-text');
+            const tipsText = document.getElementById('tips-text');
+            const qrOverlay = document.getElementById('qr-overlay');
+            const overlayMsg = document.getElementById('overlay-msg');
+
+            if (status === 'confirmed') {
+                clearInterval(pollInterval);
+                pollInterval = null;
+                statusBadge.className = 'status-badge confirmed';
+                statusText.textContent = '登录成功';
+                tipsText.textContent = '🎉 扫码登录成功！已成功保存登录授权凭证至本地。';
+                
+                qrOverlay.classList.add('active');
+                overlayMsg.textContent = '✓ 登录成功';
+
+                setTimeout(async () => {
+                    await fetchPanStatus();
+                    selectPanCard(provider);
+                }, 300);
+            } else if (status === 'scanned') {
+                statusBadge.className = 'status-badge scanned';
+                statusText.textContent = '已扫码';
+                tipsText.textContent = '已在手机端扫码成功，请在手机上点击“确认登录”完成授权。';
+            } else if (status === 'expired') {
+                clearInterval(pollInterval);
+                pollInterval = null;
+                statusBadge.className = 'status-badge expired';
+                statusText.textContent = '已过期';
+                tipsText.textContent = '二维码已失效。正在为您自动刷新，请稍候...';
+                
+                setTimeout(loadQrCode, 2000);
+            } else {
+                statusBadge.className = 'status-badge pending';
+                statusText.textContent = '等待扫码';
+            }
+        }
+
+        function onManualProviderChange() {
+            const select = document.getElementById('providerSelect');
+            if (select) {
+                const targetAlias = select.value;
+                const pInfo = PAN_DRIVES.find(d => d.alias === targetAlias);
+                if (pInfo && pInfo.key !== currentPanKey) {
+                    selectPanCard(pInfo.key);
+                } else {
+                    renderManualPage(targetAlias);
+                }
+            }
+        }
+
+        function renderManualPage(key) {
+            const config = MANUAL_PROVIDERS[key];
+            if (!config) return;
+
+            document.getElementById('inputLabel').innerText = config.label;
+            document.getElementById('credentialInput').placeholder = config.placeholder;
+            document.getElementById('tipDesc').innerText = config.tip;
+            
+            const statusMsg = document.getElementById('statusMsg');
+            if (statusMsg) statusMsg.style.display = 'none';
+            document.getElementById('credentialInput').value = '';
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) submitBtn.disabled = false;
+            const btnSpinner = document.getElementById('btnSpinner');
+            if (btnSpinner) btnSpinner.style.display = 'none';
+            const btnText = document.getElementById('btnText');
+            if (btnText) btnText.innerText = '确认提交';
+        }
+
+        async function handleManualLoginSubmit(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const btnText = document.getElementById('btnText');
+            const statusMsg = document.getElementById('statusMsg');
+            const select = document.getElementById('providerSelect');
+            const credentialInput = document.getElementById('credentialInput');
+
+            submitBtn.disabled = true;
+            btnSpinner.style.display = 'block';
+            btnText.innerText = '正在提交...';
+            statusMsg.style.display = 'none';
+
+            const config = MANUAL_PROVIDERS[select.value];
+            const payload = {
+                provider: config.id,
+                token: credentialInput.value.trim()
+            };
+
+            try {
+                const response = await fetch('/api/manual_input', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.error || '提交失败');
+                }
+                statusMsg.className = 'status-message status-success';
+                statusMsg.style.display = 'block';
+                statusMsg.innerText = '凭证保存成功！守护后台正在尝试登录网盘...';
+                
+                btnText.innerText = '提交成功';
+                btnSpinner.style.display = 'none';
+                
+                setTimeout(async () => {
+                    submitBtn.disabled = false;
+                    btnText.innerText = '确认提交';
+                    credentialInput.value = '';
+
+                    await fetchPanStatus();
+                    selectPanCard(config.id);
+                }, 500);
+            } catch(error) {
+                statusMsg.className = 'status-message status-error';
+                statusMsg.style.display = 'block';
+                statusMsg.innerText = '提交失败: ' + error.message;
+                
+                submitBtn.disabled = false;
+                btnSpinner.style.display = 'none';
+                btnText.innerText = '确认提交';
+            }
+        }
+
+        // ------------------ 网盘个人文件搜索逻辑 ------------------
+        let isPanSearching = false;
+        let currentPanSearchKeyword = '';
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function handlePanSearchInput() {
+            const input = document.getElementById('pan-search-input');
+            const clearBtn = document.getElementById('pan-search-clear-btn');
+            if (clearBtn && input) {
+                clearBtn.style.display = input.value.trim() ? 'flex' : 'none';
+            }
+        }
+
+        function handlePanSearchKeydown(e) {
+            handlePanSearchInput();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                executePanSearch();
+            }
+        }
+
+        async function executePanSearch() {
+            const input = document.getElementById('pan-search-input');
+            const kw = input ? input.value.trim() : '';
+            if (!kw) {
+                if (isPanSearching) {
+                    clearPanSearch(true);
+                } else {
+                    showToast('请输入要搜索的媒体文件名或关键词');
+                }
+                return;
+            }
+
+            isPanSearching = true;
+            currentPanSearchKeyword = kw;
+
+            const clearBtn = document.getElementById('pan-search-clear-btn');
+            if (clearBtn) clearBtn.style.display = 'flex';
+
+            renderSearchBreadcrumb(kw);
+
+            const container = document.getElementById('pan-user-file-list');
+            if (!container) return;
+
+            container.innerHTML = 
+                '<div style="text-align:center;padding:30px 0;color:var(--text-muted);font-size:12px;">' +
+                    '<div class="spinner-large" style="margin:0 auto 12px;"></div>' +
+                    '<div>正在网盘中搜索 “' + escapeHtml(kw) + '”...</div>' +
+                '</div>';
+
+            try {
+                const url = '/api/user_search?provider=' + encodeURIComponent(currentPanKey) + '&keyword=' + encodeURIComponent(kw);
+                const res = await fetch(url);
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error(data.error || ('HTTP ' + res.status));
+                }
+
+                const files = data.files || [];
+                renderSearchResultList(files, kw);
+            } catch (err) {
+                console.error("网盘搜索失败:", err);
+                container.innerHTML = 
+                    '<div style="text-align:center;padding:30px 16px;color:var(--color-expired);font-size:12px;">' +
+                        '<div>' + escapeHtml(err.message || '搜索失败') + '</div>' +
+                        '<div style="margin-top:12px;"><button type="button" onclick="clearPanSearch(true)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#F1F5F9;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;">返回目录树</button></div>' +
+                    '</div>';
+            }
+        }
+
+        function renderSearchBreadcrumb(kw) {
+            const container = document.getElementById('pan-file-breadcrumb');
+            if (!container) return;
+            container.innerHTML = 
+                '<span class="pan-crumb-item" onclick="clearPanSearch(true)">根目录</span>' +
+                '<span class="pan-crumb-sep">/</span>' +
+                '<span class="pan-search-tag"><span>🔍 搜索: “' + escapeHtml(kw) + '”</span><span class="pan-search-tag-close" onclick="clearPanSearch(true)" title="退出搜索">✕</span></span>';
+        }
+
+        function renderSearchResultList(files, kw) {
+            const container = document.getElementById('pan-user-file-list');
+            if (!container) return;
+
+            if (files.length === 0) {
+                container.innerHTML = 
+                    '<div style="text-align:center;padding:40px 16px;color:var(--text-muted);font-size:12px;">' +
+                        '<div>未在网盘中找到与 “' + escapeHtml(kw) + '” 匹配的媒体文件</div>' +
+                        '<div style="margin-top:12px;"><button type="button" onclick="clearPanSearch(true)" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#F1F5F9;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;">返回目录树</button></div>' +
+                    '</div>';
+                return;
+            }
+
+            let html = '';
+            files.forEach(f => {
+                const isFolder = !!f.is_folder;
+                const fileName = f.file_name || '';
+                const fileId = f.file_id || '';
+                const sizeLabel = f.size_label || (f.size > 0 ? (Math.round(f.size / (1024*1024)*10)/10 + ' MB') : '');
+
+                if (isFolder) {
+                    html += 
+                        '<div class="pan-user-file-item clickable" onclick="openFolderFromSearch(\'' + fileId.replace(/'/g, "\\'") + '\', \'' + fileName.replace(/'/g, "\\'") + '\')">' +
+                            '<div class="pan-user-file-info">' +
+                                '<span class="pan-user-file-icon">📁</span>' +
+                                '<span class="pan-user-file-name">' + fileName + '</span>' +
+                            '</div>' +
+                            '<div class="pan-user-file-meta">文件夹 ›</div>' +
+                        '</div>';
+                } else {
+                    const isMedia = isMediaFile(fileName);
+                    const icon = isAudioFile(fileName) ? '🎵' : '🎬';
+                    if (isMedia) {
+                        html += 
+                            '<div class="pan-user-file-item clickable" onclick="playUserPanFile(\'' + currentPanKey + '\', \'' + fileId.replace(/'/g, "\\'") + '\', \'' + fileName.replace(/'/g, "\\'") + '\')">' +
+                                '<div class="pan-user-file-info">' +
+                                    '<span class="pan-user-file-icon">' + icon + '</span>' +
+                                    '<span class="pan-user-file-name" title="' + fileName + '">' + fileName + '</span>' +
+                                '</div>' +
+                                '<div class="pan-user-file-meta">' + (sizeLabel || '播放') + '</div>' +
+                            '</div>';
+                    } else {
+                        html += 
+                            '<div class="pan-user-file-item disabled" onclick="showToast(\'非视频/音频格式，无法在 Kodi 播放\', true)">' +
+                                '<div class="pan-user-file-info">' +
+                                    '<span class="pan-user-file-icon">📄</span>' +
+                                    '<span class="pan-user-file-name" style="color:var(--text-muted);">' + fileName + '</span>' +
+                                '</div>' +
+                                '<div class="pan-user-file-meta">' + (sizeLabel || '') + '</div>' +
+                            '</div>';
+                    }
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function openFolderFromSearch(folderId, folderName) {
+            clearPanSearch(false);
+            openSubFolder(folderId, folderName);
+        }
+
+        function clearPanSearch(shouldReload = true) {
+            isPanSearching = false;
+            currentPanSearchKeyword = '';
+            const input = document.getElementById('pan-search-input');
+            if (input) input.value = '';
+            const clearBtn = document.getElementById('pan-search-clear-btn');
+            if (clearBtn) clearBtn.style.display = 'none';
+
+            if (shouldReload) {
+                loadUserFiles(currentPanKey, currentParentFileId, currentPathStack);
+            }
+        }
+
+        // ------------------ 网盘个人文件树加载与播放 ------------------
+        async function loadUserFiles(provider, parentFileId, pathStack) {
+            currentParentFileId = parentFileId;
+            currentPathStack = pathStack || [{ id: "", name: "根目录" }];
+
+            renderBreadcrumb();
+
+            const container = document.getElementById('pan-user-file-list');
+            if (!container) return;
+
+            container.innerHTML = 
+                '<div style="text-align:center;padding:30px 0;color:var(--text-muted);font-size:12px;">' +
+                    '<div class="spinner-large" style="margin:0 auto 12px;"></div>' +
+                    '<div>正在获取网盘目录树...</div>' +
+                '</div>';
+
+            try {
+                const url = '/api/user_files?provider=' + encodeURIComponent(provider) + '&parent_file_id=' + encodeURIComponent(parentFileId);
+                const res = await fetch(url);
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error || ('HTTP ' + res.status));
+                }
+
+                const data = await res.json();
+                const files = data.files || [];
+
+                let html = '';
+
+                if (currentPathStack.length > 1) {
+                    html += 
+                        '<div class="pan-user-file-item clickable" onclick="goBackParentFolder()">' +
+                            '<div class="pan-user-file-info">' +
+                                '<span class="pan-user-file-icon">↩️</span>' +
+                                '<span class="pan-user-file-name" style="color:var(--primary);font-weight:700;">.. [返回上一级]</span>' +
+                            '</div>' +
+                        '</div>';
+                }
+
+                if (files.length === 0) {
+                    html += '<div style="text-align:center;padding:40px 0;color:var(--text-muted);font-size:12px;">此目录为空</div>';
+                } else {
+                    files.forEach(f => {
+                        const isFolder = !!f.is_folder;
+                        const fileName = f.file_name || '';
+                        const fileId = f.file_id || '';
+                        const sizeLabel = f.size_label || (f.size > 0 ? (Math.round(f.size / (1024*1024)*10)/10 + ' MB') : '');
+
+                        if (isFolder) {
+                            html += 
+                                '<div class="pan-user-file-item clickable" onclick="openSubFolder(\'' + fileId.replace(/'/g, "\\'") + '\', \'' + fileName.replace(/'/g, "\\'") + '\')">' +
+                                    '<div class="pan-user-file-info">' +
+                                        '<span class="pan-user-file-icon">📁</span>' +
+                                        '<span class="pan-user-file-name">' + fileName + '</span>' +
+                                    '</div>' +
+                                    '<div class="pan-user-file-meta">文件夹 ›</div>' +
+                                '</div>';
+                        } else {
+                            const isMedia = isMediaFile(fileName);
+                            const icon = isAudioFile(fileName) ? '🎵' : '🎬';
+                            if (isMedia) {
+                                html += 
+                                    '<div class="pan-user-file-item clickable" onclick="playUserPanFile(\'' + provider + '\', \'' + fileId.replace(/'/g, "\\'") + '\', \'' + fileName.replace(/'/g, "\\'") + '\')">' +
+                                        '<div class="pan-user-file-info">' +
+                                            '<span class="pan-user-file-icon">' + icon + '</span>' +
+                                            '<span class="pan-user-file-name" title="' + fileName + '">' + fileName + '</span>' +
+                                        '</div>' +
+                                        '<div class="pan-user-file-meta">' + (sizeLabel || '播放') + '</div>' +
+                                    '</div>';
+                            } else {
+                                html += 
+                                    '<div class="pan-user-file-item disabled" onclick="showToast(\'非视频/音频格式，无法在 Kodi 播放\', true)">' +
+                                        '<div class="pan-user-file-info">' +
+                                            '<span class="pan-user-file-icon">📄</span>' +
+                                            '<span class="pan-user-file-name" style="color:var(--text-muted);">' + fileName + '</span>' +
+                                        '</div>' +
+                                        '<div class="pan-user-file-meta">' + (sizeLabel || '') + '</div>' +
+                                    '</div>';
+                            }
+                        }
+                    });
+                }
+                container.innerHTML = html;
+            } catch (err) {
+                console.error("加载文件列表失败:", err);
+                container.innerHTML = 
+                    '<div style="text-align:center;padding:30px 0;color:var(--color-expired);font-size:12px;">' +
+                        '加载失败: ' + err.message +
+                    '</div>';
+            }
+        }
+
+        function isMediaFile(fileName) {
+            const lower = (fileName || '').toLowerCase();
+            const mediaExts = ['.mp4', '.mkv', '.avi', '.flv', '.mov', '.wmv', '.ts', '.m2ts', '.rmvb', '.iso', '.m3u8', '.mpd', '.webm', '.mp3', '.flac', '.wav', '.ape', '.dts', '.m4a', '.aac', '.ogg', '.wma', '.opus', '.alac', '.aiff', '.dsf', '.dff', '.ac3', '.pcm', '.mid', '.midi', '.mka'];
+            return mediaExts.some(ext => lower.endsWith(ext));
+        }
+
+        function isAudioFile(fileName) {
+            const lower = (fileName || '').toLowerCase();
+            const audioExts = ['.mp3', '.flac', '.wav', '.ape', '.dts', '.m4a', '.aac', '.ogg', '.wma', '.opus', '.alac', '.aiff', '.dsf', '.dff', '.ac3', '.pcm', '.mid', '.midi', '.mka'];
+            return audioExts.some(ext => lower.endsWith(ext));
+        }
+
+        function renderBreadcrumb() {
+            const container = document.getElementById('pan-file-breadcrumb');
+            if (!container) return;
+
+            let html = '';
+            currentPathStack.forEach((item, idx) => {
+                const isLast = (idx === currentPathStack.length - 1);
+                if (idx > 0) {
+                    html += '<span class="pan-crumb-sep">/</span>';
+                }
+                if (isLast) {
+                    html += '<span class="pan-crumb-item active">' + item.name + '</span>';
+                } else {
+                    html += '<span class="pan-crumb-item" onclick="jumpToCrumb(' + idx + ')">' + item.name + '</span>';
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        function openSubFolder(folderId, folderName) {
+            const newStack = [...currentPathStack, { id: folderId, name: folderName }];
+            loadUserFiles(currentPanKey, folderId, newStack);
+        }
+
+        function goBackParentFolder() {
+            if (currentPathStack.length <= 1) return;
+            const newStack = currentPathStack.slice(0, currentPathStack.length - 1);
+            const parent = newStack[newStack.length - 1];
+            loadUserFiles(currentPanKey, parent.id, newStack);
+        }
+
+        function jumpToCrumb(idx) {
+            if (idx >= currentPathStack.length) return;
+            const newStack = currentPathStack.slice(0, idx + 1);
+            const target = newStack[newStack.length - 1];
+            loadUserFiles(currentPanKey, target.id, newStack);
+        }
+
+        function refreshCurrentPanFiles() {
+            if (isPanSearching && currentPanSearchKeyword) {
+                executePanSearch();
+            } else {
+                loadUserFiles(currentPanKey, currentParentFileId, currentPathStack);
+            }
+        }
+
+        function playUserPanFile(provider, fileId, fileName) {
+            const cmdVal = 'PlayMedia("plugin://plugin.video.juku/?action=play_user_pan&provider=' + encodeURIComponent(provider) + 
+                           '&file_id=' + encodeURIComponent(fileId) + 
+                           '&file_name=' + encodeURIComponent(fileName) + 
+                           '&vod_title=' + encodeURIComponent(fileName) + '")';
+            sendKodiCommand(cmdVal, '已遥控 Kodi 播放网盘文件: ' + fileName);
+        }
+
+        async function logoutCurrentPan() {
+            const pInfo = PAN_DRIVES.find(d => d.key === currentPanKey) || { name: currentPanKey };
+            if (!confirm('确定要退出【' + pInfo.name + '】的登录吗？')) return;
+
+            try {
+                const res = await fetch('/api/pan/logout?provider=' + encodeURIComponent(currentPanKey), { method: 'POST' });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error || '退出失败');
+                }
+                showToast('已清除【' + pInfo.name + '】登录凭证');
+                await fetchPanStatus();
+                selectPanCard(currentPanKey);
+            } catch (err) {
+                showToast('退出失败: ' + err.message, true);
+            }
+        }
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            initPanPage();
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.error('Service Worker registration failed', err));
+            });
+        }
+    </script>
+    <script src="/static/kodi-remote.js"></script>
+</body>
+</html>

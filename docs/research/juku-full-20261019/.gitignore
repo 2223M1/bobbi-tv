@@ -1,0 +1,6 @@
+# Large generated evidence is retained locally and in verified archives.
+# Keep coverage, indexes, function tables, journals and authored summaries reviewable.
+amd64/functions/
+arm64/functions/
+archives/*.zip
+*-ghidra.log

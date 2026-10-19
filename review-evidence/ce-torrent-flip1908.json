@@ -1,0 +1,473 @@
+{
+  "read_only": true,
+  "time": 1792416709.032224,
+  "torrent_list": [
+    {
+      "hash": "825a52fc2bf6c2a757fe66e6e7acb91d6e73bf72",
+      "title": "The Tatami Galaxy",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "820dce32257549c369cf01d5af6c8a6eea834801",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "d2c3f03e8902dbdfb7a8a93a77b9f60153065870",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "98f56a569610f545cab34c247e2be82055f4a327",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "2618d7ed21285d3747cefd8a1ab70bad771e14bd",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "2590d9348810403399ad8eeda87568f562315337",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "82500cad3da5f11f0282efd26969578c6acc956a",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "e9236079fa7268c8b46967eda805e4ca09cca61c",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "31bcd7ab0504c502b439bb14d234f1660b4f4f9f",
+      "title": "A Ghost Story",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "af80bcbc8662cb43eed02803ceb8e47cf1a7e887",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "ce62fd1d27a45e62b46eca0b8637632cbe669d7c",
+      "title": "Ping Pong the Animation",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "9bbc71ffd7b3b801a18521ed6117a920a35a7428",
+      "title": "Perfect Days",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "9dc37dd6d03fbdbed1cfd46459db913e9580c063",
+      "title": "City of God",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "baef2b836c2da203c00c217c4ce89b804e87a06c",
+      "title": "Psycho-Pass",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "9777863c067da00cba9ea8e4e58d5d5a049a75db",
+      "title": "Samurai Champloo",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "f970e2b9491d1af5552d0b79686ee445c038ddda",
+      "title": "Memento",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "f0552cd3308e3aab9d9d1d6e7c72342b38606e60",
+      "title": "Death Note",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "b75ecdcdc4a017d9409b2ed29be2ab96896d6292",
+      "title": "ODDTAXI",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "3ac7a0834e62f5bf943554a8ca53194246ae98c6",
+      "title": "Amadeus",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "33a5d90e4012d39e7f5381b38a769faa6826407b",
+      "title": "Cowboy Bebop",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "10ee7aa9ac9e758533beade3bc619e18e03a959e",
+      "title": "The Truman Show",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "6406640070630ece7d68eed5ead7c57bb1b2ef29",
+      "title": "Haikyu!!",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "839d7bb5de28222e8e620e55e5c6f18456301e67",
+      "title": "L.A. Confidential",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "b1b77022f8370ce54f5b4f909968da9ad2709155",
+      "title": "Mob Psycho 100",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "eb4fb807fc2c3abba7390911da5e4964696dc00a",
+      "title": "Violet Evergarden",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "b4549f9b3124fd1bbaee8f124ee85bb44f313d55",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "a08d68ae509ad4198c778fdb7bcc4e71c1a8aa32",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "b0415cb937ac0e60eadd7a0f6e757d5d36b6d8a0",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "ddbd8bf2263400da219fa3d2e278e3d3a27b7399",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "7af771b417c55ebc86caa0cb82cdb7faac90c04c",
+      "title": "Cyberpunk: Edgerunners",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "73243ea814f8d944ebe68144a2f722856b907faa",
+      "title": "Frieren: Beyond Journey's End",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "e58d29ada18458f9b5b23cfabbe21d0e4f24f47a",
+      "title": "Adaptation.",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "db6414965897ac15de8ce971d6472c4bb5eb4db5",
+      "title": "In Bruges",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "6c58c8c1b9033dba7c9e9d3cfe9d59e705241f37",
+      "title": "Jaadugar: A Witch in Mongolia",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "7079cf65d3f2c10a51e594a122ad5e90db819652",
+      "title": "Penguin Highway",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "ce5ae4fea33c16a2f90ff1bdb34484ecd005e26c",
+      "title": "The Amazing Spider-Man",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "397058919088152e32e680cd252b3c8f121f9d6e",
+      "title": "The Amazing Spider-Man",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "70343683484d846ae395401198d683396078eef9",
+      "title": "Mushoku Tensei: Jobless Reincarnation",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "dbddeb1b5084c69ed8397be6ff912fdfce0dd388",
+      "title": "Mushoku Tensei: Jobless Reincarnation",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "2d4f7edfdcf918f0870ff2c0ea2002698fe67987",
+      "title": "Saga of Tanya the Evil",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "62787d42ce20fd98551fb40df08045658ab8658d",
+      "title": "Saga of Tanya the Evil",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "38fdeaef0f66fd830109285829732e57e8e3dc90",
+      "title": "The Boondocks",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "dda15435d723114c588111ab30771e8d98d43bad",
+      "title": "Iron Wok Jan",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "52245d243e6b61d8efeb40405da022124f82fd07",
+      "title": "The Amazing Spider-Man",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "0231d770714d9cf1cfe953974ae4411de819253f",
+      "title": "Chainsmoker Cat",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "89aa02134ce6533c81a96eb7ec2c0dae1485cddc",
+      "title": "Slow Horses",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "7c8b9eb38693b00ed3ddadc6dd03bbc09c98e6a0",
+      "title": "Slow Horses",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "9aad6b0312b192916d0a739769add90a3ff61d4f",
+      "title": "Chainsmoker Cat",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "7a18c0adba9d0a816d7e683a77f2e50f0965af96",
+      "title": "Mushoku Tensei: Jobless Reincarnation",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "32cfc44f311dee9b4dc44874be7a8e218de8710d",
+      "title": "Mushoku Tensei: Jobless Reincarnation",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "ef474a796de9e328a30cfedc948119fb54e3ae31",
+      "title": "The Boondocks",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "adeabeb470079fe413a01dcdead14a17afdc8992",
+      "title": "Dan Da Dan",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "ca4bc5134de8718dc810c47eadb0277fffe9e7c4",
+      "title": "Re:ZERO -Starting Life in Another World-",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "c24fe98d7dbc5e9dc50a35636f15d6eea976f693",
+      "title": "The Boondocks",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "94586ac25bd95d828b672be2a89a4f5ae3a351ee",
+      "title": "The Boondocks",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "d39b44e3363a366c8f45c0aabaa78efd8e84b14b",
+      "title": "Mushoku Tensei: Jobless Reincarnation",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "81e7b0197defcb5d5be5bbebaa0cf7fe330f5a07",
+      "title": "Dan Da Dan",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    },
+    {
+      "hash": "b44a8894d4e414c5318df8d403864096d7c59561",
+      "title": "ODDTAXI",
+      "stat": 5,
+      "stat_string": "Torrent in db"
+    }
+  ],
+  "metadata": [],
+  "prior_trials": [
+    {
+      "file": "trial-flip_flappers-2.json",
+      "safe_fields": {
+        "test": {
+          "title": "Flip Flappers",
+          "tmdb_id": 68272,
+          "kind": "tv",
+          "year": 2016,
+          "season": 1,
+          "episode": 1
+        },
+        "selected_card": {
+          "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+          "Container(1000).ListItem.Property(resolution)": "",
+          "Container(1000).ListItem.Property(size)": "5.3 GB",
+          "Container(1000).ListItem.Property(source_key)": "2969590fb4e043b453194562e6ae9efc0bb37acf45543d59236028a0e524f26d",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).ListItem.Property(subtitle_badge)": ""
+        },
+        "selected_at": 2138065.95432281,
+        "request_id": "6814846ffbca407585377a930810acd7",
+        "selection_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450"
+      }
+    },
+    {
+      "file": "trial-flip_flappers-2.startup.json",
+      "safe_fields": {}
+    },
+    {
+      "file": "trial-flip_flappers-3.json",
+      "safe_fields": {
+        "test": {
+          "title": "Flip Flappers",
+          "tmdb_id": 68272,
+          "kind": "tv",
+          "year": 2016,
+          "season": 1,
+          "episode": 1
+        },
+        "selected_card": {
+          "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+          "Container(1000).ListItem.Property(resolution)": "",
+          "Container(1000).ListItem.Property(size)": "5.3 GB",
+          "Container(1000).ListItem.Property(source_key)": "2969590fb4e043b453194562e6ae9efc0bb37acf45543d59236028a0e524f26d",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).ListItem.Property(subtitle_badge)": ""
+        },
+        "selected_at": 2146490.361393087,
+        "request_id": "1a9a98f27bb741faae85831a38767d0f",
+        "selection_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450"
+      }
+    },
+    {
+      "file": "trial-flip_flappers-3.startup.json",
+      "safe_fields": {}
+    },
+    {
+      "file": "trial-flip_flappers.json",
+      "safe_fields": {
+        "test": {
+          "title": "Flip Flappers",
+          "tmdb_id": 68272,
+          "kind": "tv",
+          "year": 2016,
+          "season": 1,
+          "episode": 1
+        },
+        "selected_card": {
+          "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+          "Container(1000).ListItem.Property(resolution)": "",
+          "Container(1000).ListItem.Property(size)": "5.3 GB",
+          "Container(1000).ListItem.Property(source_key)": "2969590fb4e043b453194562e6ae9efc0bb37acf45543d59236028a0e524f26d",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).ListItem.Property(subtitle_badge)": ""
+        },
+        "selected_at": 2135905.011586439,
+        "request_id": "10e7b91883a846b3b09fd19cf625386d",
+        "selection_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450"
+      }
+    },
+    {
+      "file": "trial-flip_flappers.startup.json",
+      "safe_fields": {}
+    },
+    {
+      "file": "trial-haibane_renmei.json",
+      "safe_fields": {
+        "test": {
+          "title": "Haibane Renmei",
+          "tmdb_id": 34164,
+          "kind": "tv",
+          "year": 2002,
+          "season": 1,
+          "episode": 1
+        },
+        "selected_card": {
+          "Container(1000).ListItem.Label": "[ace] Haibane Renmei - 01v2 (DVD 480p HEVC FLAC)",
+          "Container(1000).ListItem.Property(resolution)": "",
+          "Container(1000).ListItem.Property(size)": "1.7 GB",
+          "Container(1000).ListItem.Property(source_key)": "b4493ed3d1d1817aadcb98e88a08a4974ccd47a12fbf3f1fb53c542c5da8c0db",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).ListItem.Property(subtitle_badge)": ""
+        },
+        "selected_at": 2144675.501365087,
+        "request_id": "f6bdc729589846609afbe34aba8049ea",
+        "selection_identity": "bt:7178a9fdfa6e78d2beb64722f6b5f6179aa23ecb"
+      }
+    },
+    {
+      "file": "trial-haibane_renmei.startup.json",
+      "safe_fields": {}
+    }
+  ],
+  "failure_stages": [
+    "2026-10-19 21:01:26.732 T:25547 warning <general>: [BOBBI-TORRENT] reason=TORRENT_BUFFER_TIMEOUT detail={\"metadata_polls\":6,\"request_id\":\"f6bdc729589846609afbe34aba8049ea\",\"stage\":\"buffering\"}",
+    "2026-10-19 21:30:16.559 T:32340 warning <general>: [BOBBI-TORRENT] reason=TORRENT_EPISODE_FILE_IDENTITY_UNRESOLVED detail={\"binding_present\":true,\"candidate_count\":13,\"file_count\":40,\"metadata_polls\":14,\"request_id\":\"1a9a98f27bb741faae85831a38767d0f\",\"stage\":\"filename_identity\"}"
+  ]
+}

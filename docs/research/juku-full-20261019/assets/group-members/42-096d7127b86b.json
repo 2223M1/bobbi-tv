@@ -1,0 +1,78 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\系统维护工具_script.fix.favourites_1.0.49_20260927_110113.zip",
+  "bytes": 54665,
+  "sha256": "096d7127b86bb930f4a65009dbd6b9e03f601686a04353127b266039c090b659",
+  "members": [
+    {
+      "path": "script.fix.favourites/icon.png",
+      "type": "file",
+      "bytes": 37098,
+      "compressed_bytes": 36346,
+      "sha256": "0751986e003a392f81c71498b1398865001761ee579841107b067a6319ea62ca",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.fix.favourites/addon.xml",
+      "type": "file",
+      "bytes": 1186,
+      "compressed_bytes": 742,
+      "sha256": "30276eb184f5e7fe459cef2fd0924213f42a6be90d878536567ce3d95533ddc2",
+      "copy": "group-original/42-096d7127b86b/script.fix.favourites/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "script.fix.favourites",
+        "name": "系统维护工具",
+        "version": "1.0.49",
+        "provider-name": "YiJun",
+        "extensions": [
+          {
+            "point": "xbmc.python.script",
+            "library": "default.py"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": [
+          {
+            "addon": "xbmc.python",
+            "version": "3.0.0"
+          }
+        ]
+      }
+    },
+    {
+      "path": "script.fix.favourites/default.py",
+      "type": "file",
+      "bytes": 101040,
+      "compressed_bytes": 16629,
+      "sha256": "419e08c21b0d27ae12c7bdf0a3b1509b54776433f0118ada1d2dbd8f4981700f",
+      "copy": "group-original/42-096d7127b86b/script.fix.favourites/default.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.fix.favourites/resources/settings.xml",
+      "type": "file",
+      "bytes": 642,
+      "compressed_bytes": 348,
+      "sha256": "a7a47b6724a66fc4278f28530589b47ddde2d6d9fd017cc886ee625d9562ac71",
+      "copy": "group-original/42-096d7127b86b/script.fix.favourites/resources/settings.xml",
+      "copy_status": "original-byte-copy"
+    }
+  ],
+  "python": [],
+  "summary": {
+    "files": 4,
+    "directories": 0,
+    "uncompressed_bytes": 139966,
+    "extensions": {
+      ".png": 1,
+      ".xml": 2,
+      ".py": 1
+    },
+    "copy_status": {
+      "indexed-only": 1,
+      "original-byte-copy": 3
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "checked_utc": "2026-10-19T13:22:30.508962+00:00",
+  "transport": "direct HTTPS with system TLS validation",
+  "files": [
+    {
+      "url": "https://kodi.jukuku.xyz/zips/addons.xml",
+      "status": 200,
+      "bytes": 6398,
+      "sha256": "0b7c4dd1b1a7fb504ec76c48b3610721c455466d5e8a08a4f0ee9183d5aae12f",
+      "date": "Mon, 19 Oct 2026 13:22:31 GMT",
+      "last_modified": "Sun, 18 Oct 2026 14:59:34 GMT",
+      "etag": "\"6ad4ded6-18fe\"",
+      "copy": "official/addons.xml"
+    },
+    {
+      "url": "https://kodi.jukuku.xyz/zips/addons.xml.md5",
+      "status": 200,
+      "bytes": 32,
+      "sha256": "1a8e7bb1a55a90608a5ce81aee94d2281f9bfbf131501895285233da3a389216",
+      "date": "Mon, 19 Oct 2026 13:22:32 GMT",
+      "last_modified": "Sun, 18 Oct 2026 14:59:34 GMT",
+      "etag": "\"6ad4ded6-20\"",
+      "copy": "official/addons.xml.md5"
+    },
+    {
+      "url": "https://kodi.jukuku.xyz/repository.juku-1.0.1.zip",
+      "status": 200,
+      "bytes": 29289,
+      "sha256": "a1cc39a1ed63bb2998ec61e677d74cafb3d0241c87d64a56017b45fde6f6fd29",
+      "date": "Mon, 19 Oct 2026 13:22:33 GMT",
+      "last_modified": "Sun, 18 Oct 2026 14:59:20 GMT",
+      "etag": "\"6ad4dec8-7269\"",
+      "members": [
+        {
+          "path": "repository.juku/icon.png",
+          "bytes": 30296,
+          "sha256": "f8cc60d8f062fab763e1ae02a721bda32761d800150c13fe6a828fef018288be",
+          "copy": "official/repository.juku/icon.png"
+        },
+        {
+          "path": "repository.juku/addon.xml",
+          "bytes": 859,
+          "sha256": "9ee63fd0bcd5b602f8ac16363ba63656f5e0f54a7b05a97ed20fce58f08721a6",
+          "copy": "official/repository.juku/addon.xml"
+        }
+      ]
+    },
+    {
+      "url": "https://kodi.jukuku.xyz/zips/plugin.video.juku/plugin.video.juku-0.80-linux-arm64.zip",
+      "status": 200,
+      "bytes": 16851532,
+      "sha256": "850414fb4829512b44086245e1889f4e9bb9ae44b9f42b3f6d7834c75e2950a0",
+      "date": "Mon, 19 Oct 2026 13:22:34 GMT",
+      "last_modified": "Sun, 18 Oct 2026 15:04:18 GMT",
+      "etag": "\"6ad4dff2-101224c\""
+    },
+    {
+      "url": "https://kodi.jukuku.xyz/zips/plugin.video.juku/plugin.video.juku-0.80-linux-x64.zip",
+      "status": 200,
+      "bytes": 17968614,
+      "sha256": "0a384785f3cb9182513b0ea9f387675438217136df0ca751f6011c45ddeea9ca",
+      "date": "Mon, 19 Oct 2026 13:22:37 GMT",
+      "last_modified": "Sun, 18 Oct 2026 15:04:19 GMT",
+      "etag": "\"6ad4dff3-1122de6\""
+    }
+  ],
+  "advertised_addons": [
+    {
+      "id": "repository.juku",
+      "name": "巨库插件源",
+      "version": "1.0.1",
+      "provider-name": "juku"
+    },
+    {
+      "id": "plugin.video.juku",
+      "name": "巨库",
+      "version": "0.80",
+      "provider-name": "juku"
+    },
+    {
+      "id": "service.emby.server",
+      "name": "Emby Server",
+      "version": "1.0.5",
+      "provider-name": "juku"
+    },
+    {
+      "id": "service.trimmedia",
+      "name": "飞牛影视服务 (Trim Media)",
+      "version": "1.0.0",
+      "provider-name": "fnOS / CoreELEC Port"
+    },
+    {
+      "id": "service.faststrm",
+      "name": "FastStrm Service",
+      "version": "1.4.2",
+      "provider-name": "wabisabi926"
+    },
+    {
+      "id": "service.litepan",
+      "name": "LitePan Background Service",
+      "version": "0.5.7.1",
+      "provider-name": "LitePan"
+    }
+  ]
+}

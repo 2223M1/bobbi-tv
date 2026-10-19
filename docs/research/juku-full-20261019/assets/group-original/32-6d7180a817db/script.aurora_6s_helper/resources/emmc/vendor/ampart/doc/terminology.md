@@ -1,0 +1,24 @@
+# Terminology
+[中文文档](terminology_cn.md)
+ - DT
+   - Device Tree, a tree-like data structure that describe the device so u-boot/kernel can behave accordingly
+ - DTS
+   - Device Tree Structure, the actual data structure for DT, human-readable
+ - DTB
+   - Device Tree Blob (Big Large Object Binary), the file format to store DT, human-unreadble, it contains more metadata
+ - FDT
+   - Flattened Device Tree, actual format name, in the sense of ampart, this is an alias of DTB
+ - plain DTB
+   - A simple DTS stored in plain FDT format. One DTS = one file (although most of the time it's written as binary streams onto the eMMC)
+ - multi DTB
+   - Amlogic's proprietary format, zips multiple plain DTBs into one single file (although most of the time it's written as binary streams onto the eMMC)
+ - gzipped DTB
+   - On top of multi DTB, if the raw size of the multi DTB is too big (>256KiB-16B), then it's compressed as a gzip file (although most of the time it's written as binary streams onto the eMMC)
+ - reserved partition
+   - The partition in EPT (usually the second entry) to store partition table, DTB, keys, etc. It does not have a filesystem, all the data mentioned earlier are stored directly in byte format (binary streams). Usually 64MiB in size, and placed at 36MiB offset of the eMMC user area, 32M offset relative to the bootloader partition's end.
+ - DTB partition
+   - The area in reserved partition, 512KiB in size, 4MiB offset relative to reserved partition's head, the partition contains two identical 256KiB copies of the same data streams, of which both the last 16B are used for metadata. So at most 256KiB-16B DTB datas (plain/multi/gzipped) can be stored.
+ - EPT
+   - eMMC Partition Table, the table stored at the beginning of the reserved partition on the eMMC. It has 32 partition slots, each of which can have a name of 15 characters / 16 bytes (including terminating null byte), uses 64-bit unsigned integer as offset and size, and 32-bit unsigned integer as masks
+ - pedantic EPT
+   - An EPT created by Amlogic's u-boot, or with certain ampart modes. The first 4 partitions are forced to be bootloader(4MiB), reserved(64MiB), cache(0), env(8MiB). Bootlaoder starts at 0, reserved has 32MiB gap before it, all other partitions have 8MiB gap before them. Partitions in the `partitions` node in DTB are used to populate the EPT, latter replacing former. All partitions must come in incremental order: the latter partition's offset can't be smaller than last partition's end point + 8MiB.

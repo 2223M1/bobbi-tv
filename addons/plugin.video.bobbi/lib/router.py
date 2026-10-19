@@ -914,7 +914,7 @@ def _route_gui(action, params):
         actions[action](params)
     elif action == "extras":
         from lib.gui.extras_window import ExtrasWindow
-        from lib.bobbi.utils import ADDON_PATH
+        from lib.jacktook.utils import ADDON_PATH
 
         # Load the metadata properties needed by the Extras window
         item_information = {
