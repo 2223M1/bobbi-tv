@@ -1,0 +1,15 @@
+.work/
+build/
+downloads/
+# Keep generated native evidence locally and deliver it as hashed private
+# attachments. Source, patches, build-result.json and build logs stay reviewable.
+/ce-directory-lifetime-20261019/reentry_test
+/ce-directory-lifetime-20261019/run-*/*.bin
+/ce-directory-lifetime-20261019/run-*/*.unstripped
+/ce-directory-lifetime-20261019/run-*/**/*.a
+/ce-directory-lifetime-20261019/run-*/**/*.o
+/ce-directory-lifetime-20261019/run-*/**/*.o.d
+# Defensive boundary for future validation layouts outside the ignored build/.
+**/profile/
+**/profiles/
+**/userdata/

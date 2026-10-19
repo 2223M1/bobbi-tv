@@ -1,7 +1,7 @@
 """Immutable subtitle bytes plus append-only evidence in the resource ledger.
 
 Called by the preparation owner, never by GUI callbacks. A downloaded file is
-a candidate until its separate content, timing and font checks pass. Legacy
+a candidate until its identity and text checks pass. Fonts are optional. Legacy
 IMDb folders are not recursively scanned or silently adopted by this store.
 """
 import hashlib
@@ -134,18 +134,18 @@ class SubtitleStore:
             self._release_proof(video, record['timing'])
             current = binding(video, raw, record['extension'], record['language'], record['full_dialogue'],
                               record['forced'], record['origin'], record['timing'], record['font_result'], record['manual_intent'])
-            if current != {k: v for k, v in record.items() if k != 'font_result'}:
+            # v1 records retain source/file identity and original bytes, but
+            # their derived timing/font gate is deliberately not inherited.
+            old = {k: v for k, v in record.items() if k != 'font_result'}
+            if record.get('schema') == 1:
+                derived = {'schema', 'content', 'chinese_ready', 'state'}
+                matches = all(current.get(k) == v for k, v in old.items() if k not in derived)
+            else:
+                matches = current == old
+            if not matches:
                 raise ValueError('Subtitle record differs from its inputs')
             if ready_only and (current['state'] != 'READY_NOT_VISUAL_PROOF'
                     or current_manual_intent is None or current['manual_intent'] != current_manual_intent):
                 continue
-            if ready_only and current['extension'] in {'.ass', '.ssa'}:
-                if self.font_cache is None:
-                    continue
-                fonts = self.font_cache.binding(video['release_key'], current['subtitle_sha256'])
-                if fonts != record['font_result']:
-                    continue
-                for item in fonts['selected']:
-                    self.font_cache._verify(self.font_cache._record(item['sha256']))
             result.append(dict(current, local_object=str(self._path(record))))
         return result

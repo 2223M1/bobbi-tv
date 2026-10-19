@@ -93,7 +93,10 @@ def _is_115_copy(source, context):
         (site == '115 · CD2' and guid.startswith('bobi:')
          and locator.startswith('/storage/videos/Clouddrive/CloudDrive/115open/'))
         or (site in ('115 资源目录', '腾讯文档 · 115分享') and guid.startswith('qqdocs:')
-            and locator.startswith('am6bqqdocs://')))
+            and locator.startswith('am6bqqdocs://'))
+        or (site == 'Juku · 115分享' and guid.startswith('juku:')
+            and locator.startswith('am6bjuku://')
+            and getattr(source, 'verifiedShareFile', False) is True))
 
 
 def _release_name(value):

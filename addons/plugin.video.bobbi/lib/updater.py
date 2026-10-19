@@ -1,4 +1,4 @@
-"""Public updates belong to Kodi's bobbi repository, never upstream overwrite."""
+"""Offline private update information only; no anonymous network update."""
 import xbmc
 from lib.utils.kodi.utils import ADDON_VERSION
 

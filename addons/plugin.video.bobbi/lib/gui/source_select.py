@@ -1,4 +1,5 @@
 import contextlib
+import json
 import re
 import threading
 from time import monotonic
@@ -11,6 +12,7 @@ import xbmcgui
 from lib.clients.stremio.constants import STREMIO_ADDON_ALIASES_KEY
 from lib.db.cached import cache
 from lib.domain.torrent import TorrentStream
+from lib.cinema.source_presentation import source_site_label
 from lib.utils.general.source_platform import source_platform_label
 from lib.gui.base_window import BaseWindow
 from lib.gui.filter_items_window import FilterWindow
@@ -127,6 +129,10 @@ def _get_source_indexer_label(source: TorrentStream, aliases: Dict) -> str:
     return source.addonInstanceLabel or source.indexer
 
 
+def _source_filter_label(source):
+    return source_site_label(source_platform_label(source), source.type, filter_option=True)
+
+
 def _show_release_group(item_information, source):
     """User policy: encode groups belong only to BT anime/anime movies.
 
@@ -191,7 +197,7 @@ class SourceSelect(BaseWindow):
         self.source_pump = None
         self._source_revision = -1
         self._source_interacted = False
-        self._auto_select_pending = self.item_information.get('auto_select_sources') is True
+        self._auto_select_pending = False  # Manual source selection is product policy.
 
     def onInit(self) -> None:
         self.setProperty("playback_error", self.last_error)
@@ -240,8 +246,71 @@ class SourceSelect(BaseWindow):
         qualities_list.selectItem(keys.index(selected) if selected in keys else 0)
 
     def doModal(self) -> bool:
-        from lib.portable import manual_modal
-        return manual_modal(self, lambda: super(SourceSelect, self).doModal())
+        from lib.native_support import available
+        self._native_owner = available()
+        if not self._native_owner:
+            from lib.portable import manual_modal
+            return manual_modal(self, lambda: super(SourceSelect, self).doModal())
+        prepared_retry = None
+        while True:
+            from lib.cinema.playback_ipc import call
+            try:
+                self._control_snapshot = call({'operation': 'snapshot'})
+            except (OSError, ValueError, RuntimeError):
+                self.last_error = '播放控制服务尚未就绪，请稍后重试'
+                self.setProperty('playback_error', self.last_error)
+                return False
+            self._pending_selection = None
+            self._selection_locked = False
+            if prepared_retry is not None:
+                from lib.cinema.prepared_retry import unchanged
+                cloud_source, prior_snapshot = prepared_retry
+                prepared_retry = None
+                if not unchanged(prior_snapshot, self._control_snapshot):
+                    return False  # A new selection/restart wins over a late retry.
+                self._resolve_item(cloud_source)
+            elif getattr(self, 'source_session', None) is None:
+                super().doModal()
+            else:
+                self._run_progressive_window()
+            pending = self._pending_selection
+            if pending is None:
+                if getattr(self, 'source_pump', None):
+                    self.source_pump.cancel()
+                    self.source_session.cancel()
+                return self.resolved
+            # Resolution runs outside the source dialog's GUI callback. The
+            # source dialog has already closed; only one loading owner remains.
+            source, options = pending
+            if self._resolution_answered:
+                self.item_information["direct_playback_handoff"] = True
+            resolver = ResolverWindow(
+                "resolver.xml", ADDON_PATH, source=source,
+                item_information=dict(self.item_information), **options,
+            )
+            self.resolved = resolver.doModal(False)
+            self.last_error = getattr(resolver, "error_message", "")
+            self._resolution_answered = self._resolution_answered or getattr(resolver, "resolution_answered", False)
+            if (not self.resolved and not resolver.user_cancelled
+                    and resolver.startup_failure_category in {'buffer_timeout', 'preload_error'}
+                    and isinstance(resolver.playback_info, dict)):
+                from lib.cinema.prepared_retry import ready_source
+                prepared_retry = ready_source(resolver.playback_info, resolver.startup_failure_category,
+                    resolver.preparation_intent, lambda: resolver.user_cancelled or xbmc.Monitor().abortRequested())
+                if prepared_retry:
+                    kodilog('[CINEMA-PREPARE] SAME_FILE_CLOUD_RETRY request='
+                            + self.item_information['request_id'])
+            del resolver
+            if self.resolved:
+                return True
+            if get_property("bobbi_cinema_selection") != self.item_information.get("request_id"):
+                return False
+            if prepared_retry is not None:
+                continue  # One new exact request; never repeat the failed BT opener.
+            self._restore_position = self.position
+            if getattr(self, 'source_session', None):
+                self.source_session.reopen()
+            self.setProperty("resolving", "false")
 
     def close(self):
         if hasattr(self, '_source_closed'):
@@ -350,6 +419,11 @@ class SourceSelect(BaseWindow):
         self.setProperty('source_loading', 'true' if pending else 'false')
         from lib.cinema.source_presentation import search_status
         summary, error, diagnostic = search_status(snapshot['providers'], bool(self.sources))
+        if not pending and not getattr(self, '_provider_terminal_logged', False):
+            from lib.cinema.source_presentation import provider_diagnostics
+            self._provider_terminal_logged = True
+            kodilog('BOBBI-PROVIDERS ' + json.dumps(provider_diagnostics(snapshot['providers']),
+                                                  ensure_ascii=True, sort_keys=True), level=xbmc.LOGINFO)
         if self._auto_select_pending and not self._source_interacted:
             summary = '正在统一比较片源，完成后自动播放；操作列表可改为手动选择'
         if snapshot.get('superseded_count'):
@@ -423,8 +497,8 @@ class SourceSelect(BaseWindow):
                 "filter": lambda val: [s for s in self.sources if s.type == val],
             },
             "indexer": {
-                "items": lambda: sorted({source_platform_label(s) for s in self.sources if source_platform_label(s)}),
-                "filter": lambda val: [s for s in self.sources if source_platform_label(s) == val],
+                "items": lambda: sorted({_source_filter_label(s) for s in self.sources if _source_filter_label(s)}),
+                "filter": lambda val: [s for s in self.sources if _source_filter_label(s) == val],
             },
             "language": {
                 "items": self._get_all_languages,
@@ -492,7 +566,7 @@ class SourceSelect(BaseWindow):
 
     def _apply_source_filter(self, kind, value):
         if kind == 'indexer':
-            return [s for s in self.sources if source_platform_label(s) == value]
+            return [s for s in self.sources if _source_filter_label(s) == value]
         if kind == 'quality':
             return [s for s in self.sources if _source_quality(s) == value]
         if kind == 'type':
@@ -513,7 +587,83 @@ class SourceSelect(BaseWindow):
         raise ValueError('Unknown source filter')
 
     def _handle_context_menu_action(self):
-        xbmcgui.Dialog().ok("bobbi", "后台下载、云任务及字幕上传尚未完成通用版适配。")
+        self.position = self.display_list.getSelectedPosition()
+        if not 0 <= self.position < len(self.list_sources):
+            return
+        if getattr(self, 'source_session', None):
+            item = self.display_list.getSelectedItem()
+            selected_source = self.source_session.inspect(self.source_session.epoch,
+                                                          item.getProperty('source_key') if item else '')
+            if selected_source is None:
+                return
+        else:
+            selected_source = self.list_sources[self.position]
+
+        menu_items = []
+        menu_actions = []
+
+        if selected_source.type == IndexerType.TORRENT:
+            menu_items.extend(
+                [
+                    translation(90365),
+                    translation(90359),
+                    translation(90082),
+                    translation(90744),
+                ]
+            )
+            menu_actions.extend(
+                [
+                    "download_to_debrid",
+                    "add_to_torrserver",
+                    "subtitle_download",
+                    "upload_subtitle",
+                ]
+            )
+        elif selected_source.type in (IndexerType.DIRECT, IndexerType.STREMIO_DEBRID):
+            menu_items.extend([translation(90083), translation(90082), translation(90744)])
+            menu_actions.extend(["download_file", "subtitle_download", "upload_subtitle"])
+        else:
+            menu_items.extend(
+                [
+                    translation(90084),
+                    translation(90083),
+                    translation(90082),
+                    translation(90744),
+                ]
+            )
+            menu_actions.extend(
+                [
+                    "pack_select",
+                    "download_file",
+                    "subtitle_download",
+                    "upload_subtitle",
+                ]
+            )
+
+        response = xbmcgui.Dialog().contextmenu(menu_items)
+        if response < 0 or response >= len(menu_actions):
+            return
+
+        action = menu_actions[response]
+        kodilog(
+            f"SourceSelect context action selected: action={action}, mode={self.item_information.get('mode')}, query={self.item_information.get('query')}, year={self.item_information.get('year')}"
+        )
+        if action == "download_to_debrid":
+            try:
+                self._download_to_debrid(selected_source)
+            except Exception as e:
+                kodilog(f"SourceSelect _download_to_debrid raised: {e}")
+                notification(str(e))
+        elif action == "add_to_torrserver":
+            self._add_to_torrserver(selected_source)
+        elif action == "download_file":
+            self._download_file(selected_source)
+        elif action == "subtitle_download":
+            self._resolve_item(selected_source, is_subtitle_download=True)
+        elif action == "pack_select":
+            self._resolve_item(selected_source, pack_select=True)
+        elif action == "upload_subtitle":
+            self._upload_subtitle(selected_source)
 
     def _handle_quality_select_action(self):
         quality_list = self.getControl(1300)
@@ -608,8 +758,8 @@ class SourceSelect(BaseWindow):
             menu_item.setProperty("show_release_group", "true" if _show_release_group(getattr(self, "item_information", {}), source) else "false")
             menu_item.setProperty("provider_raw", release_group)
             menu_item.setProperty("chinese_subtitles", chinese_subtitles)
-            from lib.clients.qqdocs_provider import is_source as is_qqdocs_source
-            if is_qqdocs_source(source):
+            from lib.clients.catalog_providers import provider_for
+            if provider_for(source):
                 # A file named bilingual has not established subtitle presence
                 # or synchronization. Keep provenance separate from evidence.
                 chinese_subtitles = subtitle_evidence
@@ -641,7 +791,7 @@ class SourceSelect(BaseWindow):
             indexer_label = _get_source_indexer_label(source, aliases)
             menu_item.setProperty("type", get_provider_color(provider_name))
             menu_item.setProperty("indexer", get_random_color(indexer_label))
-            menu_item.setProperty("source_site", indexer_label)
+            menu_item.setProperty("source_site", source_site_label(indexer_label, source.type))
             menu_item.setProperty("guid", source.guid)
             menu_item.setProperty("infoHash", source.infoHash)
             menu_item.setProperty("size", bytes_to_human_readable(int(source.size)))
@@ -935,8 +1085,53 @@ class SourceSelect(BaseWindow):
         is_subtitle_download=False,
         local_subtitle_path: Optional[str] = None,
     ) -> None:
-        from lib.portable import queue_selected
-        return queue_selected(self, selected_source, pack_select, is_subtitle_download, local_subtitle_path)
+        if not getattr(self, "_native_owner", False):
+            from lib.portable import queue_selected
+            return queue_selected(self, selected_source, pack_select, is_subtitle_download, local_subtitle_path)
+        if not pack_select and not is_subtitle_download:
+            if self._selection_locked:
+                return
+            self._selection_locked = True
+            self.last_error = ""
+            # A binding belongs to one selected release, not the reusable list.
+            self.item_information.pop("episode_binding", None)
+            self.item_information["request_id"] = uuid4().hex
+            self.item_information["selection_policy"] = "exact"
+            from lib.cinema.playback_request import select, source_identity
+            try:
+                select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source))
+            except (AttributeError, OSError, ValueError, RuntimeError):
+                self._selection_locked = False
+                self.last_error = '片源选择已变化或播放控制不可用，请重试'
+                self.setProperty('playback_error', self.last_error)
+                return
+            set_property("bobbi_cinema_selection", self.item_information["request_id"])
+            # Invalidate an older pending child immediately, before this source
+            # starts potentially slow resolution.
+            set_property("bobbi_active_player_session", self.item_information["request_id"])
+            self._pending_selection = (selected_source, {
+                "is_subtitle_download": False,
+                "local_subtitle_path": local_subtitle_path,
+            })
+            self.setProperty("instant_close", "true")
+            self.close()
+            return
+        self.setProperty("resolving", "true")
+        # Explicit advanced actions must not inherit a failed exact request.
+        advanced_information = dict(self.item_information)
+        for key in ("selection_policy", "request_id", "episode_binding", "direct_playback_handoff"):
+            advanced_information.pop(key, None)
+        resolver_window = ResolverWindow(
+            "resolver.xml",
+            ADDON_PATH,
+            source=selected_source,
+            previous_window=self,
+            item_information=advanced_information,
+            is_subtitle_download=is_subtitle_download,
+            local_subtitle_path=local_subtitle_path,
+        )
+        self.resolved = resolver_window.doModal(pack_select)
+        del resolver_window
 
     def show_resume_dialog(self, playback_percent: float) -> Optional[bool]:
         try:

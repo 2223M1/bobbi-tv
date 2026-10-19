@@ -1,0 +1,79 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "wild_tales",
+    "stopped": true,
+    "before": {
+      "wall": 2132936.381437222,
+      "phase": "AV_STARTED",
+      "cancelled": false,
+      "failure": null,
+      "native": {
+        "file_identity": "transport:42427646425485aeacaeb42452f85ea3e05b7ff6cec63d5b4032d098a3023697|transport:6f9e07399743174872710a681ead19e74b35f8d4ff8dbc3cdf3db9aba8945428",
+        "monotonic_us": 2132817818736,
+        "native_instance": "3980f6f9-62bd-40b2-84bc-413c918156da",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "d8b187a550f24b9eb29f7cd6e0b7df8e",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "6f9e07399743174872710a681ead19e74b35f8d4ff8dbc3cdf3db9aba8945428",
+        "user_intent": 0
+      },
+      "seconds": 118.484,
+      "duration": 7280.384,
+      "currentaudiostream": {
+        "bitrate": 256000,
+        "channels": 6,
+        "codec": "eac3",
+        "index": 1,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "spa",
+        "name": "Spanish",
+        "samplerate": 0
+      },
+      "currentsubtitle": {},
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1608,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 3840
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "字幕来源暂不可用 · 可手动重试",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 2865,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      }
+    },
+    "seconds": 0.62
+  },
+  "diagnostic_present": false,
+  "work": "wild_tales",
+  "operation": "stop"
+}

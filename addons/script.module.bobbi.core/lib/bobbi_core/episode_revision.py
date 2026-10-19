@@ -45,9 +45,9 @@ def compatible_pair(first, following, season, episode, first_key, next_key):
 
 def qualified_next(first, following):
     """Both independent cloud records must be qualified and tuple-bound."""
-    from bobbi_core.subtitle_binding import checked_video
+    from bobbi_core.video_context import checked_video
     try:
-        a, b = checked_video(first['subtitle_video']), checked_video(following['subtitle_video'])
+        a, b = checked_video(first['video_context']), checked_video(following['video_context'])
         current = re.fullmatch(r'tmdb:tv:([1-9]\d*):s([1-9]\d*):e([1-9]\d*)', a['media_id'])
         if not current:
             return False

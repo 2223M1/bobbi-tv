@@ -692,7 +692,10 @@ class TmdbClient(BaseTmdbClient):
         if show_collapsed_seasons(tmdb_obj, title, ids, mode, media_type):
             return
         number_of_seasons = tmdb_obj.get("number_of_seasons", 1) or 1
-        if number_of_seasons == 1:
+        anime_hub = (xbmc.getSkinDir() == 'skin.bobbi.cinema'
+                     and any(genre.get('id') == 16 for genre in tmdb_obj.get('genres', [])
+                             if hasattr(genre, 'get')))
+        if number_of_seasons == 1 and not anime_hub:
             TmdbClient.show_episodes_details(
                 tv_name=title,
                 ids=ids,

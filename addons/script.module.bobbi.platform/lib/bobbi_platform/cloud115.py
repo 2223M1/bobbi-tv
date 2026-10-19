@@ -92,8 +92,14 @@ def load(path):
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 16384:
         raise CloudError('INVALID_CREDENTIALS')
     try:
-        return credentials(json.loads(path.read_text(encoding='utf-8')))
-    except (ValueError, OSError):
+        value = json.loads(path.read_text(encoding='utf-8'))
+        if isinstance(value, dict) and set(value) == {'_account'}:
+            from .account_manager import validate_snapshot
+            scope = validate_snapshot(value['_account'])
+            if not scope['authenticated']:
+                return None
+        return credentials(value)
+    except (ValueError, OSError, RuntimeError):
         raise CloudError('INVALID_CREDENTIALS') from None
 
 

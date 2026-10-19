@@ -1,5 +1,5 @@
 from lib.api.debrid.base import DebridClient
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 from lib.services.debrid.auth import run_debrider_auth
 from lib.utils.kodi.utils import dialog_ok, set_setting, translation
 

@@ -24,7 +24,8 @@ def rename(text):
     for old, new in IDS.items():
         text = text.replace(old, new)
     # Independent Kodi global properties as well as independent addon data.
-    return text.replace('jacktook.', 'bobbi.').replace('jacktook_', 'bobbi_')
+    return (text.replace('jacktook.', 'bobbi.').replace('jacktook_', 'bobbi_')
+            .replace('lib.bobbi.', 'lib.jacktook.'))  # Internal package directory is not an addon ID.
 
 
 def once(text, before, after):

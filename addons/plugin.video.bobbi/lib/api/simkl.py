@@ -19,7 +19,7 @@ from lib.api.simkl_cache import (
 )
 from lib.clients.simkl import SIMKL_CLIENT_ID
 from lib.gui.qr_progress_dialog import QRProgressDialog
-from lib.bobbi.utils import ADDON_NAME, ADDON_PATH, ADDON_VERSION
+from lib.jacktook.utils import ADDON_NAME, ADDON_PATH, ADDON_VERSION
 from lib.utils.debrid.qrcode_utils import make_qrcode
 from lib.utils.kodi.utils import (
     copy2clip,

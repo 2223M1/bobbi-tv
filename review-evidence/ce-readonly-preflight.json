@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "mode": "readonly",
+  "timestamp": 1792399880.5091467,
+  "kodi_processes": 1,
+  "kodi_elf": {
+    "class": 1,
+    "machine": 40,
+    "sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b"
+  },
+  "application": {
+    "name": "Kodi",
+    "version": {
+      "major": 21,
+      "minor": 3,
+      "revision": "e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+      "tag": "stable"
+    }
+  },
+  "players": [],
+  "native_methods": [
+    "Player.BobiControl",
+    "Player.BobiFullscreen",
+    "Player.BobiIntent",
+    "Player.BobiState",
+    "Player.BobiSubtitle",
+    "Player.BobiSubtitleFile",
+    "Player.BobiSubtitles"
+  ],
+  "network": {
+    "tmdb": {
+      "http": 401,
+      "configured_proxy": false,
+      "seconds": 1.201
+    },
+    "image": {
+      "http": 404,
+      "configured_proxy": false,
+      "seconds": 0.571
+    },
+    "qualification": "API authentication and nontransparent routing are not proved by these unauthenticated reads."
+  }
+}

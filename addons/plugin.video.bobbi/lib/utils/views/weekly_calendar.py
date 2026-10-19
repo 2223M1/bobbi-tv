@@ -6,7 +6,7 @@ from urllib.parse import quote
 
 from lib.clients.tmdb.utils.utils import tmdb_get
 from lib.db.pickle_db import PickleDatabase
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 from lib.utils.general.utils import (
     execute_thread_pool,
     set_media_infoTag,

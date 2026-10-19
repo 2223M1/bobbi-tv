@@ -9,9 +9,13 @@ class SearchCompletion:
     failed: int = 0
     skipped: int = 0
     timed_out: int = 0
+    stale: int = 0
+    truncated: int = 0
+    snapshot_age: int = 0
 
     def __post_init__(self):
-        counts = (self.planned, self.succeeded, self.failed, self.skipped, self.timed_out)
+        counts = (self.planned, self.succeeded, self.failed, self.skipped, self.timed_out,
+                  self.stale, self.truncated, self.snapshot_age)
         if any(type(value) is not int or value < 0 for value in counts):
             raise ValueError('Nonnegative integer query counts required')
         if self.planned != self.succeeded + self.failed + self.skipped + self.timed_out:
@@ -19,7 +23,7 @@ class SearchCompletion:
 
     @property
     def complete(self):
-        return not (self.failed or self.skipped or self.timed_out)
+        return not (self.failed or self.skipped or self.timed_out or self.stale or self.truncated)
 
     @property
     def state(self):
@@ -32,17 +36,21 @@ class SearchCompletion:
     def combine(self, other):
         return SearchCompletion(self.planned + other.planned,
             self.succeeded + other.succeeded, self.failed + other.failed,
-            self.skipped + other.skipped, self.timed_out + other.timed_out)
+            self.skipped + other.skipped, self.timed_out + other.timed_out,
+            self.stale + other.stale, self.truncated + other.truncated,
+            max(self.snapshot_age, other.snapshot_age))
 
     def with_parse_failures(self, count):
         if type(count) is not int or not 0 <= count <= self.succeeded:
             raise ValueError('Parse failures must be an integer within successful query count')
         return SearchCompletion(self.planned, self.succeeded - count,
-                                self.failed + count, self.skipped, self.timed_out)
+                                self.failed + count, self.skipped, self.timed_out,
+                                self.stale, self.truncated, self.snapshot_age)
 
     def summary(self):
-        return 'queries={}/{} failed={} skipped={} timed_out={}'.format(
-            self.succeeded, self.planned, self.failed, self.skipped, self.timed_out)
+        return 'queries={}/{} failed={} skipped={} timed_out={} stale={} truncated={} snapshot_age={}'.format(
+            self.succeeded, self.planned, self.failed, self.skipped, self.timed_out,
+            self.stale, self.truncated, self.snapshot_age)
 
 
 class SearchResults(list):

@@ -1,0 +1,42 @@
+{
+  "action": "window",
+  "gui": {
+    "currentcontrol": {
+      "label": "[程序插件]"
+    },
+    "currentwindow": {
+      "id": 10040,
+      "label": "插件浏览器"
+    }
+  },
+  "labels": {
+    "Container(50).ListItemPosition(0).Label": "程序插件",
+    "Container(50).ListItemPosition(1).Label": "视频插件",
+    "Container(50).NumItems": "2",
+    "Container(50).Position": "0",
+    "Container.FolderPath": "addons://repository.jacktook/",
+    "Container.NumItems": "2",
+    "ListItem.Label": "程序插件",
+    "System.CurrentControl": "[程序插件]",
+    "System.CurrentWindow": "插件浏览器"
+  },
+  "safe_settings": {
+    "service_enabled": "true",
+    "apply_settings_to_torrserver": "false",
+    "migrated": "true"
+  },
+  "settings_sha256": "36100aa91d14348e8df4695aff23b04f74cc950998f2ebdf5ac2f20c85356d28",
+  "engine_pid": "4025",
+  "installed": {
+    "plugin.video.jacktorr": {
+      "enabled": true,
+      "origin": "",
+      "version": "1.2.2+am6b.317"
+    },
+    "repository.jacktook": {
+      "enabled": true,
+      "origin": "repository.jacktook",
+      "version": "0.0.5"
+    }
+  }
+}

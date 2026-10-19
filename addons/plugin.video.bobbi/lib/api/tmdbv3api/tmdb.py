@@ -45,7 +45,11 @@ class TMDb:
 
     def __init__(self, obj_cached=True, session=None):
         if self.__class__._session is None or session is not None:
-            self.__class__._session = requests.Session() if session is None else session
+            if session is None:
+                from bobbi_core import metadata_transport
+                self.__class__._session = metadata_transport
+            else:
+                self.__class__._session = session
         self._base = "https://api.themoviedb.org/3"
         self._remaining = 40
         self._reset = None
@@ -185,12 +189,14 @@ class TMDb:
                 )
             except requests.RequestException as exc:
                 last_error = exc
-                if attempt < attempts:
+                stage = getattr(exc, 'metadata_stage', None)
+                if attempt < attempts and stage not in ('CANCELLED', 'TIMEOUT', 'TLS', 'ORIGIN', 'PROXY_DISABLED'):
                     time.sleep(min(cls.MAX_RETRY_DELAY_SECONDS, 0.25 * attempt))
                     continue
-                raise TMDbException(
-                    "TMDb request failed after {} attempt(s)".format(attempts)
-                )
+                error = TMDbException("TMDb request failed after {} attempt(s){}".format(
+                    attempt, ' [METADATA_' + stage + ']' if stage else ''))
+                error.metadata_stage = stage
+                raise error from None
 
             status_code = int(getattr(response, "status_code", 0) or 0)
             if status_code in cls.RETRY_STATUS_CODES and attempt < attempts:
@@ -201,9 +207,9 @@ class TMDb:
                 response.raise_for_status()
             except requests.RequestException as exc:
                 last_error = exc
-                raise TMDbException(
-                    "TMDb request failed with HTTP status {}".format(status_code or "unknown")
-                )
+                error = TMDbException("TMDb request failed with HTTP status {}".format(status_code or "unknown"))
+                error.metadata_stage = 'HTTP_' + str(status_code or 0)
+                raise error from None
             return response
 
         raise TMDbException(
@@ -215,8 +221,9 @@ class TMDb:
     @staticmethod
     @lru_cache(maxsize=REQUEST_CACHE_MAXSIZE)
     def cached_request(method, url, data, json, proxies, cache_bucket):
+        from bobbi_core.metadata_transport import request
         return TMDb._request_with_bounds(
-            requests.request,
+            request,
             method,
             url,
             data,
@@ -300,7 +307,9 @@ class TMDb:
         try:
             payload = req.json()
         except (TypeError, ValueError):
-            raise TMDbException("TMDb returned an invalid JSON response")
+            error = TMDbException("TMDb returned an invalid JSON response")
+            error.metadata_stage = 'JSON'
+            raise error from None
 
         if "page" in payload:
             os.environ["page"] = str(payload["page"])

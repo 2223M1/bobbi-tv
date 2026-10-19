@@ -1,0 +1,248 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Flip Flappers",
+        "tmdb_id": 68272,
+        "kind": "tv",
+        "year": 2016,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "1a9a98f27bb741faae85831a38767d0f",
+      "started": 2146724.923938944,
+      "home": {
+        "generation": 74,
+        "intent": 4,
+        "retired_generation": 74,
+        "observed_at": 2146725.264253083
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2146725.264599126,
+      "picker": {
+        "window": 13001,
+        "generation": 75,
+        "intent": 4,
+        "tmdb_id": 68272,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2146729.796282562
+    },
+    "samples": [
+      {
+        "wall": 2146725.468970543,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "target_unresolved",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2146725.447504622,
+          "decoder_started": 2146725.481973221,
+          "decoder_completed": 2146725.482924017,
+          "sample_completed": 2146725.482928559
+        }
+      },
+      {
+        "wall": 2146727.60868349,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "target_unresolved",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2146727.565816857,
+          "decoder_started": 2146727.632378212,
+          "decoder_completed": 2146727.63269588,
+          "sample_completed": 2146727.632698255
+        }
+      },
+      {
+        "wall": 2146729.816833979,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "target_unresolved",
+        "labels": {
+          "Container(1000).ListItem.Label": "[Judas] Flip Flappers (Season 1) [BD 1080p][HEVC x265 10bit][Dual-Audio][Eng-Subs]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "21",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "21"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2146729.796904814,
+          "decoder_started": 2146729.829561115,
+          "decoder_completed": 2146729.829989867,
+          "sample_completed": 2146729.829993408
+        }
+      },
+      {
+        "wall": 2146731.958627333,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "target_unresolved",
+        "labels": {
+          "Container(1000).ListItem.Label": "[Judas] Flip Flappers (Season 1) [BD 1080p][HEVC x265 10bit][Dual-Audio][Eng-Subs]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "22",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "22"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2146731.929617298,
+          "decoder_started": 2146732.031821633,
+          "decoder_completed": 2146732.032402469,
+          "sample_completed": 2146732.032405011
+        }
+      },
+      {
+        "wall": 2146734.107546187,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "target_unresolved",
+        "labels": {
+          "Container(1000).ListItem.Label": "[Judas] Flip Flappers (Season 1) [BD 1080p][HEVC x265 10bit][Dual-Audio][Eng-Subs]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "23",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "23"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2146734.096260724,
+          "decoder_started": 2146734.145344925,
+          "decoder_completed": 2146734.145620593,
+          "sample_completed": 2146734.145622676
+        }
+      },
+      {
+        "wall": 2146736.334799873,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "target_unresolved",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "23"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2146736.268365933,
+          "decoder_started": 2146736.364344119,
+          "decoder_completed": 2146736.364685454,
+          "sample_completed": 2146736.364688454
+        }
+      },
+      {
+        "wall": 2146738.451358199,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "target_unresolved",
+        "labels": {
+          "Container(1000).ListItem.Label": "[Judas] Flip Flappers (Season 1) [BD 1080p][HEVC x265 10bit][Dual-Audio][Eng-Subs]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "23",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "23"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2146738.436046053,
+          "decoder_started": 2146738.484621711,
+          "decoder_completed": 2146738.484875837,
+          "sample_completed": 2146738.484877754
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "start",
+  "attempt": 5,
+  "regression_attempt": true
+}

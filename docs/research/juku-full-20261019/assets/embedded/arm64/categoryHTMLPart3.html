@@ -1,0 +1,350 @@
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">同步指令发送中...</div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="nav-bar">
+        <a href="/" class="nav-item" id="nav-home">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>推荐</span>
+        </a>
+        <a href="/l" class="nav-item" id="nav-lists">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>片单</span>
+        </a>
+        <a href="/c" class="nav-item active" id="nav-category">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>分类</span>
+        </a>
+        <a href="/sq" class="nav-item" id="nav-share">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>广场</span>
+        </a>
+        <a href="/private" class="nav-item" id="nav-private">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+            <span>私有库</span>
+        </a>
+        <a href="/s" class="nav-item" id="nav-search">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>搜索</span>
+        </a>
+        <a href="/p" class="nav-item" id="nav-push">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>推送</span>
+        </a>
+        <a href="/qr" class="nav-item" id="nav-pan">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span>网盘</span>
+        </a>
+    </div>
+
+    <script>
+        // Filter options constants (mirrors Python server values)
+        const YEARS = ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017", "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009", "2008", "2007", "earlier"];
+        const YEAR_LABELS = { "earlier": "更早" };
+
+        const AREAS = ["大陆", "香港", "台湾", "美国", "西班牙", "法国", "英国", "日本", "韩国", "泰国", "德国", "印度", "意大利", "加拿大", "其它"];
+
+        const GENRES = ["剧情", "喜剧", "惊悚", "动作", "犯罪", "爱情", "恐怖", "悬疑", "纪录", "冒险", "奇幻", "家庭", "科幻", "动画", "历史", "电视电影", "科幻玄幻", "音乐", "动作冒险", "战争", "西部", "真人秀", "战争政治", "古装"];
+
+        // Query states
+        let currentTypeId = 0;
+        let currentYear = '';
+        let currentArea = '';
+        let currentGenre = '';
+        let currentTagId = 0;
+
+        let currentPage = 1;
+        let totalPages = 1;
+        let isLoading = false;
+
+        // Tags data cache
+        let dynamicTags = [];
+
+        // Show Toast Function
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.toggle('toast-error', isError);
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Toggle Expand Filter UI
+        function toggleFilterPanel() {
+            const panel = document.getElementById('filterPanel');
+            const toggleText = document.getElementById('toggleText');
+            const isOpen = panel.classList.toggle('open');
+            toggleText.innerText = isOpen ? "收起筛选" : "展开筛选";
+        }
+
+        // Render static filter options on startup
+        function initStaticFilters() {
+            const yearOptions = document.getElementById('yearOptions');
+            YEARS.forEach(y => {
+                const label = YEAR_LABELS[y] || y;
+                yearOptions.innerHTML += '<button class="filter-opt-btn" data-val="' + y + '" onclick="setFilter(\'year\', \'' + y + '\')">' + label + '<\/button>';
+            });
+
+            const areaOptions = document.getElementById('areaOptions');
+            AREAS.forEach(a => {
+                areaOptions.innerHTML += '<button class="filter-opt-btn" data-val="' + a + '" onclick="setFilter(\'area\', \'' + a + '\')">' + a + '<\/button>';
+            });
+
+            const genreOptions = document.getElementById('genreOptions');
+            GENRES.forEach(g => {
+                genreOptions.innerHTML += '<button class="filter-opt-btn" data-val="' + g + '" onclick="setFilter(\'genre\', \'' + g + '\')">' + g + '<\/button>';
+            });
+        }
+
+        // Load Tags from API
+        async function loadDynamicTags() {
+            const tagOptions = document.getElementById('tagOptions');
+            try {
+                const response = await fetch('/api/mv/videos/tags');
+                if (!response.ok) throw new Error("tags status " + response.status);
+                const raw = await response.json();
+                dynamicTags = raw.data || [];
+                
+                dynamicTags.forEach(t => {
+                    const tid = t.tagId || t.id;
+                    const name = t.tagName || t.name;
+                    tagOptions.innerHTML += '<button class="filter-opt-btn" data-val="' + tid + '" onclick="setFilter(\'tag\', ' + tid + ')">' + name + '<\/button>';
+                });
+            } catch (err) {
+                console.error("加载标签分类失败:", err);
+            }
+        }
+
+        // Change Category TypeId
+        function switchCategory(typeId) {
+            if (currentTypeId === typeId) return;
+            currentTypeId = typeId;
+
+            // Highlight Tab
+            const tabs = document.querySelectorAll('.category-tab');
+            tabs.forEach(tab => {
+                tab.classList.toggle('active', parseInt(tab.getAttribute('data-type')) === typeId);
+            });
+
+            // Reset filters
+            resetAllFiltersUI();
+            loadVideos(true);
+        }
+
+        function resetAllFiltersUI() {
+            currentYear = '';
+            currentArea = '';
+            currentGenre = '';
+            currentTagId = 0;
+
+            document.querySelectorAll('.filter-row').forEach(row => {
+                const buttons = row.querySelectorAll('.filter-opt-btn');
+                buttons.forEach((btn, idx) => {
+                    btn.classList.toggle('active', idx === 0);
+                });
+            });
+            updateFilterSummaryText();
+        }
+
+        // Apply filters
+        function setFilter(type, value) {
+            let rowId = '';
+            if (type === 'year') {
+                currentYear = value;
+                rowId = 'yearOptions';
+            } else if (type === 'area') {
+                currentArea = value;
+                rowId = 'areaOptions';
+            } else if (type === 'genre') {
+                currentGenre = value;
+                rowId = 'genreOptions';
+            } else if (type === 'tag') {
+                currentTagId = parseInt(value);
+                rowId = 'tagOptions';
+            }
+
+            // Highlighting
+            const rowEl = document.getElementById(rowId);
+            if (rowEl) {
+                const buttons = rowEl.querySelectorAll('.filter-opt-btn');
+                buttons.forEach(btn => {
+                    const bVal = btn.getAttribute('data-val');
+                    const isActive = (type === 'tag') ? parseInt(bVal) === currentTagId : bVal === value;
+                    btn.classList.toggle('active', isActive);
+                });
+            }
+
+            updateFilterSummaryText();
+            loadVideos(true);
+        }
+
+        function updateFilterSummaryText() {
+            let yText = currentYear ? (YEAR_LABELS[currentYear] || currentYear) : '全部';
+            let aText = currentArea || '全部';
+            let gText = currentGenre || '全部';
+            
+            let tText = '全部';
+            if (currentTagId > 0) {
+                const matched = dynamicTags.find(t => parseInt(t.tagId || t.id) === currentTagId);
+                if (matched) tText = matched.tagName || matched.name;
+            }
+
+            const summary = document.getElementById('filterSummaryText');
+            summary.innerHTML = '筛选: 年份 ' + yText + ' <span class="filter-summary-dot">·<\/span> 地区 ' + aText + ' <span class="filter-summary-dot">·<\/span> 类型 ' + gText + ' <span class="filter-summary-dot">·<\/span> 标签 ' + tText;
+        }
+
+        // Fetch videos list
+        async function loadVideos(reset = true) {
+            if (isLoading) return;
+            isLoading = true;
+
+            const content = document.getElementById('videosContent');
+            const loader = document.getElementById('loadingStatus');
+            const noMore = document.getElementById('noMoreStatus');
+
+            if (reset) {
+                currentPage = 1;
+                content.innerHTML = '<div class="spinner-large"><\/div>';
+                noMore.style.display = 'none';
+                window.scrollTo({ top: 0 });
+            } else {
+                loader.style.display = 'flex';
+            }
+
+            try {
+                // Compile URL params
+                let queryUrl = '/api/mv/videos?typeId=' + currentTypeId + '&page=' + currentPage + '&pageSize=18';
+                if (currentYear) queryUrl += '&year=' + encodeURIComponent(currentYear);
+                if (currentArea) queryUrl += '&area=' + encodeURIComponent(currentArea);
+                if (currentGenre) queryUrl += '&genre=' + encodeURIComponent(currentGenre);
+                if (currentTagId > 0) queryUrl += '&tagId=' + currentTagId;
+
+                const response = await fetch(queryUrl);
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const raw = await response.json();
+                
+                const data = raw.data || {};
+                const videos = data.items || [];
+                const pag = data.pagination || {};
+
+                totalPages = pag.totalPages || 1;
+
+                if (reset) {
+                    content.innerHTML = '';
+                    if (videos.length === 0) {
+                        content.innerHTML = '<div class="msg-box">没有找到符合条件的资源，请更换筛选条件<\/div>';
+                        loader.style.display = 'none';
+                        isLoading = false;
+                        return;
+                    }
+                    content.innerHTML = '<div class="video-grid" id="videoGrid"><\/div>';
+                }
+
+                const grid = document.getElementById('videoGrid');
+                let appendHTML = '';
+                videos.forEach(v => {
+                    const cover = v.pic || v.coverUrl || v.sourceCoverUrl || '';
+                    const year = v.year || '未知';
+                    const label = v.typeName || '';
+                    appendHTML += 
+                        '<div class="video-card" onclick="openDetail(' + v.id + ')">' +
+                            '<div class="video-cover-wrap">' +
+                                '<img class="video-cover" referrerpolicy="no-referrer" src="' + getAbsoluteCoverUrl(cover) + '" alt="' + v.title + '" onerror="this.classList.add(\'no-cover\')">' +
+                                '<div class="video-cover-placeholder">无封面<\/div>' +
+                            '<\/div>' +
+                            '<div class="video-info">' +
+                                '<div class="video-title">' + v.title + '<\/div>' +
+                                '<div class="video-meta">' +
+                                    '<span>' + year + '<\/span>' +
+                                    (label ? '<span class="video-tag">' + label + '<\/span>' : '') +
+                                '<\/div>' +
+                            '<\/div>' +
+                        '<\/div>';
+                });
+                
+                if (grid) {
+                    grid.innerHTML += appendHTML;
+                }
+
+                loader.style.display = 'none';
+                if (currentPage >= totalPages) {
+                    noMore.style.display = 'flex';
+                }
+
+            } catch (err) {
+                console.error(err);
+                if (reset) {
+                    content.innerHTML = '<div class="msg-box" style="color:var(--color-expired);">加载失败: ' + err.message + '<\/div>';
+                } else {
+                    showToast("追加加载失败: " + err.message, true);
+                }
+                loader.style.display = 'none';
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // Infinite Scroll Listener
+        window.addEventListener('scroll', () => {
+            if (isLoading) return;
+            if (currentPage >= totalPages) return;
+
+            // Trigger when scrolled to bottom within 200px
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+                currentPage++;
+                loadVideos(false);
+            }
+        });
+
+        // Run on startup
+        window.addEventListener('DOMContentLoaded', async () => {
+            initStaticFilters();
+            await loadDynamicTags();
+            
+            // Check default params from URL
+            const params = new URLSearchParams(window.location.search);
+            const typeParam = parseInt(params.get('type') || params.get('typeId') || '1');
+            switchCategory(typeParam);
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.error('Service Worker registration failed', err));
+            });
+        }

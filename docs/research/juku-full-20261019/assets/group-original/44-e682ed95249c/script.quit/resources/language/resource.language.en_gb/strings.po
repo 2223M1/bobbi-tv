@@ -1,0 +1,8 @@
+# Kodi Media Center language file
+msgctxt "#30000"
+msgid "Show diagnostic info (debug)"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Preload cache (instant quit dialog)"
+msgstr ""

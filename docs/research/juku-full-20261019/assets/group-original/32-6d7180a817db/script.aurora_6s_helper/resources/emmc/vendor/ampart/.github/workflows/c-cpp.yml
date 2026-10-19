@@ -1,0 +1,47 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Static build for x86_64
+      run: make fresh STATIC=1
+    - name: Rename for x86_64
+      run: mv ampart ampart-x86_64
+    # - name: Install cross toolchain for aarch64
+    #   run: |
+    #     sudo dpkg --add-architecture arm64
+    #     CODENAME=$(lsb_release -c -s)
+    #     sudo bash -c "echo -e '\
+    #       deb [arch=arm64] http://ports.ubuntu.com/ $CODENAME main multiverse restricted universe \n\
+    #       deb [arch=arm64] http://ports.ubuntu.com/ $CODENAME-updates main multiverse restricted universe \n\
+    #       deb [arch=arm64] http://ports.ubuntu.com/ $CODENAME-backports main multiverse restricted universe \n' > /etc/apt/sources.list.d/arm64-cross.list"
+    #     sudo sed -i 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
+    #     sudo apt-get update
+    #     sudo apt-get install \
+    #       gcc-aarch64-linux-gnu \
+    #       binutils-aarch64-linux-gnu \
+    #       linux-libc-dev:arm64 \
+    #       zlib1g-dev:arm64
+    # - name: Static build for aarch64
+    #   run: make fresh CC=aarch64-linux-gnu-gcc STRIP=aarch64-linux-gnu-strip STATIC=1
+    # - name: Rename for aarch64
+    #   run: mv ampart ampart-aarch64
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4.6.1
+      with:
+        name: static-build
+        path: ampart-*
+        if-no-files-found: error
+        retention-days: 0
+
+# sudo apt install linux-libc-dev:arm64 zlib1g-dev:arm64

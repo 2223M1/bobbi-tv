@@ -227,9 +227,9 @@
           </include>
           <include content="TextPill">
             <param name="id">20223</param><param name="label">找中文字幕</param><param name="width">220</param>
-            <param name="visible">$PARAM[issub] + System.HasAddon(script.bobbi.subtitles)</param>
+            <param name="visible">$PARAM[issub] + System.HasAddon(script.bobbi.opensubtitles)</param>
             <param name="onclick">Dialog.Close($PARAM[window])</param>
-            <param name="onclick2">RunScript(script.bobbi.subtitles)</param>
+            <param name="onclick2">RunScript(script.bobbi.opensubtitles)</param>
           </include>
         </control>
       </control>

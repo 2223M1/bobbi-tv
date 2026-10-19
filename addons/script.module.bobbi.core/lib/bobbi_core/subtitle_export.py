@@ -12,16 +12,18 @@ import tempfile
 from bobbi_core.font_cache import safe_directory
 from bobbi_core.subtitle_binding import style_reviewable
 
-NATIVE_ROOT = '/storage/.kodi/userdata/addon_data/plugin.video.bobbi/subtitle-browser'
+from bobbi_core.runtime_paths import ProfilePath
+NATIVE_ROOT = ProfilePath('subtitle-browser')
 
 
-def export(store, record, root=NATIVE_ROOT, volume='/storage'):
+def export(store, record, root=NATIVE_ROOT, volume=None):
     if ((record['state'] != 'READY_NOT_VISUAL_PROOF' and not style_reviewable(record))
             or record['extension'] not in {'.srt', '.ass', '.ssa', '.vtt'}):
         raise ValueError('Only qualified text subtitles can enter native automatic loading')
     directory = safe_directory(root)
     info = directory.stat()
-    if (info.st_dev != Path(volume).stat().st_dev or stat.S_IMODE(info.st_mode) & 0o022
+    if (info.st_dev != Path(volume or directory).stat().st_dev
+            or (os.name == 'posix' and stat.S_IMODE(info.st_mode) & 0o022)
             or (hasattr(os, 'getuid') and info.st_uid != os.getuid())):
         raise ValueError('Private same-volume native subtitle cache required')
     raw = store._read(record)
@@ -36,11 +38,17 @@ def export(store, record, root=NATIVE_ROOT, volume='/storage'):
                 os.fsync(stream.fileno())
             os.chmod(temporary, 0o444)
             try:
-                os.link(temporary, target)
+                if os.name == 'nt':
+                    os.rename(temporary, target)
+                else:
+                    os.link(temporary, target)
             except FileExistsError:
                 pass  # Another identical publication still requires verification.
         finally:
-            Path(temporary).unlink()  # Only this exclusively created partial.
+            if Path(temporary).exists():
+                if os.name == 'nt':
+                    os.chmod(temporary, 0o600)
+                Path(temporary).unlink()  # Only this exclusively created partial.
     info = target.lstat()
     if (not stat.S_ISREG(info.st_mode) or info.st_dev != directory.stat().st_dev
             or info.st_size != len(raw) or stat.S_IMODE(info.st_mode) & 0o222

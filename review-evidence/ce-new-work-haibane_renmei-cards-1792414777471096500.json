@@ -1,0 +1,37 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "haibane_renmei",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "[ace] Haibane Renmei - 01v2 (DVD 480p HEVC FLAC)",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "b4493ed3d1d1817aadcb98e88a08a4974ccd47a12fbf3f1fb53c542c5da8c0db",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Serena] Haibane Renmei [1-13]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.9 GB",
+        "Container(1000).ListItem.Property(source_key)": "96bd0b15b5915bc7715c4e70c3b1f6f2ca2d699e0581a365edbbc61252f00ac6",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 2,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "haibane_renmei",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}
