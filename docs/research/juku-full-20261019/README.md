@@ -129,14 +129,16 @@ juku-full-20261019/
 HTTP 请求和远端服务关系。Go ABI 的寄存器、多返回值、指针类型恢复有误差，必要时
 须看 `.asm`、原始 Python 和两个架构交叉证据。
 
-大体积函数散文件和 ZIP 保留在本地，`.gitignore` 避免误将 11 万余散文件整体提交。
+大体积函数散文件和 ZIP 在本地保留，`.gitignore` 避免误将 11 万余散文件整体提交。
+两个 ZIP 已作为[私库 Release 附件](https://github.com/2223M1/bobbi-tv/releases/tag/audit-20261019-private-ce1909)
+上传并核对 GitHub SHA-256；网页审阅请用下表下载链接，不依赖 ignored 本地路径。
 每架构 ZIP 含全部该架构静态导出和 manifest，不含原始安装包、ELF、账户状态或私钥。
 校验结果见 `archives/amd64-archive.json` 与 `archives/arm64-archive.json`。
 
 | 已逐项校验的证据包 | 字节 / 文件项 | SHA-256 |
 | --- | --- | --- |
-| `archives/juku-0.80-amd64-full-static.zip` | 49,114,616 / 57,341 | `507afb7d91792188e285f89c2ef84b29aadea766833c0b52b405c43521bef7a9` |
-| `archives/juku-0.80-arm64-full-static.zip` | 51,980,628 / 57,113 | `20685353b7567a8eb1702881a24361a06e699a7fd7bc14c651d94cfd9dbc8100` |
+| [juku-0.80-amd64-full-static.zip](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/juku-0.80-amd64-full-static.zip) | 49,114,616 / 57,341 | `507afb7d91792188e285f89c2ef84b29aadea766833c0b52b405c43521bef7a9` |
+| [juku-0.80-arm64-full-static.zip](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/juku-0.80-arm64-full-static.zip) | 51,980,628 / 57,113 | `20685353b7567a8eb1702881a24361a06e699a7fd7bc14c651d94cfd9dbc8100` |
 
 收尾复核重新读取两个 ZIP 的 **114,454 个条目**，逐项核对 manifest 的长度与
 SHA-256，并重新计算 ZIP 整体哈希；均一致。直接从归档内 `index.tsv` 复算成功/失败，

@@ -31,8 +31,8 @@ runtime/标准库/第三方库；仍有 48,371 / 43,748 字节的函数 body 外
 收尾重新验算 ZIP 整体及 **114,454 个归档条目**，长度、manifest 和 SHA-256 全部一致。
 资产只读复核也通过：46 个源文件、44 个镜像文件、883 个唯一复制路径，共 25,984,245 字节。
 
-- [AMD64 全量静态包](archives/juku-0.80-amd64-full-static.zip)：49,114,616 字节，57,341 项。SHA-256：`507afb7d91792188e285f89c2ef84b29aadea766833c0b52b405c43521bef7a9`。
-- [ARM64 全量静态包](archives/juku-0.80-arm64-full-static.zip)：51,980,628 字节，57,113 项。SHA-256：`20685353b7567a8eb1702881a24361a06e699a7fd7bc14c651d94cfd9dbc8100`。
+- [AMD64 全量静态包](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/juku-0.80-amd64-full-static.zip)：49,114,616 字节，57,341 项。SHA-256：`507afb7d91792188e285f89c2ef84b29aadea766833c0b52b405c43521bef7a9`。
+- [ARM64 全量静态包](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/juku-0.80-arm64-full-static.zip)：51,980,628 字节，57,113 项。SHA-256：`20685353b7567a8eb1702881a24361a06e699a7fd7bc14c651d94cfd9dbc8100`。
 
 归档包含该架构全部静态导出、索引、调用图、失败 journal 和逐文件清单，不包含原始
 安装包、ELF、账户状态或私钥；原始输入的固定位置和哈希另记在 README。交付结论是
