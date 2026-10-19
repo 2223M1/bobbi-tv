@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="script.quit" name="退出播放确认" version="1.0.8.26" provider-name="YiJun">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+  </requires>
+  <extension point="xbmc.python.script" library="default.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.service" library="service.py" start="login"/>
+  <extension point="xbmc.addon.metadata">
+    <summary>Confirm exit playback with Kodi built-in dialog</summary>
+    <description>退出播放确认提醒，确认对话框显示当前播放影片的海报、片名、简介详情，10秒无操作自动关闭对话框。</description>
+    <platform>all</platform>
+        <assets>
+            <icon>icon.png</icon>
+        </assets>
+    <settings>
+        <setting id="show_diag" type="boolean" label="30000" default="false" />
+        <setting id="preload_cache" type="boolean" label="30001" default="true" />
+    </settings>
+  </extension>
+</addon>

@@ -1,0 +1,26 @@
+{
+  "error": "AssertionError",
+  "reason": "USER_CHANGED_SELECTION",
+  "frames": [
+    {
+      "function": "<module>",
+      "line": 260
+    },
+    {
+      "function": "main",
+      "line": 194
+    },
+    {
+      "function": "wait_picker_idle",
+      "line": 404
+    },
+    {
+      "function": "require_picker",
+      "line": 365
+    },
+    {
+      "function": "assert_picker_idle",
+      "line": 274
+    }
+  ]
+}

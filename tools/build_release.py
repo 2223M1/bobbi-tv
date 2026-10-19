@@ -1,4 +1,4 @@
-"""Reproducible public Kodi repository from a reviewed explicit inventory.
+"""Reproducible offline Kodi components from a reviewed explicit inventory.
 
 This delegates installation/update lifecycle to Kodi. It does NOT activate the
 experimental custom atomic updater or claim real-device certification.
@@ -13,7 +13,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / 'release/source-inventory.json'
-OFFICIAL = {'xbmc.python', 'xbmc.gui', 'script.module.requests', 'script.module.routing'}
+OFFICIAL = {'xbmc.python', 'xbmc.gui', 'script.module.pycryptodome'}  # Official Kodi ABI-native host modules.
 
 
 def sources():
@@ -65,7 +65,7 @@ def build(destination):
     roots = sources()
     if set(roots) != set(inventory):
         raise ValueError('Addon inventory changed; review before refreshing')
-    manifest = {'version': '0.1.0-alpha.1', 'channel': 'public-alpha', 'device_verified': False, 'components': []}
+    manifest = {'version': '0.2.0-private.1', 'channel': 'private-candidate', 'device_verified': False, 'components': []}
     xml = ET.Element('addons')
     for addon, root in roots.items():
         if files(root) != inventory[addon]:

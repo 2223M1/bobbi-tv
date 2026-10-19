@@ -1,0 +1,25 @@
+{
+  "source": "dev/remote/nanosic_wnvc_decoder.c",
+  "source_sha256": "d2643ad7b108b8978181997f385afeec7846602f7989d3a5f773bc069eae2d53",
+  "output": "libnanosic-wnvc-avutil60.so",
+  "sha256": "a6b63469bbb67a656570ea4a7164000da0e7f63eb1d436e154b0a9688a6f6309",
+  "compiler": "/home/bxy/avdvplus/R10/CoreELEC/build.CoreELEC-Amlogic-ng.arm-21/toolchain/bin/armv8a-libreelec-linux-gnueabihf-gcc",
+  "flags": [
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-mcpu=cortex-a53",
+    "-mfpu=neon-fp-armv8",
+    "-mfloat-abi=hard",
+    "-Wl,-soname,libnanosic-wnvc-avutil60.so"
+  ],
+  "license": "LGPL-2.1-or-later",
+  "upstream": "FFmpeg 8.1.3 libavcodec/siren.c",
+  "codec": "Nanosic WNVC-320, 16 regions, 24000 bit/s",
+  "system_dependency": "public libavutil.so.60 transform API",
+  "bundles_android_binary": false,
+  "production_addon_modified": true
+}

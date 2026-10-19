@@ -40,6 +40,10 @@
                 </setting>
             </group>
             <group id="search" label="90006">
+                    <setting id="juku_enabled" type="boolean" label="Juku 目录（115 分享）" help="检索作者授权的主站与共享目录；使用你自己的 115 账号播放，不自动转存。">
+                        <default>true</default>
+                        <control type="toggle" />
+                    </setting>
                     <setting id="search_dialog_style" type="string" label="90238" help="">
                         <default>0</default>
                         <constraints>
@@ -1849,11 +1853,13 @@
                 </setting>
                 <setting id="trakt_client" type="string" label="30798" help="30818">
                     <default />
+                    <constraints><allowempty>true</allowempty></constraints>
                     <visible>false</visible>
                     <control type="edit" format="string" />
                 </setting>
                 <setting id="trakt_secret" type="string" label="30800" help="30811">
                     <default />
+                    <constraints><allowempty>true</allowempty></constraints>
                     <visible>false</visible>
                     <control type="edit" format="string" />
                 </setting>

@@ -3,7 +3,7 @@ import os
 
 from lib.clients.tmdb.utils.utils import tmdb_get
 from lib.db.pickle_db import PickleDatabase
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 from lib.utils.general.utils import parse_time, set_media_infoTag, set_pluging_category
 from lib.utils.kodi.utils import (
     ADDON_PATH,

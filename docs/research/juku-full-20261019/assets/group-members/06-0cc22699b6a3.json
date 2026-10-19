@@ -1,0 +1,106 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\VFS Stream Fast_vfs.stream.fast_1.3.1_20260920_001737.zip",
+  "bytes": 7783002,
+  "sha256": "0cc22699b6a34fcee9068350762b19f62fa660ffc44b5617896725ff90742abf",
+  "members": [
+    {
+      "path": "vfs.stream.fast/icon.png",
+      "type": "file",
+      "bytes": 11944,
+      "compressed_bytes": 11085,
+      "sha256": "122e66ccdd268538cf5d48b07c6cd2d795282b435d2a578d97157cc0ad7bc5e8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "vfs.stream.fast/libvfs.stream.fast.so",
+      "type": "file",
+      "bytes": 19599028,
+      "compressed_bytes": 7768721,
+      "sha256": "010a6eab35de926518a41c4218d266506ee149044088af5fbe62f4e9b0b35559",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "vfs.stream.fast/addon.xml",
+      "type": "file",
+      "bytes": 2133,
+      "compressed_bytes": 1190,
+      "sha256": "70d253ed56dc6dd04d85fcb26c4b194fafa30ef28401d1c055cc5a262978184b",
+      "copy": "group-original/06-0cc22699b6a3/vfs.stream.fast/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "vfs.stream.fast",
+        "version": "1.3.1",
+        "name": "VFS Stream Fast",
+        "provider-name": "forbxy",
+        "extensions": [
+          {
+            "point": "kodi.vfs",
+            "files": "true",
+            "directories": "false",
+            "protocols": "dav|davs|http|https",
+            "library_windows": "vfs.stream.fast.dll",
+            "library_linux": "libvfs.stream.fast.so",
+            "library_android": "libvfs.stream.fast.so",
+            "library_osx": "vfs.stream.fast.dylib"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": [
+          {
+            "addon": "kodi.binary.global.main",
+            "version": "2.0.2"
+          },
+          {
+            "addon": "kodi.binary.instance.vfs",
+            "version": "3.0.1"
+          }
+        ]
+      }
+    },
+    {
+      "path": "vfs.stream.fast/resources/settings.xml",
+      "type": "file",
+      "bytes": 2283,
+      "compressed_bytes": 411,
+      "sha256": "a0e446e1c0ad0a52bc9e2a6ffea0303e3060a814ff9e0d460cdecdb1a401a6fb",
+      "copy": "group-original/06-0cc22699b6a3/vfs.stream.fast/resources/settings.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "vfs.stream.fast/resources/language/resource.language.en_gb/strings.po",
+      "type": "file",
+      "bytes": 669,
+      "compressed_bytes": 253,
+      "sha256": "6714ce1dd2568bbedf1b2ea793a61a5af5151df0d70ebecfefc474d7935d7ead",
+      "copy": "group-original/06-0cc22699b6a3/vfs.stream.fast/resources/language/resource.language.en_gb/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "vfs.stream.fast/resources/language/resource.language.zh_cn/strings.po",
+      "type": "file",
+      "bytes": 661,
+      "compressed_bytes": 340,
+      "sha256": "1d303f8307bd7ca2b194606058f22892b6bf2f835f4f3dc999f68a771b265821",
+      "copy": "group-original/06-0cc22699b6a3/vfs.stream.fast/resources/language/resource.language.zh_cn/strings.po",
+      "copy_status": "original-byte-copy"
+    }
+  ],
+  "python": [],
+  "summary": {
+    "files": 6,
+    "directories": 0,
+    "uncompressed_bytes": 19616718,
+    "extensions": {
+      ".png": 1,
+      ".so": 1,
+      ".xml": 2,
+      ".po": 2
+    },
+    "copy_status": {
+      "indexed-only": 2,
+      "original-byte-copy": 4
+    }
+  }
+}

@@ -4,19 +4,18 @@ Catalog identity proves the work/episode; parent share/directory and release
 envelope prove the edition. No fuzzy global search, cloud task or signed cache.
 """
 from copy import deepcopy
-import re
 import time
 from uuid import uuid4
 
-EPISODE = re.compile(r'(?i)(?<![a-z0-9])s(\d{1,2})[ ._-]*e(\d{1,3})(?![a-z0-9])')
-QUALITY = re.compile(r'(?i)(?<![a-z0-9])(?:2160|1080|720|576|480)[pi](?![a-z0-9])')
+from lib.cinema import _shared
+from bobbi_core.catalog_release import release_envelope
 
 
 def episode_data(current, season, episode):
     # An allowlist prevents previous subtitles, resume positions, native file
     # receipts, provider tokens and UI reservations leaking into the next file.
     keys = ('title', 'query', 'ids', 'mode', 'media_type', 'poster', 'description',
-            'anime', 'selection_policy', 'fanart', 'thumb')
+            'anime', 'selection_policy', 'fanart', 'thumb', '_account')
     result = {key: deepcopy(current[key]) for key in keys if key in current}
     result.update(tv_data=dict(season=season, episode=episode), autoplay=True,
                   playnext_context=True, cinema_continuity=True, is_torrent=False)
@@ -25,43 +24,12 @@ def episode_data(current, season, episode):
     return result
 
 
-def release_envelope(name, season, episode):
-    """Only a single explicit S/E plus full technical/group suffix is eligible.
-
-    Episode-specific prose between S/E and quality is not a release identity.
-    Preserve the entire title prefix and technical suffix, including revision,
-    subtitles, codec, edition, group and container; do not equate resolution.
-    """
-    if not isinstance(name, str) or len(name) > 2048 or re.search(r'[\x00-\x1f/\\]', name):
-        return None
-    markers = list(EPISODE.finditer(name))
-    if len(markers) != 1:
-        return None
-    marker = markers[0]
-    if (int(marker[1]), int(marker[2])) != (season, episode):
-        return None
-    tail = name[marker.end():]
-    if re.match(r'(?i)\s*(?:e\d|[-~–]\s*(?:s\d+\s*)?e?\d)', tail):
-        return None
-    quality = QUALITY.search(tail)
-    if not quality:
-        return None
-    # Fail closed on edition/revision tags in the episode-title area.
-    prose = tail[:quality.start()]
-    if re.search(r'(?i)\[|\]|\(|\)|\b(?:v\d+|repack|proper|extended|uncut|dubbed)\b', prose):
-        return None
-    prefix = re.sub(r'[\W_]+', ' ', name[:marker.start()].casefold()).strip()
-    suffix = tail[quality.start():].casefold()
-    if not prefix or not re.search(r'\.(?:mkv|mp4|m4v|avi|webm|ts)$', suffix):
-        return None
-    return prefix, season, suffix
-
-
 def attach_source(source, data):
     guid, locator = getattr(source, 'guid', ''), getattr(source, 'url', '')
     if data.get('is_torrent') or not isinstance(guid, str):
         return
-    provider = 'mdsub' if guid.startswith('mdsub:') else 'qqdocs' if guid.startswith('qqdocs:') else None
+    from lib.clients.catalog_providers import provider_for
+    provider = 'mdsub' if guid.startswith('mdsub:') else provider_for(source)
     if provider:
         data['direct_source'] = dict(provider=provider, guid=guid, locator=locator,
                                     title=source.title, size=source.size)
@@ -111,7 +79,7 @@ def _mdsub(current, identity):
 
 
 def _qqdocs(current, identity, cancelled):
-    from bobbi_catalog.catalog import Cache, Client, fields, share_for
+    from bobbi_catalog.catalog import Cache, fields, share_for
     from bobbi_catalog.identity import media_key
     from lib.clients.qqdocs_provider import enabled
     if not enabled():
@@ -131,8 +99,17 @@ def _qqdocs(current, identity, cancelled):
             return None, 'RELEASE_ENVELOPE_UNPROVEN'
         # One share-read request to the selected, identity-checked share only.
         # No different document row, no general title search or cloud task.
-        deadline = time.monotonic() + 6
-        rows = Client().search(share_for(anchor['cell']), 'S{:02d}E{:02d}'.format(season, episode + 1), deadline)
+        from bobbi_platform.runtime import call
+        expected = current.get('_account')
+        if not expected:
+            return None, 'ACCOUNT_SCOPE_REQUIRED'
+        # Host gives this read six seconds; the normal three-second IPC timeout
+        # must not discard a valid slow same-share continuation response.
+        receipt = call('share_search', dict(account=expected, share=share_for(anchor['cell']),
+            query='S{:02d}E{:02d}'.format(season, episode + 1)), timeout=6.5)
+        if receipt.get('account') != expected or not isinstance(receipt.get('rows'), list):
+            return None, 'ACCOUNT_SCOPE_CHANGED'
+        rows = receipt['rows']
         if cancelled():
             return None, 'CANCELLED'
         candidates = [r for r in rows if release_envelope(r['name'], season, episode + 1) == envelope]
@@ -158,6 +135,9 @@ def next_direct_data(current, index, cancelled=lambda: False):
         fields, reason = _mdsub(current, identity)
     elif provider == 'qqdocs':
         fields, reason = _qqdocs(current, identity, cancelled)
+    elif provider == 'juku':
+        from lib.clients.juku_provider import next_source
+        fields, reason = next_source(current, identity, cancelled, time.monotonic() + 16)
     else:
         return None, 'NO_DIRECT_CATALOG_ADAPTER'
     if not fields or cancelled():
@@ -197,6 +177,12 @@ def resolve_direct(data, cancelled):
     if not identity or pointer['title'] != data['source_title'] or pointer['size'] != data['size']:
         raise ValueError('DIRECT_IDENTITY_CHANGED')
     tmdb, season, episode = identity
+    data.pop('_share', None)  # Never carry previous-file subtitle authority.
+    if pointer['provider'] in ('qqdocs', 'juku'):
+        from bobbi_platform.runtime import call
+        expected = data.get('_account')
+        if not expected or call('account_status', {}) != expected:
+            raise RuntimeError('ACCOUNT_SCOPE_CHANGED')
     if pointer['provider'] == 'mdsub':
         import xbmcaddon
         from bobbi_mdsub.catalog import load, find_sources, source_fields
@@ -216,13 +202,28 @@ def resolve_direct(data, cancelled):
         if not enabled():
             raise ValueError('PROVIDER_DISABLED')
         url = resolve(pointer['locator'], pointer['guid'], pointer['title'], pointer['size'],
-                      media_key(tmdb, 'tv', season, episode))
+                      media_key(tmdb, 'tv', season, episode), account=data['_account'])
         data['transient_url'] = True
         data['qqdocs_locator'] = pointer['locator']
+    elif pointer['provider'] == 'juku':
+        from lib.clients.juku_provider import resolve_source, SITE
+        from lib.domain.torrent import TorrentStream
+        source = TorrentStream(type='Direct', guid=pointer['guid'], url=pointer['locator'],
+            title=pointer['title'], size=pointer['size'], indexer=SITE)
+        url = resolve_source(source, data)
+        data['transient_url'] = True
+        data['juku_locator'] = pointer['locator']
     else:
         raise ValueError('UNSUPPORTED_DIRECT_PROVIDER')
     if cancelled():
         raise RuntimeError('CONTINUATION_CANCELLED')
+    if pointer['provider'] in ('qqdocs', 'juku'):
+        from bobbi_catalog.identity import media_key
+        if call('account_status', {}) != data['_account']:
+            raise RuntimeError('ACCOUNT_SCOPE_CHANGED')
+        data['_share'] = dict(locator=pointer['locator'], guid=pointer['guid'],
+            title=pointer['title'], size=pointer['size'], account=deepcopy(data['_account']),
+            media=media_key(tmdb, 'tv', season, episode))
     return url
 
 

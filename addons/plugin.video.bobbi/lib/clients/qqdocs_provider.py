@@ -51,7 +51,7 @@ def resolve_source(source, item):
         from bobbi_catalog.identity import media_key
         tv = item.get('tv_data') or {}
         key = media_key((item.get('ids') or {}).get('tmdb_id'), item.get('mode'), tv.get('season'), tv.get('episode'))
-        url = resolve(source.url, source.guid, source.title, source.size, key)
+        url = resolve(source.url, source.guid, source.title, source.size, key, account=item.get('_account'))
     except ShareError as error:
         messages = {'login_required': '115 分享登录已失效，请在影院设置重新扫码',
                     'share_unavailable': '这个分享已失效或访问码已变化，请选其他来源',

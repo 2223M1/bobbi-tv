@@ -26,6 +26,27 @@ first_run_update_prop = "bobbi.first_run_update"
 pause_services_prop = "bobbi.pause_services"
 
 
+def _start_optional_sync(module_name, class_name, flags, credentials=()):
+    """Do not import provider clients or create idle threads for disabled sync."""
+    if not all(str(get_setting(key)).lower() == "true" for key in flags):
+        return None
+    if not all(get_setting(key) for key in credentials):
+        return None
+
+    def run():
+        try:
+            from importlib import import_module
+            service = getattr(import_module(module_name), class_name)()
+            # Each service retains its own auth/profile checks and stop loop.
+            service.run()
+        except Exception as error:
+            kodilog(class_name + " failed: " + type(error).__name__, level=xbmc.LOGERROR)
+
+    thread = Thread(target=run, name=class_name, daemon=True)
+    thread.start()
+    return thread
+
+
 def updates_check_addon(*args, **kwargs):
     # Keep the existing updater and test seam; import only on its auxiliary job.
     from lib.updater import updates_check_addon as update
@@ -241,9 +262,13 @@ class JacktookMOnitor(xbmc.Monitor):
         self._auxiliary_thread = None
         self._auxiliary_status = 'NOT_STARTED'
 
-    def run_owner_loop(self):
+    def run_owner_loop(self, host=None):
         from lib.services.playback_control import PlaybackControlServer
         control = PlaybackControlServer(events=self._playback_events)
+        if host is not None:
+            host.bind_owner(control.authority.dispatch)
+            control.native.subtitle_fallback.share_provider = host.sidecar_candidate
+            control.native.subtitle_fallback.accounts = host.accounts
         xbmc.log('[BOBI-OWNER-BOOT] playback socket bound; entering owner loop', xbmc.LOGINFO)
         try:
             # Bind the authoritative owner before optional startup work. A slow
@@ -256,6 +281,8 @@ class JacktookMOnitor(xbmc.Monitor):
                     # Never keep issuing playback actions after losing ordering.
                     raise RuntimeError('Playback receipt queue overflow; owner stopped')
                 control.tick()
+                if host is not None:
+                    host.tick()
                 # Kodi dispatches pending Python notifications in waitForAbort,
                 # not abortRequested or Python's selector.select. Keep this on
                 # the owner interpreter/thread so window/terminal events reach
@@ -265,6 +292,8 @@ class JacktookMOnitor(xbmc.Monitor):
                     break
         finally:
             self._owner_stopped.set()
+            if host is not None:
+                host.bind_owner(None)
             control.close()
 
     def _start_auxiliary_services(self):
@@ -283,10 +312,7 @@ class JacktookMOnitor(xbmc.Monitor):
         # These existing modules import provider clients and database helpers.
         # Load them on the existing auxiliary thread, after owner socket bind.
         from lib.services.migrations import run_migrations
-        from lib.services.nuvio_sync import NuvioSyncService
         from lib.services.preloader import StartupPreloader
-        from lib.services.simkl_sync import SimklSyncService
-        from lib.services.trakt_sync import TraktSyncService
         operations = (
             lambda: set_setting("addon_version", ADDON_VERSION),
             # Isolated invokers cannot share import-only warmup. Keep the real
@@ -294,10 +320,16 @@ class JacktookMOnitor(xbmc.Monitor):
             lambda: CheckKodiVersion().run(),
             lambda: DatabaseSetup().run(), run_migrations,
             lambda: Thread(target=UpdateCheck().run).start(),
-            lambda: Thread(target=TraktSyncService().run).start(),
-            lambda: Thread(target=SimklSyncService().run).start(),
-            lambda: Thread(target=NuvioSyncService().run).start(),
-            lambda: Thread(target=DebridExpirationCheck().run).start(),
+            lambda: _start_optional_sync("lib.services.trakt_sync", "TraktSyncService",
+                                         ("trakt_enabled", "is_trakt_auth")),
+            lambda: _start_optional_sync("lib.services.simkl_sync", "SimklSyncService",
+                                         ("simkl_enabled", "simkl_authenticated"),
+                                         ("simkl_access_token",)),
+            lambda: _start_optional_sync("lib.services.nuvio_sync", "NuvioSyncService",
+                                         ("nuvio_enabled", "nuvio_authenticated"),
+                                         ("nuvio_access_token", "nuvio_profile_id")),
+            lambda: (Thread(target=DebridExpirationCheck().run, daemon=True).start()
+                     if get_setting("debrid_expiration_enabled") else None),
             lambda: StartupPreloader().run(), lambda: DownloaderSetup().run(), TMDBHelperAutoInstall,
         )
         for operation in operations:

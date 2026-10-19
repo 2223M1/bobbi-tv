@@ -1,0 +1,32 @@
+{
+  "architecture": "arm64",
+  "identified_functions": 19028,
+  "attempted_functions": 19028,
+  "all_identified_attempted": true,
+  "status_counts": {
+    "OK": 19023,
+    "FAILED": 5
+  },
+  "category_counts": {
+    "standard-library-or-unclassified": 6806,
+    "compiler-or-unclassified": 807,
+    "go-runtime": 1552,
+    "third-party": 7574,
+    "juku": 2289
+  },
+  "direct_call_edges": 81762,
+  "modules": 306,
+  "file_bytes": {
+    "asm": 56648467,
+    "calls": 8217724,
+    "c": 83537057
+  },
+  "total_attempt_records": 19033,
+  "function_coverage_denominator": "All internal and external functions identified in the existing Ghidra program",
+  "limitations": [
+    "Not original Go source",
+    "Coverage is of identified functions, not proof every executable byte is code",
+    "Direct call graph omits unresolved interface/function-pointer dispatch",
+    "OK means Ghidra emitted C, not semantic correctness or recompilable source"
+  ]
+}

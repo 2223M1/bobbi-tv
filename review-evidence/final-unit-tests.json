@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "release_sequence": 2026101905,
+  "run_started": "2026-10-19T18:17:52+08:00",
+  "runtime": "CPython 3.12.10 64-bit Windows",
+  "python": "D:/AM6B-Project/AM6B-B-FULL-execution/20260908-115110/venv/Scripts/python.exe",
+  "scope": "Three isolated pytest processes, not an aggregate of repeated targeted runs. Unit fixtures and host stubs are not device/playback certification.",
+  "runs": [
+    {
+      "suite": "primary",
+      "arguments": "-X utf8 -B -m pytest -q -o addopts= tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=review-evidence/final-unit-primary.xml",
+      "passed": 875,
+      "skipped": 2,
+      "failed": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "reported_duration_seconds": 46.26,
+      "stdout": "review-evidence/final-unit-primary.stdout",
+      "junit": "review-evidence/final-unit-primary.xml",
+      "excluded_active_integration_tests": [],
+      "skip_reasons": [
+        "test_ce_state_migration.test_asset_link_never_followed: Windows host cannot create a symlink fixture",
+        "test_updates.test_symlink_target_rejected: Windows host cannot create a symlink fixture"
+      ]
+    },
+    {
+      "suite": "private_baseline",
+      "arguments": "-X utf8 -B -m pytest -q -o addopts= tests/private_baseline --junitxml=review-evidence/final-unit-baseline.xml",
+      "passed": 718,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "reported_duration_seconds": 5.26,
+      "stdout": "review-evidence/final-unit-baseline.stdout",
+      "junit": "review-evidence/final-unit-baseline.xml"
+    },
+    {
+      "suite": "preparation_regression",
+      "arguments": "-X utf8 -B -m pytest -q -o addopts= tests/preparation_regression --junitxml=review-evidence/final-unit-preparation.xml",
+      "passed": 177,
+      "skipped": 0,
+      "failed": 0,
+      "errors": 0,
+      "exit_code": 0,
+      "reported_duration_seconds": 8.63,
+      "stdout": "review-evidence/final-unit-preparation.stdout",
+      "junit": "review-evidence/final-unit-preparation.xml"
+    }
+  ]
+}

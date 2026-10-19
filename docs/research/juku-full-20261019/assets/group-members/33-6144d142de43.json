@@ -1,0 +1,1237 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\script.signde.tinyppi-17.2.7.5(修复http路径播放信息显示等待时间过长).zip",
+  "bytes": 1252937,
+  "sha256": "6144d142de43cf3e275d9032361097b810ba26ae367d0a886e663d0bcd544e84",
+  "members": [
+    {
+      "path": "script.signde.tinyppi/icon.jpg",
+      "type": "file",
+      "bytes": 114396,
+      "compressed_bytes": 114185,
+      "sha256": "e8667c46e182f15340fbb811ef0420548653ead549be66e365a845fa42d7276c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/addon.xml",
+      "type": "file",
+      "bytes": 3608,
+      "compressed_bytes": 1704,
+      "sha256": "bcee980c9a3429069c8bd7c240655e2832549c49f8b05a689ed2b551c3e0c810",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "script.signde.tinyppi",
+        "name": "signde PPI (avdvplus / p3i)",
+        "version": "17.2.7.5",
+        "provider-name": "jamal2362, signde",
+        "extensions": [
+          {
+            "point": "xbmc.service",
+            "library": "resources/lib/service/monitor.py"
+          },
+          {
+            "point": "xbmc.python.script",
+            "library": "main.py"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": [
+          {
+            "addon": "xbmc.python",
+            "version": "3.0.0"
+          }
+        ]
+      }
+    },
+    {
+      "path": "script.signde.tinyppi/LICENSE",
+      "type": "file",
+      "bytes": 1064,
+      "compressed_bytes": 629,
+      "sha256": "578f3833c5237089cb39cacd43aac280195bdb8b47f48405048c72f8d17744ad",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/README.md",
+      "type": "file",
+      "bytes": 8933,
+      "compressed_bytes": 3485,
+      "sha256": "9c8b644e108ea44f2e5908b4ce7b9e0200d4ae8f3ca717e78f1d907916920c7c",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/README.md",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/fanart.jpg",
+      "type": "file",
+      "bytes": 608501,
+      "compressed_bytes": 608365,
+      "sha256": "8ba8433c6b04f44baf88d563a3685eeab70fa93de3720ef9d9698bbd736887ce",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/main.py",
+      "type": "file",
+      "bytes": 1477,
+      "compressed_bytes": 598,
+      "sha256": "d84938b506be77c2b0094473ef035c4fb5353e1740781f25025809e0e89abd46",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/main.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/settings.xml",
+      "type": "file",
+      "bytes": 289240,
+      "compressed_bytes": 7852,
+      "sha256": "2ff83bc78331d3a2d8c82dff29246e626aa6b12212d6bdf8fbafb4fd280e0c43",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/settings.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/index.html",
+      "type": "file",
+      "bytes": 5004,
+      "compressed_bytes": 1875,
+      "sha256": "388dcf4baaa171621fd8012b4fc8ca02bca0ee21fc0de96d34faf7d8030d797c",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/index.html",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/metadata.html",
+      "type": "file",
+      "bytes": 3098,
+      "compressed_bytes": 1118,
+      "sha256": "b31a14280e2cf4433da227a3f7a3189888c339f6c69da586a2c7236281b93c80",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/metadata.html",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/manifest.webmanifest",
+      "type": "file",
+      "bytes": 362,
+      "compressed_bytes": 219,
+      "sha256": "7d246413f62fe3ee10c241e0354fdd69d20bbf0c3900e452f533da597e044c9f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/css/theme.css",
+      "type": "file",
+      "bytes": 10177,
+      "compressed_bytes": 3562,
+      "sha256": "bfd6f1a4659a373a0981c565948750647c33d70b0400b0bbdb473d1bcb8a50d2",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/css/theme.css",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/css/metadata.css",
+      "type": "file",
+      "bytes": 5730,
+      "compressed_bytes": 2222,
+      "sha256": "889676aa06a7163136f928bea200b22295553e08c065cce944dd39f521fc5d1a",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/css/metadata.css",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/css/live-panels.css",
+      "type": "file",
+      "bytes": 32588,
+      "compressed_bytes": 10069,
+      "sha256": "b23f85ed5c1eacc9e21a3f2f9cec5c1939589212520621d99020f735d385cb2d",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/css/live-panels.css",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/css/dashboard.css",
+      "type": "file",
+      "bytes": 8660,
+      "compressed_bytes": 3198,
+      "sha256": "95c588e0ff28173c1b7cfa0aaff2354aca8c409f2ab142463a51ab12187873e2",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/css/dashboard.css",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/css/base.css",
+      "type": "file",
+      "bytes": 25410,
+      "compressed_bytes": 8447,
+      "sha256": "30a2d13c805e0bc3de96ff136b2d90394f90ffc0ad776453ef07e133efa8c587",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/css/base.css",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/js/cover-tint.js",
+      "type": "file",
+      "bytes": 34287,
+      "compressed_bytes": 11543,
+      "sha256": "82c7966fa1739cc88a3ac6051edfe89e00e5639b327cd9f18e5a48b970b75d64",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/js/cover-tint.js",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/js/core.js",
+      "type": "file",
+      "bytes": 27074,
+      "compressed_bytes": 9433,
+      "sha256": "d77e28874ff4e370dfa4295a1334f95469fca757d6ac2ee6ce36cb814b40e9b9",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/js/core.js",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/js/theme.js",
+      "type": "file",
+      "bytes": 16197,
+      "compressed_bytes": 5333,
+      "sha256": "2045c4a282787cbd984a460332f0352e4ea6ec64bbed73b21051125a6a2ee48b",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/js/theme.js",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/js/metadata.js",
+      "type": "file",
+      "bytes": 12742,
+      "compressed_bytes": 4168,
+      "sha256": "00a5949c38df677bedd9ab2ba1d864e88c94dc2125e3f94a25a40c6cf98e122b",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/js/metadata.js",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/js/live-panels.js",
+      "type": "file",
+      "bytes": 45073,
+      "compressed_bytes": 14183,
+      "sha256": "88e41b332498644d87b2acedebebf04304397d68a6752a770abc7ce167747e1d",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/js/live-panels.js",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/js/dashboard.js",
+      "type": "file",
+      "bytes": 15861,
+      "compressed_bytes": 5391,
+      "sha256": "6e6fbf12a2a6c0b5754a66a66dc6c296f615aae12f7487312e8f60bccc6c3a8d",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/web/js/dashboard.js",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/yes.svg",
+      "type": "file",
+      "bytes": 243,
+      "compressed_bytes": 170,
+      "sha256": "1515624016efce3ad20694f049f926b21812cd620ab4e5ed932a82fb32951d00",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/chevron-down.svg",
+      "type": "file",
+      "bytes": 185,
+      "compressed_bytes": 138,
+      "sha256": "bf3503ab4ec667a5c1402299e87b3a719e120369185b084523cf05f840b4ac4b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/key.svg",
+      "type": "file",
+      "bytes": 234,
+      "compressed_bytes": 167,
+      "sha256": "1e00d814578c42e44a85186c733fcb83797410d800c8f7110b4e92a2c02e1e6a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/download.svg",
+      "type": "file",
+      "bytes": 232,
+      "compressed_bytes": 155,
+      "sha256": "d09bfa116f4ad243fba466c92ef0fc0e277b15469a71fbf5bd23169f2aa12c72",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/volume.svg",
+      "type": "file",
+      "bytes": 268,
+      "compressed_bytes": 187,
+      "sha256": "bf14c8f4cc44808048504bfebde531457ccfe70d3e13af27b8ac2625dc2ed4f9",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/no.svg",
+      "type": "file",
+      "bytes": 218,
+      "compressed_bytes": 160,
+      "sha256": "06908162e94eda3e923b0207ddbcf0a73dc78f74a2fde8a045f61e886026ba5e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/theme-dark.svg",
+      "type": "file",
+      "bytes": 220,
+      "compressed_bytes": 157,
+      "sha256": "edc9b040c89de44346ee79cfba6ef89aaeeaca5f5b6df67c01d52343299e83e8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/stop.svg",
+      "type": "file",
+      "bytes": 136,
+      "compressed_bytes": 114,
+      "sha256": "078c6ad28919bd27dd6bea9695eb8148872ae55a257b6cadb2a13cf15d8b4aed",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/play.svg",
+      "type": "file",
+      "bytes": 185,
+      "compressed_bytes": 151,
+      "sha256": "dff6cd80ef8117044a303db293f65c61f6f5486e0cfe5de3b4a24b5e6a91a76e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/theme-adaptive.svg",
+      "type": "file",
+      "bytes": 251,
+      "compressed_bytes": 174,
+      "sha256": "96feaecfe360a7b11eb2e7a47c50043508a54ef5df91b6c7ea1acf266366e17f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/volume-muted.svg",
+      "type": "file",
+      "bytes": 239,
+      "compressed_bytes": 174,
+      "sha256": "d6d6abe449965ec2b94a53d8899b3244c54e1e7555a8f84b3e03bb5e57bae7d1",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/pause.svg",
+      "type": "file",
+      "bytes": 199,
+      "compressed_bytes": 122,
+      "sha256": "eb0ab72c614b20878539fbe0d0aa9f0c582b2242b655264df0376659db95c72c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/web/icons/theme-midnight.svg",
+      "type": "file",
+      "bytes": 252,
+      "compressed_bytes": 164,
+      "sha256": "d3b39c9a84e1d58159eae31e20c7d11afcb79314fc9fa9befda5072ae2148896",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/1080i/script-tinyppi-main.xml",
+      "type": "file",
+      "bytes": 84358,
+      "compressed_bytes": 6150,
+      "sha256": "3f396e8648fcd8bd45e4dc989eab9e8caeb1bc1c788516591c0154fe3d12aaa3",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/skins/Default/1080i/script-tinyppi-main.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/1080i/script-tinyppi-dialog.xml",
+      "type": "file",
+      "bytes": 9483,
+      "compressed_bytes": 1223,
+      "sha256": "66acbd1ebed3d309275334212c06ebad263774425335a9b284ad431f6b6d6e86",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/skins/Default/1080i/script-tinyppi-dialog.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/channels-bg-start.png",
+      "type": "file",
+      "bytes": 273,
+      "compressed_bytes": 255,
+      "sha256": "187241e4200cf393cfef55a85b31ac5ec60c46021e2a1279d6169d1939255457",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/dv-overlay-bg-start.png",
+      "type": "file",
+      "bytes": 334,
+      "compressed_bytes": 279,
+      "sha256": "74e5c46e9b2f9f5dadc296096523521a35d4d64d0f35a6e9fe1c8f9bf259769a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/overlay-bg-end.png",
+      "type": "file",
+      "bytes": 316,
+      "compressed_bytes": 261,
+      "sha256": "0babb4f16652d325076994b5217255aa54064bae84997b42e7a16a97d8509b97",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/channels-bg-end.png",
+      "type": "file",
+      "bytes": 264,
+      "compressed_bytes": 245,
+      "sha256": "8565462f7b28046936ae100ec3b89f79d8ffda03fbb7bd111166c12888ab31cc",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/dv-overlay-bg-end.png",
+      "type": "file",
+      "bytes": 327,
+      "compressed_bytes": 272,
+      "sha256": "b00faf2807a4a4c6f4782aec8e3d2033aaf912c2d2b3c4944c464e169705e181",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/dialog-bg-start.png",
+      "type": "file",
+      "bytes": 315,
+      "compressed_bytes": 267,
+      "sha256": "24edb3e216c69137875c2db13936efa2fbb4d0701c749e22005eeb7c6eda9ab5",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/overlay-bg-start.png",
+      "type": "file",
+      "bytes": 320,
+      "compressed_bytes": 267,
+      "sha256": "76ed7ef8ba0620b696de788013de4a834202103fddd78b99f85f3c5f74cd9359",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/background/dialog-bg-end.png",
+      "type": "file",
+      "bytes": 313,
+      "compressed_bytes": 261,
+      "sha256": "3476170f95b628a6846c019824c2c4030562bb1a64bd7bcf3e0bb99bb0d194f3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/splash/corner-tl.png",
+      "type": "file",
+      "bytes": 705,
+      "compressed_bytes": 710,
+      "sha256": "5f2c51ce4e1875132f8d67094dc8bed6d3df996b0640979ad57a4e2931048530",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/splash/corner-br.png",
+      "type": "file",
+      "bytes": 687,
+      "compressed_bytes": 692,
+      "sha256": "d00ef0f15189166d82aefa35d27834ebf0d7bd1a1b6d9752a816d63541015e47",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/splash/corner-tr.png",
+      "type": "file",
+      "bytes": 699,
+      "compressed_bytes": 704,
+      "sha256": "7afaf9537b1f9c0c47d00f13b928833a40ac6253c58c713a044ad9cddf123f68",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/splash/corner-bl.png",
+      "type": "file",
+      "bytes": 720,
+      "compressed_bytes": 725,
+      "sha256": "c4985f4daa3160db8f579eb57b91e221d8e72953c67b1e59685c4836c6a7f15f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Dolby_TrueHD.png",
+      "type": "file",
+      "bytes": 4672,
+      "compressed_bytes": 4541,
+      "sha256": "c426b8781745b1840e46605fe1ad169cb23316a56417dca43c1cfea319566b83",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/HLG.png",
+      "type": "file",
+      "bytes": 4835,
+      "compressed_bytes": 4065,
+      "sha256": "253726f1fc07fcec7b86c7baabdc9ae8cad20c0dd84cb56cbaefa82fedff455b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/DTS-HD-MA.png",
+      "type": "file",
+      "bytes": 6909,
+      "compressed_bytes": 6726,
+      "sha256": "1e073838a008e8c1284f52f3392005d4c8c03bcce3565526a425a9b087b4313d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/DTS-HD-HRA.png",
+      "type": "file",
+      "bytes": 7364,
+      "compressed_bytes": 7157,
+      "sha256": "aaada1f5334799daf164bec61c21f307cef4be476ace073d848338164f575a59",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Vorbis.png",
+      "type": "file",
+      "bytes": 9245,
+      "compressed_bytes": 9159,
+      "sha256": "d8346d2362467fb9a7076b3bb92492fc7ec9b2236f4335df4fa5355702d20bc2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Dolby_Vision.png",
+      "type": "file",
+      "bytes": 5312,
+      "compressed_bytes": 5172,
+      "sha256": "bbcf45a1a757b683651ca15a3690182a5764852cb002e2a88b8e4cbe2434707d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/IMAX.png",
+      "type": "file",
+      "bytes": 7093,
+      "compressed_bytes": 6881,
+      "sha256": "1dffcf136e6b698f9664f6737333cd9c8b434739894baf4463146c98b8be8c0e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/FLAC.png",
+      "type": "file",
+      "bytes": 3672,
+      "compressed_bytes": 3553,
+      "sha256": "50cb602f5c1ac2fcf8a4bb04d12cacaec6a71dce596814258b14892e8e699d03",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/DTS-Express.png",
+      "type": "file",
+      "bytes": 6234,
+      "compressed_bytes": 6063,
+      "sha256": "af446e5e81fd6af7def07ec0e4bfbd9a37311eba4cac3bc309bfffa3fdcfc0e8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/HDR10Plus.png",
+      "type": "file",
+      "bytes": 4068,
+      "compressed_bytes": 3852,
+      "sha256": "4172f44bdab944646535b5019be9324245858e7362e7c419472f9313a8c91fd6",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Dolby_Digital.png",
+      "type": "file",
+      "bytes": 4964,
+      "compressed_bytes": 4811,
+      "sha256": "ab101b4bdcdb3a0f744cd27225c5434a455e9335404b5296c9b9796232d12db4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/PCM.png",
+      "type": "file",
+      "bytes": 2952,
+      "compressed_bytes": 2722,
+      "sha256": "b9da8a4f7ed4a442d861318b4040d9c0b41d564f087620ea4a62acd862f23c0e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/AAC.png",
+      "type": "file",
+      "bytes": 4364,
+      "compressed_bytes": 4272,
+      "sha256": "c3bda16ab40337d8dceaa58be1b202267d65d220c514c0b08efaa4e261f2815a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Dolby_TrueHD_Atmos.png",
+      "type": "file",
+      "bytes": 6112,
+      "compressed_bytes": 5971,
+      "sha256": "a62a4eccd52036ab0b038d809e9cc3e6722f7bc3b5067093d287c7d0187a486e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/SDR.png",
+      "type": "file",
+      "bytes": 5973,
+      "compressed_bytes": 5251,
+      "sha256": "c5c2fb38b39656ca4bcb9abc1ff252234b331ad9da0d29775982b62d6b4520e6",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/OPUS.png",
+      "type": "file",
+      "bytes": 5375,
+      "compressed_bytes": 4748,
+      "sha256": "abb29b13c0b499510e3983af0567ef2bef38c3899738a6148981c86b22ceb82d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/DTS-96-24.png",
+      "type": "file",
+      "bytes": 4214,
+      "compressed_bytes": 3559,
+      "sha256": "1b0b3fc547a913481c840eadb9a63804a3c11854c8e89b5e03ca6b194882e142",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/HDR10Plus_IMAX.png",
+      "type": "file",
+      "bytes": 5264,
+      "compressed_bytes": 4586,
+      "sha256": "d3f18802af9c96d9b3793698cb7f8584dec87fd60932ab84e7777f926ebd18dc",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/DTS.png",
+      "type": "file",
+      "bytes": 4911,
+      "compressed_bytes": 4760,
+      "sha256": "424fc6ba098c55092120568e6c2f1666495e2232ef852b5cb76680095e3be31f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/MP3.png",
+      "type": "file",
+      "bytes": 4564,
+      "compressed_bytes": 4473,
+      "sha256": "b027386c4d6e7d841b5158417033cbfec984400da9042819ddf68cd1dd7b8f7e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Dolby_Digital_Plus_Atmos.png",
+      "type": "file",
+      "bytes": 6137,
+      "compressed_bytes": 5986,
+      "sha256": "dab4851a29303d5be28d394dc58c4bc8ba265951899d428dc842a0224d65e6b5",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/DTSX.png",
+      "type": "file",
+      "bytes": 4597,
+      "compressed_bytes": 4466,
+      "sha256": "acfa1c9aac98aadc174b63aea39b906f531f1eb07ef0a322135314a901b2c48f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/MP2.png",
+      "type": "file",
+      "bytes": 4660,
+      "compressed_bytes": 4561,
+      "sha256": "f95213ea3f066408a1b660340892f697c60990254447a08ba390eecf286fdd1b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/HDR10.png",
+      "type": "file",
+      "bytes": 5763,
+      "compressed_bytes": 5021,
+      "sha256": "f19d289bc0f23168a883b5a553931607bf82c7d3b22493bbc3260e631ec602c4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Dolby_Vision_IMAX.png",
+      "type": "file",
+      "bytes": 6348,
+      "compressed_bytes": 6174,
+      "sha256": "f169f2f6db52caee93f29fcc3ad279b6d57ed02665e638ebc47f851fcc92e832",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/DTS-ES.png",
+      "type": "file",
+      "bytes": 3694,
+      "compressed_bytes": 3030,
+      "sha256": "8d55779c5c0362e9be4ca5f58aaf144cc8a0d34b43810a3cb5a1a47402f6d786",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/MP1.png",
+      "type": "file",
+      "bytes": 6243,
+      "compressed_bytes": 5626,
+      "sha256": "cf19a031dd247323eca2778707b8149b6815d33cc7770d0a01b9232f038b42c2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/Dolby_Digital_Plus.png",
+      "type": "file",
+      "bytes": 5643,
+      "compressed_bytes": 5491,
+      "sha256": "b0c3a722761e9d81c33fcb891b254d16ba221bd85c78db0950ec27cc1ee77a95",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/codecs/HDR10_IMAX.png",
+      "type": "file",
+      "bytes": 5132,
+      "compressed_bytes": 4440,
+      "sha256": "24a70ad912ca6b4929894fddf8c15af74b73ef23c2641c770b6b05f00f2fc392",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/progress/bar.png",
+      "type": "file",
+      "bytes": 195,
+      "compressed_bytes": 195,
+      "sha256": "1dae68fa99143ea924853f38a5f2c78d2ec180fd49c9f8c3c51708238e13e377",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/common/dot-1x1.png",
+      "type": "file",
+      "bytes": 70,
+      "compressed_bytes": 61,
+      "sha256": "8be00bca265285a8734c4579951a1929fc80d48b435b8ed9d7f1d37922c3acd9",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/common/signde-classic-dark-gradient-v3.png",
+      "type": "file",
+      "bytes": 478,
+      "compressed_bytes": 332,
+      "sha256": "b2f3c72e7fdc8178871576c0c55c193b4e60d88caf271ced826a4d9fb2fcb7cb",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/common/dot-circle.png",
+      "type": "file",
+      "bytes": 1153,
+      "compressed_bytes": 1158,
+      "sha256": "92daec43c5eacebd4a91490a41b476790b323d9ecde25a1280049d6886ac98a3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/common/pill.png",
+      "type": "file",
+      "bytes": 2348,
+      "compressed_bytes": 2353,
+      "sha256": "d69f8952e785499d6e6aa90c13cd5407e1e592f6853fc7ebf1839f17dc005e41",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/common/button-white.png",
+      "type": "file",
+      "bytes": 708,
+      "compressed_bytes": 646,
+      "sha256": "a642c2e2754f43b9dd3aea91829663310384e8361f5fd496e980ef80c379ce09",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/lrtb.png",
+      "type": "file",
+      "bytes": 1094,
+      "compressed_bytes": 1099,
+      "sha256": "8f2c6fa5cf51116394a1e71215916a352a42af75c52c644c6947fad984b58ffe",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/volume.png",
+      "type": "file",
+      "bytes": 873,
+      "compressed_bytes": 878,
+      "sha256": "f85eae6a267546c550613e5ab6fbd60233c2b903e33b4988eff88452006e2ac2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/dv-name.png",
+      "type": "file",
+      "bytes": 1460,
+      "compressed_bytes": 1465,
+      "sha256": "42a8b5ba38e492c6c75400ffbbabf2921407e897771d8dc400cb19677a851575",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/vs10.png",
+      "type": "file",
+      "bytes": 1396,
+      "compressed_bytes": 1401,
+      "sha256": "33615ecfe60e99f587710ab2b6a5a86882a2c7e9472ae80a1c822ee9231b59f3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/camcorder.png",
+      "type": "file",
+      "bytes": 683,
+      "compressed_bytes": 688,
+      "sha256": "309ca01eee6ccdf4879fd74d2e9fa5ced14cc99cfe41045f88abd49d35874be4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/dv-logo.png",
+      "type": "file",
+      "bytes": 278,
+      "compressed_bytes": 283,
+      "sha256": "fc6975b7df3f0ebf82b29aba2fcf123c7c4542ec7f266de4b10ddf98dbcf48f8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/chart.png",
+      "type": "file",
+      "bytes": 512,
+      "compressed_bytes": 517,
+      "sha256": "1ab9fd396cb904e1c06dc550fa20419d5db1ef09d40f66dbc68345be37fb83d7",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/layer-group.png",
+      "type": "file",
+      "bytes": 537,
+      "compressed_bytes": 538,
+      "sha256": "1ac79233925848f9217f0655846bfcb6944f2a0c54100708924cffde54b27b61",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/arrow-progress.png",
+      "type": "file",
+      "bytes": 882,
+      "compressed_bytes": 887,
+      "sha256": "342439606c7b5afe7eb636ff3e6a59d85fc8b9808fb6d22b639f144cc72d23bd",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/circle-xmark.png",
+      "type": "file",
+      "bytes": 1195,
+      "compressed_bytes": 1200,
+      "sha256": "d759d05aa9f449468b82361af6371e06e21ebc958db8c7324460d5014a30d4e4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/memory.png",
+      "type": "file",
+      "bytes": 725,
+      "compressed_bytes": 730,
+      "sha256": "c09afeb92483ba9664214bb34ca2ab7f20b7b559496e580394d646775cbc8df8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/icons/check-circle.png",
+      "type": "file",
+      "bytes": 1146,
+      "compressed_bytes": 1151,
+      "sha256": "b6adcd20444effdf6dd03a8f2bfca8851af5dc76c3d0a1c866eb94b4c8ea378b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/5.1.png",
+      "type": "file",
+      "bytes": 4598,
+      "compressed_bytes": 4330,
+      "sha256": "9186bd3492104d69a16a482e620c6df815b56976a9f17e894d208bf91497d865",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/7.1.png",
+      "type": "file",
+      "bytes": 6260,
+      "compressed_bytes": 5952,
+      "sha256": "691f07ab82907f91f1d23ec2eb9f22fc985bbf7907cca9f7d11a04759eca63e5",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/3.1.png",
+      "type": "file",
+      "bytes": 3575,
+      "compressed_bytes": 3337,
+      "sha256": "84515db958d69272b698735501e2823a74ee6213c4d0f7b5f103253a4a6dcf14",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/5.1.2.png",
+      "type": "file",
+      "bytes": 5875,
+      "compressed_bytes": 5570,
+      "sha256": "a3edc308b46e767bfe581a9106210d38bb58453fa8f45055b5f846879bb4485b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/1.0.png",
+      "type": "file",
+      "bytes": 1336,
+      "compressed_bytes": 903,
+      "sha256": "a495e50e0ae609684cd0a9d0acc9fdbd37616aa36fe3196fe07327c3232ba94c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/6.1.png",
+      "type": "file",
+      "bytes": 5178,
+      "compressed_bytes": 4861,
+      "sha256": "9e0ed4b9bc1f88799d4588db5f7f08cb34c4f577859d1b9d9d3bbd6caa87d990",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/7.1.2.png",
+      "type": "file",
+      "bytes": 7664,
+      "compressed_bytes": 7288,
+      "sha256": "3b65012f021fa9966c7261305942995e8b019fd89251b42c50e8e342817f2c3a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/4.1.png",
+      "type": "file",
+      "bytes": 4079,
+      "compressed_bytes": 3831,
+      "sha256": "c8c3d7edd9eb096b8bffc0ae4a164788e0d53565fddf55aba2989d58cecbfe1f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/2.0.png",
+      "type": "file",
+      "bytes": 3474,
+      "compressed_bytes": 2762,
+      "sha256": "d66e7e7cd6b251bc0ce0b4a0954c06467180a2e7b6a8d6dc452e7a9fcb9fa4d5",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/2.1.png",
+      "type": "file",
+      "bytes": 4210,
+      "compressed_bytes": 3453,
+      "sha256": "2504661aa6355fe35f663757412e32ed845b4e7f0a878e868c6dfd87668ef15b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/495x298/layer.png",
+      "type": "file",
+      "bytes": 8665,
+      "compressed_bytes": 8419,
+      "sha256": "3769537243c362a4e709abf5db88124b6cd08b98bf55b321b0166376daf03457",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/5.1.png",
+      "type": "file",
+      "bytes": 5469,
+      "compressed_bytes": 4747,
+      "sha256": "827d0a7da59a08b0c548bc5149a3518415a77a6a77842472ab407ff22a09c595",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/7.1.png",
+      "type": "file",
+      "bytes": 7196,
+      "compressed_bytes": 6477,
+      "sha256": "431123c9e28e9c29ff44f70ff1de1286a1796076e7684c3932d360ccd88346c3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/3.1.png",
+      "type": "file",
+      "bytes": 4534,
+      "compressed_bytes": 3789,
+      "sha256": "de8854aeb026d21c07b1c411d610e29f467130100feeb0f21d841a1513697fc6",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/5.1.2.png",
+      "type": "file",
+      "bytes": 4728,
+      "compressed_bytes": 4498,
+      "sha256": "8df874279265985b7409cb69cfd380201276bbec82615c83c8ff2f481c8db618",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/1.0.png",
+      "type": "file",
+      "bytes": 1090,
+      "compressed_bytes": 751,
+      "sha256": "2b868787bbd3df4a1cf057662dcfa88423bf7ca3a7a240a966d01e3ec02c816b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/6.1.png",
+      "type": "file",
+      "bytes": 4088,
+      "compressed_bytes": 3859,
+      "sha256": "7f942a9ea823929dc0fcc1bc82c4390982cfba7fe0c74b630e13c559a400a27a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/7.1.2.png",
+      "type": "file",
+      "bytes": 6121,
+      "compressed_bytes": 5965,
+      "sha256": "3c3a4d6d721a85bb4f5eaa35dbc83a6b615631cd0a5ea67c9d387ef241c8b91d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/4.1.png",
+      "type": "file",
+      "bytes": 5102,
+      "compressed_bytes": 4376,
+      "sha256": "6d88709d49ffcb41445ffdf9bfd5629fd0f007943067ee0b63471519323a686d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/2.0.png",
+      "type": "file",
+      "bytes": 2941,
+      "compressed_bytes": 2267,
+      "sha256": "10a138bf2c9b56215b187a38b3596d9d8921d06ad24378fe47358184a95c1d7b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/2.1.png",
+      "type": "file",
+      "bytes": 3519,
+      "compressed_bytes": 2817,
+      "sha256": "9bc80abf43bce45a5b126792d58c56aeaac1c63799104af1f5deb440b448e415",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/skins/Default/media/channels/400x241/layer.png",
+      "type": "file",
+      "bytes": 7068,
+      "compressed_bytes": 6864,
+      "sha256": "133f497c5af2996fba9c28eaf23b2ad95d1b951dafb639c49317a99af3c294b3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/language/resource.language.de_de/strings.po",
+      "type": "file",
+      "bytes": 35739,
+      "compressed_bytes": 8972,
+      "sha256": "b1ec4f3f26f33886ac29a3e804e36d0f0d55ea0c2ac201d296328a5ab37d6e95",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/language/resource.language.de_de/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/language/resource.language.en_gb/strings.po",
+      "type": "file",
+      "bytes": 25120,
+      "compressed_bytes": 5478,
+      "sha256": "098106665668ac5c3197f058d85b1cb85fda6245947a4ff4c9e0ea4617e32b25",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/language/resource.language.en_gb/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/language/resource.language.ar_sa/strings.po",
+      "type": "file",
+      "bytes": 39023,
+      "compressed_bytes": 9500,
+      "sha256": "c31e9e932e4f14182605372bd45cea5359b7d720e39a4e41b17cf7f887876137",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/language/resource.language.ar_sa/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/language/resource.language.hu_hu/strings.po",
+      "type": "file",
+      "bytes": 31924,
+      "compressed_bytes": 8426,
+      "sha256": "728c5482dcee7d826adb69c840e2ea061afe0c5f24d097d42404ddf76446fa9b",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/language/resource.language.hu_hu/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/language/resource.language.zh_cn/strings.po",
+      "type": "file",
+      "bytes": 34408,
+      "compressed_bytes": 9095,
+      "sha256": "8e721b22544f4b39b0e4bfeec620570ab46a903d6648a01475d742d390ad046a",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/language/resource.language.zh_cn/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/ui/overlay.py",
+      "type": "file",
+      "bytes": 23705,
+      "compressed_bytes": 7740,
+      "sha256": "76e198a911f9373a152a85bb90995c21e35a9decbf107a0f5713ffba4d60e1aa",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/ui/overlay.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/ui/theme.py",
+      "type": "file",
+      "bytes": 21329,
+      "compressed_bytes": 6556,
+      "sha256": "8808d0e02b4d15e0414ddadc7d9a11b25c1173e04300bfa6212fa93929ed2399",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/ui/theme.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/ui/mode_select.py",
+      "type": "file",
+      "bytes": 23141,
+      "compressed_bytes": 7822,
+      "sha256": "a6f5da9838ffcddbde89c050634569d87cf8ac6d9ddb386e64fdd43d6b19f9e3",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/ui/mode_select.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/ui/__init__.py",
+      "type": "file",
+      "bytes": 77,
+      "compressed_bytes": 71,
+      "sha256": "a685a824373b42182d2f989b65e6b6160f420c696ffeaab836737ca4a787ac2b",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/ui/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/ui/fonts.py",
+      "type": "file",
+      "bytes": 11318,
+      "compressed_bytes": 4172,
+      "sha256": "7bdb7ac3f4f204144eb63459df3fbe106a1ea5b1b7cf2d9316a8033afa8e5aad",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/ui/fonts.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/ui/splash.py",
+      "type": "file",
+      "bytes": 28575,
+      "compressed_bytes": 9236,
+      "sha256": "e7ffeca51e1f92777a88fa29de71a914b3e91a5c438db51d0d339bd5bfe901e8",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/ui/splash.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/core/maps.py",
+      "type": "file",
+      "bytes": 28085,
+      "compressed_bytes": 9697,
+      "sha256": "dd4f49ad224e39835c7e6a207991791ff167e148cb1c68c670c72f5b3e595b8e",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/core/maps.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/core/__init__.py",
+      "type": "file",
+      "bytes": 78,
+      "compressed_bytes": 75,
+      "sha256": "380c97d211b7f56a1a8decb248133f7340376c2116dab865edf34f17b0a05864",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/core/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/core/display.py",
+      "type": "file",
+      "bytes": 11722,
+      "compressed_bytes": 3901,
+      "sha256": "239d9d559a0a7f3e4b505c0154e0fdeeea740ba987af2c03e6d2655737061e02",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/core/display.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/core/utils.py",
+      "type": "file",
+      "bytes": 14150,
+      "compressed_bytes": 5354,
+      "sha256": "f775a8f79c44c5d9c039ac5139347969b7b4b9257d8e1e71167eee3d536d8d3b",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/core/utils.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/core/images.py",
+      "type": "file",
+      "bytes": 16207,
+      "compressed_bytes": 4986,
+      "sha256": "c1f93867b1c918ef4dc526566e806feaf822c05f13fe434bd3899138b0d544e1",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/core/images.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/core/helpers.py",
+      "type": "file",
+      "bytes": 2782,
+      "compressed_bytes": 1159,
+      "sha256": "ac4ee9ed7740c360702b59d20661b43677fde7b906c27770f443b66dbd0e156d",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/core/helpers.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/info/properties.py",
+      "type": "file",
+      "bytes": 37972,
+      "compressed_bytes": 11234,
+      "sha256": "e5e2ea1131d869fd21dfd7e2af95cf6b19e6090e0515af857ef5639bb4400d9f",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/info/properties.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/info/mediasource.py",
+      "type": "file",
+      "bytes": 15789,
+      "compressed_bytes": 5977,
+      "sha256": "67eb3e8a2b2213da1074b443cdffc298593862026aad61bfd5e768923c230ab2",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/info/mediasource.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/info/__init__.py",
+      "type": "file",
+      "bytes": 81,
+      "compressed_bytes": 74,
+      "sha256": "f8cf1f14ceea3a55d293f107a6e40f2668bb0a3373c0d326c2fc1756738c4100",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/info/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/info/imax.py",
+      "type": "file",
+      "bytes": 17526,
+      "compressed_bytes": 6809,
+      "sha256": "a0e744d00180afc5423134525e203b07b20077c6953f6704fc666b4193346a9d",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/info/imax.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/info/dvinfo.py",
+      "type": "file",
+      "bytes": 8027,
+      "compressed_bytes": 2463,
+      "sha256": "c0cefe7b9b1be30d3f097163ce465923cc7f107fc26cbcf08c6612b19910c812",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/info/dvinfo.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/service/monitor.py",
+      "type": "file",
+      "bytes": 2759,
+      "compressed_bytes": 1087,
+      "sha256": "8f223c38d0fb5e6051090a364e7ea2b0e43aba38349fa9aee2bfcd0c2636b7ad",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/service/monitor.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/lib/service/__init__.py",
+      "type": "file",
+      "bytes": 79,
+      "compressed_bytes": 73,
+      "sha256": "f291ccb33c08a776875442c91a60acc894938f256c1abc4480d03cefc7e18751",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/lib/service/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.signde.tinyppi/resources/data/imax_titles.txt",
+      "type": "file",
+      "bytes": 5652,
+      "compressed_bytes": 2068,
+      "sha256": "6bb9adc55af8d41efec081225d2813144137b47523093cc452603c6afc8c9695",
+      "copy": "group-original/33-6144d142de43/script.signde.tinyppi/resources/data/imax_titles.txt",
+      "copy_status": "original-byte-copy"
+    }
+  ],
+  "python": [],
+  "summary": {
+    "files": 142,
+    "directories": 0,
+    "uncompressed_bytes": 2085543,
+    "extensions": {
+      ".jpg": 2,
+      ".xml": 4,
+      "<none>": 1,
+      ".md": 1,
+      ".py": 20,
+      ".html": 2,
+      ".webmanifest": 1,
+      ".css": 5,
+      ".js": 6,
+      ".svg": 13,
+      ".png": 81,
+      ".po": 5,
+      ".txt": 1
+    },
+    "copy_status": {
+      "indexed-only": 98,
+      "original-byte-copy": 44
+    }
+  }
+}

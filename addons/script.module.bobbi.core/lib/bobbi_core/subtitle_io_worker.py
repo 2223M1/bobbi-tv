@@ -40,6 +40,7 @@ if __name__ == '__main__':
 import base64
 import ipaddress
 import socket
+import time
 from urllib.error import HTTPError
 from urllib.parse import urljoin, urlsplit
 from urllib.request import build_opener, HTTPRedirectHandler, ProxyHandler, Request
@@ -47,6 +48,30 @@ from urllib.request import build_opener, HTTPRedirectHandler, ProxyHandler, Requ
 
 OPENSUBTITLES_DOWNLOAD_HOSTS = frozenset((
     'www.opensubtitles.com', 'dl.opensubtitles.com', 'dl.opensubtitles.org'))
+
+
+def command_guard(command):
+    if (command.get('_cancelled', lambda: False)() or
+            time.monotonic() >= command.get('_deadline', float('inf'))):
+        raise ValueError('SUBTITLE_IO_DEADLINE')
+
+
+def read_body(response, command, limit):
+    """Embedded Kodi has no killable CLI child: yield at each socket read."""
+    if '_deadline' not in command:
+        return response.read(limit + 1)
+    pieces, size = [], 0
+    while True:
+        command_guard(command)
+        part = response.read1(min(65536, limit + 1 - size))
+        if not part:
+            break
+        pieces.append(part)
+        size += len(part)
+        if size > limit:
+            raise ValueError('SUBTITLE_IO_SIZE')
+    command_guard(command)
+    return b''.join(pieces)
 
 
 def opensubtitles_url(url, mode):
@@ -204,6 +229,7 @@ def fetch_opensubtitles(command):
     elif body is not None:
         raise ValueError('SUBTITLE_IO_REQUEST_INVALID')
     for _ in range(3):
+        command_guard(command)
         if trusted_proxy is not None:
             parts, addresses = opensubtitles_url(url, mode), None
         else:
@@ -215,6 +241,7 @@ def fetch_opensubtitles(command):
         connection = (opensubtitles_connect_proxy(parts) if trusted_proxy is not None
                       else opensubtitles_connect(parts, addresses))
         try:
+            command_guard(command)
             target = parts.path + (('?' + parts.query) if parts.query else '')
             connection.request(method, target, body=raw_body, headers=headers)
             response = connection.getresponse()
@@ -240,11 +267,12 @@ def fetch_opensubtitles(command):
             declared = response.getheader('Content-Length')
             if declared is not None and (not declared.isdigit() or not 0 <= int(declared) <= limit):
                 raise ValueError('SUBTITLE_IO_SIZE')
-            raw = response.read(limit + 1)
+            raw = read_body(response, command, limit)
             if len(raw) > limit:
                 raise ValueError('SUBTITLE_IO_SIZE')
             if declared is not None and len(raw) != int(declared):
                 raise ValueError('SUBTITLE_IO_LENGTH')
+            command_guard(command)
             return raw
         finally:
             connection.close()
@@ -267,11 +295,19 @@ def validate(url, mode):
         addresses = socket.getaddrinfo(parts.hostname, parts.port or 443)
         if not addresses or any(not ipaddress.ip_address(row[4][0]).is_global for row in addresses):
             raise ValueError('SUBTITLE_IO_ORIGIN')
+    elif mode == 'share_cdn':
+        if (parts.scheme not in ('http', 'https') or parts.port not in (None, 80, 443)
+                or not any(parts.hostname == root or parts.hostname.endswith('.' + root)
+                           for root in ('115.com', '115cdn.com', '115cdn.net'))):
+            raise ValueError('SUBTITLE_IO_ORIGIN')
     elif mode != 'torrent' or parts.scheme not in ('http', 'https'):
         raise ValueError('SUBTITLE_IO_ORIGIN')
 
 
 def fetch(command):
+    def guard():
+        command_guard(command)
+    guard()
     if command.get('trusted_proxy') is not None and command.get('mode') not in (
             'opensubtitles_api', 'opensubtitles_download'):
         raise ValueError('SUBTITLE_IO_ORIGIN')
@@ -281,6 +317,9 @@ def fetch(command):
     if type(limit) is not int or not 0 < limit <= 8 * 1024 * 1024:
         raise ValueError('SUBTITLE_IO_SIZE')
     headers = dict(command['headers'], **{'Accept-Encoding': 'identity'})
+    if mode == 'share_cdn' and (command['method'] != 'GET' or command.get('auth')
+            or command.get('json_body') is not None or set(key.lower() for key in headers) - {'user-agent', 'accept-encoding'}):
+        raise ValueError('SUBTITLE_IO_ORIGIN')
     auth = command.get('auth')
     if auth:
         token = base64.b64encode((':'.join(auth)).encode()).decode('ascii')
@@ -291,6 +330,7 @@ def fetch(command):
         headers['Content-Type'] = 'application/json'
     opener = build_opener(ProxyHandler({}), NoRedirect())
     for _ in range(4 if mode == 'assrt' else 1):
+        guard()
         validate(url, mode)
         request = Request(url, data=data, headers=headers, method=command['method'])
         try:
@@ -309,11 +349,12 @@ def fetch(command):
             declared = response.headers.get('Content-Length')
             if declared is not None and (not declared.isdigit() or not 0 <= int(declared) <= limit):
                 raise ValueError('SUBTITLE_IO_SIZE')
-            raw = response.read(limit + 1)
+            raw = read_body(response, command, limit)
             if len(raw) > limit:
                 raise ValueError('SUBTITLE_IO_SIZE')
             if declared is not None and len(raw) != int(declared):
                 raise ValueError('SUBTITLE_IO_LENGTH')
+            guard()
             return raw
     raise ValueError('SUBTITLE_IO_REDIRECT_LIMIT')
 

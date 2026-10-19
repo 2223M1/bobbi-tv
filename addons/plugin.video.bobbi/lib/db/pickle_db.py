@@ -13,7 +13,7 @@ from contextlib import contextmanager
 
 import xbmcvfs
 
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 from lib.utils.kodi.utils import ADDON_ID
 
 

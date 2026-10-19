@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings>
+
+  <category label="30000">
+
+    <setting id="meta_path" type="folder" label="30013" source="auto" option="write" default=""/>
+
+    <setting id="api_key" type="text" label="30002" default="9a4ee93fbb8a3db32f4c0a66516260ec"/>
+
+    <setting id="tmdb_language" type="enum" label="30026" lvalues="30036|30037" default="0"/>
+
+    <setting id="api_endpoint_mode" type="enum" label="30003" lvalues="30010|30033|30011" default="0"/>
+
+    <setting id="api_scheme" type="text" label="30004" default="https" enable="eq(-1,2)"/>
+
+    <setting id="api_host" type="text" label="30005" default="" enable="eq(-2,2)"/>
+
+    <setting id="api_port" type="text" label="30006" default="" enable="eq(-3,2)"/>
+
+    <setting id="api_host_header" type="text" label="30007" default="api.themoviedb.org" enable="eq(-4,2)"/>
+
+    <setting id="ssl_verify" type="bool" label="30008" default="true" enable="eq(-5,2)"/>
+
+    <setting id="image_host" type="enum" label="30040" lvalues="30041|30042|30043" default="0"/>
+
+  </category>
+
+  <category label="30020">
+
+    <setting id="tmdb_notice" type="labelenum" label="30021" lvalues="30022" default="0"/>
+
+  </category>
+
+</settings>
+

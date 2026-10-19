@@ -16,6 +16,8 @@ def ensure_tmdb_init():
     """Initialize TMDb API key and language from current settings."""
     tmdb = TMDb()
     tmdb.api_key = get_setting("tmdb_api_key", "")
+    # This profile never silently inherits a private proxy or upstream app key.
+    tmdb.proxies = None
     try:
         language_index = get_setting("language", 18)
         tmdb.language = LANGUAGES[int(language_index)]

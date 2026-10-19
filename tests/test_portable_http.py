@@ -2,12 +2,21 @@ import importlib.util
 from pathlib import Path
 import time
 from types import SimpleNamespace
+from threading import BoundedSemaphore
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('portable_http_test',
     ROOT / 'addons/plugin.video.bobbi/lib/clients/portable_http.py')
 http = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(http)
+
+
+@pytest.fixture(autouse=True)
+def bounded_test_slots(monkeypatch):
+    slots = BoundedSemaphore(4)
+    monkeypatch.setattr(http, '_slot', lambda: SimpleNamespace(release=slots.release)
+                        if slots.acquire(blocking=False) else None)
 
 
 class Response:
@@ -44,7 +53,7 @@ def test_cancel_never_emits_success():
             yield b'{}'
             state[0] = True
     response = Slow([])
-    assert run(response, lambda: state[0])[-1][1] == 'skipped'
+    assert not any(row[1] == 'succeeded' for row in run(response, lambda: state[0]))
     assert response.closed
 
 

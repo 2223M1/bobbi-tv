@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "kodi": {"url": "https://github.com/xbmc/xbmc.git", "tag": "21.3-Omega", "commit": "a3a448d26b8d560a65655dab2cd122994dc4e146"},
+  "android": {
+    "application_id": "org.bobbi.helper", "min_api": 26, "target_api": 34,
+    "abis": ["arm64-v8a", "armeabi-v7a"],
+    "gradle": {"version": "8.3", "url": "https://services.gradle.org/distributions/gradle-8.3-bin.zip", "sha256": "591855b517fc635b9e04de1d05d5e76ada3f89f5fc76f87978d1b245b4f69225"},
+    "archives": [
+      {"name": "android-ndk-r21e-linux-x86_64.zip", "url": "https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip", "algorithm": "sha256", "digest": "ad7ce5467e18d40050dc51b8e7affc3e635c85bd8c59be62de32352328ed467e", "published_sha1": "c3ebc83c96a4d7f539bd72c241b2be9dcd29bda9", "bytes": 1190670072},
+      {"name": "commandlinetools-linux-11076708.zip", "url": "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip", "algorithm": "sha256", "digest": "2d2d50857e4eb553af5a6dc3ad507a17adf43d115264b1afc116f95c92e5e258", "published_sha1": "d313adb7aedccf6cf0cfca51ec180f0059f5f8f8", "bytes": 153607504},
+      {"name": "build-tools_r33.0.1-linux.zip", "url": "https://dl.google.com/android/repository/build-tools_r33.0.1-linux.zip", "algorithm": "sha256", "digest": "0fdf2746200ee21d50a837451350e14cb11a544cbb40be5e539a89164cf3b8e5", "published_sha1": "fefb393b82814feb94f88147827cbc918cf992b0", "bytes": 56003178},
+      {"name": "platform-34-ext7_r03.zip", "url": "https://dl.google.com/android/repository/platform-34-ext7_r03.zip", "algorithm": "sha256", "digest": "16fdb74c55e59ae3ef52def135aec713508467bd56d7dabcd8c9be31fa8b20f3", "published_sha1": "1f2e9478d6a7601425ceaa553311dc43191f103d", "bytes": 63180081},
+      {"name": "OpenJDK17U-jdk_x64_linux_hotspot_17.0.18_8.tar.gz", "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.18%2B8/OpenJDK17U-jdk_x64_linux_hotspot_17.0.18_8.tar.gz", "algorithm": "sha256", "digest": "0c94cbb54325c40dcf026143eb621562017db5525727f2d9131a11250f72c450", "bytes": 193062224}
+    ]
+  },
+  "upstream_checksum_source": "https://dl.google.com/android/repository/repository2-1.xml",
+  "windows": {
+    "visual_studio": "17.14.42 BuildTools", "msvc": "14.44.35207", "sdk": "10.0.22621.0",
+    "cmake": {"version": "3.26.4", "sha256": "62c35427104a4f8205226f72708d71334bd36a72cf72c60d0e3a766d71dcc78a"},
+    "nsis": {"version": "3.11", "url": "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.11/nsis-3.11.zip", "sha256": "c7d27f780ddb6cffb4730138cd1591e841f4b7edb155856901cdf5f214394fa1"}
+  },
+  "note": "Google archive SHA1 was verified against published metadata before locking the observed SHA256. No AMLogic/CoreELEC target objects are permitted."
+}

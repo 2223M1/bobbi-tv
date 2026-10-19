@@ -1,0 +1,14 @@
+[Unit]
+Description=Aurora 6S NG wifi driver
+After=systemd-modules-load.service
+Before=kodi.service
+ConditionKernelVersion=4.9.269
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh /storage/.config/aurora6s-ng/load-drivers.sh wifi
+TimeoutStartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -13,7 +13,10 @@ import shutil
 import sqlite3
 import stat
 import tempfile
+from collections import deque
 from contextlib import contextmanager
+from threading import Lock
+from time import monotonic
 from uuid import uuid4
 
 from bobbi_core.fonts import (
@@ -23,6 +26,9 @@ from bobbi_core.fonts import (
 from bobbi_core.ledger import encode
 
 FONT_SCHEMA_KEY = 'extension:subtitle-fonts:schema'
+# Windows st_ctime is creation time, not a reliable content-change marker.
+# The CoreELEC target is POSIX; other platforms retain full-byte verification.
+BYTE_PROOF_REUSE = os.name == 'posix'
 FONT_DDL = (
     'CREATE TABLE font_objects(sha256 TEXT PRIMARY KEY, payload TEXT NOT NULL, last_used REAL)',
     'CREATE TABLE font_sources(sha256 TEXT REFERENCES font_objects(sha256), version TEXT, '
@@ -80,10 +86,15 @@ def safe_directory(path):
     return path
 
 
-def file_hash(path):
+def file_hash(path, allowed=None):
     digest = hashlib.sha256()
     with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
+        while True:
+            if allowed is not None and allowed() is not True:
+                raise InterruptedError('Idle font verification paused')
+            block = stream.read(1024 * 1024)
+            if not block:
+                break
             digest.update(block)
     return digest.hexdigest()
 
@@ -96,24 +107,38 @@ def file_stamp(path):
                  ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns', 'st_ctime_ns'))
 
 
-def verify_font_plan(plan):
-    """IO-only worker: no SQLite, native links, renderer or cloud operations."""
+def verify_font_plan(plan, reusable=None, allowed=None):
+    """Verify current paths against complete byte proofs from this process.
+
+    Unchanged proofs may come from an earlier idle verification. They grant no
+    activation authority: every path is restatted here and again by the owner.
+    A new/replaced/changed object is always hashed completely.
+    """
     proof, hashed = {}, {}
+    reusable = (reusable or {}) if BYTE_PROOF_REUSE else {}
     for path, record in plan.items():
+        if allowed is not None and allowed() is not True:
+            raise InterruptedError('Idle font verification paused')
         before = file_stamp(path)
+        if before[3] != record['bytes']:
+            raise ValueError('Font bytes differ from the frozen activation plan')
         # Object and native paths normally are hard links. Hash each physical
         # inode once within THIS verification, not twice through its two names.
-        # No cross-request cache: every activation still verifies current bytes.
         digest = hashed.get(before) if before[1] else None
         if digest is None:
-            digest = file_hash(Path(path))
-        if before[3] != record['bytes'] or digest != record['sha256']:
+            if before[1] and reusable.get(path) == (record['sha256'], before):
+                digest = record['sha256']
+            else:
+                digest = file_hash(Path(path)) if allowed is None else file_hash(Path(path), allowed=allowed)
+        if digest != record['sha256']:
             raise ValueError('Font bytes differ from the frozen activation plan')
-        if file_stamp(path) != before:
-            raise ValueError('Font changed during worker verification')
         if before[1]:
             hashed[before] = digest
         proof[path] = (record['sha256'], before)
+    # Include aliases and paths proved before another object was read.
+    for path, (_, before) in proof.items():
+        if file_stamp(path) != before:
+            raise ValueError('Font changed during worker verification')
     return proof
 
 
@@ -126,6 +151,104 @@ class FontCache:
         if self.native == self.root or self.native in self.root.parents or self.root in self.native.parents:
             raise ValueError("Native font links and private cache must be disjoint")
         self.migration_backup = install_schema(ledger)
+        # Volatile byte evidence only, never serialized into the ledger. The
+        # lock coordinates the existing idle and preflight IO lanes, not SQLite.
+        self._proofs, self._proof_lock = {}, Lock()
+        self._byte_queue, self._byte_queued = deque(), set()
+        self._seed_byte_warmup()
+
+    def _queue_bytes(self, digest, priority=False):
+        if digest in self._byte_queued:
+            if priority:
+                self._byte_queue.remove(digest)
+                self._byte_queue.appendleft(digest)
+            return
+        if len(self._byte_queued) >= 256:
+            if not priority:
+                return
+            self._byte_queued.remove(self._byte_queue.pop())
+        self._byte_queued.add(digest)
+        (self._byte_queue.appendleft if priority else self._byte_queue.append)(digest)
+
+    def _seed_byte_warmup(self):
+        """One bounded ledger-only pass per service start; never a font scan."""
+        for row in self.ledger.db.execute('SELECT sha256 FROM font_native_links LIMIT 128'):
+            self._queue_bytes(row[0])
+        for version, subtitle in self.ledger.db.execute(
+                "SELECT version,subtitle FROM font_leases WHERE expires>? "
+                "ORDER BY CASE purpose WHEN 'current' THEN 0 ELSE 1 END LIMIT 32", (self.ledger.now(),)):
+            result = self.binding(version, subtitle)
+            for item in (result or {}).get('selected', []):
+                self._queue_bytes(item['sha256'])
+        for row in self.ledger.db.execute('SELECT payload FROM font_bindings ORDER BY rowid DESC LIMIT 64'):
+            for item in json.loads(row[0]).get('selected', []):
+                self._queue_bytes(item['sha256'])
+
+    def verify_plan(self, plan, allowed=None):
+        """IO-lane entry point; no ledger reads or activation writes here."""
+        with self._proof_lock:
+            reusable = {path: self._proofs[path] for path in plan if path in self._proofs}
+        try:
+            proof = verify_font_plan(plan, reusable, allowed)
+        except (OSError, ValueError):
+            with self._proof_lock:
+                for path in plan:
+                    self._proofs.pop(path, None)
+            raise
+        with self._proof_lock:
+            for path, value in proof.items():
+                self._proofs.pop(path, None)
+                self._proofs[path] = value
+            while len(self._proofs) > 512:
+                self._proofs.pop(next(iter(self._proofs)))
+        return proof
+
+    def _invalidate_bytes(self, record, requeue=True):
+        # link/unlink changes ctime even when bytes are unchanged. Do NOT turn
+        # its post-operation stamp into fresh byte evidence without rehashing.
+        with self._proof_lock:
+            for native in (False, True):
+                self._proofs.pop(str(self._path(record, native)), None)
+        if requeue:
+            self._queue_bytes(record['sha256'], priority=True)
+
+    def next_byte_action(self):
+        """Owner pops one event-enqueued object; an empty queue does no IO."""
+        while self._byte_queue:
+            digest = self._byte_queue.popleft()
+            self._byte_queued.remove(digest)
+            try:
+                record = self._record(digest)
+            except KeyError:  # Evicted after it was queued.
+                continue
+            plan = {str(self._path(record)): record}
+            if self.ledger.db.execute('SELECT 1 FROM font_native_links WHERE sha256=?', (digest,)).fetchone():
+                plan[str(self._path(record, True))] = record
+            return plan
+        return None
+
+    def warm_bytes(self, plan, allowed):
+        """One local object on the existing idle lane, never a renderer action."""
+        next_check, idle = 0.0, False
+        def still_idle():
+            nonlocal next_check, idle
+            now = monotonic()
+            if now >= next_check:
+                idle = allowed() is True
+                next_check = now + 0.1
+            return idle
+        if not still_idle():
+            return {'state': 'PAUSED'}
+        try:
+            proof = self.verify_plan(plan, allowed=still_idle)
+        except InterruptedError:
+            return {'state': 'PAUSED'}
+        return {'state': 'BYTE_PROOF_ONLY', 'paths': len(proof)}
+
+    def finish_byte_action(self, plan, result):
+        if result.get('state') == 'PAUSED':
+            for record in plan.values():
+                self._queue_bytes(record['sha256'], priority=True)
 
     def _record(self, digest):
         if not isinstance(digest, str) or not re.fullmatch("[0-9a-f]{64}", digest):
@@ -212,6 +335,7 @@ class FontCache:
             self.ledger._audit("font_import", record["sha256"], {"origin": origin, "version": source_version, "bytes": record['bytes']})
             if added:
                 self._wake_preparation(record, origin, source_version)
+        self._queue_bytes(record['sha256'])
         return record
 
     def _wake_preparation(self, record, origin, source_version):
@@ -295,6 +419,8 @@ class FontCache:
         with self.ledger.transaction():
             self.ledger.db.execute("INSERT OR REPLACE INTO font_leases VALUES(?,?,?,?,?)",
                                    (owner, version, subtitle, purpose, self.ledger.now() + seconds))
+        for item in result['selected']:
+            self._queue_bytes(item['sha256'], priority=True)
         return result
 
     def owns_activation(self, version, subtitle, owner, hashes):
@@ -382,12 +508,14 @@ class FontCache:
                             raise ValueError("Unrecorded native font collision; preserve it")
                         verify(record, native=True)
                     else:
+                        self._invalidate_bytes(record)
                         os.link(self._path(record), native)
                         added.append(native)
                     self.ledger.db.execute("INSERT OR IGNORE INTO font_native_links VALUES(?)", (digest,))
                 if can_activate() is not True:
                     raise RuntimeError("Playback/request changed during font activation")
                 for digest, record in old_records.items():
+                    self._invalidate_bytes(record)
                     self._path(record, native=True).unlink()
                     self.ledger.db.execute("DELETE FROM font_native_links WHERE sha256=?", (digest,))
                 self.ledger.db.execute("DELETE FROM font_leases WHERE purpose='current'")
@@ -438,6 +566,7 @@ class FontCache:
                     break
                 record = self._record(digest)
                 self._verify(record).unlink()
+                self._invalidate_bytes(record, requeue=False)
                 self.ledger.db.execute("DELETE FROM font_sources WHERE sha256=?", (digest,))
                 self.ledger.db.execute("DELETE FROM font_objects WHERE sha256=?", (digest,))
                 self.ledger._audit("font_cache_evict", digest, {"bytes": record["bytes"]})

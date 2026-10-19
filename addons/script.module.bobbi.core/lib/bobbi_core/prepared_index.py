@@ -3,11 +3,12 @@ import json
 import os
 from pathlib import Path
 import re
+import sqlite3
 import tempfile
 
 from bobbi_core.preparation import scope_path
 from bobbi_core.prepared_qualification import qualification_token
-from bobbi_core.subtitle_binding import video_identity, checked_video
+from bobbi_core.video_context import video_identity, checked_video, migrate_entry
 
 MAX_BYTES = 4 * 1024 * 1024
 MOUNT_ROOT = '/storage/videos/Clouddrive/CloudDrive'
@@ -18,7 +19,11 @@ def document(queue, account):
         raise ValueError('Current cloud account scope required')
     titles = {}
     from bobbi_core.subtitle_projection import records, generation as subtitle_generation
-    subtitles = records(queue.db)
+    try:
+        subtitles = records(queue.db)
+        subtitle_revision = subtitle_generation(queue.db)
+    except (ValueError, TypeError, KeyError, AttributeError, sqlite3.Error):
+        subtitles, subtitle_revision = {}, 0
     rows = queue.db.execute('''SELECT b.resource,b.media_id,b.version_key,b.evidence,t.account,t.source_hash,p.payload
         FROM prepared_bindings b JOIN tasks t ON b.task=t.id
         JOIN preparation_targets p ON p.task=b.task AND p.media_id=b.media_id AND p.version_key=b.version_key
@@ -52,23 +57,26 @@ def document(queue, account):
             from bobbi_core.release_media_profile import checked_profile
             source['prepared_media_profile'] = checked_profile(item['qualification']['media_profile'])
         file = selected['file']
-        source['subtitle_video'] = video_identity(row['media_id'], row['version_key'],
+        source['video_context'] = video_identity(row['media_id'], row['version_key'],
             dict(source_info_hash=row['source_hash'], torrent_file_id=file['id'],
                  torrent_path=file['path'], torrent_file_bytes=file['length']))
-        subtitle = subtitles.get(source['subtitle_video']['key'])
+        subtitle = subtitles.get(source['video_context']['key'])
         if subtitle:
             source['prepared_subtitle'] = subtitle
         if match[1] == 'tv':
             source.update(season=int(match[3]), episode=int(match[4]))
         titles[key]['sources'].append(source)
-    return dict(schema_version=1, prepared_schema=1, generation=queue.generation(), account=account,
-                subtitle_generation=subtitle_generation(queue.db),
+    return dict(schema_version=1, prepared_schema=2, generation=queue.generation(), account=account,
+                subtitle_generation=subtitle_revision,
                 mount_root=MOUNT_ROOT, titles=list(titles.values()))
 
 
-def publish(queue, destination, account):
+def publish(queue, destination, account, account_scope=None):
     target = Path(destination)
     value = document(queue, account)
+    if account_scope is not None:
+        from bobbi_platform.account_manager import validate_snapshot
+        value['account_scope'] = validate_snapshot(account_scope, authenticated=True)
     raw = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode('utf-8')
     if len(raw) > MAX_BYTES:
         raise ValueError('Prepared snapshot exceeds byte budget')
@@ -85,6 +93,8 @@ def publish(queue, destination, account):
             stamp = '{}:{}'.format(account, value['generation'])
             if value['subtitle_generation']:
                 stamp += ':sub:{}'.format(value['subtitle_generation'])
+            if account_scope is not None:
+                stamp += ':epoch:{}'.format(account_scope['epoch'])
             stream.write(stamp.encode('utf-8'))
             stream.flush()
             os.fsync(stream.fileno())
@@ -117,7 +127,7 @@ def load(path):
     if len(raw) > MAX_BYTES:
         raise ValueError('Prepared snapshot exceeds byte budget')
     value = json.loads(raw)
-    if (not isinstance(value, dict) or value.get('prepared_schema') != 1 or value.get('schema_version') != 1
+    if (not isinstance(value, dict) or value.get('prepared_schema') not in (1, 2) or value.get('schema_version') != 1
             or value.get('mount_root') != MOUNT_ROOT or type(value.get('generation')) is not int
             or not isinstance(value.get('account'), str) or not value['account']
             or value['generation'] < 0 or not isinstance(value.get('titles'), list) or len(value['titles']) > 1000
@@ -128,6 +138,7 @@ def load(path):
         if title.get('kind') not in {'movie', 'tv'} or not isinstance(title.get('sources'), list):
             raise ValueError('Invalid prepared title')
         for item in title['sources']:
+            migrate_entry(item)
             count += 1
             if 'prepared_media_profile' in item:
                 from bobbi_core.release_media_profile import checked_profile
@@ -143,18 +154,36 @@ def load(path):
                     (not isinstance(item['prepared_qualification'], str) or
                      not re.fullmatch('[0-9a-f]{64}', item['prepared_qualification']))):
                 raise ValueError('Invalid per-resource qualification')
-            if 'subtitle_video' in item:
-                context = checked_video(item['subtitle_video'])
+            if 'video_context' in item:
+                context = checked_video(item['video_context'])
                 media = ('tmdb:tv:{}:s{}:e{}'.format(title['tmdb_id'], item.get('season'), item.get('episode'))
                          if title['kind'] == 'tv' else 'tmdb:movie:{}'.format(title['tmdb_id']))
                 if (context['media_id'] != media or context['release_key'] != item['prepared_version_key']
                         or context['selected']['source_info_hash'] != item['prepared_source_info_hash']
                         or context['selected']['torrent_file_bytes'] != item['bytes']):
-                    raise ValueError('Subtitle context does not belong to the prepared video')
+                    raise ValueError('Video context does not belong to the prepared file')
             if 'prepared_subtitle' in item:
                 from bobbi_core.subtitle_projection import checked
-                checked(item['prepared_subtitle'], checked_video(item.get('subtitle_video')))
+                try:
+                    checked(item['prepared_subtitle'], checked_video(item.get('video_context')))
+                except (ValueError, TypeError, KeyError):
+                    # Optional subtitle metadata cannot revoke a qualified video.
+                    item.pop('prepared_subtitle', None)
+    value['prepared_schema'] = 2
+    if 'account_scope' in value and not scope_is_current(value['account_scope']):
+        return dict(value, titles=[])
     return value
+
+
+def scope_is_current(scope):
+    """Old projection bytes never advertise another generation as ready."""
+    from bobbi_platform.account_manager import validate_snapshot, AccountError
+    try:
+        from bobbi_platform.runtime import call
+        return (validate_snapshot(scope, authenticated=True) ==
+                call('account_status', {}, timeout=.2))
+    except (AccountError, OSError, RuntimeError, ValueError, ImportError):
+        return False
 
 
 def selected_cloud(data, snapshot):

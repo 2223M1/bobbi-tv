@@ -1,0 +1,32 @@
+{
+  "action": "status",
+  "gui": {
+    "currentcontrol": {
+      "label": "无职转生～到了异世界就拿出真本事～"
+    },
+    "currentwindow": {
+      "id": 10000,
+      "label": "主界面"
+    }
+  },
+  "labels": {
+    "ListItem.Label": "无职转生～到了异世界就拿出真本事～",
+    "System.CurrentControl": "无职转生～到了异世界就拿出真本事～",
+    "System.CurrentWindow": "主界面"
+  },
+  "safe_settings": {
+    "service_enabled": "true",
+    "apply_settings_to_torrserver": "false",
+    "migrated": "true"
+  },
+  "settings_sha256": "36100aa91d14348e8df4695aff23b04f74cc950998f2ebdf5ac2f20c85356d28",
+  "engine_pid": "4025",
+  "installed": {
+    "plugin.video.jacktorr": {
+      "enabled": true,
+      "origin": "",
+      "version": "1.2.2+am6b.317"
+    },
+    "repository.jacktook": {}
+  }
+}

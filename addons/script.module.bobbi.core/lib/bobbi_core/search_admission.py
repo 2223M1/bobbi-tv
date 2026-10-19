@@ -30,11 +30,8 @@ class SearchAdmission:
 
 def try_acquire(directory=None):
     if directory is None:
-        if os.name == 'nt':
-            import tempfile
-            directory = Path(tempfile.gettempdir()) / 'bobitv-source-admission'
-        else:
-            directory = Path('/storage/.local/share/bobitv/search')
+        from .runtime_paths import ProfilePath
+        directory = ProfilePath('search-admission')
     directory = Path(directory)
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
     info = directory.lstat()

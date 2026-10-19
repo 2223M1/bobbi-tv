@@ -22,7 +22,7 @@ from lib.api.trakt.trakt_cache import (
 )
 from lib.api.trakt.trakt_utils import clean_ids, is_trakt_auth, sort_for_article, sort_list
 from lib.gui.qr_progress_dialog import QRProgressDialog
-from lib.bobbi.utils import ADDON_NAME, ADDON_PATH, ADDON_VERSION
+from lib.jacktook.utils import ADDON_NAME, ADDON_PATH, ADDON_VERSION
 from lib.utils.debrid.qrcode_utils import make_qrcode
 from lib.utils.general.utils import set_pluging_category
 from lib.utils.kodi.settings import (

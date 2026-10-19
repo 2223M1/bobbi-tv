@@ -1,0 +1,1802 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\script.voice.assistant-0.5.0.zip",
+  "bytes": 2908756,
+  "sha256": "79f2e1f490e62dcecf059c10fd75da085301f5f0d87832794de0224b369328a5",
+  "members": [
+    {
+      "path": "script.voice.assistant/addon.xml",
+      "type": "file",
+      "bytes": 729,
+      "compressed_bytes": 460,
+      "sha256": "25a24912e0f482af36ba17c13522db8e30f0319d107dcf693bd2bc279d06f220",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "script.voice.assistant",
+        "name": "AI语音助手",
+        "version": "0.5.0",
+        "provider-name": "forbxy",
+        "extensions": [
+          {
+            "point": "xbmc.python.script",
+            "library": "default.py"
+          },
+          {
+            "point": "xbmc.service",
+            "library": "service.py"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": [
+          {
+            "addon": "xbmc.python",
+            "version": "3.0.0"
+          }
+        ]
+      }
+    },
+    {
+      "path": "script.voice.assistant/default.py",
+      "type": "file",
+      "bytes": 1512,
+      "compressed_bytes": 660,
+      "sha256": "db30996b32ed4c2072208b45e752ae8169c1112fb3f358efac1a60308fb0f8be",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/default.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/service.py",
+      "type": "file",
+      "bytes": 154,
+      "compressed_bytes": 122,
+      "sha256": "9b8925e5a155e100230b2d853689d66b2dc175c61f40e286de993052c38ee9ae",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/LICENSE.txt",
+      "type": "file",
+      "bytes": 1063,
+      "compressed_bytes": 627,
+      "sha256": "14a77d0afd7c32a912c5179a5009e085e07d8509c5185eed4fc6e2afa3bd0de5",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/LICENSE.txt",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/README.md",
+      "type": "file",
+      "bytes": 1838,
+      "compressed_bytes": 826,
+      "sha256": "1b5878f939761de4d223bdc51045af61f1f57ced58f3a0532c91a46df0bfe34c",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/README.md",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/config/asr-test.wav",
+      "type": "file",
+      "bytes": 134570,
+      "compressed_bytes": 95808,
+      "sha256": "46dbc998c9d1d48111267c40741dd3200f2e5bcf4075f8c4c97f4451160dce50",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/config/components.json",
+      "type": "file",
+      "bytes": 13435,
+      "compressed_bytes": 2724,
+      "sha256": "90762109776b70cd2c51d878290c391ecc1f8a2d9ae2f0c84591469db0f1d001",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/config/components.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/config/keyboard-mapping.json",
+      "type": "file",
+      "bytes": 3245,
+      "compressed_bytes": 1052,
+      "sha256": "49e2507aec9326e19aecdb4729cf166258b295658b37d3ffccc0a05bca79d431",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/config/keyboard-mapping.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/config/media-pronunciations.json",
+      "type": "file",
+      "bytes": 420982,
+      "compressed_bytes": 126660,
+      "sha256": "6236f6f4738bffc12e5b4a02a533c3b66eab1825c43c6a225775ebbbe6a78864",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/config/media-pronunciations.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/config/restricted-model-template.json",
+      "type": "file",
+      "bytes": 2980,
+      "compressed_bytes": 1142,
+      "sha256": "7e616c6a277e32e62d26213362485915c7953a067a390959274b18b7a590760e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/config/restricted-model-template.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/language/resource.language.en_gb/strings.po",
+      "type": "file",
+      "bytes": 15240,
+      "compressed_bytes": 3607,
+      "sha256": "b5d244dc4b18efdd80778d72cee26e66effd94843c75da66d8024bc934a4b9c5",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/language/resource.language.en_gb/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/language/resource.language.zh_cn/strings.po",
+      "type": "file",
+      "bytes": 16351,
+      "compressed_bytes": 4200,
+      "sha256": "4ccfbb90c56c94f25a5d426caa489d69bf786d4ff23dc97cac75bddc87fb9b1b",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/language/resource.language.zh_cn/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/__init__.py",
+      "type": "file",
+      "bytes": 84,
+      "compressed_bytes": 78,
+      "sha256": "d55346b3603cbf6cb0391f40f314a618d11c4af379cbe2b27844968cfdd919cb",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/agent_tools.py",
+      "type": "file",
+      "bytes": 37251,
+      "compressed_bytes": 11253,
+      "sha256": "51354fc1aecd3494e015d4733dc5959a36ea6bd5a049dd5c28c2f1812fe4df03",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/agent_tools.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/application.py",
+      "type": "file",
+      "bytes": 20802,
+      "compressed_bytes": 5782,
+      "sha256": "eb619491492752843c4856026c34230b84365ec12b08e4c798ad8e05ab34b3fc",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/application.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/asr/__init__.py",
+      "type": "file",
+      "bytes": 72,
+      "compressed_bytes": 71,
+      "sha256": "a1311e223f1cd36d16cc76cb01d39fad46949aa125f2542fe28e8b68cf9fcf23",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/asr/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/asr/factory.py",
+      "type": "file",
+      "bytes": 1463,
+      "compressed_bytes": 629,
+      "sha256": "c2ac5c5e524824306ad3daf665c37854e6c2176fb78ff8483ffd7146e2f0b1ad",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/asr/factory.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/asr/library_hotwords.py",
+      "type": "file",
+      "bytes": 6126,
+      "compressed_bytes": 2341,
+      "sha256": "7654791987f5e22123b5d0b31fc719caa941520d4d1cccda71eed2c0d3f99870",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/asr/library_hotwords.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/asr/native.py",
+      "type": "file",
+      "bytes": 3698,
+      "compressed_bytes": 1445,
+      "sha256": "5be04522df964e308eac17a2a5a0e4cabdfd62bc369cd46a4f15d74789d2b070",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/asr/native.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/asr/recognizer.py",
+      "type": "file",
+      "bytes": 2333,
+      "compressed_bytes": 975,
+      "sha256": "28dff87b1872b080e63c13c61710e3786aece7e1b59144ca7b82ab95333b54de",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/asr/recognizer.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/asr/service.py",
+      "type": "file",
+      "bytes": 14087,
+      "compressed_bytes": 3875,
+      "sha256": "1a9db12cbab7cbd11abf96ed3fd216729b47345ed2d4e3a07f7fa034a02253a0",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/asr/service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/asr/text.py",
+      "type": "file",
+      "bytes": 1084,
+      "compressed_bytes": 635,
+      "sha256": "2ab582f1eaa6487e6603c457826ad59f1a0182d9c7f5f7c94b682bdf02e488ae",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/asr/text.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/audio.py",
+      "type": "file",
+      "bytes": 8898,
+      "compressed_bytes": 3107,
+      "sha256": "413151ac70923e2d3c457c738b4e3632860cdec66fc62b2ea234405f2dc5cf8d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/audio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/b25_audio.py",
+      "type": "file",
+      "bytes": 236,
+      "compressed_bytes": 173,
+      "sha256": "169dca908ff9729b0353b3a984abab595b8245ae0a4f37d71500d4ba20ebb689",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/b25_audio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/b25_service.py",
+      "type": "file",
+      "bytes": 1257,
+      "compressed_bytes": 635,
+      "sha256": "86593110470d168a55f02033963114339f1459721e8495b7bf61decd0902d12d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/b25_service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/bluez_gatt.py",
+      "type": "file",
+      "bytes": 9814,
+      "compressed_bytes": 2705,
+      "sha256": "cb5b502fb4135413218e2f62a9a69d2b6301687a925cae421fe4649ad9813d4f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/bluez_gatt.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/cmcc_audio.py",
+      "type": "file",
+      "bytes": 3207,
+      "compressed_bytes": 1147,
+      "sha256": "a9b2db8c4f0e90b797fdb2f7acb1bb0773c16656ee4691c0b32ba6105790597e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/cmcc_audio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/cmcc_service.py",
+      "type": "file",
+      "bytes": 11940,
+      "compressed_bytes": 3419,
+      "sha256": "bbb42c6faa4fb2e6eb904a815e339edc2d4e486660dd251cc0f1436eaad4244c",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/cmcc_service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codebuddy_account.py",
+      "type": "file",
+      "bytes": 5295,
+      "compressed_bytes": 1754,
+      "sha256": "79a098b7924f899b14f8240332a07364065f607bfb5e571fedcaaad9cb28ca3c",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codebuddy_account.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codebuddy_agent.py",
+      "type": "file",
+      "bytes": 18121,
+      "compressed_bytes": 5357,
+      "sha256": "99e3d61705d1f7bf028ab6bacf29986c26ee2c4ff4cef6bbac9731877d768a2f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codebuddy_agent.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codebuddy_metadata.py",
+      "type": "file",
+      "bytes": 5994,
+      "compressed_bytes": 2414,
+      "sha256": "b45b9ea412cd84d98e8c27fb7e8284dc272db8c5f0d76a7518f3549cdb67de06",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codebuddy_metadata.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codebuddy_protocol.py",
+      "type": "file",
+      "bytes": 7650,
+      "compressed_bytes": 2709,
+      "sha256": "8a44d15dab17620490171ee9a25c00b33268d29d569515a6ff202a452809cda1",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codebuddy_protocol.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codebuddy_regions.py",
+      "type": "file",
+      "bytes": 1678,
+      "compressed_bytes": 647,
+      "sha256": "5b5412c3bc20800e2c806a6d884914e2c00bd5c0c19ff600481bbd5417641c8f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codebuddy_regions.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codebuddy_resident.py",
+      "type": "file",
+      "bytes": 12550,
+      "compressed_bytes": 3694,
+      "sha256": "e601421060e40af82f637bf87b02de44891f18dd77493082d915a67d73376544",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codebuddy_resident.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codex_account.py",
+      "type": "file",
+      "bytes": 7282,
+      "compressed_bytes": 2590,
+      "sha256": "21b3b768d493218f36244d6a69e9d7aa1fd521a36598b2d7cccc8f63a2b5b670",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codex_account.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codex_account_ui.py",
+      "type": "file",
+      "bytes": 6862,
+      "compressed_bytes": 2413,
+      "sha256": "9d6c72b12e2e875069ae7991a1f1391eac430157ff59b08d08876eda8218742a",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codex_account_ui.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codex_agent.py",
+      "type": "file",
+      "bytes": 44250,
+      "compressed_bytes": 14461,
+      "sha256": "02a6b4cae9c7209f77a45835711f8233e4ec512b06bd41be4074c9b59fdffd99",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codex_agent.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codex_dictation.py",
+      "type": "file",
+      "bytes": 7507,
+      "compressed_bytes": 2916,
+      "sha256": "fa1472b591132cbbc7527f71cb90455a0aa7b0edb6ac01ca0495176c6e738fc0",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codex_dictation.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codex_dictation_recognizer.py",
+      "type": "file",
+      "bytes": 778,
+      "compressed_bytes": 438,
+      "sha256": "d3b76904adb7c75f239a5b2bafbd073ba83b174aecfd48fb5ceabc28ba351b14",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codex_dictation_recognizer.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/codex_dictation_worker.py",
+      "type": "file",
+      "bytes": 1963,
+      "compressed_bytes": 964,
+      "sha256": "0d389f5f16ec2ebd12b0117dd8a8ed72dd893440c8ede7f8c05d9df58cb52fac",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/codex_dictation_worker.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/configuration/__init__.py",
+      "type": "file",
+      "bytes": 84,
+      "compressed_bytes": 77,
+      "sha256": "96993c1363208550427a33b0a9dd05b53b00c07a2bf75e10b7f03c28d429c1c4",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/configuration/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/configuration/credentials.py",
+      "type": "file",
+      "bytes": 1927,
+      "compressed_bytes": 1005,
+      "sha256": "8e9a15c1961da8dfcc55028d03f45f30e3a0755d20286eda215f5a8845b8c057",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/configuration/credentials.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/configuration/server.py",
+      "type": "file",
+      "bytes": 25686,
+      "compressed_bytes": 6573,
+      "sha256": "cf832e032c3ec743f0aedaabdcc3f725deb3d8251434fc5368f101162e290d06",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/configuration/server.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/configuration/ui.py",
+      "type": "file",
+      "bytes": 1814,
+      "compressed_bytes": 919,
+      "sha256": "e80c0a5ebe439dd308a63b244aef85faa56c3909792df3026ff2ed78792eb92e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/configuration/ui.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/data_paths.py",
+      "type": "file",
+      "bytes": 2933,
+      "compressed_bytes": 1123,
+      "sha256": "31af282fad09326788cc71a5d36fb714aa2531850557cf8a290193b81a34f6ad",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/data_paths.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/dependencies/__init__.py",
+      "type": "file",
+      "bytes": 79,
+      "compressed_bytes": 71,
+      "sha256": "22ebf5673502b371a4f8bf118037ecacac6c01f878feea87a469901b36a53dcf",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/dependencies/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/dependencies/catalog.py",
+      "type": "file",
+      "bytes": 3783,
+      "compressed_bytes": 1530,
+      "sha256": "859ab2202594771f51595031ffb5f77255817e846edbf1b1de9f3903b649bbd0",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/dependencies/catalog.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/dependencies/download.py",
+      "type": "file",
+      "bytes": 8274,
+      "compressed_bytes": 2861,
+      "sha256": "17e345e7e2a90b958094e666583f47a30a488e6f7767c33fddfc414f5e773b46",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/dependencies/download.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/dependencies/service.py",
+      "type": "file",
+      "bytes": 9241,
+      "compressed_bytes": 2632,
+      "sha256": "653155a6a812d485f09aa8aa45dec797cddaa9dc8fd983defd2c11b6ca147ce9",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/dependencies/service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/dependencies/ui.py",
+      "type": "file",
+      "bytes": 1877,
+      "compressed_bytes": 827,
+      "sha256": "ad82ee75a7faf1d15022d010c297a65175d3950135ef2c4ce5b7ddc102fa06f1",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/dependencies/ui.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/dependencies/uploads.py",
+      "type": "file",
+      "bytes": 3145,
+      "compressed_bytes": 1266,
+      "sha256": "a6a7fa307408736f8b611a11097aa25945d05def8fbea6f9bbfb82d82fe425a5",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/dependencies/uploads.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/doubao_config.py",
+      "type": "file",
+      "bytes": 1720,
+      "compressed_bytes": 819,
+      "sha256": "65f1a894f8b18d7340aa156726b710c62fb0385d03ec3560c046a9ea1940f599",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/doubao_config.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/doubao_protocol.py",
+      "type": "file",
+      "bytes": 3697,
+      "compressed_bytes": 1551,
+      "sha256": "0b70d4c92f941944cce760f9545d0919587e263f9c5d95138acd420a0b180457",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/doubao_protocol.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/doubao_recognizer.py",
+      "type": "file",
+      "bytes": 894,
+      "compressed_bytes": 450,
+      "sha256": "34e1d0f0666235ea32d6f186f1d0a39ca7391b3bd567f66bbac054325bb4754d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/doubao_recognizer.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/doubao_worker.py",
+      "type": "file",
+      "bytes": 4541,
+      "compressed_bytes": 1828,
+      "sha256": "65304d51a7b27990978e200c14e85fd2ee40f0482f4088fe8701619d63a0d771",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/doubao_worker.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/errors.py",
+      "type": "file",
+      "bytes": 117,
+      "compressed_bytes": 104,
+      "sha256": "699bf655e4d218402bb1583641ee3be2cfa60cdf53890584af571975d2691896",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/errors.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/http_proxy.py",
+      "type": "file",
+      "bytes": 899,
+      "compressed_bytes": 451,
+      "sha256": "c15c2a2b6585fd0ab692baf6713680562a70cb36b9413af0cb3c988973ea45f4",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/http_proxy.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/inputs/__init__.py",
+      "type": "file",
+      "bytes": 80,
+      "compressed_bytes": 74,
+      "sha256": "0835b0e10ad7d0dc99e1b22811b374d62a3c6a43720fbb91e2dc81426e723001",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/inputs/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/inputs/pcm.py",
+      "type": "file",
+      "bytes": 4817,
+      "compressed_bytes": 1676,
+      "sha256": "c1c0915b96d6148da75d8138cb7daa358d9b43efd638a78d4822ed35c3f37777",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/inputs/pcm.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/inputs/registry.py",
+      "type": "file",
+      "bytes": 1648,
+      "compressed_bytes": 813,
+      "sha256": "21b4e39980e9003db849390c0fa4836138b173050eff52e0cb81d3ff1d1f9028",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/inputs/registry.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/inputs/runtime.py",
+      "type": "file",
+      "bytes": 10335,
+      "compressed_bytes": 2626,
+      "sha256": "f1b3eefc5390dbfb8cf868c1699f79a8a24192e7a11d31356bf1f5dbabae1a2d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/inputs/runtime.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/__init__.py",
+      "type": "file",
+      "bytes": 80,
+      "compressed_bytes": 69,
+      "sha256": "1e763ac37740a4572ebc4ec046a6012ba8a09d0864102ceb2a75f6bbf6c3fa62",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/capability_specs.py",
+      "type": "file",
+      "bytes": 10172,
+      "compressed_bytes": 4022,
+      "sha256": "b213613cf14ec377a474404cc5629d181ae05dd64463490ffd6fdbe7a0a14f9b",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/capability_specs.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/collection_tools.py",
+      "type": "file",
+      "bytes": 13856,
+      "compressed_bytes": 4155,
+      "sha256": "09364a1ae5628388f36e9fab5d3f6becd09d58eb265cb5b51f3500792dc57e25",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/collection_tools.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/command_media.py",
+      "type": "file",
+      "bytes": 4440,
+      "compressed_bytes": 1712,
+      "sha256": "b418845620ccd5d87f943a99b7748d941ecd92f45dbeae697ae6fb205400035e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/command_media.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/command_resume.py",
+      "type": "file",
+      "bytes": 7700,
+      "compressed_bytes": 2523,
+      "sha256": "6f5130caf52d6f873a3ec2ad7fface7896d6a6be5492f523340d97ef0cb24c5e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/command_resume.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/command_rules.py",
+      "type": "file",
+      "bytes": 11023,
+      "compressed_bytes": 3720,
+      "sha256": "6cac9499aa469c85b3a07e78be74d4bad6de4e1fb807aa28c5828f02d5858897",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/command_rules.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/commands.py",
+      "type": "file",
+      "bytes": 14320,
+      "compressed_bytes": 4484,
+      "sha256": "a23e90be0abd178832bff65a78dc8f5e9735937f742a002d7ef5625f081cf41d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/commands.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/errors.py",
+      "type": "file",
+      "bytes": 114,
+      "compressed_bytes": 101,
+      "sha256": "18c8bf0d8a649fcb377b2e5b9818024a0bcc75a4fdd9ab8e7937fe8d31db27a8",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/errors.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/interface_tools.py",
+      "type": "file",
+      "bytes": 4370,
+      "compressed_bytes": 1801,
+      "sha256": "090339337a2c7fce1be129b6d258c19cf34f9f824b6307dfde4df32c2ef99b27",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/interface_tools.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/library_tools.py",
+      "type": "file",
+      "bytes": 6082,
+      "compressed_bytes": 2314,
+      "sha256": "4ebd3a9669e55a51dbc50692a87ece53c5cfbdd066036dfa3fedc291887eb78d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/library_tools.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/live_tv.py",
+      "type": "file",
+      "bytes": 6354,
+      "compressed_bytes": 2596,
+      "sha256": "3b1b17120c041cfdd6640531f9fe4727c4c7520a1dce0dd8763ec37416d08f5a",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/live_tv.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/media_catalog.py",
+      "type": "file",
+      "bytes": 3297,
+      "compressed_bytes": 1330,
+      "sha256": "0d3acf6b13a21a9b39cad66ddcfa80c455fcf76d562e9d97b090d731d959ba99",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/media_catalog.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/media_match.py",
+      "type": "file",
+      "bytes": 4996,
+      "compressed_bytes": 2039,
+      "sha256": "f59272d0affe860778b4f6746ec74b8608ca13357492e0b4eff2d91d410296da",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/media_match.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/permissions.py",
+      "type": "file",
+      "bytes": 3599,
+      "compressed_bytes": 1471,
+      "sha256": "1fa0730ff86328f10204fca026df83a03f0f0bb729a34785aa7874da9665cd06",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/permissions.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/playback_tools.py",
+      "type": "file",
+      "bytes": 8901,
+      "compressed_bytes": 3100,
+      "sha256": "9fc051b9e3c596a1f86b5bd4419648a464c5df8d19e4f65c5af6018ae28a134f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/playback_tools.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/presentation.py",
+      "type": "file",
+      "bytes": 3260,
+      "compressed_bytes": 1259,
+      "sha256": "43d2424c8f2bc64cb6450db1d7b81846952136c023156df6b505a6f5b757fb88",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/presentation.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/questions.py",
+      "type": "file",
+      "bytes": 1768,
+      "compressed_bytes": 667,
+      "sha256": "151778a00472df901364465c981abe282f444c1b8d6ef50d14e1ca40902e0ac4",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/questions.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/resident.py",
+      "type": "file",
+      "bytes": 12223,
+      "compressed_bytes": 3613,
+      "sha256": "5e28bd6d39bacf8711475fbe5e7ca043857e2d9312ae6e8cfb8827b2cd34e589",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/resident.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/runtime.py",
+      "type": "file",
+      "bytes": 3198,
+      "compressed_bytes": 958,
+      "sha256": "809d554ef20b0fdedb74908c6b45542d9e9f5de39c07a75d033e7f9043758781",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/runtime.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/screen.py",
+      "type": "file",
+      "bytes": 13485,
+      "compressed_bytes": 4872,
+      "sha256": "5db7fc6fa28ceb9b1770c72d192cf95ca5a064a6ffc8611d3722fbc382f08859",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/screen.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/sessions.py",
+      "type": "file",
+      "bytes": 4268,
+      "compressed_bytes": 1529,
+      "sha256": "66c7294f5d75141c9a977bd815761896463bade83343fb5229f667f67bd25a9e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/sessions.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/steering.py",
+      "type": "file",
+      "bytes": 1271,
+      "compressed_bytes": 521,
+      "sha256": "a9e6aa96e0b655763e02949286f07c8194085a09fd1af890841f8ac40602a3e0",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/steering.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/transcript.py",
+      "type": "file",
+      "bytes": 2059,
+      "compressed_bytes": 769,
+      "sha256": "352a2119b0a90dce4317abd0ed5c3a84016e8e707bb4038f5ac86c91bf818c97",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/transcript.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/ui_context.py",
+      "type": "file",
+      "bytes": 4366,
+      "compressed_bytes": 1766,
+      "sha256": "8a663d87b5e70c2732b115930dabb13dbff30e3147672ebb4aa9084bec9bb193",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/ui_context.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/intelligence/watch_progress.py",
+      "type": "file",
+      "bytes": 4290,
+      "compressed_bytes": 1604,
+      "sha256": "3c9631bc2400d18a0935ff15146f25a98d0a1540f7a2237e45f5854296b7a46e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/intelligence/watch_progress.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/log_upload.py",
+      "type": "file",
+      "bytes": 3377,
+      "compressed_bytes": 1420,
+      "sha256": "514406449841d396669dd9c19dcc4fd17522eafee7624325e1ba72034cfcbd84",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/log_upload.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/nanosic_audio.py",
+      "type": "file",
+      "bytes": 2090,
+      "compressed_bytes": 865,
+      "sha256": "994a1e8b7f4d37eea8a4b5a921f50ecd5ad3351016f43e1d5942e5fce5907b3f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/nanosic_audio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/nanosic_frames.py",
+      "type": "file",
+      "bytes": 2762,
+      "compressed_bytes": 818,
+      "sha256": "84b5f293326b1f933c0ae819c79fbb5ef154d2b9b05a9ad9b0f33d80cfff5f24",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/nanosic_frames.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/nanosic_service.py",
+      "type": "file",
+      "bytes": 7978,
+      "compressed_bytes": 2563,
+      "sha256": "219224485866ff757cadbb9b2dfc4ea17b79b5d2e9dfa2ebf8a68bcb319ed4f6",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/nanosic_service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/native_platform.py",
+      "type": "file",
+      "bytes": 876,
+      "compressed_bytes": 459,
+      "sha256": "36e8624f40708b8ea85a78da50274c2e49ed936d3774a4d9aa82c6347c4f3b1f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/native_platform.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/pcm_worker.py",
+      "type": "file",
+      "bytes": 6337,
+      "compressed_bytes": 1967,
+      "sha256": "d6e68acb850ab3e56db189cb2415f16abcc15cd7be73453073871970306bec31",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/pcm_worker.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/profile_migration.py",
+      "type": "file",
+      "bytes": 14279,
+      "compressed_bytes": 4187,
+      "sha256": "2a0e363cd476cc4494260c6d93f8b8257c0db859ea9dfcc20597e7cb7e67babb",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/profile_migration.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/profile_upgrade.py",
+      "type": "file",
+      "bytes": 656,
+      "compressed_bytes": 380,
+      "sha256": "f1f20a844c4c8ae26f33525d703eb4adf1e0bb074fee774dee4e6899e6614679",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/profile_upgrade.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/proxy.py",
+      "type": "file",
+      "bytes": 1942,
+      "compressed_bytes": 844,
+      "sha256": "b0bd34e888bb4b06409d2e02419ce328a896e3c8dea8821093e43124864c77dc",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/proxy.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/qrcodegen.py",
+      "type": "file",
+      "bytes": 39337,
+      "compressed_bytes": 12028,
+      "sha256": "b089855caf16185c61421ea4927c1b213cf9468940d71fa8ab11ef83662dcc84",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/qrcodegen.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/r22_audio.py",
+      "type": "file",
+      "bytes": 2723,
+      "compressed_bytes": 1067,
+      "sha256": "07745e04b0ed48878f4cf185b0904d58081372c7b924d5f78f14ba7291c6f350",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/r22_audio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/r22_service.py",
+      "type": "file",
+      "bytes": 3483,
+      "compressed_bytes": 1467,
+      "sha256": "3f6f2a78c180604aecfd793cdf6e5cb1da9b07bb3b5d7f6c66d2732a5cb18457",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/r22_service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/recording_ui.py",
+      "type": "file",
+      "bytes": 2599,
+      "compressed_bytes": 962,
+      "sha256": "0fbf0dbe5012291ca57e5c3c2f9af040816564395a1a9f73f56b4597b5cf496e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/recording_ui.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/settings.py",
+      "type": "file",
+      "bytes": 13295,
+      "compressed_bytes": 4204,
+      "sha256": "60388b592635f73d291b091203596728ee2bea0bf270e6e77629837daefe8aeb",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/settings.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/speech/__init__.py",
+      "type": "file",
+      "bytes": 73,
+      "compressed_bytes": 71,
+      "sha256": "4816a4fce0e96a658c8d9dcaf96c0579935cc40adca6e2ba5ff7fcf9cd36862a",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/speech/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/speech/client.py",
+      "type": "file",
+      "bytes": 2103,
+      "compressed_bytes": 785,
+      "sha256": "213f4588c2df3c4255ec54aea72debea74263691da9e2fc7c60c887738bc0657",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/speech/client.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/speech/engine.py",
+      "type": "file",
+      "bytes": 4194,
+      "compressed_bytes": 1602,
+      "sha256": "49267e0a52b7ffd65168718e0a3ca5a05c55c6ea3991aad76af72c6bd131a3a3",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/speech/engine.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/speech/output.py",
+      "type": "file",
+      "bytes": 10461,
+      "compressed_bytes": 3622,
+      "sha256": "99475deb69e8aa54a2697c73cdb446e36708788328c8bf80c7d867dd46a788f9",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/speech/output.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/speech/service.py",
+      "type": "file",
+      "bytes": 9128,
+      "compressed_bytes": 2654,
+      "sha256": "3b64576d7b6731b0e69e82e30030b0505afe0e30b58960e04a1d4167463e37b0",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/speech/service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/speech/text.py",
+      "type": "file",
+      "bytes": 6915,
+      "compressed_bytes": 2932,
+      "sha256": "5c45628e7b3196dba3c7f3275c9366f9d665412037e94321a3eab3890295f0d5",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/speech/text.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/storage.py",
+      "type": "file",
+      "bytes": 872,
+      "compressed_bytes": 423,
+      "sha256": "d53c67d8e688bd17250ba2af5cf7a5bbfe3f9585e5ea5659791e0a545a9ef1f2",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/storage.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/streaming.py",
+      "type": "file",
+      "bytes": 6725,
+      "compressed_bytes": 1804,
+      "sha256": "40e0fd1b7e864762bc9721f98a6838274ec7ef42e93d26dabcbda9db68baf765",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/streaming.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/__init__.py",
+      "type": "file",
+      "bytes": 81,
+      "compressed_bytes": 74,
+      "sha256": "c22d6376a1e53ab7d4202f4b9a66d92ca45c2d4b07a7c0653a67a10f5ea0a9df",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/agent_turn.py",
+      "type": "file",
+      "bytes": 13642,
+      "compressed_bytes": 3860,
+      "sha256": "1a0b4bd6826989c5eed411de29f42065823a84e403be7ab16e06e526c7d7fc96",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/agent_turn.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/conversation.py",
+      "type": "file",
+      "bytes": 17613,
+      "compressed_bytes": 4730,
+      "sha256": "8335fdb31dadc08ebdfa39905195c17a4917e5b0fb9724afc2013db9d617c5be",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/conversation.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/key_binding.py",
+      "type": "file",
+      "bytes": 2687,
+      "compressed_bytes": 1142,
+      "sha256": "9f144bb968a2141f9a2cdc09a9217deeed57ceb6a8834b61d4d76637122f151a",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/key_binding.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/live_input.py",
+      "type": "file",
+      "bytes": 2572,
+      "compressed_bytes": 1028,
+      "sha256": "9fe6bcc6e762e1298436c8d6a5bbf6111f15ae24b94a79ddcb19360b9f23c64b",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/live_input.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/navigation.py",
+      "type": "file",
+      "bytes": 1205,
+      "compressed_bytes": 584,
+      "sha256": "2b8ac3d78a176faa26b9d368942580ad315349fb45b37594c99d584645b69ded",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/navigation.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/questions.py",
+      "type": "file",
+      "bytes": 2217,
+      "compressed_bytes": 794,
+      "sha256": "6201931a5d491406d706b3623a8ce939312b018929375ca0a08c3d1b8677e67f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/questions.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ui/transcript.py",
+      "type": "file",
+      "bytes": 1776,
+      "compressed_bytes": 758,
+      "sha256": "6f4eef8d0c7775e3db715c65721ca54dac82b387c2d79e1d63828e55353ae5c8",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ui/transcript.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ur02_audio.py",
+      "type": "file",
+      "bytes": 3999,
+      "compressed_bytes": 1717,
+      "sha256": "f9667a1402cd2e0d08593e4f49461b5cad0ccd915c6c66d55069b6611dbda759",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ur02_audio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/ur02_service.py",
+      "type": "file",
+      "bytes": 9201,
+      "compressed_bytes": 2713,
+      "sha256": "e393eac44bbdc3667016246bf291616318eaff0dccedb54320b4fbb59fc50351",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/ur02_service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/version.py",
+      "type": "file",
+      "bytes": 236,
+      "compressed_bytes": 181,
+      "sha256": "6ba98f22621e74f5f5b33acb0e80a68cfd6d7b26a6687506cc8d191ed752781b",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/version.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/lib/voice_binding.py",
+      "type": "file",
+      "bytes": 6170,
+      "compressed_bytes": 2370,
+      "sha256": "cf9fa1892326674d6fcc9fa7dbf86f522815ad7dc9d6d308f053d0aef34783d1",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/lib/voice_binding.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/ASR-TEST-SOURCE.txt",
+      "type": "file",
+      "bytes": 348,
+      "compressed_bytes": 314,
+      "sha256": "c85b8ef8f07da8195f6ae3d92dc91749d5004148da163d62441a616a1eb5078a",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/ASR-TEST-SOURCE.txt",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/CODEBUDDY-LICENSE",
+      "type": "file",
+      "bytes": 1062,
+      "compressed_bytes": 617,
+      "sha256": "fc68abd7dfba71c364455b155afbf69ae2684350e163248f6069d8e6fd380c26",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/CODEX-LICENSE",
+      "type": "file",
+      "bytes": 10926,
+      "compressed_bytes": 3923,
+      "sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/CODEX-NOTICE",
+      "type": "file",
+      "bytes": 242,
+      "compressed_bytes": 180,
+      "sha256": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/JSON-LICENSE",
+      "type": "file",
+      "bytes": 1076,
+      "compressed_bytes": 637,
+      "sha256": "46a65cffd1ea955132d95a8dd921640714a8d6b537d2e4e482d31145ae95b603",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/KALDI-NATIVE-FBANK-LICENSE",
+      "type": "file",
+      "bytes": 11358,
+      "compressed_bytes": 3949,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/KISSFFT-LICENSE",
+      "type": "file",
+      "bytes": 2077,
+      "compressed_bytes": 1026,
+      "sha256": "e676f3791d3c4a17030092e1a3b3f209b870399f1c84e15d8b8c205d0f96eacb",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/NANOSIC-DECODER-LICENSE.txt",
+      "type": "file",
+      "bytes": 26517,
+      "compressed_bytes": 9341,
+      "sha256": "246041b6ecf9bc32d718a62c57877c78b5eb397b6467e74ed7ae2626ab189c30",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/NANOSIC-DECODER-LICENSE.txt",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/NCNN-LICENSE",
+      "type": "file",
+      "bytes": 6427,
+      "compressed_bytes": 1976,
+      "sha256": "7c974bac98848df46be1af5bdaa3c3c9c01f6082a90f55caeb7f60c6208aa255",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/OPENFST-LICENSE",
+      "type": "file",
+      "bytes": 560,
+      "compressed_bytes": 364,
+      "sha256": "9ba732713e5a28a183907aaba134490900bc258310a8fb37a391b47bc1c7f951",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/PYPINYIN-LICENSE.txt",
+      "type": "file",
+      "bytes": 1105,
+      "compressed_bytes": 674,
+      "sha256": "1e6c90014b4912815c296ee64bb6f6280af47e6d4c5d80e86232dfc5defe764c",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/PYPINYIN-LICENSE.txt",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/QRCODEGEN-LICENSE",
+      "type": "file",
+      "bytes": 1220,
+      "compressed_bytes": 622,
+      "sha256": "ca1a06c4f0b5c4709658176a5de06d3b8c7e43eceeb9b9316026c7d898751524",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/RESTRICTED-MODEL-SOURCE.txt",
+      "type": "file",
+      "bytes": 452,
+      "compressed_bytes": 279,
+      "sha256": "bef06407b839bd95227145a61aa6896381ed73c4bbdbe4714c63336f734f2eef",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/RESTRICTED-MODEL-SOURCE.txt",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/WEBSOCKET-CLIENT-LICENSE",
+      "type": "file",
+      "bytes": 11339,
+      "compressed_bytes": 3945,
+      "sha256": "14214b7bbb6952ada76afea206b6c393f2563d4e7678be0232e1a1d216716679",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/asr_worker.c",
+      "type": "file",
+      "bytes": 6376,
+      "compressed_bytes": 1987,
+      "sha256": "1c3c0fbbbf94eafab8e26619891e49085a98cfcd58e19641801ec5eb9d1557e3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/cmcc-build.json",
+      "type": "file",
+      "bytes": 958,
+      "compressed_bytes": 552,
+      "sha256": "119fb2858b95109f53837e0ffd861ee5579d70b707950560bd9a48a3724ab12f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/cmcc-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/codebuddy-build.json",
+      "type": "file",
+      "bytes": 454,
+      "compressed_bytes": 313,
+      "sha256": "77b41d46e3031e12e0aa37b18c130747eac03e7b0e020c5ef60fae775558ea15",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/codebuddy-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/codex-build.json",
+      "type": "file",
+      "bytes": 2726,
+      "compressed_bytes": 990,
+      "sha256": "caf31e5def97c3d28e03c1150d0d56c9d70098e36298893c8e9a92c8c5237464",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/codex-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/decoders-linux_aarch64.json",
+      "type": "file",
+      "bytes": 5274,
+      "compressed_bytes": 868,
+      "sha256": "12b2ad4bf05e1dec29a4b15096dac966a8d777a6ab70df979622e4904b38b77d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/decoders-linux_aarch64.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/ESPEAK-NG-COPYING",
+      "type": "file",
+      "bytes": 35147,
+      "compressed_bytes": 12119,
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/MODEL-README.md",
+      "type": "file",
+      "bytes": 2021,
+      "compressed_bytes": 688,
+      "sha256": "33b8b80010fd6dacddb0cffed0a91445d729ae9ea04ab6e922b67c59ff552552",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/matcha/MODEL-README.md",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/ONNXRUNTIME-LICENSE",
+      "type": "file",
+      "bytes": 1073,
+      "compressed_bytes": 626,
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/SHERPA-ONNX-LICENSE",
+      "type": "file",
+      "bytes": 11358,
+      "compressed_bytes": 3949,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/VOCOS-LICENSE",
+      "type": "file",
+      "bytes": 1069,
+      "compressed_bytes": 629,
+      "sha256": "8f36ba0c214d4f487ffd7ee0b8528da9b67b459bef2d115de9cd001316589f46",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/build.json",
+      "type": "file",
+      "bytes": 49455,
+      "compressed_bytes": 17971,
+      "sha256": "f9f27ceae806b83bfe78ea1026c72986d3cdd14986c88ff6d10ce47238d803df",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/matcha/build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/libc6-arm64-cross-copyright",
+      "type": "file",
+      "bytes": 26462,
+      "compressed_bytes": 6420,
+      "sha256": "d3c95b56fa33e28b57860580f0baf4e4f4de2a268a2b80f1d031a5191bade265",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha/matcha_worker.c",
+      "type": "file",
+      "bytes": 2478,
+      "compressed_bytes": 1038,
+      "sha256": "dec61a09253e333879be5e371cb4d90835883f8fa7da3126fe0efcd9a3c4567e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/matcha_worker.c",
+      "type": "file",
+      "bytes": 2478,
+      "compressed_bytes": 1038,
+      "sha256": "dec61a09253e333879be5e371cb4d90835883f8fa7da3126fe0efcd9a3c4567e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/media-pronunciations.json",
+      "type": "file",
+      "bytes": 537,
+      "compressed_bytes": 350,
+      "sha256": "19a643f29d24154cbb5b5caaf34710db6f1b71a648db5751044bff5dca18288d",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/media-pronunciations.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/nanosic-build.json",
+      "type": "file",
+      "bytes": 1158,
+      "compressed_bytes": 638,
+      "sha256": "bceea4df5c47230b2559dc0c0ab0a50577a647bf67f05a969d15eb494a955ab4",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/nanosic-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/nanosic_wnvc_decoder.c",
+      "type": "file",
+      "bytes": 39949,
+      "compressed_bytes": 10697,
+      "sha256": "d2643ad7b108b8978181997f385afeec7846602f7989d3a5f773bc069eae2d53",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/qrcodegen-build.json",
+      "type": "file",
+      "bytes": 308,
+      "compressed_bytes": 220,
+      "sha256": "f25960516e134d137e8daaa25a38a938d970f8f0de32ca708034787b2e6a48c1",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/qrcodegen-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/r22-build.json",
+      "type": "file",
+      "bytes": 951,
+      "compressed_bytes": 552,
+      "sha256": "6cdf0493626324f2e34fc3876fa84c6099c4e5a067254ec388ee1e4d1faee4a5",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/r22-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/r22_msbc_decoder.c",
+      "type": "file",
+      "bytes": 2035,
+      "compressed_bytes": 789,
+      "sha256": "d9591905eab92d99d76ba85cc8fb9a8690b1d6dae0df437b1394b6bc1858f27d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/speech-bridge-build.json",
+      "type": "file",
+      "bytes": 1547,
+      "compressed_bytes": 668,
+      "sha256": "50d583c2a524acc41d4357e3e0df26a2888ff2fc57b40eaf0d4b2d9f33d83be8",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/speech-bridge-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/licenses/websocket-client-build.json",
+      "type": "file",
+      "bytes": 324,
+      "compressed_bytes": 231,
+      "sha256": "b2506252ed2e8211e5b8b204f628cdb70a24f375b95dd99c214920026c3d2c58",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/licenses/websocket-client-build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/asr-worker",
+      "type": "file",
+      "bytes": 72336,
+      "compressed_bytes": 5773,
+      "sha256": "215f999bc0a8b4131640ceef49b8ed84190e7d42bdec94afd27225e12bfcbd83",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/ld-linux-aarch64.so.1",
+      "type": "file",
+      "bytes": 202784,
+      "compressed_bytes": 90547,
+      "sha256": "142f02374792bf5f62293efc3500d472dbbe280dc658cc60480eff73ad46f33c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/libc.so.6",
+      "type": "file",
+      "bytes": 1716480,
+      "compressed_bytes": 786674,
+      "sha256": "101106b8ae66601234e0b61f6ba21bcf0fed952ed8ceaa22fb2ada993c25ec3c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/libdl.so.2",
+      "type": "file",
+      "bytes": 67440,
+      "compressed_bytes": 1661,
+      "sha256": "d5a6fcacab359c1d5ca94baf9dc7c770007a835d4dc887dc8459329a613f81fc",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/libgcc_s.so.1",
+      "type": "file",
+      "bytes": 133560,
+      "compressed_bytes": 64913,
+      "sha256": "031767c85871740fd715f983419092515f7107ab26db0c3048522fab78b60730",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/libgomp.so.1",
+      "type": "file",
+      "bytes": 462544,
+      "compressed_bytes": 130266,
+      "sha256": "ed82bf6d47cc8434a935a51c0d726a93bef6f755eee22d884a3624d23465ba6a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/libm.so.6",
+      "type": "file",
+      "bytes": 591800,
+      "compressed_bytes": 288503,
+      "sha256": "20a09d884f6247a2f352960d13212f90035e177e3324ccf332d6af384bf93c48",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/libpthread.so.0",
+      "type": "file",
+      "bytes": 67440,
+      "compressed_bytes": 1789,
+      "sha256": "ec0475b3a19e17169037aad86c24572d0eff162788b9e2f5eafcb1a295a07e35",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/librt.so.1",
+      "type": "file",
+      "bytes": 67512,
+      "compressed_bytes": 2225,
+      "sha256": "c5b0bf9379f0de79bdbbdfaea52389a15dd2b74d9827b88663904f7f42197079",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/lib/libstdc++.so.6",
+      "type": "file",
+      "bytes": 3298296,
+      "compressed_bytes": 851627,
+      "sha256": "00866ee20d5bfa56406e9e155acc2109aa8a7250006d5c7c5d86716794ef6d61",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/bridge/matcha-worker",
+      "type": "file",
+      "bytes": 71192,
+      "compressed_bytes": 4374,
+      "sha256": "7e2b67f180b4faec98518564129012c6ecbbaa63c4ddf18bd024dc68ef51c4c3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/cmcc/libcmcc-siren-ffmpeg63.so",
+      "type": "file",
+      "bytes": 67592,
+      "compressed_bytes": 2934,
+      "sha256": "7d0569577fc837b38015c067ff5db1a8d5fd83f2709f5708c97323db15ce254e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/nanosic/libnanosic-wnvc-avutil61.so",
+      "type": "file",
+      "bytes": 67600,
+      "compressed_bytes": 9876,
+      "sha256": "847652e4cc8232c432102b7be38bb865c4965659f4cb6311cd060d9e86703f9d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_aarch64/r22/libr22-msbc-ffmpeg63.so",
+      "type": "file",
+      "bytes": 67576,
+      "compressed_bytes": 2615,
+      "sha256": "906ed9107c0d6695e78a1792bc2780d3859a39902b6e11c71cf22e2aa4519f34",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_armv7l/cmcc/libcmcc-siren-ffmpeg62.so",
+      "type": "file",
+      "bytes": 5404,
+      "compressed_bytes": 2362,
+      "sha256": "a072a6260f46a4d8a814838aeec92eac7e92d9a6074d6c9d962f05bd113e912f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_armv7l/nanosic/build.json",
+      "type": "file",
+      "bytes": 890,
+      "compressed_bytes": 546,
+      "sha256": "74e3c65bdf5dbf6d72848605ae4fce4cedada0b35ac078b5a75975fff3b61ecf",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/native/linux_armv7l/nanosic/build.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_armv7l/nanosic/libnanosic-wnvc-avutil60.so",
+      "type": "file",
+      "bytes": 17708,
+      "compressed_bytes": 9260,
+      "sha256": "a6b63469bbb67a656570ea4a7164000da0e7f63eb1d436e154b0a9688a6f6309",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/native/linux_armv7l/r22/libr22-msbc-ffmpeg62.so",
+      "type": "file",
+      "bytes": 5400,
+      "compressed_bytes": 2079,
+      "sha256": "654fb6e37af308cff0a91f4a827ffb766337b57e366a8eae683caa1f767a38b4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/settings.xml",
+      "type": "file",
+      "bytes": 30307,
+      "compressed_bytes": 2421,
+      "sha256": "02ecaf9fae9335e01e9846118eb114bb4057daefa5ca3b813068565d9e3af09c",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/settings.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/skins/Default/1080i/BindVoiceKey.xml",
+      "type": "file",
+      "bytes": 909,
+      "compressed_bytes": 400,
+      "sha256": "e4527593dc866ec4aef403f563712218b73cf632bd937873b33403169912655e",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/skins/Default/1080i/BindVoiceKey.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/skins/Default/1080i/CodexLogin.xml",
+      "type": "file",
+      "bytes": 2181,
+      "compressed_bytes": 744,
+      "sha256": "3ecf84099827ee13d381ca669c4dbc689e8e685604543941a0004c4348bd9aa7",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/skins/Default/1080i/CodexLogin.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/skins/Default/1080i/Configuration.xml",
+      "type": "file",
+      "bytes": 2216,
+      "compressed_bytes": 794,
+      "sha256": "b8aaeb0f8d0d3141ac02a899768eacd72cde9b928c87615d5317047dcca87c5b",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/skins/Default/1080i/Configuration.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/skins/Default/1080i/VoiceConversation.xml",
+      "type": "file",
+      "bytes": 21553,
+      "compressed_bytes": 1541,
+      "sha256": "3b75349bcd94936d1003147d19aa7a673656ddd3ad57ad77b924869cd1067ecb",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/skins/Default/1080i/VoiceConversation.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/skins/Default/1080i/VoiceRecording.xml",
+      "type": "file",
+      "bytes": 1727,
+      "compressed_bytes": 592,
+      "sha256": "509597a4aa71f19368607de872cbbecf679df773c3780018719428d29b6793b3",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/skins/Default/1080i/VoiceRecording.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/skins/Default/media/chat-bubble.png",
+      "type": "file",
+      "bytes": 225,
+      "compressed_bytes": 227,
+      "sha256": "9f526c227232a6da56f038c56cb80545cf630f9c8298a63c0046de3150efd429",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/skins/Default/media/codex-login-white.png",
+      "type": "file",
+      "bytes": 69,
+      "compressed_bytes": 64,
+      "sha256": "e878950f8091ec010cf5cc723bdea027a8539cf7147cfea199c2f666232dcd4e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/__init__.py",
+      "type": "file",
+      "bytes": 958,
+      "compressed_bytes": 510,
+      "sha256": "ace447d39bec2d5152bb44301e4a5204bb1a2e62efd7db69a95856ddfef76e47",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/__init__.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_abnf.py",
+      "type": "file",
+      "bytes": 15711,
+      "compressed_bytes": 4346,
+      "sha256": "77b1007578230bf99bc82184f9e83014f852ec7b6aa3c38364668d3a4fcaa4cb",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_abnf.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_app.py",
+      "type": "file",
+      "bytes": 26802,
+      "compressed_bytes": 6482,
+      "sha256": "04b2c6d431480c6c10282db90f5f08ba6399af73155ece346cd8a1148045a1ff",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_app.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_cookiejar.py",
+      "type": "file",
+      "bytes": 2346,
+      "compressed_bytes": 854,
+      "sha256": "b24fdb2640b5553373f524cfca0a7d5a280539ce322855db5c9cf3eef9cd03b7",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_cookiejar.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_core.py",
+      "type": "file",
+      "bytes": 24910,
+      "compressed_bytes": 6073,
+      "sha256": "3011b43e249623594045c808e7fb847aea938a910993eeea85fe7e6ac83f45de",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_core.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_dispatcher.py",
+      "type": "file",
+      "bytes": 4626,
+      "compressed_bytes": 1319,
+      "sha256": "2fe3bd65d76f3f282356e85924c133a5c3c27a640710a06185c9cd2fed4a5c0f",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_dispatcher.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_exceptions.py",
+      "type": "file",
+      "bytes": 2319,
+      "compressed_bytes": 835,
+      "sha256": "42145294b2351dd56cd508bb73d537db5224ae3159ef3702a03d0f80dc245e82",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_exceptions.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_handshake.py",
+      "type": "file",
+      "bytes": 7302,
+      "compressed_bytes": 2562,
+      "sha256": "ce39525fe9fc3fbc1dd378a23190edb63953285dd6fb408ed70a8770e31c5cbe",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_handshake.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_http.py",
+      "type": "file",
+      "bytes": 16021,
+      "compressed_bytes": 4400,
+      "sha256": "79e8ab98e09d3c1357f28d6845131ee1cb344ab5701c9925e8d2032d3fa6b2a6",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_http.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_logging.py",
+      "type": "file",
+      "bytes": 2884,
+      "compressed_bytes": 1055,
+      "sha256": "c213b317cbe157fe1033ca4093720547114a63b1633ce99e945aa566aeea096b",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_logging.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_socket.py",
+      "type": "file",
+      "bytes": 6046,
+      "compressed_bytes": 1738,
+      "sha256": "0e1bf0eba2a9c26eae1ef35c3b71dd4511d0921a97047c15746405f7e150aa6a",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_socket.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_ssl_compat.py",
+      "type": "file",
+      "bytes": 1761,
+      "compressed_bytes": 722,
+      "sha256": "ff847c7a0af7b888339eb5794293095b7a266ef1abaaf907574a54e1daaa5ec4",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_ssl_compat.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_url.py",
+      "type": "file",
+      "bytes": 5900,
+      "compressed_bytes": 2020,
+      "sha256": "a83b51837b751354dedd992f34770a636625a9dcfab32b192cf540d09521007c",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_url.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_utils.py",
+      "type": "file",
+      "bytes": 7052,
+      "compressed_bytes": 1427,
+      "sha256": "7206be963365ed5f6de02b07bee63b6050b87fa06c99095cfab3e13730a17b21",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_utils.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/vendor/websocket/_wsdump.py",
+      "type": "file",
+      "bytes": 6560,
+      "compressed_bytes": 2265,
+      "sha256": "ad665a6ccdbe39a0fbd47874b9c00ce29a25616ea9bc52a2ca0c378e2602d2fd",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/vendor/websocket/_wsdump.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "script.voice.assistant/resources/web/index.html",
+      "type": "file",
+      "bytes": 33359,
+      "compressed_bytes": 11634,
+      "sha256": "ca841b850e52279803d71986d59550f6bf41a7021ad17e4049788b309b1a9275",
+      "copy": "group-original/34-79f2e1f490e6/script.voice.assistant/resources/web/index.html",
+      "copy_status": "original-byte-copy"
+    }
+  ],
+  "python": [],
+  "summary": {
+    "files": 198,
+    "directories": 0,
+    "uncompressed_bytes": 8771213,
+    "extensions": {
+      ".xml": 7,
+      ".py": 125,
+      ".txt": 5,
+      ".md": 2,
+      ".wav": 1,
+      ".json": 16,
+      ".po": 2,
+      "<none>": 17,
+      ".c": 5,
+      ".1": 4,
+      ".6": 3,
+      ".2": 1,
+      ".0": 1,
+      ".so": 6,
+      ".png": 2,
+      ".html": 1
+    },
+    "copy_status": {
+      "original-byte-copy": 158,
+      "indexed-only": 40
+    }
+  }
+}

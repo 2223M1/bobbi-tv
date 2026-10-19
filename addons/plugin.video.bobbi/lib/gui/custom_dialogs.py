@@ -2,6 +2,7 @@ import contextlib
 import json
 from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List
+from bobbi_core.image_cache import image_url as tmdb_image_url
 
 import xbmcgui
 from xbmcgui import WindowXML, WindowXMLDialog
@@ -113,7 +114,7 @@ fake_torrent = TorrentStream(
 
 _mock_information = {
     "fanart": "https://assets.fanart.tv/fanart/tv/453280/showbackground/secret-level-674c531a09534.jpg",
-    "poster": "http://image.tmdb.org/t/p/w780/856MRq23grNxpeVl1PdFgmmLiT0.jpg",
+    "poster": tmdb_image_url('/856MRq23grNxpeVl1PdFgmmLiT0.jpg', 'w780'),
     "clearlogo": "https://assets.fanart.tv/fanart/movies/86161/hdmovielogo/mobile-suit-gundam-0083-the-last-blitz-of-zeon-5c2ede0c7530d.png",
     "plot": "Silo is the story of the last ten thousand people on earth, their mile-deep home protecting them from the toxic and deadly world outside. However, no one knows when or why the silo was built and any who try to find out face fatal consequences.",
 }

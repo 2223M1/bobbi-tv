@@ -85,17 +85,17 @@ def get(path, params, language, cache, fetch, report=lambda *_: None, clock=time
         # Kodi directory invocations use separate Python interpreters. A file
         # lease coalesces them too; in-memory locks alone are insufficient.
         if lock_root is not None:
-            import fcntl
+            from bobbi_platform.instance_lock import InstanceLock
             directory = Path(lock_root)
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             stripe = str(int(hashlib.sha256(key.encode()).hexdigest()[:8], 16) % 64)
-            lease = os.open(str(directory / stripe), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+            lease = InstanceLock(directory / stripe)
             until = time.monotonic() + 24
             while True:
                 try:
-                    fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    lease.acquire()
                     break
-                except BlockingIOError:
+                except (BlockingIOError, PermissionError):
                     if old or time.monotonic() >= until:
                         return fallback(old, 'REFRESH_IN_FLIGHT' if old else 'COALESCED_REQUEST_TIMEOUT')
                     time.sleep(.05)
@@ -127,5 +127,5 @@ def get(path, params, language, cache, fetch, report=lambda *_: None, clock=time
         return data
     finally:
         if lease is not None:
-            os.close(lease)
+            lease.close()
         lock.release()

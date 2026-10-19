@@ -3,8 +3,8 @@ from datetime import datetime
 from enum import Enum
 from urllib import parse
 
-from lib.utils.kodi_utils import get_setting
-from lib.utils.utils import Indexer
+from lib.utils.kodi.utils import get_setting
+from lib.utils.general.utils import Indexer
 
 
 class AuthPin:

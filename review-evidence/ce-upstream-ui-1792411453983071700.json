@@ -1,0 +1,51 @@
+{
+  "action": "key",
+  "gui": {
+    "currentcontrol": {
+      "label": "repository.jacktook-0.0.5.zip"
+    },
+    "currentwindow": {
+      "id": 10126,
+      "label": "文件浏览器"
+    }
+  },
+  "labels": {
+    "Container(450).ListItemPosition(0).Label": "backup",
+    "Container(450).ListItemPosition(1).Label": "Clouddrive",
+    "Container(450).ListItemPosition(10).Label": "screenshots",
+    "Container(450).ListItemPosition(11).Label": "tvshows",
+    "Container(450).ListItemPosition(12).Label": "videos",
+    "Container(450).ListItemPosition(13).Label": "repository.jacktook-0.0.5.zip",
+    "Container(450).ListItemPosition(2).Label": "downloads",
+    "Container(450).ListItemPosition(3).Label": "emulators",
+    "Container(450).ListItemPosition(4).Label": "logfiles",
+    "Container(450).ListItemPosition(5).Label": "lost+found",
+    "Container(450).ListItemPosition(6).Label": "music",
+    "Container(450).ListItemPosition(7).Label": "picons",
+    "Container(450).ListItemPosition(8).Label": "pictures",
+    "Container(450).ListItemPosition(9).Label": "recordings",
+    "Container(450).NumItems": "84",
+    "Container(450).Position": "13",
+    "Container.FolderPath": "addons://",
+    "Container.NumItems": "4",
+    "Control.GetLabel(416)": "镜像图像 ( )",
+    "ListItem.Label": "repository.jacktook-0.0.5.zip",
+    "System.CurrentControl": "repository.jacktook-0.0.5.zip",
+    "System.CurrentWindow": "文件浏览器"
+  },
+  "safe_settings": {
+    "service_enabled": "true",
+    "apply_settings_to_torrserver": "false",
+    "migrated": "true"
+  },
+  "settings_sha256": "36100aa91d14348e8df4695aff23b04f74cc950998f2ebdf5ac2f20c85356d28",
+  "engine_pid": "4025",
+  "installed": {
+    "plugin.video.jacktorr": {
+      "enabled": true,
+      "origin": "",
+      "version": "1.2.2+am6b.317"
+    },
+    "repository.jacktook": {}
+  }
+}
