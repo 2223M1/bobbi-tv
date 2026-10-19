@@ -1,0 +1,61 @@
+{
+  "reader": "bundled Python; python-docx/pypdf; task-local olefile 0.47/py7zr 1.1.4",
+  "files": [
+    {
+      "name": "abdbfe10fc77ff94ca56e48def863828.temp",
+      "file": "group-documents/753898a2ac85.json",
+      "sha256": "753898a2ac852c8f029c4f55541c03efc41d8c63c6528d7fa9af3152e82e0d1d",
+      "state": "invalid-or-incomplete-archive",
+      "pages": 0
+    },
+    {
+      "name": "am6b plus刷CE镜像教程.pdf",
+      "file": "group-documents/08c606fa620e.json",
+      "sha256": "08c606fa620ed22b689c6f2b4b816f808eeba49082821626e71f7f434afbf449",
+      "state": "page-text-extracted",
+      "pages": 15
+    },
+    {
+      "name": "ce系统刷写教程-优化版.docx",
+      "file": "group-documents/9ba4be170443.json",
+      "sha256": "9ba4be170443203618109bba0e01506611d57b80c34dadd6ef9e4b1f9f96eca2",
+      "state": "semantic-extraction-only",
+      "pages": 0
+    },
+    {
+      "name": "ce系统刷写教程.docx",
+      "file": "group-documents/ecc0c5ca8d8e.json",
+      "sha256": "ecc0c5ca8d8ec5a27cec235804e38a4cc4ffa1aff7f3acd03b8e09aefd4ba4c3",
+      "state": "semantic-extraction-only",
+      "pages": 0
+    },
+    {
+      "name": "emby建库刮削教程.doc",
+      "file": "group-documents/53982999eeed.json",
+      "sha256": "53982999eeed31e61a22c982f0c4064ab1ce702d0bfdc933c7d12be1ef8c7f30",
+      "state": "legacy-OLE-stream-index-only",
+      "pages": 0
+    },
+    {
+      "name": "插件EMBY部署流程.doc",
+      "file": "group-documents/30ff503fdc12.json",
+      "sha256": "30ff503fdc12d8a220b5abcff13a9549f259817bafd3f67f7840237f5889f56a",
+      "state": "legacy-OLE-stream-index-only",
+      "pages": 0
+    },
+    {
+      "name": "插件openlist部署302教程.doc",
+      "file": "group-documents/fa628e7fa7fa.json",
+      "sha256": "fa628e7fa7fa2256c2ef5260943857677a0fae3eae1665429b8326df355add47",
+      "state": "legacy-OLE-stream-index-only",
+      "pages": 0
+    },
+    {
+      "name": "终极教程之CD2篇.doc",
+      "file": "group-documents/98f136ac0df1.json",
+      "sha256": "98f136ac0df18d2e95f90c1eae102f0961feb84cc92c6041f4a5d9900fece427",
+      "state": "legacy-OLE-stream-index-only",
+      "pages": 0
+    }
+  ]
+}

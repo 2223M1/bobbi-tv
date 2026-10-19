@@ -1,0 +1,5 @@
+Restricted model capability template for OpenAI Codex app-server 0.162.1.
+Field schema: https://github.com/openai/codex/blob/rust-v0.162.1/codex-rs/protocol/src/openai_models.rs
+Capabilities observed from the native client model catalog; no identity/authentication data.
+All model instruction text in this distributed template is authored for this add-on.
+Native model/effort selectors use model/list; the template does not assert account entitlement.

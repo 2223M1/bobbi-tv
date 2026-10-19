@@ -5,7 +5,6 @@ Only the native playback owner may apply the exported immutable text file.
 """
 import hashlib
 import json
-import math
 import os
 from pathlib import Path
 import re
@@ -17,9 +16,10 @@ from urllib.parse import urlencode
 
 MAX_BYTES = 8 * 1024 * 1024
 TEXT_EXTENSIONS = {'.srt', '.ass', '.ssa', '.vtt'}
-TOKEN_FILE = '/storage/.config/am6b-subtitles283/assrt-token'
-ROOT = '/storage/.kodi/userdata/addon_data/plugin.video.bobbi/subtitle-browser'
-PREPARATION_ROOT = '/storage/.local/share/bobitv/preparation'
+from bobbi_core.runtime_paths import ProfilePath
+TOKEN_FILE = ProfilePath('assrt-token')
+ROOT = ProfilePath('subtitle-browser')
+PREPARATION_ROOT = ProfilePath('preparation')
 EDITION = re.compile(r'(?i)extended|unrated|director.?s.?cut|theatrical|imax')
 EXCLUDE = re.compile(r'(?i)commentary|\bforced\b|signs.?and.?songs|导演评论|導演評論|仅标识|僅標識')
 _VALUE_REASONS = {
@@ -46,9 +46,12 @@ _STOP_REASONS = frozenset({
     'CANCELLED_OR_DEADLINE', 'SUBTITLE_IO_DEADLINE', 'SUBTITLE_IO_REAP_FAILED',
     'SUBTITLE_IO_BUSY', 'SUBTITLE_IO_PYTHON_UNAVAILABLE', 'SUBTITLE_IO_LIFETIME_FAILED',
     'SUBTITLE_IO_FAILED', 'TORRENT_SUBTITLE_HTTP', 'SUBTITLE_CACHE_CAPACITY',
+    'SUBTITLE_ACCOUNT_CHANGED',
     'ASSRT_QUOTA_STATE_INVALID', 'ASSRT_RATE_LIMIT', 'ASSRT_TOKEN_NOT_CONFIGURED',
     'ASSRT_RESPONSE_INVALID', 'MATCHED_SUBTITLE_UNAVAILABLE', 'NO_MATCHED_CHINESE_TEXT',
-} | {'ASSRT_HTTP_' + str(code) for code in (400, 401, 403, 404, 408, 410, 429, 500, 502, 503, 504)})
+# Preserve any bounded HTTP error status, including nonstandard provider/CDN
+# responses. This records evidence only; it does not widen candidate retries.
+} | {'ASSRT_HTTP_' + str(code) for code in range(400, 600)})
 
 
 class LookupStopped(RuntimeError):
@@ -74,11 +77,8 @@ def identity(context):
     if not isinstance(context, dict):
         raise ValueError('Subtitle context required')
     title = context.get('title')
-    duration = context.get('duration')
     if not isinstance(title, str) or not 2 <= len(title) <= 256 or '://' in title:
         raise ValueError('Bounded title required')
-    if type(duration) not in (int, float) or not math.isfinite(duration) or not 60 <= duration <= 21600:
-        raise ValueError('Actual video duration required')
     mode = context.get('mode')
     if mode == 'movie':
         if type(context.get('year')) is not int or not 1888 <= context['year'] <= 2100:
@@ -161,7 +161,7 @@ def rank(row, context, allow_season_pack=False, allow_incomplete=False):
     return (int(exact), int(bilingual), int(simplified), int(same_medium))
 
 
-def inspect_text(raw, extension, duration):
+def inspect_text(raw, extension, duration=None):
     from bobbi_core.fonts import subtitle_text
     from bobbi_core.subtitle_cues import parse
     if extension not in TEXT_EXTENSIONS or not 0 < len(raw) <= MAX_BYTES:
@@ -169,14 +169,13 @@ def inspect_text(raw, extension, duration):
     text = subtitle_text(raw)
     if text.lstrip().startswith('<'):
         raise ValueError('HTML is not a subtitle')
-    raw = text.encode('utf-8')
-    cues = parse(raw, extension, min(21600, duration + 60))
+    cues = parse(raw, extension)
     chinese = [c for c in cues if re.search(r'[\u3400-\u9fff]', c['text'])]
-    if len(chinese) < max(20, int(duration / 60)):
+    if not chinese:
         raise ValueError('Insufficient full Chinese dialogue')
-    bins = {min(5, int(c['start'] / duration * 6)) for c in chinese}
-    if len(bins) < 4 or max(c['end'] for c in chinese) - min(c['start'] for c in chinese) < duration * .5:
-        raise ValueError('Only partial Chinese dialogue')
+    # Sparse dialogue, opening credits or a shifted subtitle are not evidence
+    # of a wrong work. Explicit forced/signs/commentary labels are excluded by
+    # identity ranking; no elapsed-time/coverage threshold decides admission.
     # ASS may put Chinese and English in separate simultaneous Dialogue rows.
     english = sorted((c for c in cues if re.search(r'[A-Za-z]{3,}', c['text'])), key=lambda c: c['start'])
     paired, cursor = 0, 0
@@ -186,7 +185,7 @@ def inspect_text(raw, extension, duration):
         paired += any(c['start'] <= cue['end'] + .25 and c['end'] >= cue['start'] - .25
                       for c in english[cursor:cursor + 8])
     bilingual = paired >= len(chinese) * .4
-    return raw, bilingual
+    return raw, bilingual  # Preserve ASS/SSA source bytes, styles and encoding.
 
 
 def candidate_rank(record, context):
@@ -206,7 +205,7 @@ def publish(raw, extension, root=ROOT, volume=None):
         raise ValueError('Symlink candidate directory')
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
     info = directory.stat()
-    volume = volume or ('/storage' if root == ROOT else directory)
+    volume = volume or directory
     if (info.st_dev != Path(volume).stat().st_dev or (os.name == 'posix' and stat.S_IMODE(info.st_mode) & 0o022)
             or (hasattr(os, 'getuid') and info.st_uid != os.getuid())
             or extension not in TEXT_EXTENSIONS or not 0 < len(raw) <= MAX_BYTES):
@@ -230,11 +229,20 @@ def publish(raw, extension, root=ROOT, volume=None):
                 os.fsync(stream.fileno())
             os.chmod(temporary, 0o444)
             try:
-                os.link(temporary, target)
+                if os.name == 'nt':
+                    # Windows cannot unlink a read-only hardlink. rename does
+                    # not replace an existing target on Windows and preserves
+                    # the immutable attribute without a writable target gap.
+                    os.rename(temporary, target)
+                else:
+                    os.link(temporary, target)
             except FileExistsError:
                 pass
         finally:
-            os.unlink(temporary)
+            if os.path.exists(temporary):
+                if os.name == 'nt':
+                    os.chmod(temporary, 0o600)
+                os.unlink(temporary)
     info = target.lstat()
     if (not stat.S_ISREG(info.st_mode) or info.st_size != len(raw) or info.st_mode & 0o222
             or info.st_dev != directory.stat().st_dev
@@ -246,12 +254,39 @@ def publish(raw, extension, root=ROOT, volume=None):
 
 
 class AssrtCandidates:
-    def __init__(self, session, state, token_file=TOKEN_FILE, clock=time.monotonic, wall=time.time, transport=None):
+    def __init__(self, session, state, token_file=TOKEN_FILE, clock=time.monotonic, wall=time.time, transport=None,
+                 accounts=None, preparation_root=PREPARATION_ROOT):
         self.session, self.directory = session, Path(state)
         self.directory.mkdir(parents=True, mode=0o700, exist_ok=True)
         self.token_file, self.clock, self.wall = Path(token_file), clock, wall
         self.events = []
         self.transport = transport
+        self.accounts, self.preparation_root, self.local_scope = accounts, preparation_root, None
+        if accounts is not None:
+            try:
+                from bobbi_platform.account_manager import validate_snapshot
+                self.local_scope = validate_snapshot(accounts.snapshot(), authenticated=True)
+            except (ImportError, ValueError, RuntimeError, OSError):
+                pass  # Optional prepared cache; public Assrt does not need 115.
+
+    def local_current(self):
+        try:
+            return (self.local_scope is not None and self.accounts is not None
+                    and self.accounts.is_current(self.local_scope) is True)
+        except (ValueError, RuntimeError, OSError):
+            return False
+
+    def candidate_current(self, record):
+        # Old unscoped local-cache receipts cannot prove which account/epoch
+        # authorized their ledger. Public Assrt text is independent of 115.
+        if str(record.get('origin', '')).startswith('local:'):
+            return self.local_current() and record.get('account_scope') == self.local_scope
+        return True
+
+    def selected_candidate(self, record):
+        if not self.candidate_current(record):
+            raise LookupStopped('SUBTITLE_ACCOUNT_CHANGED')
+        return record
 
     def note(self, stage, reason, ident=None):
         """Small public diagnostic vocabulary; never retain provider URLs/text."""
@@ -361,7 +396,7 @@ class AssrtCandidates:
             raise LookupStopped('ASSRT_RESPONSE_INVALID')
         return rows
 
-    def local_candidates(self, context, deadline, cancelled, root, state=PREPARATION_ROOT):
+    def local_candidates(self, context, deadline, cancelled, root):
         """Read already stored same-work subtitles, not videos or cloud tasks.
 
         Other releases remain uncalibrated candidates, irrespective of their
@@ -373,12 +408,18 @@ class AssrtCandidates:
             return []
         media = 'tmdb:movie:' + str(ident) if context['mode'] == 'movie' else 'tmdb:tv:{}:s{}:e{}'.format(
             ident, context['season'], context['episode'])
-        directory = Path(state)
+        if not self.local_current():
+            return []
+        directory = Path(self.preparation_root) / (self.local_scope['account_id'][4:] + '-' + str(self.local_scope['epoch']))
+        # No recursive search, previous-epoch fallback or implicit legacy root.
         database = directory / 'resources.sqlite'
         if not database.is_file() or any(p.is_symlink() for p in (database, *database.parents)):
             return []
         choices, consumed = [], 0
-        connection = sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=.1)
+        try:
+            connection = sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=.1)
+        except sqlite3.Error:
+            return []
         try:
             connection.execute('PRAGMA query_only=ON')
             connection.set_progress_handler(lambda: int(cancelled() or self.clock() >= deadline), 1000)
@@ -386,6 +427,8 @@ class AssrtCandidates:
                 "ON r.seq=c.revision WHERE json_extract(r.payload,'$.video.media_id')=? ORDER BY r.seq DESC LIMIT 32", (media,))
             for (payload,) in rows:
                 self.guard(deadline, cancelled)
+                if not self.local_current():
+                    return []
                 try:
                     record = json.loads(payload)
                     video = record['video']
@@ -411,15 +454,18 @@ class AssrtCandidates:
                         continue
                     raw, bilingual = inspect_text(raw, extension, context['duration'])
                     self.guard(deadline, cancelled)
+                    if not self.local_current():
+                        return []
                     choices.append(dict(media=identity(context), source=source, state='candidate',
-                        file=publish(raw, extension, root), bilingual=bilingual, origin='local:' + digest[:16]))
+                        file=publish(raw, extension, root), bilingual=bilingual, origin='local:' + digest[:16],
+                        account_scope=dict(self.local_scope)))
                 except (OSError, KeyError, TypeError, ValueError):
                     continue
         except sqlite3.Error:
             pass  # Optional old cache schema cannot affect video or API search.
         finally:
             connection.close()
-        return choices
+        return choices if self.local_current() else []
 
     def candidates(self, context, deadline, cancelled, root=ROOT):
         self.guard(deadline, cancelled)
@@ -433,6 +479,8 @@ class AssrtCandidates:
         for record in catalog:
             self.guard(deadline, cancelled)
             if not isinstance(record, dict):
+                continue
+            if not self.candidate_current(record):
                 continue
             if record.get('media') != key or rank(record.get('source', {}), context) is None:
                 continue
@@ -451,9 +499,7 @@ class AssrtCandidates:
                                           cancelled, root)
         except (OSError, ValueError, sqlite3.Error, LookupStopped):
             self.guard(deadline, cancelled)
-            if cached:
-                return max(cached, key=lambda record: candidate_rank(record, context))
-            raise
+            local = []  # Optional local state never prevents public API search.
         additions = [record for record in local if record not in catalog]
         if additions:
             catalog = (catalog + additions)[-128:]
@@ -465,16 +511,16 @@ class AssrtCandidates:
             # Exact, actually bilingual text needs no forced network refresh.
             # Other releases remain usable while an optional improvement fits.
             if candidate_rank(best, context)[:2] == (1, 1) or deadline - self.clock() < 7:
-                return best
+                return self.selected_candidate(best)
         try:
             candidate = self.remote_candidates(context, self.improvement_deadline(deadline) if choices else deadline,
                                                cancelled, root, key, catalog, choices)
             self.guard(deadline, cancelled)
-            return candidate
+            return self.selected_candidate(candidate)
         except (OSError, ValueError, LookupStopped):
             self.guard(deadline, cancelled)
             if choices:
-                return max(choices, key=lambda record: candidate_rank(record, context))
+                return self.selected_candidate(max(choices, key=lambda record: candidate_rank(record, context)))
             raise
 
     def search(self, query, deadline, cancelled):

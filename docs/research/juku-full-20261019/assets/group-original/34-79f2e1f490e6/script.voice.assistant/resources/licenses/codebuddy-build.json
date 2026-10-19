@@ -1,0 +1,9 @@
+{
+  "version": "2.168.2",
+  "source": "https://www.codebuddy.cn/cli/install.sh",
+  "platform": "Linux_arm64",
+  "artifact": "https://acc-1258344699.cos.accelerate.myqcloud.com/@tencent-ai/codebuddy-code/releases/download/2.168.2/codebuddy-code-headless_Linux_arm64.tar.gz",
+  "sha256": "db06699860e90438061b6bf7e38c1c640392266c0ea3d63cbda3367122d33137",
+  "license": "CODEBUDDY-LICENSE",
+  "runtime": "Bundled ARM64 glibc bridge; downloaded on demand"
+}

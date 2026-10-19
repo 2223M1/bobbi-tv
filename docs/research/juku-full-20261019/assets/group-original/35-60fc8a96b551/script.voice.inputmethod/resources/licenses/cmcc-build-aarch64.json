@@ -1,0 +1,49 @@
+{
+  "target": "resources/native/linux_aarch64/cmcc",
+  "output": "libcmcc-siren-ffmpeg63.so",
+  "sha256": "a327b3151ab4624ede2c169c29c0d3435f3ac98afe518e534e01d1f097b82b32",
+  "size_bytes": 50984,
+  "source": "resources/licenses/cmcc_siren_decoder.c",
+  "source_sha256": "a87542b6e17a912cde6e8b374be7931271a7db14f80e5b8e7d8a32da891be3a0",
+  "wrapper_license": "MIT",
+  "codec_implementation": "CoreELEC system FFmpeg Siren decoder; no FFmpeg code is bundled",
+  "codec_source": "https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/siren.c",
+  "why": [
+    "The add-on shipped only an armv7l build of this wrapper, so CoreELEC 22 (aarch64 user space) reported a missing runtime when the CMCC remote was selected.",
+    "An ELF32 object cannot be loaded into an ELF64 process, and CoreELEC's aarch64 user space provides no 32-bit loader (/lib/ld-linux-armhf.so.3) and no 32-bit libc, so running the existing 32-bit library there is impossible.",
+    "The wrapper is rebuilt from the same source for aarch64 against the system FFmpeg 9 that CoreELEC 22 ships. Because it only calls libavcodec/libavutil, the produced object is ~50 KB and stays architecture-agnostic about the codec."
+  ],
+  "compiler": "zig 0.14.1 `zig cc`, host x86_64-windows",
+  "compiler_sha256": "1ddf230367e07738c4a769eae66c1db7469e37bd520e81e86356453d0db2b9fd",
+  "target_triple": "aarch64-linux-gnu.2.28",
+  "flags": [
+    "-target aarch64-linux-gnu.2.28",
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Wl,--allow-shlib-undefined",
+    "-Wl,-soname,libcmcc-siren-ffmpeg63.so"
+  ],
+  "include_paths": [
+    "dl/toolchain/ffmpeg-headers (hand-written libavutil/avconfig.h + ffversion.h)",
+    "dl/toolchain/ffmpeg-src/ffmpeg-9.0"
+  ],
+  "link_inputs": [
+    "dl/box-ffmpeg/libavcodec.so.63 (copied off the target box; supplies DT_NEEDED only)",
+    "dl/box-ffmpeg/libavutil.so.61 (copied off the target box; supplies DT_NEEDED only)"
+  ],
+  "system_dependencies": [
+    "libavcodec.so.63",
+    "libavutil.so.61",
+    "libm.so.6",
+    "libc.so.6"
+  ],
+  "ffmpeg_version": "9.0",
+  "glibc_floor": "2.28",
+  "rebuild": "python tools/build_decoders.py",
+  "verified_on": "CoreELEC 22 (Amlogic-no, aarch64), FFmpeg 9.0 / glibc 2.44",
+  "verification": "Loaded through ctypes on the box: create() succeeded, a real 40-byte frame returned 640 bytes of S16_LE with 320/320 non-zero samples, and all-zero / 0xf8+zero frames returned AVERROR_INVALIDDATA (-1094995529), which is the documented Siren behaviour. Symbol set matches the armv7l build.",
+  "bundles_android_binary": false
+}

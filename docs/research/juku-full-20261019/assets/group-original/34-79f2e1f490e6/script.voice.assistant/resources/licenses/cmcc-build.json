@@ -1,0 +1,27 @@
+{
+  "source": "dev/remote/cmcc_siren_decoder.c",
+  "wrapper_license": "MIT",
+  "source_sha256": "c6b0f5fb2b08d834cbe43201a561769a426386b15fae26aa710a2cfdcf1a962c",
+  "output": "resources/native/linux_armv7l/cmcc/libcmcc-siren-ffmpeg62.so",
+  "compiler": "/home/bxy/avdvplus/R10/CoreELEC/build.CoreELEC-Amlogic-ng.arm-21/toolchain/bin/armv8a-libreelec-linux-gnueabihf-gcc",
+  "flags": [
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-mcpu=cortex-a53",
+    "-mfpu=neon-fp-armv8",
+    "-mfloat-abi=hard",
+    "-Wl,-soname,libcmcc-siren-ffmpeg62.so"
+  ],
+  "system_dependencies": [
+    "libavcodec.so.62",
+    "libavutil.so.60"
+  ],
+  "sha256": "a072a6260f46a4d8a814838aeec92eac7e92d9a6074d6c9d962f05bd113e912f",
+  "bundles_android_binary": false,
+  "codec_implementation": "CoreELEC system FFmpeg Siren; no FFmpeg libraries bundled",
+  "codec_source": "https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/siren.c"
+}

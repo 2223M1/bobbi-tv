@@ -32,15 +32,15 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
                      '原目录已保留' if library_root else '可跳过')
     return [
         ('check', '1. 检查播放器 · ' + ('通过' if kodi_ok else '需要处理')),
-        ('helper', '2. 连接本机助手 · ' + helper_labels.get(helper_state, '需要检查')),
+        ('helper', '2. 可选 BT 后台（115 / NAS 无需）· ' + helper_labels.get(helper_state, '需要检查')),
         ('library', '3. 我的网盘 / NAS / 片库 · ' + library_label),
         ('language', '4. 原声与中文字幕 · 打开播放器设置'),
         ('test', '5. 试播自己的视频 · 手动选择，不自动播放'),
         ('cloud', '115 账号 · 用自己的手机扫码登录'),
         ('catalog', '影视海报与搜索 · 配置 TMDb / 自选检索服务'),
         ('cinema', '进入波比影院 · 切换新皮肤'),
-        ('updates', '更新与恢复 · 检查 Kodi 仓库'),
-        ('status', '发行状态 · 公开测试版与能力说明'),
+        ('updates', '更新与恢复 · 原版插件管理 / 波比签名包'),
+        ('status', '发行状态 · 私人候选与实机验收状态'),
     ]
 
 

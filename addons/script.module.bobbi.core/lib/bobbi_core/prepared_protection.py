@@ -182,5 +182,5 @@ class ProtectionLane:
             self.future = self.executor.submit(self._sample)
 
     def close(self):
-        self.executor.shutdown(wait=True, cancel_futures=True)
+        self.executor.shutdown(wait=True)  # Python 3.8; at most one IO future.
         self.protection.observe(None)

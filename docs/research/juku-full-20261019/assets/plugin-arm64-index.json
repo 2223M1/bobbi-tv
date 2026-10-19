@@ -1,0 +1,2885 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B-review-ui-anirss-20261018\\ui-redesign\\review-evidence\\juku-20261019\\research\\juku080\\plugin.video.juku-0.80-linux-arm64\\plugin.video.juku-0.80-linux-arm64.zip",
+  "bytes": 16851532,
+  "sha256": "850414fb4829512b44086245e1889f4e9bb9ae44b9f42b3f6d7834c75e2950a0",
+  "members": [
+    {
+      "path": "plugin.video.juku/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/service.py",
+      "type": "file",
+      "bytes": 69576,
+      "compressed_bytes": 17483,
+      "sha256": "52bfcf1e96a54b9adc39e1f9e8ae26cd322a4d92b7475b2b48128a9ccaf83dfa",
+      "copy": "original/arm64/plugin.video.juku/service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/addon.xml",
+      "type": "file",
+      "bytes": 1075,
+      "compressed_bytes": 626,
+      "sha256": "12672a2affb95f6c52dfafb71088c0496030f181fb98afa85759ff822d8b03af",
+      "copy": "original/arm64/plugin.video.juku/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "plugin.video.juku",
+        "name": "巨库",
+        "version": "0.80",
+        "provider-name": "juku",
+        "extensions": [
+          {
+            "point": "xbmc.python.pluginsource",
+            "library": "default.py"
+          },
+          {
+            "point": "xbmc.service",
+            "library": "service.py"
+          },
+          {
+            "point": "xbmc.metadata.scraper.movies",
+            "library": "resources/lib/scraper.py"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": [
+          {
+            "addon": "xbmc.python",
+            "version": "3.0.0"
+          }
+        ]
+      }
+    },
+    {
+      "path": "plugin.video.juku/.DS_Store",
+      "type": "file",
+      "bytes": 6148,
+      "compressed_bytes": 222,
+      "sha256": "82f5334c5277b27dfcd4aea750c1bedaf600e7ac98608c184dba7f7f907af40c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/bin/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/bin/daemon-linux-arm64",
+      "type": "file",
+      "bytes": 29286823,
+      "compressed_bytes": 14644327,
+      "sha256": "e21cec4ba1f0411022a2d22061b1d27ac80d439606529ddc9cabec3060ca118b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/addon.xml.metadata.json",
+      "type": "file",
+      "bytes": 143,
+      "compressed_bytes": 127,
+      "sha256": "11cf296944fa8d691dc5c5d10fb0c2338564c532adf19c816db689ce9ab34545",
+      "copy": "original/arm64/plugin.video.juku/addon.xml.metadata.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/fanart.webp",
+      "type": "file",
+      "bytes": 108698,
+      "compressed_bytes": 108718,
+      "sha256": "44000a79e4c22925d17ac229f1997bf0478846f5988a891d4875285cbcd602ef",
+      "copy": "original/arm64/plugin.video.juku/resources/fanart.webp",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/icon.png",
+      "type": "file",
+      "bytes": 30296,
+      "compressed_bytes": 28299,
+      "sha256": "f8cc60d8f062fab763e1ae02a721bda32761d800150c13fe6a828fef018288be",
+      "copy": "original/arm64/plugin.video.juku/resources/icon.png",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/.DS_Store",
+      "type": "file",
+      "bytes": 6148,
+      "compressed_bytes": 218,
+      "sha256": "a5efaf1dc9570536662ef458ebd0b94c8f65533bd0a6fdceb86b58f7e451e95a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/settings.xml",
+      "type": "file",
+      "bytes": 14447,
+      "compressed_bytes": 1097,
+      "sha256": "4d0c8a6e19101888ace663a04a7836c3d86802cf08ece781fe50cd8c6b0cf856",
+      "copy": "original/arm64/plugin.video.juku/resources/settings.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_thumb.jpg",
+      "type": "file",
+      "bytes": 21958,
+      "compressed_bytes": 19402,
+      "sha256": "7f48bf96d4c0e4cfdccec2ca76f2a7f7a1ef723e1998c3e2067704311a361fcb",
+      "copy": "original/arm64/plugin.video.juku/resources/images/pansou_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 36870,
+      "compressed_bytes": 31878,
+      "sha256": "c69cadc4557ec4320f07b965bf8fdf5f8e58771261e0715fab2301a75b88337d",
+      "copy": "original/arm64/plugin.video.juku/resources/images/pansou_menu_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/settings_thumb.jpg",
+      "type": "file",
+      "bytes": 20891,
+      "compressed_bytes": 17920,
+      "sha256": "93299b1f8f42c19c8d7b85742d262f086ccabd18fe35a4226057972ceffa2c42",
+      "copy": "original/arm64/plugin.video.juku/resources/images/settings_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/favorites_thumb.jpg",
+      "type": "file",
+      "bytes": 27175,
+      "compressed_bytes": 24580,
+      "sha256": "1adbf8a2e2b64bc6031309880d5a7e90e2087e63e2b2e5084f09a65fe5e0168d",
+      "copy": "original/arm64/plugin.video.juku/resources/images/favorites_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/connect_phone_thumb.jpg",
+      "type": "file",
+      "bytes": 27616,
+      "compressed_bytes": 25161,
+      "sha256": "2a553d2e15866e0b72198162b0222e8dc4d4aed365e31409ed74cbcc91ba3c73",
+      "copy": "original/arm64/plugin.video.juku/resources/images/connect_phone_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_fanart.jpg",
+      "type": "file",
+      "bytes": 39363,
+      "compressed_bytes": 34444,
+      "sha256": "c5574fd2b6fdcc22a225e87018abbcb6241dc392f014503e2fa91ee6dc901975",
+      "copy": "original/arm64/plugin.video.juku/resources/images/search_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/playlists_thumb.jpg",
+      "type": "file",
+      "bytes": 26762,
+      "compressed_bytes": 23902,
+      "sha256": "eb56ac7f0289e52881dc63e4b64d140e2b8326e9e18d1736c5304ec456ae545b",
+      "copy": "original/arm64/plugin.video.juku/resources/images/playlists_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/private_libraries_thumb.jpg",
+      "type": "file",
+      "bytes": 27722,
+      "compressed_bytes": 25048,
+      "sha256": "1a908d01d388649467488d291a4e79f139a15d4924cd57815bc91c021ed099c2",
+      "copy": "original/arm64/plugin.video.juku/resources/images/private_libraries_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/shared_libraries_thumb.jpg",
+      "type": "file",
+      "bytes": 28061,
+      "compressed_bytes": 25440,
+      "sha256": "d41d5ccfad27d176860e516b88741302813c57f6dd9c5d203d8e19a563dedecf",
+      "copy": "original/arm64/plugin.video.juku/resources/images/shared_libraries_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_doc_fanart.jpg",
+      "type": "file",
+      "bytes": 32543,
+      "compressed_bytes": 27112,
+      "sha256": "8c0d32d7f45b02516ac7d39f9cbed0392c46e27a4ed4a2c9c9c0a75fe80ac91c",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_doc_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/connect_phone_fanart.jpg",
+      "type": "file",
+      "bytes": 38654,
+      "compressed_bytes": 34059,
+      "sha256": "97e2dd84a3365628652edb7f3e04c79cec66bbe9718b89ca8517d736a67213e2",
+      "copy": "original/arm64/plugin.video.juku/resources/images/connect_phone_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_thumb.jpg",
+      "type": "file",
+      "bytes": 27931,
+      "compressed_bytes": 25336,
+      "sha256": "240848d8bca207c20622df55c84a9b5265119fcb27f32c6601ee1d4114172295",
+      "copy": "original/arm64/plugin.video.juku/resources/images/search_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_short_fanart.jpg",
+      "type": "file",
+      "bytes": 33167,
+      "compressed_bytes": 27793,
+      "sha256": "4373ebd70414bd11ac468bcd1b17c4f27439171998720c2d19b6509adda24159",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_short_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/filter_thumb.jpg",
+      "type": "file",
+      "bytes": 20913,
+      "compressed_bytes": 18281,
+      "sha256": "979362a9a85f8d185ff13c8df9b59925c6b1c218d26e77d3e4fd8d267cda2d41",
+      "copy": "original/arm64/plugin.video.juku/resources/images/filter_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_doc_thumb.jpg",
+      "type": "file",
+      "bytes": 21934,
+      "compressed_bytes": 19158,
+      "sha256": "0ae3dced61e476d16de2b735f93bea96beb7a7e9012daaa7a65f1eaccb65d5ef",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_doc_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/root_fanart.jpg",
+      "type": "file",
+      "bytes": 31840,
+      "compressed_bytes": 26626,
+      "sha256": "9d3403dfc5ff6bfadca277be3bc0ba75c8a78f6298dcf44d161ac21cc8f5173b",
+      "copy": "original/arm64/plugin.video.juku/resources/images/root_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_variety_thumb.jpg",
+      "type": "file",
+      "bytes": 22319,
+      "compressed_bytes": 19507,
+      "sha256": "393cf21a379680b50d56de947849dcc297fcb5421fa43b564837933c6219d5b3",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_variety_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/login_thumb.jpg",
+      "type": "file",
+      "bytes": 22907,
+      "compressed_bytes": 20228,
+      "sha256": "b8a5cd0c371185b713e7fbe35ef68f011a40d447e459f763d964a823e287610b",
+      "copy": "original/arm64/plugin.video.juku/resources/images/login_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/playlists_fanart.jpg",
+      "type": "file",
+      "bytes": 37418,
+      "compressed_bytes": 32405,
+      "sha256": "b7dcb08c84bec437948040312d9cb8fd3b93a7b516b75d3955b16b95dbbe852f",
+      "copy": "original/arm64/plugin.video.juku/resources/images/playlists_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 24914,
+      "compressed_bytes": 22256,
+      "sha256": "2054bf1614cf5edde4fec4a0ae30d74d560b0dabf581f7077fc85a0ea97a8eb1",
+      "copy": "original/arm64/plugin.video.juku/resources/images/push_menu_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_anime_fanart.jpg",
+      "type": "file",
+      "bytes": 33069,
+      "compressed_bytes": 27843,
+      "sha256": "0993da45ceb5d470db694904e7fb47bf7f5563180f27baa3a0256dc1f7448910",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_anime_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_thumb.jpg",
+      "type": "file",
+      "bytes": 25910,
+      "compressed_bytes": 23196,
+      "sha256": "e0a6f804589159c22b846e229366182c7db2d412620d01c13b5ee6cce65f6f6c",
+      "copy": "original/arm64/plugin.video.juku/resources/images/push_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_fanart.jpg",
+      "type": "file",
+      "bytes": 37893,
+      "compressed_bytes": 32820,
+      "sha256": "7ee2f047d67314a729daace3b0a2c149917c59778f8ad36c58a27f6599ae2f84",
+      "copy": "original/arm64/plugin.video.juku/resources/images/push_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/favorites_fanart.jpg",
+      "type": "file",
+      "bytes": 39331,
+      "compressed_bytes": 34590,
+      "sha256": "10aa6bb6f9e799e8df430522a67ab0206eb442659ab9eea4d1b2f584ad296a02",
+      "copy": "original/arm64/plugin.video.juku/resources/images/favorites_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/recommend_fanart.jpg",
+      "type": "file",
+      "bytes": 38504,
+      "compressed_bytes": 33753,
+      "sha256": "6ee026ccfe10eeeb9acd2ca117ff3a5610ec0f0fda6943c1a74049da1460fdce",
+      "copy": "original/arm64/plugin.video.juku/resources/images/recommend_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_movie_fanart.jpg",
+      "type": "file",
+      "bytes": 33216,
+      "compressed_bytes": 28042,
+      "sha256": "bebae5d81c59d99ea71977e8c8933ab9ff304f63da31375c411335e85626ecb9",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_movie_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/root_thumb.jpg",
+      "type": "file",
+      "bytes": 21738,
+      "compressed_bytes": 18824,
+      "sha256": "5ad109ef4df562113cae13aa710a3f0d0796299f35bba87bd7cc880ac0b2a753",
+      "copy": "original/arm64/plugin.video.juku/resources/images/root_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_fanart.jpg",
+      "type": "file",
+      "bytes": 33558,
+      "compressed_bytes": 28561,
+      "sha256": "c53cde03f6e657d7475fc11d3f456cc763b6321a7bfb3e1c7676fb493caa28aa",
+      "copy": "original/arm64/plugin.video.juku/resources/images/pansou_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_tv_thumb.jpg",
+      "type": "file",
+      "bytes": 23562,
+      "compressed_bytes": 20794,
+      "sha256": "226353e56731aa1c2688c50ea7f7bcb80345d9e870138b73f1fc2593bd075713",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_tv_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 26101,
+      "compressed_bytes": 23347,
+      "sha256": "bf5ab6fc87ea1b53f8815239063d512f9019eba0028d91b317e17dd220b65b7b",
+      "copy": "original/arm64/plugin.video.juku/resources/images/my_pans_menu_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/home_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 28186,
+      "compressed_bytes": 25540,
+      "sha256": "12f05a281385ce26553091cf3f16e855987a302b63b9fba822e783b261b9e040",
+      "copy": "original/arm64/plugin.video.juku/resources/images/home_menu_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/share_square_thumb.jpg",
+      "type": "file",
+      "bytes": 25103,
+      "compressed_bytes": 22310,
+      "sha256": "563819c33b07ed552a33d5b0ca826286ee48c386057d376b3eef38f7755b43b2",
+      "copy": "original/arm64/plugin.video.juku/resources/images/share_square_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_short_thumb.jpg",
+      "type": "file",
+      "bytes": 22800,
+      "compressed_bytes": 20123,
+      "sha256": "85f4bb9ec850dfb4ce1bc5539b000f075a8938b22b809ff5fe0eeb62c69045c4",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_short_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/recommend_thumb.jpg",
+      "type": "file",
+      "bytes": 27865,
+      "compressed_bytes": 25407,
+      "sha256": "f987228096d29eb6055b2e2208dd96f2f4a6f55fd08b1d6e5d8f427ec02ae323",
+      "copy": "original/arm64/plugin.video.juku/resources/images/recommend_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/login_fanart.jpg",
+      "type": "file",
+      "bytes": 33048,
+      "compressed_bytes": 27630,
+      "sha256": "faeb902eb7ce61f5a1228a4aab62f676bd395c92481fdfd5bd29774f503fe86f",
+      "copy": "original/arm64/plugin.video.juku/resources/images/login_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/home_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 38450,
+      "compressed_bytes": 33525,
+      "sha256": "dbb4a45d323e114e80128061adcc19a79f829dce47ab5629438131c5aa261437",
+      "copy": "original/arm64/plugin.video.juku/resources/images/home_menu_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/private_libraries_fanart.jpg",
+      "type": "file",
+      "bytes": 40009,
+      "compressed_bytes": 34885,
+      "sha256": "116763383a042e0115efcbdc9b2e3b7fe32609462306c8a01ce6888926e85b86",
+      "copy": "original/arm64/plugin.video.juku/resources/images/private_libraries_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_tv_fanart.jpg",
+      "type": "file",
+      "bytes": 33540,
+      "compressed_bytes": 28360,
+      "sha256": "121993034b084d6d806bef6cdb22e36591b3c34f6ae5cf0573038dd7be90d589",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_tv_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/history_thumb.jpg",
+      "type": "file",
+      "bytes": 28355,
+      "compressed_bytes": 25733,
+      "sha256": "9fb5b747a905ef50e903eb039d455605cd8219e0638694d077b1195c572e244b",
+      "copy": "original/arm64/plugin.video.juku/resources/images/history_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_thumb.jpg",
+      "type": "file",
+      "bytes": 27394,
+      "compressed_bytes": 24753,
+      "sha256": "afb418c7f83d245924b92cdb4cc7af21187e4d8740c2ac06ff2cbb7a66dfc702",
+      "copy": "original/arm64/plugin.video.juku/resources/images/my_pans_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_fanart.jpg",
+      "type": "file",
+      "bytes": 38660,
+      "compressed_bytes": 33805,
+      "sha256": "1a32210e24446ce8c4a215034e0b0e83c2cd3ee4121c1c50cb2a092e4f840285",
+      "copy": "original/arm64/plugin.video.juku/resources/images/my_pans_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/share_square_fanart.jpg",
+      "type": "file",
+      "bytes": 36033,
+      "compressed_bytes": 31027,
+      "sha256": "bee98feaeefa00b6cbf1d8f307f06251dbade7219db6dcddd7baf0acf8c87f92",
+      "copy": "original/arm64/plugin.video.juku/resources/images/share_square_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_variety_fanart.jpg",
+      "type": "file",
+      "bytes": 34285,
+      "compressed_bytes": 29431,
+      "sha256": "275c289e2509c0d648635df5317d9fd10aa53d32e61e6d7b7d569cafc2c00de4",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_variety_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 36795,
+      "compressed_bytes": 31830,
+      "sha256": "f34be92ae1ee8763cadf5e9cc990779d904b50c5882726a53baf429773fbb1b0",
+      "copy": "original/arm64/plugin.video.juku/resources/images/push_menu_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 24772,
+      "compressed_bytes": 22249,
+      "sha256": "9b6385298353e103b7b6dbe79303ee40b89459d0ed693eb8a2460531de76cc28",
+      "copy": "original/arm64/plugin.video.juku/resources/images/pansou_menu_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 25271,
+      "compressed_bytes": 22693,
+      "sha256": "53667b5b0eeb72d1b85da1f50061701228bb597f172322ca13357d7656951769",
+      "copy": "original/arm64/plugin.video.juku/resources/images/search_menu_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 38611,
+      "compressed_bytes": 33397,
+      "sha256": "7e4922464bfac5361f2542608b538310d2ab50a70a8a36eae9774f333eb48eb7",
+      "copy": "original/arm64/plugin.video.juku/resources/images/my_pans_menu_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/settings_fanart.jpg",
+      "type": "file",
+      "bytes": 31689,
+      "compressed_bytes": 25633,
+      "sha256": "53b47cadb589ca872b4349334895e1e80e89e0919c869a5481ebb835a9f557b5",
+      "copy": "original/arm64/plugin.video.juku/resources/images/settings_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_anime_thumb.jpg",
+      "type": "file",
+      "bytes": 22552,
+      "compressed_bytes": 19823,
+      "sha256": "50dc5175f445a0db2557a92577985f2d4220b09decf3c7fbd40cd4ea6d531eeb",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_anime_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_movie_thumb.jpg",
+      "type": "file",
+      "bytes": 22868,
+      "compressed_bytes": 20392,
+      "sha256": "d3d5f45fa1afcf4aec3de059b9c34b2466fe914cfa3cbfe52f006d001228d646",
+      "copy": "original/arm64/plugin.video.juku/resources/images/category_movie_thumb.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 36926,
+      "compressed_bytes": 31797,
+      "sha256": "5fbbe6f3e653191bab0c5dcebab2f387403272804e47f46378bcb63ce5b29836",
+      "copy": "original/arm64/plugin.video.juku/resources/images/search_menu_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/filter_fanart.jpg",
+      "type": "file",
+      "bytes": 32285,
+      "compressed_bytes": 26520,
+      "sha256": "96a06d5e156107f5a7f280396b8cd9eaa1fc0287ce265bef492ecc9e7ff8365a",
+      "copy": "original/arm64/plugin.video.juku/resources/images/filter_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/shared_libraries_fanart.jpg",
+      "type": "file",
+      "bytes": 40211,
+      "compressed_bytes": 35208,
+      "sha256": "0b0a29fcc206910565515ea91913b6bf9b2e4742dd65ac2afd2bd619b967c690",
+      "copy": "original/arm64/plugin.video.juku/resources/images/shared_libraries_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/history_fanart.jpg",
+      "type": "file",
+      "bytes": 39156,
+      "compressed_bytes": 34396,
+      "sha256": "34279b5dbe50ad4d703b84c9ceaa0859cf2df1d0dab67bad70e1a86960986c0e",
+      "copy": "original/arm64/plugin.video.juku/resources/images/history_fanart.jpg",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/language/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/language/resource.language.en_gb/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/language/resource.language.en_gb/strings.po",
+      "type": "file",
+      "bytes": 6033,
+      "compressed_bytes": 1504,
+      "sha256": "8219040a581627941acd83a3be266e7e6eccab1c387ea6d81f783e190247f1d4",
+      "copy": "original/arm64/plugin.video.juku/resources/language/resource.language.en_gb/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/language/resource.language.zh_cn/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/language/resource.language.zh_cn/strings.po",
+      "type": "file",
+      "bytes": 6265,
+      "compressed_bytes": 2414,
+      "sha256": "2c72c22110110f5a4321655d799bd5e466a70eb7e0a2e42d3a673707d09dcd3a",
+      "copy": "original/arm64/plugin.video.juku/resources/language/resource.language.zh_cn/strings.po",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/scraper.py",
+      "type": "file",
+      "bytes": 10116,
+      "compressed_bytes": 3413,
+      "sha256": "61cd052155823684b62683e92ddd6d38a28c25ba2781069ca51e0adfeee98a32",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/scraper.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/qrcode_dialog.py",
+      "type": "file",
+      "bytes": 20510,
+      "compressed_bytes": 4460,
+      "sha256": "8c6442b475074dfdba54f8769531c3c5fce8b6c8c1c01df915f3e9b3ec70065f",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/qrcode_dialog.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/api_client.py.metadata.json",
+      "type": "file",
+      "bytes": 147,
+      "compressed_bytes": 131,
+      "sha256": "dd7636b753dc9ec486754516fc437a265db78d24bb413e3dbdb3a26bfec9bc89",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/api_client.py.metadata.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/menu_config.py",
+      "type": "file",
+      "bytes": 14884,
+      "compressed_bytes": 4016,
+      "sha256": "1a2698ace3820515489c4753f8187d6f0f1144f9e847771e9a4c621db70340c9",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/menu_config.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/vfs_adapter.py",
+      "type": "file",
+      "bytes": 19023,
+      "compressed_bytes": 5266,
+      "sha256": "5715d252e483dd72c9cfb27dafdd6525df8ecced6b3f2d01b90d2ea0c9bcfa20",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/vfs_adapter.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/qrcode_dialog.py.metadata.json",
+      "type": "file",
+      "bytes": 150,
+      "compressed_bytes": 134,
+      "sha256": "5a1fe9c0d5c9ef12c9c9beb8aebb174e5ed4fc20ce7b60182ad6f3ae1073d021",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/qrcode_dialog.py.metadata.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/vfs_adapter.py.metadata.json",
+      "type": "file",
+      "bytes": 148,
+      "compressed_bytes": 132,
+      "sha256": "51434b752c0adf24c7ce2b18b4885177c673192ef2f4e6d03ec078e65aaae9e5",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/vfs_adapter.py.metadata.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/router.py.metadata.json",
+      "type": "file",
+      "bytes": 143,
+      "compressed_bytes": 127,
+      "sha256": "93995e2c8915b9fa51d82f647691d2396e8ed456bda1ee2dceb5e1f3ce441f09",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/router.py.metadata.json",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/api_client.cpython-314.pyc",
+      "type": "file",
+      "bytes": 59792,
+      "compressed_bytes": 19510,
+      "sha256": "bf8d0ff45d2644d5c72d1a45e1ed1f3324720f4e7308d25fb7d6ee483d198c57",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/vfs_adapter.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 26453,
+      "compressed_bytes": 11928,
+      "sha256": "dd04daa5ecbbeeb5ff56f46575b8bc6e27214767d4ddefd2eb2e1ba1560932f4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/menu_config.cpython-314.pyc",
+      "type": "file",
+      "bytes": 14462,
+      "compressed_bytes": 7421,
+      "sha256": "5b051ebd05d71a08c8123bae0edd411758114874c78bba4e4729a314963a8a8f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/qrcode_dialog.cpython-314.pyc",
+      "type": "file",
+      "bytes": 28355,
+      "compressed_bytes": 11728,
+      "sha256": "f00c22f11d066e887f82f467de9f96eebb438a9bc4e99cb1baf3edf82f26698b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/vfs_adapter.cpython-314.pyc",
+      "type": "file",
+      "bytes": 26461,
+      "compressed_bytes": 11898,
+      "sha256": "2bbabb9f0bf2fa60ee1a7a1101e2ef9643e559856916b074d0ef0ca7e2e50f6c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/qrcode_dialog.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 28859,
+      "compressed_bytes": 11693,
+      "sha256": "578d1b5b83353c65989f323c6ae40a39c8f4ae9ae2cb4336c446f2ff68cd49db",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/api_client.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 63905,
+      "compressed_bytes": 19651,
+      "sha256": "97ea737e96f6df36db8802c493baf9370dc0ab9aed0602f4dc9cef4ec1f90857",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/router.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 379693,
+      "compressed_bytes": 152302,
+      "sha256": "448fbb8e306c27baf22eb51bf8bd9982e3c94895562866b195699676623c91cc",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/menu_config.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 15250,
+      "compressed_bytes": 7618,
+      "sha256": "79204046433611d638c3f1c95182b2fa3a84db322f49e2e4596298ab45ecb0a3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/daemon.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 43284,
+      "compressed_bytes": 16506,
+      "sha256": "728affb132e05083e61fdc021bc04832629d63bf4e595b06d3027cc407567707",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/router.cpython-314.pyc",
+      "type": "file",
+      "bytes": 371310,
+      "compressed_bytes": 152277,
+      "sha256": "08daf43e95e80c800584d8ed8cb5776291b9162a130095b95ca9b63d58159a68",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/daemon.cpython-314.pyc",
+      "type": "file",
+      "bytes": 41253,
+      "compressed_bytes": 16285,
+      "sha256": "4f1d125fa5a067b777fa35fda0b1ec0320ab20fe1bdf4f698524f2818735fda8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/scraper.cpython-314.pyc",
+      "type": "file",
+      "bytes": 14665,
+      "compressed_bytes": 7608,
+      "sha256": "13a852d61a7b2c499be114228674876f1652f1f04831c00123363c46811d7f06",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/router.py",
+      "type": "file",
+      "bytes": 349858,
+      "compressed_bytes": 66938,
+      "sha256": "ba19f6f9fb0210747d906abff1da60df03ffe6a927772f08aee6355793e29cd7",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/router.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/api_client.py",
+      "type": "file",
+      "bytes": 40634,
+      "compressed_bytes": 7334,
+      "sha256": "d352f7410952bb61f66686b94dcc04173a788c469293645098a006a6d0ed779d",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/api_client.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/daemon.py",
+      "type": "file",
+      "bytes": 26186,
+      "compressed_bytes": 6941,
+      "sha256": "c0d5a843d65da86c90d4f963b6328b3c39ff08559659251e32b9040b5b1ee4f1",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/daemon.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/__pycache__/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/__pycache__/service.cpython-314.pyc",
+      "type": "file",
+      "bytes": 81705,
+      "compressed_bytes": 37049,
+      "sha256": "a8ac2cbe8b590330c6c4de066c2479b0dacf7dc5d2063bd761be07018cc923d2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/device_key.pem",
+      "type": "file",
+      "bytes": 227,
+      "compressed_bytes": 190,
+      "sha256": "cbfa45135067d134d1ca247e538b7594b5317988aa5d0947aba6676d5542c4b1",
+      "copy_status": "key-or-runtime-state-not-copied"
+    },
+    {
+      "path": "plugin.video.juku/default.py",
+      "type": "file",
+      "bytes": 1650,
+      "compressed_bytes": 912,
+      "sha256": "17f10c1a98d10b8bd0fc04016e7a15323d62a65705851e07321fb2c9502205b3",
+      "copy": "original/arm64/plugin.video.juku/default.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/default.py.metadata.json",
+      "type": "file",
+      "bytes": 144,
+      "compressed_bytes": 128,
+      "sha256": "67d3999b9a64a0bc44c93c9681d6535a33151d8a1306e0aba13e1263ac49c69d",
+      "copy": "original/arm64/plugin.video.juku/default.py.metadata.json",
+      "copy_status": "original-byte-copy"
+    }
+  ],
+  "python": [
+    {
+      "path": "plugin.video.juku/service.py",
+      "lines": 1497,
+      "functions": [
+        {
+          "name": "MvServiceMonitor.__init__",
+          "line": 24,
+          "end_line": 34
+        },
+        {
+          "name": "MvServiceMonitor.onAbortRequested",
+          "line": 36,
+          "end_line": 38
+        },
+        {
+          "name": "MvServiceMonitor.onSettingsChanged",
+          "line": 40,
+          "end_line": 42
+        },
+        {
+          "name": "MvServiceMonitor.handle_settings_changed",
+          "line": 44,
+          "end_line": 72
+        },
+        {
+          "name": "get_primary_user_id",
+          "line": 78,
+          "end_line": 112
+        },
+        {
+          "name": "is_private_library_item_id",
+          "line": 115,
+          "end_line": 131
+        },
+        {
+          "name": "MvPlaybackTracker.__init__",
+          "line": 136,
+          "end_line": 144
+        },
+        {
+          "name": "MvPlaybackTracker._extract_target_id_from_file",
+          "line": 146,
+          "end_line": 202
+        },
+        {
+          "name": "MvPlaybackTracker.onPlayBackStarted",
+          "line": 204,
+          "end_line": 243
+        },
+        {
+          "name": "MvPlaybackTracker._launch_disc_seek_guard",
+          "line": 245,
+          "end_line": 299
+        },
+        {
+          "name": "MvPlaybackTracker._launch_disc_seek_guard._seek_worker",
+          "line": 271,
+          "end_line": 294
+        },
+        {
+          "name": "MvPlaybackTracker.onPlayBackPaused",
+          "line": 301,
+          "end_line": 311
+        },
+        {
+          "name": "MvPlaybackTracker.onPlayBackStopped",
+          "line": 313,
+          "end_line": 329
+        },
+        {
+          "name": "MvPlaybackTracker.onPlayBackEnded",
+          "line": 331,
+          "end_line": 347
+        },
+        {
+          "name": "MvPlaybackTracker.tick",
+          "line": 349,
+          "end_line": 382
+        },
+        {
+          "name": "MvPlaybackTracker._report_progress",
+          "line": 384,
+          "end_line": 453
+        },
+        {
+          "name": "kodi_jsonrpc",
+          "line": 457,
+          "end_line": 473
+        },
+        {
+          "name": "is_matching_movie_or_episode",
+          "line": 480,
+          "end_line": 566
+        },
+        {
+          "name": "is_disc_item",
+          "line": 569,
+          "end_line": 591
+        },
+        {
+          "name": "find_latest_video_db",
+          "line": 594,
+          "end_line": 615
+        },
+        {
+          "name": "has_skin_iso_resume_handler",
+          "line": 618,
+          "end_line": 637
+        },
+        {
+          "name": "get_existing_disc_player_state",
+          "line": 640,
+          "end_line": 665
+        },
+        {
+          "name": "ensure_disc_player_state",
+          "line": 668,
+          "end_line": 703
+        },
+        {
+          "name": "sync_emby_progress_to_kodi_library",
+          "line": 706,
+          "end_line": 990
+        },
+        {
+          "name": "clean_title_text",
+          "line": 993,
+          "end_line": 1007
+        },
+        {
+          "name": "show_update_notification",
+          "line": 1010,
+          "end_line": 1025
+        },
+        {
+          "name": "check_and_update_subscription_libraries",
+          "line": 1028,
+          "end_line": 1106
+        },
+        {
+          "name": "check_addon_repo_updates",
+          "line": 1109,
+          "end_line": 1124
+        },
+        {
+          "name": "process_pushed_item",
+          "line": 1127,
+          "end_line": 1382
+        },
+        {
+          "name": "main",
+          "line": 1385,
+          "end_line": 1494
+        }
+      ],
+      "classes": [
+        {
+          "name": "MvServiceMonitor",
+          "line": 23,
+          "end_line": 72
+        },
+        {
+          "name": "MvPlaybackTracker",
+          "line": 134,
+          "end_line": 453
+        }
+      ],
+      "imports": [
+        "api_client",
+        "daemon",
+        "json",
+        "os",
+        "re",
+        "router",
+        "sqlite3",
+        "sys",
+        "threading",
+        "time",
+        "urllib.parse",
+        "urllib.request",
+        "xbmc",
+        "xbmcaddon",
+        "xbmcgui",
+        "xbmcvfs"
+      ],
+      "url_hosts": [
+        "127.0.0.1"
+      ]
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/scraper.py",
+      "lines": 270,
+      "functions": [
+        {
+          "name": "proxied_image_url",
+          "line": 19,
+          "end_line": 24
+        },
+        {
+          "name": "parse_movie_identifiers",
+          "line": 26,
+          "end_line": 61
+        },
+        {
+          "name": "TMDBMovieScraper.__init__",
+          "line": 64,
+          "end_line": 65
+        },
+        {
+          "name": "TMDBMovieScraper.find_movie",
+          "line": 67,
+          "end_line": 111
+        },
+        {
+          "name": "TMDBMovieScraper.get_movie_detail",
+          "line": 113,
+          "end_line": 130
+        },
+        {
+          "name": "TMDBMovieScraper.populate_listitem_metadata",
+          "line": 132,
+          "end_line": 238
+        },
+        {
+          "name": "main",
+          "line": 241,
+          "end_line": 267
+        }
+      ],
+      "classes": [
+        {
+          "name": "TMDBMovieScraper",
+          "line": 63,
+          "end_line": 238
+        }
+      ],
+      "imports": [
+        "json",
+        "re",
+        "sys",
+        "urllib.parse",
+        "urllib.request",
+        "xbmc",
+        "xbmcaddon",
+        "xbmcgui",
+        "xbmcplugin"
+      ],
+      "url_hosts": [
+        "127.0.0.1",
+        "image.tmdb.org"
+      ]
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/qrcode_dialog.py",
+      "lines": 503,
+      "functions": [
+        {
+          "name": "DialogBase.__init__",
+          "line": 16,
+          "end_line": 17
+        },
+        {
+          "name": "DialogBase.addControl",
+          "line": 18,
+          "end_line": 19
+        },
+        {
+          "name": "DialogBase.show",
+          "line": 20,
+          "end_line": 21
+        },
+        {
+          "name": "DialogBase.close",
+          "line": 22,
+          "end_line": 23
+        },
+        {
+          "name": "DialogBase.__init__",
+          "line": 31,
+          "end_line": 32
+        },
+        {
+          "name": "DialogBase.addControl",
+          "line": 33,
+          "end_line": 34
+        },
+        {
+          "name": "DialogBase.show",
+          "line": 35,
+          "end_line": 36
+        },
+        {
+          "name": "DialogBase.close",
+          "line": 37,
+          "end_line": 38
+        },
+        {
+          "name": "get_qr_temp_dir",
+          "line": 40,
+          "end_line": 60
+        },
+        {
+          "name": "_cleanup_old_qr_files",
+          "line": 62,
+          "end_line": 76
+        },
+        {
+          "name": "_ensure_rgb_image",
+          "line": 78,
+          "end_line": 99
+        },
+        {
+          "name": "QrCodeLoginDialog.__init__",
+          "line": 118,
+          "end_line": 156
+        },
+        {
+          "name": "QrCodeLoginDialog.start",
+          "line": 158,
+          "end_line": 207
+        },
+        {
+          "name": "QrCodeLoginDialog.poll_status",
+          "line": 209,
+          "end_line": 300
+        },
+        {
+          "name": "QrCodeLoginDialog.onControl",
+          "line": 302,
+          "end_line": 304
+        },
+        {
+          "name": "QrCodeLoginDialog.onAction",
+          "line": 306,
+          "end_line": 310
+        },
+        {
+          "name": "QrCodeLoginDialog.close_dialog",
+          "line": 312,
+          "end_line": 336
+        },
+        {
+          "name": "PushQrDialog.__init__",
+          "line": 342,
+          "end_line": 370
+        },
+        {
+          "name": "PushQrDialog.start",
+          "line": 372,
+          "end_line": 410
+        },
+        {
+          "name": "PushQrDialog.load_info",
+          "line": 412,
+          "end_line": 468
+        },
+        {
+          "name": "PushQrDialog.onControl",
+          "line": 471,
+          "end_line": 473
+        },
+        {
+          "name": "PushQrDialog.onAction",
+          "line": 475,
+          "end_line": 478
+        },
+        {
+          "name": "PushQrDialog.close_dialog",
+          "line": 480,
+          "end_line": 503
+        }
+      ],
+      "classes": [
+        {
+          "name": "DialogBase",
+          "line": 15,
+          "end_line": 23
+        },
+        {
+          "name": "DialogBase",
+          "line": 30,
+          "end_line": 38
+        },
+        {
+          "name": "QrCodeLoginDialog",
+          "line": 114,
+          "end_line": 336
+        },
+        {
+          "name": "PushQrDialog",
+          "line": 338,
+          "end_line": 503
+        }
+      ],
+      "imports": [
+        "PIL",
+        "base64",
+        "os",
+        "tempfile",
+        "threading",
+        "time",
+        "urllib.parse",
+        "urllib.request",
+        "urlparse",
+        "xbmc",
+        "xbmcgui",
+        "xbmcvfs"
+      ],
+      "url_hosts": []
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/menu_config.py",
+      "lines": 396,
+      "functions": [
+        {
+          "name": "MenuConfigManager.__init__",
+          "line": 173,
+          "end_line": 174
+        },
+        {
+          "name": "MenuConfigManager._get_addon",
+          "line": 176,
+          "end_line": 183
+        },
+        {
+          "name": "MenuConfigManager.get_menu_items",
+          "line": 185,
+          "end_line": 229
+        },
+        {
+          "name": "MenuConfigManager.save_menu_items",
+          "line": 231,
+          "end_line": 247
+        },
+        {
+          "name": "MenuConfigManager.hide_menu_item",
+          "line": 249,
+          "end_line": 258
+        },
+        {
+          "name": "MenuConfigManager.reset_to_default",
+          "line": 260,
+          "end_line": 273
+        },
+        {
+          "name": "MenuConfigManager.show_manage_entry_at_bottom",
+          "line": 275,
+          "end_line": 285
+        },
+        {
+          "name": "MenuConfigManager.run_interactive_manager",
+          "line": 287,
+          "end_line": 396
+        }
+      ],
+      "classes": [
+        {
+          "name": "MenuConfigManager",
+          "line": 170,
+          "end_line": 396
+        }
+      ],
+      "imports": [
+        "json",
+        "os",
+        "xbmcaddon"
+      ],
+      "url_hosts": []
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/vfs_adapter.py",
+      "lines": 440,
+      "functions": [
+        {
+          "name": "DummyBgProgress.update",
+          "line": 11,
+          "end_line": 12
+        },
+        {
+          "name": "DummyBgProgress.close",
+          "line": 13,
+          "end_line": 14
+        },
+        {
+          "name": "DummyBgProgress.isFinished",
+          "line": 15,
+          "end_line": 16
+        },
+        {
+          "name": "VfsAdapter.__init__",
+          "line": 24,
+          "end_line": 40
+        },
+        {
+          "name": "VfsAdapter.build_url",
+          "line": 42,
+          "end_line": 44
+        },
+        {
+          "name": "VfsAdapter.library_view_enabled",
+          "line": 49,
+          "end_line": 68
+        },
+        {
+          "name": "VfsAdapter._addon_root",
+          "line": 70,
+          "end_line": 85
+        },
+        {
+          "name": "VfsAdapter.node_image",
+          "line": 87,
+          "end_line": 106
+        },
+        {
+          "name": "VfsAdapter.node_art",
+          "line": 108,
+          "end_line": 126
+        },
+        {
+          "name": "VfsAdapter.create_list_item",
+          "line": 128,
+          "end_line": 234
+        },
+        {
+          "name": "VfsAdapter.add_directory_item",
+          "line": 236,
+          "end_line": 242
+        },
+        {
+          "name": "VfsAdapter.add_library_item",
+          "line": 244,
+          "end_line": 288
+        },
+        {
+          "name": "VfsAdapter.add_directory_items",
+          "line": 290,
+          "end_line": 293
+        },
+        {
+          "name": "VfsAdapter.create_bg_progress",
+          "line": 295,
+          "end_line": 304
+        },
+        {
+          "name": "VfsAdapter.set_content",
+          "line": 306,
+          "end_line": 308
+        },
+        {
+          "name": "VfsAdapter.set_library_content",
+          "line": 310,
+          "end_line": 319
+        },
+        {
+          "name": "VfsAdapter.set_resolved_url",
+          "line": 321,
+          "end_line": 346
+        },
+        {
+          "name": "VfsAdapter.end_of_directory",
+          "line": 348,
+          "end_line": 350
+        },
+        {
+          "name": "VfsAdapter.show_select_dialog",
+          "line": 352,
+          "end_line": 356
+        },
+        {
+          "name": "VfsAdapter.show_numeric_dialog",
+          "line": 358,
+          "end_line": 362
+        },
+        {
+          "name": "VfsAdapter.show_input_dialog",
+          "line": 364,
+          "end_line": 368
+        },
+        {
+          "name": "VfsAdapter.update_container",
+          "line": 370,
+          "end_line": 374
+        },
+        {
+          "name": "VfsAdapter.refresh_container",
+          "line": 376,
+          "end_line": 378
+        },
+        {
+          "name": "VfsAdapter.get_profile_path",
+          "line": 380,
+          "end_line": 394
+        },
+        {
+          "name": "VfsAdapter.log",
+          "line": 396,
+          "end_line": 405
+        },
+        {
+          "name": "VfsAdapter.show_keyboard_input",
+          "line": 407,
+          "end_line": 415
+        },
+        {
+          "name": "VfsAdapter.show_multiselect_dialog",
+          "line": 417,
+          "end_line": 421
+        },
+        {
+          "name": "VfsAdapter.show_yes_no_dialog",
+          "line": 423,
+          "end_line": 427
+        },
+        {
+          "name": "VfsAdapter.show_notification",
+          "line": 429,
+          "end_line": 435
+        },
+        {
+          "name": "VfsAdapter.execute_builtin",
+          "line": 437,
+          "end_line": 439
+        }
+      ],
+      "classes": [
+        {
+          "name": "DummyBgProgress",
+          "line": 9,
+          "end_line": 16
+        },
+        {
+          "name": "VfsAdapter",
+          "line": 19,
+          "end_line": 439
+        }
+      ],
+      "imports": [
+        "os",
+        "tempfile",
+        "urllib.parse",
+        "xbmc",
+        "xbmcaddon",
+        "xbmcgui",
+        "xbmcplugin",
+        "xbmcvfs"
+      ],
+      "url_hosts": []
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/router.py",
+      "lines": 7570,
+      "functions": [
+        {
+          "name": "kodi_jsonrpc",
+          "line": 9,
+          "end_line": 31
+        },
+        {
+          "name": "safe_int",
+          "line": 33,
+          "end_line": 37
+        },
+        {
+          "name": "format_file_size",
+          "line": 39,
+          "end_line": 52
+        },
+        {
+          "name": "parse_episode_number",
+          "line": 61,
+          "end_line": 178
+        },
+        {
+          "name": "parse_season_number",
+          "line": 180,
+          "end_line": 212
+        },
+        {
+          "name": "build_play_display_title",
+          "line": 214,
+          "end_line": 313
+        },
+        {
+          "name": "get_file_category",
+          "line": 315,
+          "end_line": 323
+        },
+        {
+          "name": "should_mark_pan_link_invalid",
+          "line": 325,
+          "end_line": 338
+        },
+        {
+          "name": "TagsCacheManager.__init__",
+          "line": 346,
+          "end_line": 349
+        },
+        {
+          "name": "TagsCacheManager.get_cached_tags",
+          "line": 351,
+          "end_line": 362
+        },
+        {
+          "name": "TagsCacheManager.save_tags",
+          "line": 364,
+          "end_line": 379
+        },
+        {
+          "name": "HistoryManager.__init__",
+          "line": 387,
+          "end_line": 390
+        },
+        {
+          "name": "HistoryManager.load_history",
+          "line": 392,
+          "end_line": 399
+        },
+        {
+          "name": "HistoryManager.save_history",
+          "line": 401,
+          "end_line": 411
+        },
+        {
+          "name": "HistoryManager.add_record",
+          "line": 413,
+          "end_line": 449
+        },
+        {
+          "name": "HistoryManager.add_record.is_same",
+          "line": 420,
+          "end_line": 441
+        },
+        {
+          "name": "HistoryManager.clear_history",
+          "line": 451,
+          "end_line": 452
+        },
+        {
+          "name": "SearchHistoryManager.__init__",
+          "line": 460,
+          "end_line": 463
+        },
+        {
+          "name": "SearchHistoryManager.load_history",
+          "line": 465,
+          "end_line": 475
+        },
+        {
+          "name": "SearchHistoryManager.save_history",
+          "line": 477,
+          "end_line": 487
+        },
+        {
+          "name": "SearchHistoryManager.add_query",
+          "line": 489,
+          "end_line": 508
+        },
+        {
+          "name": "SearchHistoryManager.clear_history",
+          "line": 510,
+          "end_line": 512
+        },
+        {
+          "name": "PushHistoryManager.__init__",
+          "line": 520,
+          "end_line": 523
+        },
+        {
+          "name": "PushHistoryManager.load_history",
+          "line": 525,
+          "end_line": 535
+        },
+        {
+          "name": "PushHistoryManager.save_history",
+          "line": 537,
+          "end_line": 547
+        },
+        {
+          "name": "PushHistoryManager.add_record",
+          "line": 549,
+          "end_line": 565
+        },
+        {
+          "name": "PushHistoryManager.clear_history",
+          "line": 567,
+          "end_line": 568
+        },
+        {
+          "name": "sort_pan_keys",
+          "line": 628,
+          "end_line": 638
+        },
+        {
+          "name": "sort_pan_keys.get_order_idx",
+          "line": 632,
+          "end_line": 637
+        },
+        {
+          "name": "detect_cloud_provider_key",
+          "line": 640,
+          "end_line": 691
+        },
+        {
+          "name": "get_pic_url",
+          "line": 718,
+          "end_line": 736
+        },
+        {
+          "name": "proxied_image_url",
+          "line": 738,
+          "end_line": 744
+        },
+        {
+          "name": "get_backdrop_url",
+          "line": 746,
+          "end_line": 764
+        },
+        {
+          "name": "to_share_url",
+          "line": 766,
+          "end_line": 777
+        },
+        {
+          "name": "is_single_file_url",
+          "line": 779,
+          "end_line": 783
+        },
+        {
+          "name": "extract_file_id_from_url",
+          "line": 785,
+          "end_line": 790
+        },
+        {
+          "name": "VfsRouter.__init__",
+          "line": 801,
+          "end_line": 803
+        },
+        {
+          "name": "VfsRouter.route",
+          "line": 805,
+          "end_line": 974
+        },
+        {
+          "name": "VfsRouter.show_root_menu",
+          "line": 976,
+          "end_line": 1026
+        },
+        {
+          "name": "VfsRouter.handle_manage_root_menus",
+          "line": 1028,
+          "end_line": 1031
+        },
+        {
+          "name": "VfsRouter.handle_reset_root_menus",
+          "line": 1033,
+          "end_line": 1040
+        },
+        {
+          "name": "VfsRouter.handle_quick_hide_menu",
+          "line": 1042,
+          "end_line": 1051
+        },
+        {
+          "name": "VfsRouter.show_home_menu",
+          "line": 1054,
+          "end_line": 1072
+        },
+        {
+          "name": "VfsRouter.show_home_list",
+          "line": 1074,
+          "end_line": 1093
+        },
+        {
+          "name": "VfsRouter.show_recommend",
+          "line": 1095,
+          "end_line": 1101
+        },
+        {
+          "name": "VfsRouter.show_playlists",
+          "line": 1103,
+          "end_line": 1118
+        },
+        {
+          "name": "VfsRouter.show_playlist_category",
+          "line": 1120,
+          "end_line": 1139
+        },
+        {
+          "name": "VfsRouter.show_playlist_detail",
+          "line": 1141,
+          "end_line": 1174
+        },
+        {
+          "name": "VfsRouter.show_search_menu",
+          "line": 1176,
+          "end_line": 1209
+        },
+        {
+          "name": "VfsRouter.clear_search_history",
+          "line": 1211,
+          "end_line": 1217
+        },
+        {
+          "name": "VfsRouter.handle_voice_command",
+          "line": 1219,
+          "end_line": 1245
+        },
+        {
+          "name": "VfsRouter.start_new_search",
+          "line": 1247,
+          "end_line": 1256
+        },
+        {
+          "name": "VfsRouter.show_search_results",
+          "line": 1258,
+          "end_line": 1285
+        },
+        {
+          "name": "VfsRouter.show_local_candidates",
+          "line": 1287,
+          "end_line": 1379
+        },
+        {
+          "name": "VfsRouter.play_kodi_item",
+          "line": 1381,
+          "end_line": 1431
+        },
+        {
+          "name": "VfsRouter.fetch_tags",
+          "line": 1436,
+          "end_line": 1452
+        },
+        {
+          "name": "VfsRouter.show_category",
+          "line": 1454,
+          "end_line": 1552
+        },
+        {
+          "name": "VfsRouter.handle_filter_selection",
+          "line": 1554,
+          "end_line": 1608
+        },
+        {
+          "name": "VfsRouter.show_video_detail",
+          "line": 1613,
+          "end_line": 1698
+        },
+        {
+          "name": "VfsRouter.show_video_detail.get_sort_key",
+          "line": 1652,
+          "end_line": 1659
+        },
+        {
+          "name": "VfsRouter.show_hls_lines",
+          "line": 1700,
+          "end_line": 1729
+        },
+        {
+          "name": "VfsRouter.show_pan_sources",
+          "line": 1731,
+          "end_line": 1775
+        },
+        {
+          "name": "VfsRouter.show_cloud_down_sources",
+          "line": 1777,
+          "end_line": 1846
+        },
+        {
+          "name": "VfsRouter._check_login_and_prompt",
+          "line": 1848,
+          "end_line": 1862
+        },
+        {
+          "name": "VfsRouter.play_cloud_down_item",
+          "line": 1864,
+          "end_line": 2027
+        },
+        {
+          "name": "VfsRouter._handle_completed_cloud_down",
+          "line": 2029,
+          "end_line": 2188
+        },
+        {
+          "name": "VfsRouter.show_cloud_down_tasks",
+          "line": 2190,
+          "end_line": 2347
+        },
+        {
+          "name": "VfsRouter.play_cloud_down_task",
+          "line": 2349,
+          "end_line": 2441
+        },
+        {
+          "name": "VfsRouter.handle_cloud_down_task_menu",
+          "line": 2443,
+          "end_line": 2467
+        },
+        {
+          "name": "VfsRouter.handle_delete_cloud_down_task",
+          "line": 2469,
+          "end_line": 2480
+        },
+        {
+          "name": "VfsRouter.show_cloud_down_dir_files",
+          "line": 2482,
+          "end_line": 2576
+        },
+        {
+          "name": "VfsRouter.show_cloud_down_dir_files._scan_dir",
+          "line": 2497,
+          "end_line": 2512
+        },
+        {
+          "name": "VfsRouter.show_cloud_down_dir_files._sort_key",
+          "line": 2521,
+          "end_line": 2524
+        },
+        {
+          "name": "VfsRouter.show_cloud_files",
+          "line": 2578,
+          "end_line": 2665
+        },
+        {
+          "name": "VfsRouter.play_fast_pan_file",
+          "line": 2667,
+          "end_line": 2802
+        },
+        {
+          "name": "VfsRouter.show_line_episodes",
+          "line": 2804,
+          "end_line": 2874
+        },
+        {
+          "name": "VfsRouter.play_hls",
+          "line": 2876,
+          "end_line": 3048
+        },
+        {
+          "name": "VfsRouter.play_all_lines",
+          "line": 3050,
+          "end_line": 3118
+        },
+        {
+          "name": "VfsRouter.show_pan_files",
+          "line": 3120,
+          "end_line": 3430
+        },
+        {
+          "name": "VfsRouter.show_pan_files.get_next_link",
+          "line": 3139,
+          "end_line": 3178
+        },
+        {
+          "name": "VfsRouter.play_all_pan_files",
+          "line": 3432,
+          "end_line": 3515
+        },
+        {
+          "name": "VfsRouter._populate_series_playlist",
+          "line": 3517,
+          "end_line": 3729
+        },
+        {
+          "name": "VfsRouter._populate_series_playlist._get_sort_key",
+          "line": 3648,
+          "end_line": 3652
+        },
+        {
+          "name": "VfsRouter.play_pan_file",
+          "line": 3731,
+          "end_line": 4003
+        },
+        {
+          "name": "VfsRouter.show_my_pans_menu",
+          "line": 4008,
+          "end_line": 4078
+        },
+        {
+          "name": "VfsRouter.show_pan_detail_menu",
+          "line": 4080,
+          "end_line": 4247
+        },
+        {
+          "name": "VfsRouter.handle_pan_logout",
+          "line": 4249,
+          "end_line": 4259
+        },
+        {
+          "name": "VfsRouter.handle_pan_concurrency",
+          "line": 4261,
+          "end_line": 4292
+        },
+        {
+          "name": "VfsRouter.handle_pan_chunk_size",
+          "line": 4294,
+          "end_line": 4355
+        },
+        {
+          "name": "VfsRouter.handle_pan_qps",
+          "line": 4357,
+          "end_line": 4406
+        },
+        {
+          "name": "VfsRouter.handle_pan115_save_dir",
+          "line": 4408,
+          "end_line": 4440
+        },
+        {
+          "name": "VfsRouter.handle_pan_toggle_auto_delete",
+          "line": 4442,
+          "end_line": 4461
+        },
+        {
+          "name": "VfsRouter.handle_pan_toggle_all_auto_delete",
+          "line": 4463,
+          "end_line": 4480
+        },
+        {
+          "name": "VfsRouter.list_user_pan_files",
+          "line": 4482,
+          "end_line": 4568
+        },
+        {
+          "name": "VfsRouter.handle_unsupported_file",
+          "line": 4570,
+          "end_line": 4574
+        },
+        {
+          "name": "VfsRouter.play_user_pan",
+          "line": 4576,
+          "end_line": 4639
+        },
+        {
+          "name": "VfsRouter.start_qr_login",
+          "line": 4641,
+          "end_line": 4688
+        },
+        {
+          "name": "VfsRouter.start_manual_login",
+          "line": 4690,
+          "end_line": 4704
+        },
+        {
+          "name": "VfsRouter._render_video_item",
+          "line": 4709,
+          "end_line": 4766
+        },
+        {
+          "name": "VfsRouter.show_history",
+          "line": 4771,
+          "end_line": 5041
+        },
+        {
+          "name": "VfsRouter.clear_history",
+          "line": 5043,
+          "end_line": 5055
+        },
+        {
+          "name": "VfsRouter.show_push_menu",
+          "line": 5060,
+          "end_line": 5124
+        },
+        {
+          "name": "VfsRouter.start_push_dialog",
+          "line": 5126,
+          "end_line": 5169
+        },
+        {
+          "name": "VfsRouter.clear_push_history",
+          "line": 5171,
+          "end_line": 5179
+        },
+        {
+          "name": "VfsRouter._guess_provider_key",
+          "line": 5181,
+          "end_line": 5203
+        },
+        {
+          "name": "VfsRouter._clean_title",
+          "line": 5205,
+          "end_line": 5219
+        },
+        {
+          "name": "VfsRouter.show_pansou_menu",
+          "line": 5221,
+          "end_line": 5234
+        },
+        {
+          "name": "VfsRouter.show_pansou_results",
+          "line": 5236,
+          "end_line": 5321
+        },
+        {
+          "name": "VfsRouter.show_pansou_settings_page",
+          "line": 5323,
+          "end_line": 5418
+        },
+        {
+          "name": "VfsRouter.save_pansou_settings",
+          "line": 5420,
+          "end_line": 5438
+        },
+        {
+          "name": "VfsRouter.show_share_square",
+          "line": 5440,
+          "end_line": 5513
+        },
+        {
+          "name": "VfsRouter.show_share_favorites",
+          "line": 5515,
+          "end_line": 5586
+        },
+        {
+          "name": "VfsRouter.show_share_detail",
+          "line": 5588,
+          "end_line": 5743
+        },
+        {
+          "name": "VfsRouter.handle_share_toggle_favorite",
+          "line": 5745,
+          "end_line": 5764
+        },
+        {
+          "name": "VfsRouter.show_private_libraries",
+          "line": 5770,
+          "end_line": 5875
+        },
+        {
+          "name": "VfsRouter.show_private_library_movies",
+          "line": 5877,
+          "end_line": 6020
+        },
+        {
+          "name": "VfsRouter._mark_playback_started",
+          "line": 6022,
+          "end_line": 6090
+        },
+        {
+          "name": "VfsRouter._render_private_movie_item",
+          "line": 6092,
+          "end_line": 6309
+        },
+        {
+          "name": "VfsRouter.show_my_favorites",
+          "line": 6311,
+          "end_line": 6331
+        },
+        {
+          "name": "VfsRouter.handle_toggle_favorite",
+          "line": 6333,
+          "end_line": 6342
+        },
+        {
+          "name": "VfsRouter._get_provider_display_name",
+          "line": 6344,
+          "end_line": 6354
+        },
+        {
+          "name": "VfsRouter.show_private_movie_links",
+          "line": 6356,
+          "end_line": 6578
+        },
+        {
+          "name": "VfsRouter.play_private_link",
+          "line": 6580,
+          "end_line": 6888
+        },
+        {
+          "name": "VfsRouter.handle_sync_private_library",
+          "line": 6890,
+          "end_line": 6909
+        },
+        {
+          "name": "VfsRouter.handle_detach_private_library",
+          "line": 6911,
+          "end_line": 6937
+        },
+        {
+          "name": "VfsRouter.handle_delete_private_library",
+          "line": 6939,
+          "end_line": 7050
+        },
+        {
+          "name": "VfsRouter._after_library_deleted",
+          "line": 7052,
+          "end_line": 7056
+        },
+        {
+          "name": "VfsRouter.handle_copy_private_movie",
+          "line": 7058,
+          "end_line": 7094
+        },
+        {
+          "name": "VfsRouter.handle_export_strm_library",
+          "line": 7096,
+          "end_line": 7124
+        },
+        {
+          "name": "VfsRouter.handle_private_library_poster_setting",
+          "line": 7126,
+          "end_line": 7212
+        },
+        {
+          "name": "VfsRouter._monitor_poster_sync_progress",
+          "line": 7214,
+          "end_line": 7287
+        },
+        {
+          "name": "VfsRouter.show_shared_libraries",
+          "line": 7289,
+          "end_line": 7397
+        },
+        {
+          "name": "VfsRouter.show_public_shared_libraries",
+          "line": 7399,
+          "end_line": 7401
+        },
+        {
+          "name": "VfsRouter.handle_input_import_share_code",
+          "line": 7403,
+          "end_line": 7497
+        },
+        {
+          "name": "VfsRouter.handle_import_shared_library",
+          "line": 7499,
+          "end_line": 7568
+        }
+      ],
+      "classes": [
+        {
+          "name": "TagsCacheManager",
+          "line": 344,
+          "end_line": 379
+        },
+        {
+          "name": "HistoryManager",
+          "line": 385,
+          "end_line": 452
+        },
+        {
+          "name": "SearchHistoryManager",
+          "line": 458,
+          "end_line": 512
+        },
+        {
+          "name": "PushHistoryManager",
+          "line": 518,
+          "end_line": 568
+        },
+        {
+          "name": "VfsRouter",
+          "line": 796,
+          "end_line": 7568
+        }
+      ],
+      "imports": [
+        "daemon",
+        "json",
+        "menu_config",
+        "os",
+        "qrcode_dialog",
+        "re",
+        "time",
+        "urllib.parse",
+        "xbmc",
+        "xbmcaddon",
+        "xbmcgui"
+      ],
+      "url_hosts": [
+        "115.com",
+        "127.0.0.1",
+        "caiyun.139.com",
+        "cloud.189.cn",
+        "drive.uc.cn",
+        "image.tmdb.org",
+        "pan.baidu.com",
+        "pan.quark.cn",
+        "pan.xunlei.com",
+        "so.252035.xyz",
+        "www.123pan.com",
+        "www.alipan.com",
+        "www.guangyapan.com"
+      ]
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/api_client.py",
+      "lines": 982,
+      "functions": [
+        {
+          "name": "get_kodi_user_agent",
+          "line": 17,
+          "end_line": 26
+        },
+        {
+          "name": "ApiClient.__init__",
+          "line": 32,
+          "end_line": 36
+        },
+        {
+          "name": "ApiClient._request_json",
+          "line": 38,
+          "end_line": 74
+        },
+        {
+          "name": "ApiClient.get_home_data",
+          "line": 76,
+          "end_line": 85
+        },
+        {
+          "name": "ApiClient.get_recommendations",
+          "line": 87,
+          "end_line": 96
+        },
+        {
+          "name": "ApiClient.get_playlist_categories",
+          "line": 98,
+          "end_line": 107
+        },
+        {
+          "name": "ApiClient.get_playlist_detail",
+          "line": 109,
+          "end_line": 118
+        },
+        {
+          "name": "ApiClient.search_videos",
+          "line": 120,
+          "end_line": 130
+        },
+        {
+          "name": "ApiClient.get_video_detail",
+          "line": 132,
+          "end_line": 141
+        },
+        {
+          "name": "ApiClient.get_tags",
+          "line": 143,
+          "end_line": 152
+        },
+        {
+          "name": "ApiClient.get_category_videos",
+          "line": 154,
+          "end_line": 172
+        },
+        {
+          "name": "ApiClient.clear_pan_files_cache",
+          "line": 180,
+          "end_line": 182
+        },
+        {
+          "name": "ApiClient.list_pan_files",
+          "line": 184,
+          "end_line": 211
+        },
+        {
+          "name": "ApiClient.get_cloud_files",
+          "line": 213,
+          "end_line": 227
+        },
+        {
+          "name": "ApiClient.resolve_play",
+          "line": 229,
+          "end_line": 236
+        },
+        {
+          "name": "ApiClient.resolve_fast_play",
+          "line": 238,
+          "end_line": 249
+        },
+        {
+          "name": "ApiClient.get_qrcode",
+          "line": 251,
+          "end_line": 257
+        },
+        {
+          "name": "ApiClient.get_115_client_type",
+          "line": 259,
+          "end_line": 268
+        },
+        {
+          "name": "ApiClient.set_115_client_type",
+          "line": 270,
+          "end_line": 276
+        },
+        {
+          "name": "ApiClient.get_115_save_dir",
+          "line": 278,
+          "end_line": 287
+        },
+        {
+          "name": "ApiClient.set_115_save_dir",
+          "line": 289,
+          "end_line": 295
+        },
+        {
+          "name": "ApiClient.get_manual_login_info",
+          "line": 297,
+          "end_line": 301
+        },
+        {
+          "name": "ApiClient.check_qrcode_status",
+          "line": 303,
+          "end_line": 310
+        },
+        {
+          "name": "ApiClient.get_pan_status",
+          "line": 312,
+          "end_line": 318
+        },
+        {
+          "name": "ApiClient.logout_pan",
+          "line": 320,
+          "end_line": 326
+        },
+        {
+          "name": "ApiClient.set_pan_concurrency",
+          "line": 328,
+          "end_line": 334
+        },
+        {
+          "name": "ApiClient.set_pan_chunk_size",
+          "line": 336,
+          "end_line": 342
+        },
+        {
+          "name": "ApiClient.set_pan_auto_delete",
+          "line": 344,
+          "end_line": 351
+        },
+        {
+          "name": "ApiClient.set_pan_qps",
+          "line": 353,
+          "end_line": 359
+        },
+        {
+          "name": "ApiClient.get_pan_qps",
+          "line": 361,
+          "end_line": 370
+        },
+        {
+          "name": "ApiClient.get_pan_order",
+          "line": 372,
+          "end_line": 381
+        },
+        {
+          "name": "ApiClient.get_push_url_info",
+          "line": 383,
+          "end_line": 388
+        },
+        {
+          "name": "ApiClient.poll_pushed_link",
+          "line": 390,
+          "end_line": 396
+        },
+        {
+          "name": "ApiClient._post_json",
+          "line": 398,
+          "end_line": 427
+        },
+        {
+          "name": "ApiClient.send_voice_command",
+          "line": 429,
+          "end_line": 432
+        },
+        {
+          "name": "ApiClient.mark_pan_link_invalid",
+          "line": 434,
+          "end_line": 442
+        },
+        {
+          "name": "ApiClient.get_pansou_config",
+          "line": 444,
+          "end_line": 450
+        },
+        {
+          "name": "ApiClient.save_pansou_config",
+          "line": 452,
+          "end_line": 461
+        },
+        {
+          "name": "ApiClient.search_pansou",
+          "line": 463,
+          "end_line": 466
+        },
+        {
+          "name": "ApiClient.get_user_files",
+          "line": 468,
+          "end_line": 477
+        },
+        {
+          "name": "ApiClient.resolve_user_play",
+          "line": 479,
+          "end_line": 493
+        },
+        {
+          "name": "ApiClient.get_shares",
+          "line": 495,
+          "end_line": 507
+        },
+        {
+          "name": "ApiClient.get_share_favorites",
+          "line": 509,
+          "end_line": 519
+        },
+        {
+          "name": "ApiClient.add_share",
+          "line": 521,
+          "end_line": 530
+        },
+        {
+          "name": "ApiClient.favorite_share",
+          "line": 532,
+          "end_line": 535
+        },
+        {
+          "name": "ApiClient.unfavorite_share",
+          "line": 537,
+          "end_line": 540
+        },
+        {
+          "name": "ApiClient.add_115_offline_task",
+          "line": 542,
+          "end_line": 556
+        },
+        {
+          "name": "ApiClient.get_115_offline_status",
+          "line": 558,
+          "end_line": 568
+        },
+        {
+          "name": "ApiClient.get_115_offline_tasks",
+          "line": 570,
+          "end_line": 576
+        },
+        {
+          "name": "ApiClient.delete_115_offline_tasks",
+          "line": 578,
+          "end_line": 591
+        },
+        {
+          "name": "ApiClient.resolve_115_offline_play",
+          "line": 593,
+          "end_line": 604
+        },
+        {
+          "name": "ApiClient.get_private_libraries",
+          "line": 608,
+          "end_line": 617
+        },
+        {
+          "name": "ApiClient.get_private_library_movies",
+          "line": 619,
+          "end_line": 631
+        },
+        {
+          "name": "ApiClient.get_private_library_movies_paged",
+          "line": 633,
+          "end_line": 647
+        },
+        {
+          "name": "ApiClient.get_private_movie_links",
+          "line": 649,
+          "end_line": 658
+        },
+        {
+          "name": "ApiClient.get_shared_library_preview",
+          "line": 660,
+          "end_line": 669
+        },
+        {
+          "name": "ApiClient.get_shared_library_detail",
+          "line": 671,
+          "end_line": 680
+        },
+        {
+          "name": "ApiClient.get_public_shared_libraries",
+          "line": 682,
+          "end_line": 694
+        },
+        {
+          "name": "ApiClient.import_private_snapshot",
+          "line": 696,
+          "end_line": 714
+        },
+        {
+          "name": "ApiClient.sync_private_library",
+          "line": 716,
+          "end_line": 724
+        },
+        {
+          "name": "ApiClient.detach_private_library",
+          "line": 726,
+          "end_line": 734
+        },
+        {
+          "name": "ApiClient.delete_private_library",
+          "line": 736,
+          "end_line": 750
+        },
+        {
+          "name": "ApiClient.unpublish_private_library",
+          "line": 752,
+          "end_line": 766
+        },
+        {
+          "name": "ApiClient.copy_private_movies",
+          "line": 768,
+          "end_line": 787
+        },
+        {
+          "name": "ApiClient.export_private_library_strm",
+          "line": 789,
+          "end_line": 805
+        },
+        {
+          "name": "ApiClient.get_private_library",
+          "line": 807,
+          "end_line": 818
+        },
+        {
+          "name": "ApiClient.update_private_library_poster_mode",
+          "line": 820,
+          "end_line": 835
+        },
+        {
+          "name": "ApiClient.trigger_private_library_poster_sync",
+          "line": 837,
+          "end_line": 850
+        },
+        {
+          "name": "ApiClient.get_private_library_poster_status",
+          "line": 852,
+          "end_line": 860
+        },
+        {
+          "name": "ApiClient.get_playback_status",
+          "line": 862,
+          "end_line": 872
+        },
+        {
+          "name": "ApiClient.report_playback_progress",
+          "line": 874,
+          "end_line": 894
+        },
+        {
+          "name": "ApiClient.get_playback_history",
+          "line": 896,
+          "end_line": 907
+        },
+        {
+          "name": "ApiClient.clear_playback_history",
+          "line": 909,
+          "end_line": 924
+        },
+        {
+          "name": "ApiClient.get_batch_playback_status",
+          "line": 926,
+          "end_line": 944
+        },
+        {
+          "name": "ApiClient.get_user_favorites",
+          "line": 946,
+          "end_line": 959
+        },
+        {
+          "name": "ApiClient.toggle_user_favorite",
+          "line": 961,
+          "end_line": 980
+        }
+      ],
+      "classes": [
+        {
+          "name": "ApiClient",
+          "line": 28,
+          "end_line": 980
+        }
+      ],
+      "imports": [
+        "json",
+        "time",
+        "urllib.error",
+        "urllib.parse",
+        "urllib.request",
+        "xbmc"
+      ],
+      "url_hosts": [
+        "127.0.0.1"
+      ]
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/daemon.py",
+      "lines": 622,
+      "functions": [
+        {
+          "name": "MockXbmc.log",
+          "line": 20,
+          "end_line": 21
+        },
+        {
+          "name": "MockAddon.__init__",
+          "line": 25,
+          "end_line": 26
+        },
+        {
+          "name": "MockAddon.getAddonInfo",
+          "line": 28,
+          "end_line": 33
+        },
+        {
+          "name": "MockAddon.getSetting",
+          "line": 35,
+          "end_line": 36
+        },
+        {
+          "name": "MockAddon.setSetting",
+          "line": 38,
+          "end_line": 39
+        },
+        {
+          "name": "MockXbmcAddon.Addon",
+          "line": 42,
+          "end_line": 43
+        },
+        {
+          "name": "MockXbmcVfs.translatePath",
+          "line": 47,
+          "end_line": 48
+        },
+        {
+          "name": "is_android_platform",
+          "line": 54,
+          "end_line": 64
+        },
+        {
+          "name": "get_android_so_path",
+          "line": 66,
+          "end_line": 91
+        },
+        {
+          "name": "prepare_android_so",
+          "line": 93,
+          "end_line": 129
+        },
+        {
+          "name": "start_android_so_daemon",
+          "line": 131,
+          "end_line": 153
+        },
+        {
+          "name": "is_port_in_use",
+          "line": 155,
+          "end_line": 164
+        },
+        {
+          "name": "get_binary_path",
+          "line": 166,
+          "end_line": 243
+        },
+        {
+          "name": "get_effective_profile_dir",
+          "line": 245,
+          "end_line": 269
+        },
+        {
+          "name": "get_tokens_file_path",
+          "line": 271,
+          "end_line": 274
+        },
+        {
+          "name": "get_pid_file_path",
+          "line": 276,
+          "end_line": 279
+        },
+        {
+          "name": "write_pid_file",
+          "line": 281,
+          "end_line": 287
+        },
+        {
+          "name": "clean_pid_file",
+          "line": 289,
+          "end_line": 296
+        },
+        {
+          "name": "ensure_daemon_started",
+          "line": 298,
+          "end_line": 539
+        },
+        {
+          "name": "stop_daemon",
+          "line": 541,
+          "end_line": 609
+        },
+        {
+          "name": "restart_daemon",
+          "line": 611,
+          "end_line": 616
+        }
+      ],
+      "classes": [
+        {
+          "name": "MockXbmc",
+          "line": 16,
+          "end_line": 21
+        },
+        {
+          "name": "MockAddon",
+          "line": 24,
+          "end_line": 39
+        },
+        {
+          "name": "MockXbmcAddon",
+          "line": 41,
+          "end_line": 43
+        },
+        {
+          "name": "MockXbmcVfs",
+          "line": 46,
+          "end_line": 48
+        }
+      ],
+      "imports": [
+        "atexit",
+        "ctypes",
+        "os",
+        "platform",
+        "shutil",
+        "signal",
+        "socket",
+        "subprocess",
+        "sys",
+        "time",
+        "urllib.request",
+        "xbmc",
+        "xbmcaddon",
+        "xbmcvfs"
+      ],
+      "url_hosts": [
+        "pwa.jukuku.xyz"
+      ]
+    },
+    {
+      "path": "plugin.video.juku/default.py",
+      "lines": 52,
+      "functions": [
+        {
+          "name": "main",
+          "line": 24,
+          "end_line": 49
+        }
+      ],
+      "classes": [],
+      "imports": [
+        "api_client",
+        "daemon",
+        "os",
+        "router",
+        "sys",
+        "vfs_adapter",
+        "xbmc",
+        "xbmcaddon",
+        "xbmcgui",
+        "xbmcvfs"
+      ],
+      "url_hosts": []
+    }
+  ],
+  "summary": {
+    "files": 93,
+    "directories": 10,
+    "uncompressed_bytes": 32863623,
+    "extensions": {
+      ".py": 9,
+      ".xml": 2,
+      "<none>": 3,
+      ".json": 6,
+      ".webp": 1,
+      ".png": 1,
+      ".jpg": 54,
+      ".po": 2,
+      ".pyc": 14,
+      ".pem": 1
+    },
+    "copy_status": {
+      "original-byte-copy": 75,
+      "indexed-only": 17,
+      "key-or-runtime-state-not-copied": 1
+    }
+  },
+  "architecture": "arm64"
+}

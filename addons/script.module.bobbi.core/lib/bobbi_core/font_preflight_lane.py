@@ -67,6 +67,6 @@ class FontPreflightLane:
 
     def close(self):
         # Never commit a result while shutting down, including a late IO success.
-        self.executor.shutdown(wait=True, cancel_futures=True)
+        self.executor.shutdown(wait=True)  # Python 3.8; at most one IO future.
         self.records.clear()
         self.future = self.active = None

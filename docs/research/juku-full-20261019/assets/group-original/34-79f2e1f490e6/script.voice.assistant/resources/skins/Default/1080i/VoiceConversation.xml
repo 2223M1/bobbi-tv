@@ -1,0 +1,523 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<window>
+  <defaultcontrol always="true">400</defaultcontrol>
+  <controls>
+    <control type="group" id="9900">
+      <visible>String.IsEmpty(Window(10000).Property(VoiceAssistant.CaptureHidden))</visible>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="C010151D">codex-login-white.png</texture>
+    </control>
+    <control type="image">
+      <left>220</left>
+      <top>130</top>
+      <width>1480</width>
+      <height>820</height>
+      <texture colordiffuse="FF18212C">codex-login-white.png</texture>
+    </control>
+    <control type="image">
+      <left>220</left>
+      <top>130</top>
+      <width>1480</width>
+      <height>5</height>
+      <texture colordiffuse="FF7BD9C2">codex-login-white.png</texture>
+    </control>
+    <control type="label" id="301">
+      <left>275</left>
+      <top>175</top>
+      <width>1300</width>
+      <height>60</height>
+      <font>font30</font>
+      <textcolor>FF7BD9C2</textcolor>
+      <label>语音助手</label>
+    </control>
+    <control type="label" id="304">
+      <left>275</left>
+      <top>225</top>
+      <width>1360</width>
+      <height>30</height>
+      <font>font20</font>
+      <textcolor>FF7BD9C2</textcolor>
+      <label>$INFO[Window.Property(VoiceAssistant.Status)]</label>
+    </control>
+    <control type="textbox" id="305">
+      <left>275</left>
+      <top>780</top>
+      <width>1360</width>
+      <height>60</height>
+      <font>font20</font>
+      <textcolor>FFEAF1F8</textcolor>
+      <label>$INFO[Window.Property(VoiceAssistant.Detail)]</label>
+    </control>
+    <control type="list" id="500">
+      <left>275</left>
+      <top>260</top>
+      <width>1360</width>
+      <height>480</height>
+      <orientation>vertical</orientation>
+      <scrolltime>80</scrolltime>
+      <onup>400</onup>
+      <ondown>400</ondown>
+      <onleft>400</onleft>
+      <onright>400</onright>
+      <itemlayout width="1360" height="40">
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>40</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + !String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF2C3E56">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>40</height>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + !String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF1E2B37">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>40</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + !String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF3D5778">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>40</height>
+          <visible>!String.IsEqual(ListItem.Property(role),user) + !String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF20313F">codex-login-white.png</texture>
+        </control>
+        <control type="label">
+          <left>20</left>
+          <top>0</top>
+          <width>1300</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF7BD9C2</textcolor>
+          <label>$INFO[ListItem.Label]</label>
+          <align>left</align>
+          <visible>String.IsEqual(ListItem.Property(role),assistant) + String.IsEqual(ListItem.Property(part),header)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>20</left>
+          <top>0</top>
+          <width>1300</width>
+          <height>40</height>
+          <font>font25</font>
+          <textcolor>FFEAF1F8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <visible>String.IsEqual(ListItem.Property(role),assistant) + String.IsEqual(ListItem.Property(part),body)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>28</left>
+          <top>0</top>
+          <width>1280</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF96A5B8</textcolor>
+          <label>$INFO[ListItem.Label]</label>
+          <align>left</align>
+          <visible>String.IsEqual(ListItem.Property(role),activity) + String.IsEqual(ListItem.Property(part),header)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>28</left>
+          <top>0</top>
+          <width>1280</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FFACB9C8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <visible>String.IsEqual(ListItem.Property(role),activity) + String.IsEqual(ListItem.Property(part),body)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>392</left>
+          <top>0</top>
+          <width>936</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FFC1D1E7</textcolor>
+          <label>$INFO[ListItem.Label]</label>
+          <align>right</align>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),header)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>392</left>
+          <top>0</top>
+          <width>936</width>
+          <height>40</height>
+          <font>font25</font>
+          <textcolor>FFEAF1F8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),body)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>16</left>
+          <top>10</top>
+          <width>68</width>
+          <height>100</height>
+          <texture>$INFO[ListItem.Art(thumb)]</texture>
+          <aspectratio>keep</aspectratio>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice0)</visible>
+        </control>
+        <control type="label">
+          <left>116</left>
+          <top>0</top>
+          <width>1210</width>
+          <height>40</height>
+          <font>font25</font>
+          <textcolor>FFEAF1F8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <scroll>true</scroll>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice0)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>16</left>
+          <top>-30</top>
+          <width>68</width>
+          <height>100</height>
+          <texture>$INFO[ListItem.Art(thumb)]</texture>
+          <aspectratio>keep</aspectratio>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice1)</visible>
+        </control>
+        <control type="label">
+          <left>116</left>
+          <top>0</top>
+          <width>1210</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF9EAFC0</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <scroll>true</scroll>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice1)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>16</left>
+          <top>-70</top>
+          <width>68</width>
+          <height>100</height>
+          <texture>$INFO[ListItem.Art(thumb)]</texture>
+          <aspectratio>keep</aspectratio>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice2)</visible>
+        </control>
+        <control type="label">
+          <left>116</left>
+          <top>0</top>
+          <width>1210</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF9EAFC0</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <scroll>true</scroll>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice2)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>10</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF2C3E56">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>10</height>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF1E2B37">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>10</height>
+          <visible>!String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF20313F">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>10</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF3D5778">codex-login-white.png</texture>
+        </control>
+      </itemlayout>
+      <focusedlayout width="1360" height="40">
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>40</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + !String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF2C3E56">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>40</height>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + !String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF1E2B37">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>40</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + !String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF3D5778">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>40</height>
+          <visible>!String.IsEqual(ListItem.Property(role),user) + !String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF20313F">codex-login-white.png</texture>
+        </control>
+        <control type="label">
+          <left>20</left>
+          <top>0</top>
+          <width>1300</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF7BD9C2</textcolor>
+          <label>$INFO[ListItem.Label]</label>
+          <align>left</align>
+          <visible>String.IsEqual(ListItem.Property(role),assistant) + String.IsEqual(ListItem.Property(part),header)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>20</left>
+          <top>0</top>
+          <width>1300</width>
+          <height>40</height>
+          <font>font25</font>
+          <textcolor>FFEAF1F8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <visible>String.IsEqual(ListItem.Property(role),assistant) + String.IsEqual(ListItem.Property(part),body)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>28</left>
+          <top>0</top>
+          <width>1280</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF96A5B8</textcolor>
+          <label>$INFO[ListItem.Label]</label>
+          <align>left</align>
+          <visible>String.IsEqual(ListItem.Property(role),activity) + String.IsEqual(ListItem.Property(part),header)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>28</left>
+          <top>0</top>
+          <width>1280</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FFACB9C8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <visible>String.IsEqual(ListItem.Property(role),activity) + String.IsEqual(ListItem.Property(part),body)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>392</left>
+          <top>0</top>
+          <width>936</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FFC1D1E7</textcolor>
+          <label>$INFO[ListItem.Label]</label>
+          <align>right</align>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),header)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>392</left>
+          <top>0</top>
+          <width>936</width>
+          <height>40</height>
+          <font>font25</font>
+          <textcolor>FFEAF1F8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),body)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>16</left>
+          <top>10</top>
+          <width>68</width>
+          <height>100</height>
+          <texture>$INFO[ListItem.Art(thumb)]</texture>
+          <aspectratio>keep</aspectratio>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice0)</visible>
+        </control>
+        <control type="label">
+          <left>116</left>
+          <top>0</top>
+          <width>1210</width>
+          <height>40</height>
+          <font>font25</font>
+          <textcolor>FFEAF1F8</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <scroll>true</scroll>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice0)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>16</left>
+          <top>-30</top>
+          <width>68</width>
+          <height>100</height>
+          <texture>$INFO[ListItem.Art(thumb)]</texture>
+          <aspectratio>keep</aspectratio>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice1)</visible>
+        </control>
+        <control type="label">
+          <left>116</left>
+          <top>0</top>
+          <width>1210</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF9EAFC0</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <scroll>true</scroll>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice1)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>16</left>
+          <top>-70</top>
+          <width>68</width>
+          <height>100</height>
+          <texture>$INFO[ListItem.Art(thumb)]</texture>
+          <aspectratio>keep</aspectratio>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice2)</visible>
+        </control>
+        <control type="label">
+          <left>116</left>
+          <top>0</top>
+          <width>1210</width>
+          <height>40</height>
+          <font>font20</font>
+          <textcolor>FF9EAFC0</textcolor>
+          <label>$INFO[ListItem.Property(body)]</label>
+          <scroll>true</scroll>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),choice2)</visible>
+          <aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>10</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF2C3E56">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>10</height>
+          <visible>String.IsEqual(ListItem.Property(role),choice) + String.IsEqual(ListItem.Property(part),gap)</visible>
+          <texture colordiffuse="FF1E2B37">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1350</width>
+          <height>10</height>
+          <visible>!String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF20313F">codex-login-white.png</texture>
+        </control>
+        <control type="image">
+          <left>370</left>
+          <top>0</top>
+          <width>980</width>
+          <height>10</height>
+          <visible>String.IsEqual(ListItem.Property(role),user) + String.IsEqual(ListItem.Property(part),gap) + Control.HasFocus(500) + String.IsEqual(ListItem.Property(block),Window.Property(VoiceAssistant.SelectedBlock))</visible>
+          <texture colordiffuse="FF3D5778">codex-login-white.png</texture>
+        </control>
+      </focusedlayout>
+    </control>
+    <control type="button" id="400">
+      <left>275</left>
+      <top>845</top>
+      <width>325</width>
+      <height>60</height>
+      <font>font25</font>
+      <label>$INFO[Window.Property(VoiceAssistant.VoiceLabel)]</label>
+      <texturefocus colordiffuse="FF367A76">codex-login-white.png</texturefocus>
+      <texturenofocus colordiffuse="FF283647">codex-login-white.png</texturenofocus>
+      <onleft>402</onleft>
+      <onright>401</onright>
+      <onup>500</onup>
+      <ondown>400</ondown>
+    </control>
+    <control type="button" id="401">
+      <left>620</left>
+      <top>845</top>
+      <width>325</width>
+      <height>60</height>
+      <font>font25</font>
+      <label>输入文字</label>
+      <texturefocus colordiffuse="FF367A76">codex-login-white.png</texturefocus>
+      <texturenofocus colordiffuse="FF283647">codex-login-white.png</texturenofocus>
+      <onleft>400</onleft>
+      <onright>403</onright>
+      <onup>500</onup>
+      <ondown>401</ondown>
+      <enable>!String.IsEqual(Window.Property(VoiceAssistant.Busy),true)</enable>
+    </control>
+    <control type="button" id="402">
+      <left>1310</left>
+      <top>845</top>
+      <width>325</width>
+      <height>60</height>
+      <font>font25</font>
+      <label>退出对话（返回）</label>
+      <texturefocus colordiffuse="FF367A76">codex-login-white.png</texturefocus>
+      <texturenofocus colordiffuse="FF283647">codex-login-white.png</texturenofocus>
+      <onleft>403</onleft>
+      <onright>400</onright>
+      <onup>500</onup>
+      <ondown>402</ondown>
+    </control>
+    <control type="button" id="403">
+      <left>965</left>
+      <top>845</top>
+      <width>325</width>
+      <height>60</height>
+      <font>font25</font>
+      <label>停止任务</label>
+      <texturefocus colordiffuse="FF367A76">codex-login-white.png</texturefocus>
+      <texturenofocus colordiffuse="FF283647">codex-login-white.png</texturenofocus>
+      <onleft>401</onleft>
+      <onright>402</onright>
+      <onup>500</onup>
+      <ondown>403</ondown>
+      <enable>String.IsEqual(Window.Property(VoiceAssistant.TaskActive),true)</enable>
+    </control>
+      </control>
+  </controls>
+</window>

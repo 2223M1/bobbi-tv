@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "mode": "readonly",
+  "python": "3.11.9",
+  "pointer_bytes": 4,
+  "addons": [
+    {
+      "root": "/usr/share/kodi/addons/script.module.pycryptodome",
+      "version": "3.4.3",
+      "extensions": [
+        {
+          "point": "xbmc.python.module",
+          "library": "lib"
+        },
+        {
+          "point": "xbmc.addon.metadata"
+        }
+      ]
+    }
+  ],
+  "crypto": {
+    "Cryptodome": {
+      "file": "/usr/lib/python3.11/site-packages/Cryptodome/__init__.pyc",
+      "version": "3.20.0"
+    },
+    "Crypto": {
+      "file": "/usr/lib/python3.11/site-packages/Crypto/__init__.pyc",
+      "version": "3.20.0"
+    }
+  },
+  "paths": {
+    "legacy_assrt": {
+      "exists": true,
+      "valid_shape": true
+    },
+    "candidate_assrt": {
+      "exists": false,
+      "valid_shape": false
+    },
+    "legacy_preparation": {
+      "exists": true,
+      "ffprobe": {
+        "path": "/storage/.local/share/bobitv/preparation-runtime/r3-20260922/ffprobe",
+        "exists": true,
+        "file": true,
+        "directory": false,
+        "executable": true,
+        "elf": {
+          "class": 1,
+          "machine": 40
+        }
+      },
+      "font_tool": {
+        "path": "/storage/.local/share/bobitv/preparation-runtime/r3-20260922/font-tools/7zzs",
+        "exists": true,
+        "file": true,
+        "directory": false,
+        "executable": true,
+        "elf": {
+          "class": 1,
+          "machine": 40
+        }
+      },
+      "font_native_directory": {
+        "path": "/storage/.kodi/media/Fonts",
+        "exists": true,
+        "file": false,
+        "directory": true,
+        "executable": true
+      },
+      "tmdb_api_key_file": {
+        "path": "/storage/.local/share/bobitv/preparation-private/tmdb-key",
+        "exists": true,
+        "file": true,
+        "directory": false,
+        "executable": false
+      },
+      "cd2_token_file": {
+        "path": "/storage/.local/share/bobitv/preparation-private/cd2-token",
+        "exists": true,
+        "file": true,
+        "directory": false,
+        "executable": false
+      },
+      "python_library_directory": {
+        "path": "/storage/.local/share/bobitv/preparation-runtime/r3-20260922/python-lib",
+        "exists": true,
+        "file": false,
+        "directory": true,
+        "executable": true
+      }
+    },
+    "candidate_preparation": {
+      "exists": false
+    }
+  },
+  "python_elf": {
+    "class": 1,
+    "machine": 40
+  },
+  "kodi_addon": {
+    "id": 1,
+    "jsonrpc": "2.0",
+    "result": {
+      "addon": {
+        "addonid": "script.module.pycryptodome",
+        "enabled": true,
+        "path": "/usr/share/kodi/addons/script.module.pycryptodome/",
+        "type": "xbmc.python.module",
+        "version": "3.4.3"
+      }
+    }
+  },
+  "kodi_elf": [
+    {
+      "class": 1,
+      "machine": 40
+    }
+  ],
+  "kodi_python_libraries": [
+    "/usr/lib/libpython3.11.so.1.0"
+  ],
+  "dss_expected_types": {
+    "DerSequence": "Crypto.Util.asn1",
+    "Integer": "Crypto.Math._IntegerCustom",
+    "EccKey": "Crypto.PublicKey.ECC",
+    "DsaKey": "Crypto.PublicKey.DSA",
+    "DssSigScheme": "Crypto.Signature.DSS",
+    "DeterministicDsaSigScheme": "Crypto.Signature.DSS",
+    "FipsDsaSigScheme": "Crypto.Signature.DSS",
+    "FipsEcDsaSigScheme": "Crypto.Signature.DSS"
+  },
+  "candidate_crypto": {
+    "ecc_p256_sign_verify": true,
+    "aes_encrypt": true,
+    "namespace": "Crypto"
+  },
+  "crypto_namespace_fixture": {
+    "p256_sign_verify": true
+  },
+  "candidate_crypto_isolated": {
+    "p256_sign_verify": true,
+    "namespace": "Crypto",
+    "no_path_widening": true
+  },
+  "assrt_same": false
+}

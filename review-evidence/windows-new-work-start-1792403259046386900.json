@@ -1,0 +1,18 @@
+{
+  "error": "AssertionError",
+  "reason": "NEW_PICKER_NOT_OBSERVED",
+  "frames": [
+    {
+      "function": "<module>",
+      "line": 249
+    },
+    {
+      "function": "main",
+      "line": 178
+    },
+    {
+      "function": "require_picker",
+      "line": 364
+    }
+  ]
+}

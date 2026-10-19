@@ -10,7 +10,7 @@ from xbmcgui import Dialog
 
 from lib.db.cached import cache
 from lib.domain.torrent import TorrentStream
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 from lib.utils.debrid.debrid_utils import (
     get_debrid_direct_url,
     get_debrid_pack_direct_url,
@@ -34,6 +34,7 @@ from lib.utils.kodi.utils import (
     get_setting,
     is_elementum_addon,
     is_jacktorr_addon,
+    is_bobbi_torrent_addon,
     is_torrest_addon,
     notification,
     translation,
@@ -527,19 +528,15 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
         f"Preparing Jacktorr URL with magnet={summarize_locator_for_log(magnet)!r}, url={summarize_locator_for_log(url)!r}, has_magnet={bool(magnet)}, has_url={bool(url)}",
         level=LOGDEBUG,
     )
-    if not is_jacktorr_addon():
-        if (data or {}).get("selection_policy") == "exact":
-            raise RuntimeError("JackTorr is unavailable")
-        if Dialog().yesno(
-            translation(30253),
-            translation(30255),
-            yeslabel=translation(90605),
-            nolabel=translation(90606),
-        ):
-            execute_builtin("InstallAddon(plugin.video.jacktorr)")
-        else:
-            notification(translation(30253))
-            return None
+    if (data or {}).get('selection_policy') != 'exact':
+        raise RuntimeError('请通过当前选源窗口播放；通用 Kodi 使用独立的手动 BT 适配。')
+    if not is_bobbi_torrent_addon():
+        raise RuntimeError('受控 BT 解析组件尚未安装或已禁用，请安装完整 bobbi 版本后重试。')
+    try:
+        from bobbi_torrent.backend import load_config
+        load_config()  # No network, engine start, legacy config or install prompt.
+    except (ImportError, OSError, ValueError, RuntimeError):
+        raise RuntimeError('尚未配置可用的本机 BT 后台；未启动旧插件或更换片源。') from None
 
     movie_binding = _jacktorr_movie_binding(data or {})
     _save_jacktorr_playback_metadata(magnet, data or {})
@@ -614,9 +611,9 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
         if movie_binding:
             exact_params += '&movie_binding=' + quote(movie_binding)
     if magnet:
-        _url = f"plugin://plugin.video.jacktorr/play_magnet?magnet={quote(magnet)}{poster_param}{title_param}{description_param}{category_param}{season_episode_param}{release_param}{exact_params}"
+        _url = f"plugin://plugin.video.bobbi.torrent/play_magnet?magnet={quote(magnet)}{poster_param}{title_param}{description_param}{category_param}{season_episode_param}{release_param}{exact_params}"
     elif url:
-        _url = f"plugin://plugin.video.jacktorr/play_url?url={quote(url)}{poster_param}{title_param}{description_param}{category_param}{season_episode_param}{release_param}{exact_params}"
+        _url = f"plugin://plugin.video.bobbi.torrent/play_url?url={quote(url)}{poster_param}{title_param}{description_param}{category_param}{season_episode_param}{release_param}{exact_params}"
     else:
         kodilog("Jacktorr playback failed due to empty magnet and url", level=LOGDEBUG)
         raise TorrentException("No magnet or url found for Jacktorr playback")

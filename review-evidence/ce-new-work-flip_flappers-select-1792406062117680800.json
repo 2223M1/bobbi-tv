@@ -1,0 +1,1378 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "cards": [],
+    "selected": true,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 9,
+      "reset_action": "firstpage"
+    },
+    "samples": [
+      {
+        "wall": 2135905.137035377,
+        "phase": null,
+        "cancelled": true,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135905.530634027,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135906.04963768,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135906.537886599,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135907.041499697,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135907.543651511,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135908.03213669,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135908.544191377,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135909.047017752,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135909.534834023,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135910.048942453,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135910.536738819,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135911.042074051,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135911.543776915,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135912.036140303,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135912.535584539,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135913.034509292,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135913.542664135,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135914.052373192,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135914.542122345,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135915.036512096,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135915.537637594,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135916.04901556,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135916.533417618,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135917.049470886,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135917.544329445,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135918.040991968,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135918.552188388,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135919.043911147,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135919.536370636,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135920.044343486,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135920.561639858,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135921.044782319,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135921.559288044,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135922.035935261,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135922.530841807,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135923.044683141,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135923.538738804,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135924.038506604,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135924.532207705,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135925.046549093,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135925.534182012,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135926.048895714,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135926.537897921,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135927.041171494,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135927.534604095,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135928.037612907,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135928.54561024,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135929.076252917,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135929.557279012,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135930.035683475,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135930.534137303,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135931.039135195,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135931.5524724,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135932.037099437,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135932.545957598,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135933.042588692,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135933.569074767,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135934.060803273,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135934.537886354,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135935.043713542,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135935.537633074,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135936.05830636,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135936.53716229,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135937.042936406,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135937.544692359,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135938.045592524,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135938.540853245,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135939.057259742,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135939.557373468,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135940.044469329,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135940.548696144,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135941.042569965,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135941.543810365,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135942.062300245,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135942.546209429,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135943.0436731,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135943.543838859,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135944.037385218,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2135944.537906853,
+        "phase": null,
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      }
+    ],
+    "record": {
+      "test": {
+        "title": "Flip Flappers",
+        "tmdb_id": 68272,
+        "kind": "tv",
+        "year": 2016,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "e08d28d37770461eb949689daab9cea5",
+      "started": 2135662.815005464,
+      "home": {
+        "generation": 22,
+        "intent": 0,
+        "retired_generation": 22,
+        "observed_at": 2135663.138168077
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2135663.138828939,
+      "picker": {
+        "window": 13001,
+        "generation": 23,
+        "intent": 0,
+        "tmdb_id": 68272,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2135667.67655856,
+      "picker_idle": {
+        "passed": true,
+        "seconds": 35.04769878927618,
+        "observations": 64,
+        "picker": {
+          "window": 13001,
+          "generation": 23,
+          "intent": 0,
+          "tmdb_id": 68272,
+          "kind": "tv"
+        },
+        "query_finished": true
+      },
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "2969590fb4e043b453194562e6ae9efc0bb37acf45543d59236028a0e524f26d",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2135905.011586439,
+      "request_id": "10e7b91883a846b3b09fd19cf625386d",
+      "selection_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450"
+    },
+    "trace_health": {
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "trace_coverage": {
+      "legacy_health": {
+        "no_observed_stall": true,
+        "max_observed_stall_seconds": 0.0,
+        "clock_discontinuities": 0,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "av_sample_count": 0,
+      "positive_av_sample_count": 0,
+      "positive_adjacent_interval_count": 0,
+      "longest_contiguous_positive_av_span_seconds": 0.0,
+      "whole_startup_or_render_continuity_proven": false,
+      "status": "not_covered",
+      "reason": "NO_AV_STARTED_WITHIN_CAPTURE",
+      "passed": null
+    },
+    "trace_passed": false
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "select"
+}

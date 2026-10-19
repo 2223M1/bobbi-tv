@@ -1,0 +1,27 @@
+{
+  "error": "RuntimeError",
+  "reason": "TRIAL_ERROR",
+  "frames": [
+    {
+      "function": "<module>",
+      "line": 280
+    },
+    {
+      "function": "main",
+      "line": 169
+    },
+    {
+      "function": "metadata",
+      "line": 134
+    },
+    {
+      "function": "query",
+      "line": 132
+    }
+  ],
+  "installed_generation": {
+    "sequence": 2026101903,
+    "path": "D:\\AM6B-Project\\bobbi-tv-private-20261019\\native\\build\\windows-installer-1903",
+    "frozen_build_receipt_sha256": "c7967612b0931c89dc44e2f53a2c88a4efdf22d63d7b0583ebd5153d76d96c51"
+  }
+}

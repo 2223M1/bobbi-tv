@@ -1,0 +1,30 @@
+[
+  {
+    "query": "Haibane Renmei",
+    "results": [
+      {
+        "id": 34164,
+        "name": "Haibane Renmei",
+        "original_name": "灰羽連盟",
+        "first_air_date": "2002-10-09"
+      }
+    ]
+  },
+  {
+    "query": "Kino's Journey",
+    "results": [
+      {
+        "id": 34166,
+        "name": "Kino's Journey",
+        "original_name": "キノの旅",
+        "first_air_date": "2003-04-08"
+      },
+      {
+        "id": 74097,
+        "name": "Kino's Journey -the Beautiful World- the Animated Series",
+        "original_name": "キノの旅 -the Beautiful World- the Animated Series",
+        "first_air_date": "2017-10-06"
+      }
+    ]
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "commit": "ff530e09c34c6285ccb05c1d4179140b097174fb",
+  "files": [
+    {
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/player.py",
+      "source_sha256": "b948a055fe4b23271cf21c2dd9d1a0b340f895bf0820b3dad59e6e47712f8419",
+      "target": "addons/plugin.video.bobbi/lib/native_player.py",
+      "sha256": "21bb2058012e0ed4f70d4bfa6925761806c45059e8fac80517668888860ef10b"
+    },
+    {
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/gui/source_select.py",
+      "source_sha256": "5b28aeaeb56b09f7886f5ad88e72c00d7c640101a87716dd2457fe02c8cd1e17",
+      "target": "addons/plugin.video.bobbi/lib/gui/source_select.py",
+      "sha256": "46cb66b746e5516dca7192f59feb32ec58b5f47da4d8bd9a4c013cb96d861ace"
+    }
+  ]
+}

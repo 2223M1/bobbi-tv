@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<settings version="1">
+  <section id="script.voice.inputmethod">
+    <category id="input" label="31000">
+      <group id="1">
+        <setting id="voice_input" type="string" label="31004">
+          <level>0</level>
+          <default>usb</default>
+          <constraints>
+            <options>
+              <option label="31005">ur02</option>
+              <option label="31006">nanosic</option>
+              <option label="31007">cmcc</option>
+              <option label="31071">r22</option>
+              <option label="31072">b25</option>
+              <option label="31008">usb</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="alsa_device" type="string" label="31009">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="voice_input" operator="is">usb</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="max_seconds" type="integer" label="31010">
+          <level>0</level>
+          <default>30</default>
+          <constraints>
+            <minimum>3</minimum>
+            <maximum>30</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="start_timeout" type="integer" label="31011">
+          <level>0</level>
+          <default>6</default>
+          <constraints>
+            <minimum>2</minimum>
+            <maximum>15</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="silence_ms" type="integer" label="31012">
+          <level>0</level>
+          <default>1000</default>
+          <constraints>
+            <minimum>500</minimum>
+            <maximum>3000</maximum>
+            <step>100</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="ur02_threshold" type="integer" label="31013">
+          <level>0</level>
+          <default>1000</default>
+          <constraints>
+            <minimum>30</minimum>
+            <maximum>3000</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="voice_input" operator="is">ur02</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="threshold" type="integer" label="31014">
+          <level>0</level>
+          <default>200</default>
+          <constraints>
+            <minimum>30</minimum>
+            <maximum>3000</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="voice_input" operator="is" negated="true">ur02</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+      </group>
+    </category>
+    <category id="asr" label="31001">
+      <group id="2">
+        <setting id="recognition_engine" type="string" label="31015">
+          <level>0</level>
+          <default>ncnn</default>
+          <constraints>
+            <options>
+              <option label="31016">ncnn</option>
+              <option label="31017">doubao</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="ncnn_model_quality" type="string" label="31019">
+          <level>0</level>
+          <default>balanced</default>
+          <constraints>
+            <options>
+              <option label="31020">balanced</option>
+              <option label="31021">fast</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="recognition_engine" operator="is">ncnn</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="ncnn_model_path" type="string" label="31022">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="recognition_engine" operator="is">ncnn</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="ncnn_decoding_method" type="string" label="31023">
+          <level>0</level>
+          <default>modified_beam_search</default>
+          <constraints>
+            <options>
+              <option label="31024">modified_beam_search</option>
+              <option label="31025">greedy_search</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="recognition_engine" operator="is">ncnn</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="doubao_key_file" type="path" label="31026">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="button" format="file">
+            <heading>31026</heading>
+          </control>
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="recognition_engine" operator="is">doubao</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="doubao_resource_id" type="string" label="31027">
+          <level>0</level>
+          <default>volc.seedasr.sauc.duration</default>
+          <constraints>
+            <options>
+              <option label="31028">volc.seedasr.sauc.duration</option>
+              <option label="31029">volc.seedasr.sauc.concurrent</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="recognition_engine" operator="is">doubao</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="doubao_timeout" type="integer" label="31030">
+          <level>0</level>
+          <default>20</default>
+          <constraints>
+            <minimum>5</minimum>
+            <maximum>60</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="recognition_engine" operator="is">doubao</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+      </group>
+    </category>
+    <category id="output" label="31002">
+      <group id="3">
+        <setting id="submit_mode" type="string" label="31031">
+          <level>0</level>
+          <default>open</default>
+          <constraints>
+            <options>
+              <option label="31033">submit</option>
+              <option label="31032">open</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="no_input_action" type="string" label="31034">
+          <level>0</level>
+          <default>juku</default>
+          <constraints>
+            <options>
+              <option label="31035">notify</option>
+              <option label="31036">ignore</option>
+              <option label="31075">juku</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+      </group>
+    </category>
+    <category id="tools" label="31003">
+      <group id="4">
+        <setting id="configure_web" type="action" label="31076">
+          <level>0</level>
+          <data>RunScript(script.voice.inputmethod,--configure)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="bind_voice_key" type="action" label="31037">
+          <level>0</level>
+          <data>RunScript(script.voice.inputmethod,--bind-voice-key)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="test_asr" type="action" label="31038">
+          <level>0</level>
+          <data>RunScript(script.voice.inputmethod,--test-asr)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="test_key" type="action" label="31103">
+          <level>0</level>
+          <data>RunScript(script.voice.inputmethod,--test-key)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="test_inject" type="action" label="31039">
+          <level>0</level>
+          <data>RunScript(script.voice.inputmethod,--test-inject)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+        <setting id="test_dictate" type="action" label="31040">
+          <level>0</level>
+          <data>RunScript(script.voice.inputmethod,--dictate-sample)</data>
+          <control type="button" format="action"><close>true</close></control>
+        </setting>
+      </group>
+    </category>
+  </section>
+</settings>

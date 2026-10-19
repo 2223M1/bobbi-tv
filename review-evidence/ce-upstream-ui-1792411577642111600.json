@@ -1,0 +1,6 @@
+{
+  "action": "status",
+  "state": "unconfirmed",
+  "error": "URLError",
+  "code": "READ_CURRENT_STATE_BEFORE_RETRY"
+}

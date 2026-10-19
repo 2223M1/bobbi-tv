@@ -41,6 +41,7 @@ TITLES_TYPE = "titles"
 
 TORREST_ADDON_ID = "plugin.video.torrest"
 JACKTORR_ADDON_ID = "plugin.video.jacktorr"
+BOBBI_TORRENT_ADDON_ID = "plugin.video.bobbi.torrent"
 ELEMENTUM_ADDON_ID = "plugin.video.elementum"
 YOUTUBE_ADDON_ID = "plugin.video.youtube"
 JACKTOOK_BURST_ADOON_ID = "script.bobbi.burst"
@@ -291,6 +292,17 @@ def get_kodi_version():
 
 def is_torrest_addon():
     return xbmc.getCondVisibility(f"System.HasAddon({TORREST_ADDON_ID})")
+
+
+def is_bobbi_torrent_addon():
+    """Only the signed current adapter may service exact bobbi requests."""
+    try:
+        if not xbmc.getCondVisibility(f"System.HasAddon({BOBBI_TORRENT_ADDON_ID})"):
+            return False
+        xbmcaddon.Addon(BOBBI_TORRENT_ADDON_ID)
+        return True
+    except Exception:
+        return False
 
 
 def is_jacktorr_addon():

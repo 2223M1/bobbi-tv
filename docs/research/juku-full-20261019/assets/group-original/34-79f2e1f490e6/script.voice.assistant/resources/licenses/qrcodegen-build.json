@@ -1,0 +1,8 @@
+{
+  "project": "QR Code generator library",
+  "author": "Project Nayuki",
+  "license": "MIT",
+  "source": "https://www.nayuki.io/page/qr-code-generator-library",
+  "reused_from": "plugin.hongguo.ce/resources/lib/qrcodegen.py",
+  "sha256": "b089855caf16185c61421ea4927c1b213cf9468940d71fa8ab11ef83662dcc84"
+}

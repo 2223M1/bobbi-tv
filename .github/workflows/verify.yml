@@ -1,4 +1,4 @@
-name: Verify public sources
+name: Verify private sources
 on:
   push:
     branches: [main]
@@ -14,7 +14,12 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements-test.txt
-      - run: python -m pytest -q tests
+      # The inherited Kodi mock harness is intentionally a separate process.
+      - run: python -m pytest -q tests --ignore=tests/private_baseline --ignore=tests/preparation_regression
+      - run: python -m pytest -q tests/private_baseline
+      - run: python -m pytest -q tests/preparation_regression
       - run: python tools/build_release.py --output dist/repository-check
-      - name: Verify checked-in packages are reproducible
-        run: python tools/check_repository.py repository dist/repository-check
+      - name: Verify a second private build is byte-identical
+        run: |
+          python tools/build_release.py --output dist/repository-second
+          python tools/check_repository.py dist/repository-check dist/repository-second

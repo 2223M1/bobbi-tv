@@ -26,6 +26,7 @@ import zipfile
 from io import BytesIO
 
 MAX_MANIFEST = 256 * 1024
+MAX_BACKUP_RECEIPT = 16 * 1024 * 1024
 MAX_ARCHIVE = 128 * 1024 * 1024
 MAX_EXPANDED = 512 * 1024 * 1024
 MAX_FILES = 10000
@@ -178,16 +179,28 @@ class _Lock:
 
 class UpdateEngine:
     def __init__(self, addons_root, work_root, expected_components, channel, profile,
-                 verify_signature, download, is_idle, commit_lease):
+                 verify_signature, download, is_idle, commit_lease, offline=False,
+                 retain_previous=False, managed_components=None, dependency_check=None):
         self.addons = _safe_path(addons_root)
         self.work = _safe_path(work_root)
         if (self.addons == self.work or self.addons in self.work.parents
                 or self.work in self.addons.parents):
             raise UpdateError('Update work must be separate from addons')
         self.expected = frozenset(expected_components)
-        if not self.expected or any(not _component(item) for item in self.expected):
+        self.managed = self.expected if managed_components is None else frozenset(managed_components)
+        self.offline, self.retain_previous = bool(offline), bool(retain_previous)
+        if self.managed != self.expected:
+            from .upstream_addons import FULL_COMPONENTS, OWNED_COMPONENTS
+            if (not self.offline or self.expected != FULL_COMPONENTS
+                    or self.managed != OWNED_COMPONENTS or not callable(dependency_check)):
+                raise UpdateError('Unreviewed partial component ownership')
+        self.dependency_check = dependency_check
+        component_check = (lambda item: isinstance(item, str) and
+            re.fullmatch(r'[a-z0-9][a-z0-9._-]{1,100}', item)) if offline else _component
+        if not self.expected or any(not component_check(item) for item in self.expected):
             raise UpdateError('Explicit bobbi component inventory required')
-        if channel not in ('preview', 'stable') or profile not in ('kodi', 'android', 'coreelec'):
+        if (channel not in (('private-candidate', 'private-stable') if offline else ('preview', 'stable'))
+                or profile not in ('kodi', 'android', 'coreelec', 'windows')):
             raise UpdateError('Unknown release channel or profile')
         self.channel, self.profile = channel, profile
         self.verify, self.download, self.idle, self.lease = verify_signature, download, is_idle, commit_lease
@@ -196,12 +209,32 @@ class UpdateEngine:
         if self.addons.stat().st_dev != self.work.stat().st_dev:
             raise UpdateError('Staging and addons must share a filesystem')
         self.state_path, self.journal_path = self.work / 'state.json', self.work / 'journal.json'
+        self.previous_path = self.work / 'previous.json'
 
-    def _read(self, path):
+    def _version(self, value):
+        if not self.offline:
+            return _version(value)
+        # Kodi dependencies may carry +matrix.1. The signed generation is the
+        # ordering authority; never reinterpret that suffix as a new channel.
+        match = re.fullmatch(r'(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})(?:\.(0|[1-9][0-9]{0,8}))?(?:[+~-][A-Za-z0-9._-]{1,64})?',
+                             value) if isinstance(value, str) else None
+        if not match:
+            raise UpdateError('Invalid Kodi component version')
+        return tuple(int(part or 0) for part in match.groups())
+
+    def _location(self, item):
+        return item['file' if self.offline else 'url']
+
+    def _location_allowed(self, item):
+        if not self.offline:
+            return allowed_release_url(item['url'])
+        return item['file'] == item['id'] + '/' + item['id'] + '-' + item['version'] + '.zip'
+
+    def _read(self, path, maximum=MAX_MANIFEST):
         _safe_path(path)
         if not path.exists():
             return None
-        if not path.is_file() or path.stat().st_size > MAX_MANIFEST:
+        if not path.is_file() or path.stat().st_size > maximum:
             raise UpdateError('Invalid update metadata')
         return _json(path.read_bytes())
 
@@ -215,11 +248,25 @@ class UpdateEngine:
         if (not isinstance(value, dict) or set(value) != {'sequence', 'versions'}
                 or type(value['sequence']) is not int or value['sequence'] < 0
                 or not isinstance(value['versions'], dict)
-                or set(value['versions']) not in (set(), set(self.expected))):
+                or (not set(value['versions']) <= self.expected if self.offline else
+                    set(value['versions']) not in (set(), set(self.expected)))):
             raise UpdateError('Invalid installed release state')
-        for version in value['versions'].values():
-            _version(version)
+        for name, version in value['versions'].items():
+            if self.managed != self.expected and name not in self.managed:
+                from .upstream_addons import kodi_version
+                kodi_version(version)
+            else:
+                self._version(version)
         return value
+
+    def _managed_state(self, state):
+        return dict(sequence=state['sequence'],
+                    versions={name: value for name, value in state['versions'].items() if name in self.managed})
+
+    def _dependencies(self, stage):
+        if self.dependency_check is not None:
+            return self.dependency_check(self.addons, stage, self.managed)
+        return {}
 
     def _idle(self):
         if self.idle() is not True:
@@ -232,7 +279,7 @@ class UpdateEngine:
             raise UpdateError('Signature rejected')
         value = _json(raw)
         if (not isinstance(value, dict) or set(value) != {'schema', 'channel', 'profile', 'sequence', 'components'}
-                or type(value['schema']) is not int or value['schema'] != 1
+                or type(value['schema']) is not int or value['schema'] != (2 if self.offline else 1)
                 or value['channel'] != self.channel or value['profile'] != self.profile
                 or type(value['sequence']) is not int or value['sequence'] <= state['sequence']
                 or not isinstance(value['components'], list)
@@ -240,24 +287,28 @@ class UpdateEngine:
             raise UpdateError('Release profile, schema or sequence rejected')
         found = set()
         for item in value['components']:
-            if (not isinstance(item, dict) or set(item) != {'id', 'version', 'url', 'size', 'sha256'}
+            if (not isinstance(item, dict) or set(item) != {'id', 'version', 'file' if self.offline else 'url', 'size', 'sha256'}
                     or not isinstance(item['id'], str) or item['id'] not in self.expected or item['id'] in found
-                    or not allowed_release_url(item['url']) or type(item['size']) is not int
+                    or not isinstance(item['version'], str) or not self._location_allowed(item) or type(item['size']) is not int
                     or not 0 < item['size'] <= MAX_ARCHIVE or not isinstance(item['sha256'], str)
                     or not re.fullmatch('[0-9a-f]{64}', item['sha256'])):
                 raise UpdateError('Invalid complete component manifest')
-            version = _version(item['version'])
+            version = self._version(item['version'])
+            found.add(item['id'])
+            if item['id'] not in self.managed:
+                # Package bytes still undergo complete hash/archive validation;
+                # their version does not own the independently installed addon.
+                continue
             previous = state['versions'].get(item['id'])
             installed = self.addons / item['id']
             if installed.exists():
                 actual_id, actual_version = self._addon(installed / 'addon.xml')
                 if actual_id != item['id']:
                     raise UpdateError('Installed addon identity mismatch')
-                if version < _version(actual_version):
+                if version < self._version(actual_version):
                     raise UpdateError('Installed version downgrade rejected')
-            if previous is not None and version < _version(previous):
+            if previous is not None and version < self._version(previous):
                 raise UpdateError('Release version downgrade rejected')
-            found.add(item['id'])
         if found != self.expected:
             raise UpdateError('Incomplete coordinated release')
         return value
@@ -353,25 +404,85 @@ class UpdateEngine:
             else:
                 path.unlink()
 
+    def _tree(self, root):
+        """Exact, bounded program-only backup inventory; never traverses links."""
+        result, size = {}, 0
+        if not root.is_dir():
+            raise UpdateError('Missing program backup')
+        for folder, dirs, files in os.walk(str(root), followlinks=False):
+            for name in dirs + files:
+                item = _safe_path(Path(folder) / name)
+                if item.is_file():
+                    size += item.stat().st_size
+                    if size > MAX_EXPANDED or len(result) >= MAX_FILES:
+                        raise UpdateError('Program backup exceeds budget')
+                    digest = hashlib.sha256()
+                    with item.open('rb') as stream:
+                        for block in iter(lambda: stream.read(1024 * 1024), b''):
+                            digest.update(block)
+                    result[item.relative_to(root).as_posix()] = digest.hexdigest()
+        return result
+
+    def _retain(self, journal, tx):
+        old = self._read(self.previous_path, MAX_BACKUP_RECEIPT)
+        digests = {name: self._tree(tx / 'backup' / name)
+                   for name, existed in journal['entries'].items() if existed}
+        receipt = dict(transaction=tx.name, entries=journal['entries'],
+            state=journal['old_state'], current_sequence=self._state()['sequence'], digests=digests)
+        self._receipt_budget(receipt)
+        _atomic(self.previous_path, receipt)
+        self._remove(tx / 'stage')
+        if isinstance(old, dict) and old.get('transaction') != tx.name:
+            previous_tx = old.get('transaction')
+            if isinstance(previous_tx, str) and re.fullmatch('[0-9a-f]{32}', previous_tx):
+                self._remove(self.work / previous_tx)
+
+    def _preserved(self, tx):
+        previous = self._read(self.previous_path, MAX_BACKUP_RECEIPT) if self.retain_previous else None
+        return isinstance(previous, dict) and previous.get('transaction') == tx.name
+
+    @staticmethod
+    def _receipt_budget(receipt):
+        # Backup hashes describe thousands of files, unlike a small signed
+        # component manifest. Never write a receipt that our reader rejects.
+        if len(json.dumps(receipt, sort_keys=True, separators=(',', ':')).encode('utf-8')) > MAX_BACKUP_RECEIPT:
+            raise UpdateError('Program backup receipt exceeds budget')
+
+    def _preflight_retention(self, journal, sequence):
+        if self.retain_previous:
+            digests = {name: self._tree(self.addons / name)
+                for name, existed in journal['entries'].items() if existed}
+            self._receipt_budget(dict(transaction=journal['transaction'], entries=journal['entries'],
+                state=journal['old_state'], current_sequence=sequence, digests=digests))
+
     def _recover(self):
         journal = self._read(self.journal_path)
         if journal is None:
             return False
+        if (self.managed != self.expected and isinstance(journal, dict)
+                and isinstance(journal.get('entries'), dict)
+                and set(journal['entries']) == self.expected):
+            raise UpdateError('Legacy full-inventory journal requires its frozen controller recovery')
         if (not isinstance(journal, dict) or set(journal) != {'transaction', 'phase', 'entries', 'old_state'}
                 or not isinstance(journal['transaction'], str)
                 or not re.fullmatch('[0-9a-f]{32}', journal['transaction'])
                 or journal['phase'] not in ('committing', 'committed')
-                or not isinstance(journal['entries'], dict) or set(journal['entries']) != self.expected
+                or not isinstance(journal['entries'], dict) or set(journal['entries']) != self.managed
                 or any(type(value) is not bool for value in journal['entries'].values())
                 or not isinstance(journal['old_state'], dict)):
             raise UpdateError('Invalid transaction journal; manual repair required')
         self._checked_state(journal['old_state'])
+        if set(journal['old_state']['versions']) - self.managed:
+            raise UpdateError('Transaction state exceeds managed inventory')
         tx = _safe_path(self.work / journal['transaction'])
         if journal['phase'] == 'committed':
             # The durable state is the commit point. Cleanup does not change
             # live addons and need not reacquire a runtime lease after success.
             self._state()
-            self._remove(tx)
+            if self.retain_previous:
+                self._retain(journal, tx)
+            else:
+                self._remove(tx)
             self.journal_path.unlink()
             _sync_dir(self.work)
             return True
@@ -422,27 +533,36 @@ class UpdateEngine:
             _sync_dir(self.work)
             try:
                 for item in manifest['components']:
-                    self._extract(self.download(item['url'], item['size']), item, stage)
+                    self._extract(self.download(self._location(item), item['size']), item, stage)
+                self._dependencies(stage)
                 with self.lease():
                     self._idle()  # Immediately before transaction publication/moves.
                     # Another installer may have run during downloads. Capture
                     # existence and recheck downgrade/identity under the lease.
                     for item in manifest['components']:
+                        if item['id'] not in self.managed:
+                            continue
                         installed = _safe_path(self.addons / item['id'])
                         if installed.exists():
                             actual_id, actual_version = self._addon(installed / 'addon.xml')
-                            if actual_id != item['id'] or _version(actual_version) > _version(item['version']):
+                            if actual_id != item['id'] or self._version(actual_version) > self._version(item['version']):
                                 raise UpdateError('Installed addon changed during staging')
+                    self._dependencies(stage)
+                    if self.offline:
+                        state = dict(state, versions={name: self._addon(self.addons / name / 'addon.xml')[1]
+                            for name in sorted(self.managed) if (self.addons / name).exists()})
                     journal = {'transaction': tx.name, 'phase': 'committing',
-                               'entries': {name: (self.addons / name).exists() for name in sorted(self.expected)},
+                               'entries': {name: (self.addons / name).exists() for name in sorted(self.managed)},
                                'old_state': state}
+                    self._preflight_retention(journal, manifest['sequence'])
                     _atomic(self.journal_path, journal)
                     for name, existed in journal['entries'].items():
                         if existed:
                             self._move(self.addons / name, backup / name)
                         self._move(stage / name, self.addons / name)
                     result = {'sequence': manifest['sequence'],
-                              'versions': {item['id']: item['version'] for item in manifest['components']}}
+                              'versions': {item['id']: item['version'] for item in manifest['components']
+                                           if item['id'] in self.managed}}
                     _atomic(self.state_path, result)
                     journal['phase'] = 'committed'
                     _atomic(self.journal_path, journal)
@@ -453,5 +573,90 @@ class UpdateEngine:
                     self._recover()
                 raise
             finally:
-                if not self.journal_path.exists():
+                if not self.journal_path.exists() and not self._preserved(tx):
+                    self._remove(tx)
+
+    def rollback(self):
+        """Explicit previous program generation only; sequence high-water stays."""
+        if not self.retain_previous:
+            raise UpdateError('Previous program retention is not enabled')
+        with _Lock(self.work / 'update.lock'):
+            self._recover()
+            current = self._state()
+            previous = self._read(self.previous_path, MAX_BACKUP_RECEIPT)
+            if (not isinstance(previous, dict) or
+                    set(previous) != {'transaction', 'entries', 'state', 'current_sequence', 'digests'} or
+                    not isinstance(previous['transaction'], str) or
+                    not re.fullmatch('[0-9a-f]{32}', previous['transaction']) or
+                    previous['current_sequence'] != current['sequence'] or
+                    not isinstance(previous['entries'], dict)
+                    or set(previous['entries']) not in (set(self.managed), set(self.expected)) or
+                    any(type(flag) is not bool for flag in previous['entries'].values()) or
+                    not isinstance(previous['digests'], dict) or
+                    set(previous['digests']) != {name for name, flag in previous['entries'].items() if flag}):
+                raise UpdateError('Previous program generation unavailable')
+            restored = self._checked_state(previous['state'])
+            if set(restored['versions']) != set(previous['digests']):
+                raise UpdateError('Previous component state mismatch')
+            self._idle()
+            tx = self.work / uuid.uuid4().hex
+            stage, backup = tx / 'stage', tx / 'backup'
+            stage.mkdir(parents=True)
+            backup.mkdir()
+            try:
+                for name, expected in previous['digests'].items():
+                    source = _safe_path(self.work / previous['transaction'] / 'backup' / name)
+                    if self._tree(source) != expected:
+                        raise UpdateError('Previous program integrity failed')
+                    # Historical full receipts are verified in full, including
+                    # upstream backups, but those files no longer grant writes.
+                    if name not in self.managed:
+                        continue
+                    shutil.copytree(str(source), str(stage / name))
+                    if self._tree(stage / name) != expected:
+                        raise UpdateError('Previous staging integrity failed')
+                    for relative in expected:
+                        copied = stage / name / relative
+                        mode = stat.S_IMODE(copied.stat().st_mode)
+                        try:
+                            if os.name == 'nt':
+                                copied.chmod(mode | stat.S_IWUSR)
+                            with copied.open('r+b' if os.name == 'nt' else 'rb') as stream:
+                                os.fsync(stream.fileno())
+                        finally:
+                            if os.name == 'nt':
+                                copied.chmod(mode)
+                    for folder, _, _ in os.walk(str(stage / name), topdown=False):
+                        _sync_dir(Path(folder))
+                _sync_dir(stage)
+                _sync_dir(tx)
+                _sync_dir(self.work)
+                self._dependencies(stage)
+                with self.lease():
+                    self._idle()
+                    self._dependencies(stage)
+                    journal = dict(transaction=tx.name, phase='committing',
+                        entries={name: (self.addons / name).exists() for name in sorted(self.managed)},
+                        old_state=self._managed_state(current))
+                    self._preflight_retention(journal, current['sequence'])
+                    _atomic(self.journal_path, journal)
+                    for name, existed in journal['entries'].items():
+                        if existed:
+                            self._move(self.addons / name, backup / name)
+                        if (stage / name).exists():
+                            self._move(stage / name, self.addons / name)
+                    # A deliberate rollback doesn't permit replaying old signed
+                    # packages. A future update needs a higher release sequence.
+                    result = dict(sequence=current['sequence'], versions=self._managed_state(restored)['versions'])
+                    _atomic(self.state_path, result)
+                    journal['phase'] = 'committed'
+                    _atomic(self.journal_path, journal)
+                self._recover()
+                return result
+            except Exception:
+                if self.journal_path.exists():
+                    self._recover()
+                raise
+            finally:
+                if not self.journal_path.exists() and not self._preserved(tx):
                     self._remove(tx)

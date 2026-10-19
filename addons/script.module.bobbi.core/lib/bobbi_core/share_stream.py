@@ -29,12 +29,64 @@ OBSERVATION_REASONS = frozenset((
     'SHARE_STOPPED', 'SHARE_RANGE_IDENTITY', 'SHARE_RANGE_OVERFLOW',
     'SHARE_READ_UNAVAILABLE', 'SHARE_READ_TRUNCATED', 'SHARE_READ_REJECTED',
     'SHARE_REFRESH_BUDGET', 'SHARE_TRANSPORT_INVALID'))
+OBSERVATION_NUMBERS = frozenset((
+    'http', 'gate', 'start', 'end', 'monotonic_us', 'offset', 'delivered',
+    'status', 'first_block_bytes', 'block_end', 'wait_ms', 'wait_begin_us',
+    'wait_end_us', 'upstream_start', 'bytes', 'remaining', 'retry', 'fetch_ms',
+    'write_ms', 'wall_ms', 'suppressed', 'len', 'requested'))
+OBSERVATION_HASHES = {'run': 16, 'request': 16, 'transport': 64, 'file': 64}
+OBSERVATION_ENUMS = {
+    'phase': frozenset(('begin', 'response', 'gate_wait', 'upstream_status',
+                       'yield', 'retry', 'fetch_end', 'write_end', 'end')),
+    'stage': frozenset(('range', 'gate', 'fetch', 'grant', 'connect',
+                       'response_check', 'body', 'headers', 'write')),
+    'cancel': frozenset(('none', 'account_revoked', 'service_stop',
+                        'socket_error', 'socket_probe_error')),
+    'method': frozenset(('GET', 'HEAD')),
+    'role': frozenset(('unknown',)),
+    'outcome': frozenset(('incomplete', 'rejected', 'head_complete',
+                         'complete', 'cancelled', 'failed')),
+    'reason': OBSERVATION_REASONS | frozenset((
+        'none', 'invalid_range', 'gate_cancelled', 'after_fetch',
+        'delivery_incomplete', 'range_complete', 'before_fetch',
+        'unexpected_exception', 'contention', 'address_renewed', 'read_resumed')),
+}
+
+
+def observation_fields(row):
+    """A closed, bounded schema; a future caller cannot log URLs/paths by accident."""
+    if type(row) is not dict:
+        return {}
+    safe = {}
+    for key in OBSERVATION_NUMBERS:
+        value = row.get(key)
+        if type(value) is int and 0 <= value <= 2**63 - 1:
+            safe[key] = value
+    for key, length in OBSERVATION_HASHES.items():
+        value = row.get(key)
+        if type(value) is str and len(value) == length and re.fullmatch('[0-9a-f]+', value):
+            safe[key] = value
+    for key, allowed in OBSERVATION_ENUMS.items():
+        value = row.get(key)
+        if type(value) is str and value in allowed:
+            safe[key] = value
+    for key in ('started', 'initial', 'complete'):
+        if type(row.get(key)) is bool:
+            safe[key] = row[key]
+    return safe
+
+
+def observation_line(row):
+    """One bounded JSON record for the portable host's existing report sink."""
+    return json.dumps(dict(event='share_read', **observation_fields(row)),
+                      sort_keys=True, separators=(',', ':'))
 
 
 def observation_json(row):
     # This module runs in the standalone preparation service. Its stdout is
     # journalled; keep this separate from the existing report callback contract.
-    print(json.dumps(dict(event='share_read', at=time.time(), **row), sort_keys=True), flush=True)
+    print(json.dumps(dict(event='share_read', at=time.time(), **observation_fields(row)),
+                     sort_keys=True), flush=True)
 
 
 class ReadGate:
@@ -121,7 +173,7 @@ def checked(body):
     if not isinstance(body, dict) or set(body) != keys:
         raise ValueError('SHARE_FIELDS')
     if (not isinstance(body['request_id'], str) or not re.fullmatch('[0-9a-f]{32}', body['request_id'])
-            or not isinstance(body['locator'], str) or not re.fullmatch(r'am6bqqdocs://(?:[A-Z]{1,2}[1-9]\d*|supp-[0-9a-f]{24})/\d{1,32}', body['locator'])
+            or not isinstance(body['locator'], str) or not re.fullmatch(r'(?:am6bqqdocs://(?:[A-Z]{1,2}[1-9]\d*|supp-[0-9a-f]{24})/\d{1,32}|am6bjuku://[0-9a-f]{64})', body['locator'])
             or not isinstance(body['guid'], str) or len(body['guid']) > 90
             or not isinstance(body['title'], str) or not 1 <= len(body['title']) <= 1024
             or re.search(r'[\x00-\x1f\x7f/\\]', body['title'])
@@ -132,8 +184,11 @@ def checked(body):
 
 
 class Binding:
-    def __init__(self, body, resolve, validate_url):
+    def __init__(self, body, resolve, validate_url, account=None, scope=None):
         self.body, self.resolve, self.validate_url = body, resolve, validate_url
+        self.account, self.scope = account, dict(scope) if scope else None
+        self.revoked = Event()
+        self.connections, self.connection_lock = set(), Lock()
         self.token = uuid4().hex
         self.request_hash = hashlib.sha256(body['request_id'].encode('ascii')).hexdigest()[:16]
         self.transport_hash = ''
@@ -147,8 +202,24 @@ class Binding:
         self.touched = time.monotonic()
         self.active = 0
 
+    def cancelled(self):
+        return self.revoked.is_set() or (self.account is not None and not self.account.is_current(self.scope))
+
+    def revoke(self):
+        self.revoked.set()
+        self.address = None
+        with self.connection_lock:
+            connections = tuple(self.connections)
+        for connection in connections:
+            try:
+                connection.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+
     def grant(self, rejected=None):
         with self.lock:
+            if self.cancelled():
+                raise OSError('SHARE_STOPPED')
             if self.address is not None and (rejected is None or rejected != self.address):
                 return self.address
             now = time.monotonic()
@@ -156,7 +227,10 @@ class Binding:
             if len(self.renewals) >= 4:
                 raise ValueError('SHARE_REFRESH_BUDGET')
             self.renewals.append(now)
-            address = self.resolve(self.body)
+            address = (self.resolve(self.body, self.scope) if self.account is not None
+                       else self.resolve(self.body))
+            if self.cancelled():
+                raise OSError('SHARE_STOPPED')
             base, separator, options = address.partition('|')
             headers = parse_qs(options, strict_parsing=True)
             ua = headers.get('User-Agent', [])
@@ -164,7 +238,10 @@ class Binding:
                     or not ua[0] or len(ua[0]) > 1024 or re.search(r'[\x00-\x1f\x7f]', ua[0])
                     or not self.validate_url(base)):
                 raise ValueError('SHARE_TRANSPORT_INVALID')
-            self.address = address
+            if self.account is not None:
+                self.account.run_if_current(self.scope, lambda: setattr(self, 'address', address))
+            else:
+                self.address = address
             return address
 
 
@@ -195,7 +272,8 @@ class LimitedHTTPServer(ThreadingMixIn, HTTPServer):
 
 class ShareStream:
     def __init__(self, validate, resolve, validate_url, report=lambda phase: None,
-                 session_factory=None, segment_bytes=MAX_SEGMENT_BYTES, observer=observation_json):
+                 session_factory=None, segment_bytes=MAX_SEGMENT_BYTES, observer=observation_json,
+                 account=None):
         if type(segment_bytes) is not int or not 0 < segment_bytes <= MAX_SEGMENT_BYTES:
             raise ValueError('SHARE_SEGMENT_BUDGET')
         self.validate, self.resolve, self.validate_url = validate, resolve, validate_url
@@ -204,6 +282,7 @@ class ShareStream:
         self.http_sequence = self.gate_sequence = 0
         self.session_factory = session_factory
         self.segment_bytes = segment_bytes
+        self.account = account
         self.records, self.lock = {}, Lock()
         self.stopping, self.slots = Event(), BoundedSemaphore(6)
         self.server = LimitedHTTPServer(('127.0.0.1', 0), Handler)
@@ -211,6 +290,7 @@ class ShareStream:
         self.thread = Thread(target=self.server.serve_forever, kwargs={'poll_interval': .1}, daemon=True,
                              name='share-stream-listener')
         self.thread.start()
+        self.unsubscribe = account.subscribe(self.revoke) if account is not None else lambda: None
 
     def report(self, phase):
         try:
@@ -225,16 +305,23 @@ class ShareStream:
                         request=entry.request_hash, file=entry.physical_file_hash,
                         gate=entry.io_lock.diagnostic_id)
 
-    def register(self, body):
+    def register(self, body, account=None):
         body = checked(body)
+        if self.account is not None:
+            return self.account.run_if_current(account, lambda: self._register(body, account))
+        return self._register(body, None)
+
+    def _register(self, body, account):
         with self.lock:
+            if self.stopping.is_set():
+                raise ValueError('SHARE_STOPPED')
             now = time.monotonic()
             for key, entry in list(self.records.items()):
                 if not entry.active and now - entry.touched > 6 * 3600:
                     del self.records[key]
             entry = self.records.get(body['request_id'])
             if entry is not None:
-                if entry.body != body:
+                if entry.body != body or entry.scope != account or entry.cancelled():
                     raise ValueError('SHARE_REQUEST_RETARGETED')
             else:
                 if len(self.records) >= 32:
@@ -246,12 +333,12 @@ class ShareStream:
                         raise ValueError('SHARE_BINDINGS_FULL')
                     del self.records[min(idle)[1]]
                 self.validate(body)  # Exact local catalogue binding, no network IO here.
-                entry = Binding(body, self.resolve, self.validate_url)
+                entry = Binding(body, self.resolve, self.validate_url, self.account, account)
                 # A new playback reservation of the same physical file shares
                 # the upstream gate, even while an old reservation winds down.
                 identity = BINDING_IDENTITY
                 peer = next((e for e in self.records.values()
-                             if all(e.body[k] == body[k] for k in identity)), None)
+                             if e.scope == account and all(e.body[k] == body[k] for k in identity)), None)
                 if peer is not None:
                     entry.io_lock = peer.io_lock
                 else:
@@ -269,21 +356,38 @@ class ShareStream:
             return dict(state='ready', request_id=body['request_id'], guid=body['guid'], media=body['media'],
                         bytes=body['size'], url=url)
 
-    def acquire(self, path):
+    def revoke(self, previous, current=None):
+        with self.lock:
+            entries = [entry for entry in self.records.values() if entry.scope == previous]
+            self.records = {key: entry for key, entry in self.records.items() if entry.scope != previous}
+        for entry in entries:
+            entry.revoke()
+
+    def acquire(self, path, connection=None):
         match = re.fullmatch(r'/stream/([0-9a-f]{32})/video\.[a-z0-9]+', path)
         if match is None or self.stopping.is_set():
             return None
         with self.lock:
             entry = next((e for e in self.records.values() if e.token == match[1]), None)
             if entry is not None:
+                # No manager lock while holding records: register/revoke acquire
+                # account -> records. The revoked flag is the local fast gate.
+                if entry.revoked.is_set():
+                    return None
                 entry.active += 1
                 entry.touched = time.monotonic()
+                if connection is not None:
+                    with entry.connection_lock:
+                        entry.connections.add(connection)
             return entry
 
-    def release(self, entry):
+    def release(self, entry, connection=None):
         with self.lock:
             entry.active -= 1
             entry.touched = time.monotonic()
+            if connection is not None:
+                with entry.connection_lock:
+                    entry.connections.discard(connection)
 
     def session(self):
         if self.session_factory:
@@ -294,7 +398,15 @@ class ShareStream:
         return session
 
     def close(self):
+        if self.stopping.is_set():
+            return
         self.stopping.set()
+        self.unsubscribe()
+        with self.lock:
+            entries = tuple(self.records.values())
+            self.records.clear()
+        for entry in entries:
+            entry.revoke()
         self.server.shutdown()
         self.server.server_close()
         self.thread.join(timeout=1)
@@ -312,6 +424,10 @@ class Handler(BaseHTTPRequestHandler):
         self.disconnected = False
 
     def cancelled(self):
+        entry = getattr(self, 'entry', None)
+        if entry is not None and entry.cancelled():
+            self.cancel_reason = 'account_revoked'
+            return True
         if self.server.owner.stopping.is_set():
             self.cancel_reason = 'service_stop'
             return True
@@ -335,16 +451,18 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if not hasattr(self, 'observation_state'):
                 return
-            if not terminal and self.observation_count >= OBSERVATION_LIMIT:
+            # Reserve the last record for end, including when retries exhaust
+            # the ordinary event budget. Total per HTTP read never exceeds 48.
+            if self.observation_count >= OBSERVATION_LIMIT - (0 if terminal else 1):
                 self.observation_suppressed += 1
                 return
             self.observation_count += 1
-            row = dict(self.observation_state, phase=event,
+            row = observation_fields(dict(self.observation_state, phase=event,
                        monotonic_us=int(time.monotonic() * 1000000),
                        stage=self.observation_stage,
                        offset=self.observation_offset,
                        delivered=self.observation_delivered,
-                       cancel=getattr(self, 'cancel_reason', 'none'), **detail)
+                       cancel=getattr(self, 'cancel_reason', 'none'), **detail))
             if self.observation_holds_gate:
                 self.observation_pending.append(row)
             else:
@@ -380,10 +498,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def serve(self, head=False):
         owner = self.server.owner
-        entry = owner.acquire(self.path)
+        entry = owner.acquire(self.path, self.connection)
         if entry is None:
             self.send_error(404)
             return
+        self.entry = entry
         self.observation_state = owner.observation(entry)
         self.observation_count = self.observation_suppressed = 0
         self.observation_offset = self.observation_delivered = 0
@@ -395,6 +514,8 @@ class Handler(BaseHTTPRequestHandler):
         outcome, reason = 'incomplete', 'none'
         started = False
         try:
+            if self.cancelled():
+                raise OSError('SHARE_STOPPED')
             size = entry.body['size']
             try:
                 start, end, status = byte_range(self.headers.get('Range'), size)
@@ -433,6 +554,10 @@ class Handler(BaseHTTPRequestHandler):
                         outcome, reason = 'cancelled', 'gate_cancelled'
                         return
                     self.observation_holds_gate = True
+                    # Cover growth through the first maximum-size block, not
+                    # the whole movie. This also applies to a new HTTP seek.
+                    observe_block = offset - start <= MAX_SEGMENT_BYTES
+                    block_bytes, fetch_complete = 0, False
                     try:
                         reading = time.monotonic()
                         waited = int((reading - waiting) * 1000)
@@ -444,13 +569,19 @@ class Handler(BaseHTTPRequestHandler):
                         # delivered block is successful recovery; failures from
                         # it must not poison an unrelated future range.
                         block, failures = self.read_block(session, entry, offset, upper, 0)
-                        fetch_ms += int((time.monotonic() - reading) * 1000)
+                        block_bytes, fetch_complete = len(block), True
                         recovered += failures
                     finally:
+                        block_fetch_ms = int((time.monotonic() - reading) * 1000)
+                        fetch_ms += block_fetch_ms
+                        observation_fetch_ms += block_fetch_ms
                         entry.io_lock.release()
                         self.observation_holds_gate = False
-                        observation_fetch_ms += int((time.monotonic() - reading) * 1000)
                         self.flush_observations()
+                        if observe_block:
+                            self.observe('fetch_end', len=block_bytes, requested=upper-offset+1,
+                                         fetch_ms=block_fetch_ms, write_ms=0,
+                                         complete=fetch_complete, block_end=upper)
                         if waited >= OBSERVATION_WAIT_MS:
                             self.observe('gate_wait', block_end=upper, wait_ms=waited,
                                          wait_begin_us=int(waiting * 1000000),
@@ -465,13 +596,22 @@ class Handler(BaseHTTPRequestHandler):
                         self.observe('response', status=status, first_block_bytes=len(block))
                     self.observation_stage = 'write'
                     writing = time.monotonic()
-                    if not self.write_block(block):
-                        observation_write_ms += int((time.monotonic() - writing) * 1000)
+                    delivered_before = self.observation_delivered
+                    write_complete = False
+                    try:
+                        write_complete = self.write_block(block)
+                    finally:
+                        block_write_ms = int((time.monotonic() - writing) * 1000)
+                        observation_write_ms += block_write_ms
+                        if observe_block:
+                            self.observe('write_end', len=self.observation_delivered-delivered_before,
+                                         requested=block_bytes, fetch_ms=block_fetch_ms,
+                                         write_ms=block_write_ms, complete=write_complete)
+                    if not write_complete:
                         outcome, reason = 'cancelled', 'delivery_incomplete'
                         owner.report('CLIENT_DISCONNECTED')
                         return  # Known Stop/seek/disconnect never fetches another block.
-                    write_ms += int((time.monotonic() - writing) * 1000)
-                    observation_write_ms += int((time.monotonic() - writing) * 1000)
+                    write_ms += block_write_ms
                     fetched += len(block)
                     offset += len(block)
                     self.observation_offset = offset
@@ -501,7 +641,7 @@ class Handler(BaseHTTPRequestHandler):
             # body or claim the remaining Content-Length reached a real EOF.
             self.close_connection = True
         finally:
-            owner.release(entry)
+            owner.release(entry, self.connection)
             self.observe('end', terminal=True, outcome=outcome, reason=reason, started=started,
                          wait_ms=observation_wait_ms, fetch_ms=observation_fetch_ms,
                          write_ms=observation_write_ms,
@@ -518,7 +658,7 @@ class Handler(BaseHTTPRequestHandler):
         view = memoryview(block)
         position = 0
         try:
-            while position < len(view) and not self.server.owner.stopping.is_set():
+            while position < len(view) and not self.cancelled():
                 try:
                     sent = self.connection.send(view[position:position + DELIVERY_CHUNK_BYTES])
                 except TimeoutError:

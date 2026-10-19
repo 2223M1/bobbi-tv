@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="script.voice.inputmethod" name="语音输入法" version="0.3.0" provider-name="forbxy">
+  <requires><import addon="xbmc.python" version="3.0.0" /></requires>
+  <extension point="xbmc.python.script" library="default.py"><provides>executable</provides></extension>
+  <extension point="xbmc.service" library="service.py" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">语音输入法</summary>
+    <summary lang="en_GB">Voice Input Method</summary>
+    <description lang="zh_CN">按遥控器语音键说话，识别出的文字直接写入当前 Kodi 输入框。支持本地离线识别与豆包联网识别。</description>
+    <description lang="en_GB">Press the remote voice key, speak, and the recognized text is written straight into the focused Kodi input field.</description>
+    <platform>linux</platform>
+    <license>MIT; Apache-2.0; BSD-3-Clause; LGPL-2.1-or-later</license>
+  </extension>
+</addon>

@@ -30,11 +30,12 @@ def test_public_inventory_is_exact():
         assert build_release.files(path) == recorded[addon], addon
 
 
-def test_repository_uses_kodi21_index_and_package_hashes():
+def test_retired_repository_has_no_anonymous_endpoint_and_packages_keep_hashes():
     import hashlib
     root = ET.parse(ROOT / 'addons/repository.bobbi/addon.xml').getroot()
-    assert root.findtext('./extension/dir/hashes') == 'sha256'
-    assert root.find('./extension/dir/checksum').get('verify') == 'sha256'
+    assert root.find("./extension[@point='xbmc.addon.repository']") is None
+    assert root.findtext('./extension/dir/datadir') is None
+    assert (ROOT / 'addons/repository.bobbi/default.py').is_file()
     repository = ROOT / 'repository'
     for path in repository.glob('*/*.zip'):
         assert path.with_suffix('.zip.sha256').read_text() == hashlib.sha256(path.read_bytes()).hexdigest()

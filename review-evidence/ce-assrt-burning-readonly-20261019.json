@@ -1,0 +1,29 @@
+{
+  "exit_code": 0,
+  "result": {
+    "read_only": true,
+    "api_requests": 0,
+    "utc_epoch": 1792405818.0376022,
+    "token": {
+      "present": true,
+      "bytes": 32,
+      "mode": "0o600",
+      "format_valid": true
+    },
+    "subtitle_abi": "ce-f9",
+    "native_pin_matches_marker": true,
+    "quota_records_last_60s": 0,
+    "current_prepared_db_present": true,
+    "subtitle_events": [
+      {
+        "time": "2026-10-19 18:26:27.876",
+        "diagnostic": "stage=download candidate=641764 reason=ASSRT_HTTP_493"
+      },
+      {
+        "time": "2026-10-19 18:26:27.877",
+        "diagnostic": "unavailable ASSRT_HTTP_493"
+      }
+    ]
+  },
+  "diagnostic_present": false
+}

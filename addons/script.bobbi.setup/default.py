@@ -28,7 +28,7 @@ def helper_status(path):
 def pair_helper(dialog, path):
     choice = dialog.select('连接本机 bobbi 助手', [
         'Android：输入助手显示的六位配对码',
-        '打开 Android 助手',
+        '查看本机 BT 支持说明',
         'CoreELEC：安装本机 BT 后台（可跳过）',
         '选择助手导出的 bobbi 配对文件',
         '重新检查连接',
@@ -46,10 +46,9 @@ def pair_helper(dialog, path):
         except (ValueError, OSError, TorrServerError):
             dialog.ok('尚未配对', '请确认助手已启动，并重新显示配对码。原有配对未更改。')
     elif choice == 1:
-        if xbmc.getCondVisibility('System.Platform.Android'):
-            xbmc.executebuiltin('StartAndroidActivity(org.bobbi.helper)')
-        else:
-            dialog.ok('bobbi', 'Android 助手仅适用于 Android。CoreELEC 后台安装仍在集成中。')
+        dialog.ok('可选 BT 后台', '完整 Android 影院已内含 Kodi 播放器，不是旧助手。\n'
+                  '当前候选未内嵌 BT 下载后台；115 / NAS 播放不需要配对。\n'
+                  '只有你另行配置了兼容的本机后台时才导入其配对文件。不会打开应用配对自身。')
     elif choice == 2:
         from bobbi_platform.native_engine import install
         if xbmc.Player().isPlaying():
@@ -183,20 +182,43 @@ def main():
                 rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': 'skin.bobbi.cinema'})
                 return
         elif action == 'updates':
-            show_updates(dialog)
+            if show_updates(dialog):
+                return  # Do not reopen setup over Kodi's native add-on browser.
         elif action == 'status':
-            dialog.ok('bobbi TV · 公开测试版', '支持新影院、个人 115 分享读取、网盘 / NAS、手选片源和本机 BT。\n'
-                      '不包含私人后台账号或定制内核；自动字幕与自动续播尚未完成通用版适配。\n'
-                      'Android / 全新安装仍待真实设备验收。不会刷机或替换原系统。')
+            dialog.ok('波比 TV · 私人候选版', '新影院、个人 115 / NAS、手动选源、同版续播及中文字幕共用业务核心。\n'
+                      'BT / CD2 云准备为可选能力，未配置时不会阻止启动。\n'
+                      '原生构建成功不代表每种设备都已实播验收；以随包验收记录为准。不会自动刷机。')
 
 
 def show_updates(dialog):
-    dialog.ok('更新与恢复', '通过 Kodi 的 bobbi TV 仓库接收组件更新。\n'
-              '建议在 Kodi 插件设置中选择“通知，但不要安装更新”，停止播放后再更新。\n'
-              'APK 新版见 github.com/2223M1/bobbi-tv/releases，安装时保留原应用，不要卸载。\n'
-              '回退：先切回 Estuary，退出 Kodi，备份用户数据，再从旧发行安装相同版本整套组件。')
-    xbmc.executebuiltin('UpdateAddonRepos')
-    xbmc.executebuiltin('ActivateWindow(addonbrowser)')
+    """Open native management only; never start an update or refresh a repo."""
+    if xbmc.Player().isPlaying():
+        dialog.ok('请先停止播放', '播放中不打开插件更新操作页，也不会停止影片或执行更新。')
+        return False
+    choice = dialog.select('更新与恢复 · 原版与定制分开维护', [
+        '原版依赖 · Kodi 依赖管理 / 更新',
+        '已装插件 · Kodi 我的插件 / 原仓库更新',
+        '波比定制组件 · 签名包更新与回退说明',
+    ])
+    if choice in (0, 1):
+        dialog.ok('打开 Kodi 原生插件管理',
+                  '原版依赖保留原 ID，由 Kodi 按可用的原仓库管理；这里不自动检查或执行更新。\n'
+                  '波比定制组件不能整体用原版覆盖。旧定制 JackTorr 与原版也不是一回事，请勿直接替换。')
+        # Playback can start while the selector or explanation is open.
+        if xbmc.Player().isPlaying():
+            dialog.ok('当前已经开始播放', '本次不打开插件更新操作页，影片保持播放。')
+            return False
+        target = 'addons://dependencies/' if choice == 0 else 'addons://user/all/'
+        xbmc.executebuiltin('ActivateWindow(addonbrowser,%s,return)' % target)
+        return True
+    if choice == 2:
+        dialog.ok('波比定制组件 · 私人签名包',
+                  '原版依赖使用 Kodi 原生管理；波比定制组件使用维护者提供的同代完整签名包。\n'
+                  '这里只提供说明，不下载、不安装，也不刷新仓库。先校验完整签名包，再退出播放器切换。\n'
+                  'Windows：退出影院后使用 bobbi.exe --apply 签名包；--rollback 回退程序。\n'
+                  'CE：由维护工具停播校验后切换；Android：安装同签名完整 APK，不要卸载原应用。\n'
+                  '回退仅恢复波比程序，不覆盖账号、片库和观看数据；不代替原版插件的更新管理。')
+    return False
 
 
 if __name__ == '__main__':

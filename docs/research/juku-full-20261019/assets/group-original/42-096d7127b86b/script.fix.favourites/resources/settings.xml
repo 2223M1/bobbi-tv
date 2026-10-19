@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <category label="名称清理">
+        <setting id="enable_name_clean" type="bool" label="启用名称清理" default="true"/>
+        <setting id="prefixes" type="text" label="要删除的前缀（每行一个，注意：后面有空格）" default="EMBY: "/>
+        <setting id="suffixes" type="text" label="要删除的后缀（每行一个注意括号前有空格）" default=" (movies)&#10; (tvshows)"/>
+    </category>
+    <category label="路径修复">
+        <setting id="enable_path_fix" type="bool" label="启用补全 /all.xml/" default="true"/>
+    </category>
+</settings>

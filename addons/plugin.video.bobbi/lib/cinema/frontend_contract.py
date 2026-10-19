@@ -35,13 +35,8 @@ def clean_title(value):
 
 
 def image_url(value, size):
-    value = text(value)
-    if value.startswith('/') and not value.startswith('//'):
-        return 'https://image.tmdb.org/t/p/' + size + value
-    parsed = urlsplit(value)
-    if parsed.hostname == 'image.tmdb.org' and re.match(r'^/t/p/[^/]+/', parsed.path):
-        return urlunsplit(('https', parsed.netloc, re.sub(r'^/t/p/[^/]+/', '/t/p/' + size + '/', parsed.path), parsed.query, parsed.fragment))
-    return value
+    from bobbi_core.image_cache import image_url as tmdb_image_url
+    return tmdb_image_url(text(value), size)
 
 
 def history_identity(data, fallback=''):
