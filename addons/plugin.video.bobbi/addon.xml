@@ -1,0 +1,29 @@
+<addon id="plugin.video.bobbi" name="bobbi Cinema · 移植预览" version="0.1.0" provider-name="bobbi TV / Sam-Max and contributors">
+  <requires>
+    <import addon="script.module.bobbi.core" version="0.1.0" />
+    <import addon="script.module.bobbi.mdsub" version="0.1.0" />
+    <import addon="script.module.bobbi.catalog" version="0.1.0" />
+    <import addon="xbmc.python" version="3.00.0" />
+    <import addon="script.module.requests" version="2.25.1" />
+    <import addon="script.module.routing" version="0.2.3" />
+  <import addon="script.module.bobbi.platform" version="0.1.0" /><import addon="plugin.video.bobbi.library" version="0.1.0" /></requires>
+  <extension point="xbmc.python.pluginsource" library="bobbi.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.service" library="service.py" start="startup" />
+  <extension point="xbmc.python.module" library="lib" />
+  <extension point="xbmc.addon.metadata">
+    
+    <reuselanguageinvoker>false</reuselanguageinvoker>
+    <summary lang="en">jacktook</summary>
+    <description lang="en">Kodi addon for torrent streaming</description>
+    <license>GPL-3.0; see LICENSE and THIRD-PARTY notices</license>
+    <source>https://github.com/2223M1/bobbi-tv</source>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.png</fanart>
+      <screenshot>resources/screenshots/home.png</screenshot>
+      <screenshot>resources/screenshots/tv.png</screenshot>
+    </assets>
+ </extension>
+</addon>

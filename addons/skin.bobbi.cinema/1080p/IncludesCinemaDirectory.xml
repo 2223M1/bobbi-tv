@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <variable name="BobiStreamLanguage">
+    <value condition="String.IsEqual(ListItem.Property(language),chi) | String.IsEqual(ListItem.Property(language),zho) | String.IsEqual(ListItem.Property(language),zh) | String.IsEqual(ListItem.Property(language),cmn)">中文</value>
+    <value condition="String.IsEqual(ListItem.Property(language),jpn) | String.IsEqual(ListItem.Property(language),ja)">日语</value>
+    <value condition="String.IsEqual(ListItem.Property(language),eng) | String.IsEqual(ListItem.Property(language),en)">英语</value>
+    <value condition="String.IsEqual(ListItem.Property(language),kor) | String.IsEqual(ListItem.Property(language),ko)">韩语</value>
+    <value condition="String.IsEqual(ListItem.Property(language),yue)">粤语</value>
+    <value condition="String.IsEqual(ListItem.Property(language),fra) | String.IsEqual(ListItem.Property(language),fre) | String.IsEqual(ListItem.Property(language),fr)">法语</value>
+    <value condition="String.IsEqual(ListItem.Property(language),deu) | String.IsEqual(ListItem.Property(language),ger) | String.IsEqual(ListItem.Property(language),de)">德语</value>
+    <value>$VAR[Label_StreamLanguage]</value>
+  </variable>
+  <variable name="BobiStreamCaption">
+    <value condition="String.Contains(ListItem.Label2,zh-hans)">简体中文</value>
+    <value condition="String.Contains(ListItem.Label2,zh-hant)">繁体中文</value>
+    <value>$VAR[BobiStreamLanguage]$INFO[ListItem.Label2, · ]</value>
+  </variable>
+  <variable name="CinemaDirectoryTitle">
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Episode.Title.zh))">$INFO[ListItem.Property(AM6B.Episode.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.zh))">$INFO[ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.Title)">$INFO[ListItem.Title]</value>
+    <value>$INFO[ListItem.Label]</value>
+  </variable>
+  <variable name="BobiDetailAction">
+    <value condition="ListItem.IsFolder">选择剧集</value>
+    <value>选择片源</value>
+  </variable>
+  <variable name="BobiDirectoryHeading">
+    <value condition="Container.Content(episodes)">选择剧集</value>
+    <value condition="Container.Content(seasons)">选择季数</value>
+    <value condition="!String.IsEmpty(Container.PluginCategory)">$INFO[Container.PluginCategory]</value>
+    <value>影片与目录</value>
+  </variable>
+  <include name="CinemaDirectoryList">
+    <control type="group">
+      <control type="panel" id="50">
+        <left>80</left>
+        <top>258</top>
+        <width>1190</width>
+        <height>752</height>
+        <orientation>vertical</orientation>
+        <onleft>50</onleft>
+        <onright>60</onright>
+        <ondown>50</ondown>
+        <pagecontrol>60</pagecontrol>
+        <scrolltime>180</scrolltime>
+        <preloaditems>1</preloaditems>
+        <onup condition="String.IsEqual(Window(Home).Property(BobiNavSection),9701)">SetFocus(9701)</onup>
+        <onup condition="String.IsEqual(Window(Home).Property(BobiNavSection),9702)">SetFocus(9702)</onup>
+        <onup condition="String.IsEqual(Window(Home).Property(BobiNavSection),9703)">SetFocus(9703)</onup>
+        <onup condition="String.IsEqual(Window(Home).Property(BobiNavSection),9704)">SetFocus(9704)</onup>
+        <onup condition="String.IsEqual(Window(Home).Property(BobiNavSection),9705)">SetFocus(9705)</onup>
+        <onup condition="String.IsEqual(Window(Home).Property(BobiNavSection),9706)">SetFocus(9706)</onup>
+        <onup condition="String.IsEmpty(Window(Home).Property(BobiNavSection))">SetFocus(9702)</onup>
+        <viewtype label="波比海报墙">icon</viewtype>
+        <itemlayout width="1190" height="182" condition="Container.Content(episodes)">
+          <control type="group">
+            <left>0</left>
+            <top>0</top>
+            <width>1180</width>
+            <height>176</height>
+            <control type="image">
+              <left>12</left>
+              <top>12</top>
+              <width>254</width>
+              <height>146</height>
+              <texture background="true" fallback="am6b/cinema/movies.png">$INFO[ListItem.Art(thumb)]</texture>
+              <aspectratio>scale</aspectratio>
+            </control>
+            <control type="label">
+              <left>288</left>
+              <top>15</top>
+              <width>870</width>
+              <height>49</height>
+              <label>$INFO[ListItem.Episode,第 , 集]  $VAR[CinemaDirectoryTitle]</label>
+              <font>font13</font>
+              <textcolor>FFD7D5DE</textcolor>
+            </control>
+            <control type="label">
+              <left>290</left>
+              <top>78</top>
+              <width>866</width>
+              <height>40</height>
+              <label>$INFO[ListItem.Plot]</label>
+              <font>font11</font>
+              <textcolor>FFB3B3B3</textcolor>
+            </control>
+            <control type="label">
+              <left>290</left>
+              <top>138</top>
+              <width>860</width>
+              <height>30</height>
+              <label>$INFO[ListItem.Duration,时长 ]$INFO[ListItem.Premiered,   ·   ]</label>
+              <font>font10</font>
+              <textcolor>FFB3B3B3</textcolor>
+            </control>
+          </control>
+        </itemlayout>
+        <itemlayout width="238" height="367" condition="!Container.Content(episodes)">
+          <control type="group">
+            <left>0</left>
+            <top>0</top>
+            <width>230</width>
+            <height>360</height>
+            <control type="image">
+              <left>11</left>
+              <top>10</top>
+              <width>211</width>
+              <height>294</height>
+              <texture background="true" fallback="am6b/cinema/movies.png">$INFO[ListItem.Art(poster)]</texture>
+              <aspectratio>scale</aspectratio>
+            </control>
+            <control type="label">
+              <left>12</left>
+              <top>316</top>
+              <width>213</width>
+              <height>37</height>
+              <label>$VAR[CinemaDirectoryTitle]</label>
+              <font>font11</font>
+              <textcolor>FFB3B3B3</textcolor>
+            </control>
+          </control>
+        </itemlayout>
+        <focusedlayout width="1190" height="182" condition="Container.Content(episodes)">
+          <control type="group">
+            <left>0</left>
+            <top>0</top>
+            <width>1180</width>
+            <height>176</height>
+            <animation effect="zoom" start="98" end="100" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+            <control type="image">
+              <left>3</left>
+              <top>3</top>
+              <width>1176</width>
+              <height>171</height>
+              <visible>Control.HasFocus(50)</visible>
+              <texture colordiffuse="FFF5F5F5" border="12">am6b/cinema/outline.png</texture>
+            </control>
+            <control type="image">
+              <left>12</left>
+              <top>12</top>
+              <width>254</width>
+              <height>146</height>
+              <texture background="true" fallback="am6b/cinema/movies.png">$INFO[ListItem.Art(thumb)]</texture>
+              <aspectratio>scale</aspectratio>
+            </control>
+            <control type="label">
+              <left>288</left>
+              <top>15</top>
+              <width>870</width>
+              <height>49</height>
+              <label>$INFO[ListItem.Episode,第 , 集]  $VAR[CinemaDirectoryTitle]</label>
+              <font>font13</font>
+              <textcolor>FFF5F5F5</textcolor>
+            </control>
+            <control type="label">
+              <left>290</left>
+              <top>78</top>
+              <width>866</width>
+              <height>40</height>
+              <label>$INFO[ListItem.Plot]</label>
+              <font>font11</font>
+              <textcolor>FFB3B3B3</textcolor>
+            </control>
+            <control type="label">
+              <left>290</left>
+              <top>138</top>
+              <width>860</width>
+              <height>30</height>
+              <label>$INFO[ListItem.Duration,时长 ]$INFO[ListItem.Premiered,   ·   ]</label>
+              <font>font10</font>
+              <textcolor>FFB3B3B3</textcolor>
+            </control>
+          </control>
+        </focusedlayout>
+        <focusedlayout width="238" height="367" condition="!Container.Content(episodes)">
+          <control type="group">
+            <left>0</left>
+            <top>0</top>
+            <width>230</width>
+            <height>360</height>
+            <animation effect="zoom" start="98" end="100" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+            <control type="image">
+              <left>3</left>
+              <top>3</top>
+              <width>228</width>
+              <height>310</height>
+              <visible>Control.HasFocus(50)</visible>
+              <texture colordiffuse="FFF5F5F5" border="12">am6b/cinema/outline.png</texture>
+            </control>
+            <control type="image">
+              <left>11</left>
+              <top>10</top>
+              <width>211</width>
+              <height>294</height>
+              <texture background="true" fallback="am6b/cinema/movies.png">$INFO[ListItem.Art(poster)]</texture>
+              <aspectratio>scale</aspectratio>
+            </control>
+            <control type="label">
+              <left>12</left>
+              <top>316</top>
+              <width>213</width>
+              <height>37</height>
+              <label>$VAR[CinemaDirectoryTitle]</label>
+              <font>font11</font>
+              <textcolor>FFF5F5F5</textcolor>
+            </control>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="group">
+        <left>1316</left>
+        <top>253</top>
+        <width>520</width>
+        <height>754</height>
+        <visible>Control.IsVisible(50)</visible>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>520</width>
+          <height>293</height>
+          <texture background="true" fallback="am6b/cinema/movies.png">$INFO[ListItem.Art(fanart)]</texture>
+          <aspectratio>scale</aspectratio>
+          <fadetime>180</fadetime>
+        </control>
+        <control type="textbox">
+          <left>0</left>
+          <top>324</top>
+          <width>514</width>
+          <height>104</height>
+          <font>font16</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <label>$VAR[CinemaDirectoryTitle]</label>
+        </control>
+        <control type="label">
+          <left>2</left>
+          <top>439</top>
+          <width>514</width>
+          <height>34</height>
+          <label>$INFO[ListItem.Year]$INFO[ListItem.Genre,  ·  ]</label>
+          <font>font11</font>
+          <textcolor>FFB3B3B3</textcolor>
+        </control>
+        <control type="textbox">
+          <left>2</left>
+          <top>494</top>
+          <width>512</width>
+          <height>169</height>
+          <font>CinemaBody</font>
+          <textcolor>FFBBB9C6</textcolor>
+          <label>$INFO[ListItem.Plot]</label>
+        </control>
+        <control type="label">
+          <left>2</left>
+          <top>702</top>
+          <width>512</width>
+          <height>34</height>
+          <label>确认键进入 · 长按查看操作</label>
+          <font>font10</font>
+          <textcolor>FFB3B3B3</textcolor>
+        </control>
+      </control>
+      <control type="scrollbar" id="60">
+        <left>1278</left>
+        <top>264</top>
+        <width>6</width>
+        <height>724</height>
+        <onleft>50</onleft>
+        <onright>50</onright>
+        <showonepage>false</showonepage>
+        <visible>Control.IsVisible(50)</visible>
+        <texturesliderbackground colordiffuse="FF303030">am6b/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="FF888888">am6b/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFF5F5F5">am6b/white.png</texturesliderbarfocus>
+        <textureslidernib colordiffuse="00000000">am6b/white.png</textureslidernib>
+        <textureslidernibfocus colordiffuse="00000000">am6b/white.png</textureslidernibfocus>
+      </control>
+    </control>
+  </include>
+</includes>

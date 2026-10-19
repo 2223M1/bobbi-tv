@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  波比TV source picker, direct mode (source_select_direct.xml; same layout as source_select.xml).
+  Contract kept: list 1000 (sources), list 1300 (quality tabs), button 1400 (filter),
+  scrollbar 1111, window properties info.*, source_count, chinese_subtitle_count,
+  source_loading, playback_error.
+
+  Layout: left info column (poster, bilingual title, season/episode, live status);
+  right column = quality tabs + filter, then source rows.
+  Row: quality badge | title (scrolls on focus) | tags line | size · seeds | recommendation.
+  Focus = white row. Recommended source carries an accent "推荐" tag, not a colour wash.
+  Context menu key (long OK on many remotes) opens Jacktook's actions for the focused row.
+-->
+<window type="dialog">
+  <defaultcontrol always="true">1000</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <animation effect="fade" start="0" end="100" time="180" tween="cubic" easing="out">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120">WindowClose</animation>
+  <controls>
+    <!-- backdrop -->
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="FF0A0B0E">bobi/white.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <aspectratio>scale</aspectratio>
+      <texture background="true" colordiffuse="40FFFFFF">$INFO[Window().Property(info.fanart)]</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="CC0A0B0E">bobi/white.png</texture>
+    </control>
+
+    <!-- ===== left column: the work ===== -->
+    <control type="group">
+      <left>96</left><top>96</top>
+      <control type="label">
+        <left>0</left><top>0</top><width>440</width><height>32</height>
+        <label>选择片源</label>
+        <font>Label24</font><textcolor>FFFFB27F</textcolor>
+      </control>
+      <control type="image">
+        <left>0</left><top>48</top><width>300</width><height>450</height>
+        <texture colordiffuse="FF1E2128" border="16">bobi/r20.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>48</top><width>300</width><height>450</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobi/mask-300x450.png">$INFO[Window().Property(info.poster)]</texture>
+      </control>
+      <!-- title block: collapsing column; long titles scroll on one line -->
+      <control type="grouplist">
+        <left>0</left><top>520</top><width>440</width><height>270</height>
+        <orientation>vertical</orientation><itemgap>4</itemgap>
+        <usecontrolcoords>true</usecontrolcoords>
+        <control type="label">
+          <width>440</width><height>60</height>
+          <label>$INFO[Window().Property(info.display_title)]</label>
+          <font>Head40</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+          <scroll>true</scroll><scrollspeed>40</scrollspeed>
+        </control>
+        <control type="label">
+          <width>440</width><height>36</height>
+          <label>$INFO[Window().Property(info.original_title)]</label>
+          <font>Meta24</font><textcolor>FFB4B2AD</textcolor><aligny>center</aligny>
+          <visible>!String.IsEmpty(Window().Property(info.original_title)) + !String.IsEqual(Window().Property(info.original_title),Window().Property(info.display_title))</visible>
+        </control>
+        <control type="image"><width>10</width><height>12</height><texture /></control>
+        <control type="label">
+          <width>440</width><height>44</height>
+          <label>$INFO[Window().Property(info.season_episode)]</label>
+          <font>Head30</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+          <visible>!String.IsEmpty(Window().Property(info.season_episode))</visible>
+        </control>
+        <control type="label">
+          <width>440</width><height>36</height>
+          <label>$INFO[Window().Property(info.display_subtitle)]</label>
+          <font>Meta24</font><textcolor>FFB4B2AD</textcolor><aligny>center</aligny>
+          <scroll>true</scroll>
+          <visible>!String.IsEmpty(Window().Property(info.display_subtitle))</visible>
+        </control>
+      </control>
+      <!-- status block -->
+      <control type="group">
+        <top>806</top>
+        <control type="image">
+          <left>0</left><top>4</top><width>32</width><height>32</height>
+          <texture colordiffuse="FFFF8A3D">bobi/spinner.png</texture>
+          <animation effect="rotate" end="-360" center="16,20" time="900" loop="true" condition="true">Conditional</animation>
+          <visible>String.IsEqual(Window().Property(source_loading),true)</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>4</top><width>32</width><height>32</height>
+          <texture colordiffuse="FF4CD08A">bobi/icons/check.png</texture>
+          <visible>!String.IsEqual(Window().Property(source_loading),true) + Integer.IsGreater(Container(1000).NumItems,0)</visible>
+        </control>
+        <control type="label">
+          <left>48</left><top>0</top><width>400</width><height>40</height>
+          <label>$INFO[Window().Property(source_count),,  个片源]</label>
+          <font>Label28</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>48</left><top>40</top><width>400</width><height>32</height>
+          <label>$INFO[Window().Property(chinese_subtitle_count),含中文字幕 ,  个]</label>
+          <font>Meta22</font><textcolor>FFB4B2AD</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>48</left><top>72</top><width>400</width><height>32</height>
+          <label>$INFO[Window().Property(source_status)]</label>
+          <font>Meta22</font><textcolor>FF7E7D79</textcolor><aligny>center</aligny>
+          <scroll>true</scroll>
+        </control>
+      </control>
+    </control>
+
+    <!-- ===== right column ===== -->
+    <!-- quality tabs -->
+    <control type="list" id="1300">
+      <left>600</left><top>96</top><width>1000</width><height>64</height>
+      <orientation>horizontal</orientation>
+      <itemgap>0</itemgap>
+      <scrolltime>120</scrolltime>
+      <onup>noop</onup>
+      <ondown>1000</ondown>
+      <onleft>noop</onleft>
+      <onright>1400</onright>
+      <itemlayout width="168" height="64">
+        <control type="image">
+          <left>0</left><top>4</top><width>156</width><height>56</height>
+          <texture colordiffuse="FFFF8A3D" border="30,0,30,0">bobi/tab-underline.png</texture>
+          <visible>ListItem.IsSelected</visible>
+        </control>
+        <control type="label">
+          <left>0</left><top>4</top><width>156</width><height>56</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>FFB4B2AD</textcolor><selectedcolor>FFF5F3EF</selectedcolor>
+          <align>center</align><aligny>center</aligny>
+        </control>
+      </itemlayout>
+      <focusedlayout width="168" height="64">
+        <control type="image">
+          <left>0</left><top>4</top><width>156</width><height>56</height>
+          <texture colordiffuse="FFFFFFFF" border="28">bobi/pill.png</texture>
+          <visible>Control.HasFocus(1300)</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>4</top><width>156</width><height>56</height>
+          <texture colordiffuse="FFFF8A3D" border="30,0,30,0">bobi/tab-underline.png</texture>
+          <visible>!Control.HasFocus(1300)</visible>
+        </control>
+        <control type="label">
+          <left>0</left><top>4</top><width>156</width><height>56</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>FF0A0B0E</textcolor>
+          <align>center</align><aligny>center</aligny>
+          <visible>Control.HasFocus(1300)</visible>
+        </control>
+        <control type="label">
+          <left>0</left><top>4</top><width>156</width><height>56</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>FFF5F3EF</textcolor>
+          <align>center</align><aligny>center</aligny>
+          <visible>!Control.HasFocus(1300)</visible>
+        </control>
+      </focusedlayout>
+    </control>
+    <!-- filter -->
+    <control type="group">
+      <left>1624</left><top>100</top>
+      <control type="button" id="1400">
+        <left>0</left><top>0</top><width>200</width><height>56</height>
+        <label />
+        <texturefocus colordiffuse="FFFFFFFF" border="28">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="FF1E2128" border="28">bobi/pill.png</texturenofocus>
+        <onleft>1300</onleft><onright>noop</onright><onup>noop</onup><ondown>1000</ondown>
+      </control>
+      <control type="image">
+        <left>28</left><top>14</top><width>28</width><height>28</height>
+        <texture colordiffuse="FFF5F3EF">bobi/icons/filter.png</texture>
+        <visible>!Control.HasFocus(1400)</visible>
+      </control>
+      <control type="image">
+        <left>28</left><top>14</top><width>28</width><height>28</height>
+        <texture colordiffuse="FF0A0B0E">bobi/icons/filter.png</texture>
+        <visible>Control.HasFocus(1400)</visible>
+      </control>
+      <control type="label">
+        <left>68</left><top>0</top><width>120</width><height>56</height>
+        <label>筛选</label>
+        <font>Button24</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+        <visible>!Control.HasFocus(1400)</visible>
+      </control>
+      <control type="label">
+        <left>68</left><top>0</top><width>120</width><height>56</height>
+        <label>筛选</label>
+        <font>Button24</font><textcolor>FF0A0B0E</textcolor><aligny>center</aligny>
+        <visible>Control.HasFocus(1400)</visible>
+      </control>
+    </control>
+
+    <!-- source rows -->
+    <control type="list" id="1000">
+      <left>584</left><top>184</top><width>1256</width><height>808</height>
+      <orientation>vertical</orientation>
+      <scrolltime tween="cubic" easing="out">160</scrolltime>
+      <pagecontrol>1111</pagecontrol>
+      <onup>1300</onup>
+      <ondown>noop</ondown>
+      <onleft>noop</onleft>
+      <onright>noop</onright>
+      <itemlayout width="1256" height="136">
+        <control type="image">
+          <left>16</left><top>6</top><width>1224</width><height>124</height>
+          <texture colordiffuse="FF15171C" border="14">bobi/r14.png</texture>
+        </control>
+        <control type="group">
+          <left>16</left><top>6</top>
+          <control type="label">
+            <left>24</left><top>18</top><width>120</width><height>48</height>
+            <label>$VAR[BobiQualityBadge]</label>
+            <font>Head30</font><textcolor>FFF5F3EF</textcolor><align>center</align><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>24</left><top>66</top><width>120</width><height>32</height>
+            <label>$INFO[ListItem.Property(type_plain)]</label>
+            <font>Meta22</font><textcolor>FF7E7D79</textcolor><align>center</align><aligny>center</aligny>
+          </control>
+          <control type="image">
+            <left>168</left><top>18</top><width>1</width><height>88</height>
+            <texture colordiffuse="FF2A2E37">bobi/white.png</texture>
+          </control>
+          <control type="label">
+            <left>192</left><top>12</top><width>740</width><height>40</height>
+            <label>$INFO[ListItem.Property(title)]</label>
+            <font>Label28</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>192</left><top>52</top><width>1010</width><height>32</height>
+            <label>$INFO[ListItem.Property(chinese_subtitles),[COLOR FF4CD08A]中字 ,[/COLOR]   ]$INFO[ListItem.Property(badges_plain),,   ]$INFO[ListItem.Property(release_group)]</label>
+            <font>Meta24</font><textcolor>FFB4B2AD</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>192</left><top>84</top><width>1010</width><height>30</height>
+            <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(languages_plain),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]</label>
+            <font>Meta22</font><textcolor>FF7E7D79</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>948</left><top>12</top><width>256</width><height>40</height>
+            <label>$INFO[ListItem.Property(recommendation_status)]</label>
+            <font>Button24</font><textcolor>FFFF8A3D</textcolor><align>right</align><aligny>center</aligny>
+          </control>
+        </control>
+      </itemlayout>
+      <focusedlayout width="1256" height="136">
+        <control type="image">
+          <left>16</left><top>6</top><width>1224</width><height>124</height>
+          <texture colordiffuse="FFFFFFFF" border="14">bobi/r14.png</texture>
+          <visible>Control.HasFocus(1000)</visible>
+        </control>
+        <control type="image">
+          <left>16</left><top>6</top><width>1224</width><height>124</height>
+          <texture colordiffuse="FF1E2128" border="14">bobi/r14.png</texture>
+          <visible>!Control.HasFocus(1000)</visible>
+        </control>
+        <control type="group">
+          <left>16</left><top>6</top>
+          <control type="label">
+            <left>24</left><top>18</top><width>120</width><height>48</height>
+            <label>$VAR[BobiQualityBadge]</label>
+            <font>Head30</font><textcolor>FF0A0B0E</textcolor><align>center</align><aligny>center</aligny>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>24</left><top>18</top><width>120</width><height>48</height>
+            <label>$VAR[BobiQualityBadge]</label>
+            <font>Head30</font><textcolor>FFF5F3EF</textcolor><align>center</align><aligny>center</aligny>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>24</left><top>66</top><width>120</width><height>32</height>
+            <label>$INFO[ListItem.Property(type_plain)]</label>
+            <font>Meta22</font><textcolor>FF54545A</textcolor><align>center</align><aligny>center</aligny>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>24</left><top>66</top><width>120</width><height>32</height>
+            <label>$INFO[ListItem.Property(type_plain)]</label>
+            <font>Meta22</font><textcolor>FF7E7D79</textcolor><align>center</align><aligny>center</aligny>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>168</left><top>18</top><width>1</width><height>88</height>
+            <texture colordiffuse="33000000">bobi/white.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>192</left><top>12</top><width>740</width><height>40</height>
+            <label>$INFO[ListItem.Property(title)]</label>
+            <font>Label28</font><textcolor>FF0A0B0E</textcolor><aligny>center</aligny>
+            <scroll>true</scroll>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>192</left><top>12</top><width>740</width><height>40</height>
+            <label>$INFO[ListItem.Property(title)]</label>
+            <font>Label28</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="group">
+            <visible>Control.HasFocus(1000)</visible>
+            <control type="label">
+              <left>192</left><top>52</top><width>1010</width><height>32</height>
+              <label>$INFO[ListItem.Property(chinese_subtitles),[COLOR FF1E8C55]中字 ,[/COLOR]   ]$INFO[ListItem.Property(badges_plain),,   ]$INFO[ListItem.Property(release_group)]</label>
+              <font>Meta24</font><textcolor>FF3A3D45</textcolor><aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>192</left><top>84</top><width>1010</width><height>30</height>
+              <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(languages_plain),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]</label>
+              <font>Meta22</font><textcolor>FF5A5D66</textcolor><aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>948</left><top>12</top><width>256</width><height>40</height>
+              <label>$INFO[ListItem.Property(recommendation_status)]</label>
+              <font>Button24</font><textcolor>FFD9601A</textcolor><align>right</align><aligny>center</aligny>
+            </control>
+          </control>
+          <control type="group">
+            <visible>!Control.HasFocus(1000)</visible>
+            <control type="label">
+              <left>192</left><top>52</top><width>1010</width><height>32</height>
+              <label>$INFO[ListItem.Property(chinese_subtitles),[COLOR FF4CD08A]中字 ,[/COLOR]   ]$INFO[ListItem.Property(badges_plain),,   ]$INFO[ListItem.Property(release_group)]</label>
+              <font>Meta24</font><textcolor>FFB4B2AD</textcolor><aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>192</left><top>84</top><width>1010</width><height>30</height>
+              <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(seeders),   ·   做种 ]$INFO[ListItem.Property(languages_plain),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]</label>
+              <font>Meta22</font><textcolor>FF7E7D79</textcolor><aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>948</left><top>12</top><width>256</width><height>40</height>
+              <label>$INFO[ListItem.Property(recommendation_status)]</label>
+              <font>Button24</font><textcolor>FFFF8A3D</textcolor><align>right</align><aligny>center</aligny>
+            </control>
+          </control>
+        </control>
+      </focusedlayout>
+    </control>
+    <control type="scrollbar" id="1111">
+      <left>1852</left><top>192</top><width>6</width><height>792</height>
+      <onleft>1000</onleft>
+      <showonepage>false</showonepage>
+      <orientation>vertical</orientation>
+      <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+    </control>
+
+    <!-- loading (no rows yet) -->
+    <control type="group">
+      <left>600</left><top>230</top>
+      <visible>Integer.IsEqual(Container(1000).NumItems,0) + String.IsEqual(Window().Property(source_loading),true)</visible>
+      <control type="image">
+        <left>0</left><top>0</top><width>1224</width><height>124</height>
+        <texture colordiffuse="FF15171C" border="14">bobi/r14.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>136</top><width>1224</width><height>124</height>
+        <texture colordiffuse="FF121419" border="14">bobi/r14.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>272</top><width>1224</width><height>124</height>
+        <texture colordiffuse="FF0F1115" border="14">bobi/r14.png</texture>
+      </control>
+      <control type="label">
+        <left>40</left><top>0</top><width>1100</width><height>124</height>
+        <label>正在向各来源查询…  先到的片源会立即出现，可直接选择</label>
+        <font>Label28</font><textcolor>FFB4B2AD</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+    <!-- empty -->
+    <control type="group">
+      <left>600</left><top>260</top>
+      <visible>Integer.IsEqual(Container(1000).NumItems,0) + !String.IsEqual(Window().Property(source_loading),true)</visible>
+      <control type="image">
+        <left>0</left><top>0</top><width>56</width><height>56</height>
+        <texture colordiffuse="FF7E7D79">bobi/icons/empty.png</texture>
+      </control>
+      <control type="label">
+        <left>80</left><top>-4</top><width>1100</width><height>40</height>
+        <label>没有符合条件的片源</label>
+        <font>Head30</font><textcolor>FFF5F3EF</textcolor>
+      </control>
+      <control type="label">
+        <left>80</left><top>40</top><width>1100</width><height>32</height>
+        <label>按 上 切换清晰度为“全部”，或在“筛选”中放宽条件</label>
+        <font>Meta24</font><textcolor>FF7E7D79</textcolor>
+      </control>
+    </control>
+    <!-- status / error line -->
+    <control type="group">
+      <left>584</left><top>1004</top>
+      <visible>!String.IsEmpty(Window().Property(playback_error))</visible>
+      <control type="image">
+        <left>16</left><top>4</top><width>1224</width><height>56</height>
+        <texture colordiffuse="33F5C451" border="14">bobi/r14.png</texture>
+      </control>
+      <control type="label">
+        <left>40</left><top>4</top><width>1180</width><height>56</height>
+        <label>$INFO[Window().Property(playback_error)]</label>
+        <font>Label24</font><textcolor>FFF5C451</textcolor><aligny>center</aligny>
+        <scroll>true</scroll>
+      </control>
+    </control>
+    <control type="label">
+      <left>96</left><top>1012</top><width>440</width><height>40</height>
+      <label>确认 播放   ·   菜单 更多操作</label>
+      <font>Meta22</font><textcolor>FF7E7D79</textcolor><aligny>center</aligny>
+      <visible>String.IsEmpty(Window().Property(playback_error))</visible>
+    </control>
+  </controls>
+</window>

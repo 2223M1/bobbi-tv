@@ -1,0 +1,7 @@
+# bobbi TV review-candidate assets
+
+The layout is inherited from the Minsk/Confluence-derived AM6B Cinema skin. Existing author credits and license files are retained; no blanket relicensing is asserted. Arctic Fuse-derived artwork remains CC BY-NC-SA 4.0 (noncommercial and share-alike), not GPL artwork.
+
+All active font roles now reference unmodified HarmonyOS Sans SC Regular, Medium or Bold. Copyright 2021-2025 Huawei Device Co., Ltd. The accompanying fonts/LICENCE-HarmonyOS-Sans.txt permits unmodified bundling with software subject to its conditions. No font binary is modified, subsetted, merged or renamed. Keyboard icons use unchanged Font Awesome Free 6.7.2 Solid (Fonticons, Inc., SIL OFL 1.1 for font files), pinned to commit af620534bfc3c2d4cbefcfeec29603bbe7809e64. All nine required icon mappings are checked against its actual cmap; the full upstream license accompanies the font. Restricted Founder, Netflix and Font Awesome Pro fonts and unreviewed MiSans fonts are not included. Historical upstream provenance is retained separately under licenses/ and is not a claim about the current typography.
+
+Private screenshots and all legacy local updater/authentication, network, firmware and device helpers are omitted. The standalone Kodi IME helper is retained. The candidate is not a certified release; other artwork provenance, native-host compatibility and device tests remain release gates.

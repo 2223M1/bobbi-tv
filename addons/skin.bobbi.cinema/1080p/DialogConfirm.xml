@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">9000</defaultcontrol>
+  <depth>DepthDialog</depth>
+  <controls>
+    <include>DialogScrim</include>
+    <control type="group">
+      <centerleft>50%</centerleft><centertop>50%</centertop>
+      <width>1040</width><height>420</height>
+      <include content="PanelOpen"><param name="slide">0,16</param></include>
+      <control type="image">
+        <left>0</left><top>0</top><width>1040</width><height>420</height>
+        <texture colordiffuse="FF15171C" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="label" id="1">
+        <left>56</left><top>44</top><width>928</width><height>56</height>
+        <font>Head40</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="textbox" id="9">
+        <left>56</left><top>120</top><width>928</width><height>150</height>
+        <font>Body28</font><textcolor>text2</textcolor>
+        <autoscroll delay="5000" time="2000" repeat="6000">true</autoscroll>
+      </control>
+      <control type="progress" id="20">
+        <left>56</left><top>278</top><width>928</width><height>8</height>
+        <texturebg colordiffuse="33FFFFFF" border="4,0,4,0">bobi/bar8.png</texturebg>
+        <midtexture colordiffuse="accent" border="4,0,4,0">bobi/bar8.png</midtexture>
+      </control>
+      <control type="grouplist" id="9000">
+        <left>56</left><top>310</top><width>928</width><height>72</height>
+        <orientation>horizontal</orientation><itemgap>16</itemgap>
+        <onup>noop</onup><ondown>noop</ondown>
+        <include content="DialogButton"><param name="id">11</param><param name="width">240</param></include>
+        <include content="DialogButton"><param name="id">10</param><param name="width">240</param></include>
+        <include content="DialogButton"><param name="id">12</param><param name="width">240</param></include>
+      </control>
+    </control>
+  </controls>
+</window>

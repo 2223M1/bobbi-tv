@@ -1,0 +1,4959 @@
+# Kodi Media Center language file
+# Addon Name: Jacktook
+# Addon id: plugin.video.bobbi
+# Addon Provider: Sam-Max
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-09-19 19:53+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Settings
+msgctxt "#30000"
+msgid "Players"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Clients"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Torrent Client"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Indexers"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Indexer"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Jackett Configuration:"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Client Key"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Host"
+msgstr ""
+
+msgctxt "#30026"
+msgid "Description length"
+msgstr ""
+
+msgctxt "#30027"
+msgid "Insecured connection"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Sort by"
+msgstr ""
+
+msgctxt "#30029"
+msgid "Total Results"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Timeout"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Timeout"
+msgstr ""
+
+msgctxt "#30050"
+msgid "Prowlarr Configuration:"
+msgstr ""
+
+msgctxt "#30051"
+msgid "Client Key"
+msgstr ""
+
+msgctxt "#30052"
+msgid "Host"
+msgstr ""
+
+msgctxt "#30053"
+msgid "Indexers-Ids"
+msgstr ""
+
+msgctxt "#30054"
+msgid "Anime IndexersIds"
+msgstr ""
+
+msgctxt "#30100"
+msgid "TMDB"
+msgstr ""
+
+msgctxt "#30102"
+msgid "TMDB Configuration"
+msgstr ""
+
+msgctxt "#30103"
+msgid "Client Key"
+msgstr ""
+
+msgctxt "#30104"
+msgid "Clear tmdb cache"
+msgstr ""
+
+msgctxt "#30105"
+msgid "Cache expiration hours"
+msgstr ""
+
+msgctxt "#30106"
+msgid "Clear Cache"
+msgstr ""
+
+msgctxt "#30107"
+msgid "Enable Cache"
+msgstr ""
+
+msgctxt "#30140"
+msgid "AniList"
+msgstr ""
+
+msgctxt "#30142"
+msgid "AniList Configuration:"
+msgstr ""
+
+msgctxt "#30143"
+msgid "Client ID"
+msgstr ""
+
+msgctxt "#30144"
+msgid "Client Secret"
+msgstr ""
+
+msgctxt "#30150"
+msgid "Services"
+msgstr ""
+
+msgctxt "#30152"
+msgid "Real Debrid Configuration"
+msgstr ""
+
+msgctxt "#30154"
+msgid "Token"
+msgstr ""
+
+msgctxt "#30200"
+msgid "Fanart.TV"
+msgstr ""
+
+msgctxt "#30202"
+msgid "Fanart.TV Configuration:"
+msgstr ""
+
+msgctxt "#30203"
+msgid "Client ID"
+msgstr ""
+
+msgctxt "#30221"
+msgid "No Client Key provided for"
+msgstr ""
+
+msgctxt "#30223"
+msgid "You need to configure"
+msgstr ""
+
+msgctxt "#30228"
+msgid "The request to Torrentio failed."
+msgstr ""
+
+msgctxt "#30229"
+msgid "The request to Jackett failed."
+msgstr ""
+
+msgctxt "#30230"
+msgid "The request to Prowlarr failed."
+msgstr ""
+
+msgctxt "#30231"
+msgid "The request to Elhosted failed."
+msgstr ""
+
+msgctxt "#30232"
+msgid "The request to Jackgram failed."
+msgstr ""
+
+msgctxt "#30233"
+msgid "The request to Mediafusion failed."
+msgstr ""
+
+msgctxt "#30234"
+msgid "The request to Peerflix failed."
+msgstr ""
+
+msgctxt "#30235"
+msgid "Stremio"
+msgstr ""
+
+msgctxt "#30236"
+msgid "Stremio add-ons"
+msgstr ""
+
+msgctxt "#30237"
+msgid "Import your config"
+msgstr ""
+
+msgctxt "#30238"
+msgid "Manage add-ons"
+msgstr ""
+
+msgctxt "#30240"
+msgid "TMDB cache cleared"
+msgstr ""
+
+msgctxt "#30241"
+msgid "Search on TMDB:"
+msgstr ""
+
+msgctxt "#30242"
+msgid "Search on AniList:"
+msgstr ""
+
+msgctxt "#30243"
+msgid "Search for a keyword:"
+msgstr ""
+
+msgctxt "#30244"
+msgid "Cache cleared"
+msgstr ""
+
+msgctxt "#30249"
+msgid "Addon Jacktook Burst not found - (script.bobbi.burst)"
+msgstr ""
+
+msgctxt "#30250"
+msgid "Addon Torrest not found - (plugin.video.torrest)"
+msgstr ""
+
+msgctxt "#30251"
+msgid "No sources found to play"
+msgstr ""
+
+msgctxt "#30252"
+msgid "Addon Elementum not found - (plugin.video.elementum)"
+msgstr ""
+
+msgctxt "#30253"
+msgid "Addon Jacktorr not found - (plugin.video.jacktorr)"
+msgstr ""
+
+msgctxt "#30254"
+msgid "Do you want to install Elementum?"
+msgstr ""
+
+msgctxt "#30255"
+msgid "Do you want to install Jacktorr?"
+msgstr ""
+
+msgctxt "#30256"
+msgid "Do you want to install Torrest?"
+msgstr ""
+
+msgctxt "#30257"
+msgid "Do you want to install Jacktook Burst?"
+msgstr ""
+
+msgctxt "#30258"
+msgid "Invalid host for %s. Use http:// or https://"
+msgstr ""
+
+msgctxt "#30259"
+msgid "Test connection"
+msgstr ""
+
+msgctxt "#30260"
+msgid "Jackgram: OK"
+msgstr ""
+
+msgctxt "#30261"
+msgid "Host not reachable"
+msgstr ""
+
+msgctxt "#30262"
+msgid "Search in Telegram"
+msgstr ""
+
+msgctxt "#30650"
+msgid "Queued"
+msgstr ""
+
+msgctxt "#30651"
+msgid "Checking"
+msgstr ""
+
+msgctxt "#30652"
+msgid "Finding"
+msgstr ""
+
+msgctxt "#30653"
+msgid "Downloading"
+msgstr ""
+
+msgctxt "#30654"
+msgid "Finished"
+msgstr ""
+
+msgctxt "#30655"
+msgid "Seeding"
+msgstr ""
+
+msgctxt "#30656"
+msgid "Allocating"
+msgstr ""
+
+msgctxt "#30657"
+msgid "Checking resume data"
+msgstr ""
+
+msgctxt "#30658"
+msgid "Paused"
+msgstr ""
+
+msgctxt "#30659"
+msgid "Buffering"
+msgstr ""
+
+msgctxt "#30660"
+msgid "Unknown"
+msgstr ""
+
+msgctxt "#30700"
+msgid "Play Torrent"
+msgstr "Play Torrent"
+
+msgctxt "#30701"
+msgid "Stop downloading"
+msgstr ""
+
+msgctxt "#30702"
+msgid "Downloads"
+msgstr ""
+
+msgctxt "#30703"
+msgid "Resume"
+msgstr ""
+
+msgctxt "#30704"
+msgid "Pause"
+msgstr ""
+
+msgctxt "#30705"
+msgid "Remove torrent"
+msgstr ""
+
+msgctxt "#30706"
+msgid "Remove torrent and files"
+msgstr ""
+
+msgctxt "#30707"
+msgid "Torrent status"
+msgstr ""
+
+msgctxt "#30708"
+msgid "Stop"
+msgstr ""
+
+msgctxt "#30709"
+msgid "Drop torrent"
+msgstr ""
+
+msgctxt "#30710"
+msgid "Include Season Packs"
+msgstr ""
+
+msgctxt "#30711"
+msgid "Torrent Settings"
+msgstr ""
+
+msgctxt "#30712"
+msgid "General"
+msgstr ""
+
+msgctxt "#30713"
+msgid "Enable"
+msgstr ""
+
+msgctxt "#30714"
+msgid "Jacktorr"
+msgstr ""
+
+msgctxt "#30715"
+msgid "Torrest"
+msgstr ""
+
+msgctxt "#30716"
+msgid "Elementum"
+msgstr ""
+
+msgctxt "#30717"
+msgid "General"
+msgstr ""
+
+msgctxt "#30718"
+msgid "Auto-Play"
+msgstr ""
+
+msgctxt "#30719"
+msgid "Enable Next Episode Dialog"
+msgstr ""
+
+msgctxt "#30720"
+msgid "Seconds left before show Next Episode Dialog"
+msgstr ""
+
+msgctxt "#30721"
+msgid "Cache Enabled"
+msgstr ""
+
+msgctxt "#30722"
+msgid "Cache Expiration (hours)"
+msgstr ""
+
+msgctxt "#30723"
+msgid "Cache"
+msgstr ""
+
+msgctxt "#30724"
+msgid "Update"
+msgstr ""
+
+msgctxt "#30725"
+msgid "Indexers Configuration"
+msgstr ""
+
+msgctxt "#30726"
+msgid "Sort"
+msgstr ""
+
+msgctxt "#30727"
+msgid "Quality"
+msgstr ""
+
+msgctxt "#30938"
+msgid "Silent Resume"
+msgstr ""
+
+msgctxt "#30939"
+msgid "Auto-resume from last position without asking"
+msgstr ""
+
+msgctxt "#30940"
+msgid "Use Percentage Trigger"
+msgstr ""
+
+msgctxt "#30941"
+msgid "Show Dialog at Playback Percentage"
+msgstr ""
+
+msgctxt "#30942"
+msgid "Trigger the next-episode dialog based on percentage of video played instead of seconds remaining."
+msgstr ""
+
+msgctxt "#30943"
+msgid "The percentage at which the next-episode dialog appears (e.g. 95 means 95% of the video)."
+msgstr ""
+
+msgctxt "#30944"
+msgid "Auto-Play Timeout"
+msgstr ""
+
+msgctxt "#30945"
+msgid "Seconds before auto-playing next episode. 0 = disabled, dialog waits for user input."
+msgstr ""
+
+msgctxt "#30946"
+msgid "Offcloud Configuration"
+msgstr "Offcloud Configuration"
+
+msgctxt "#30947"
+msgid "Enable Offcloud cached torrent and cloud transfer support."
+msgstr "Enable Offcloud cached torrent and cloud transfer support."
+
+msgctxt "#30948"
+msgid "Your Offcloud account username/email."
+msgstr "Your Offcloud account username/email."
+
+msgctxt "#30949"
+msgid "Offcloud API key from Account API Key settings."
+msgstr "Offcloud API key from Account API Key settings."
+
+msgctxt "#30950"
+msgid "View Offcloud account information."
+msgstr "View Offcloud account information."
+
+msgctxt "#30951"
+msgid "Authorize add-on to access Offcloud account."
+msgstr "Authorize add-on to access Offcloud account."
+
+msgctxt "#30952"
+msgid "Revoke Offcloud account access."
+msgstr "Revoke Offcloud account access."
+
+msgctxt "#30728"
+msgid "Seeds"
+msgstr ""
+
+msgctxt "#30729"
+msgid "Size"
+msgstr ""
+
+msgctxt "#30730"
+msgid "Cached"
+msgstr ""
+
+msgctxt "#30731"
+msgid "Date"
+msgstr ""
+
+msgctxt "#30732"
+msgid "None"
+msgstr ""
+
+msgctxt "#30733"
+msgid "Torrentio Configuration"
+msgstr ""
+
+msgctxt "#30734"
+msgid "Enable"
+msgstr ""
+
+msgctxt "#30735"
+msgid "Still Watching? Threshold"
+msgstr ""
+
+msgctxt "#30736"
+msgid "Subtitle Language"
+msgstr ""
+
+msgctxt "#30737"
+msgid "GB"
+msgstr ""
+
+msgctxt "#30738"
+msgid "JP"
+msgstr ""
+
+msgctxt "#30739"
+msgid "RU"
+msgstr ""
+
+msgctxt "#30740"
+msgid "IT"
+msgstr ""
+
+msgctxt "#30741"
+msgid "PT"
+msgstr ""
+
+msgctxt "#30742"
+msgid "ES"
+msgstr ""
+
+msgctxt "#30743"
+msgid "MX"
+msgstr ""
+
+msgctxt "#30744"
+msgid "KR"
+msgstr ""
+
+msgctxt "#30745"
+msgid "CN"
+msgstr ""
+
+msgctxt "#30746"
+msgid "TW"
+msgstr ""
+
+msgctxt "#30747"
+msgid "FR"
+msgstr ""
+
+msgctxt "#30748"
+msgid "DE"
+msgstr ""
+
+msgctxt "#30749"
+msgid "NL"
+msgstr ""
+
+msgctxt "#30750"
+msgid "IN"
+msgstr ""
+
+msgctxt "#30751"
+msgid "PL"
+msgstr ""
+
+msgctxt "#30752"
+msgid "LT"
+msgstr ""
+
+msgctxt "#30753"
+msgid "CZ"
+msgstr ""
+
+msgctxt "#30754"
+msgid "SK"
+msgstr ""
+
+msgctxt "#30755"
+msgid "SI"
+msgstr ""
+
+msgctxt "#30756"
+msgid "HU"
+msgstr ""
+
+msgctxt "#30757"
+msgid "RO"
+msgstr ""
+
+msgctxt "#30758"
+msgid "HR"
+msgstr ""
+
+msgctxt "#30759"
+msgid "UA"
+msgstr ""
+
+msgctxt "#30760"
+msgid "GR"
+msgstr ""
+
+msgctxt "#30761"
+msgid "DK"
+msgstr ""
+
+msgctxt "#30762"
+msgid "FI"
+msgstr ""
+
+msgctxt "#30763"
+msgid "SE"
+msgstr ""
+
+msgctxt "#30764"
+msgid "NO"
+msgstr ""
+
+msgctxt "#30765"
+msgid "TR"
+msgstr ""
+
+msgctxt "#30766"
+msgid "Torrentio Providers"
+msgstr ""
+
+msgctxt "#30767"
+msgid "Jackgram Configuration"
+msgstr ""
+
+msgctxt "#30768"
+msgid "Host"
+msgstr ""
+
+msgctxt "#30769"
+msgid "Elfhosted/KnightCrawler Configuration"
+msgstr ""
+
+msgctxt "#30770"
+msgid "Language"
+msgstr ""
+
+msgctxt "#30771"
+msgid "Zilean Configuration"
+msgstr ""
+
+msgctxt "#30772"
+msgid "Zilean Host"
+msgstr ""
+
+msgctxt "#30773"
+msgid "Number of consecutive auto-played episodes before asking 'Still Watching?'. Set to 0 to disable."
+msgstr ""
+
+msgctxt "#30774"
+msgid "Zilean Timeout"
+msgstr ""
+
+msgctxt "#30775"
+msgid "Jackett Configuration"
+msgstr ""
+
+msgctxt "#30776"
+msgid "Prowlarr Configuration"
+msgstr ""
+
+msgctxt "#30777"
+msgid "MediaFusion configuration"
+msgstr ""
+
+msgctxt "#30779"
+msgid "Manifest Url"
+msgstr ""
+
+msgctxt "#30780"
+msgid "Jacktook Burst Configuration"
+msgstr ""
+
+msgctxt "#30781"
+msgid "Burst Configuration"
+msgstr ""
+
+msgctxt "#30782"
+msgid "User"
+msgstr ""
+
+msgctxt "#30783"
+msgid "Authorize"
+msgstr ""
+
+msgctxt "#30784"
+msgid "Remove Authorization"
+msgstr ""
+
+msgctxt "#30785"
+msgid "Premiumize Configuration"
+msgstr ""
+
+msgctxt "#30786"
+msgid "Enabled"
+msgstr ""
+
+msgctxt "#30787"
+msgid "Token"
+msgstr ""
+
+msgctxt "#30788"
+msgid "TorBox Configuration"
+msgstr ""
+
+msgctxt "#30789"
+msgid "Debrider Configuration"
+msgstr ""
+
+msgctxt "#30790"
+msgid "Uncached"
+msgstr ""
+
+msgctxt "#30791"
+msgid "Show uncached torrents"
+msgstr ""
+
+msgctxt "#30792"
+msgid "Use Kodi Language"
+msgstr ""
+
+msgctxt "#30793"
+msgid "Trakt"
+msgstr ""
+
+msgctxt "#30794"
+msgid "Trakt Configuration"
+msgstr ""
+
+msgctxt "#30795"
+msgid "Expires"
+msgstr ""
+
+msgctxt "#30796"
+msgid "Refresh"
+msgstr ""
+
+msgctxt "#30797"
+msgid "Token"
+msgstr ""
+
+msgctxt "#30798"
+msgid "Trakt Client"
+msgstr ""
+
+msgctxt "#30800"
+msgid "Trakt Secret"
+msgstr ""
+
+msgctxt "#30802"
+msgid "Log out"
+msgstr ""
+
+msgctxt "#30804"
+msgid "Menus"
+msgstr ""
+
+msgctxt "#30805"
+msgid "Show Telegram Menu"
+msgstr ""
+
+msgctxt "#30806"
+msgid "Clear cache when update"
+msgstr ""
+
+msgctxt "#30807"
+msgid "Peerfix Configuration"
+msgstr ""
+
+msgctxt "#30894"
+msgid "Show Changelog"
+msgstr "Show Changelog"
+
+msgctxt "#30895"
+msgid "View the latest changes and updates to the addon."
+msgstr "View the latest changes and updates to the addon."
+
+msgctxt "#30896"
+msgid "Calendar"
+msgstr "Calendar"
+
+msgctxt "#30897"
+msgid "Use broadcast day adjustment"
+msgstr "Use broadcast day adjustment"
+
+msgctxt "#30898"
+msgid "Adjust broadcast day based on manual offset"
+msgstr "Adjust broadcast day based on manual offset"
+
+msgctxt "#30899"
+msgid "Broadcast Offset (Hours)"
+msgstr "Broadcast Offset (Hours)"
+
+msgctxt "#30900"
+msgid "Manual hour adjustment for broadcast day simulation"
+msgstr "Manual hour adjustment for broadcast day simulation"
+
+msgctxt "#30905"
+msgid "Trakt Calendar Previous Days"
+msgstr "Trakt Calendar Previous Days"
+
+msgctxt "#30906"
+msgid "Number of days in the past to show in the Trakt calendar."
+msgstr "Number of days in the past to show in the Trakt calendar."
+
+msgctxt "#30907"
+msgid "Trakt Calendar Future Days"
+msgstr "Trakt Calendar Future Days"
+
+msgctxt "#30908"
+msgid "Number of days in the future to show in the Trakt calendar."
+msgstr "Number of days in the future to show in the Trakt calendar."
+
+msgctxt "#30909"
+msgid "Show All Shows in Calendar"
+msgstr "Show All Shows in Calendar"
+
+msgctxt "#30918"
+msgid "{provider} cannot directly play packed releases (.rar/.zip). Choose a source with video files instead."
+msgstr "{provider} cannot directly play packed releases (.rar/.zip). Choose a source with video files instead."
+
+msgctxt "#30910"
+msgid "Show all airing shows instead of just your watchlist/collection."
+msgstr "Show all airing shows instead of just your watchlist/collection."
+
+msgctxt "#30911"
+msgid "Your Torbox account username/email."
+msgstr "Your Torbox account username/email."
+
+msgctxt "#30912"
+msgid "Authorize add-on to access Torbox account."
+msgstr "Authorize add-on to access Torbox account."
+
+msgctxt "#30913"
+msgid "Revoke Torbox account access."
+msgstr "Revoke Torbox account access."
+
+msgctxt "#30914"
+msgid "Trakt Sync Interval (minutes)"
+msgstr "Trakt Sync Interval (minutes)"
+
+msgctxt "#30915"
+msgid "How often Jacktook checks Trakt for remote activity changes while Kodi is running."
+msgstr "How often Jacktook checks Trakt for remote activity changes while Kodi is running."
+
+msgctxt "#30916"
+msgid "Account Info"
+msgstr "Account Info"
+
+msgctxt "#30917"
+msgid "View your Trakt account profile and library stats."
+msgstr "View your Trakt account profile and library stats."
+
+msgctxt "#30924"
+msgid "Trakt List Name"
+msgstr "Trakt List Name"
+
+msgctxt "#30925"
+msgid "Trakt List Description"
+msgstr "Trakt List Description"
+
+msgctxt "#30926"
+msgid "Create Trakt List"
+msgstr "Create Trakt List"
+
+msgctxt "#30927"
+msgid "Choose Trakt List"
+msgstr "Choose Trakt List"
+
+msgctxt "#30936"
+msgid "Enable or disable Trakt scrobbling and resume playback from the last tracked position."
+msgstr "Enable or disable Trakt scrobbling and resume playback from the last tracked position."
+
+msgctxt "#30937"
+msgid "Clear cached Trakt data and force Jacktook to fetch fresh Trakt results the next time you open a Trakt view."
+msgstr "Clear cached Trakt data and force Jacktook to fetch fresh Trakt results the next time you open a Trakt view."
+
+msgctxt "#90970"
+msgid "Simkl Configuration"
+msgstr "Simkl Configuration"
+
+msgctxt "#90971"
+msgid "Enable Simkl"
+msgstr "Enable Simkl"
+
+msgctxt "#90972"
+msgid "Enable Simkl account integration."
+msgstr "Enable Simkl account integration."
+
+msgctxt "#90973"
+msgid "Advanced Simkl Client ID Override"
+msgstr "Advanced Simkl Client ID Override"
+
+msgctxt "#90974"
+msgid "Optional. Leave empty to use Jacktook's built-in Simkl application."
+msgstr "Optional. Leave empty to use Jacktook's built-in Simkl application."
+
+msgctxt "#90975"
+msgid "Authorize Simkl"
+msgstr "Authorize Simkl"
+
+msgctxt "#90976"
+msgid "Link your Simkl account using PIN authorization."
+msgstr "Link your Simkl account using PIN authorization."
+
+msgctxt "#90977"
+msgid "Reset Simkl Authorization"
+msgstr "Reset Simkl Authorization"
+
+msgctxt "#90978"
+msgid "Remove the saved Simkl access token from Jacktook."
+msgstr "Remove the saved Simkl access token from Jacktook."
+
+msgctxt "#90979"
+msgid "Enable Simkl Scrobbling"
+msgstr "Enable Simkl Scrobbling"
+
+msgctxt "#90980"
+msgid "Send movie and TV episode playback start, pause, resume, and stop events to Simkl."
+msgstr "Send movie and TV episode playback start, pause, resume, and stop events to Simkl."
+
+msgctxt "#90981"
+msgid "Simkl Library"
+msgstr "Simkl Library"
+
+msgctxt "#90983"
+msgid "Plan to Watch"
+msgstr "Plan to Watch"
+
+msgctxt "#90984"
+msgid "Watching"
+msgstr "Watching"
+
+msgctxt "#90985"
+msgid "Completed"
+msgstr "Completed"
+
+msgctxt "#90986"
+msgid "On Hold"
+msgstr "On Hold"
+
+msgctxt "#90987"
+msgid "Dropped"
+msgstr "Dropped"
+
+msgctxt "#90988"
+msgid "Move to %s"
+msgstr "Move to %s"
+
+msgctxt "#90989"
+msgid "Simkl status updated."
+msgstr "Simkl status updated."
+
+msgctxt "#90990"
+msgid "Unable to update Simkl status."
+msgstr "Unable to update Simkl status."
+
+msgctxt "#90991"
+msgid "Mark as Watched on Simkl"
+msgstr "Mark as Watched on Simkl"
+
+msgctxt "#90992"
+msgid "Mark as Unwatched on Simkl"
+msgstr "Mark as Unwatched on Simkl"
+
+msgctxt "#90993"
+msgid "Remove Movie from Simkl?"
+msgstr "Remove Movie from Simkl?"
+
+msgctxt "#90994"
+msgid "Removing a movie from its Simkl watch history also removes it from your Simkl library. Continue?"
+msgstr "Removing a movie from its Simkl watch history also removes it from your Simkl library. Continue?"
+
+msgctxt "#90995"
+msgid "Simkl watch history updated."
+msgstr "Simkl watch history updated."
+
+msgctxt "#90996"
+msgid "Unable to update Simkl watch history."
+msgstr "Unable to update Simkl watch history."
+
+msgctxt "#90997"
+msgid "Enable and authorize Simkl in settings to access your library."
+msgstr "Enable and authorize Simkl in settings to access your library."
+
+msgctxt "#90998"
+msgid "Enable and authorize Trakt in settings to access your library."
+msgstr "Enable and authorize Trakt in settings to access your library."
+
+msgctxt "#40000"
+msgid "Arabic (United Arab Emirates)"
+msgstr ""
+
+msgctxt "#40001"
+msgid "Arabic (Saudi Arabia)"
+msgstr ""
+
+msgctxt "#40002"
+msgid "Belarusian (Belarus)"
+msgstr ""
+
+msgctxt "#40003"
+msgid "Bulgarian (Bulgaria)"
+msgstr ""
+
+msgctxt "#40004"
+msgid "Bengali (Bangladesh)"
+msgstr ""
+
+msgctxt "#40005"
+msgid "Catalan (Spain)"
+msgstr ""
+
+msgctxt "#40006"
+msgid "Chamorro (Guam)"
+msgstr ""
+
+msgctxt "#40007"
+msgid "Czech (Czech Republic)"
+msgstr ""
+
+msgctxt "#40008"
+msgid "Danish (Denmark)"
+msgstr ""
+
+msgctxt "#40009"
+msgid "German (Austria)"
+msgstr ""
+
+msgctxt "#40010"
+msgid "German (Switzerland)"
+msgstr ""
+
+msgctxt "#40011"
+msgid "German (Germany)"
+msgstr ""
+
+msgctxt "#40012"
+msgid "Greek (Greece)"
+msgstr ""
+
+msgctxt "#40013"
+msgid "English (Australia)"
+msgstr ""
+
+msgctxt "#40014"
+msgid "English (Canada)"
+msgstr ""
+
+msgctxt "#40015"
+msgid "English (United Kingdom)"
+msgstr ""
+
+msgctxt "#40016"
+msgid "English (Ireland)"
+msgstr ""
+
+msgctxt "#40017"
+msgid "English (New Zealand)"
+msgstr ""
+
+msgctxt "#40018"
+msgid "English (United States of America)"
+msgstr ""
+
+msgctxt "#40019"
+msgid "Esperanto (None)"
+msgstr ""
+
+msgctxt "#40020"
+msgid "Spanish (Spain)"
+msgstr ""
+
+msgctxt "#40021"
+msgid "Spanish (Mexico)"
+msgstr ""
+
+msgctxt "#40022"
+msgid "Estonian (Estonia)"
+msgstr ""
+
+msgctxt "#40023"
+msgid "Basque (Spain)"
+msgstr ""
+
+msgctxt "#40024"
+msgid "Persian (Iran)"
+msgstr ""
+
+msgctxt "#40025"
+msgid "Finnish (Finland)"
+msgstr ""
+
+msgctxt "#40026"
+msgid "French (Canada)"
+msgstr ""
+
+msgctxt "#40027"
+msgid "French (France)"
+msgstr ""
+
+msgctxt "#40028"
+msgid "Galician (Spain)"
+msgstr ""
+
+msgctxt "#40029"
+msgid "Hebrew (Israel)"
+msgstr ""
+
+msgctxt "#40030"
+msgid "Hindi (India)"
+msgstr ""
+
+msgctxt "#40031"
+msgid "Hungarian (Hungary)"
+msgstr ""
+
+msgctxt "#40032"
+msgid "Indonesian (Indonesia)"
+msgstr ""
+
+msgctxt "#40033"
+msgid "Italian (Italy)"
+msgstr ""
+
+msgctxt "#40034"
+msgid "Japanese (Japan)"
+msgstr ""
+
+msgctxt "#40035"
+msgid "Georgian (Georgia)"
+msgstr ""
+
+msgctxt "#40036"
+msgid "Kazakh (Kazakhstan)"
+msgstr ""
+
+msgctxt "#40037"
+msgid "Kannada (India)"
+msgstr ""
+
+msgctxt "#40038"
+msgid "Korean (South Korea)"
+msgstr ""
+
+msgctxt "#40039"
+msgid "Lithuanian (Lithuania)"
+msgstr ""
+
+msgctxt "#40040"
+msgid "Latvian (Latvia)"
+msgstr ""
+
+msgctxt "#40041"
+msgid "Malayalam (India)"
+msgstr ""
+
+msgctxt "#40042"
+msgid "Malay (Malaysia)"
+msgstr ""
+
+msgctxt "#40043"
+msgid "Malay (Singapore)"
+msgstr ""
+
+msgctxt "#40044"
+msgid "Norwegian Bokmål (Norway)"
+msgstr ""
+
+msgctxt "#40045"
+msgid "Dutch (Netherlands)"
+msgstr ""
+
+msgctxt "#40046"
+msgid "Norwegian (Norway)"
+msgstr ""
+
+msgctxt "#40047"
+msgid "Polish (Poland)"
+msgstr ""
+
+msgctxt "#40048"
+msgid "Portuguese (Brazil)"
+msgstr ""
+
+msgctxt "#40049"
+msgid "Portuguese (Portugal)"
+msgstr ""
+
+msgctxt "#40050"
+msgid "Romanian (Romania)"
+msgstr ""
+
+msgctxt "#40051"
+msgid "Russian (Russia)"
+msgstr ""
+
+msgctxt "#40052"
+msgid "Sinhalese (Sri Lanka)"
+msgstr ""
+
+msgctxt "#40053"
+msgid "Slovak (Slovakia)"
+msgstr ""
+
+msgctxt "#40054"
+msgid "Slovenian (Slovenia)"
+msgstr ""
+
+msgctxt "#40055"
+msgid "Serbian (Serbia)"
+msgstr ""
+
+msgctxt "#40056"
+msgid "Swedish (Sweden)"
+msgstr ""
+
+msgctxt "#40057"
+msgid "Tamil (India)"
+msgstr ""
+
+msgctxt "#40058"
+msgid "Telugu (India)"
+msgstr ""
+
+msgctxt "#40059"
+msgid "Thai (Thailand)"
+msgstr ""
+
+msgctxt "#40060"
+msgid "Tagalog (Philippines)"
+msgstr ""
+
+msgctxt "#40061"
+msgid "Turkish (Turkey)"
+msgstr ""
+
+msgctxt "#40062"
+msgid "Ukrainian (Ukraine)"
+msgstr ""
+
+msgctxt "#40063"
+msgid "Vietnamese (Vietnam)"
+msgstr ""
+
+msgctxt "#40064"
+msgid "Mandarin (China)"
+msgstr ""
+
+msgctxt "#40065"
+msgid "Mandarin (Hong Kong)"
+msgstr ""
+
+msgctxt "#40066"
+msgid "Mandarin (Taiwan)"
+msgstr ""
+
+msgctxt "#40067"
+msgid "Zulu (South Africa)"
+msgstr ""
+
+msgctxt "#42418"
+msgid "Language and country"
+msgstr ""
+
+msgctxt "#42419"
+msgid "The language and country settings used when looking up data from TMDb"
+msgstr ""
+
+msgctxt "#42420"
+msgid "EN"
+msgstr ""
+
+msgctxt "#30801"
+msgid "Zilean server address (include port if required)."
+msgstr ""
+
+msgctxt "#30803"
+msgid "Display torrents not yet cached on your debrid service."
+msgstr ""
+
+msgctxt "#30808"
+msgid "Fanart.tv Client Key (for artwork)."
+msgstr ""
+
+msgctxt "#30809"
+msgid "Improve performance by caching metadata."
+msgstr ""
+
+msgctxt "#30810"
+msgid "Seconds before Jackett requests time out (e.g., 30)."
+msgstr ""
+
+msgctxt "#30811"
+msgid "Trakt client secret from OAuth application settings."
+msgstr ""
+
+msgctxt "#30812"
+msgid "Limit TV show results to specific seasons/episodes."
+msgstr ""
+
+msgctxt "#30813"
+msgid "Hours before cached data is automatically refreshed (e.g., 24)."
+msgstr ""
+
+msgctxt "#30814"
+msgid "Premiumize Client Token (get from account page)."
+msgstr ""
+
+msgctxt "#30815"
+msgid "Jackett server URL (e.g., http://localhost)."
+msgstr ""
+
+msgctxt "#30816"
+msgid "Display Telegram integration options in UI."
+msgstr ""
+
+msgctxt "#30817"
+msgid "Your Real-Debrid account username/email."
+msgstr ""
+
+msgctxt "#30818"
+msgid "Trakt client ID from https://trakt.tv/oauth/apps."
+msgstr ""
+
+msgctxt "#30819"
+msgid "Connect Trakt.tv account to sync watch progress."
+msgstr ""
+
+msgctxt "#30820"
+msgid "Seconds before Zilean requests time out (e.g., 30)."
+msgstr ""
+
+msgctxt "#30821"
+msgid "Your Jackett Client Key (found in dashboard)."
+msgstr ""
+
+msgctxt "#30822"
+msgid "Sort results by criteria (e.g., 'date', 'title', 'size')."
+msgstr ""
+
+msgctxt "#30823"
+msgid "Configure Burst mode settings and providers."
+msgstr ""
+
+msgctxt "#30824"
+msgid "Enable Premiumize.me cloud service."
+msgstr ""
+
+msgctxt "#30825"
+msgid "Truncate descriptions after [X] characters (0 for full text)."
+msgstr ""
+
+msgctxt "#30826"
+msgid "Enable Prowlarr indexer management."
+msgstr ""
+
+msgctxt "#30827"
+msgid "Jackgram server URL (e.g., http://localhost:9117)."
+msgstr ""
+
+msgctxt "#30828"
+msgid "Debrider Client Key for authentication."
+msgstr ""
+
+msgctxt "#30829"
+msgid "Delay (in seconds) before next episode dialog appears (e.g., 10)."
+msgstr ""
+
+msgctxt "#30830"
+msgid "Specify the torrent client."
+msgstr ""
+
+msgctxt "#30831"
+msgid "Enable Debrider cached torrent support."
+msgstr ""
+
+msgctxt "#30832"
+msgid "Torbox Client Token (found in account settings)."
+msgstr ""
+
+msgctxt "#30833"
+msgid "Trakt refresh token (auto-managed)."
+msgstr ""
+
+msgctxt "#30834"
+msgid "Show confirmation dialog before playing next episode."
+msgstr ""
+
+msgctxt "#30835"
+msgid "Authorize add-on to access Real-Debrid account."
+msgstr ""
+
+msgctxt "#30836"
+msgid "Enable torrent-based media content"
+msgstr ""
+
+msgctxt "#30837"
+msgid "Indicates if Real-Debrid account is linked."
+msgstr ""
+
+msgctxt "#30838"
+msgid "Automatically play next media item when current playback ends."
+msgstr ""
+
+msgctxt "#30839"
+msgid "Check for and install the latest add-on updates."
+msgstr ""
+
+msgctxt "#30840"
+msgid "Comma-separated Prowlarr indexer IDs to use (e.g., 1,5,7)."
+msgstr ""
+
+msgctxt "#30841"
+msgid "Timeout (seconds) for Prowlarr requests (e.g., 20)."
+msgstr ""
+
+msgctxt "#30842"
+msgid "Trakt authorization expiration date (read-only)."
+msgstr ""
+
+msgctxt "#30843"
+msgid "Enable Torbox.de cloud torrent integration."
+msgstr ""
+
+msgctxt "#30844"
+msgid "Trakt Access Token (auto-filled after auth)."
+msgstr ""
+
+msgctxt "#30845"
+msgid "Link Premiumize.me account to add-on."
+msgstr ""
+
+msgctxt "#30846"
+msgid "Clear cached data automatically after updating the add-on."
+msgstr ""
+
+msgctxt "#30847"
+msgid "Click to delete all cached data immediately."
+msgstr ""
+
+msgctxt "#30848"
+msgid "Real-Debrid Client Token (auto-filled after auth)."
+msgstr ""
+
+msgctxt "#30849"
+msgid "Enable Jackett torrent proxy support."
+msgstr ""
+
+msgctxt "#30850"
+msgid "Enable Jackgram integration for enhanced search."
+msgstr ""
+
+msgctxt "#30851"
+msgid "Prowlarr instance URL (e.g., http://localhost)."
+msgstr ""
+
+msgctxt "#30852"
+msgid "Maximum number of search results to display (e.g., 50)."
+msgstr ""
+
+msgctxt "#30853"
+msgid "Revoke Real-Debrid account access."
+msgstr ""
+
+msgctxt "#30854"
+msgid "Prowlarr Client Key (found in Settings > General)."
+msgstr ""
+
+msgctxt "#30855"
+msgid "Trakt.tv username (auto-populated after auth)."
+msgstr ""
+
+msgctxt "#30856"
+msgid "Disconnect Trakt.tv account from add-on."
+msgstr ""
+
+msgctxt "#30857"
+msgid "Enable Zilean integration for metadata fetching."
+msgstr ""
+
+msgctxt "#30858"
+msgid "Your Client Key (required for metadata)"
+msgstr ""
+
+msgctxt "#30859"
+msgid "Enable Burst mode for accelerated searches."
+msgstr ""
+
+msgctxt "#30860"
+msgid "Others"
+msgstr ""
+
+msgctxt "#30861"
+msgid "Filters"
+msgstr ""
+
+msgctxt "#30862"
+msgid "Torrent (P2P) Configuration"
+msgstr ""
+
+msgctxt "#30863"
+msgid "Specify the torrent client"
+msgstr ""
+
+msgctxt "#30864"
+msgid "Sources"
+msgstr ""
+
+msgctxt "#30865"
+msgid "General Filters"
+msgstr ""
+
+msgctxt "#30866"
+msgid "Sign in to your Stremio account to access add-ons and personalized features."
+msgstr "Inicia sesión en tu cuenta de Stremio para acceder a complementos y características personalizadas."
+
+msgctxt "#30867"
+msgid "Sign out of your Stremio account. This will disconnect your account but won't delete your data."
+msgstr "Cierra sesión en tu cuenta de Stremio. Esto desconectará tu cuenta, pero no eliminará tus datos."
+
+msgctxt "#30868"
+msgid "Log Out of Stremio"
+msgstr "Cerrar sesión en Stremio"
+
+msgctxt "#30869"
+msgid "Enable Stremio add-ons integration."
+msgstr "Habilitar la integración de complementos de Stremio."
+
+msgctxt "#30870"
+msgid "Select Stream Addons"
+msgstr ""
+
+msgctxt "#30871"
+msgid "Log In to Stremio"
+msgstr "Iniciar sesión en Stremio"
+
+msgctxt "#30872"
+msgid "Enable or disable Stremio add-ons."
+msgstr "Habilitar o deshabilitar los complementos de Stremio."
+
+msgctxt "#30873"
+msgid "Select language for player subtitle selection"
+msgstr ""
+
+msgctxt "#30874"
+msgid "Update Addons"
+msgstr ""
+
+msgctxt "#30875"
+msgid "Select Catalogs Addons"
+msgstr ""
+
+msgctxt "#30876"
+msgid "Download directory"
+msgstr ""
+
+msgctxt "#30877"
+msgid "Enable Trakt.tv Scrobbling"
+msgstr ""
+
+msgctxt "#30878"
+msgid "Automatically find and load subtitles"
+msgstr ""
+
+msgctxt "#30879"
+msgid "Auto-play quality"
+msgstr ""
+
+msgctxt "#30880"
+msgid "1080p"
+msgstr ""
+
+msgctxt "#30881"
+msgid "720p"
+msgstr ""
+
+msgctxt "#30882"
+msgid "4k"
+msgstr ""
+
+msgctxt "#30883"
+msgid "480p"
+msgstr ""
+
+msgctxt "#30884"
+msgid "Subtitles Configuration"
+msgstr ""
+
+msgctxt "#30885"
+msgid "Addon Host"
+msgstr ""
+
+msgctxt "#30886"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#30887"
+msgid "Primary Language"
+msgstr ""
+
+msgctxt "#30888"
+msgid "Secondary Language"
+msgstr ""
+
+msgctxt "#30889"
+msgid "Deepl Enabled"
+msgstr ""
+
+msgctxt "#30890"
+msgid "Deepl Client Key"
+msgstr ""
+
+msgctxt "#30891"
+msgid "Translator Configuration"
+msgstr ""
+
+msgctxt "#30892"
+msgid "Deepl Target Language"
+msgstr ""
+
+msgctxt "#30893"
+msgid "Stremio Subtitle Configuration"
+msgstr ""
+
+msgctxt "#90001"
+msgid "Add Custom Addon"
+msgstr "Add Custom Addon"
+
+msgctxt "#90002"
+msgid "Add a custom Stremio addon by entering its URL"
+msgstr "Agrega un complemento personalizado de Stremio ingresando su URL"
+
+msgctxt "#90003"
+msgid "Auto-select audio when playing"
+msgstr ""
+
+msgctxt "#90004"
+msgid "Audio Language"
+msgstr ""
+
+msgctxt "#90005"
+msgid "Select audio language for playing the video"
+msgstr ""
+
+msgctxt "#90006"
+msgid "Search"
+msgstr ""
+
+msgctxt "#90007"
+msgid "TV Shows"
+msgstr ""
+
+msgctxt "#90008"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#90009"
+msgid "Anime"
+msgstr ""
+
+msgctxt "#90010"
+msgid "Live TV"
+msgstr ""
+
+msgctxt "#90011"
+msgid "Direct Search"
+msgstr ""
+
+msgctxt "#90012"
+msgid "Torrents"
+msgstr ""
+
+msgctxt "#90013"
+msgid "Telegram"
+msgstr ""
+
+msgctxt "#90014"
+msgid "Cloud"
+msgstr ""
+
+msgctxt "#90015"
+msgid "Downloads"
+msgstr ""
+
+msgctxt "#90016"
+msgid "Settings"
+msgstr ""
+
+msgctxt "#90017"
+msgid "History"
+msgstr ""
+
+msgctxt "#90018"
+msgid "Donate"
+msgstr ""
+
+msgctxt "#90019"
+msgid "Recently Watched Files"
+msgstr ""
+
+msgctxt "#90020"
+msgid "Recently Watched Titles"
+msgstr ""
+
+msgctxt "#90021"
+msgid "TV Calendar"
+msgstr ""
+
+
+msgctxt "#90022"
+msgid "Jacktook is free and built with care in spare time. If you enjoy the addon, consider supporting its development. Donations are optional and help keep updates coming."
+msgstr ""
+
+msgctxt "#90023"
+msgid "Support Jacktook"
+msgstr ""
+
+msgctxt "#90024"
+msgid "Trending Recent"
+msgstr ""
+
+msgctxt "#90025"
+msgid "Genres"
+msgstr ""
+
+msgctxt "#90026"
+msgid "Calendar"
+msgstr ""
+
+msgctxt "#90027"
+msgid "Years"
+msgstr ""
+
+msgctxt "#90028"
+msgid "Trending"
+msgstr ""
+
+msgctxt "#90029"
+msgid "Most Watched"
+msgstr ""
+
+msgctxt "#90030"
+msgid "Most Favorited"
+msgstr ""
+
+msgctxt "#90031"
+msgid "Popular Lists"
+msgstr ""
+
+msgctxt "#90032"
+msgid "Trending Lists"
+msgstr ""
+
+msgctxt "#90033"
+msgid "Recomendations"
+msgstr ""
+
+msgctxt "#90034"
+msgid "Watched History"
+msgstr ""
+
+msgctxt "#90035"
+msgid "Watchlist"
+msgstr ""
+
+msgctxt "#90036"
+msgid "Top 10 BoxOffice"
+msgstr ""
+
+msgctxt "#90037"
+msgid "Popular"
+msgstr ""
+
+msgctxt "#90038"
+msgid "Popular Recent"
+msgstr ""
+
+msgctxt "#90039"
+msgid "Airing"
+msgstr ""
+
+msgctxt "#90040"
+msgid "Years"
+msgstr ""
+
+msgctxt "#90041"
+msgid "Genres"
+msgstr ""
+
+msgctxt "#90042"
+msgid "Top Rated"
+msgstr ""
+
+msgctxt "#90043"
+msgid "Most Watched"
+msgstr ""
+
+msgctxt "#90044"
+msgid "Torrentio Configuration"
+msgstr ""
+
+msgctxt "#90045"
+msgid "Enable Torrentio Settings"
+msgstr ""
+
+msgctxt "#90046"
+msgid "Enable or disable the Torrentio Configuration"
+msgstr ""
+
+msgctxt "#90047"
+msgid "Select Torrentio Providers"
+msgstr ""
+
+msgctxt "#90048"
+msgid "Choose which providers to include in the stream request."
+msgstr ""
+
+# Context menus
+
+msgctxt "#90049"
+msgid "Scrape again"
+msgstr ""
+
+msgctxt "#90050"
+msgid "Recommendations"
+msgstr ""
+
+msgctxt "#90051"
+msgid "Similar"
+msgstr ""
+
+msgctxt "#90052"
+msgid "Thread Number"
+msgstr ""
+
+msgctxt "#90053"
+msgid "Select the number of threads (1-30)"
+msgstr ""
+
+msgctxt "#90054"
+msgid "Kodi logs"
+msgstr ""
+
+msgctxt "#90055"
+msgid "Kodi old logs"
+msgstr ""
+
+msgctxt "#90056"
+msgid "Displays Kodi logs to help diagnose issues."
+msgstr ""
+
+msgctxt "#90057"
+msgid "Logs"
+msgstr ""
+
+msgctxt "#90058"
+msgid "Filter by Size"
+msgstr ""
+
+msgctxt "#90059"
+msgid "Enable Size Filter"
+msgstr ""
+
+msgctxt "#90060"
+msgid "Minimum Size (MB)"
+msgstr ""
+
+msgctxt "#90061"
+msgid "Maximum Size (MB)"
+msgstr ""
+
+msgctxt "#90062"
+msgid "Enable Cached Search"
+msgstr ""
+
+msgctxt "#90063"
+msgid "Only show cached streams from external services"
+msgstr ""
+
+msgctxt "#90064"
+msgid "Popular"
+msgstr ""
+
+msgctxt "#90065"
+msgid "Languages"
+msgstr ""
+
+msgctxt "#90066"
+msgid "Networks"
+msgstr ""
+
+msgctxt "#90067"
+msgid "Collections"
+msgstr ""
+
+msgctxt "#90068"
+msgid "Search for collections:"
+msgstr ""
+
+msgctxt "#90069"
+msgid "Main Menu"
+msgstr ""
+
+msgctxt "#90070"
+msgid "Last Titles"
+msgstr ""
+
+msgctxt "#90071"
+msgid "Last Files"
+msgstr ""
+
+msgctxt "#90072"
+msgid "Trakt Lists"
+msgstr ""
+
+msgctxt "#90073"
+msgid "Metadata"
+msgstr ""
+
+msgctxt "#90074"
+msgid "Top Lists"
+msgstr ""
+
+msgctxt "#90075"
+msgid "User Lists"
+msgstr ""
+
+msgctxt "#90076"
+msgid "Search Lists"
+msgstr ""
+
+msgctxt "#90077"
+msgid "MDbList Configuration"
+msgstr ""
+
+msgctxt "#90078"
+msgid "People"
+msgstr ""
+
+msgctxt "#90079"
+msgid "Popular People"
+msgstr ""
+
+msgctxt "#90080"
+msgid "Latest People"
+msgstr ""
+
+msgctxt "#90081"
+msgid "Search People"
+msgstr ""
+
+msgctxt "#90082"
+msgid "Download subtitles"
+msgstr ""
+
+msgctxt "#90083"
+msgid "Download video"
+msgstr ""
+
+msgctxt "#90084"
+msgid "Browse into"
+msgstr ""
+
+msgctxt "#90085"
+msgid "Include TV show Specials"
+msgstr ""
+
+msgctxt "#90086"
+msgid "Airing Today"
+msgstr ""
+
+msgctxt "#90099"
+msgid "Filter by Source Type"
+msgstr ""
+
+# BluRay/UHD
+msgctxt "#90100"
+msgid "Include BluRay/UHD sources"
+msgstr ""
+
+msgctxt "#90105"
+msgid "Includes releases such as: BluRay, BluRay REMUX, BRRip, BDRip, UHDRip, REMUX"
+msgstr ""
+
+# WEB/HD
+msgctxt "#90101"
+msgid "Include WEB/HD sources"
+msgstr ""
+
+msgctxt "#90106"
+msgid "Includes releases such as: WEB-DL, WEB-DLRip, WEBRip, HDRip, WEBMux"
+msgstr ""
+
+# DVD/TV/SAT
+msgctxt "#90102"
+msgid "Include DVD/TV/SAT sources"
+msgstr ""
+
+msgctxt "#90107"
+msgid "Includes releases such as: DVD, DVDRip, HDTV, SATRip, TVRip, PPVRip, PDTV"
+msgstr ""
+
+# CAM/Screener
+msgctxt "#90103"
+msgid "Include CAM/Screener sources"
+msgstr ""
+
+msgctxt "#90108"
+msgid "Includes releases such as: CAM, TeleSync, TeleCine, SCR"
+msgstr ""
+
+# Unknown
+msgctxt "#90104"
+msgid "Include Unknown sources"
+msgstr ""
+
+msgctxt "#90109"
+msgid "Includes uncategorized or unidentified sources"
+msgstr ""
+
+msgctxt "#90110"
+msgid "Do you want to clear your watched history?."
+msgstr ""
+
+msgctxt "#90111"
+msgid "Do you want to clear your history?."
+msgstr ""
+
+msgctxt "#90112"
+msgid "Clear History"
+msgstr ""
+
+msgctxt "#90113"
+msgid "Click to delete all watched history immediately."
+msgstr ""
+
+msgctxt "#90114"
+msgid "History cleared"
+msgstr ""
+
+msgctxt "#90115"
+msgid "Source Select"
+msgstr ""
+
+msgctxt "#90116"
+msgid "Open Settings"
+msgstr ""
+
+msgctxt "#90117"
+msgid "Select Torrentio Providers"
+msgstr ""
+
+msgctxt "#90118"
+msgid "Port"
+msgstr ""
+
+msgctxt "#90119"
+msgid "Jackett port (default:9117)"
+msgstr ""
+
+msgctxt "#90120"
+msgid "Prowlarr port (default:9696)"
+msgstr ""
+
+msgctxt "#90121"
+msgid "All Debrid Configuration"
+msgstr ""
+
+msgctxt "#90122"
+msgid "Auto download subtitles"
+msgstr ""
+
+msgctxt "#90123"
+msgid "Stremio Timeout"
+msgstr ""
+
+msgctxt "#90124"
+msgid "Webdav Client Configuration"
+msgstr ""
+
+msgctxt "#90126"
+msgid "Host"
+msgstr ""
+
+msgctxt "#90127"
+msgid "Username"
+msgstr ""
+
+msgctxt "#90128"
+msgid "Password"
+msgstr ""
+
+msgctxt "#90129"
+msgid "Test Connection"
+msgstr ""
+
+msgctxt "#90131"
+msgid "Webdav"
+msgstr ""
+
+msgctxt "#90132"
+msgid "Remote Path"
+msgstr ""
+
+msgctxt "#90133"
+msgid "The hostname or IP address of your WebDAV server (e.g., http://mywebdav.com or https://192.168.1.100)."
+msgstr ""
+
+msgctxt "#90134"
+msgid "The username required for authenticating with your WebDAV server"
+msgstr ""
+
+msgctxt "#90135"
+msgid "The password for the specified username to authenticate with your WebDAV server"
+msgstr ""
+
+msgctxt "#90136"
+msgid "The base path or directory on the WebDAV server where your media files are located (e.g., /movies)."
+msgstr ""
+
+msgctxt "#90137"
+msgid "Click to verify if the WebDAV client can successfully connect to the configured server using the provided credentials."
+msgstr ""
+
+msgctxt "#90138"
+msgid "Remove Custom Addon"
+msgstr "Remove Custom Addon"
+
+msgctxt "#90139"
+msgid "Playback"
+msgstr "Playback"
+
+msgctxt "#90140"
+msgid "Super quick play"
+msgstr ""
+
+msgctxt "#90141"
+msgid "Re-ask to play last played video"
+msgstr ""
+
+msgctxt "#90142"
+msgid "Replay Dialog"
+msgstr "Replay Dialog"
+
+msgctxt "#90143"
+msgid "Do you want to play last watched?"
+msgstr "Do you want to play last watched?"
+
+msgctxt "#90144"
+msgid "Could not resolve playback URL"
+msgstr "Could not resolve playback URL"
+
+msgctxt "#90171"
+msgid "Autoscrape Next Episode"
+msgstr "Autoscrape Next Episode"
+
+msgctxt "#90172"
+msgid "Pre-resolve the next episode's playback URL in the background while watching."
+msgstr "Pre-resolve the next episode's playback URL in the background while watching."
+
+msgctxt "#90173"
+msgid "Autoscrape Threshold"
+msgstr "Autoscrape Threshold"
+
+msgctxt "#90174"
+msgid "Percentage of playback to trigger background pre-resolution."
+msgstr "Percentage of playback to trigger background pre-resolution."
+
+msgctxt "#90175"
+msgid "Autoscrape Episode Count"
+msgstr "Autoscrape Episode Count"
+
+msgctxt "#90176"
+msgid "Number of upcoming episodes to pre-resolve."
+msgstr "Number of upcoming episodes to pre-resolve."
+
+msgctxt "#90177"
+msgid "Autoscrape Cache TTL"
+msgstr "Autoscrape Cache TTL"
+
+msgctxt "#90178"
+msgid "Hours to keep resolved playback data in cache."
+msgstr "Hours to keep resolved playback data in cache."
+
+msgctxt "#30901"
+msgid "Show Only Stremio Catalogs"
+msgstr ""
+
+msgctxt "#30902"
+msgid "Hides embedded items (TMDb, Trakt, etc.) and shows only Stremio catalogs in menus."
+msgstr ""
+
+msgctxt "#30903"
+msgid "Select Live TV Addons"
+msgstr ""
+
+msgctxt "#30904"
+msgid "Choose specific Stremio addons for Live TV content"
+msgstr ""
+
+msgctxt "#30920"
+msgid "Clear Trakt Cache"
+msgstr "Clear Trakt Cache"
+
+msgctxt "#30921"
+msgid "Clear TMDB Cache"
+msgstr "Clear TMDB Cache"
+
+msgctxt "#30922"
+msgid "Clear Providers Cache"
+msgstr "Clear Providers Cache"
+
+msgctxt "#30923"
+msgid "Clear Settings Cache"
+msgstr "Clear Settings Cache"
+
+msgctxt "#90149"
+msgid "Maintenance"
+msgstr "Maintenance"
+
+msgctxt "#90150"
+msgid "Stremio: General"
+msgstr "Stremio: General"
+
+msgctxt "#90151"
+msgid "Stremio: Account"
+msgstr "Stremio: Account"
+
+msgctxt "#90152"
+msgid "Stremio: Addons & Catalogs"
+msgstr "Stremio: Addons & Catalogs"
+
+msgctxt "#90153"
+msgid "Stremio: Torrentio"
+msgstr "Stremio: Torrentio"
+
+msgctxt "#90154"
+msgid "Trending Recent"
+msgstr ""
+
+msgctxt "#90155"
+msgid "Stremio: Filters"
+msgstr "Stremio: Filters"
+
+msgctxt "#32300"
+msgid "Filter by Quality"
+msgstr ""
+
+msgctxt "#32301"
+msgid "Filter by Provider"
+msgstr ""
+
+msgctxt "#32302"
+msgid "Filter by Source"
+msgstr ""
+
+msgctxt "#32303"
+msgid "Filter by Language"
+msgstr ""
+
+msgctxt "#32307"
+msgid "Filter by Group"
+msgstr ""
+
+msgctxt "#32304"
+msgid "Filter by Torrents"
+msgstr ""
+
+msgctxt "#32305"
+msgid "Filter by Debrid"
+msgstr ""
+
+msgctxt "#32306"
+msgid "Reset Filter"
+msgstr ""
+
+msgctxt "#30930"
+msgid "Ping Addons"
+msgstr "Ping Addons"
+
+msgctxt "#30931"
+msgid "Check availability of addons and show only reachable ones"
+msgstr "Check availability of addons and show only reachable ones"
+
+msgctxt "#90164"
+msgid "Skip Intro / Recap"
+msgstr "Skip Intro / Recap"
+
+msgctxt "#90165"
+msgid "Enable Skip Intro"
+msgstr "Enable Skip Intro"
+
+msgctxt "#90166"
+msgid "Detect intros and recaps using IntroDB and offer to skip them during playback"
+msgstr "Detect intros and recaps using IntroDB and offer to skip them during playback"
+
+msgctxt "#90167"
+msgid "Auto-skip"
+msgstr "Auto-skip"
+
+msgctxt "#90168"
+msgid "Automatically skip intros and recaps without showing the button"
+msgstr "Automatically skip intros and recaps without showing the button"
+
+msgctxt "#90160"
+msgid "Skip Intro"
+msgstr "Skip Intro"
+
+msgctxt "#90161"
+msgid "Skip Recap"
+msgstr "Skip Recap"
+
+msgctxt "#90162"
+msgid "Manage from Phone"
+msgstr "Manage from Phone"
+
+msgctxt "#90163"
+msgid "Start a local web server and show a QR code to manage Stremio sources from your phone"
+msgstr "Start a local web server and show a QR code to manage Stremio sources from your phone"
+
+msgctxt "#90200"
+msgid "Continue Watching"
+msgstr "Continue Watching"
+
+msgctxt "#90201"
+msgid "Library"
+msgstr "Library"
+
+msgctxt "#90202"
+msgid "My Shows"
+msgstr "My Shows"
+
+msgctxt "#90203"
+msgid "My Movies"
+msgstr "My Movies"
+
+msgctxt "#90204"
+msgid "Remove from Library"
+msgstr "Remove from Library"
+
+msgctxt "#90205"
+msgid "Add to Library"
+msgstr "Add to Library"
+
+msgctxt "#90206"
+msgid "Remove"
+msgstr "Remove"
+
+msgctxt "#90207"
+msgid "Search Movies & TV"
+msgstr ""
+
+msgctxt "#90208"
+msgid "Recent Searches"
+msgstr ""
+
+msgctxt "#90209"
+msgid "Recent Direct Searches"
+msgstr ""
+
+msgctxt "#90210"
+msgid "Clear All Search History"
+msgstr ""
+
+msgctxt "#90211"
+msgid "Bypass Stremio Addons Native Sorting"
+msgstr ""
+
+msgctxt "#90212"
+msgid "If enabled, addons specified won't have their results re-ordered or filtered by Jacktook's native quality and size thresholds."
+msgstr ""
+
+msgctxt "#90213"
+msgid "Select Bypassed Addons"
+msgstr ""
+
+msgctxt "#90214"
+msgid "Select which Stremio addons bypass Jacktook's native size and quality filtering."
+msgstr ""
+
+msgctxt "#90215"
+msgid "Downgrade"
+msgstr ""
+
+msgctxt "#90671"
+msgid "Install an older published version of Jacktook. The current version is backed up and restored automatically if the downgrade fails."
+msgstr ""
+
+msgctxt "#30932"
+msgid "Update Action"
+msgstr ""
+
+msgctxt "#30933"
+msgid "Choose how to handle background update checks."
+msgstr ""
+
+msgctxt "#30934"
+msgid "Ask"
+msgstr ""
+
+msgctxt "#30935"
+msgid "Notify"
+msgstr ""
+
+msgctxt "#90216"
+msgid "Volume Check Enabled"
+msgstr "Volume Check Enabled"
+
+msgctxt "#90217"
+msgid "Automatically limits volume if it is above the threshold before playback."
+msgstr "Automatically limits volume if it is above the threshold before playback."
+
+msgctxt "#90218"
+msgid "Volume Threshold"
+msgstr "Volume Threshold"
+
+msgctxt "#90219"
+msgid "The volume percentage above which the warning triggers."
+msgstr "The volume percentage above which the warning triggers."
+
+msgctxt "#90220"
+msgid "High Volume Warning"
+msgstr "High Volume Warning"
+
+msgctxt "#90221"
+msgid "High volume detected. Adjusting to %s%% for safety."
+msgstr "High volume detected. Adjusting to %s%% for safety."
+
+msgctxt "#90222"
+msgid "Fanart.tv Configuration"
+msgstr ""
+
+msgctxt "#90223"
+msgid "Client Key"
+msgstr ""
+
+msgctxt "#90224"
+msgid "Your personal Fanart.tv client key for higher quality assets."
+msgstr ""
+
+msgctxt "#90225"
+msgid "Debrid Notifications"
+msgstr ""
+
+msgctxt "#90226"
+msgid "Debrid Expiration Notification"
+msgstr ""
+
+msgctxt "#90227"
+msgid "Enable or disable notifications when your Debrid subscription is about to expire."
+msgstr ""
+
+msgctxt "#90228"
+msgid "Expiration Threshold (Days)"
+msgstr ""
+
+msgctxt "#90229"
+msgid "How many days before expiration to start notifying."
+msgstr ""
+
+msgctxt "#90230"
+msgid "%s expires in %d days."
+msgstr ""
+
+msgctxt "#90231"
+msgid "%s expires today!"
+msgstr ""
+
+msgctxt "#90232"
+msgid "Easynews"
+msgstr ""
+
+msgctxt "#90233"
+msgid "Enable EasyNews as a direct stream provider."
+msgstr ""
+
+msgctxt "#90234"
+msgid "Your EasyNews username."
+msgstr ""
+
+msgctxt "#90235"
+msgid "Your EasyNews password."
+msgstr ""
+
+msgctxt "#90236"
+msgid "Request timeout in seconds."
+msgstr ""
+
+msgctxt "#90237"
+msgid "Account Information"
+msgstr ""
+
+msgctxt "#90238"
+msgid "Search Dialog Style"
+msgstr "Search Dialog Style"
+
+msgctxt "#90239"
+msgid "Background"
+msgstr "Background"
+
+msgctxt "#90240"
+msgid "Detailed Status"
+msgstr "Detailed Status"
+
+msgctxt "#90241"
+msgid "Search Status"
+msgstr "Search Status"
+
+msgctxt "#90242"
+msgid "Cancel"
+msgstr "Cancel"
+
+msgctxt "#90243"
+msgid "Results found: "
+msgstr "Results found: "
+
+msgctxt "#90244"
+msgid "Pending"
+msgstr "Pending"
+
+msgctxt "#90245"
+msgid "In Progress"
+msgstr "In Progress"
+
+msgctxt "#90246"
+msgid "Completed"
+msgstr "Completed"
+
+msgctxt "#90247"
+msgid "Failed"
+msgstr "Failed"
+
+msgctxt "#90248"
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgctxt "#90249"
+msgid "Your personal Jackgram API token for authentication."
+msgstr "Your personal Jackgram API token for authentication."
+
+msgctxt "#90250"
+msgid "Subtitles Found"
+msgstr "Subtitles Found"
+
+msgctxt "#90251"
+msgid "There are already downloaded subtitles for this video.\nDo you want to use the existing subtitles?"
+msgstr "There are already downloaded subtitles for this video.\nDo you want to use the existing subtitles?"
+
+msgctxt "#90252"
+msgid "No subtitles found"
+msgstr "No subtitles found"
+
+msgctxt "#90253"
+msgid "No subtitles selected"
+msgstr "No subtitles selected"
+
+msgctxt "#90254"
+msgid "Translate Subtitles"
+msgstr "Translate Subtitles"
+
+msgctxt "#90255"
+msgid "Do you want to also translate the selected subtitles?"
+msgstr "Do you want to also translate the selected subtitles?"
+
+msgctxt "#90256"
+msgid "Select Subtitle to Download"
+msgstr "Select Subtitle to Download"
+
+msgctxt "#90257"
+msgid "Subtitles Loaded"
+msgstr "Subtitles Loaded"
+
+msgctxt "#90258"
+msgid "Backup"
+msgstr "Backup"
+
+msgctxt "#90259"
+msgid "Export Backup"
+msgstr "Export Backup"
+
+msgctxt "#90260"
+msgid "Export addon settings and custom Stremio addons to a JSON backup file."
+msgstr "Export addon settings and custom Stremio addons to a JSON backup file."
+
+msgctxt "#90261"
+msgid "Restore Backup"
+msgstr "Restore Backup"
+
+msgctxt "#90262"
+msgid "Restore addon settings and replace custom Stremio addons from a JSON backup file."
+msgstr "Restore addon settings and replace custom Stremio addons from a JSON backup file."
+
+msgctxt "#90263"
+msgid "Remove Sensitive Data"
+msgstr "Remove Sensitive Data"
+
+msgctxt "#90264"
+msgid "Remove API keys, passwords, usernames, emails, auth state, and custom Stremio addon URLs from exported backups."
+msgstr "Remove API keys, passwords, usernames, emails, auth state, and custom Stremio addon URLs from exported backups."
+
+msgctxt "#90265"
+msgid "Settings backup exported"
+msgstr "Settings backup exported"
+
+msgctxt "#90266"
+msgid "Settings backup restored"
+msgstr "Settings backup restored"
+
+msgctxt "#90267"
+msgid "Settings Backup Failed"
+msgstr "Settings Backup Failed"
+
+msgctxt "#90268"
+msgid "Select export folder"
+msgstr "Select export folder"
+
+msgctxt "#90269"
+msgid "Select backup file"
+msgstr "Select backup file"
+
+msgctxt "#90270"
+msgid "Backup file is invalid."
+msgstr "Backup file is invalid."
+
+msgctxt "#90271"
+msgid "No export folder selected."
+msgstr "No export folder selected."
+
+msgctxt "#90272"
+msgid "No backup file selected."
+msgstr "No backup file selected."
+
+msgctxt "#90273"
+msgid "Unable to export settings backup."
+msgstr "Unable to export settings backup."
+
+msgctxt "#90274"
+msgid "Unable to restore settings backup."
+msgstr "Unable to restore settings backup."
+
+msgctxt "#90275"
+msgid "Restore Backup"
+msgstr "Restore Backup"
+
+msgctxt "#90276"
+msgid "This will overwrite your current addon settings and replace your custom Stremio addons with the backup. Continue?"
+msgstr "This will overwrite your current addon settings and replace your custom Stremio addons with the backup. Continue?"
+
+msgctxt "#90277"
+msgid "Restore cancelled"
+msgstr "Restore cancelled"
+
+msgctxt "#90278"
+msgid "Reset All Settings"
+msgstr "Reset All Settings"
+
+msgctxt "#90279"
+msgid "This will reset all addon settings to their defaults and remove your custom Stremio addons. Continue?"
+msgstr "This will reset all addon settings to their defaults and remove your custom Stremio addons. Continue?"
+
+msgctxt "#90280"
+msgid "Reset cancelled"
+msgstr "Reset cancelled"
+
+msgctxt "#90281"
+msgid "All addon settings reset"
+msgstr "All addon settings reset"
+
+msgctxt "#90282"
+msgid "Reset Failed"
+msgstr "Reset Failed"
+
+msgctxt "#90283"
+msgid "Unable to reset addon settings."
+msgstr "Unable to reset addon settings."
+
+msgctxt "#90284"
+msgid "Reset every addon setting back to its default value and clear custom Stremio addons."
+msgstr "Reset every addon setting back to its default value and clear custom Stremio addons."
+
+msgctxt "#90285"
+msgid "Factory Reset"
+msgstr "Factory Reset"
+
+msgctxt "#90286"
+msgid "This will reset settings, clear caches, remove custom Stremio addons, and wipe local addon history/database data. Continue?"
+msgstr "This will reset settings, clear caches, remove custom Stremio addons, and wipe local addon history/database data. Continue?"
+
+msgctxt "#90287"
+msgid "Factory reset cancelled"
+msgstr "Factory reset cancelled"
+
+msgctxt "#90288"
+msgid "Factory reset completed"
+msgstr "Factory reset completed"
+
+msgctxt "#90289"
+msgid "Factory Reset Failed"
+msgstr "Factory Reset Failed"
+
+msgctxt "#90290"
+msgid "Unable to complete factory reset."
+msgstr "Unable to complete factory reset."
+
+msgctxt "#90291"
+msgid "Reset settings to defaults, clear caches, and wipe local addon history/database data."
+msgstr "Reset settings to defaults, clear caches, and wipe local addon history/database data."
+
+msgctxt "#90292"
+msgid "Trakt Library"
+msgstr "Trakt Library"
+
+msgctxt "#90293"
+msgid "Trakt Discovery"
+msgstr "Trakt Discovery"
+
+msgctxt "#90294"
+msgid "Collection"
+msgstr "Collection"
+
+msgctxt "#90295"
+msgid "Favorites"
+msgstr "Favorites"
+
+msgctxt "#90296"
+msgid "Up Next"
+msgstr "Up Next"
+
+msgctxt "#90297"
+msgid "My Lists"
+msgstr "My Lists"
+
+msgctxt "#90298"
+msgid "Liked Lists"
+msgstr "Liked Lists"
+
+msgctxt "#90299"
+msgid "No metadata found for this torrent"
+msgstr "No metadata found for this torrent"
+
+msgctxt "#90331"
+msgid "Stremio Addons"
+msgstr "Stremio Addons"
+
+msgctxt "#90332"
+msgid "No addons available yet. Use Log In to Stremio or Add Custom Addon first."
+msgstr "No addons available yet. Use Log In to Stremio or Add Custom Addon first."
+
+msgctxt "#90333"
+msgid "Stremio Stream Addons"
+msgstr "Stremio Stream Addons"
+
+msgctxt "#90334"
+msgid "Stremio Catalog Addons"
+msgstr "Stremio Catalog Addons"
+
+msgctxt "#90335"
+msgid "Stremio Live TV Addons"
+msgstr "Stremio Live TV Addons"
+
+msgctxt "#90336"
+msgid "Refresh addons imported from your Stremio account. Custom addons remain unchanged."
+msgstr "Refresh addons imported from your Stremio account. Custom addons remain unchanged."
+
+msgctxt "#90337"
+msgid "Choose which imported or custom Stremio stream addons to use. If none are available yet, log in or add a custom addon first."
+msgstr "Choose which imported or custom Stremio stream addons to use. If none are available yet, log in or add a custom addon first."
+
+msgctxt "#90338"
+msgid "Choose which imported or custom Stremio catalog addons to use. If none are available yet, log in or add a custom addon first."
+msgstr "Choose which imported or custom Stremio catalog addons to use. If none are available yet, log in or add a custom addon first."
+
+msgctxt "#90339"
+msgid "Choose which imported or custom Stremio Live TV addons to use. If none are available yet, log in or add a custom addon first."
+msgstr "Choose which imported or custom Stremio Live TV addons to use. If none are available yet, log in or add a custom addon first."
+
+msgctxt "#90340"
+msgid "Remove custom Stremio addons you previously added manually."
+msgstr "Remove custom Stremio addons you previously added manually."
+
+msgctxt "#90341"
+msgid "Choose Torrent Client"
+msgstr "Choose Torrent Client"
+
+msgctxt "#90342"
+msgid "Clear Database Cache"
+msgstr "Clear Database Cache"
+
+msgctxt "#90343"
+msgid "Clear Stremio Cache"
+msgstr "Clear Stremio Cache"
+
+msgctxt "#90344"
+msgid "Clear Debrid Cache"
+msgstr "Clear Debrid Cache"
+
+msgctxt "#90345"
+msgid "Clear MDBList Cache"
+msgstr "Clear MDBList Cache"
+
+msgctxt "#90346"
+msgid "Restore backup from"
+msgstr "Restore backup from"
+
+msgctxt "#90347"
+msgid "File"
+msgstr "File"
+
+msgctxt "#90348"
+msgid "URL"
+msgstr "URL"
+
+msgctxt "#90349"
+msgid "Enter backup URL"
+msgstr "Enter backup URL"
+
+msgctxt "#90350"
+msgid "No backup URL provided."
+msgstr "No backup URL provided."
+
+msgctxt "#90351"
+msgid "Unable to download settings backup."
+msgstr "Unable to download settings backup."
+
+msgctxt "#90352"
+msgid "Source Select Style"
+msgstr "Source Select Style"
+
+msgctxt "#90353"
+msgid "Modern"
+msgstr "Modern"
+
+msgctxt "#90354"
+msgid "OLED"
+msgstr "OLED"
+
+msgctxt "#90355"
+msgid "Cyberpunk"
+msgstr "Cyberpunk"
+
+msgctxt "#90356"
+msgid "Forest"
+msgstr "Forest"
+
+msgctxt "#90357"
+msgid "Gold"
+msgstr "Gold"
+
+msgctxt "#90358"
+msgid "No playable results found"
+msgstr "No playable results found"
+
+msgctxt "#90359"
+msgid "Add to TorrServer"
+msgstr "Add to TorrServer"
+
+msgctxt "#90360"
+msgid "Added to TorrServer"
+msgstr "Added to TorrServer"
+
+msgctxt "#90361"
+msgid "Could not resolve torrent details"
+msgstr "Could not resolve torrent details"
+
+msgctxt "#90362"
+msgid "Added to %s cloud"
+msgstr "Added to %s cloud"
+
+msgctxt "#90363"
+msgid "Choose Debrid Service"
+msgstr "Choose Debrid Service"
+
+msgctxt "#90364"
+msgid "No supported debrid service is enabled"
+msgstr "No supported debrid service is enabled"
+
+msgctxt "#90365"
+msgid "Download to Debrid"
+msgstr "Download to Debrid"
+
+msgctxt "#90366"
+msgid "Include Unknown quality"
+msgstr "Include Unknown quality"
+
+msgctxt "#90367"
+msgid "Includes releases where video quality could not be identified"
+msgstr "Includes releases where video quality could not be identified"
+
+msgctxt "#90368"
+msgid "Search by Keyword"
+msgstr "Search by Keyword"
+
+msgctxt "#90369"
+msgid "Latest Movies"
+msgstr "Latest Movies"
+
+msgctxt "#90370"
+msgid "Latest Series"
+msgstr "Latest Series"
+
+msgctxt "#90371"
+msgid "Raw Files"
+msgstr "Raw Files"
+
+msgctxt "#90372"
+msgid "MDblist"
+msgstr "MDblist"
+
+msgctxt "#90373"
+msgid "Active Downloads"
+msgstr "Active Downloads"
+
+msgctxt "#90374"
+msgid "Cancel Download"
+msgstr "Cancel Download"
+
+msgctxt "#90375"
+msgid "Delete File"
+msgstr "Delete File"
+
+msgctxt "#90376"
+msgid "Search Collections"
+msgstr "Search Collections"
+
+msgctxt "#90377"
+msgid "Popular Collections"
+msgstr "Popular Collections"
+
+msgctxt "#90378"
+msgid "Top Rated Collections"
+msgstr "Top Rated Collections"
+
+msgctxt "#90379"
+msgid "Recommendations"
+msgstr "Recommendations"
+
+msgctxt "#90380"
+msgid "Similar"
+msgstr "Similar"
+
+msgctxt "#90381"
+msgid "Keyword: %s"
+msgstr "Keyword: %s"
+
+msgctxt "#90382"
+msgid "Please set a valid Trakt Client ID Key"
+msgstr "Please set a valid Trakt Client ID Key"
+
+msgctxt "#90383"
+msgid "Please set a valid Trakt Client Secret Key"
+msgstr "Please set a valid Trakt Client Secret Key"
+
+msgctxt "#90384"
+msgid "Trakt Error Authorizing"
+msgstr "Trakt Error Authorizing"
+
+msgctxt "#90385"
+msgid "Trakt Account Authorized"
+msgstr "Trakt Account Authorized"
+
+msgctxt "#90386"
+msgid "You are now logged out from Trakt.tv"
+msgstr "You are now logged out from Trakt.tv"
+
+msgctxt "#90387"
+msgid "Failed to mark as watched"
+msgstr "Failed to mark as watched"
+
+msgctxt "#90388"
+msgid "Marked as watched"
+msgstr "Marked as watched"
+
+msgctxt "#90389"
+msgid "No results found"
+msgstr "No results found"
+
+msgctxt "#90390"
+msgid "Invalid mode"
+msgstr "Invalid mode"
+
+msgctxt "#90391"
+msgid "No recommendations found"
+msgstr "No recommendations found"
+
+msgctxt "#90392"
+msgid "No similar items found"
+msgstr "No similar items found"
+
+msgctxt "#90393"
+msgid "TMDB metadata not found"
+msgstr "TMDB metadata not found"
+
+msgctxt "#90394"
+msgid "No TV shows found"
+msgstr "No TV shows found"
+
+msgctxt "#90395"
+msgid "No shows airing today"
+msgstr "No shows airing today"
+
+msgctxt "#90396"
+msgid "Invalid collection query"
+msgstr "Invalid collection query"
+
+msgctxt "#90397"
+msgid "No keywords found"
+msgstr "No keywords found"
+
+msgctxt "#90398"
+msgid "No keyword ID provided"
+msgstr "No keyword ID provided"
+
+msgctxt "#90399"
+msgid "No results found for this keyword"
+msgstr "No results found for this keyword"
+
+msgctxt "#90400"
+msgid "No TMDB ID found"
+msgstr "No TMDB ID found"
+
+msgctxt "#90401"
+msgid "Unsupported media type or missing external_ids"
+msgstr "Unsupported media type or missing external_ids"
+
+msgctxt "#90402"
+msgid "Refreshed Metadata"
+msgstr "Refreshed Metadata"
+
+msgctxt "#90403"
+msgid "No Stremio addons selected"
+msgstr "No Stremio addons selected"
+
+msgctxt "#90404"
+msgid "No suitable source found for auto play."
+msgstr "No suitable source found for auto play."
+
+msgctxt "#90405"
+msgid "No sources found with the preferred quality."
+msgstr "No sources found with the preferred quality."
+
+msgctxt "#90406"
+msgid "No languages found"
+msgstr "No languages found"
+
+msgctxt "#90407"
+msgid "Failed to resolve playback source"
+msgstr "Failed to resolve playback source"
+
+msgctxt "#90408"
+msgid "Trakt not authorized. Please authenticate."
+msgstr "Trakt not authorized. Please authenticate."
+
+msgctxt "#90409"
+msgid "Added to Trakt Watchlist"
+msgstr "Added to Trakt Watchlist"
+
+msgctxt "#90410"
+msgid "Error modifying Trakt Watchlist"
+msgstr "Error modifying Trakt Watchlist"
+
+msgctxt "#90411"
+msgid "Marked as Watched on Trakt"
+msgstr "Marked as Watched on Trakt"
+
+msgctxt "#90412"
+msgid "Error modifying Trakt Watched status"
+msgstr "Error modifying Trakt Watched status"
+
+msgctxt "#90413"
+msgid "Play"
+msgstr "Play"
+
+msgctxt "#90414"
+msgid "Trailer"
+msgstr "Trailer"
+
+msgctxt "#90415"
+msgid "Watched"
+msgstr "Watched"
+
+msgctxt "#90416"
+msgid "Refresh"
+msgstr "Refresh"
+
+msgctxt "#90418"
+msgid "No credits found for this ID"
+msgstr "No credits found for this ID"
+
+msgctxt "#90419"
+msgid "Credited People"
+msgstr "Credited People"
+
+msgctxt "#90420"
+msgid "Person Details"
+msgstr "Person Details"
+
+msgctxt "#90421"
+msgid "Person not found"
+msgstr "Person not found"
+
+msgctxt "#90422"
+msgid "Jackgram not activated"
+msgstr "Jackgram not activated"
+
+msgctxt "#90423"
+msgid "Not yet implemented"
+msgstr "Not yet implemented"
+
+msgctxt "#90424"
+msgid "Unsupported debrid type"
+msgstr "Unsupported debrid type"
+
+msgctxt "#90425"
+msgid "Easynews credentials required"
+msgstr "Easynews credentials required"
+
+msgctxt "#90426"
+msgid "No Corrupt or Missing Databases"
+msgstr "No Corrupt or Missing Databases"
+
+msgctxt "#90427"
+msgid "Otaku (script.otaku.mappings) not found"
+msgstr "Otaku (script.otaku.mappings) not found"
+
+msgctxt "#90428"
+msgid "Database read error. File may be corrupted."
+msgstr "Database read error. File may be corrupted."
+
+msgctxt "#90429"
+msgid "Failed to delete data. Database error."
+msgstr "Failed to delete data. Database error."
+
+msgctxt "#90430"
+msgid "Failed to clear cache. Database in use."
+msgstr "Failed to clear cache. Database in use."
+
+msgctxt "#90431"
+msgid "No items found in this list"
+msgstr "No items found in this list"
+
+msgctxt "#90432"
+msgid "Databases Rebuilt"
+msgstr "Databases Rebuilt"
+
+msgctxt "#90433"
+msgid "[B]Following Databases Rebuilt:[/B][CR][CR]%s"
+msgstr "[B]Following Databases Rebuilt:[/B][CR][CR]%s"
+
+msgctxt "#90434"
+msgid "Added to Trakt watchlist"
+msgstr "Added to Trakt watchlist"
+
+msgctxt "#90435"
+msgid "Failed to add to Trakt watchlist"
+msgstr "Failed to add to Trakt watchlist"
+
+msgctxt "#90436"
+msgid "Removed from Trakt watchlist"
+msgstr "Removed from Trakt watchlist"
+
+msgctxt "#90437"
+msgid "Failed to remove from Trakt watchlist"
+msgstr "Failed to remove from Trakt watchlist"
+
+msgctxt "#90438"
+msgid "Failed to mark as watched on Trakt"
+msgstr "Failed to mark as watched on Trakt"
+
+msgctxt "#90439"
+msgid "Marked as unwatched on Trakt"
+msgstr "Marked as unwatched on Trakt"
+
+msgctxt "#90440"
+msgid "Failed to mark as unwatched on Trakt"
+msgstr "Failed to mark as unwatched on Trakt"
+
+msgctxt "#90441"
+msgid "Added to Trakt collection"
+msgstr "Added to Trakt collection"
+
+msgctxt "#90442"
+msgid "Removed from Trakt collection"
+msgstr "Removed from Trakt collection"
+
+msgctxt "#90443"
+msgid "Failed to add to Trakt collection"
+msgstr "Failed to add to Trakt collection"
+
+msgctxt "#90444"
+msgid "Failed to remove from Trakt collection"
+msgstr "Failed to remove from Trakt collection"
+
+msgctxt "#90445"
+msgid "Added to Trakt favorites"
+msgstr "Added to Trakt favorites"
+
+msgctxt "#90446"
+msgid "Removed from Trakt favorites"
+msgstr "Removed from Trakt favorites"
+
+msgctxt "#90447"
+msgid "Failed to add to Trakt favorites"
+msgstr "Failed to add to Trakt favorites"
+
+msgctxt "#90448"
+msgid "Failed to remove from Trakt favorites"
+msgstr "Failed to remove from Trakt favorites"
+
+msgctxt "#90449"
+msgid "Created Trakt list"
+msgstr "Created Trakt list"
+
+msgctxt "#90450"
+msgid "Failed to create Trakt list"
+msgstr "Failed to create Trakt list"
+
+msgctxt "#90451"
+msgid "Deleted Trakt list"
+msgstr "Deleted Trakt list"
+
+msgctxt "#90452"
+msgid "Failed to delete Trakt list"
+msgstr "Failed to delete Trakt list"
+
+msgctxt "#90453"
+msgid "Liked Trakt list"
+msgstr "Liked Trakt list"
+
+msgctxt "#90454"
+msgid "Failed to like Trakt list"
+msgstr "Failed to like Trakt list"
+
+msgctxt "#90455"
+msgid "Unliked Trakt list"
+msgstr "Unliked Trakt list"
+
+msgctxt "#90456"
+msgid "Failed to unlike Trakt list"
+msgstr "Failed to unlike Trakt list"
+
+msgctxt "#90457"
+msgid "Added to Trakt list"
+msgstr "Added to Trakt list"
+
+msgctxt "#90458"
+msgid "OpenSubtitles Stremio: No results found."
+msgstr ""
+
+msgctxt "#90459"
+msgid "Failed to add to Trakt list"
+msgstr "Failed to add to Trakt list"
+
+msgctxt "#90460"
+msgid "Subtitle Manager: No subtitles available for this video."
+msgstr ""
+
+msgctxt "#90461"
+msgid "No Trakt lists found"
+msgstr "No Trakt lists found"
+
+msgctxt "#90462"
+msgid "Item not found in Trakt collection"
+msgstr "Item not found in Trakt collection"
+
+msgctxt "#90463"
+msgid "Trakt could not match this item for collection"
+msgstr "Trakt could not match this item for collection"
+
+msgctxt "#90464"
+msgid "No Trakt collection changes were applied"
+msgstr "No Trakt collection changes were applied"
+
+msgctxt "#90465"
+msgid "Could not build Trakt collection payload for show"
+msgstr "Could not build Trakt collection payload for show"
+
+msgctxt "#90466"
+msgid "Delete this Trakt list?"
+msgstr "Delete this Trakt list?"
+
+msgctxt "#90468"
+msgid "Search menu"
+msgstr ""
+
+msgctxt "#90469"
+msgid "Continue watching menu"
+msgstr ""
+
+msgctxt "#90470"
+msgid "TV Shows Items"
+msgstr ""
+
+msgctxt "#90471"
+msgid "Movies Items"
+msgstr ""
+
+msgctxt "#90472"
+msgid "Anime menu"
+msgstr ""
+
+msgctxt "#90473"
+msgid "TV Menu"
+msgstr ""
+
+msgctxt "#90474"
+msgid "Library menu"
+msgstr ""
+
+msgctxt "#90475"
+msgid "Torrents Management"
+msgstr ""
+
+msgctxt "#90476"
+msgid "Telegram menu"
+msgstr ""
+
+msgctxt "#90477"
+msgid "Cloud Storage"
+msgstr ""
+
+msgctxt "#90478"
+msgid "Downloads Management"
+msgstr ""
+
+msgctxt "#90479"
+msgid "Settings Management"
+msgstr ""
+
+msgctxt "#90480"
+msgid "History Menu"
+msgstr ""
+
+msgctxt "#90481"
+msgid "Files History"
+msgstr ""
+
+msgctxt "#90482"
+msgid "Titles History"
+msgstr ""
+
+msgctxt "#90483"
+msgid "Titles Calendar"
+msgstr ""
+
+msgctxt "#90484"
+msgid "My Shows"
+msgstr ""
+
+msgctxt "#90485"
+msgid "My Movies"
+msgstr ""
+
+msgctxt "#90486"
+msgid "Upcoming Episodes"
+msgstr ""
+
+msgctxt "#90487"
+msgid "Discovery List"
+msgstr ""
+
+msgctxt "#90488"
+msgid "Library List"
+msgstr ""
+
+msgctxt "#90489"
+msgid "Trakt Recommendations"
+msgstr ""
+
+msgctxt "#90490"
+msgid "Trending Lists"
+msgstr ""
+
+msgctxt "#90491"
+msgid "Popular Lists"
+msgstr ""
+
+msgctxt "#90492"
+msgid "Search Lists"
+msgstr ""
+
+msgctxt "#90493"
+msgid "Recent Activity"
+msgstr ""
+
+msgctxt "#90494"
+msgid "Downloads List"
+msgstr ""
+
+msgctxt "#90495"
+msgid "Download New"
+msgstr ""
+
+msgctxt "#90496"
+msgid "Cartoons Popular"
+msgstr "Cartoons Popular"
+
+msgctxt "#90497"
+msgid "Animation Popular"
+msgstr "Animation Popular"
+
+msgctxt "#90500"
+msgid "Translating subtitle..."
+msgstr "Translating subtitle..."
+
+msgctxt "#90501"
+msgid "Translation done."
+msgstr "Translation done."
+
+msgctxt "#90502"
+msgid "Searching subtitles..."
+msgstr ""
+
+msgctxt "#90503"
+msgid "No subtitles found"
+msgstr ""
+
+msgctxt "#90504"
+msgid "Failed to authenticate with DeepL. Please check your API key."
+msgstr ""
+
+msgctxt "#90505"
+msgid "DeepL API key is missing or invalid."
+msgstr ""
+
+msgctxt "#90510"
+msgid "No meta available"
+msgstr "No meta available"
+
+msgctxt "#90511"
+msgid "No content available for"
+msgstr "No content available for"
+
+msgctxt "#90512"
+msgid "Season"
+msgstr "Season"
+
+msgctxt "#90513"
+msgid "No episodes available"
+msgstr "No episodes available"
+
+msgctxt "#90514"
+msgid "No videos available"
+msgstr "No videos available"
+
+msgctxt "#90515"
+msgid "Next Page"
+msgstr "Next Page"
+
+msgctxt "#90516"
+msgid "No metas available"
+msgstr "No metas available"
+
+msgctxt "#90517"
+msgid "No seasons available"
+msgstr "No seasons available"
+
+msgctxt "#90518"
+msgid "Invalid query"
+msgstr "Invalid query"
+
+msgctxt "#90519"
+msgid "No lists found"
+msgstr "No lists found"
+
+msgctxt "#90520"
+msgid "No user lists found"
+msgstr "No user lists found"
+
+msgctxt "#90521"
+msgid "No top lists found"
+msgstr "No top lists found"
+
+msgctxt "#90522"
+msgid "Custom Addon"
+msgstr "Custom Addon"
+
+msgctxt "#90523"
+msgid "Enter the custom Stremio addon URL"
+msgstr "Enter the custom Stremio addon URL"
+
+msgctxt "#90524"
+msgid "No URL provided."
+msgstr "No URL provided."
+
+msgctxt "#90525"
+msgid "Failed to fetch manifest: %s"
+msgstr "Failed to fetch manifest: %s"
+
+msgctxt "#90526"
+msgid "Manifest missing 'id' or 'name'."
+msgstr "Manifest missing 'id' or 'name'."
+
+msgctxt "#90527"
+msgid "Custom Stremio addon added successfully!"
+msgstr "Custom Stremio addon added successfully!"
+
+msgctxt "#90528"
+msgid "Addon does not provide 'stream' or 'catalog' resources."
+msgstr "Addon does not provide 'stream' or 'catalog' resources."
+
+msgctxt "#90529"
+msgid "This addon is already added to your list."
+msgstr "This addon is already added to your list."
+
+msgctxt "#90530"
+msgid "Failed to add custom addon: %s"
+msgstr "Failed to add custom addon: %s"
+
+msgctxt "#90531"
+msgid "Remove Addon"
+msgstr "Remove Addon"
+
+msgctxt "#90532"
+msgid "No custom Stremio addons to remove."
+msgstr "No custom Stremio addons to remove."
+
+msgctxt "#90533"
+msgid "Remove Stremio Addons"
+msgstr "Remove Stremio Addons"
+
+msgctxt "#90534"
+msgid "Selected addon(s) removed."
+msgstr "Selected addon(s) removed."
+
+msgctxt "#90836"
+msgid "Configure Stremio Addon"
+msgstr "Configure Stremio Addon"
+
+msgctxt "#90837"
+msgid "This addon does not expose a standard configuration URL."
+msgstr "This addon does not expose a standard configuration URL."
+
+msgctxt "#90838"
+msgid "Unable to import the configured manifest. Check the HTTPS manifest URL and try again."
+msgstr "Unable to import the configured manifest. Check the HTTPS manifest URL and try again."
+
+msgctxt "#90839"
+msgid "Unable to save the configured addon."
+msgstr "Unable to save the configured addon."
+
+msgctxt "#90840"
+msgid "Unable to open the external configurator."
+msgstr "Unable to open the external configurator."
+
+msgctxt "#90841"
+msgid "Open the official addon configurator, then import its configured manifest URL as a custom addon."
+msgstr "Open the official addon configurator, then import its configured manifest URL as a custom addon."
+
+msgctxt "#90535"
+msgid "Untitled List"
+msgstr "Untitled List"
+
+msgctxt "#90536"
+msgid "Removed from Trakt list"
+msgstr "Removed from Trakt list"
+
+msgctxt "#90537"
+msgid "Failed to remove from Trakt list"
+msgstr "Failed to remove from Trakt list"
+
+msgctxt "#90538"
+msgid "Resume from %.1f%%"
+msgstr "Resume from %.1f%%"
+
+msgctxt "#90539"
+msgid "Start from Beginning"
+msgstr "Start from Beginning"
+
+msgctxt "#90540"
+msgid "Authorize Debrid Services"
+msgstr "Authorize Debrid Services"
+
+msgctxt "#90541"
+msgid "Navigate to: [B]%s[/B]"
+msgstr "Navigate to: [B]%s[/B]"
+
+msgctxt "#90542"
+msgid "Enter the following code: [COLOR orangered][B]%s[/B][/COLOR]"
+msgstr "Enter the following code: [COLOR orangered][B]%s[/B][/COLOR]"
+
+msgctxt "#90543"
+msgid "Premiumize Auth"
+msgstr "Premiumize Auth"
+
+msgctxt "#90544"
+msgid "Success"
+msgstr "Success"
+
+msgctxt "#90545"
+msgid "Authentication completed."
+msgstr "Authentication completed."
+
+msgctxt "#90546"
+msgid "Error:"
+msgstr "Error:"
+
+msgctxt "#90547"
+msgid "Error: %s"
+msgstr "Error: %s"
+
+msgctxt "#90548"
+msgid "Auth Error"
+msgstr "Auth Error"
+
+msgctxt "#90549"
+msgid "Torbox authentication successful."
+msgstr "Torbox authentication successful."
+
+msgctxt "#90554"
+msgid "Please wait..."
+msgstr "Please wait..."
+
+msgctxt "#90555"
+msgid "Go to:\n[COLOR cyan]%s[/COLOR]\nEnter code: [COLOR seagreen][B]%s[/B][/COLOR]"
+msgstr "Go to:\n[COLOR cyan]%s[/COLOR]\nEnter code: [COLOR seagreen][B]%s[/B][/COLOR]"
+
+msgctxt "#90556"
+msgid "Go to:\n[COLOR cyan]%s[/COLOR]\n\nEnter code: [COLOR seagreen][B]%s[/B][/COLOR]"
+msgstr "Go to:\n[COLOR cyan]%s[/COLOR]\n\nEnter code: [COLOR seagreen][B]%s[/B][/COLOR]"
+
+msgctxt "#90557"
+msgid "Pastebin Link:\n[COLOR cyan]%s[/COLOR]"
+msgstr "Pastebin Link:\n[COLOR cyan]%s[/COLOR]"
+
+msgctxt "#90670"
+msgid "Local URL:\n[COLOR cyan]%s[/COLOR]"
+msgstr "Local URL:\n[COLOR cyan]%s[/COLOR]"
+
+msgctxt "#90558"
+msgid "QR Code Authentication"
+msgstr "QR Code Authentication"
+
+msgctxt "#90559"
+msgid "Kodi 20 or above required. Please update Kodi to use this addon."
+msgstr "Kodi 20 or above required. Please update Kodi to use this addon."
+
+msgctxt "#90560"
+msgid "Failed to start web server. Port may be in use."
+msgstr "Failed to start web server. Port may be in use."
+
+msgctxt "#90561"
+msgid "Authentification Removed."
+msgstr "Authentification Removed."
+
+msgctxt "#90562"
+msgid "WebDAV Error"
+msgstr "WebDAV Error"
+
+msgctxt "#90563"
+msgid "Trakt Authorization"
+msgstr "Trakt Authorization"
+
+msgctxt "#90564"
+msgid "Do you want to continue transfer in background?"
+msgstr "Do you want to continue transfer in background?"
+
+msgctxt "#90565"
+msgid "Cloud Transfer"
+msgstr "Cloud Transfer"
+
+msgctxt "#90566"
+msgid "Kodi Logs"
+msgstr "Kodi Logs"
+
+msgctxt "#90567"
+msgid "Show Logs"
+msgstr "Show Logs"
+
+msgctxt "#90568"
+msgid "Export to paste.kodi.tv"
+msgstr "Export to paste.kodi.tv"
+
+msgctxt "#90569"
+msgid "Kodi Logs Exported"
+msgstr "Kodi Logs Exported"
+
+msgctxt "#90570"
+msgid "Providers Selection Dialog"
+msgstr "Providers Selection Dialog"
+
+msgctxt "#90571"
+msgid "Your current Providers are: \n%s\n\nDo you want to change?"
+msgstr "Your current Providers are: \n%s\n\nDo you want to change?"
+
+msgctxt "#90572"
+msgid "Select Providers"
+msgstr "Select Providers"
+
+msgctxt "#90573"
+msgid "Selection Dialog"
+msgstr "Selection Dialog"
+
+msgctxt "#90574"
+msgid "Successfully selected: %s"
+msgstr "Successfully selected: %s"
+
+msgctxt "#90575"
+msgid "Selection"
+msgstr "Selection"
+
+msgctxt "#90576"
+msgid "No providers selected"
+msgstr "No providers selected"
+
+msgctxt "#90577"
+msgid "Changelog"
+msgstr "Changelog"
+
+msgctxt "#90578"
+msgid "[B]Unable to check for updates[/B]"
+msgstr "[B]Unable to check for updates[/B]"
+
+msgctxt "#90579"
+msgid "[B]No update available[/B]"
+msgstr "[B]No update available[/B]"
+
+msgctxt "#90580"
+msgid "Installed: [B]%s[/B][CR]Online: [B]%s[/B][CR][CR]"
+msgstr "Installed: [B]%s[/B][CR]Online: [B]%s[/B][CR][CR]"
+
+msgctxt "#90581"
+msgid "[B]Update available. Do you want to update?[/B]"
+msgstr "[B]Update available. Do you want to update?[/B]"
+
+msgctxt "#90582"
+msgid "[B]Update Available (v%s).[/B] [I]Check settings to update.[/I]"
+msgstr "[B]Update Available (v%s).[/B] [I]Check settings to update.[/I]"
+
+msgctxt "#90583"
+msgid "Error fetching versions: %s"
+msgstr "Error fetching versions: %s"
+
+msgctxt "#90584"
+msgid "No older/different versions found."
+msgstr "No older/different versions found."
+
+msgctxt "#90585"
+msgid "Select Version to Downgrade"
+msgstr "Select Version to Downgrade"
+
+msgctxt "#90586"
+msgid "Are you sure you want to downgrade/reinstall to version [B]%s[/B]?"
+msgstr "Are you sure you want to downgrade/reinstall to version [B]%s[/B]?"
+
+msgctxt "#90587"
+msgid "[B]Downloading update...[/B]"
+msgstr "[B]Downloading update...[/B]"
+
+msgctxt "#90588"
+msgid "Error: Unable to download update."
+msgstr "Error: Unable to download update."
+
+msgctxt "#90589"
+msgid "Error saving update file: %s"
+msgstr "Error saving update file: %s"
+
+msgctxt "#90590"
+msgid "Error extracting update. Please install manually."
+msgstr "Error extracting update. Please install manually."
+
+msgctxt "#90591"
+msgid "Do you want to view the changelog for the new version?"
+msgstr "Do you want to view the changelog for the new version?"
+
+msgctxt "#90592"
+msgid "New Release v%s - Changelog"
+msgstr "New Release v%s - Changelog"
+
+msgctxt "#90593"
+msgid "[B]Update complete.[/B]"
+msgstr "[B]Update complete.[/B]"
+
+msgctxt "#90594"
+msgid "Real Debrid Auth"
+msgstr "Real Debrid Auth"
+
+msgctxt "#90595"
+msgid "Torbox Auth"
+msgstr "Torbox Auth"
+
+msgctxt "#90596"
+msgid "Debrider Auth"
+msgstr "Debrider Auth"
+
+msgctxt "#90597"
+msgid "Download Error"
+msgstr "Download Error"
+
+msgctxt "#90598"
+msgid "Failed to download text: %s"
+msgstr "Failed to download text: %s"
+
+msgctxt "#90599"
+msgid "General Error"
+msgstr "General Error"
+
+msgctxt "#90600"
+msgid "Could not display text file."
+msgstr "Could not display text file."
+
+msgctxt "#90601"
+msgid "Failed to export logs."
+msgstr "Failed to export logs."
+
+msgctxt "#90602"
+msgid "Error reading log: %s"
+msgstr "Error reading log: %s"
+
+msgctxt "#90603"
+msgid "Kodi log file not found."
+msgstr "Kodi log file not found."
+
+msgctxt "#90604"
+msgid "%s Auth"
+msgstr "%s Auth"
+
+msgctxt "#90605"
+msgid "Ok"
+msgstr "Ok"
+
+msgctxt "#90606"
+msgid "No"
+msgstr "No"
+
+msgctxt "#90607"
+msgid "Pinging addons for availability..."
+msgstr "Pinging addons for availability..."
+
+msgctxt "#90608"
+msgid "Pinging addons... %d/%d"
+msgstr "Pinging addons... %d/%d"
+
+msgctxt "#90609"
+msgid "Ping Results"
+msgstr "Ping Results"
+
+msgctxt "#90610"
+msgid "Reachable: %d\nUnreachable: %d"
+msgstr "Reachable: %d\nUnreachable: %d"
+
+msgctxt "#90611"
+msgid "Select Category to Filter"
+msgstr "Select Category to Filter"
+
+msgctxt "#90612"
+msgid "Stremio Add-ons Import"
+msgstr "Stremio Add-ons Import"
+
+msgctxt "#90613"
+msgid "To import your add-ons, please log in with your Stremio email and password."
+msgstr "To import your add-ons, please log in with your Stremio email and password."
+
+msgctxt "#90614"
+msgid "Enter your Email"
+msgstr "Enter your Email"
+
+msgctxt "#90615"
+msgid "Enter your Password"
+msgstr "Enter your Password"
+
+msgctxt "#90616"
+msgid "Login Failed"
+msgstr "Login Failed"
+
+msgctxt "#90617"
+msgid "Failed to login: %s"
+msgstr "Failed to login: %s"
+
+msgctxt "#90618"
+msgid "Add-ons Import Failed"
+msgstr "Add-ons Import Failed"
+
+msgctxt "#90619"
+msgid "Please try again later and report the issue if the problem persists. For more details, check the log file."
+msgstr "Please try again later and report the issue if the problem persists. For more details, check the log file."
+
+msgctxt "#90620"
+msgid "Addons Imported"
+msgstr "Addons Imported"
+
+msgctxt "#90621"
+msgid "Successfully imported addons from your account."
+msgstr "Successfully imported addons from your account."
+
+msgctxt "#90622"
+msgid "Update Stremio Addons"
+msgstr "Update Stremio Addons"
+
+msgctxt "#90623"
+msgid "Do you want to update the Addons from your account?"
+msgstr "Do you want to update the Addons from your account?"
+
+msgctxt "#90624"
+msgid "Log Out from Stremio"
+msgstr "Log Out from Stremio"
+
+msgctxt "#90625"
+msgid "Are you sure you want to log out? You can continue using Stremio without logging in, but your settings will be reset to the default configuration."
+msgstr "Are you sure you want to log out? You can continue using Stremio without logging in, but your settings will be reset to the default configuration."
+
+msgctxt "#90626"
+msgid "Log Out"
+msgstr "Log Out"
+
+msgctxt "#90627"
+msgid "Use Existing"
+msgstr "Use Existing"
+
+msgctxt "#90628"
+msgid "Download New"
+msgstr "Download New"
+
+msgctxt "#90629"
+msgid "Playback Failed"
+msgstr "Playback Failed"
+
+msgctxt "#90630"
+msgid "The video could not be played.\nDo you want to retry?"
+msgstr "The video could not be played.\nDo you want to retry?"
+
+msgctxt "#90631"
+msgid "Retry"
+msgstr "Retry"
+
+msgctxt "#90632"
+msgid "Information"
+msgstr "Information"
+
+msgctxt "#90633"
+msgid "Review"
+msgstr "Review"
+
+msgctxt "#90634"
+msgid "Comment"
+msgstr "Comment"
+
+msgctxt "#90635"
+msgid "Trivia"
+msgstr "Trivia"
+
+msgctxt "#90636"
+msgid "Goof"
+msgstr "Goof"
+
+msgctxt "#90637"
+msgid "Parental Guide"
+msgstr "Parental Guide"
+
+msgctxt "#90638"
+msgid "Converting Magnet...\n\n%s"
+msgstr "Converting Magnet...\n\n%s"
+
+msgctxt "#90639"
+msgid "Real Debrid Error."
+msgstr "Real Debrid Error."
+
+msgctxt "#90640"
+msgid "File already cached"
+msgstr "File already cached"
+
+msgctxt "#90641"
+msgid "Saving file to the Real Debrid Cloud"
+msgstr "Saving file to the Real Debrid Cloud"
+
+msgctxt "#90642"
+msgid "File cached"
+msgstr "File cached"
+
+msgctxt "#90643"
+msgid "Saving File to the Real Debrid Cloud...\n%s\n\n"
+msgstr "Saving File to the Real Debrid Cloud...\n%s\n\n"
+
+msgctxt "#90644"
+msgid "Downloading %s GB @ %s mbps from %s peers, %s %% completed"
+msgstr "Downloading %s GB @ %s mbps from %s peers, %s %% completed"
+
+msgctxt "#90645"
+msgid "Trakt"
+msgstr "Trakt"
+
+msgctxt "#90651"
+msgid "Easynews Account Info"
+msgstr "Easynews Account Info"
+
+msgctxt "#90652"
+msgid "DeepL API Error"
+msgstr "DeepL API Error"
+
+msgctxt "#90653"
+msgid "Download"
+msgstr "Download"
+
+msgctxt "#90654"
+msgid "Failed to start download: %s"
+msgstr "Failed to start download: %s"
+
+msgctxt "#90655"
+msgid "Modify Search"
+msgstr "Modify Search"
+
+msgctxt "#90656"
+msgid "Torbox"
+msgstr "Torbox"
+
+msgctxt "#90657"
+msgid "Easy-Debrid"
+msgstr "Easy-Debrid"
+
+msgctxt "#90658"
+msgid "All-Debrid"
+msgstr "All-Debrid"
+
+msgctxt "#90659"
+msgid "Real-Debrid"
+msgstr "Real-Debrid"
+
+msgctxt "#90660"
+msgid "Getting results from providers..."
+msgstr "Getting results from providers..."
+
+msgctxt "#90661"
+msgid "Jacktook [COLOR FFFF6B00]%s[/COLOR]"
+msgstr "Jacktook [COLOR FFFF6B00]%s[/COLOR]"
+
+msgctxt "#90662"
+msgid "Downloads Viewer"
+msgstr "Downloads Viewer"
+
+msgctxt "#90663"
+msgid "WebDAV Text Viewer"
+msgstr "WebDAV Text Viewer"
+
+msgctxt "#90664"
+msgid "Selected Item"
+msgstr "Selected Item"
+
+msgctxt "#90665"
+msgid "Subtitle No. %d"
+msgstr "Subtitle No. %d"
+
+msgctxt "#90666"
+msgid "Free DeepL usage available!\nCharacters left in free quota: %s\nCharacters to translate: %s\n\nDo you want to proceed with the translation?"
+msgstr "Free DeepL usage available!\nCharacters left in free quota: %s\nCharacters to translate: %s\n\nDo you want to proceed with the translation?"
+
+msgctxt "#90667"
+msgid "Free DeepL Usage"
+msgstr "Free DeepL Usage"
+
+msgctxt "#90668"
+msgid "Total characters to translate: %s\nEstimated cost: $%.2f USD\n\nDo you want to proceed with the translation?"
+msgstr "Total characters to translate: %s\nEstimated cost: $%.2f USD\n\nDo you want to proceed with the translation?"
+
+msgctxt "#90669"
+msgid "Translation Cost"
+msgstr "Translation Cost"
+
+msgctxt "#90672"
+msgid "Play Trailer"
+msgstr "Play Trailer"
+
+msgctxt "#90673"
+msgid "Trailer unavailable"
+msgstr "Trailer unavailable"
+
+msgctxt "#90690"
+msgid "Clear All Items"
+msgstr "Clear All Items"
+
+msgctxt "#90691"
+msgid "Remove all items from this library?"
+msgstr "Remove all items from this library?"
+
+msgctxt "#90692"
+msgid "Library cleared"
+msgstr "Library cleared"
+
+msgctxt "#90693"
+msgid "No items to remove"
+msgstr "No items to remove"
+
+msgctxt "#90694"
+msgid "Added to %s cloud but still downloading. Please wait before playing."
+msgstr "Added to %s cloud but still downloading. Please wait before playing."
+
+msgctxt "#90695"
+msgid "Torrent Not Ready"
+msgstr "Torrent Not Ready"
+
+msgctxt "#90696"
+msgid "This torrent is still downloading in %s and is not ready yet."
+msgstr "This torrent is still downloading in %s and is not ready yet."
+
+msgctxt "#90697"
+msgid "Would you like to play using torrent client (may be slower) or cancel and wait for debrid to finish?"
+msgstr "Would you like to play using torrent client (may be slower) or cancel and wait for debrid to finish?"
+
+msgctxt "#90698"
+msgid "Play with Torrent"
+msgstr "Play with Torrent"
+
+msgctxt "#90699"
+msgid "Cancel & Wait"
+msgstr "Cancel & Wait"
+
+msgctxt "#90712"
+msgid "Views"
+msgstr "Views"
+
+msgctxt "#90713"
+msgid "Set Main View"
+msgstr "Set Main View"
+
+msgctxt "#90714"
+msgid "Set Movies View"
+msgstr "Set Movies View"
+
+msgctxt "#90715"
+msgid "Set TV Shows View"
+msgstr "Set TV Shows View"
+
+msgctxt "#90716"
+msgid "Set Seasons View"
+msgstr "Set Seasons View"
+
+msgctxt "#90717"
+msgid "Set Episodes View"
+msgstr "Set Episodes View"
+
+msgctxt "#90718"
+msgid "Set Library View"
+msgstr "Set Library View"
+
+msgctxt "#90719"
+msgid "Set History View"
+msgstr "Set History View"
+
+msgctxt "#90720"
+msgid "Set Downloads View"
+msgstr "Set Downloads View"
+
+msgctxt "#90721"
+msgid "Save Current View"
+msgstr "Save Current View"
+
+msgctxt "#90722"
+msgid "View saved"
+msgstr "View saved"
+
+msgctxt "#90723"
+msgid "Could not detect the current view"
+msgstr "Could not detect the current view"
+
+msgctxt "#90724"
+msgid "Saved views reset"
+msgstr "Saved views reset"
+
+msgctxt "#90725"
+msgid "Reset Saved Views"
+msgstr "Reset Saved Views"
+
+msgctxt "#90726"
+msgid "Open this screen, change the Kodi view manually, then select Save Current View."
+msgstr "Open this screen, change the Kodi view manually, then select Save Current View."
+
+msgctxt "#90742"
+msgid "Addon Settings"
+msgstr "Addon Settings"
+
+msgctxt "#90743"
+msgid "Set Views"
+msgstr "Set Views"
+
+msgctxt "#90730"
+msgid "Search with title + year"
+msgstr "Search with title + year"
+
+msgctxt "#90731"
+msgid "Search with original title"
+msgstr "Search with original title"
+
+msgctxt "#90732"
+msgid "Search with original title + year"
+msgstr "Search with original title + year"
+
+msgctxt "#90733"
+msgid "Search modes"
+msgstr "Search modes"
+
+msgctxt "#90734"
+msgid "Enter year"
+msgstr "Enter year"
+
+msgctxt "#90735"
+msgid "Invalid year"
+msgstr "Invalid year"
+
+msgctxt "#90736"
+msgid "Edit title"
+msgstr "Edit title"
+
+msgctxt "#90512"
+msgid "Season"
+msgstr "Season"
+
+msgctxt "#90737"
+msgid "Invalid season"
+msgstr "Invalid season"
+
+msgctxt "#90738"
+msgid "Episode"
+msgstr "Episode"
+
+msgctxt "#90739"
+msgid "Invalid episode"
+msgstr "Invalid episode"
+
+msgctxt "#90740"
+msgid "Search with current title"
+msgstr "Search with current title"
+
+msgctxt "#90741"
+msgid "Search with original title"
+msgstr "Search with original title"
+
+msgctxt "#90773"
+msgid "Search full show with title + year"
+msgstr "Search full show with title + year"
+
+msgctxt "#90744"
+msgid "Upload Subtitle"
+msgstr "Upload Subtitle"
+
+msgctxt "#90745"
+msgid "Select Subtitle File"
+msgstr "Select Subtitle File"
+
+msgctxt "#90746"
+msgid "Local File"
+msgstr "Local File"
+
+msgctxt "#90747"
+msgid "Upload from Browser"
+msgstr "Upload from Browser"
+
+msgctxt "#90748"
+msgid "Upload subtitle from your browser"
+msgstr "Upload subtitle from your browser"
+
+msgctxt "#90749"
+msgid "Scan the QR code or open the URL (%s) in your browser to upload a subtitle file"
+msgstr "Scan the QR code or open the URL (%s) in your browser to upload a subtitle file"
+
+msgctxt "#90750"
+msgid "Search Title Language"
+msgstr "Search Title Language"
+
+msgctxt "#90751"
+msgid "Controls how Easynews/Jackett/Prowlarr title queries are prioritized for context searches."
+msgstr "Controls how Easynews/Jackett/Prowlarr title queries are prioritized for context searches."
+
+msgctxt "#90752"
+msgid "English first"
+msgstr "English first"
+
+msgctxt "#90753"
+msgid "English only"
+msgstr "English only"
+
+msgctxt "#90754"
+msgid "Localized first"
+msgstr "Localized first"
+
+msgctxt "#90755"
+msgid "Manage Sources"
+msgstr "Manage Sources"
+
+msgctxt "#90756"
+msgid "No sources available"
+msgstr "No sources available"
+
+msgctxt "#90179"
+msgid "Stinger Notifications"
+msgstr "Stinger Notifications"
+
+msgctxt "#90180"
+msgid "Show a notification when a movie has post-credit scenes."
+msgstr "Show a notification when a movie has post-credit scenes."
+
+msgctxt "#90181"
+msgid "Stinger Notification Time"
+msgstr "Stinger Notification Time"
+
+msgctxt "#90182"
+msgid "Seconds before the end to show the stinger notification."
+msgstr "Seconds before the end to show the stinger notification."
+
+msgctxt "#90183"
+msgid "Stay tuned after the credits!"
+msgstr "Stay tuned after the credits!"
+
+msgctxt "#90757"
+msgid "Image Resolution"
+msgstr "Image Resolution"
+
+msgctxt "#90758"
+msgid "Low"
+msgstr "Low"
+
+msgctxt "#90759"
+msgid "Medium"
+msgstr "Medium"
+
+msgctxt "#90760"
+msgid "High"
+msgstr "High"
+
+msgctxt "#90761"
+msgid "Original"
+msgstr "Original"
+
+msgctxt "#90762"
+msgid "Enable RPDB Posters"
+msgstr ""
+
+msgctxt "#90763"
+msgid "RPDB API Key"
+msgstr ""
+
+msgctxt "#90764"
+msgid "Get your API key at ratingposterdb.com"
+msgstr ""
+
+msgctxt "#90765"
+msgid "Filter by Codecs"
+msgstr ""
+
+msgctxt "#90766"
+msgid "Filter by HDR"
+msgstr ""
+
+msgctxt "#90767"
+msgid "Include HEVC / H.265"
+msgstr ""
+
+msgctxt "#90768"
+msgid "Include AV1"
+msgstr ""
+
+msgctxt "#90769"
+msgid "Include H.264"
+msgstr ""
+
+msgctxt "#90770"
+msgid "Include Dolby Vision"
+msgstr ""
+
+msgctxt "#90771"
+msgid "Include HDR10 / HDR10+"
+msgstr ""
+
+msgctxt "#90772"
+msgid "Include HDR (generic)"
+msgstr ""
+
+msgctxt "#90774"
+msgid "Organize downloads by type"
+msgstr ""
+
+msgctxt "#90775"
+msgid "Movies folder name"
+msgstr ""
+
+msgctxt "#90776"
+msgid "TV Shows folder name"
+msgstr ""
+
+msgctxt "#90777"
+msgid "Pause"
+msgstr ""
+
+msgctxt "#90778"
+msgid "Resume"
+msgstr ""
+
+msgctxt "#90779"
+msgid "Downloading"
+msgstr ""
+
+msgctxt "#90780"
+msgid "Paused"
+msgstr ""
+
+msgctxt "#90781"
+msgid "Completed"
+msgstr ""
+
+msgctxt "#90782"
+msgid "Delete"
+msgstr ""
+
+msgctxt "#90783"
+msgid "Startup"
+msgstr ""
+
+msgctxt "#90784"
+msgid "Auto-start Jacktook on Kodi boot"
+msgstr ""
+
+msgctxt "#90785"
+msgid "Automatically open Jacktook when Kodi starts"
+msgstr ""
+
+msgctxt "#90786"
+msgid "Widgets"
+msgstr ""
+
+msgctxt "#90787"
+msgid "Widget refresh interval (minutes)"
+msgstr ""
+
+msgctxt "#90788"
+msgid "Set to 0 to disable automatic widget refresh"
+msgstr ""
+
+msgctxt "#90789"
+msgid "Show refresh notification"
+msgstr ""
+
+msgctxt "#90790"
+msgid "Display a notification when widgets are refreshed"
+msgstr ""
+
+msgctxt "#90791"
+msgid "Download to Device"
+msgstr ""
+
+msgctxt "#90792"
+msgid "Download Manager"
+msgstr ""
+
+msgctxt "#90793"
+msgid "No active downloads"
+msgstr ""
+
+msgctxt "#90794"
+msgid "Progress"
+msgstr ""
+
+msgctxt "#90795"
+msgid "Speed"
+msgstr ""
+
+msgctxt "#90796"
+msgid "ETA"
+msgstr ""
+
+msgctxt "#90797"
+msgid "Size"
+msgstr ""
+
+msgctxt "#90798"
+msgid "Pause"
+msgstr ""
+
+msgctxt "#90799"
+msgid "Resume"
+msgstr ""
+
+msgctxt "#90800"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "#90801"
+msgid "Delete"
+msgstr ""
+
+msgctxt "#90802"
+msgid "Clear Completed"
+msgstr ""
+
+msgctxt "#90803"
+msgid "Download not yet completed"
+msgstr ""
+
+msgctxt "#90804"
+msgid "File not found"
+msgstr ""
+
+msgctxt "#90805"
+msgid "Download Manager"
+msgstr ""
+
+msgctxt "#90806"
+msgid "My Downloads"
+msgstr ""
+
+msgctxt "#90807"
+msgid "Connecting..."
+msgstr ""
+
+msgctxt "#90808"
+msgid "Close"
+msgstr ""
+
+msgctxt "#90809"
+msgid "Delete download?"
+msgstr ""
+
+msgctxt "#90810"
+msgid "This will permanently delete the downloaded file. Are you sure?"
+msgstr ""
+
+msgctxt "#90811"
+msgid "Completed"
+msgstr ""
+
+msgctxt "#90812"
+msgid "Excluded TMDB Languages"
+msgstr ""
+
+msgctxt "#90813"
+msgid "Select languages to exclude"
+msgstr ""
+
+msgctxt "#90814"
+msgid "Choose original languages to hide from TMDB listings"
+msgstr ""
+
+msgctxt "#90815"
+msgid "Support Jacktook"
+msgstr ""
+
+msgctxt "#90816"
+msgid "Support Jacktook development with an optional Ko-fi donation."
+msgstr ""
+
+msgctxt "#90817"
+msgid "Scan the QR code or open this link:"
+msgstr ""
+
+msgctxt "#90818"
+msgid "Jacktook was updated with new improvements. Donations are optional, but they help keep development active. Would you like to see the support link?"
+msgstr ""
+
+msgctxt "#90819"
+msgid "Rename Stremio add-on"
+msgstr ""
+
+msgctxt "#90820"
+msgid "Enter add-on alias."
+msgstr ""
+
+msgctxt "#90821"
+msgid "Stremio alias"
+msgstr ""
+
+msgctxt "#90822"
+msgid "Alias saved."
+msgstr ""
+
+msgctxt "#90823"
+msgid "Alias cleared."
+msgstr ""
+
+msgctxt "#90824"
+msgid "Rename Stremio catalog"
+msgstr ""
+
+msgctxt "#90825"
+msgid "Select catalog"
+msgstr ""
+
+msgctxt "#90826"
+msgid "Enter catalog alias."
+msgstr ""
+
+msgctxt "#90827"
+msgid "Set a Kodi-only display alias for a Stremio add-on."
+msgstr ""
+
+msgctxt "#90828"
+msgid "Set a Kodi-only display alias for a Stremio catalog."
+msgstr ""
+
+msgctxt "#90829"
+msgid "Edit"
+msgstr ""
+
+msgctxt "#90830"
+msgid "Clear"
+msgstr ""
+
+msgctxt "#90831"
+msgid "This item already has an alias. Do you want to clear it?"
+msgstr ""
+
+msgctxt "#90832"
+msgid "Stremio: Addons Management"
+msgstr ""
+
+msgctxt "#90833"
+msgid "Stremio: Catalogs & Visibility"
+msgstr ""
+
+msgctxt "#90834"
+msgid "Stremio: Rename & Customization"
+msgstr ""
+
+msgctxt "#90835"
+msgid "Stremio: Search & Behavior"
+msgstr ""
+
+msgctxt "#90300"
+msgid "External Scraper"
+msgstr ""
+
+msgctxt "#90301"
+msgid "Enable external scraper module integration."
+msgstr ""
+
+msgctxt "#90302"
+msgid "Choose External Scraper Module"
+msgstr ""
+
+msgctxt "#90303"
+msgid "Select an external scraper addon module to use for torrent search."
+msgstr ""
+
+msgctxt "#90304"
+msgid "Choose External Scraper"
+msgstr ""
+
+msgctxt "#90305"
+msgid "Selected Module"
+msgstr ""
+
+msgctxt "#90306"
+msgid "Open External Scraper Settings"
+msgstr ""
+
+msgctxt "#90307"
+msgid "Open the settings for the selected external scraper module."
+msgstr ""
+
+msgctxt "#30953"
+msgid "Select subtitle addons"
+msgstr ""
+
+msgctxt "#30954"
+msgid "Choose which installed Stremio addons to query for subtitles."
+msgstr ""
+
+msgctxt "#30955"
+msgid "No subtitle-capable addons found."
+msgstr ""
+
+msgctxt "#30956"
+msgid "Use integrated OpenSubtitles"
+msgstr ""
+
+msgctxt "#30957"
+msgid "Queries the integrated OpenSubtitles service with the current video ID and, when available, filename, size, and video hash. Disable this to prevent those requests."
+msgstr ""
+
+msgctxt "#90958"
+msgid "Yamtrack"
+msgstr ""
+
+msgctxt "#90959"
+msgid "Sync completed playback to Yamtrack"
+msgstr ""
+
+msgctxt "#90960"
+msgid "Yamtrack base URL"
+msgstr ""
+
+msgctxt "#90961"
+msgid "Yamtrack webhook token"
+msgstr ""
+
+msgctxt "#90962"
+msgid "MDbList"
+msgstr ""
+
+msgctxt "#90963"
+msgid "Uncategorized"
+msgstr ""
+
+msgctxt "#90964"
+msgid "The installed version is newer than the version published in the repository."
+msgstr "The installed version is newer than the version published in the repository."
+
+msgctxt "#90999"
+msgid "Clear Continue Watching"
+msgstr "Clear Continue Watching"
+
+msgctxt "#91001"
+msgid "Continue Watching cleared"
+
+msgctxt "#91002"
+msgid "Nuvio: Account"
+msgstr "Nuvio: Account"
+
+msgctxt "#91003"
+msgid "Enable"
+msgstr "Enable"
+
+msgctxt "#91004"
+msgid "Push your Jacktook movie and TV episode watch progress to Nuvio when playback stops."
+msgstr "Push your Jacktook movie and TV episode watch progress to Nuvio when playback stops."
+
+msgctxt "#91005"
+msgid "Connect Nuvio with QR Code"
+msgstr "Connect Nuvio with QR Code"
+
+msgctxt "#91006"
+msgid "Scan the QR code with a signed-in Nuvio device, then select the profile that receives watch-progress updates."
+msgstr "Scan the QR code with a signed-in Nuvio device, then select the profile that receives watch-progress updates."
+
+msgctxt "#91007"
+msgid "Sign Out of Nuvio"
+msgstr "Sign Out of Nuvio"
+
+msgctxt "#91008"
+msgid "Remove the saved Nuvio session and selected profile from Jacktook."
+msgstr "Remove the saved Nuvio session and selected profile from Jacktook."
+
+msgctxt "#91009"
+msgid "Nuvio connection cancelled."
+msgstr "Nuvio connection cancelled."
+
+msgctxt "#91010"
+msgid "Nuvio authorization expired. Start the QR connection again."
+msgstr "Nuvio authorization expired. Start the QR connection again."
+
+msgctxt "#91011"
+msgid "Nuvio authorization was already used or cancelled. Start the QR connection again."
+msgstr "Nuvio authorization was already used or cancelled. Start the QR connection again."
+
+msgctxt "#91012"
+msgid "Nuvio could not start QR authorization. Please try again."
+msgstr "Nuvio could not start QR authorization. Please try again."
+
+msgctxt "#91013"
+msgid "Nuvio authorization check failed. Please try again."
+msgstr "Nuvio authorization check failed. Please try again."
+
+msgctxt "#91014"
+msgid "Nuvio authorization exchange failed. Please try again."
+msgstr "Nuvio authorization exchange failed. Please try again."
+
+msgctxt "#91015"
+msgid "Unable to load Nuvio profiles. Please try again."
+msgstr "Unable to load Nuvio profiles. Please try again."
+
+msgctxt "#91016"
+msgid "Nuvio watch-progress sync connected."
+msgstr "Nuvio watch-progress sync connected."
+
+msgctxt "#91017"
+msgid "Choose Nuvio profile"
+msgstr "Choose Nuvio profile"
+
+msgctxt "#91018"
+msgid "Nuvio: Addons Management"
+msgstr "Nuvio: Addons Management"
+
+msgctxt "#91019"
+msgid "Select Nuvio Addons"
+msgstr "Select Nuvio Addons"
+
+msgctxt "#91020"
+msgid "Select the enabled Nuvio addons to use for stream searches."
+msgstr "Select the enabled Nuvio addons to use for stream searches."
+
+msgctxt "#91021"
+msgid "No usable Nuvio addons are available."
+msgstr "No usable Nuvio addons are available."
+
+msgctxt "#91022"
+msgid "Nuvio addons could not be loaded. Your saved selection was not changed."
+msgstr "Nuvio addons could not be loaded. Your saved selection was not changed."
+
+msgctxt "#91023"
+msgid "Nuvio: Watch Progress"
+msgstr "Nuvio: Watch Progress"
+
+msgctxt "#91024"
+msgid "Nuvio: Watch History"
+msgstr "Nuvio: Watch History"
+
+msgctxt "#91025"
+msgid "No Nuvio watch progress available."
+msgstr "No Nuvio watch progress available."
+
+msgctxt "#91026"
+msgid "No Nuvio watch history available."
+msgstr "No Nuvio watch history available."
+
+msgctxt "#91027"
+msgid "Remove from Nuvio"
+msgstr "Remove from Nuvio"
+
+msgctxt "#91028"
+msgid "Removed from Nuvio Continue Watching"
+msgstr "Removed from Nuvio Continue Watching"
+
+msgctxt "#91029"
+msgid "Could not remove Nuvio watch progress."
+msgstr "Could not remove Nuvio watch progress."
+
+msgctxt "#91030"
+msgid "About"
+msgstr "About"
+
+msgctxt "#91031"
+msgid "Version"
+msgstr "Version"
+
+msgctxt "#91032"
+msgid "My Nuvio Movies"
+msgstr "My Nuvio Movies"
+
+msgctxt "#91033"
+msgid "My Nuvio Shows"
+msgstr "My Nuvio Shows"
+
+msgctxt "#91034"
+msgid "No Nuvio library items available."
+msgstr "No Nuvio library items available."
+
+msgctxt "#91035"
+msgid "Nuvio: Library Sync"
+msgstr "Nuvio: Library Sync"
+
+msgctxt "#91036"
+msgid "Sync interval (minutes)"
+msgstr "Sync interval (minutes)"
+
+msgctxt "#91037"
+msgid "How often Nuvio library changes are pulled, in minutes (minimum 1)."
+msgstr "How often Nuvio library changes are pulled, in minutes (minimum 1)."
+
+msgctxt "#91038"
+msgid "Nuvio"
+msgstr "Nuvio"
+
+msgctxt "#91039"
+msgid "Add to Nuvio Library"
+msgstr "Add to Nuvio Library"
+
+msgctxt "#91040"
+msgid "Remove from Nuvio Library"
+msgstr "Remove from Nuvio Library"
+
+msgctxt "#91041"
+msgid "Added to Nuvio Library"
+msgstr "Added to Nuvio Library"
+
+msgctxt "#91042"
+msgid "Removed from Nuvio Library"
+msgstr "Removed from Nuvio Library"
+
+msgctxt "#91043"
+msgid "Could not update the Nuvio library."
+msgstr "Could not update the Nuvio library."
+
+msgctxt "#91044"
+msgid "Mark as Watched on Nuvio"
+msgstr "Mark as Watched on Nuvio"
+
+msgctxt "#91045"
+msgid "Mark as Unwatched on Nuvio"
+msgstr "Mark as Unwatched on Nuvio"
+
+msgctxt "#91046"
+msgid "Marked as watched on Nuvio."
+msgstr "Marked as watched on Nuvio."
+
+msgctxt "#91047"
+msgid "Removed from Nuvio history."
+msgstr "Removed from Nuvio history."
+
+msgctxt "#91048"
+msgid "Could not update Nuvio history."
+msgstr "Could not update Nuvio history."
+
+msgctxt "#91049"
+msgid "Remove from Nuvio History?"
+msgstr "Remove from Nuvio History?"
+
+msgctxt "#91050"
+msgid "This removes the item from your Nuvio watch history. Continue?"
+msgstr "This removes the item from your Nuvio watch history. Continue?"
+
+msgctxt "#91051"
+msgid "Collections"
+msgstr "Collections"
+
+msgctxt "#91052"
+msgid "No Nuvio collections available."
+msgstr "No Nuvio collections available."
+
+msgctxt "#91053"
+msgid "Addon not installed"
+msgstr "Addon not installed"
+
+msgctxt "#91054"
+msgid "This catalog's addon is not installed in Nuvio."
+msgstr "This catalog's addon is not installed in Nuvio."
+
+msgctxt "#91055"
+msgid "This collection source is not supported yet."
+msgstr "This collection source is not supported yet."
+
+msgctxt "#91056"
+msgid "No results found."
+msgstr "No results found."

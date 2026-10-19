@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">5</defaultcontrol>
+  <depth>DepthDialog</depth>
+  <controls>
+    <include>DialogScrim</include>
+    <control type="group">
+      <centerleft>50%</centerleft><centertop>50%</centertop>
+      <width>1440</width><height>880</height>
+      <include content="PanelOpen"><param name="slide">0,16</param></include>
+      <control type="image">
+        <left>0</left><top>0</top><width>1440</width><height>880</height>
+        <texture colordiffuse="FF15171C" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="label" id="1">
+        <left>64</left><top>44</top><width>1312</width><height>56</height>
+        <font>Head40</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="textbox" id="5">
+        <left>64</left><top>128</top><width>1280</width><height>680</height>
+        <font>Body28</font><textcolor>text2</textcolor>
+        <pagecontrol>60</pagecontrol>
+      </control>
+      <control type="scrollbar" id="60">
+        <left>1368</left><top>132</top><width>4</width><height>672</height>
+        <orientation>vertical</orientation><showonepage>false</showonepage>
+        <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+      </control>
+      <control type="label">
+        <left>64</left><top>820</top><width>1312</width><height>40</height>
+        <label>↑↓ 翻页   ·   返回 关闭</label>
+        <font>Meta22</font><textcolor>text3</textcolor><align>right</align><aligny>center</aligny>
+      </control>
+    </control>
+  </controls>
+</window>

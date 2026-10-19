@@ -1,0 +1,13 @@
+<addon id="script.module.bobbi.catalog" name="AM6B 115资源目录" version="0.1.0" provider-name="AM6B">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0" />
+    <import addon="script.module.bobbi.core" version="0.1.0" />
+    <import addon="script.module.bobbi.platform" version="0.1.0" />
+  </requires>
+  <extension point="xbmc.python.module" library="lib" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">腾讯目录与经核验补充分享的统一115资源目录</summary>
+    <description lang="zh_CN">保留原始表格出处，按作品、年份和季集校验实际文件。后台有限查询，点击时解析临时地址，不转存、不创建云任务。未核实的字幕不标为已验证。可独立关闭和更新目录。</description>
+    <license>MIT</license><platform>all</platform>
+  </extension>
+</addon>

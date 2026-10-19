@@ -1,0 +1,852 @@
+import json
+import os
+import threading
+import time
+from datetime import datetime, timedelta
+from typing import List, Optional
+from urllib import parse
+
+import xbmc
+from xbmcplugin import addDirectoryItem
+
+from lib.api.mdblist.mdblist import MDblistAPI
+from lib.api.tmdbv3api.as_obj import AsObj
+from lib.api.tmdbv3api.objs.anime import TmdbAnime
+from lib.api.tmdbv3api.objs.collection import Collection
+from lib.api.tmdbv3api.objs.discover import Discover
+from lib.api.tmdbv3api.objs.episode import Episode
+from lib.api.tmdbv3api.objs.find import Find
+from lib.api.tmdbv3api.objs.genre import Genre
+from lib.api.tmdbv3api.objs.movie import Movie
+from lib.api.tmdbv3api.objs.person import Person
+from lib.api.tmdbv3api.objs.search import Search
+from lib.api.tmdbv3api.objs.season import Season
+from lib.api.tmdbv3api.objs.trending import Trending
+from lib.api.tmdbv3api.objs.tv import TV
+from lib.api.tmdbv3api.tmdb import TMDb
+from lib.db.cached import cache
+from lib.utils.general.utils import execute_thread_pool
+from lib.utils.kodi.settings import get_cache_expiration, is_cache_enabled
+from lib.utils.kodi.utils import (
+    ADDON_HANDLE,
+    ADDON_PATH,
+    action_url_run,
+    build_url,
+    container_update,
+    get_setting,
+    kodi_play_media,
+    kodilog,
+    translation,
+)
+
+LANGUAGES = [
+    "ar-AE",
+    "ar-SA",
+    "be-BY",
+    "bg-BG",
+    "bn-BD",
+    "ca-ES",
+    "ch-GU",
+    "cs-CZ",
+    "da-DK",
+    "de-AT",
+    "de-CH",
+    "de-DE",
+    "el-GR",
+    "en-AU",
+    "en-CA",
+    "en-GB",
+    "en-IE",
+    "en-NZ",
+    "en-US",
+    "eo-EO",
+    "es-ES",
+    "es-MX",
+    "et-EE",
+    "eu-ES",
+    "fa-IR",
+    "fi-FI",
+    "fr-CA",
+    "fr-FR",
+    "gl-ES",
+    "he-IL",
+    "hi-IN",
+    "hu-HU",
+    "id-ID",
+    "it-IT",
+    "ja-JP",
+    "ka-GE",
+    "kk-KZ",
+    "kn-IN",
+    "ko-KR",
+    "lt-LT",
+    "lv-LV",
+    "ml-IN",
+    "ms-MY",
+    "ms-SG",
+    "nb-NO",
+    "nl-NL",
+    "no-NO",
+    "pl-PL",
+    "pt-BR",
+    "pt-PT",
+    "ro-RO",
+    "ru-RU",
+    "si-LK",
+    "sk-SK",
+    "sl-SI",
+    "sr-RS",
+    "sv-SE",
+    "ta-IN",
+    "te-IN",
+    "th-TH",
+    "tl-PH",
+    "tr-TR",
+    "uk-UA",
+    "vi-VN",
+    "zh-CN",
+    "zh-HK",
+    "zh-TW",
+    "zu-ZA",
+]
+
+FULL_NAME_LANGUAGES = [
+    {"name": "Arabic", "id": "ar"},
+    {"name": "Bosnian", "id": "bs"},
+    {"name": "Bulgarian", "id": "bg"},
+    {"name": "Chinese", "id": "zh"},
+    {"name": "Croatian", "id": "hr"},
+    {"name": "Dutch", "id": "nl"},
+    {"name": "English", "id": "en"},
+    {"name": "Finnish", "id": "fi"},
+    {"name": "French", "id": "fr"},
+    {"name": "German", "id": "de"},
+    {"name": "Greek", "id": "el"},
+    {"name": "Hebrew", "id": "he"},
+    {"name": "Hindi", "id": "hi"},
+    {"name": "Hungarian", "id": "hu"},
+    {"name": "Icelandic", "id": "is"},
+    {"name": "Italian", "id": "it"},
+    {"name": "Japanese", "id": "ja"},
+    {"name": "Korean", "id": "ko"},
+    {"name": "Macedonian", "id": "mk"},
+    {"name": "Norwegian", "id": "no"},
+    {"name": "Persian", "id": "fa"},
+    {"name": "Polish", "id": "pl"},
+    {"name": "Portuguese", "id": "pt"},
+    {"name": "Punjabi", "id": "pa"},
+    {"name": "Romanian", "id": "ro"},
+    {"name": "Russian", "id": "ru"},
+    {"name": "Serbian", "id": "sr"},
+    {"name": "Slovenian", "id": "sl"},
+    {"name": "Spanish", "id": "es"},
+    {"name": "Swedish", "id": "sv"},
+    {"name": "Turkish", "id": "tr"},
+    {"name": "Ukrainian", "id": "uk"},
+]
+
+
+NETWORKS = [
+    {"id": 129, "name": "A&E", "icon": "https://i.imgur.com/xLDfHjH.png"},
+    {"id": 2, "name": "ABC", "icon": "https://i.imgur.com/qePLxos.png"},
+    {"id": 174, "name": "AMC", "icon": "https://i.imgur.com/ndorJxi.png"},
+    {"id": 2697, "name": "Acorn TV", "icon": "https://i.imgur.com/fSWB5gB.png"},
+    {"id": 80, "name": "Adult Swim", "icon": "https://i.imgur.com/jCqbRcS.png"},
+    {"id": 1024, "name": "Amazon", "icon": "https://i.imgur.com/ru9DDlL.png"},
+    {"id": 91, "name": "Animal Planet", "icon": "https://i.imgur.com/olKc4RP.png"},
+    {"id": 2552, "name": "Apple TV +", "icon": "https://i.imgur.com/fAQMVNp.png"},
+    {"id": 251, "name": "Audience", "icon": "https://i.imgur.com/5Q3mo5A.png"},
+    {"id": 4, "name": "BBC 1", "icon": "https://i.imgur.com/u8x26te.png"},
+    {"id": 332, "name": "BBC 2", "icon": "https://i.imgur.com/SKeGH1a.png"},
+    {"id": 3, "name": "BBC 3", "icon": "https://i.imgur.com/SDLeLcn.png"},
+    {"id": 100, "name": "BBC 4", "icon": "https://i.imgur.com/PNDalgw.png"},
+    {"id": 493, "name": "BBC America", "icon": "https://i.imgur.com/TUHDjfl.png"},
+    {"id": 24, "name": "BET", "icon": "https://i.imgur.com/ZpGJ5UQ.png"},
+    {"id": 74, "name": "Bravo", "icon": "https://i.imgur.com/TmEO3Tn.png"},
+    {"id": 23, "name": "CBC", "icon": "https://i.imgur.com/unQ7WCZ.png"},
+    {"id": 16, "name": "CBS", "icon": "https://i.imgur.com/8OT8igR.png"},
+    {"id": 1709, "name": "CBS All Access", "icon": "https://i.imgur.com/ZvaWMuU.png"},
+    {"id": 110, "name": "CTV", "icon": "https://i.imgur.com/qUlyVHz.png"},
+    {"id": 56, "name": "Cartoon Network", "icon": "https://i.imgur.com/zmOLbbI.png"},
+    {"id": 26, "name": "Channel 4", "icon": "https://i.imgur.com/6ZA9UHR.png"},
+    {"id": 99, "name": "Channel 5", "icon": "https://i.imgur.com/5ubnvOh.png"},
+    {"id": 359, "name": "Cinemax", "icon": "https://i.imgur.com/zWypFNI.png"},
+    {"id": 47, "name": "Comedy Central", "icon": "https://i.imgur.com/ko6XN77.png"},
+    {"id": 928, "name": "Crackle", "icon": "https://i.imgur.com/53kqZSY.png"},
+    {"id": 2243, "name": "DC Universe", "icon": "https://i.imgur.com/bhWIubn.png"},
+    {"id": 64, "name": "Discovery Channel", "icon": "https://i.imgur.com/8UrXnAB.png"},
+    {"id": 244, "name": "Discovery ID", "icon": "https://i.imgur.com/07w7BER.png"},
+    {"id": 4353, "name": "Discovery+", "icon": "https://i.imgur.com/ukz1nOG.png"},
+    {"id": 54, "name": "Disney Channel", "icon": "https://i.imgur.com/ZCgEkp6.png"},
+    {"id": 44, "name": "Disney XD", "icon": "https://i.imgur.com/PAJJoqQ.png"},
+    {"id": 2739, "name": "Disney+", "icon": "https://i.imgur.com/DVrPgbM.png"},
+    {"id": 76, "name": "E!", "icon": "https://i.imgur.com/3Delf9f.png"},
+    {"id": 136, "name": "E4", "icon": "https://i.imgur.com/frpunK8.png"},
+    {"id": 19, "name": "FOX", "icon": "https://i.imgur.com/6vc0Iov.png"},
+    {"id": 88, "name": "FX", "icon": "https://i.imgur.com/aQc1AIZ.png"},
+    {"id": 1267, "name": "Freeform", "icon": "https://i.imgur.com/f9AqoHE.png"},
+    {"id": 49, "name": "HBO", "icon": "https://i.imgur.com/Hyu8ZGq.png"},
+    {"id": 3186, "name": "HBO Max", "icon": "https://i.imgur.com/mmRMG75.png"},
+    {"id": 210, "name": "HGTV", "icon": "https://i.imgur.com/INnmgLT.png"},
+    {"id": 384, "name": "Hallmark Channel", "icon": "https://i.imgur.com/zXS64I8.png"},
+    {"id": 65, "name": "History Channel", "icon": "https://i.imgur.com/LEMgy6n.png"},
+    {"id": 453, "name": "Hulu", "icon": "https://i.imgur.com/uSD2Cdw.png"},
+    {"id": 9, "name": "ITV", "icon": "https://i.imgur.com/5Hxp5eA.png"},
+    {"id": 34, "name": "Lifetime", "icon": "https://i.imgur.com/tvYbhen.png"},
+    {"id": 33, "name": "MTV", "icon": "https://i.imgur.com/QM6DpNW.png"},
+    {"id": 6, "name": "NBC", "icon": "https://i.imgur.com/yPRirQZ.png"},
+    {
+        "id": 43,
+        "name": "National Geographic",
+        "icon": "https://i.imgur.com/XCGNKVQ.png",
+    },
+    {"id": 213, "name": "Netflix", "icon": "https://i.imgur.com/jI5c3bw.png"},
+    {"id": 35, "name": "Nick Junior", "icon": "https://i.imgur.com/leuCWYt.png"},
+    {"id": 13, "name": "Nickelodeon", "icon": "https://i.imgur.com/OUVoqYc.png"},
+    {"id": 132, "name": "Oxygen", "icon": "https://i.imgur.com/uFCQvbR.png"},
+    {"id": 14, "name": "PBS", "icon": "https://i.imgur.com/r9qeDJY.png"},
+    {
+        "id": 2076,
+        "name": "Paramount Network",
+        "icon": "https://i.imgur.com/ez3U6NV.png",
+    },
+    {"id": 4330, "name": "Paramount+", "icon": "https://i.imgur.com/dmUjWmU.png"},
+    {"id": 3353, "name": "Peacock", "icon": "https://i.imgur.com/1JXFkSM.png"},
+    {"id": 67, "name": "Showtime", "icon": "https://i.imgur.com/SawAYkO.png"},
+    {"id": 214, "name": "Sky 1", "icon": "https://i.imgur.com/xbgzhPU.png"},
+    {"id": 55, "name": "Spike", "icon": "https://i.imgur.com/BhXYytR.png"},
+    {"id": 318, "name": "Starz", "icon": "https://i.imgur.com/Z0ep2Ru.png"},
+    {"id": 270, "name": "SundanceTV", "icon": "https://i.imgur.com/qldG5p2.png"},
+    {"id": 77, "name": "Syfy", "icon": "https://i.imgur.com/9yCq37i.png"},
+    {"id": 68, "name": "TBS", "icon": "https://i.imgur.com/RVCtt4Z.png"},
+    {"id": 84, "name": "TLC", "icon": "https://i.imgur.com/c24MxaB.png"},
+    {"id": 41, "name": "TNT", "icon": "https://i.imgur.com/WnzpAGj.png"},
+    {"id": 397, "name": "TV Land", "icon": "https://i.imgur.com/1nIeDA5.png"},
+    {"id": 71, "name": "The CW", "icon": "https://i.imgur.com/Q8tooeM.png"},
+    {"id": 21, "name": "The WB", "icon": "https://i.imgur.com/rzfVME6.png"},
+    {"id": 209, "name": "Travel Channel", "icon": "https://i.imgur.com/mWXv7SF.png"},
+    {"id": 30, "name": "USA Network", "icon": "https://i.imgur.com/Doccw9E.png"},
+    {"id": 158, "name": "VH1", "icon": "https://i.imgur.com/IUtHYzA.png"},
+    {"id": 202, "name": "WGN America", "icon": "https://i.imgur.com/TL6MzgO.png"},
+    {"id": 1436, "name": "YouTube Red", "icon": "https://i.imgur.com/ZfewP1Y.png"},
+    {"id": 364, "name": "truTV", "icon": "https://i.imgur.com/HnB3zfc.png"},
+]
+
+
+def add_kodi_dir_item(
+    list_item, url, is_folder=True, icon_path=None, set_playable=False, batch=False
+):
+    if icon_path:
+        add_icon_tmdb(list_item, icon_path=icon_path)
+    if set_playable:
+        list_item.setProperty("IsPlayable", "true")
+    if batch:
+        return (url, list_item, is_folder)
+    addDirectoryItem(ADDON_HANDLE, url, list_item, isFolder=is_folder)
+
+
+def add_icon_genre(item, icon_path="tmdb.png"):
+    item.setArt(
+        {
+            "icon": os.path.join(ADDON_PATH, "resources", "img", icon_path),
+            "thumb": os.path.join(ADDON_PATH, "resources", "img", icon_path),
+        }
+    )
+
+
+def add_icon_tmdb(item, icon_path="tmdb.png"):
+    item.setArt(
+        {
+            "icon": os.path.join(ADDON_PATH, "resources", "img", icon_path),
+            "thumb": os.path.join(ADDON_PATH, "resources", "img", icon_path),
+        }
+    )
+
+
+def tmdb_get(path, params=None) -> Optional[AsObj]:
+    identifier = f"{path}|{params}|{TMDb().language}"
+    legacy_identifier = identifier if path == 'movie_details' else None
+    if path == 'movie_details':
+        identifier = 'movie-years303|' + identifier
+    detail_request = path in ('tv_details', 'season_details')
+    data = None if detail_request or path == 'movie_details' else cache.get(key=identifier)
+    if data:
+        return data
+
+    handlers = {
+        "search_tv": lambda p: Search().tv_shows(
+            term=p["query"], page=p.get("page", 1), release_year=p.get("year")
+        ),
+        "search_movie": lambda p: Search().movies(
+            term=p["query"], page=p.get("page", 1), year=p.get("year")
+        ),
+        "search_multi": lambda p: Search().multi(p["query"], page=p["page"]),
+        "search_collections": lambda p: Search().collections(p["query"], p["page"]),
+        "search_people": lambda p: Search().people(p["query"], p["page"]),
+        "movie_details": lambda p: Movie().details(p["id"], **{
+            key: p[key] for key in ("language", "append_to_response") if key in p
+        }) if isinstance(p, dict) else Movie().details(p),
+        "tv_details": lambda p: TV().details(p["id"], **{
+            key: p[key] for key in ("language", "append_to_response") if key in p
+        }) if isinstance(p, dict) else TV().details(p),
+        "season_details": lambda p: Season().details(
+            p["id"],
+            p["season"],
+            append_to_response=p.get(
+                "append_to_response",
+                "videos,trailers,images,credits,translations,runtime",
+            ),
+            language=p.get("language"),
+        ),
+        "episode_details": lambda p: Episode().details(p["id"], p["season"], p["episode"]),
+        "episode_external_ids": lambda p: Episode().external_ids(
+            p["id"], p["season"], p["episode"]
+        ),
+        "movie_genres": lambda _: Genre().movie_list(),
+        "show_genres": lambda _: Genre().tv_list(),
+        "discover_movie": lambda p: Discover().discover_movies(p),
+        "discover_tv": lambda p: Discover().discover_tv_shows(p),
+        "tv_calendar": lambda p: Discover().discover_tv_calendar(page=p),
+        "tv_week": lambda p: Trending().tv_week(page=p),
+        "trending_movie": lambda p: Trending().movie_week(page=p),
+        "popular_movie": lambda p: Movie().popular(page=p),
+        "trending_tv": lambda p: Trending().tv_week(page=p),
+        "popular_shows": lambda p: TV().popular(page=p),
+        "airing_today": lambda p: TV().airing_today(page=p),
+        "popular_people": lambda p: Person().popular(page=p),
+        "trending_people": lambda p: Trending().person_week(page=p),
+        "latest_people": lambda p: Person().latest(),
+        "person_details": lambda p: Person().details(p["id"] if isinstance(p, dict) else p),
+        "person_credits": lambda p: Person().combined_credits(
+            p["id"] if isinstance(p, dict) else p
+        ),
+        "person_tv_credits": lambda p: Person().tv_credits(p["id"] if isinstance(p, dict) else p),
+        "person_movie_credits": lambda p: Person().movie_credits(
+            p["id"] if isinstance(p, dict) else p
+        ),
+        "tv_credits": lambda p: TV().credits(p["id"] if isinstance(p, dict) else p),
+        "movie_credits": lambda p: Movie().credits(p["id"] if isinstance(p, dict) else p),
+        "person_ids": lambda p: Person().external_ids(p["id"] if isinstance(p, dict) else p),
+        "find_by_tvdb": lambda p: Find().find_by_tvdb_id(p["id"] if isinstance(p, dict) else p),
+        "find_by_imdb_id": lambda p: Find().find_by_imdb_id(p["id"] if isinstance(p, dict) else p),
+        "anime_year": lambda p: TmdbAnime().anime_year(p),
+        "anime_genres": lambda p: TmdbAnime().anime_genres(p),
+        "collection_details": lambda p: Collection().details(p["id"] if isinstance(p, dict) else p),
+        "collection_images": lambda p: Collection().images(p["id"] if isinstance(p, dict) else p),
+        "tv_recommendations": lambda p: TV().recommendations(tv_id=p["id"], page=p["page"]),
+        "movie_recommendations": lambda p: Movie().recommendations(
+            movie_id=p["id"], page=p["page"]
+        ),
+        "tv_similar": lambda p: TV().similar(tv_id=p["id"], page=p["page"]),
+        "movie_similar": lambda p: Movie().similar(movie_id=p["id"], page=p["page"]),
+        "movie_images": lambda p: Movie().images(movie_id=p["id"]),
+        "tv_images": lambda p: TV().images(tv_id=p["id"]),
+        "movie_reviews": lambda p: Movie().reviews(movie_id=p["id"], page=p["page"]),
+        "tv_reviews": lambda p: TV().reviews(tv_id=p["id"], page=p["page"]),
+        "movie_keywords": lambda p: Movie().keywords(p["id"] if isinstance(p, dict) else p),
+    }
+
+    if detail_request:
+        from lib.clients.tmdb.detail_cache import get as resilient_details
+        def report(state, reason):
+            # No provider exception bodies, request URLs or credentials.
+            kodilog('AM6B details {}: {} ({})'.format(state, path, reason))
+            if state == 'stale':
+                import xbmcgui
+                window = xbmcgui.Window(10000)
+                previous = window.getProperty('AM6B.MetadataCacheNotice')
+                try:
+                    recent = float(previous or 0)
+                except ValueError:
+                    recent = 0
+                if time.time() - recent > 30:
+                    window.setProperty('AM6B.MetadataCacheNotice', str(time.time()))
+                    xbmcgui.Dialog().notification('波比TV', '资料网络暂不可用，正在使用最近缓存', time=4000, sound=False)
+        lock_root = None
+        if os.name == 'posix':
+            from lib.db.cached import ADDON_DATA
+            lock_root = os.path.join(ADDON_DATA, 'detail-cache283-locks')
+        try:
+            return resilient_details(path, params, TMDb().language, cache, handlers[path], report, lock_root=lock_root)
+        except (OSError, ValueError, TypeError) as error:
+            report('failed', type(error).__name__)
+            return None
+
+    if path == 'movie_details':
+        from lib.clients.tmdb.movie_details_guard import get as guarded_movie_details
+        lock_root = None
+        if os.name == 'posix':
+            from lib.db.cached import ADDON_DATA
+            lock_root = os.path.join(ADDON_DATA, 'movie-detail-retry-locks')
+        try:
+            return guarded_movie_details(params, identifier, legacy_identifier, cache,
+                handlers[path], timedelta(hours=get_cache_expiration() if is_cache_enabled() else 0),
+                lambda reason: kodilog('TMDb movie detail attempt: ' + reason), lock_root=lock_root)
+        except (OSError, ValueError, TypeError) as error:
+            kodilog('TMDb movie detail coordination failed: ' + type(error).__name__)
+            return None
+
+    try:
+        data = handlers.get(path, lambda _: None)(params)
+    except Exception as e:
+        kodilog('TMDb request failed: {} ({})'.format(path, type(e).__name__))
+        return None
+
+    if data is not None:
+        cache.set(
+            key=identifier,
+            data=data,
+            expires=timedelta(hours=get_cache_expiration() if is_cache_enabled() else 0),
+        )
+
+    return data
+
+
+def mdblist_get(path, params=None) -> Optional[List]:
+    identifier = f"{path}|{params}"
+    data = cache.get(key=identifier)
+    if data:
+        return data
+
+    handlers = {
+        "get_user_lists": lambda _: MDblistAPI().get_user_lists(),
+        "get_list_items": lambda p: MDblistAPI().get_list_items(
+            list_id=p.get("list_id"),
+            limit=p.get("limit"),
+            offset=p.get("offset"),
+            append_to_response="genre,poster",
+            unified=True,
+        ),
+        "top_mdbd_lists": lambda _: MDblistAPI().get_top_lists(),
+        "search_lists": lambda p: MDblistAPI().search_lists(p["query"]),
+    }
+
+    try:
+        data = handlers.get(path, lambda _: None)(params)
+    except Exception as e:
+        kodilog(f"Error in mdblist_get for {path} with params {params}: {e}")
+        return None
+
+    if data is not None:
+        cache.set(
+            key=identifier,
+            data=data,
+            expires=timedelta(hours=get_cache_expiration() if is_cache_enabled() else 0),
+        )
+
+    return data
+
+
+def get_tmdb_media_details(tmdb_id, mode):
+    if mode == "tv":
+        return tmdb_get("tv_details", tmdb_id)
+    elif mode == "movies":
+        return tmdb_get("movie_details", tmdb_id)
+
+
+def get_tmdb_movie_details(id: str) -> Optional[AsObj]:
+    return tmdb_get("movie_details", id)
+
+
+def get_tmdb_show_details(id: str) -> Optional[AsObj]:
+    return tmdb_get("tv_details", id)
+
+
+def get_movie_keywords(tmdb_id):
+    """Fetch TMDB keywords for a movie. Returns list of keyword names."""
+    try:
+        res = tmdb_get("movie_keywords", tmdb_id)
+        keywords = []
+        for k in getattr(res, "keywords", []):
+            # Support both AsObj (runtime) and dict (tests)
+            name = getattr(k, "name", None)
+            if not name and isinstance(k, dict):
+                name = k.get("name")
+            if name:
+                keywords.append(name)
+        return keywords
+    except Exception as e:
+        kodilog(f"Error fetching movie keywords for {tmdb_id}: {e}")
+        return []
+
+
+def filter_anime_by_keyword(results, mode):
+    filtered_anime = []
+    anime_api = TmdbAnime()
+    list_lock = threading.Lock()
+
+    def check_and_append(item, filtered_anime, list_lock):
+        keywords_data = anime_api.tmdb_keywords(mode, item["id"])
+        keywords = keywords_data["results"] if mode == "tv" else keywords_data["keywords"]
+        for keyword in keywords:
+            if keyword["id"] == 210024:
+                with list_lock:
+                    filtered_anime.append(item)
+                break
+
+    execute_thread_pool(results["results"], check_and_append, filtered_anime, list_lock)
+    results["results"] = filtered_anime
+    results["total_results"] = len(filtered_anime)
+    return results
+
+
+def _build_trailer_ids(ids, title=None, title_key="title"):
+    trailer_ids = dict(ids or {})
+    if title and not trailer_ids.get(title_key):
+        trailer_ids[title_key] = title
+    return trailer_ids
+
+
+def build_play_trailer_context_menu_item(ids, media_type, title=None, title_key="title"):
+    trailer_ids = _build_trailer_ids(ids=ids, title=title, title_key=title_key)
+    if not any(trailer_ids.get(key) for key in ("trailer_yt_id", "trailer_url", "tmdb_id")):
+        return None
+
+    params = {
+        "name": "play_trailer",
+        "media_type": media_type,
+        "tmdb_id": trailer_ids.get("tmdb_id"),
+        "title": trailer_ids.get(title_key),
+    }
+    if trailer_ids.get("trailer_yt_id"):
+        params["yt_id"] = trailer_ids.get("trailer_yt_id")
+    if trailer_ids.get("trailer_url"):
+        params["youtube_url"] = trailer_ids.get("trailer_url")
+
+    return (
+        translation(90672),
+        kodi_play_media(**params),
+    )
+
+
+def _build_nuvio_add_context_menu_item(content_type, title, ids, mode):
+    """Return the "Add to Nuvio Library" context entry, or None when unavailable.
+
+    Gated by Nuvio availability and a usable TMDB id; a missing or disabled
+    Nuvio session yields no entry rather than an error.
+    """
+    tmdb_id = ids.get("tmdb_id") if isinstance(ids, dict) else None
+    if tmdb_id in (None, ""):
+        return None
+    try:
+        from lib.api.nuvio import is_nuvio_progress_sync_enabled
+
+        if not is_nuvio_progress_sync_enabled():
+            return None
+    except Exception:
+        return None
+    data = json.dumps(
+        {
+            "content_id": f"tmdb:{tmdb_id}",
+            "content_type": content_type,
+            "title": title,
+            "ids": ids,
+            "mode": mode,
+            "added_at": int(time.time() * 1000),
+        }
+    )
+    return (translation(91039), f"RunPlugin({build_url('nuvio_add_to_library', data=data)})")
+
+
+def add_tmdb_movie_context_menu(mode, media_type, title=None, ids=None):
+    if ids is None:
+        ids = {}
+    context_menu = [
+        (
+            translation(90049),
+            kodi_play_media(
+                name="rescrape_tmdb_media",
+                mode=mode,
+                media_type=media_type,
+                query=title,
+                tmdb_id=ids.get("tmdb_id"),
+                rescrape=True,
+            ),
+        ),
+        (
+            translation(90115),
+            kodi_play_media(
+                name="rescrape_tmdb_media",
+                mode=mode,
+                media_type=media_type,
+                query=title,
+                tmdb_id=ids.get("tmdb_id"),
+                force_select=True,
+            ),
+        ),
+        (
+            translation(90755),
+            "RunPlugin(plugin://plugin.video.bobbi/?action=source_manager_toggle)",
+        ),
+        (
+            "Extras",
+            f"RunPlugin(plugin://plugin.video.bobbi/?action=extras&id={ids.get('tmdb_id')}&imdb_id={ids.get('imdb_id', '')}&media_type={media_type}&title={parse.quote(title or '')})",
+        ),
+        (
+            translation(90733),
+            action_url_run(
+                "tmdb_search_modes",
+                mode=mode,
+                media_type=media_type,
+                query=title,
+                tmdb_id=ids.get("tmdb_id"),
+            ),
+        ),
+    ]
+    trailer_item = build_play_trailer_context_menu_item(
+        ids=ids,
+        media_type="tv" if media_type == "tv" else "movie",
+        title=title,
+    )
+    if trailer_item:
+        context_menu.append(trailer_item)
+    context_menu += [
+        (
+            translation(90050),
+            container_update(
+                name="search_tmdb_recommendations",
+                mode=mode,
+                ids=ids,
+                media_type=media_type,
+            ),
+        ),
+        (
+            translation(90051),
+            container_update(
+                name="search_tmdb_similar",
+                mode=mode,
+                ids=ids,
+                media_type=media_type,
+            ),
+        ),
+        (
+            translation(90081),
+            container_update(
+                name="search_people_by_id",
+                mode=mode,
+                ids=ids,
+                media_type=media_type,
+            ),
+        ),
+        (
+            translation(90205),
+            kodi_play_media(
+                name="add_to_library",
+                data=json.dumps(
+                    {
+                        "title": title,
+                        "ids": ids,
+                        "mode": media_type,
+                        "timestamp": datetime.now().strftime("%a, %d %b %Y %I:%M %p"),
+                    }
+                ),
+            ),
+        ),
+        (
+            translation(90205),
+            kodi_play_media(
+                name="add_to_library",
+                data=json.dumps(
+                    {
+                        "title": ids.get("name") or ids.get("title"),
+                        "ids": ids,
+                        "mode": mode,
+                        "timestamp": datetime.now().strftime("%a, %d %b %Y %I:%M %p"),
+                    }
+                ),
+            ),
+        ),
+        (
+            translation(90116),
+            container_update(name="settings"),
+        ),
+    ]
+    nuvio_item = _build_nuvio_add_context_menu_item("movie", title, ids, mode)
+    if nuvio_item:
+        context_menu.append(nuvio_item)
+    return context_menu
+
+
+def add_tmdb_show_context_menu(mode, ids=None, title=None):
+    if ids is None:
+        ids = {}
+    context_menu = [
+        (
+            "Extras",
+            f"RunPlugin(plugin://plugin.video.bobbi/?action=extras&id={ids.get('tmdb_id')}&imdb_id={ids.get('imdb_id', '')}&media_type=tv&title={parse.quote(title or ids.get('name') or ids.get('title') or '')})",
+        ),
+    ]
+    trailer_item = build_play_trailer_context_menu_item(
+        ids=ids,
+        media_type="tv",
+        title=title or ids.get("name") or ids.get("title"),
+        title_key="name",
+    )
+    if trailer_item:
+        context_menu.append(trailer_item)
+    context_menu += [
+        (
+            translation(90050),
+            container_update(
+                name="search_tmdb_recommendations",
+                mode=mode,
+                ids=ids,
+            ),
+        ),
+        (
+            translation(90051),
+            container_update(
+                name="search_tmdb_similar",
+                mode=mode,
+                ids=ids,
+            ),
+        ),
+        (
+            translation(90081),
+            container_update(
+                name="search_people_by_id",
+                mode=mode,
+                ids=ids,
+            ),
+        ),
+        (
+            translation(90205),
+            kodi_play_media(
+                name="add_to_library",
+                data=json.dumps(
+                    {
+                        "title": ids.get("name") or ids.get("title"),
+                        "ids": ids,
+                        "mode": mode,
+                        "timestamp": datetime.now().strftime("%a, %d %b %Y %I:%M %p"),
+                    }
+                ),
+            ),
+        ),
+        (
+            translation(90755),
+            "RunPlugin(plugin://plugin.video.bobbi/?action=source_manager_toggle)",
+        ),
+        (
+            translation(90116),
+            container_update(name="settings"),
+        ),
+    ]
+    nuvio_item = _build_nuvio_add_context_menu_item(
+        "series", title or ids.get("name") or ids.get("title"), ids, mode
+    )
+    if nuvio_item:
+        context_menu.append(nuvio_item)
+    return context_menu
+
+
+def add_tmdb_episode_context_menu(mode, tv_name=None, tv_data=None, ids=None):
+    if ids is None:
+        ids = {}
+    return [
+        (
+            translation(90049),
+            kodi_play_media(
+                name="search",
+                mode=mode,
+                query=tv_name,
+                ids=ids,
+                tv_data=tv_data,
+                rescrape=True,
+            ),
+        ),
+        (
+            translation(90115),
+            kodi_play_media(
+                name="search",
+                mode=mode,
+                query=tv_name,
+                ids=ids,
+                tv_data=tv_data,
+                force_select=True,
+            ),
+        ),
+        (
+            translation(90755),
+            "RunPlugin(plugin://plugin.video.bobbi/?action=source_manager_toggle)",
+        ),
+        (
+            translation(90733),
+            action_url_run(
+                "tmdb_episode_search_modes",
+                mode=mode,
+                media_type="tv",
+                query=tv_name,
+                ids=ids,
+                tv_data=tv_data,
+            ),
+        ),
+        (
+            translation(90050),
+            container_update(
+                name="search_tmdb_recommendations",
+                mode=mode,
+                ids=ids,
+            ),
+        ),
+        (
+            translation(90051),
+            container_update(
+                name="search_tmdb_similar",
+                mode=mode,
+                ids=ids,
+            ),
+        ),
+        (
+            translation(90081),
+            container_update(
+                name="search_people_by_id",
+                mode=mode,
+                ids=ids,
+            ),
+        ),
+        (
+            translation(90116),
+            container_update(name="settings"),
+        ),
+    ]
+
+
+def get_excluded_languages():
+    raw = get_setting("excluded_languages", "[]")
+    try:
+        return json.loads(raw) if raw else []
+    except (ValueError, TypeError):
+        return []
+
+
+def filter_excluded_languages(results, force_allow_lang=None):
+    excluded = get_excluded_languages()
+    if not excluded:
+        return results
+
+    input_count = len(results)
+    filtered = []
+    excluded_counts = {}
+
+    for r in results:
+        if isinstance(r, dict):
+            lang = r.get("original_language")
+        else:
+            lang = getattr(r, "original_language", None)
+
+        if lang == force_allow_lang or lang not in excluded:
+            filtered.append(r)
+        else:
+            excluded_counts[lang] = excluded_counts.get(lang, 0) + 1
+
+    output_count = len(filtered)
+    if input_count != output_count:
+        kodilog(
+            f"Excluded language filter: {input_count} -> {output_count} "
+            f"(excluded={excluded}, force_allow={force_allow_lang!r}, "
+            f"removed_by_lang={excluded_counts})",
+            level=xbmc.LOGINFO,
+        )
+
+    return filtered

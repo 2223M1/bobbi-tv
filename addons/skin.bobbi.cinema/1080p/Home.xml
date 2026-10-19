@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="false">9000</defaultcontrol>
+  <onload>SetProperty(BobiSection,home,Home)</onload>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <include>HomeStage</include>
+    <!-- rails: vertical grouplist; the focused rail scrolls to the top of the rail zone -->
+    <control type="grouplist" id="9000">
+      <left>0</left><top>580</top><width>1920</width><height>420</height>
+      <orientation>vertical</orientation>
+      <itemgap>0</itemgap>
+      <scrolltime tween="cubic" easing="out">220</scrolltime>
+      <usecontrolcoords>false</usecontrolcoords>
+      <onup>9701</onup>
+      <include content="HomeRailWide">
+        <param name="id" value="9810" />
+        <param name="title" value="继续观看" />
+        <param name="content" value="plugin://plugin.video.bobbi/?action=continue_watching_menu" />
+        <param name="up" value="9701" />
+        <param name="down" value="9820" />
+      </include>
+      <include content="HomeRail">
+        <param name="id" value="9820" />
+        <param name="title" value="我的网盘与 NAS" />
+        <param name="content" value="plugin://plugin.video.bobbi.library/" />
+        <param name="up" value="9810" />
+        <param name="down" value="9830" />
+      </include>
+      <include content="HomeRail">
+        <param name="id" value="9830" />
+        <param name="title" value="热门剧集" />
+        <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" />
+        <param name="up" value="9820" />
+        <param name="down" value="9840" />
+      </include>
+      <include content="HomeRail">
+        <param name="id" value="9840" />
+        <param name="title" value="热门电影" />
+        <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" />
+        <param name="up" value="9830" />
+        <param name="down" value="9850" />
+      </include>
+      <include content="HomeRail">
+        <param name="id" value="9850" />
+        <param name="title" value="当季新番" />
+        <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" />
+        <param name="up" value="9840" />
+        <param name="down" value="9860" />
+      </include>
+      <include content="HomeRail">
+        <param name="id" value="9860" />
+        <param name="title" value="动漫电影" />
+        <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=movies&amp;category=Anime_Movies_New" />
+        <param name="up" value="9850" />
+        <param name="down" value="noop" />
+      </include>
+    </control>
+    <!-- next-row affordance: rails move one at a time, so name what is below -->
+    <control type="group">
+      <left>96</left><top>1010</top>
+      <visible>!String.IsEmpty(Control.GetLabel(9790))</visible>
+      <include>FadeVisible</include>
+      <control type="image">
+        <left>0</left><top>8</top><width>28</width><height>28</height>
+        <texture colordiffuse="text3">bobi/icons/chevron-down.png</texture>
+      </control>
+      <control type="label" id="9790">
+        <left>40</left><top>0</top><width>800</width><height>44</height>
+        <label>$VAR[NextRailTitle]</label>
+        <font>Label24</font><textcolor>text3</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+    <!-- offline / all catalogue rails empty -->
+    <control type="group">
+      <visible>!Container(9810).IsUpdating + !Container(9820).IsUpdating + !Container(9830).IsUpdating + !Container(9840).IsUpdating + !Container(9850).IsUpdating + !Container(9860).IsUpdating + Integer.IsEqual(Container(9810).NumItems,0) + Integer.IsEqual(Container(9820).NumItems,0) + Integer.IsEqual(Container(9830).NumItems,0) + Integer.IsEqual(Container(9840).NumItems,0) + Integer.IsEqual(Container(9850).NumItems,0) + Integer.IsEqual(Container(9860).NumItems,0)</visible>
+      <include content="StateBlock">
+        <param name="y">640</param>
+        <param name="empty">true</param>
+        <param name="emptytitle">片单暂时无法加载</param>
+        <param name="emptyhint">首次使用请到“我的 → 影院设置”配置 TMDb；也可直接打开自己的网盘与 NAS</param>
+      </include>
+    </control>
+    <include content="TopBar">
+      <param name="down" value="9000" />
+    </include>
+  </controls>
+</window>

@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="1115">
+  <defaultcontrol always="true">9200</defaultcontrol>
+  <onload>Control.SetFocus(9200,1)</onload>
+  <depth>DepthOSD</depth>
+  <onunload condition="Player.HasVideo + !Window.IsActive(videoosd)">ActivateWindow(1114)</onunload>
+  <controls>
+    <include>DialogScrim</include>
+    <include content="SideSheet">
+      <param name="title">播放速度</param>
+      <param name="subtitle">← 减速   ·   → 加速   ·   返回 完成</param>
+    </include>
+    <control type="group">
+      <right>48</right><top>220</top><width>624</width><height>300</height>
+      <control type="label">
+        <left>0</left><top>0</top><width>624</width><height>140</height>
+        <label>$VAR[TempoLabel]</label>
+        <font>Display72</font><textcolor>text</textcolor><align>center</align><aligny>center</aligny>
+      </control>
+      <control type="list" id="9200">
+        <left>196</left><top>170</top><width>312</width><height>88</height>
+        <orientation>horizontal</orientation><scrolltime>0</scrolltime>
+        <onup>noop</onup><ondown>noop</ondown><onleft>noop</onleft><onright>noop</onright>
+        <itemlayout width="112" height="88"><include content="RoundItem"><param name="list">9200</param></include></itemlayout>
+        <focusedlayout width="112" height="88"><include content="RoundItem"><param name="list">9200</param><param name="focused">true</param></include></focusedlayout>
+        <content>
+          <item><label>减速</label><icon>bobi/icons/minus.png</icon><property name="hint">减速 0.1×</property><onclick>PlayerControl(TempoDown)</onclick></item>
+          <item><label>正常</label><icon>bobi/icons/refresh.png</icon><property name="hint">恢复正常速度</property><onclick>PlayerControl(Tempo,1.0)</onclick></item>
+          <item><label>加速</label><icon>bobi/icons/plus.png</icon><property name="hint">加速 0.1×</property><onclick>PlayerControl(TempoUp)</onclick></item>
+        </content>
+      </control>
+      <control type="label">
+        <left>0</left><top>276</top><width>624</width><height>32</height>
+        <label>$INFO[Container(9200).ListItem.Property(hint)]</label>
+        <font>Meta22</font><textcolor>text3</textcolor><align>center</align>
+      </control>
+    </control>
+  </controls>
+</window>

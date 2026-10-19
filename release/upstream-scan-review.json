@@ -1,0 +1,33 @@
+{
+  "upstream_commit": "a86d8fa7fd4e07605f240fe69bf299392f7cb023",
+  "findings": 5,
+  "affected_files": [
+    {
+      "path": "README.md",
+      "reason": "upstream documented curl authentication examples",
+      "matched_upstream": true,
+      "sha256": "90e8706a5fedbb02237c6c7e005a5dfa271a3d562adcfe04d5699a7f7f38cfb1"
+    },
+    {
+      "path": "server/web/sslcerts/manage_test.go",
+      "reason": "upstream TLS unit-test key fixture; not used as a deployment key",
+      "matched_upstream": true,
+      "sha256": "d58c8c37f95f7eb61fdc342a341b34fbc9753369bc7394b2c8f6b4d54397f6f8"
+    },
+    {
+      "path": "server/web/pages/template/pages/index.html",
+      "reason": "upstream browser Firebase public configuration",
+      "matched_upstream": true,
+      "sha256": "aaa9ce75454d5e191aeeaa47c9e323aaef7fd88691cf740def743b84ab3fc1fc"
+    },
+    {
+      "path": "web/public/index.html",
+      "reason": "upstream browser Firebase public configuration",
+      "matched_upstream": true,
+      "sha256": "6303fcecb5488a4ac9200a9100a58b68f1b60f076d8d288d38064c023f2e10d0"
+    }
+  ],
+  "personal_secrets": false,
+  "source_modified": false,
+  "notes": "Original corresponding source is retained intact. These are not the bobbi signer, cloud sessions, SSH credentials or NAS passwords. No broad secret suppression was added."
+}

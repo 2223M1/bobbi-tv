@@ -1,0 +1,623 @@
+from lib.api.nuvio import is_nuvio_progress_sync_enabled
+from lib.utils.kodi.utils import get_setting, translation
+from lib.utils.views.continue_watching import has_continue_watching_items
+from lib.utils.views.nuvio_collections import has_nuvio_collections
+from lib.utils.views.nuvio_continue_watching import has_nuvio_continue_watching_items
+from lib.utils.views.nuvio_history import has_nuvio_history_items
+from lib.utils.views.nuvio_library import has_nuvio_library_items
+from lib.utils.views.simkl_continue_watching import has_simkl_continue_watching_items
+from lib.utils.views.trakt_continue_watching import has_trakt_continue_watching_items
+
+trakt_tv_library_items = [
+    {
+        "name": translation(90035),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_watchlist",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90294),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_collection",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90295),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_favorites",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90296),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_up_next",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90034),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_watched_history",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90297),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_my_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90298),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_liked_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90033),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_recommendations",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(30896),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_calendar",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(30916),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_account_info",
+        "icon": "trakt.png",
+    },
+]
+
+
+trakt_tv_discovery_items = [
+    {
+        "name": translation(90028),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_trending",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90029),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_watched",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90030),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_favorited",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90076),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_search_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90032),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_trending_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90031),
+        "mode": "tv",
+        "api": "trakt",
+        "query": "trakt_popular_lists",
+        "icon": "trakt.png",
+    },
+]
+
+
+trakt_movie_library_items = [
+    {
+        "name": translation(90035),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_watchlist",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90294),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_collection",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90295),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_favorites",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90200),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_movies_progress",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90034),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_watched_history",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90297),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_my_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90298),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_liked_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90033),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_recommendations",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(30916),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_account_info",
+        "icon": "trakt.png",
+    },
+]
+
+
+trakt_movie_discovery_items = [
+    {
+        "name": translation(90028),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_trending",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90036),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_top10",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90029),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_watched",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90030),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_favorited",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90076),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_search_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90032),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_trending_lists",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90031),
+        "mode": "movies",
+        "api": "trakt",
+        "query": "trakt_popular_lists",
+        "icon": "trakt.png",
+    },
+]
+
+
+tv_items = [
+    {
+        "name": translation(90028),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_trending",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90064),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_popular",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90086),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_airing_today",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90025),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_genres",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90026),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_calendar",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90027),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_years",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90065),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_lang",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90066),
+        "mode": "tv",
+        "api": "tmdb",
+        "query": "tmdb_networks",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90078),
+        "mode": "tv",
+        "submode": "people_menu",
+        "api": "tmdb",
+        "query": "tmdb_people",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90962),
+        "mode": "tv",
+        "api": "mdblist",
+        "query": "mdblist",
+        "icon": "mdblist.png",
+    },
+    {
+        "name": translation(90981),
+        "icon": "simkl.png",
+        "action": "simkl_library_statuses",
+        "params": {"media_type": "shows"},
+    },
+    {
+        "name": translation(90292),
+        "icon": "trakt.png",
+        "action": "trakt_group_menu",
+        "params": {"mode": "tv", "group": "library"},
+    },
+    {
+        "name": translation(90293),
+        "icon": "trakt.png",
+        "action": "trakt_group_menu",
+        "params": {"mode": "tv", "group": "discovery"},
+    },
+]
+
+
+movie_items = [
+    {
+        "name": translation(90028),
+        "mode": "movies",
+        "api": "tmdb",
+        "query": "tmdb_trending",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90064),
+        "mode": "movies",
+        "api": "tmdb",
+        "query": "tmdb_popular",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90025),
+        "mode": "movies",
+        "api": "tmdb",
+        "query": "tmdb_genres",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90027),
+        "mode": "movies",
+        "api": "tmdb",
+        "query": "tmdb_years",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90065),
+        "mode": "movies",
+        "api": "tmdb",
+        "query": "tmdb_lang",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90067),
+        "mode": "movies",
+        "api": "tmdb",
+        "query": "tmdb_collections",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90078),
+        "mode": "movies",
+        "submode": "people_menu",
+        "api": "tmdb",
+        "query": "tmdb_people",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90962),
+        "mode": "movies",
+        "api": "mdblist",
+        "query": "mdblist",
+        "icon": "mdblist.png",
+    },
+    {
+        "name": translation(90981),
+        "icon": "simkl.png",
+        "action": "simkl_library_statuses",
+        "params": {"media_type": "movies"},
+    },
+    {
+        "name": translation(90292),
+        "icon": "trakt.png",
+        "action": "trakt_group_menu",
+        "params": {"mode": "movies", "group": "library"},
+    },
+    {
+        "name": translation(90293),
+        "icon": "trakt.png",
+        "action": "trakt_group_menu",
+        "params": {"mode": "movies", "group": "discovery"},
+    },
+]
+
+
+anime_items = [
+    {
+        "name": translation(90037),
+        "mode": "anime",
+        "category": "Anime_Popular",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90038),
+        "mode": "anime",
+        "category": "Anime_Popular_Recent",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90039),
+        "mode": "anime",
+        "category": "Anime_On_The_Air",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90042),
+        "mode": "anime",
+        "category": "Anime_Top_Rated",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90040),
+        "mode": "anime",
+        "category": "Anime_Years",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90041),
+        "mode": "anime",
+        "category": "Anime_Genres",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90028),
+        "mode": "anime",
+        "category": "Anime_Trending",
+        "api": "trakt",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90154),
+        "mode": "anime",
+        "category": "Anime_Trending_Recent",
+        "api": "trakt",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90043),
+        "mode": "anime",
+        "category": "Anime_Most_Watched",
+        "api": "trakt",
+        "icon": "trakt.png",
+    },
+    {
+        "name": translation(90030),
+        "mode": "anime",
+        "category": "Anime_Favorited",
+        "api": "trakt",
+        "icon": "trakt.png",
+    },
+]
+
+animation_items = [
+    {
+        "name": translation(90496),
+        "mode": "cartoon",
+        "category": "Cartoons_Popular",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+    {
+        "name": translation(90497),
+        "mode": "animation",
+        "category": "Animation_Popular",
+        "api": "tmdb",
+        "icon": "tmdb.png",
+    },
+]
+
+root_menu_items = [
+    {
+        "name": 90006,
+        "icon": "search.png",
+        "action": "search_menu",
+    },
+    {
+        "name": 90200,
+        "icon": "continue_watching.png",
+        "action": "continue_watching_menu",
+        "condition": has_continue_watching_items,
+    },  # Continue Watching
+    {
+        "name": "Simkl Continue Watching",
+        "icon": "continue_watching.png",
+        "action": "simkl_continue_watching",
+        "condition": has_simkl_continue_watching_items,
+    },
+    {
+        "name": "Trakt Continue Watching",
+        "icon": "continue_watching.png",
+        "action": "trakt_continue_watching",
+        "condition": has_trakt_continue_watching_items,
+    },
+    {
+        "name": translation(91038),
+        "icon": "nuvio.png",
+        "action": "nuvio_menu",
+        "condition": is_nuvio_progress_sync_enabled,
+    },
+    {"name": 90007, "icon": "tv.png", "action": "tv_shows_items"},
+    {"name": 90008, "icon": "movies.png", "action": "movies_items"},
+    {"name": 90009, "icon": "anime.png", "action": "anime_menu"},
+    {"name": 90010, "icon": "tv.png", "action": "tv_menu"},
+    {"name": 90201, "icon": "library.png", "action": "library_menu"},  # Library
+    {"name": 90012, "icon": "magnet2.png", "action": "torrents"},
+    {
+        "name": 90013,
+        "icon": "telegram.png",
+        "action": "telegram_menu",
+        "condition": lambda: bool(get_setting("jackgram_enabled")),
+    },
+    {"name": 90014, "icon": "cloud2.png", "action": "cloud"},
+    {"name": 90015, "icon": "download2.png", "action": "downloads_menu"},
+    {
+        "name": 90016,
+        "icon": "settings.png",
+        "action": "settings_menu",
+    },
+]
+
+history_menu_items = [
+    {"name": 90019, "icon": "history.png", "action": "files_history"},
+    {"name": 90020, "icon": "history.png", "action": "titles_history"},
+    {"name": 90021, "icon": "history.png", "action": "titles_calendar"},
+]
+
+nuvio_menu_items = [
+    {
+        "name": 90200,
+        "icon": "continue_watching.png",
+        "action": "nuvio_continue_watching",
+        "condition": has_nuvio_continue_watching_items,
+    },
+    {
+        "name": 90017,
+        "icon": "history.png",
+        "action": "nuvio_history",
+        "condition": has_nuvio_history_items,
+    },
+    {
+        "name": 91032,
+        "icon": "movies.png",
+        "action": "nuvio_library",
+        "params": {"mode": "movies"},
+        "condition": has_nuvio_library_items,
+    },
+    {
+        "name": 91033,
+        "icon": "tv.png",
+        "action": "nuvio_library",
+        "params": {"mode": "tv"},
+        "condition": has_nuvio_library_items,
+    },
+    {
+        "name": 91051,
+        "icon": "movies.png",
+        "action": "nuvio_collections",
+        "condition": has_nuvio_collections,
+    },
+]
+
+library_menu_items = [
+    {
+        "name": 90202,
+        "icon": "tv.png",
+        "action": "library_shows",
+        "context_menu": [{"label": 90690, "action": "library_shows", "params": {"clear": 1}}],
+    },  # My Shows
+    {
+        "name": 90203,
+        "icon": "movies.png",
+        "action": "library_movies",
+        "context_menu": [{"label": 90690, "action": "library_movies", "params": {"clear": 1}}],
+    },  # My Movies
+    {
+        "name": 90021,
+        "icon": "history.png",
+        "action": "library_calendar",
+    },  # Upcoming Episodes
+]

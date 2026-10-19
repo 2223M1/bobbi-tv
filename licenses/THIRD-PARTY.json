@@ -1,0 +1,197 @@
+{
+  "schema": 1,
+  "scope": "Dependency notices for the public bobbi TV fork; not blanket code or asset clearance",
+  "baseline": "a9189b5d157d886c814cf28c6748c97fc6825a35",
+  "policy": {
+    "licenses_are_component_specific": true,
+    "original_ui_and_catalog_intended": true,
+    "optional_sanitized_skin_not_adopted": true,
+    "catalog_and_share_codes_user_authorized": true,
+    "account_credentials_excluded": true,
+    "restricted_font_binaries_require_grants": true,
+    "metadata_is_not_a_full_license_notice": true
+  },
+  "documents": [
+    {
+      "id": "segno-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/segno-1.6.6-LICENSE.txt",
+      "repository": "heuer/segno",
+      "commit": "9b67a3f2914be966c35dd8f00bef19d01b9ec68e",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/heuer/segno/9b67a3f2914be966c35dd8f00bef19d01b9ec68e/LICENSE",
+      "git_blob_sha": "b80a6f00a80131459a91e9389c52dafaeea066bc",
+      "sha256": "de6c85fccf5d52902aa13dfe2dc6d2a2a106fc3419ed438f3460f0d4b76a6935",
+      "bytes": 1503
+    },
+    {
+      "id": "xmltodict-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/xmltodict-0.13.0-LICENSE.txt",
+      "repository": "martinblech/xmltodict",
+      "commit": "096db4ad337e4168ef891551814cdd829716192b",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/martinblech/xmltodict/096db4ad337e4168ef891551814cdd829716192b/LICENSE",
+      "git_blob_sha": "a462778cff0f3fef0d450d05413f047a759ff950",
+      "sha256": "d66d5eb8f83a0ba21d3dd04318b8817588e8764daabea852d1035e3f07ffda55",
+      "bytes": 1085
+    },
+    {
+      "id": "torf-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/torf-4.2.0-LICENSE.txt",
+      "repository": "rndusr/torf",
+      "commit": "8eaeee7871eeb52c76a03558b183d60aa806a6d3",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/rndusr/torf/8eaeee7871eeb52c76a03558b183d60aa806a6d3/LICENSE",
+      "git_blob_sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149
+    },
+    {
+      "id": "flatbencode-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/flatbencode-0.2.1-LICENSE.txt",
+      "repository": "acatton/flatbencode",
+      "commit": "f445a7eee6b6cd8bf5911f869014c805f3df5d62",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/acatton/flatbencode/f445a7eee6b6cd8bf5911f869014c805f3df5d62/LICENSE",
+      "git_blob_sha": "db9cf41cfd1192ed9209b4db7198e27347ebf4e1",
+      "sha256": "65f3400a83066b1e82f6114df0b64028880860e8d89d6da4237e0f31e0066dbd",
+      "bytes": 1082
+    },
+    {
+      "id": "jacktook-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/jacktook-upstream-LICENSE.txt",
+      "repository": "Sam-Max/plugin.video.jacktook",
+      "commit": "2e70c70ed6c20006eda99fd557108d31c75cb953",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/Sam-Max/plugin.video.jacktook/2e70c70ed6c20006eda99fd557108d31c75cb953/LICENSE",
+      "git_blob_sha": "e62ec04cdeece724caeeeeaeb6ae1f6af1bb6b9a",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "bytes": 35129
+    },
+    {
+      "id": "tmdbv3api-metadata",
+      "kind": "metadata-evidence-not-license",
+      "file": "licenses/vendor/tmdbv3api-1.9.0-setup-evidence.txt",
+      "repository": "AnthonyBloomer/tmdbv3api",
+      "commit": "c5e96af23494b6b5506e84ed3b0be626ee25cb26",
+      "source_path": "setup.py",
+      "source_url": "https://raw.githubusercontent.com/AnthonyBloomer/tmdbv3api/c5e96af23494b6b5506e84ed3b0be626ee25cb26/setup.py",
+      "git_blob_sha": "d9afbee25fedab8e8b032b833bcc082a488be0a7",
+      "sha256": "42fde0503d50bc327052cd3efd323a724326cd503b4058023791f46b79e045ee",
+      "bytes": 2316
+    }
+  ],
+  "components": [
+    {
+      "id": "segno",
+      "version": "1.6.6",
+      "upstream_ref": "1.6.6",
+      "license": "BSD-3-Clause",
+      "documents": ["segno-license"],
+      "status": "full-upstream-license-retained-local-modifications",
+      "baseline_evidence": {
+        "path": "plugin.video.bobbi/lib/vendor/segno/__init__.py",
+        "sha256": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
+        "upstream_path": "segno/__init__.py",
+        "upstream_sha256": "e436a1f5aa93f7ac7fa3be1f0ea98e04a792d218dfec385f595adb88dc43d2e6"
+      },
+      "notes": "Vendored __version__ is 1.6.6, but this is not a byte-identical package: formatting/import/export ordering changes and removed convenience functions were observed. Original per-file 2016-2024 copyright notices remain; upstream tag's full license also contains 2016-2025 attribution. No whole-tree equivalence claim."
+    },
+    {
+      "id": "xmltodict",
+      "version": "0.13.0",
+      "upstream_ref": "v0.13.0",
+      "license": "MIT",
+      "documents": ["xmltodict-license"],
+      "status": "full-upstream-license-retained-local-modifications",
+      "baseline_evidence": {
+        "path": "plugin.video.bobbi/lib/utils/parsers/xmltodict.py",
+        "sha256": "1850a53148146bb6bcd87a9b3d4c599827d2ef23a4340cba19959d285ea0127f",
+        "upstream_path": "xmltodict.py",
+        "upstream_sha256": "578a76d3737a2c01d93156df140189e8e3dab03ba5e8c02746bc515a7200fd0a"
+      },
+      "notes": "Vendored version/author/license declarations identify upstream. Local code also changes item_depth/whitespace behavior and integer-indent handling, so do not call it an unmodified upstream release. Retain Martin Blech and contributor notices."
+    },
+    {
+      "id": "torf",
+      "version": "4.2.0",
+      "upstream_ref": "v4.2.0",
+      "license": "GPL-3.0-or-later",
+      "documents": ["torf-license"],
+      "status": "full-upstream-license-retained",
+      "baseline_evidence": {
+        "path": "plugin.video.bobbi/lib/vendor/torf/__init__.py",
+        "sha256": "7e259f4a8c8f95275fee64d2769ceabcb84ae970c718ee286d44b7a86063c12e",
+        "upstream_path": "torf/__init__.py",
+        "upstream_sha256": "66a331b5996c6ab28bf8f1725c86abc2759289708d2b10bcb20d661d7f128ada"
+      },
+      "notes": "Explicit per-file GPL version 3-or-later grant retained. __init__ AST matches upstream with quote formatting changed; no unverified whole-tree equivalence assertion."
+    },
+    {
+      "id": "flatbencode",
+      "version": "0.2.1-derived",
+      "upstream_ref": "v0.2.1",
+      "license": "MIT",
+      "documents": ["flatbencode-license"],
+      "status": "full-upstream-license-retained-replacement-candidate",
+      "baseline_evidence": {
+        "path": "plugin.video.bobbi/lib/utils/torrent/flatbencode.py",
+        "sha256": "0fe508ff298c29f3af9e5d15d216407c1b018da69e7ba8412c676278db322b66",
+        "upstream_path": "flatbencode.py",
+        "upstream_sha256": "e557cb61db1d2448be6ed6725989edee72396162a1ae03eb853d27112112830b"
+      },
+      "notes": "Derived from Antoine Catton's MIT code. Observed differences: formatting, __all__ order, dictionary-key iteration and f-string conversion. This is a licensed replacement candidate for bencodepy, not evidence that the runtime import has already been switched or behavior validated."
+    },
+    {
+      "id": "tmdbv3api",
+      "version": "1.9.0-reference-with-local-adaptations",
+      "upstream_ref": "1.9.0",
+      "license": "MIT (upstream metadata declaration; full notice not found)",
+      "documents": ["tmdbv3api-metadata"],
+      "status": "unresolved-full-upstream-notice-missing",
+      "baseline_evidence": {
+        "path": "plugin.video.bobbi/lib/api/tmdbv3api/__init__.py",
+        "sha256": "5732e752ff0837a4fc34287b7de70a869a13dc6a4bb81fba022ac531c60ebf66",
+        "upstream_path": "tmdbv3api/__init__.py",
+        "upstream_sha256": "5732e752ff0837a4fc34287b7de70a869a13dc6a4bb81fba022ac531c60ebf66"
+      },
+      "notes": "__init__.py matches official 1.9.0 bytes, but API objects/transport are locally adapted; exact package-wide version not proved. Official tag tree has no full LICENSE/NOTICE; setup.py and PyPI declare MIT. Official 1.9.0 wheel has no license/notice entries. Do not fabricate a complete MIT text with guessed attribution or present setup.py as a license grant. Obtain full upstream notice/clarification or replace before claiming notice closure.",
+      "pypi_wheel_sha256": "2bcd8c6e8902397860715a71045f200ecc3ee06804ecf786cb4c1e09b2deeba8"
+    },
+    {
+      "id": "jacktook-derived-code",
+      "version": "baseline-1.20.0+am6b.317",
+      "license": "upstream GPL version 3 LICENSE; conflicting GPL-2.0-only addon metadata",
+      "documents": ["jacktook-license"],
+      "status": "original-license-preserved-metadata-discrepancy-recorded",
+      "baseline_evidence": {
+        "path": "plugin.video.bobbi/LICENSE",
+        "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+        "upstream_path": "LICENSE",
+        "upstream_sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad"
+      },
+      "notes": "The pinned upstream LICENSE is identical to baseline's and upstream addon.xml itself also declares GPL-2.0-only. Preserve source/credits and explicitly document public-fork metadata correction based on the GPL3 source grant. Do not blanket-relicense independently licensed dependencies, fonts, or CC artwork. The pinned upstream commit proves license content, not whole baseline source equivalence. Extracted shared core retains inherited source notices."
+    },
+    {
+      "id": "bencodepy-legacy",
+      "version": "unresolved-vendored-copy",
+      "license": "BitTorrent Open Source License version 1.1 (vendored header)",
+      "documents": [],
+      "status": "unresolved-remove-or-review-before-distribution",
+      "notes": "Baseline actively imports lib.vendor.bencodepy in torrserver_utils. Its header is not MIT and must not be relabeled. Full provenance/compatibility is not established by this audit. Prefer separately verified flatbencode after explicit import replacement and behavioral tests."
+    }
+  ],
+  "release_gates": [
+    "tmdbv3api full upstream notice/clarification remains unresolved",
+    "Confirm removal/replacement of legacy bencodepy before claiming a GPL-clean aggregate",
+    "Retain inherited shared-core source notices and resolve optional-module ownership separately",
+    "Arctic Fuse artwork remains CC-BY-NC-SA-4.0 independently of code license",
+    "Original proprietary font binaries need evidence of redistribution grants; user intent alone is not a grant",
+    "Bundled TorrServer binaries need their own corresponding-source/build provenance closure",
+    "Notices do not certify third-party media rights, stock Kodi playback, or Android device behavior"
+  ]
+}

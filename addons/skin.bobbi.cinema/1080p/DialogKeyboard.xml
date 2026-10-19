@@ -1,0 +1,539 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">120</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="E6000000">am6b/arctic/common/white.png</texture>
+    </control>
+    <control type="group">
+      <centerleft>50%</centerleft>
+      <top>100</top>
+      <bottom>100</bottom>
+      <width>1510</width>
+      <control type="image">
+        <texture border="40" colordiffuse="FF161618">am6b/arctic/common/menu.png</texture>
+      </control>
+      <animation effect="fade" start="0" end="100" time="180" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">WindowOpen</animation>
+      <control type="group">
+        <left>40</left>
+        <right>40</right>
+        <top>40</top>
+        <bottom>40</bottom>
+        <control type="group">
+          <right>320</right>
+          <control type="group">
+            <height>120</height>
+            <control type="label" id="311">
+              <left>40</left>
+              <top>40</top>
+              <height>40</height>
+              <right>120</right>
+              <font>font16</font>
+              <textcolor>FFF4F4F5</textcolor>
+            </control>
+          </control>
+          <control type="group">
+            <top>120</top>
+            <control type="group">
+              <left>20</left>
+              <right>20</right>
+              <top>20</top>
+              <bottom>20</bottom>
+              <control type="group" id="8312">
+                <height>80</height>
+                <width>1070</width>
+                <control type="image">
+                  <visible>!Control.HasFocus(312)</visible>
+                  <texture border="40" colordiffuse="FF303034">am6b/arctic/common/menu.png</texture>
+                </control>
+                <control type="image">
+                  <visible>Control.HasFocus(312)</visible>
+                  <texture border="40" colordiffuse="FF68686D">am6b/arctic/common/menu.png</texture>
+                </control>
+                <control type="edit" id="312">
+                  <font>font14</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <aligny>center</aligny>
+                  <ondown condition="Control.IsVisible(500)">500</ondown>
+                  <ondown condition="!Control.IsVisible(500)">120</ondown>
+                  <onup>300</onup>
+                  <left>0</left>
+                  <top>0</top>
+                  <width>1070</width>
+                  <height>80</height>
+                  <textoffsetx>40</textoffsetx>
+                  <align>center</align>
+                  <texturefocus />
+                  <texturenofocus />
+                  <onright>9000</onright>
+                  <onleft>9000</onleft>
+                </control>
+                <control type="label" id="313">
+                  <label />
+                  <font>font12</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <left>0</left>
+                  <top>-45</top>
+                  <width>1070</width>
+                  <height>40</height>
+                  <align>center</align>
+                </control>
+                <control type="label" id="314">
+                  <label />
+                  <font>font12</font>
+                  <textcolor>FFF5F5F5</textcolor>
+                  <left>0</left>
+                  <top>-1000</top>
+                  <width>1070</width>
+                  <height>80</height>
+                </control>
+              </control>
+              <control type="button" id="500">
+                <label>$INFO[Window(10103).Property(BobiIME.Word0)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word0))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>510</onleft>
+                <onright>501</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,400)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>0</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="501">
+                <label>$INFO[Window(10103).Property(BobiIME.Word1)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word1))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>500</onleft>
+                <onright>502</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,401)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>107</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="502">
+                <label>$INFO[Window(10103).Property(BobiIME.Word2)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word2))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>501</onleft>
+                <onright>503</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,402)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>214</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="503">
+                <label>$INFO[Window(10103).Property(BobiIME.Word3)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word3))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>502</onleft>
+                <onright>504</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,403)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>321</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="504">
+                <label>$INFO[Window(10103).Property(BobiIME.Word4)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word4))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>503</onleft>
+                <onright>505</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,404)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>428</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="505">
+                <label>$INFO[Window(10103).Property(BobiIME.Word5)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word5))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>504</onleft>
+                <onright>506</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,405)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>535</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="506">
+                <label>$INFO[Window(10103).Property(BobiIME.Word6)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word6))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>505</onleft>
+                <onright>507</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,406)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>642</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="507">
+                <label>$INFO[Window(10103).Property(BobiIME.Word7)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word7))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>506</onleft>
+                <onright>508</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,407)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>749</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="508">
+                <label>$INFO[Window(10103).Property(BobiIME.Word8)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word8))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>507</onleft>
+                <onright>509</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,408)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>856</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="button" id="509">
+                <label>$INFO[Window(10103).Property(BobiIME.Word9)]</label>
+                <font>font14</font>
+                <textcolor>FFF5F5F5</textcolor>
+                <focusedcolor>FF101014</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word9))</visible>
+                <onup>312</onup>
+                <ondown>120</ondown>
+                <onleft>508</onleft>
+                <onright>511</onright>
+                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+                <onclick>SendClick(10103,409)</onclick>
+                <onclick>SetFocus(120)</onclick>
+                <left>963</left>
+                <top>100</top>
+                <width>100</width>
+                <height>70</height>
+              </control>
+              <control type="grouplist" id="8000">
+                <align>bottom</align>
+                <orientation>vertical</orientation>
+                <itemgap>10</itemgap>
+                <include content="BobiAF_DialogKeyboard_Row">
+                  <param name="id">8001</param>
+                  <param name="keys">123456</param>
+                </include>
+                <include content="BobiAF_DialogKeyboard_Row">
+                  <param name="id">8002</param>
+                  <param name="keys">QWERTY</param>
+                </include>
+                <include content="BobiAF_DialogKeyboard_Row">
+                  <param name="id">8003</param>
+                  <param name="keys">ASDFGH</param>
+                </include>
+                <include content="BobiAF_DialogKeyboard_Row">
+                  <param name="id">8004</param>
+                  <param name="keys">ZXCVBN</param>
+                </include>
+                <include content="BobiAF_DialogKeyboard_Row">
+                  <param name="id">8005</param>
+                  <param name="keys">SYMBOL</param>
+                </include>
+              </control>
+            </control>
+          </control>
+        </control>
+        <control type="grouplist" id="9000">
+          <right>20</right>
+          <top>20</top>
+          <width>280</width>
+          <height>760</height>
+          <orientation>vertical</orientation>
+          <itemgap>20</itemgap>
+          <onleft>8000</onleft>
+          <onup>9000</onup>
+          <ondown>9000</ondown>
+          <control type="button" id="309">
+            <label>输入语言</label>
+            <font>font12</font>
+            <textcolor>FFF5F5F5</textcolor>
+            <focusedcolor>FF101014</focusedcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+            <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+            <left>0</left>
+            <top>0</top>
+            <width>280</width>
+            <height>80</height>
+            <onleft>8000</onleft>
+            <onright>8000</onright>
+            <onup>9000</onup>
+            <ondown>9000</ondown>
+          </control>
+          <control type="button" id="512">
+            <font>font12</font>
+            <textcolor>FFF5F5F5</textcolor>
+            <focusedcolor>FF101014</focusedcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+            <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+            <onclick>SetProperty(BobiIME.Clear,1,10103)</onclick>
+            <left>0</left>
+            <top>0</top>
+            <width>280</width>
+            <height>80</height>
+            <onleft>8000</onleft>
+            <onright>8000</onright>
+            <onup>9000</onup>
+            <ondown>9000</ondown>
+            <label>清空</label>
+          </control>
+          <control type="button" id="510">
+            <font>font12</font>
+            <textcolor>FFF5F5F5</textcolor>
+            <focusedcolor>FF101014</focusedcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+            <visible>Control.IsVisible(500)</visible>
+            <onclick>SendClick(10103,305)</onclick>
+            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+            <left>0</left>
+            <top>0</top>
+            <width>280</width>
+            <height>80</height>
+            <onleft>8000</onleft>
+            <onright>8000</onright>
+            <onup>9000</onup>
+            <ondown>9000</ondown>
+            <label>上一页</label>
+          </control>
+          <control type="button" id="511">
+            <font>font12</font>
+            <textcolor>FFF5F5F5</textcolor>
+            <focusedcolor>FF101014</focusedcolor>
+            <align>center</align>
+            <aligny>center</aligny>
+            <visible>Control.IsVisible(500)</visible>
+            <onclick>SendClick(10103,306)</onclick>
+            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+            <left>0</left>
+            <top>0</top>
+            <width>280</width>
+            <height>80</height>
+            <onleft>8000</onleft>
+            <onright>8000</onright>
+            <onup>9000</onup>
+            <ondown>9000</ondown>
+            <label>下一页</label>
+          </control>
+          <control type="radiobutton" id="310">
+            <font>font11</font>
+            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+            <texturenofocus>am6b/transparent.png</texturenofocus>
+            <left>0</left>
+            <top>0</top>
+            <width>280</width>
+            <height>80</height>
+            <onleft>8000</onleft>
+            <onright>8000</onright>
+            <onup>9000</onup>
+            <ondown>9000</ondown>
+            <label>显示密码</label>
+          </control>
+        </control>
+        <control type="label">
+          <left>1130</left>
+          <top>660</top>
+          <width>280</width>
+          <height>80</height>
+          <font>font11</font>
+          <textcolor>FFAAAAAA</textcolor>
+          <wrapmultiline>true</wrapmultiline>
+          <label>拼音选字：↑ 进入候选
+↓ 回到字母区</label>
+        </control>
+      </control>
+    </control>
+    <control type="button" id="400">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[0]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="401">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[1]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="402">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[2]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="403">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[3]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="404">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[4]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="405">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[5]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="406">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[6]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="407">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[7]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="408">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[8]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="409">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>$NUMBER[9]</label>
+      <visible>false</visible>
+    </control>
+    <control type="button" id="308">
+      <left>-200</left>
+      <top>-200</top>
+      <width>1</width>
+      <height>1</height>
+      <label>清空</label>
+      <visible>false</visible>
+    </control>
+  </controls>
+</window>

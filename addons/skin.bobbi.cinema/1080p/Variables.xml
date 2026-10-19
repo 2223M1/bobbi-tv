@@ -1,0 +1,254 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <!-- Plugin action progress does not register native playback context actions. -->
+  <variable name="BobiPercentPlayed">
+    <value condition="!String.IsEmpty(ListItem.Property(PercentPlayed))">$INFO[ListItem.Property(PercentPlayed)]</value>
+    <value>$INFO[ListItem.PercentPlayed]</value>
+  </variable>
+  <!-- art: poster for 2:3 cards, falling back to thumb, then nothing (the card shows the title) -->
+  <variable name="PosterImage">
+    <value condition="!String.IsEmpty(ListItem.Art(poster))">$INFO[ListItem.Art(poster)]</value>
+    <value condition="!String.IsEmpty(ListItem.Art(tvshow.poster))">$INFO[ListItem.Art(tvshow.poster)]</value>
+    <value condition="!String.IsEmpty(ListItem.Art(season.poster))">$INFO[ListItem.Art(season.poster)]</value>
+    <value>$INFO[ListItem.Art(thumb)]</value>
+  </variable>
+  <variable name="LandscapeImage">
+    <value condition="!String.IsEmpty(ListItem.Art(thumb)) + String.IsEqual(ListItem.DBType,episode)">$INFO[ListItem.Art(thumb)]</value>
+    <value condition="!String.IsEmpty(ListItem.Art(landscape))">$INFO[ListItem.Art(landscape)]</value>
+    <value condition="!String.IsEmpty(ListItem.Art(fanart))">$INFO[ListItem.Art(fanart)]</value>
+    <value>$INFO[ListItem.Art(thumb)]</value>
+  </variable>
+  <variable name="FanartImage">
+    <value condition="!String.IsEmpty(ListItem.Art(fanart))">$INFO[ListItem.Art(fanart)]</value>
+    <value condition="!String.IsEmpty(ListItem.Art(tvshow.fanart))">$INFO[ListItem.Art(tvshow.fanart)]</value>
+    <value condition="!String.IsEmpty(ListItem.Art(landscape))">$INFO[ListItem.Art(landscape)]</value>
+    <value>$INFO[ListItem.Art(thumb)]</value>
+  </variable>
+
+  <!-- Chinese title preferred; Jacktook publishes AM6B.Title.zh/en/original -->
+  <variable name="TitleZH">
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.zh))">$INFO[ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.Title)">$INFO[ListItem.Title]</value>
+    <value>$INFO[ListItem.Label]</value>
+  </variable>
+  <variable name="TitleOriginal">
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)">$INFO[ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)">$INFO[ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(ListItem.OriginalTitle) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Title)">$INFO[ListItem.OriginalTitle]</value>
+  </variable>
+
+  <!-- source picker quality badge (read from Jacktook's source list) -->
+  <variable name="BobiQualityBadge">
+    <value condition="String.IsEqual(ListItem.Property(quality_plain),n/a) | String.IsEqual(ListItem.Property(quality_plain),N/A) | String.IsEmpty(ListItem.Property(quality_plain))">未知</value>
+    <value condition="String.Contains(ListItem.Property(quality_plain),2160) | String.IsEqual(ListItem.Property(quality_plain),4k)">4K</value>
+    <value>[UPPERCASE]$INFO[ListItem.Property(quality_plain)][/UPPERCASE]</value>
+  </variable>
+
+  <variable name="StreamLang">
+    <value condition="String.IsEqual(ListItem.Label,chi)">中文</value>
+    <value condition="String.IsEqual(ListItem.Label,zho)">中文</value>
+    <value condition="String.IsEqual(ListItem.Label,chs)">简体中文</value>
+    <value condition="String.IsEqual(ListItem.Label,cht)">繁体中文</value>
+    <value condition="String.IsEqual(ListItem.Label,eng)">英语</value>
+    <value condition="String.IsEqual(ListItem.Label,jpn)">日语</value>
+    <value condition="String.IsEqual(ListItem.Label,kor)">韩语</value>
+    <value condition="String.IsEqual(ListItem.Label,fre)">法语</value>
+    <value condition="String.IsEqual(ListItem.Label,fra)">法语</value>
+    <value condition="String.IsEqual(ListItem.Label,ger)">德语</value>
+    <value condition="String.IsEqual(ListItem.Label,deu)">德语</value>
+    <value condition="String.IsEqual(ListItem.Label,spa)">西班牙语</value>
+    <value condition="String.IsEqual(ListItem.Label,ita)">意大利语</value>
+    <value condition="String.IsEqual(ListItem.Label,rus)">俄语</value>
+    <value condition="String.IsEqual(ListItem.Label,tha)">泰语</value>
+    <value condition="String.IsEqual(ListItem.Label,por)">葡萄牙语</value>
+    <value condition="String.IsEqual(ListItem.Label,und)">未标注</value>
+    <value condition="String.IsEqual(ListItem.Label,UND)">未标注</value>
+    <value>$INFO[ListItem.Label]</value>
+  </variable>
+  <variable name="SkinSettingHint">
+    <value condition="Control.HasFocus(9101)">关闭焦点放大、面板滑入和页面淡入。焦点白框、已选橙色标记和正在播放标记保持不变。</value>
+    <value condition="Control.HasFocus(9102)">播放时控制栏5秒无操作后自动收起；字幕、音轨面板和设置打开时不会收起。</value>
+    <value condition="Control.HasFocus(9103)">电视不支持 HDR 时，自动对 HDR、HLG 和杜比视界片源执行 VS10 → SDR 转换。</value>
+    <value condition="Control.HasFocus(9104)">仅对配置了“返回确认”键位的遥控器生效。Yatse 与默认键位下，返回键只收起控制栏，停止请用控制栏上的停止键。</value>
+  </variable>
+  <variable name="SettingsSectionTitle">
+    <value condition="Window.IsActive(playersettings)">播放器</value>
+    <value condition="Window.IsActive(mediasettings)">媒体</value>
+    <value condition="Window.IsActive(pvrsettings)">直播电视</value>
+    <value condition="Window.IsActive(servicesettings)">服务</value>
+    <value condition="Window.IsActive(interfacesettings)">界面</value>
+    <value condition="Window.IsActive(systemsettings)">系统</value>
+    <value>设置</value>
+  </variable>
+  <variable name="SettingsSheetContext">
+    <value condition="Player.HasVideo + [Window.IsActive(osdaudiosettings) | Window.IsActive(osdsubtitlesettings) | Window.IsActive(osdvideosettings)]">$VAR[PlayerTitle]   ·   调整立即生效，返回 收起</value>
+    <value>↑↓ 选择   ·   ← → 调整   ·   返回 关闭</value>
+  </variable>
+
+  <!-- detail page -->
+  <variable name="DetailPrimaryLabel">
+    <value condition="ListItem.IsFolder + String.IsEqual(ListItem.DBType,season)">选集</value>
+    <value condition="ListItem.IsFolder">选择季集</value>
+    <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]">继续 · 选片源</value>
+    <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">选择片源</value>
+    <value condition="Integer.IsGreater(ListItem.PercentPlayed,0)">继续播放</value>
+    <value>播放</value>
+  </variable>
+  <variable name="DetailPrimaryIcon">
+    <value condition="ListItem.IsFolder">bobi/icons/list.png</value>
+    <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">bobi/icons/play.png</value>
+    <value>bobi/icons/play.png</value>
+  </variable>
+  <variable name="DetailKicker">
+    <value condition="String.IsEqual(ListItem.DBType,movie)">电影</value>
+    <value condition="String.IsEqual(ListItem.DBType,tvshow)">剧集</value>
+    <value condition="String.IsEqual(ListItem.DBType,season)">剧集 · 季</value>
+    <value condition="String.IsEqual(ListItem.DBType,episode)">剧集 · 单集</value>
+  </variable>
+
+  <!-- wide-card captions -->
+  <variable name="CardTitle">
+    <value>$VAR[TitlePrimary]</value>
+  </variable>
+  <variable name="CardSubline">
+    <value condition="!String.IsEmpty(ListItem.Episode)">$VAR[SeasonLabel] · $VAR[EpisodeLabel]</value>
+    <value condition="!String.IsEmpty(ListItem.Season)">$VAR[SeasonLabel]$INFO[ListItem.Year,  ·  ]</value>
+    <value>$VAR[TitleSecondary]</value>
+  </variable>
+  <!-- meta line: year · genre · duration · rating -->
+  <variable name="MetaLine">
+    <value>$INFO[ListItem.Year]$INFO[ListItem.Genre,  ·  ]$INFO[ListItem.Duration(h'小时'mm'分'),  ·  ]$INFO[ListItem.Property(TotalSeasons),  ·  共,季]$INFO[ListItem.Rating,  ·  ★ ]</value>
+  </variable>
+
+  <!-- episode identity -->
+  <variable name="EpisodeCode">
+    <value condition="!String.IsEmpty(ListItem.Season) + !String.IsEmpty(ListItem.Episode)">第$INFO[ListItem.Season]季 · 第$INFO[ListItem.Episode]集</value>
+    <value condition="!String.IsEmpty(ListItem.Episode)">第$INFO[ListItem.Episode]集</value>
+  </variable>
+
+  <!-- OSD -->
+  <variable name="PlayerTitle">
+    <value condition="!String.IsEmpty(VideoPlayer.TVShowTitle)">$INFO[VideoPlayer.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(VideoPlayer.Title)">$INFO[VideoPlayer.Title]</value>
+    <value>$INFO[Player.Filename]</value>
+  </variable>
+  <variable name="PlayerSubtitle">
+    <value condition="!String.IsEmpty(VideoPlayer.TVShowTitle) + !String.IsEmpty(VideoPlayer.Episode)">第$INFO[VideoPlayer.Season]季 第$INFO[VideoPlayer.Episode]集$INFO[VideoPlayer.Title,  ·  ]</value>
+    <value condition="!String.IsEmpty(VideoPlayer.OriginalTitle) + !String.IsEqual(VideoPlayer.OriginalTitle,VideoPlayer.Title)">$INFO[VideoPlayer.OriginalTitle]$INFO[VideoPlayer.Year,  ·  ]</value>
+    <value>$INFO[VideoPlayer.Year]</value>
+  </variable>
+  <variable name="HDRLabel">
+    <value condition="String.IsEqual(Player.Process(video.source.hdr.type),dolbyvision)">杜比视界</value>
+    <value condition="String.IsEqual(Player.Process(video.source.hdr.type),hdr10)">HDR10</value>
+    <value condition="String.StartsWith(Player.Process(video.source.hdr.type),hdr10)">HDR10+</value>
+    <value condition="String.IsEqual(Player.Process(video.source.hdr.type),hlg)">HLG</value>
+    <value condition="!String.IsEmpty(Player.Process(video.source.hdr.type))">$INFO[Player.Process(video.source.hdr.type)]</value>
+    <value>SDR</value>
+  </variable>
+  <variable name="ResolutionLabel">
+    <value condition="String.IsEqual(VideoPlayer.VideoResolution,4K)">4K</value>
+    <value condition="!String.IsEmpty(VideoPlayer.VideoResolution)">$INFO[VideoPlayer.VideoResolution]P</value>
+  </variable>
+  <variable name="AudioLabel">
+    <value condition="!String.IsEmpty(VideoPlayer.AudioLanguage)">$INFO[VideoPlayer.AudioLanguage]$INFO[VideoPlayer.AudioCodec, · ]$INFO[VideoPlayer.AudioChannels, · ,ch]</value>
+    <value>$INFO[VideoPlayer.AudioCodec]$INFO[VideoPlayer.AudioChannels, · ,ch]</value>
+  </variable>
+  <variable name="TempoLabel">
+    <value condition="String.IsEmpty(Player.PlaySpeed) | String.IsEqual(Player.PlaySpeed,1.00) | String.IsEqual(Player.PlaySpeed,1)">1.0×</value>
+    <value>$INFO[Player.PlaySpeed]×</value>
+  </variable>
+  <variable name="TempoFocusHint">
+    <value condition="Control.HasFocus(11)">减速 0.1×</value>
+    <value condition="Control.HasFocus(12)">加速 0.1×</value>
+    <value condition="Control.HasFocus(13)">恢复正常速度</value>
+  </variable>
+  <variable name="VS10Label">
+    <value condition="String.IsEqual(Player.Process(video.source.hdr.type.raw),2)">不可用</value>
+    <value>片源 $INFO[Player.Process(video.source.hdr.type)]</value>
+  </variable>
+  <variable name="SeekStateIcon">
+    <value condition="Player.Forwarding">bobi/icons/forward.png</value>
+    <value condition="Player.Rewinding">bobi/icons/rewind.png</value>
+    <value condition="Player.Paused">bobi/icons/pause.png</value>
+    <value>bobi/icons/play.png</value>
+  </variable>
+  <variable name="SeekStateLabel">
+    <value condition="!String.IsEmpty(Player.SeekNumeric)">跳转到 $INFO[Player.SeekNumeric]</value>
+    <value condition="Player.Forwarding">快进 $INFO[Player.PlaySpeed]×</value>
+    <value condition="Player.Rewinding">快退 $INFO[Player.PlaySpeed]×</value>
+    <value condition="Player.Seeking">$INFO[Player.SeekStepSize]</value>
+    <value condition="Player.Paused">已暂停</value>
+    <value>$VAR[PlayerTitle]</value>
+  </variable>
+  <variable name="SeekTimeLabel">
+    <value condition="Player.Seeking | Player.DisplayAfterSeek">$INFO[Player.SeekTime] / $INFO[Player.Duration]</value>
+    <value>$INFO[Player.Time] / $INFO[Player.Duration]</value>
+  </variable>
+  <variable name="OSDToolHint">
+    <value condition="Control.HasFocus(700)">$INFO[Container(700).ListItem.Property(hint)]</value>
+    <value condition="Control.HasFocus(710)">$INFO[Container(710).ListItem.Property(hint)]</value>
+  </variable>
+  <variable name="PlayPauseHint">
+    <value condition="Player.Paused">继续播放</value>
+    <value>暂停</value>
+  </variable>
+  <variable name="PlayPauseIcon">
+    <value condition="Player.Paused | Player.Forwarding | Player.Rewinding">bobi/icons/play.png</value>
+    <value>bobi/icons/pause.png</value>
+  </variable>
+  <variable name="OSDFocusHint">
+    <value condition="Control.HasFocus(601)">上一章 / 上一集</value>
+    <value condition="Control.HasFocus(602)">后退 10 秒</value>
+    <value condition="Control.HasFocus(603) + Player.Paused">继续播放</value>
+    <value condition="Control.HasFocus(603)">暂停</value>
+    <value condition="Control.HasFocus(604)">前进 30 秒</value>
+    <value condition="Control.HasFocus(605)">下一章 / 下一集</value>
+    <value condition="Control.HasFocus(606)">停止播放并返回</value>
+    <value>返回 键收起控制栏</value>
+  </variable>
+  <variable name="OSDChipHint">
+    <value condition="Control.HasFocus(701)">当前：$VAR[SubtitleLabel]</value>
+    <value condition="Control.HasFocus(702)">当前：$VAR[AudioLabel]</value>
+    <value condition="Control.HasFocus(703)">缩放、比例、色彩与去隔行</value>
+    <value condition="Control.HasFocus(704)">杜比视界 VS10 · 播放速度 · 书签 · 信号信息</value>
+  </variable>
+  <variable name="AudioCodecLabel">
+    <value condition="String.StartsWith(VideoPlayer.AudioCodec,aac)">AAC</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3) + String.Contains(VideoPlayer.AudioLanguage,atmos)">杜比全景声</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3)">杜比数字+</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,ac3)">杜比数字</value>
+    <value condition="String.StartsWith(VideoPlayer.AudioCodec,truehd)">杜比 TrueHD</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma)">DTS-HD MA</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_hra)">DTS-HD HR</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtsx) | String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x)">DTS:X</value>
+    <value condition="String.StartsWith(VideoPlayer.AudioCodec,dts) | String.IsEqual(VideoPlayer.AudioCodec,dca)">DTS</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,flac)">FLAC</value>
+    <value condition="String.StartsWith(VideoPlayer.AudioCodec,pcm)">PCM</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,opus)">Opus</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,mp3)">MP3</value>
+    <value>$INFO[VideoPlayer.AudioCodec]</value>
+  </variable>
+  <variable name="AudioLangLabel">
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,chi) | String.IsEqual(VideoPlayer.AudioLanguage,zho) | String.IsEqual(VideoPlayer.AudioLanguage,Chinese)">中文 · $VAR[AudioCodecLabel]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,eng) | String.IsEqual(VideoPlayer.AudioLanguage,English)">英语 · $VAR[AudioCodecLabel]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,jpn) | String.IsEqual(VideoPlayer.AudioLanguage,Japanese)">日语 · $VAR[AudioCodecLabel]</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioLanguage,kor) | String.IsEqual(VideoPlayer.AudioLanguage,Korean)">韩语 · $VAR[AudioCodecLabel]</value>
+    <value condition="!String.IsEmpty(VideoPlayer.AudioLanguage)">$INFO[VideoPlayer.AudioLanguage] · $VAR[AudioCodecLabel]</value>
+    <value>$VAR[AudioCodecLabel]</value>
+  </variable>
+  <variable name="SubtitleToggleLabel">
+    <value condition="VideoPlayer.SubtitlesEnabled">关闭字幕</value>
+    <value condition="VideoPlayer.HasSubtitles">打开字幕</value>
+  </variable>
+  <variable name="SubtitleLabel">
+    <value condition="!VideoPlayer.SubtitlesEnabled">字幕已关闭</value>
+    <value condition="!String.IsEmpty(VideoPlayer.SubtitlesName)">$INFO[VideoPlayer.SubtitlesName]</value>
+    <value condition="!String.IsEmpty(VideoPlayer.SubtitlesLanguage)">$INFO[VideoPlayer.SubtitlesLanguage]</value>
+    <value condition="VideoPlayer.HasSubtitles">字幕已开启</value>
+    <value>无字幕</value>
+  </variable>
+  <variable name="BobiSourceHDR">
+    <value condition="!String.IsEmpty(Player.Process(video.source.additional.hdr.type)) + !String.IsEqual(Player.Process(video.source.hdr.type),Player.Process(video.source.additional.hdr.type))">$INFO[Player.Process(video.source.hdr.type)]$INFO[Player.Process(video.source.additional.hdr.type),  +  ,]</value>
+    <value>$INFO[Player.Process(video.source.hdr.type)]</value>
+  </variable>
+</includes>

@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "gradle": {
+    "version": "8.11.1",
+    "url": "https://services.gradle.org/distributions/gradle-8.11.1-bin.zip",
+    "sha256": "f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6"
+  },
+  "jdk": {
+    "version": "21.0.12.1+1",
+    "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_windows_hotspot_21.0.12.1_1.zip",
+    "sha256": "f9d6e191ab098c0d416e7d588a24420a8621cd2f4720dab2459b8b7b2d2d8b4e",
+    "bytes": 205073461
+  },
+  "commandline": {
+    "version": "22.0",
+    "url": "https://dl.google.com/android/repository/commandlinetools-win-15859902_latest.zip",
+    "sha256": "90ae805d20434428bffcb699c290860f19bb5f66a67e6b330067e3de801fb04a",
+    "bytes": 155655386
+  },
+  "sdk_packages": ["platforms;android-35", "build-tools;35.0.0", "platform-tools"],
+  "sdk_revisions": {"platforms;android-35": "2", "build-tools;35.0.0": "35.0.0", "platform-tools": "37.0.1"},
+  "agp": "8.9.2",
+  "engine": {
+    "version": "MatriX.147",
+    "repository": "https://github.com/YouROK/TorrServer",
+    "commit": "a86d8fa7fd4e07605f240fe69bf299392f7cb023",
+    "license": {
+      "url": "https://raw.githubusercontent.com/YouROK/TorrServer/a86d8fa7fd4e07605f240fe69bf299392f7cb023/LICENSE",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "bytes": 35147
+    },
+    "binaries": {
+      "armeabi-v7a": {
+        "url": "https://github.com/YouROK/TorrServer/releases/download/MatriX.147/TorrServer-android-arm7",
+        "sha256": "8cb44454ff201bd902a9c454e6f046d4fb25937a3b628270d0c7b48f1cc7b94c",
+        "bytes": 63929180,
+        "elf_machine": 40
+      },
+      "arm64-v8a": {
+        "url": "https://github.com/YouROK/TorrServer/releases/download/MatriX.147/TorrServer-android-arm64",
+        "sha256": "92ccc46a21d87e5861dabf31ece084ac910499dbb752ed5a37f6dceeb91fcf03",
+        "bytes": 64445000,
+        "elf_machine": 183
+      }
+    }
+  }
+}

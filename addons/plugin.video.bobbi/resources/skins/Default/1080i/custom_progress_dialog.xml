@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="12000">
+  <coordinates>
+    <left>460</left>
+    <top>320</top>
+    <width>1000</width>
+    <height>440</height>
+  </coordinates>
+  <defaultcontrol always="true">12003</defaultcontrol>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="fade" start="0" end="100" time="200" />
+  </animation>
+  <animation type="WindowClose" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="fade" start="100" end="0" time="200" />
+  </animation>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1000</width>
+      <height>440</height>
+      <texture border="20">circle.png</texture>
+      <colordiffuse>FF1A1A1A</colordiffuse>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1000</width>
+      <height>4</height>
+      <texture>white.png</texture>
+      <colordiffuse>FF00559D</colordiffuse>
+    </control>
+    <control type="group">
+      <left>40</left>
+      <top>25</top>
+      <width>920</width>
+      <height>390</height>
+      <control type="label" id="12001">
+        <top>0</top>
+        <width>920</width>
+        <height>35</height>
+        <align>center</align>
+        <font>font30_title</font>
+        <textcolor>white</textcolor>
+        <shadowcolor>AA000000</shadowcolor>
+      </control>
+      <control type="label" id="12002">
+        <top>40</top>
+        <width>920</width>
+        <height>50</height>
+        <align>center</align>
+        <font>font14</font>
+        <textcolor>EEEEEE</textcolor>
+        <shadowcolor>AA000000</shadowcolor>
+        <wrapmultiline>true</wrapmultiline>
+      </control>
+      <control type="label" id="12006">
+        <top>100</top>
+        <width>920</width>
+        <height>70</height>
+        <align>center</align>
+        <font>font48</font>
+        <textcolor>FFFFD700</textcolor>
+        <shadowcolor>AA000000</shadowcolor>
+        <label>0%</label>
+      </control>
+      <control type="label" id="12007">
+        <top>175</top>
+        <left>0</left>
+        <width>455</width>
+        <height>25</height>
+        <align>left</align>
+        <font>font12</font>
+        <textcolor>CCCCCC</textcolor>
+        <label> </label>
+      </control>
+      <control type="label" id="12008">
+        <top>175</top>
+        <left>465</left>
+        <width>455</width>
+        <height>25</height>
+        <align>right</align>
+        <font>font12</font>
+        <textcolor>CCCCCC</textcolor>
+        <label> </label>
+      </control>
+      <control type="progress" id="12004">
+        <top>210</top>
+        <left>0</left>
+        <width>920</width>
+        <height>24</height>
+        <info>percentage</info>
+      </control>
+      <control type="group">
+        <top>250</top>
+        <left>0</left>
+        <width>920</width>
+        <height>50</height>
+        <control type="button" id="12003">
+          <left>140</left>
+          <width>260</width>
+          <height>50</height>
+          <label>$ADDON[plugin.video.bobbi 90800]</label>
+          <align>center</align>
+          <font>font13</font>
+          <textcolor>DDFFFFFF</textcolor>
+          <focusedcolor>EEFFFFFF</focusedcolor>
+          <texturefocus border="20" colordiffuse="FFB22222">circle.png</texturefocus>
+          <texturenofocus border="20" colordiffuse="66000000">circle.png</texturenofocus>
+          <onright>12005</onright>
+        </control>
+        <control type="button" id="12005">
+          <left>520</left>
+          <width>260</width>
+          <height>50</height>
+          <label>$ADDON[plugin.video.bobbi 90808]</label>
+          <align>center</align>
+          <font>font13</font>
+          <textcolor>DDFFFFFF</textcolor>
+          <focusedcolor>EEFFFFFF</focusedcolor>
+          <texturefocus border="20" colordiffuse="FF999999">circle.png</texturefocus>
+          <texturenofocus border="20" colordiffuse="66000000">circle.png</texturenofocus>
+          <onleft>12003</onleft>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

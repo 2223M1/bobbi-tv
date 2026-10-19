@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CinemaTheme" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/cinema_bg</item>
+        <item name="android:colorAccent">@color/cinema_accent</item>
+        <item name="android:colorBackground">@color/cinema_bg</item>
+        <item name="android:colorControlHighlight">@color/cinema_line</item>
+        <item name="android:textColorPrimary">@color/cinema_text</item>
+        <item name="android:textColorSecondary">@color/cinema_text_secondary</item>
+        <item name="android:statusBarColor">@color/cinema_bg</item>
+        <item name="android:navigationBarColor">@color/cinema_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

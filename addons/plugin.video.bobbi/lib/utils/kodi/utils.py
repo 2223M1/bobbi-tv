@@ -1,0 +1,850 @@
+#!/usr/bin/env python3
+import contextlib
+import json
+import os
+import re
+import sys
+import time
+import xml.etree.ElementTree as ET
+from datetime import date, datetime, timedelta
+from typing import Any, Union
+from urllib.parse import quote, urlencode
+
+import xbmc
+import xbmcaddon
+import xbmcgui
+from xbmcgui import ListItem, Window
+from xbmcplugin import addDirectoryItems, endOfDirectory, setResolvedUrl
+from xbmcvfs import (
+    File as xbmcvfs_File,
+)
+from xbmcvfs import (
+    delete as xbmc_delete,
+)
+from xbmcvfs import (
+    listdir,
+)
+from xbmcvfs import (
+    translatePath as translate_path,
+)
+
+from lib.db.cached import cache
+from lib.utils.kodi.logging import kodilog
+
+_URL = sys.argv[0]
+
+MOVIES_TYPE = "movies"
+SHOWS_TYPE = "tvshows"
+SEASONS_TYPE = "seasons"
+EPISODES_TYPE = "episodes"
+TITLES_TYPE = "titles"
+
+TORREST_ADDON_ID = "plugin.video.torrest"
+JACKTORR_ADDON_ID = "plugin.video.jacktorr"
+ELEMENTUM_ADDON_ID = "plugin.video.elementum"
+YOUTUBE_ADDON_ID = "plugin.video.youtube"
+JACKTOOK_BURST_ADOON_ID = "script.bobbi.burst"
+
+
+def _get_jacktorr_addon():
+    try:
+        if xbmc.getCondVisibility(f"System.HasAddon({JACKTORR_ADDON_ID})"):
+            return xbmcaddon.Addon(JACKTORR_ADDON_ID)
+    except Exception:
+        pass
+    return None
+
+
+JACKTORR_ADDON = _get_jacktorr_addon()
+
+
+ADDON = xbmcaddon.Addon()
+
+
+class _AddonHandle:
+    """Dynamically resolves the Kodi plugin handle at call time.
+
+    With ``reuselanguageinvoker=true`` the Python interpreter is reused
+    across plugin invocations, so ``sys.argv[1]`` (set once at module
+    import) becomes stale.  This class resolves ``int(sys.argv[1])``
+    *every time* ``__index__`` is called — Kodi's C extension calls
+    ``__index__`` when it receives this object where an ``int`` is
+    expected (e.g. ``addDirectoryItems``, ``endOfDirectory``).
+
+    Example
+    -------
+    >>> from lib.utils.kodi.utils import ADDON_HANDLE
+    >>> addDirectoryItems(ADDON_HANDLE, items)   # resolves correctly
+    """
+
+    @staticmethod
+    def _resolve():
+        try:
+            return int(sys.argv[1])
+        except (IndexError, ValueError):
+            return 0
+
+    def __index__(self):
+        return self._resolve()
+
+    def __int__(self):
+        return self._resolve()
+
+    def __eq__(self, other):
+        return self._resolve() == int(other)
+
+
+ADDON_HANDLE = _AddonHandle()
+
+
+ADDON_PATH = ADDON.getAddonInfo("path")
+ADDON_PROFILE_PATH = translate_path(ADDON.getAddonInfo("profile"))
+IMAGES_PATH = f"{ADDON_PATH}/resources/images/"
+DEFAULT_LOGO = f"{IMAGES_PATH}tv.png"
+ADDON_ICON = ADDON.getAddonInfo("icon")
+ADDON_ID = ADDON.getAddonInfo("id")
+ADDON_VERSION = ADDON.getAddonInfo("version")
+ADDON_NAME = ADDON.getAddonInfo("name")
+PLAYLIST = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+
+CHANGELOG_PATH = translate_path("special://home/addons/plugin.video.bobbi/CHANGELOG.md")
+
+progressDialog = xbmcgui.DialogProgress()
+
+
+def get_jacktorr_setting(value, default=None):
+    if not JACKTORR_ADDON:
+        notification(translation(30253))
+        return
+    value = JACKTORR_ADDON.getSetting(value)
+    if not value:
+        return default
+    if isinstance(value, str):
+        if value.lower() == "true":
+            return True
+        elif value.lower() == "false":
+            return False
+    return value
+
+
+def _setting_cache_prop(setting_id: str) -> str:
+    return f"bobbi.setting.{setting_id}"
+
+
+def _settings_snapshot_prop() -> str:
+    return "bobbi.settings"
+
+
+def _load_settings_snapshot():
+    raw = Window(10000).getProperty(_settings_snapshot_prop())
+    if not raw:
+        return None
+    try:
+        return json.loads(raw)
+    except Exception:
+        return None
+
+
+def _profile_settings_xml_path() -> str:
+    return os.path.join(ADDON_PROFILE_PATH, "settings.xml")
+
+
+def rebuild_settings_snapshot():
+    settings_dict = None
+    try:
+        profile_xml = _profile_settings_xml_path()
+        if os.path.exists(profile_xml):
+            root = ET.parse(profile_xml).getroot()
+            settings_dict = {
+                item.get("id"): (item.text or "") for item in root.iter("setting") if item.get("id")
+            }
+        else:
+            settings_dict = {}
+        Window(10000).setProperty(_settings_snapshot_prop(), json.dumps(settings_dict))
+    except Exception:
+        return None
+    return settings_dict
+
+
+def get_cached_setting_property(setting_id: str):
+    settings_dict = _load_settings_snapshot()
+    if settings_dict is None:
+        settings_dict = rebuild_settings_snapshot()
+    if settings_dict is None:
+        return None
+    return settings_dict.get(setting_id, "")
+
+
+def set_cached_setting_property(setting_id: str, value: Any):
+    settings_dict = _load_settings_snapshot() or {}
+    settings_dict[setting_id] = str(value)
+    Window(10000).setProperty(_settings_snapshot_prop(), json.dumps(settings_dict))
+
+
+def clear_cached_setting_property(setting_id: str):
+    settings_dict = _load_settings_snapshot() or {}
+    if setting_id in settings_dict:
+        del settings_dict[setting_id]
+        Window(10000).setProperty(_settings_snapshot_prop(), json.dumps(settings_dict))
+
+
+def clear_cached_settings():
+    Window(10000).clearProperty(_settings_snapshot_prop())
+
+
+def _normalize_setting_value(val, default=None):
+    if not val:
+        return default
+    if isinstance(val, str):
+        if val.lower() == "true":
+            return True
+        if val.lower() == "false":
+            return False
+    return val
+
+
+def get_setting(id, default=None):
+    val = get_cached_setting_property(id)
+    if val:
+        return _normalize_setting_value(val, default)
+
+    val = ADDON.getSetting(id)
+    if val:
+        set_cached_setting_property(id, val)
+        return _normalize_setting_value(val, default)
+
+    return default
+
+
+def get_setting_fresh(id, default=None):
+    settings_dict = rebuild_settings_snapshot()
+    if settings_dict is not None:
+        val = settings_dict.get(id, "")
+        if val != "":
+            return _normalize_setting_value(val, default)
+
+    val = ADDON.getSetting(id)
+    if val:
+        set_cached_setting_property(id, val)
+        return _normalize_setting_value(val, default)
+    clear_cached_setting_property(id)
+    return default
+
+
+def set_setting(id, value):
+    ADDON.setSetting(id, value)
+    set_cached_setting_property(id, value)
+
+
+def get_property_no_fallback(prop: str):
+    return Window(10000).getProperty(prop)
+
+
+# These are session labels/actions, never durable playback authority. A disk
+# fallback can revive an old request after clear/restart, and synchronous cache
+# writes needlessly delay each episode handoff on removable storage.
+TRANSIENT_PLAYBACK_PROPERTIES = frozenset({
+    'bobbi_active_player_session', 'bobbi_cinema_selection',
+    'bobbi_next_dialog_action', 'bobbi_cinema_terminal', 'script.trakt.ids',
+})
+
+
+def get_property(prop: str):
+    value = Window(10000).getProperty(prop)
+    if prop in TRANSIENT_PLAYBACK_PROPERTIES:
+        return value or None
+    kodilog(f"Get property: {prop} = {value}", xbmc.LOGDEBUG)
+    if not value:
+        value = cache.get(prop)
+        kodilog(f"Get property from cache: {prop} = {value}", xbmc.LOGDEBUG)
+        if not value:
+            return None
+    return value
+
+
+def set_property_no_fallback(prop: str, value: Any):
+    Window(10000).setProperty(prop, value)
+
+
+def set_property(prop: str, value: Any):
+    Window(10000).setProperty(prop, value)
+    if prop not in TRANSIENT_PLAYBACK_PROPERTIES:
+        cache.set(prop, value, timedelta(days=30))
+
+
+def clear_property(prop):
+    if prop not in TRANSIENT_PLAYBACK_PROPERTIES:
+        cache.delete(prop)
+    return Window(10000).clearProperty(prop)
+
+
+def burst_addon_settings():
+    close_all_dialog()
+    xbmc.executebuiltin(f"Addon.OpenSettings({JACKTOOK_BURST_ADOON_ID})")
+
+
+def get_kodi_version():
+    build = xbmc.getInfoLabel("System.BuildVersion")
+    kodi_version = int(build.split()[0][:2])
+    return kodi_version
+
+
+def is_torrest_addon():
+    return xbmc.getCondVisibility(f"System.HasAddon({TORREST_ADDON_ID})")
+
+
+def is_jacktorr_addon():
+    return xbmc.getCondVisibility(f"System.HasAddon({JACKTORR_ADDON_ID})")
+
+
+def is_jacktorr_addon_enabled():
+    try:
+        if not xbmc.getCondVisibility(f"System.HasAddon({JACKTORR_ADDON_ID})"):
+            return False
+        xbmcaddon.Addon(JACKTORR_ADDON_ID)
+        # If the addon is disabled, this will raise RuntimeError
+        return True
+    except RuntimeError:
+        # Addon exists but is disabled
+        return False
+
+
+def is_youtube_addon_enabled():
+    try:
+        if not xbmc.getCondVisibility(f"System.HasAddon({YOUTUBE_ADDON_ID})"):
+            return False
+        xbmcaddon.Addon(YOUTUBE_ADDON_ID)
+        # If the addon is disabled, this will raise RuntimeError
+        return True
+    except RuntimeError:
+        # Addon exists but is disabled
+        return False
+
+
+def is_elementum_addon():
+    return xbmc.getCondVisibility(f"System.HasAddon({ELEMENTUM_ADDON_ID})")
+
+
+def is_burst_addon():
+    return xbmc.getCondVisibility(f"System.HasAddon({JACKTOOK_BURST_ADOON_ID})")
+
+
+def enable_addon(addon_id: str):
+    """
+    Enable a Kodi addon using JSON-RPC.
+
+    Returns True if successful, False otherwise.
+    """
+    request = {
+        "jsonrpc": "2.0",
+        "method": "Addons.SetAddonEnabled",
+        "params": {"addonid": addon_id, "enabled": True},
+        "id": 1,
+    }
+
+    try:
+        result = xbmc.executeJSONRPC(json.dumps(request))
+        response = json.loads(result)
+        return "error" not in response
+    except Exception as e:
+        xbmc.log(f"Failed to enable addon {addon_id}: {e}", level=xbmc.LOGERROR)
+        return False
+
+
+_CINEMA_CONTEXT_LABELS = {
+    90049: "重新查找片源", 90115: "选择片源", 90755: "管理片源来源",
+    90733: "选择搜索方式", 90050: "相关作品推荐", 90051: "相似作品",
+    90081: "查看相关演员", 90116: "打开插件设置", 90205: "加入媒体库",
+    90672: "播放预告片",
+}
+
+
+def translation(id_value):
+    # Jacktook does not ship a Chinese catalog. Scope these verified context
+    # captions to the Chinese Cinema skin; keep other locales/skins unchanged.
+    if id_value in _CINEMA_CONTEXT_LABELS and xbmc.getSkinDir() == "skin.bobbi.cinema":
+        return _CINEMA_CONTEXT_LABELS[id_value]
+    return ADDON.getLocalizedString(id_value)
+
+
+def logger(message, level=xbmc.LOGINFO):
+    xbmc.log("[JACKTOOK] " + str(message), level)
+
+
+def get_url(**kwargs):
+    return f"{_URL}?{urlencode(kwargs)}"
+
+
+def set_art(list_item, artwork_url):
+    if artwork_url:
+        list_item.setArt({"poster": artwork_url, "thumb": artwork_url})
+
+
+def slugify(text):
+    text = text.lower()
+    text = re.sub(r"\[.*?\]", "", text)
+    text = text.replace("(", "").replace(")", "")
+    text = text.replace("'", "").replace("’", "")
+    text = text.replace("+", "").replace("@", "")
+    text = re.sub(r"[^a-zA-Z0-9_]+", "-", text)
+    text = text.strip("-")
+    return text
+
+
+def compat(line1, line2, line3):
+    message = line1
+    if line2:
+        message += "\n" + line2
+    if line3:
+        message += "\n" + line3
+    return message
+
+
+def kodi_refresh():
+    execute_builtin("UpdateLibrary(video,special://skin/foo)")
+
+
+def refresh():
+    xbmc.executebuiltin("Container.Refresh")
+
+
+def notification(message, heading=ADDON_NAME, icon=ADDON_ICON, time=2000, sound=True):
+    xbmcgui.Dialog().notification(heading, message, icon, time, sound)
+
+
+def dialog_ok(heading, line1, line2="", line3=""):
+    return xbmcgui.Dialog().ok(heading, compat(line1=line1, line2=line2, line3=line3))
+
+
+def dialog_text(heading: str, content: str = "", file=None):
+    dialog = xbmcgui.Dialog()
+    if file:
+        try:
+            with open(file, encoding="utf-8") as r:
+                content = r.read()
+        except Exception as e:
+            logger(f"Error reading file {file}: {e}", xbmc.LOGERROR)
+            notification("Error reading file.")
+            return
+    dialog.textviewer(heading, content, False)
+    return dialog
+
+
+def dialogyesno(header, text):
+    dialog = xbmcgui.Dialog()
+    confirmed = dialog.yesno(
+        header,
+        text,
+    )
+    return bool(confirmed)
+
+
+def dialog_select(heading, _list):
+    dialog = xbmcgui.Dialog()
+    return dialog.select(heading, _list)
+
+
+def close_all_dialog():
+    execute_builtin("Dialog.Close(all,true)")
+
+
+def container_update(name, **kwargs):
+    """
+    Update the container to the specified path.
+
+    :param path: The path where to update.
+    :type path: str
+    """
+    return f"Container.Update({build_url(name, **kwargs)})"
+
+
+def container_refresh():
+    execute_builtin("Container.Refresh")
+
+
+def action_url_run(name, **kwargs):
+    return f"RunPlugin({build_url(name, **kwargs)})"
+
+
+def build_url(action, **params):
+    for key, value in params.items():
+        if isinstance(value, (dict, list)):
+            params[key] = json.dumps(value)
+    query = urlencode(params)
+    return f"plugin://{ADDON_ID}/?action={action}&{query}"
+
+
+def url_for(action, **kwargs):
+    qs_kwargs = dict(((k, v) for k, v in list(kwargs.items())))
+    query = "?" + urlencode(qs_kwargs) if qs_kwargs else ""
+    return f"plugin://{ADDON_ID}/?action={action}&{query}"
+
+
+def play_info_hash(info_hash):
+    url = f"plugin://{JACKTORR_ADDON_ID}/play_info_hash?info_hash={quote(info_hash)}"
+    return f"PlayMedia({url})"
+
+
+def buffer_and_play(info_hash, file_id, path):
+    url = f"plugin://{JACKTORR_ADDON_ID}/buffer_and_play?info_hash={info_hash}&file_id={file_id}&path={quote(path)}"
+    return f"PlayMedia({url})"
+
+
+def kodi_play_media(name, *args, **kwargs):
+    return f"PlayMedia({build_url(name, *args, **kwargs)})"
+
+
+def show_busy_dialog():
+    execute_builtin("ActivateWindow(busydialognocancel)")
+
+
+def show_picture(url):
+    xbmc.executebuiltin(f'ShowPicture("{url}")')
+
+
+def close_busy_dialog():
+    execute_builtin("Dialog.Close(busydialognocancel)")
+    execute_builtin("Dialog.Close(busydialog)")
+
+
+def execute_builtin(command, block=False):
+    return xbmc.executebuiltin(command, block)
+
+
+def get_visibility():
+    return xbmc.getCondVisibility
+
+
+def delete_file(file):
+    xbmc_delete(file)
+
+
+def update_local_addons():
+    execute_builtin("UpdateLocalAddons", True)
+    sleep(2500)
+
+
+def disable_enable_addon(addon_id=ADDON_ID):
+    try:
+        xbmc.executeJSONRPC(
+            json.dumps(
+                {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "Addons.SetAddonEnabled",
+                    "params": {"addonid": addon_id, "enabled": False},
+                }
+            )
+        )
+        xbmc.executeJSONRPC(
+            json.dumps(
+                {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "Addons.SetAddonEnabled",
+                    "params": {"addonid": addon_id, "enabled": True},
+                }
+            )
+        )
+    except Exception:
+        pass
+
+
+def update_kodi_addons_db(addon_id=ADDON_ID):
+    try:
+        import sqlite3 as database
+
+        date = time.strftime("%Y-%m-%d %H:%M:%S")
+        dbcon = database.connect(translate_path("special://database/Addons33.db"), timeout=40.0)
+        dbcon.execute(
+            "INSERT OR REPLACE INTO installed (addonID, enabled, lastUpdated) VALUES (?, ?, ?)",
+            (addon_id, 1, date),
+        )
+        dbcon.close()
+    except Exception:
+        pass
+
+
+def bytes_to_human_readable(size: int, unit: str = "B") -> str:
+    units = {"B": 0, "KB": 1, "MB": 2, "GB": 3, "TB": 4, "PB": 5}
+
+    while size >= 1024 and unit != "PB":
+        size /= 1024
+        unit = list(units.keys())[list(units.values()).index(units[unit] + 1)]
+
+    return f"{size:.3g} {unit}"
+
+
+def convert_size_to_bytes(size_str: str) -> int:
+    """Convert size string to bytes.
+
+    Supports:
+      - Standard units: GB, MB, KB, B
+      - European units: Go, Mo, Ko (Gigaoctet, Megaoctet, Kilooctet)
+      - European decimal comma: 1,5 GB → treated as 1.5 GB
+    """
+    # Normalize European decimal comma (only between digits, not a thousands separator)
+    size_str = re.sub(r"(\d),(\d)", r"\1.\2", size_str)
+    match = re.match(
+        r"(\d+(?:\.\d+)?)\s*(GB|MB|KB|B|Go|Mo|Ko)", size_str, re.IGNORECASE
+    )
+
+    if match:
+        size, unit = match.groups()
+        size = float(size)
+        unit = unit.upper()
+        if unit in ("GB", "GO"):
+            return int(size * 1024**3)
+        if unit in ("MB", "MO"):
+            return int(size * 1024**2)
+        if unit in ("KB", "KO"):
+            return int(size * 1024)
+        return int(size)
+    return 0
+
+
+def sleep(miliseconds):
+    xbmc.sleep(miliseconds)
+
+
+def show_keyboard(id, default="", hidden=False):
+    keyboard = xbmc.Keyboard(default, translation(id), hidden)
+    keyboard.doModal()
+    if keyboard.isConfirmed():
+        return keyboard.getText()
+
+
+def get_current_view_id():
+    return xbmcgui.Window(xbmcgui.getCurrentWindowId()).getFocusId()
+
+
+SECTION_VIEW_KEYS = (
+    "view.main",
+    "view.movies",
+    "view.tvshows",
+    "view.seasons",
+    "view.episodes",
+    "view.library",
+    "view.history",
+    "view.downloads",
+)
+
+
+def get_view_setting_key(view_key):
+    return "saved_{}".format(view_key.replace(".", "_"))
+
+
+def get_view_property_key(view_key):
+    return f"bobbi.{view_key}"
+
+
+def _get_named_view_id(name, default="current"):
+    if xbmc.getSkinDir() == "skin.bobbi.cinema":
+        return 50
+    views_dict = {
+        "list": 50,
+        "poster": 51,
+        "iconwall": 52,
+        "shift": 53,
+        "infowall": 54,
+        "widelist": 55,
+        "wall": 500,
+        "banner": 501,
+        "fanart": 502,
+        "current": get_current_view_id(),
+    }
+    return views_dict.get(name, views_dict.get(default))
+
+
+def _normalize_container_content(content_type):
+    content_map = {
+        "": "",
+        "files": "files",
+        "tv": SHOWS_TYPE,
+        "tvshow": SHOWS_TYPE,
+        "shows": SHOWS_TYPE,
+        "movie": MOVIES_TYPE,
+        "season": SEASONS_TYPE,
+        "episode": EPISODES_TYPE,
+        "title": TITLES_TYPE,
+        "video": "videos",
+    }
+    return content_map.get(content_type, content_type)
+
+
+def _resolve_view_name(name, content_type=""):
+    normalized_content = _normalize_container_content(content_type or container_content())
+    if name in {"banner", "fanart"} and normalized_content in {
+        MOVIES_TYPE,
+        SHOWS_TYPE,
+        SEASONS_TYPE,
+        EPISODES_TYPE,
+        TITLES_TYPE,
+        "videos",
+    }:
+        return "poster"
+    return name
+
+
+def set_saved_view_property(view_key, view_id):
+    set_property_no_fallback(get_view_property_key(view_key), str(view_id))
+
+
+def save_view_id(view_key, view_id):
+    if view_id in (None, "", 0, "0"):
+        return False
+    value = str(view_id)
+    set_setting(get_view_setting_key(view_key), value)
+    set_saved_view_property(view_key, value)
+    return True
+
+
+def get_saved_view_id(view_key):
+    view_id = get_property_no_fallback(get_view_property_key(view_key))
+    if not view_id:
+        view_id = ADDON.getSetting(get_view_setting_key(view_key))
+    return str(view_id) if view_id else None
+
+
+def load_saved_view_properties():
+    for view_key in SECTION_VIEW_KEYS:
+        view_id = ADDON.getSetting(get_view_setting_key(view_key))
+        if view_id:
+            set_saved_view_property(view_key, view_id)
+
+
+def capture_current_view_id():
+    view_id = get_current_view_id()
+    if view_id in (None, 0):
+        return None
+    return str(view_id)
+
+
+def _wait_for_container_content(content_type, timeout_ms=2000):
+    expected = _normalize_container_content(content_type)
+    if not expected:
+        return True
+    elapsed = 0
+    while elapsed <= timeout_ms:
+        if _normalize_container_content(container_content()) == expected:
+            return True
+        sleep(50)
+        elapsed += 50
+    return False
+
+
+def apply_section_view(view_key, content_type=""):
+    if xbmc.getSkinDir() == "skin.bobbi.cinema":
+        # The independent skin owns a single adaptive native view. Old Minsk
+        # view IDs are not portable. Headless widget/JSON-RPC requests must not
+        # wait for a foreground container or change its focus/view.
+        if xbmc.getCondVisibility("Window.IsActive(videos)"):
+            execute_builtin("Container.SetViewMode(50)")
+            return "50"
+        return None
+    _wait_for_container_content(content_type)
+    saved_view_id = get_saved_view_id(view_key)
+    if saved_view_id:
+        execute_builtin(f"Container.SetViewMode({saved_view_id})")
+        return saved_view_id
+    return None
+
+
+def reset_saved_views():
+    for view_key in SECTION_VIEW_KEYS:
+        setting_key = get_view_setting_key(view_key)
+        property_key = get_view_property_key(view_key)
+        ADDON.setSetting(setting_key, "")
+        clear_property(property_key)
+
+
+def set_view(name, default="current"):
+    view_id = _get_named_view_id(_resolve_view_name(name), default)
+    execute_builtin(f"Container.SetViewMode({view_id})")
+
+
+def container_content():
+    return xbmc.getInfoLabel("Container.Content")
+
+
+def copy2clip(txt):
+    import subprocess
+
+    platform = sys.platform
+    if platform == "win32":
+        try:
+            cmd = f"echo {txt.strip()}|clip"
+            return subprocess.check_call(cmd, shell=True)
+        except Exception:
+            pass
+    elif platform == "linux2":
+        try:
+            from subprocess import PIPE, Popen
+
+            p = Popen(["xsel", "-pi"], stdin=PIPE)
+            p.communicate(input=txt)
+        except Exception:
+            pass
+
+
+def get_datetime(string: bool = False, dt: bool = False) -> Union[date, datetime]:
+    """
+    Returns the current date/time in various formats.
+
+    :param dt: If True, returns the full datetime object.
+    :return: By default, returns a date object.
+    """
+    now = datetime.now()
+
+    if dt:
+        return now
+    else:
+        return now.date()
+
+
+def list_dirs(location):
+    return listdir(location)
+
+
+def translatePath(_path):
+    return translate_path(_path)
+
+
+def open_file(_file, mode="r"):
+    return xbmcvfs_File(_file, mode)
+
+
+def cancel_playback():
+    # Portable cancellation must never stop global playback or clear playlists.
+    return None
+
+
+def finish_action():
+    setResolvedUrl(ADDON_HANDLE, False, ListItem(offscreen=True))
+
+
+def make_list_item(label="", path="", offscreen=True):
+    kwargs = {"offscreen": offscreen}
+    if label:
+        kwargs["label"] = label
+    if path:
+        kwargs["path"] = path
+    return ListItem(**kwargs)
+
+
+def add_directory_items_batch(items):
+    if items:
+        from lib.utils.simkl_indicators import apply_simkl_indicators
+
+        apply_simkl_indicators(items)
+        addDirectoryItems(ADDON_HANDLE, items)
+
+
+def is_widget():
+    return "jacktook" not in xbmc.getInfoLabel("Container.PluginName")
+
+
+def end_of_directory(cache=True):
+    endOfDirectory(ADDON_HANDLE, cacheToDisc=not (is_widget() or not cache))
+    from lib.clients.tmdb.frontend_metadata import flush
+    flush()

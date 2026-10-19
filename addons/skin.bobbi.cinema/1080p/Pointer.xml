@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <controls>
+    <control type="image" id="1">
+      <left>0</left><top>0</top><width>28</width><height>28</height>
+      <texture colordiffuse="focus">bobi/dot.png</texture>
+    </control>
+  </controls>
+</window>

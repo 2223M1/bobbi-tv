@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="false">9000</defaultcontrol>
+  <onload>SetProperty(BobiSection,settings,Home)</onload>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <control type="group">
+      <left>96</left><top>136</top>
+      <control type="label">
+        <left>0</left><top>0</top><width>1200</width><height>64</height>
+        <label>设置</label>
+        <font>Display56</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>2</left><top>70</top><width>1600</width><height>36</height>
+        <label>确认 进入   ·   返回 上一页</label>
+        <font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+    <control type="panel" id="9000">
+      <left>72</left><top>270</top><width>1776</width><height>720</height>
+      <orientation>vertical</orientation>
+      <scrolltime tween="cubic" easing="out">180</scrolltime>
+      <onup>9701</onup>
+      <onleft>noop</onleft><onright>noop</onright>
+      <itemlayout width="444" height="236">
+        <include content="SettingsTile" />
+      </itemlayout>
+      <focusedlayout width="444" height="236">
+        <include content="SettingsTile"><param name="focused">true</param></include>
+      </focusedlayout>
+      <content>
+        <item>
+          <label>影院</label><label2>片源、字幕、续播与后台准备</label2><icon>bobi/icons/film.png</icon>
+          <onclick>Addon.OpenSettings(plugin.video.bobbi)</onclick>
+        </item>
+        <item>
+          <label>播放器</label><label2>视频、音频、字幕的默认行为与语言</label2><icon>bobi/icons/play.png</icon>
+          <onclick>ActivateWindow(PlayerSettings)</onclick>
+        </item>
+        <item>
+          <label>找中文字幕</label><label2>播放中手动查找 · OpenSubtitles · 下载后确认加载</label2><icon>bobi/icons/film.png</icon>
+          <onclick>RunScript(script.bobbi.subtitles)</onclick>
+          <visible>System.HasAddon(script.bobbi.subtitles)</visible>
+        </item>
+        <item>
+          <label>媒体</label><label2>媒体库、视频源与刮削</label2><icon>bobi/icons/film.png</icon>
+          <onclick>ActivateWindow(MediaSettings)</onclick>
+        </item>
+        <item>
+          <label>插件</label><label2>已安装插件、更新与插件设置</label2><icon>bobi/icons/grid.png</icon>
+          <onclick>ActivateWindow(AddonBrowser)</onclick>
+        </item>
+        <item>
+          <label>服务</label><label2>网页遥控、Yatse 连接与共享</label2><icon>bobi/icons/cloud.png</icon>
+          <onclick>ActivateWindow(ServiceSettings)</onclick>
+        </item>
+        <item>
+          <label>界面</label><label2>语言、区域、屏保与皮肤</label2><icon>bobi/icons/picture.png</icon>
+          <onclick>ActivateWindow(InterfaceSettings)</onclick>
+        </item>
+        <item>
+          <label>系统</label><label2>显示、音频输出、输入设备与电源</label2><icon>bobi/icons/chip.png</icon>
+          <onclick>ActivateWindow(SystemSettings)</onclick>
+        </item>
+        <item>
+          <label>波比TV 外观</label><label2>动效、控制栏与 HDR 转换</label2><icon>bobi/icons/sparkle.png</icon>
+          <onclick>ActivateWindow(SkinSettings)</onclick>
+        </item>
+        <item>
+          <label>直播电视</label><label2>频道、节目单与录像</label2><icon>bobi/icons/tv.png</icon>
+          <onclick>ActivateWindow(PVRSettings)</onclick>
+        </item>
+        <item>
+          <label>系统信息</label><label2>版本、存储、网络与硬件</label2><icon>bobi/icons/info.png</icon>
+          <onclick>ActivateWindow(SystemInfo)</onclick>
+        </item>
+        <item>
+          <label>CoreELEC</label><label2>系统更新、网络连接与硬件设置</label2><icon>bobi/icons/settings.png</icon>
+          </item>
+        <item>
+          <label>文件管理</label><label2>浏览与复制本地和网络文件</label2><icon>bobi/icons/folder.png</icon>
+          <onclick>ActivateWindow(FileManager)</onclick>
+        </item>
+        <item>
+          <label>电源</label><label2>重载皮肤、退出或重启到安卓</label2><icon>bobi/icons/power.png</icon>
+          <onclick>ActivateWindow(ShutdownMenu)</onclick>
+        </item>
+      </content>
+    </control>
+    <include content="TopBar"><param name="down" value="9000" /></include>
+  </controls>
+</window>

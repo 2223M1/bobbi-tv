@@ -1,0 +1,94 @@
+import groovy.json.JsonSlurper
+import java.security.MessageDigest
+
+plugins { id 'com.android.application' }
+
+def inputLock = new JsonSlurper().parse(rootProject.file('toolchain-lock.json'))
+
+android {
+    namespace 'org.bobbi.helper'
+    compileSdk 35
+    buildToolsVersion '35.0.0'
+    defaultConfig {
+        applicationId 'org.bobbi.helper'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0-alpha.1'
+        buildConfigField 'String', 'ENGINE_VERSION', '"' + inputLock.engine.version + '"'
+        buildConfigField 'String', 'ENGINE_ARM32_SHA256', '"' + inputLock.engine.binaries['armeabi-v7a'].sha256 + '"'
+        buildConfigField 'String', 'ENGINE_ARM64_SHA256', '"' + inputLock.engine.binaries['arm64-v8a'].sha256 + '"'
+        ndk { abiFilters 'armeabi-v7a', 'arm64-v8a' }
+    }
+    signingConfigs {
+        debug {
+            storeFile rootProject.file('../.private/android-preview.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+    buildTypes {
+        debug { debuggable true }
+        release { minifyEnabled false }
+    }
+    buildFeatures { buildConfig true }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    packaging {
+        jniLibs {
+            // ProcessBuilder requires a PackageManager-extracted executable,
+            // never a downloaded binary in writable files/cache directories.
+            useLegacyPackaging = true
+            keepDebugSymbols += '**/libbobbi_torrserver.so'
+        }
+    }
+    lint { abortOnError true }
+}
+
+tasks.register('verifyEngineInputs') {
+    doLast {
+        def designFonts = [
+            'HarmonyOS_SansSC_Regular.ttf': '984cf609545acee8ef060780fb70fc3099b058c0553416331b6e863fdf7c26fa',
+            'HarmonyOS_SansSC_Bold.ttf': 'c215d8ab1cb6709fec2e063f8213e9af86d7587d345b56325e36b67d6b947d98',
+            'LICENCE-HarmonyOS-Sans.txt': '327e0147d4a3ca2d89e81abce45b210576b0f9fe2b29d900f64b58039f12a102'
+        ]
+        designFonts.each { name, digest ->
+            def font = file('src/main/assets/fonts/' + name)
+            if (!font.isFile() || MessageDigest.getInstance('SHA-256').digest(font.bytes).encodeHex().toString() != digest)
+                throw new GradleException('Missing or changed licensed cinema font: ' + name)
+        }
+        inputLock.engine.binaries.each { abi, item ->
+            def binary = file("src/main/jniLibs/${abi}/libbobbi_torrserver.so")
+            if (!binary.isFile()) throw new GradleException("Missing real ${abi} engine; run bootstrap prepare")
+            def hash = MessageDigest.getInstance('SHA-256')
+            binary.withInputStream { stream ->
+                byte[] block = new byte[1048576]
+                int count
+                while ((count = stream.read(block)) > 0) hash.update(block, 0, count)
+            }
+            if (binary.length() != item.bytes || hash.digest().encodeHex().toString() != item.sha256)
+                throw new GradleException("Engine checksum failed for ${abi}")
+        }
+        ['engine-provenance.json', 'TorrServer-GPL-3.0.txt'].each { name ->
+            if (!file("src/main/assets/${name}").isFile()) throw new GradleException("Missing engine provenance: ${name}")
+        }
+        def license = file('src/main/assets/TorrServer-GPL-3.0.txt')
+        def licenseHash = MessageDigest.getInstance('SHA-256').digest(license.bytes).encodeHex().toString()
+        if (license.length() != inputLock.engine.license.bytes || licenseHash != inputLock.engine.license.sha256)
+            throw new GradleException('Upstream engine license differs from the locked source')
+        def provenance = new JsonSlurper().parse(file('src/main/assets/engine-provenance.json'))
+        if (provenance.version != inputLock.engine.version || provenance.commit != inputLock.engine.commit
+                || provenance.source != inputLock.engine.repository || provenance.license != 'GPL-3.0'
+                || provenance.binaries.keySet() != inputLock.engine.binaries.keySet())
+            throw new GradleException('Engine provenance does not match the input lock')
+        inputLock.engine.binaries.each { abi, item ->
+            if (provenance.binaries[abi].sha256 != item.sha256 || provenance.binaries[abi].bytes != item.bytes)
+                throw new GradleException("Engine provenance mismatch for ${abi}")
+        }
+    }
+}
+tasks.named('preBuild').configure { dependsOn tasks.named('verifyEngineInputs') }
+dependencies { testImplementation 'junit:junit:4.13.2' }

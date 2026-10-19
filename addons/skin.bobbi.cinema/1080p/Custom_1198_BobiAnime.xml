@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1198">
+  <defaultcontrol always="false">9101</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="FF080808">am6b/white.png</texture>
+    </control>
+    <control type="group">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <animation effect="fade" start="0" end="100" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">WindowOpen</animation>
+      <control type="label">
+        <left>96</left>
+        <top>182</top>
+        <width>1540</width>
+        <height>80</height>
+        <label>动漫世界</label>
+        <font>BobiHero</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>100</left>
+        <top>274</top>
+        <width>1580</width>
+        <height>40</height>
+        <label>新番、动画长片与想重看的故事。</label>
+        <font>font12</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9101">
+        <left>96</left>
+        <top>377</top>
+        <width>552</width>
+        <height>182</height>
+        <label>本季度新番</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9101</onleft>
+        <onright>9102</onright>
+        <onup>9705</onup>
+        <ondown>9101</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Current_Quarter&amp;mode=anime&amp;submode=tv&amp;api=tmdb",return)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>93</left>
+        <top>374</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9101)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>117</left>
+        <top>405</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/anime.png</texture>
+      </control>
+      <control type="label">
+        <left>222</left>
+        <top>417</top>
+        <width>399</width>
+        <height>48</height>
+        <label>本季度新番</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>224</left>
+        <top>480</top>
+        <width>395</width>
+        <height>37</height>
+        <label>发现正在更新的番剧</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9102">
+        <left>678</left>
+        <top>377</top>
+        <width>552</width>
+        <height>182</height>
+        <label>动漫电影</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9101</onleft>
+        <onright>9103</onright>
+        <onup>9705</onup>
+        <ondown>9102</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Movies_New&amp;mode=anime&amp;submode=movies&amp;api=tmdb",return)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>675</left>
+        <top>374</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9102)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>699</left>
+        <top>405</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/anime-movies.png</texture>
+      </control>
+      <control type="label">
+        <left>804</left>
+        <top>417</top>
+        <width>399</width>
+        <height>48</height>
+        <label>动漫电影</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>806</left>
+        <top>480</top>
+        <width>395</width>
+        <height>37</height>
+        <label>剧场版与动画长片</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9103">
+        <left>1260</left>
+        <top>377</top>
+        <width>552</width>
+        <height>182</height>
+        <label>搜索动漫</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9102</onleft>
+        <onright>9103</onright>
+        <onup>9705</onup>
+        <ondown>9103</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>RunPlugin("plugin://plugin.video.bobbi/?action=bobi_search_prompt&amp;section=anime_tv")</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>1257</left>
+        <top>374</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9103)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>1281</left>
+        <top>405</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/search.png</texture>
+      </control>
+      <control type="label">
+        <left>1386</left>
+        <top>417</top>
+        <width>399</width>
+        <height>48</height>
+        <label>搜索动漫</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>1388</left>
+        <top>480</top>
+        <width>395</width>
+        <height>37</height>
+        <label>按片名查找新番与旧番</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="label">
+        <left>100</left>
+        <top>1020</top>
+        <width>1530</width>
+        <height>35</height>
+        <label>返回键回到上一页 · 方向键移动 · 确认键进入</label>
+        <font>font10</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <include content="CinemaTopNav">
+      <param name="down" value="9101" />
+    </include>
+  </controls>
+</window>

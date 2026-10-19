@@ -1,0 +1,430 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">95</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="FF080808">am6b/white.png</texture>
+    </control>
+    <control type="group">
+      <left>1560</left>
+      <top>45</top>
+      <width>158</width>
+      <height>48</height>
+      <description>BobiCompactWordmark</description>
+      <control type="image">
+        <left>0</left>
+        <top>10</top>
+        <width>3</width>
+        <height>27</height>
+        <texture colordiffuse="FFE50924">am6b/white.png</texture>
+      </control>
+      <control type="label">
+        <left>14</left>
+        <top>0</top>
+        <width>80</width>
+        <height>48</height>
+        <label>波比</label>
+        <font>BobiLogo</font>
+        <textcolor>FFF4F4F5</textcolor>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>97</left>
+        <top>1</top>
+        <width>52</width>
+        <height>48</height>
+        <label>TV</label>
+        <font>BobiLogoLatin</font>
+        <textcolor>FFE50924</textcolor>
+        <aligny>center</aligny>
+      </control>
+    </control>
+    <control type="label">
+      <left>96</left>
+      <top>66</top>
+      <width>1200</width>
+      <height>72</height>
+      <label>系统信息</label>
+      <font>font30_title</font>
+      <textcolor>FFF5F5F5</textcolor>
+    </control>
+    <control type="label">
+      <left>96</left>
+      <top>152</top>
+      <width>1700</width>
+      <height>38</height>
+      <label>只读诊断 · 返回键回到上一页</label>
+      <font>font11</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="grouplist" id="9000">
+      <onup>9000</onup>
+      <ondown>9000</ondown>
+      <control type="button" id="95">
+        <description>Button Summary Values</description>
+        <aligny>center</aligny>
+        <pulseonselect>false</pulseonselect>
+        <label>$LOCALIZE[20037]   </label>
+        <width>338</width>
+        <height>68</height>
+        <font>font12</font>
+        <align>left</align>
+        <textoffsetx>24</textoffsetx>
+        <textcolor>FFB3B3B3</textcolor>
+        <focusedcolor>FF101010</focusedcolor>
+        <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+      </control>
+      <control type="button" id="94">
+        <description>Button Storage</description>
+        <aligny>center</aligny>
+        <pulseonselect>false</pulseonselect>
+        <label>$LOCALIZE[13277]   </label>
+        <width>338</width>
+        <height>68</height>
+        <font>font12</font>
+        <align>left</align>
+        <textoffsetx>24</textoffsetx>
+        <textcolor>FFB3B3B3</textcolor>
+        <focusedcolor>FF101010</focusedcolor>
+        <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+      </control>
+      <control type="button" id="96">
+        <description>Button Network</description>
+        <aligny>center</aligny>
+        <pulseonselect>false</pulseonselect>
+        <label>$LOCALIZE[13279]   </label>
+        <width>338</width>
+        <height>68</height>
+        <font>font12</font>
+        <align>left</align>
+        <textoffsetx>24</textoffsetx>
+        <textcolor>FFB3B3B3</textcolor>
+        <focusedcolor>FF101010</focusedcolor>
+        <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+      </control>
+      <control type="button" id="97">
+        <description>Button Video</description>
+        <aligny>center</aligny>
+        <pulseonselect>false</pulseonselect>
+        <label>$LOCALIZE[13280]   </label>
+        <width>338</width>
+        <height>68</height>
+        <font>font12</font>
+        <align>left</align>
+        <textoffsetx>24</textoffsetx>
+        <textcolor>FFB3B3B3</textcolor>
+        <focusedcolor>FF101010</focusedcolor>
+        <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+      </control>
+      <control type="button" id="98">
+        <description>Button Hardware</description>
+        <aligny>center</aligny>
+        <pulseonselect>false</pulseonselect>
+        <label>$LOCALIZE[13281]   </label>
+        <width>338</width>
+        <height>68</height>
+        <font>font12</font>
+        <align>left</align>
+        <textoffsetx>24</textoffsetx>
+        <textcolor>FFB3B3B3</textcolor>
+        <focusedcolor>FF101010</focusedcolor>
+        <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+      </control>
+      <control type="button" id="99">
+        <description>Button PVR</description>
+        <aligny>center</aligny>
+        <pulseonselect>false</pulseonselect>
+        <label>$LOCALIZE[19191]   </label>
+        <width>338</width>
+        <height>68</height>
+        <font>font12</font>
+        <align>left</align>
+        <textoffsetx>24</textoffsetx>
+        <textcolor>FFB3B3B3</textcolor>
+        <focusedcolor>FF101010</focusedcolor>
+        <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+      </control>
+      <control type="button" id="100">
+        <description>Button Privacy Policy</description>
+        <aligny>center</aligny>
+        <pulseonselect>false</pulseonselect>
+        <label>$LOCALIZE[12389]   </label>
+        <onright>61</onright>
+        <width>338</width>
+        <height>68</height>
+        <font>font12</font>
+        <align>left</align>
+        <textoffsetx>24</textoffsetx>
+        <textcolor>FFB3B3B3</textcolor>
+        <focusedcolor>FF101010</focusedcolor>
+        <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+      </control>
+      <left>96</left>
+      <top>238</top>
+      <width>338</width>
+      <height>580</height>
+      <itemgap>12</itemgap>
+    </control>
+    <control type="label" id="40">
+      <description>header label</description>
+      <label />
+      <aligny>center</aligny>
+      <shadowcolor>black</shadowcolor>
+      <left>502</left>
+      <top>216</top>
+      <width>1320</width>
+      <height>50</height>
+      <font>font16</font>
+      <align>left</align>
+      <textcolor>FFF5F5F5</textcolor>
+    </control>
+    <control type="label" id="2">
+      <description>Label 2</description>
+      <label />
+      <left>502</left>
+      <top>276</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="3">
+      <description>Label 3</description>
+      <label />
+      <left>502</left>
+      <top>327</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="4">
+      <description>Label 4</description>
+      <label />
+      <left>502</left>
+      <top>378</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="5">
+      <description>Label 5</description>
+      <label />
+      <left>502</left>
+      <top>429</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="6">
+      <description>Label 6</description>
+      <label />
+      <left>502</left>
+      <top>480</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="7">
+      <description>Label 7</description>
+      <label />
+      <left>502</left>
+      <top>531</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="8">
+      <description>Label 8</description>
+      <label />
+      <left>502</left>
+      <top>582</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="9">
+      <description>Label 9</description>
+      <label />
+      <left>502</left>
+      <top>633</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="10">
+      <description>Label 10</description>
+      <label />
+      <left>502</left>
+      <top>684</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="11">
+      <description>Label 11</description>
+      <label />
+      <left>502</left>
+      <top>735</top>
+      <width>1320</width>
+      <height>44</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="textbox" id="30">
+      <description>Privacy Policy</description>
+      <align>justify</align>
+      <shadowcolor>black</shadowcolor>
+      <pagecontrol>61</pagecontrol>
+      <left>502</left>
+      <top>276</top>
+      <width>1278</width>
+      <height>496</height>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+    </control>
+    <control type="scrollbar" id="61">
+      <texturesliderbackground colordiffuse="FF303030">am6b/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="FF888888">am6b/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFF5F5F5">am6b/white.png</texturesliderbarfocus>
+      <textureslidernib colordiffuse="00000000">am6b/white.png</textureslidernib>
+      <textureslidernibfocus colordiffuse="00000000">am6b/white.png</textureslidernibfocus>
+      <onleft>100</onleft>
+      <onright>100</onright>
+      <ondown>61</ondown>
+      <onup>61</onup>
+      <showonepage>true</showonepage>
+      <orientation>vertical</orientation>
+      <visible>Control.HasFocus(100) | Control.HasFocus(61)</visible>
+      <left>1800</left>
+      <top>276</top>
+      <width>12</width>
+      <height>496</height>
+    </control>
+    <control type="label">
+      <left>502</left>
+      <top>800</top>
+      <width>1320</width>
+      <height>42</height>
+      <label>CPU  ·  $INFO[System.CPUUsage]</label>
+      <font>font11</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="label">
+      <left>502</left>
+      <top>862</top>
+      <width>1320</width>
+      <height>42</height>
+      <label>内存  ·  $INFO[system.memory(used)] / $INFO[system.memory(total)]  ·  $INFO[system.memory(used.percent)]</label>
+      <font>font11</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="progress">
+      <left>502</left>
+      <top>847</top>
+      <width>1320</width>
+      <height>4</height>
+      <info>System.CPUUsage</info>
+      <texturebg colordiffuse="FF242424">am6b/white.png</texturebg>
+      <midtexture colordiffuse="FFE50914">am6b/white.png</midtexture>
+    </control>
+    <control type="progress">
+      <left>502</left>
+      <top>909</top>
+      <width>1320</width>
+      <height>4</height>
+      <info>system.memory(used)</info>
+      <texturebg colordiffuse="FF242424">am6b/white.png</texturebg>
+      <midtexture colordiffuse="FFE50914">am6b/white.png</midtexture>
+    </control>
+    <control type="label" id="52">
+      <description>Kodi Build Version</description>
+      <shadowcolor>black</shadowcolor>
+      <left>502</left>
+      <top>938</top>
+      <width>1320</width>
+      <height>30</height>
+      <font>font10</font>
+      <textcolor>FFB3B3B3</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label" id="53">
+      <description>Kodi Build Date</description>
+      <shadowcolor>black</shadowcolor>
+      <left>502</left>
+      <top>972</top>
+      <width>1320</width>
+      <height>30</height>
+      <font>font10</font>
+      <textcolor>FFB3B3B3</textcolor>
+      <scroll>true</scroll>
+      <scrollspeed>30</scrollspeed>
+    </control>
+    <control type="label">
+      <left>96</left>
+      <top>847</top>
+      <width>338</width>
+      <height>42</height>
+      <label>网盘管理入口</label>
+      <font>font11</font>
+      <textcolor>FFF5F5F5</textcolor>
+    </control>
+    <control type="label">
+      <left>96</left>
+      <top>893</top>
+      <width>338</width>
+      <height>40</height>
+      <label>$INFO[Network.IPAddress,,:19798]</label>
+      <font>font10</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+    <control type="label">
+      <left>96</left>
+      <top>1030</top>
+      <width>1728</width>
+      <height>30</height>
+      <label>界面字体使用 HarmonyOS Sans · Copyright 2021 Huawei Device Co., Ltd.</label>
+      <font>font10</font>
+      <textcolor>FFB3B3B3</textcolor>
+    </control>
+  </controls>
+</window>
