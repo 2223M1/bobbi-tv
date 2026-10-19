@@ -3,8 +3,9 @@
   <extension point="xbmc.addon.repository" name="bobbi TV">
     <dir minversion="21.0.0">
       <info compressed="false">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/addons.xml</info>
-      <checksum>https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/addons.xml.md5</checksum>
+      <checksum verify="sha256">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/addons.xml.sha256</checksum>
       <datadir zip="true">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/</datadir>
+      <hashes>sha256</hashes>
     </dir>
   </extension>
   <extension point="xbmc.addon.metadata">
