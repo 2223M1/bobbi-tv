@@ -23,12 +23,9 @@ Android 用六位短时配对码连接助手，无需手抄地址或密码；系
 
 ## 可以做什么
 
-- **新影院 UI**：延续波比新 UI 的布局、橙色点缀、字体层级、焦点与克制动效；音轨 / 字幕快捷菜单保留。
 - **自己的媒体**：多个 SMB / NFS NAS、WebDAV 网盘、本机 / U 盘，以及自有直链 JSON 片库；可增删连接和更新目录，不动远端文件。
 - **115 资源目录**：合并原目录与补充分享，安装者用自己的 115 App 扫码。二维码本机生成；不内置共享 Cookie，不自动转存。
-- **自选片源**：AnimeGarden 动漫候选、漫迪目录、115 分享，以及自己配置的检索服务；保留作品、年份、季集与版本过滤。
-- **不改音画质**：标准 Kodi 播放，不转码、不降分辨率、不更改 HDR 或音频直通设置；首个片源始终手选。BT 合集还需确认具体文件。
-- **后续更新**：Kodi 仓库检查组件新版本；APK 使用固定发行签名，可覆盖升级保留设置，仍需系统确认。
+- **自选片源**：动漫候选、115 分享，以及自己配置的检索服务；保留作品、年份、季集与版本过滤。
 
 海报和影视搜索需要自己的 **TMDb API Key**（向导内配置；NAS / 直链浏览不需要）。不保证 GitHub、TMDb 或每个资源站在所有网络均可访问，不内置私人代理。
 
@@ -71,11 +68,3 @@ python tools/sign_android.py
 签名命令仅用于维护者，会创建本机 `.private` 中的独立密钥；自己的构建不能覆盖本项目发行签名的 APK。**请备份该密钥，永不提交 Git。**
 
 [验证记录](docs/RELEASE_VALIDATION.md) · [第三方许可](docs/THIRD_PARTY_AUDIT.md) · [发行门禁](release/gates.json)
-
-## 致谢与许可
-
-感谢 Kodi、Jacktook / Sam-Max、Minsk / Confluence、Arctic Fuse / jurialmunkey、TorrServer / YouROK、AnimeGarden 与所有原作者。仓库不是这些服务的官方客户端。
-
-新增代码 GPL-3.0-or-later；独立目录模块保留 MIT 声明；原代码、素材、字体各按原许可。Arctic Fuse 衍生美术为 **CC-BY-NC-SA-4.0**，不是全仓统一 MIT，也不提供整体商业素材授权。未修改的 HarmonyOS Sans（华为）及 Font Awesome Free 随附许可证；没有再分发 Netflix Sans、方正或 Font Awesome Pro。
-
-仅用于管理、检索和播放你有权访问的内容。片库是索引与分享入口，不包含影片媒体文件，不授予第三方影片或字幕版权。
