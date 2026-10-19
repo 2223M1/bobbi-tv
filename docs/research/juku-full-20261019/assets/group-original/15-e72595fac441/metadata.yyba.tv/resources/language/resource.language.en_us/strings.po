@@ -1,0 +1,91 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr "General"
+
+msgctxt "#30013"
+msgid "Local storage path"
+msgstr "Local storage path (cache in .tv/, smb:// supported)"
+
+msgctxt "#30002"
+msgid "TMDB API key"
+msgstr "TMDB API key"
+
+msgctxt "#30026"
+msgid "TMDB language"
+msgstr "TMDB language"
+
+msgctxt "#30036"
+msgid "Chinese (zh-CN)"
+msgstr "Chinese (zh-CN)"
+
+msgctxt "#30037"
+msgid "English (en-US)"
+msgstr "English (en-US)"
+
+msgctxt "#30003"
+msgid "API endpoint"
+msgstr "API endpoint"
+
+msgctxt "#30004"
+msgid "API scheme (manual)"
+msgstr "API scheme (manual)"
+
+msgctxt "#30005"
+msgid "API host (manual IP)"
+msgstr "API host (manual IP)"
+
+msgctxt "#30006"
+msgid "API port (manual)"
+msgstr "API port (manual)"
+
+msgctxt "#30007"
+msgid "Host header (manual)"
+msgstr "Host header (manual, default api.themoviedb.org)"
+
+msgctxt "#30008"
+msgid "Verify SSL certificates"
+msgstr "Verify SSL certificates"
+
+msgctxt "#30010"
+msgid "api.tmdb.org"
+msgstr "api.tmdb.org (default)"
+
+msgctxt "#30033"
+msgid "api.themoviedb.org"
+msgstr "api.themoviedb.org"
+
+msgctxt "#30011"
+msgid "Manual IP + Host"
+msgstr "Manual IP + Host"
+
+msgctxt "#30020"
+msgid "TMDB"
+msgstr "TMDB"
+
+msgctxt "#30021"
+msgid "Attribution"
+msgstr "Attribution"
+
+msgctxt "#30022"
+msgid "This product uses the TMDB API but is not endorsed or certified by TMDB."
+msgstr "This product uses the TMDB API but is not endorsed or certified by TMDB."
+
+msgctxt "#30040"
+msgid "Image CDN host"
+msgstr "Image CDN host"
+
+msgctxt "#30041"
+msgid "media.themoviedb.org (default)"
+msgstr "media.themoviedb.org (default)"
+
+msgctxt "#30042"
+msgid "image.tmdb.org"
+msgstr "image.tmdb.org"
+
+msgctxt "#30043"
+msgid "tmdb.img.yyba.cn (YYBA proxy)"
+msgstr "tmdb.img.yyba.cn (YYBA proxy)"

@@ -2,7 +2,7 @@ import contextlib
 from time import time
 
 from lib.gui.qr_progress_dialog import QRProgressDialog
-from lib.bobbi.utils import ADDON_PATH
+from lib.jacktook.utils import ADDON_PATH
 from lib.utils.debrid.qrcode_utils import make_qrcode
 from lib.utils.general.utils import DebridType
 from lib.utils.kodi.utils import (

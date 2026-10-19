@@ -3,7 +3,7 @@ from os import path
 import xbmcgui
 import xbmcvfs
 
-from lib.bobbi.utils import ADDON_PATH, kodilog
+from lib.jacktook.utils import ADDON_PATH, kodilog
 from lib.utils.kodi.utils import ADDON_PROFILE_PATH
 from lib.vendor.segno import make as segnomake
 

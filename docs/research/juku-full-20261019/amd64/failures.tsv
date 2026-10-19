@@ -1,0 +1,3 @@
+ordinal	address	name	body_bytes	external	thunk	module	category	status	attempts	elapsed_ms	pseudocode	assembly	missing_files	error
+652	0043cb40	runtime.(*mheap).reclaimChunk	1116	false	false	runtime	go-runtime	FAILED	2	214	functions/0043/0043cb40.c	functions/0043/0043cb40.asm		 Low-level Error: Conditional execution: Illegal op in iblock
+15212	00b273c0	github.com/pion/dtls/v2.(*State).deserialize	1297	false	false	github.com/pion/dtls/v2	third-party	FAILED	2	53	functions/00b2/00b273c0.c	functions/00b2/00b273c0.asm		 Low-level Error: Cannot properly adjust input varnodes

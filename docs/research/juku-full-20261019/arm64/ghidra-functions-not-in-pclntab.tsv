@@ -1,0 +1,10 @@
+ordinal	address	name	body_bytes	external	thunk
+367	0002ec3c	FUN_0002ec3c	4	false	false
+929	00063f6c	FUN_00063f6c	4	false	false
+1067	000711fc	FUN_000711fc	4	false	false
+1308	00084dcc	FUN_00084dcc	4	false	false
+1310	00084f3c	FUN_00084f3c	4	false	false
+10287	00422ca8	FUN_00422ca8	208	false	false
+19025	0083dd50	runtime.etext	4	false	false
+19026	009007a0	FUN_009007a0	1	false	false
+19027	009d77e6	FUN_009d77e6	1	false	false

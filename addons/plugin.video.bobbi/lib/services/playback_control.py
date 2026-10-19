@@ -15,7 +15,7 @@ from lib.cinema.playback_ipc import MAX_FRAME, SOCKET_PATH
 
 class KodiNative:
     def __init__(self):
-        from lib.cinema.subtitle_lookup import SubtitleLookup
+        from bobbi_core.subtitle_lookup_portable import SubtitleLookup
         from lib.services.subtitle_fallback import SubtitleFallback
         self.subtitle_lookup = SubtitleLookup()
         self.subtitle_fallback = SubtitleFallback()
@@ -121,6 +121,20 @@ class KodiNative:
         xbmc.log('[CINEMA-HANDOFF303] request={} stage={} reason={} attempt={}'.format(
             request_id[:8], stage, reason, attempt), xbmc.LOGINFO)
 
+    @staticmethod
+    def terminal_diagnostic(request_id, native_instance, reason):
+        """Fixed native terminal evidence, never locators, credentials or guesses."""
+        import re
+        import xbmc
+        from bobbi_core.native_receipt import UUID, TERMINALS
+        if (not isinstance(request_id, str) or not re.fullmatch(r'(?:[0-9a-f]{32})?', request_id)
+                or not isinstance(native_instance, str) or not UUID.fullmatch(native_instance)
+                or not isinstance(reason, str) or reason not in TERMINALS):
+            return False
+        xbmc.log('[BOBBI-TERMINAL] request={} instance={} reason={}'.format(
+            request_id, native_instance, reason), xbmc.LOGINFO)
+        return True
+
     def subtitles(self):
         return self.rpc('Player.BobiSubtitles')
 
@@ -130,10 +144,18 @@ class KodiNative:
     def subtitle_file(self, command):
         return self.rpc('Player.BobiSubtitleFile', command)
 
+    def subtitle_candidate_current(self, candidate):
+        return self.subtitle_fallback.candidate_account_current(candidate)
+
     def set_subtitle_context(self, receipt, context):
         # Lookup context is not presentation ownership. Only a verified AV
         # status publication may replace the label's cleanup receipt.
         self.subtitle_fallback.context(receipt, context)
+
+    def cancel_external_subtitle_lookup(self):
+        # Embedded Chinese can appear while a bounded external search is in
+        # flight. Stop optional IO without joining/blocking the owner thread.
+        self.subtitle_fallback.cancel.set()
 
     def publish_subtitle_status(self, captured, status, final_attempt=False):
         """Called only by the serialized authority after current-owner refresh."""
@@ -143,9 +165,9 @@ class KodiNative:
                 or not subtitle_snapshot_follows(current, None)
                 or status == 'STALE'):
             return False
-        labels = {'SUBTITLE_PREPARING': '正在匹配中文字幕',
-                  'QUEUED': '正在匹配中文字幕',
-                  'CANDIDATE_LOADED': '中文字幕候选已加载 · 待校准',
+        labels = {'SUBTITLE_PREPARING': '正在查找中文字幕',
+                  'QUEUED': '正在查找中文字幕',
+                  'CANDIDATE_LOADED': '中文字幕已加载',
                   'CONFIRMED': '中文字幕已启用',
                   'NO_QUALIFIED_CHINESE_SUBTITLE': '未找到匹配中文字幕',
                   'MANUAL_PRESERVED': '字幕已由你手动控制',
@@ -155,7 +177,7 @@ class KodiNative:
                   'SUBTITLE_LOOKUP_STOPPED': '字幕匹配已中止或到时 · 可手动选择',
                   'SUBTITLE_PROVIDER_UNAVAILABLE': '字幕来源暂不可用 · 可手动重试',
                   'SUBTITLE_CANDIDATE_UNAVAILABLE': '已匹配字幕候选但未能加载 · 可手动选择',
-                  'SUBTITLE_TIMELINE_REJECTED': '字幕时间轴不匹配 · 可手动选择其他版本',
+                  'SUBTITLE_TIMELINE_REJECTED': '字幕暂不可用 · 可手动选择',
                   'SUBTITLE_TEXT_REJECTED': '字幕正文未通过校验 · 可手动选择',
                   'SUBTITLE_IDENTITY_REJECTED': '字幕与当前文件不一致 · 未自动加载',
                   'SUBTITLE_CONTEXT_UNAVAILABLE': '影片身份资料不足 · 未自动匹配字幕',
@@ -216,6 +238,16 @@ class KodiNative:
 
 class PlaybackControlServer:
     def __init__(self, native=None, path=SOCKET_PATH, events=None):
+        if path is None:
+            # The authenticated portable IPC queues to this same actor on the
+            # Kodi thread. No second authority or fabricated native receipts.
+            self.path = self.listener = self.selector = self.lock = None
+            self.clients = {}
+            self.events = events if events is not None else Queue(maxsize=128)
+            self.native = native or KodiNative()
+            self.authority = PlaybackAuthority(self.native)
+            self.refresh_pending, self.refresh_due, self.refresh_backoff = False, 0.0, .1
+            return
         import fcntl
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -294,7 +326,7 @@ class PlaybackControlServer:
             else:
                 self.refresh_pending = False
                 self.refresh_backoff = .1
-        for key, mask in self.selector.select(budget):
+        for key, mask in (self.selector.select(budget) if self.selector is not None else ()):
             connection = key.fileobj
             if connection is self.listener:
                 client, _ = self.listener.accept()
@@ -352,8 +384,11 @@ class PlaybackControlServer:
             close_io()
         for connection in tuple(self.clients):
             self._close_client(connection)
-        self.selector.close()
-        self.listener.close()
-        if self.path.exists() and self.path.stat().st_ino == self.inode:
+        if self.selector is not None:
+            self.selector.close()
+        if self.listener is not None:
+            self.listener.close()
+        if self.path is not None and self.path.exists() and self.path.stat().st_ino == self.inode:
             self.path.unlink()
-        os.close(self.lock)
+        if self.lock is not None:
+            os.close(self.lock)

@@ -1,0 +1,235 @@
+# Kodi Media Center language file
+# Addon Name: Juku
+# Addon id: plugin.video.juku
+# Addon Provider: juku
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 19:50+0800\n"
+"PO-Revision-Date: 2026-10-16 19:50+0800\n"
+"Language: en_gb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr "General"
+
+msgctxt "#30001"
+msgid "Cross-screen Roaming"
+msgstr "Cross-screen Roaming"
+
+msgctxt "#30002"
+msgid "Bound Primary Account (Default: admin)"
+msgstr "Bound Primary Account (Default: admin)"
+
+msgctxt "#30003"
+msgid "Enter Emby Primary Account Name"
+msgstr "Enter Emby Primary Account Name"
+
+msgctxt "#30004"
+msgid "Interface Display"
+msgstr "Interface Display"
+
+msgctxt "#30005"
+msgid "Enable Library View (Thumb/Fanart/Plot)"
+msgstr "Enable Library View (Thumb/Fanart/Plot)"
+
+msgctxt "#30006"
+msgid "When enabled, menus display with posters and plot info; when disabled, falls back to default list view."
+msgstr "When enabled, menus display with posters and plot info; when disabled, falls back to default list view."
+
+msgctxt "#30007"
+msgid "Phone Connection Mode"
+msgstr "Phone Connection Mode"
+
+msgctxt "#30008"
+msgid "Choose connection mode for phone scanning. Local Web uses IP:17654 for stable LAN connection without dropouts; PWA Web uses cloud signaling across networks."
+msgstr "Choose connection mode for phone scanning. Local Web uses IP:17654 for stable LAN connection without dropouts; PWA Web uses cloud signaling across networks."
+
+msgctxt "#30009"
+msgid "Local Web (IP:17654 LAN Direct, Recommended)"
+msgstr "Local Web (IP:17654 LAN Direct, Recommended)"
+
+msgctxt "#30010"
+msgid "PWA Web (Cloud Signaling / Cross-Network)"
+msgstr "PWA Web (Cloud Signaling / Cross-Network)"
+
+msgctxt "#30100"
+msgid "Main Menu Management"
+msgstr "Main Menu Management"
+
+msgctxt "#30101"
+msgid "Quick Actions"
+msgstr "Quick Actions"
+
+msgctxt "#30102"
+msgid "Visually Adjust Menu Order and Visibility"
+msgstr "Visually Adjust Menu Order and Visibility"
+
+msgctxt "#30103"
+msgid "Open visual manager dialog to reorder, pin to top, or toggle visibility."
+msgstr "Open visual manager dialog to reorder, pin to top, or toggle visibility."
+
+msgctxt "#30104"
+msgid "Restore Default Menu Order and Visibility"
+msgstr "Restore Default Menu Order and Visibility"
+
+msgctxt "#30105"
+msgid "Reset all menus to default visibility and order."
+msgstr "Reset all menus to default visibility and order."
+
+msgctxt "#30106"
+msgid "Show 'Main Menu Settings' Entry at Bottom of Root Menu"
+msgstr "Show 'Main Menu Settings' Entry at Bottom of Root Menu"
+
+msgctxt "#30107"
+msgid "Adds a settings entry at the bottom of the main menu for quick access."
+msgstr "Adds a settings entry at the bottom of the main menu for quick access."
+
+msgctxt "#30110"
+msgid "Menu Visibility"
+msgstr "Menu Visibility"
+
+msgctxt "#30111"
+msgid "Show: Connect Phone"
+msgstr "Show: Connect Phone"
+
+msgctxt "#30112"
+msgid "Show: Trending"
+msgstr "Show: Trending"
+
+msgctxt "#30113"
+msgid "Show: Private Library"
+msgstr "Show: Private Library"
+
+msgctxt "#30114"
+msgid "Show: Shared Libraries"
+msgstr "Show: Shared Libraries"
+
+msgctxt "#30115"
+msgid "Show: Cloud Drives"
+msgstr "Show: Cloud Drives"
+
+msgctxt "#30116"
+msgid "Show: Video Search"
+msgstr "Show: Video Search"
+
+msgctxt "#30117"
+msgid "Show: Playback History"
+msgstr "Show: Playback History"
+
+msgctxt "#30118"
+msgid "Show: Share Square"
+msgstr "Show: Share Square"
+
+msgctxt "#30119"
+msgid "Show: Push History"
+msgstr "Show: Push History"
+
+msgctxt "#30120"
+msgid "Show: Cloud Search"
+msgstr "Show: Cloud Search"
+
+msgctxt "#30121"
+msgid "Show: Playlists"
+msgstr "Show: Playlists"
+
+msgctxt "#30122"
+msgid "Show: Movies"
+msgstr "Show: Movies"
+
+msgctxt "#30123"
+msgid "Show: TV Shows"
+msgstr "Show: TV Shows"
+
+msgctxt "#30124"
+msgid "Show: Anime"
+msgstr "Show: Anime"
+
+msgctxt "#30125"
+msgid "Show: Variety"
+msgstr "Show: Variety"
+
+msgctxt "#30126"
+msgid "Show: Documentaries"
+msgstr "Show: Documentaries"
+
+msgctxt "#30127"
+msgid "Show: Short Dramas"
+msgstr "Show: Short Dramas"
+
+msgctxt "#30130"
+msgid "Menu Order (Smaller numbers rank higher)"
+msgstr "Menu Order (Smaller numbers rank higher)"
+
+msgctxt "#30131"
+msgid "Connect Phone - Order"
+msgstr "Connect Phone - Order"
+
+msgctxt "#30132"
+msgid "Trending - Order"
+msgstr "Trending - Order"
+
+msgctxt "#30133"
+msgid "Private Library - Order"
+msgstr "Private Library - Order"
+
+msgctxt "#30134"
+msgid "Shared Libraries - Order"
+msgstr "Shared Libraries - Order"
+
+msgctxt "#30135"
+msgid "Cloud Drives - Order"
+msgstr "Cloud Drives - Order"
+
+msgctxt "#30136"
+msgid "Video Search - Order"
+msgstr "Video Search - Order"
+
+msgctxt "#30137"
+msgid "Playback History - Order"
+msgstr "Playback History - Order"
+
+msgctxt "#30138"
+msgid "Share Square - Order"
+msgstr "Share Square - Order"
+
+msgctxt "#30139"
+msgid "Push History - Order"
+msgstr "Push History - Order"
+
+msgctxt "#30140"
+msgid "Cloud Search - Order"
+msgstr "Cloud Search - Order"
+
+msgctxt "#30141"
+msgid "Playlists - Order"
+msgstr "Playlists - Order"
+
+msgctxt "#30142"
+msgid "Movies - Order"
+msgstr "Movies - Order"
+
+msgctxt "#30143"
+msgid "TV Shows - Order"
+msgstr "TV Shows - Order"
+
+msgctxt "#30144"
+msgid "Anime - Order"
+msgstr "Anime - Order"
+
+msgctxt "#30145"
+msgid "Variety - Order"
+msgstr "Variety - Order"
+
+msgctxt "#30146"
+msgid "Documentaries - Order"
+msgstr "Documentaries - Order"
+
+msgctxt "#30147"
+msgid "Short Dramas - Order"
+msgstr "Short Dramas - Order"

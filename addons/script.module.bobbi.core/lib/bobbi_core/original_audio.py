@@ -74,7 +74,7 @@ def checked(value, request_id, now):
 def handoff_url(url, hint, request_id, now):
     """No inheritance assumption: carry a bounded hint to Jacktorr's final item."""
     parts = urlsplit(url)
-    if parts.scheme != 'plugin' or parts.netloc != 'plugin.video.jacktorr':
+    if parts.scheme != 'plugin' or parts.netloc not in ('plugin.video.jacktorr', 'plugin.video.bobbi.torrent'):
         return url
     pairs = [(key, value) for key, value in parse_qsl(parts.query, keep_blank_values=True)
              if key != 'original_audio_hint']

@@ -12,6 +12,7 @@ from enum import Enum
 from typing import Dict, List
 from urllib.parse import unquote
 from zipfile import ZipFile
+from bobbi_core.image_cache import image_url as tmdb_image_url
 
 import requests
 import xbmc
@@ -737,7 +738,7 @@ def build_actor(member, is_cast=True):
             name=member.get("name", "Unknown"),
             role=member.get("character", "Unknown"),
             thumbnail=(
-                f"http://image.tmdb.org/t/p/w185{member['profile_path']}"
+                tmdb_image_url(member['profile_path'], 'w185')
                 if member.get("profile_path")
                 else ""
             ),
@@ -748,7 +749,7 @@ def build_actor(member, is_cast=True):
             name=member.get("name", "Unknown"),
             role=member.get("job", "Unknown"),
             thumbnail=(
-                f"http://image.tmdb.org/t/p/w185{member['profile_path']}"
+                tmdb_image_url(member['profile_path'], 'w185')
                 if member.get("profile_path")
                 else ""
             ),
@@ -812,7 +813,7 @@ def extract_tmdb_logo_url(data):
 
 
 def tmdb_url(path, size):
-    return f"http://image.tmdb.org/t/p/{size}{path}" if path else ""
+    return tmdb_image_url(path, size)
 
 
 def get_rpdb_poster(imdb_id, api_key):

@@ -3,13 +3,16 @@ import json
 import socket
 import time
 
-SOCKET_PATH = '/storage/.kodi/userdata/addon_data/plugin.video.bobbi/playback-control.sock'
+SOCKET_PATH = None  # Default transport is the device-local portable host.
 MAX_FRAME = 16384
 
 
 def call(message, path=SOCKET_PATH, timeout=0.3):
     if not isinstance(message, dict) or not 0 < timeout <= 0.3:
         raise ValueError('Bounded object request required')
+    if path is None:
+        from bobbi_platform.runtime import call as host_call
+        return host_call('playback', message, timeout=timeout)
     if not hasattr(socket, 'AF_UNIX'):
         raise OSError('Local Unix playback socket is unavailable on this runtime')
     payload = json.dumps(message, separators=(',', ':'), ensure_ascii=False).encode('utf-8') + b'\n'

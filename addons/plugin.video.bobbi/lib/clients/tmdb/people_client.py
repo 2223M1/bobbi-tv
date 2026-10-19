@@ -1,4 +1,5 @@
 import json
+from bobbi_core.image_cache import image_url as tmdb_image_url
 
 from lib.clients.tmdb.base import BaseTmdbClient
 from lib.clients.tmdb.utils.utils import add_kodi_dir_item, tmdb_get
@@ -23,8 +24,7 @@ class PeopleClient(BaseTmdbClient):
     def get_image_url(self, path):
         if not path:
             return ""
-        base_url = "https://image.tmdb.org/t/p/w500"
-        return f"{base_url}{path}"
+        return tmdb_image_url(path, 'w500')
 
     def search_people(self, mode, page=1):
         set_pluging_category(translation(90081))

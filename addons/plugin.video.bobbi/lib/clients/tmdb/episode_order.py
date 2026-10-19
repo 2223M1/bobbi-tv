@@ -1,5 +1,6 @@
 """Bounded cached production-season orders for collapsed anime catalogs."""
 from datetime import timedelta
+from bobbi_core.image_cache import image_url as tmdb_image_url
 from lib.cinema.episode_order import validate_group, lookup, continuous_episode
 
 
@@ -116,7 +117,7 @@ def show_collapsed_seasons(metadata, title, ids, mode, media_type):
         item.getVideoInfoTag().setTitle('第 {} 季'.format(season['season']))
         poster = metadata.get('poster_path')
         if poster:
-            item.setArt({'poster': 'https://image.tmdb.org/t/p/w342' + poster})
+            item.setArt({'poster': tmdb_image_url(poster, 'w342')})
         url = build_url('bobi_order_episodes', ids=ids, tv_name=title, season=season['season'],
                         digest=order['digest'], mode=mode, media_type=media_type)
         items.append((url, item, True))
@@ -128,10 +129,8 @@ def show_collapsed_seasons(metadata, title, ids, mode, media_type):
         items.append((build_url('show_episodes_details', ids=ids, tv_name=title, season=0,
                                mode=mode, media_type=media_type), item, True))
     set_content_type('season')
-    from lib.clients.tmdb.related_movies import directory_entry
-    related = directory_entry(ids)
-    if related:
-        items.append(related)
+    from lib.clients.tmdb.related_movies import directory_entries
+    items.extend(directory_entries(ids, include_cached=True))
     add_directory_items_batch(items)
     end_of_directory()
     apply_section_view('view.seasons', content_type='seasons')

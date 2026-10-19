@@ -1,0 +1,43 @@
+{
+  "exit_code": 0,
+  "result": {
+    "state": "deployed",
+    "program_sequence": 2026101903,
+    "migration": {
+      "schema": 1,
+      "account": {
+        "account_id": "115:e39e34bc383954212ba4adb2c9c31f051af962df79ae6b9f2c1cb6e937420b02",
+        "epoch": 1,
+        "authenticated": true
+      },
+      "source_db_sha256": "a5349c833ff1f9b4f1f47f619daecf17bd0643f0068dba4dd67ff488acc7fc38",
+      "ledger": {
+        "counts": {
+          "resources": 58,
+          "prepared_bindings": 58,
+          "tasks": 41,
+          "sessions": 0
+        },
+        "prior_task_states": {
+          "downloading": 1,
+          "mapping": 1,
+          "ready": 39
+        },
+        "active_policy": "already-submitted read-only reconciliation; no unsent replay"
+      },
+      "objects": {
+        "count": 52,
+        "bytes": 326942068
+      },
+      "direct_states": {
+        "ready": 3
+      },
+      "metadata_entries": 41,
+      "target_db_sha256": "9c4324416616bb2bf7d286edbfbe6d75c77c03624d39ec7e63e0f0acf9c16377",
+      "assrt_token_preserved": true
+    },
+    "cd2_and_mount_untouched": true,
+    "playback_verified": false
+  },
+  "diagnostic_present": false
+}

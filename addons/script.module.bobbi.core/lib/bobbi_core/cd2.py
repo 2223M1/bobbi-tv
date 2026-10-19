@@ -205,6 +205,10 @@ class CD2:
 
     def account_scope(self):
         import hashlib
+        api = self._cloud_api()
+        return hashlib.sha256(api[1][0] + b'\0' + api[2][0]).hexdigest()
+
+    def _cloud_api(self):
         roots = [fields(item) for reply in self.list_directory('/') for item in reply.get(1, [])]
         matches = [row for row in roots if row.get(3, [b''])[0] == b'/115open']
         if len(matches) != 1 or not matches[0].get(9):
@@ -212,8 +216,23 @@ class CD2:
         api = fields(matches[0][9][0])
         if not api.get(1) or not api.get(2):
             raise CD2Error('cloud-account-unresolved')
+        return api
+
+    def provider_identity(self):
+        """Read actual mounted 115 UID, never infer it from nickname or a hash.
+
+        Official CloudAPI uses name=1 and userName=2. 115open returns its
+        numeric UID as userName; other/non-numeric providers stay unbound.
+        """
+        import hashlib
+        import re
+        api = self._cloud_api()
         # Do not expose the provider login name to caller logs or UI snapshots.
-        return hashlib.sha256(api[1][0] + b'\0' + api[2][0]).hexdigest()
+        username = api[2][0].decode('ascii')
+        if not re.fullmatch(r'[1-9][0-9]{0,31}', username):
+            raise CD2Error('cloud-account-uid-unavailable')
+        return dict(legacy_scope=hashlib.sha256(api[1][0] + b'\0' + api[2][0]).hexdigest(),
+                    account_id='115:' + hashlib.sha256(('115:' + username).encode('ascii')).hexdigest())
 
     def space(self, path):
         if not (path == "/115open" or path.startswith("/115open/")):

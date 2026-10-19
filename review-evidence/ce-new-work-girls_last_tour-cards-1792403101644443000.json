@@ -1,0 +1,43 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "girls_last_tour",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Shoujo Shuumatsu Ryokou S01E01 (BDRemux 1920x1080 AVC LPCM).mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "6.76 GB",
+        "Container(1000).ListItem.Property(source_key)": "8ca0ef7fdec844613134ad5a133eabbe14e4b2d3b690d0a2c6d9e6cb5ebc8694",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Shoujo Shuumatsu Ryokou S01E01 (BDRemux 1920x1080 AVC LPCM).mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "6.76 GB",
+        "Container(1000).ListItem.Property(source_key)": "ac323d1c672654c1f19275a161d8893056f1619fb7328a2d0a16cd0d6f6d2843",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "S01E01 - 1080p.FLAC.H.265.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.06 GB",
+        "Container(1000).ListItem.Property(source_key)": "a1bd7622a20f42e8cb1b9da8a43433ad0e509e9eaa5a6757ff5b8d20ce79d933",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 3,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "girls_last_tour",
+  "operation": "cards"
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="script.aurora_6s_helper" name="极光6S/4Pro助手" version="1.9.9" provider-name="forbxy">
+  <requires><import addon="xbmc.python" version="3.0.0"/></requires>
+  <extension point="xbmc.python.script" library="default.py"><provides>executable</provides></extension>
+  <extension point="xbmc.service" library="service.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">极光6S/4Pro硬件修复、灯条与 eMMC 双系统管理</summary>
+    <summary lang="en_GB">Aurora 6S/4 Pro hardware, RGB lighting and eMMC management</summary>
+    <description lang="zh_CN">修复和4pro/6S wifi/蓝牙/灯光，灯光管理，安装、移除安卓/CE双系统，修复双系统启动/布局，以及更换/恢复启动第一屏；6S/4Pro RTL8852 的 NG/NO 支持蓝牙待机唤醒名单、唤醒后恢复和可选有线待机处理</description>
+    <description lang="en_GB">Device-specific fixes and lighting for Aurora 4 Pro and 6S. On supported NO builds: dual-boot installation/removal and full eMMC backup/restore. Includes boot scanner recovery on NG/NO and metadata-only layout recovery on NG/NO with guarded Android 11 full-snapshot OTA target retry on NG/NO. Installation/removal resets Android data.</description>
+    <platform>linux</platform><license>GPL-2.0-or-later</license>
+  </extension>
+</addon>

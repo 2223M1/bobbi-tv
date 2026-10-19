@@ -1,0 +1,40 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\emby建库刮削教程.doc",
+  "name": "emby建库刮削教程.doc",
+  "bytes": 1531904,
+  "sha256": "53982999eeed31e61a22c982f0c4064ab1ce702d0bfdc933c7d12be1ef8c7f30",
+  "state": "legacy-OLE-stream-index-only",
+  "streams": [
+    {
+      "path": "\u0001CompObj",
+      "bytes": 109,
+      "sha256": "38782e9d11ee9f0aaaaf70cd808590af9b7d85034e5d16d969817f59581fdb91"
+    },
+    {
+      "path": "\u0005DocumentSummaryInformation",
+      "bytes": 4096,
+      "sha256": "6afd182fe7ee0997f57872af31351072619430fe6aea614208c523a86bd2466f"
+    },
+    {
+      "path": "\u0005SummaryInformation",
+      "bytes": 4096,
+      "sha256": "219a985ffea94228be5fd2bfb498821181deb97e676bde7cb4ab40e9ad90f3a4"
+    },
+    {
+      "path": "1Table",
+      "bytes": 6428,
+      "sha256": "1840f3a0ee74c587d9cd71710be9b52847bf9049b1884998b10ccb15f9f77453"
+    },
+    {
+      "path": "Data",
+      "bytes": 1493560,
+      "sha256": "e9f7bb2c4e37b85220d69ce7e9e12c8e487671be17cd719b55eeacac3fbba26c"
+    },
+    {
+      "path": "WordDocument",
+      "bytes": 7730,
+      "sha256": "425c6d0e9f07ba0a7c73ab028a30e4c99e23fcfb26b82af955c2bdbb64490ca3"
+    }
+  ],
+  "limitation": "Word binary text/layout not decoded; macros/embedded objects not executed"
+}

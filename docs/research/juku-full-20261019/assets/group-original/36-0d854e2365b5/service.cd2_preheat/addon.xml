@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="service.cd2_preheat" name="CD2 Preheat" version="1.2.0" provider-name="user">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+    </requires>
+    <extension point="xbmc.service" library="service.py" start="login"/>
+    <extension point="xbmc.python.script" library="default.py"/>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en">Preheat CD2 cache on item focus</summary>
+        <summary lang="zh">CD2 缓存预热，秒开大片</summary>
+        <description lang="en">Pre-reads file head and tail into CD2 cache when user focuses an item in library, reducing cold-start playback delay from 4-8s to ~1-2s.</description>
+        <description lang="zh">看大片时最烦的就是点播放后要等好几秒才开始。这个插件帮你把文件开头提前下载到缓存里，点播放秒开，不用干等。
+
+支持两种触发方式：
+1. 自动预读 — 浏览海报停留 0.5 秒后自动预读（默认开启）
+2. 长按 OK 键 — 弹出菜单时预读（默认关闭）
+
+特点：
+- ISO 文件预读 16MB，普通文件预读 4MB，覆盖文件头和索引
+- 播放开始时自动取消预读，不影响播放
+- 续播预读（默认关闭）：预读续播位置附近数据，加速续播起播
+- 所有开关实时生效，改完不用重启 Kodi
+- 不崩溃、不卡顿，和没装插件一样丝滑
+
+适用场景：用 CloudDrive2 挂载网盘看电影，冷启动起播从 4-8 秒压缩到 1-2 秒。</description>
+        <platform>all</platform>
+        <assets>
+            <icon>icon.png</icon>
+        </assets>
+    </extension>
+</addon>

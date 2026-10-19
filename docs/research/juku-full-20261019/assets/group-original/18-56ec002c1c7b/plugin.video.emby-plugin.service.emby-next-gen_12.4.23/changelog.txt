@@ -1,0 +1,3343 @@
+12.4.23
+=============
+fix sync bug
+fix dynamic nodes in native mode
+fix dynamic playlists
+
+
+
+12.4.22
+=============
+fix server disconnect issue
+Add season info support (Kodi 22)
+fix livetv sessions
+fix remote commands play next, add to play queue
+fix audio remote playback
+
+
+
+12.4.21
+=============
+fix songs sync issue
+
+
+
+12.4.20
+=============
+improve Kodi events stability
+fix watched status
+update Chinese language file
+fix themes when widgets are refreshed
+
+
+
+12.4.19
+=============
+fix dedulication
+fix minor sync issues
+fix minor shutdown issue
+fix playcount for songs
+
+
+
+12.4.18
+=============
+fix offline content
+improve http communication
+fix dynamic nodes cache for multitype content
+fix dynamic nodes search function
+fix watch together pause
+
+
+
+12.4.17
+=============
+fix favorites
+fix playlist artworks
+fix subitem (Tag, Genre etc.) artwork updates
+
+
+
+12.4.16
+=============
+add new Boxset info to Kodi database
+fix 3d metadata flags
+add new Kodi database strHdrDetail field
+fix subtitle metadata in Kodi database
+add translations
+fix artwork changes
+fix dates (production year)
+
+
+
+12.4.15
+=============
+fix theme play bug
+fix remove multiversion episode
+fix specials sync
+
+
+
+12.4.14
+=============
+unblock database opens
+fix minor progress update issue
+fix livetv progress
+improve kodi scan detection
+fix picture viewer
+cleanup code
+fix cinemamode for native content when autoplay next is enabled
+several minor bugfixes
+fix progress for fake themes
+improve themes play
+
+
+
+12.4.13
+=============
+fix database open
+
+
+
+12.4.12
+=============
+intercept invalid Emby items while sync
+stability improvements
+
+
+
+12.4.11
+=============
+fix settings
+fix folder delete
+
+
+
+12.4.10
+=============
+fix init sync bug
+
+
+
+12.4.9
+=============
+update Chinese language
+fix multiversion movie progress sync
+
+
+
+12.4.8
+=============
+fix close progress bars
+fix database commit issues
+fix sync timing issues
+fix shutdown issues
+
+
+
+12.4.7
+=============
+fix timeformat issue for Kodi 21
+
+
+
+12.4.6
+=============
+improve progress bars
+improve performance
+fix playback issues
+update Chinese language
+
+
+
+12.4.5
+=============
+fix progress position
+
+
+
+12.4.4
+=============
+update Chinese language
+fix Kodi 22 sync issue for multicontent movie
+
+
+
+12.4.3
+=============
+fix date issue
+
+
+
+12.4.2
+=============
+fix micro stalls for dynamic/hybrid nodes
+update Chinese language file
+fix transcoding for dynamic/hybrid nodes
+fix dynamic hybrid nodes
+fix favorits in dynamic nodes
+improve mime type detection (avoids stat call timeouts)
+fix themes for tvshow hybrid nodes
+
+
+
+12.4.1
+=============
+fix song listitem when loaded from mymusic.db and playcount is available
+fix playerid for themes
+improve performance and less cpu load
+improve sync performance
+add debug log option into advanced settings
+fix content remove issue
+fix date issue
+themes based on skip intro markers
+themes based on content playback
+fix cinema intros whem themes and autoplay next is enabled
+fix trailer remove for edge cases
+fix multiversion file delete
+fix addon settings when Kodi holds a lock
+fix micro stalls on Kodi
+fix watch together when playback was in progress
+update chinese language file
+
+
+
+12.4.0
+=============
+sync trailers (used as hybrid node)
+sync photos (used as hybrid node)
+sync photoalbums (used as hybrid node)
+sync themes
+sync specials
+fix musicartist remove for mixed content libraries
+fix playlist sync issues
+improve sync performance
+improve photoviewer
+improve hybrid nodes
+improve caching for dynamic nodes
+themeplay is now native implemented
+fix several minor issues
+
+
+
+12.3.8
+=============
+fix tag-links database issue
+fix minor sync issues
+fix boxset tag removal
+fix musicalbum removal on song updates
+fix song removal on musicalbum delete
+fix intros
+
+
+
+12.3.7
+=============
+improve database performance for some queries
+add pragma page_size = 65536 when executing database vaccum
+Update Chinese language
+fix themes
+fix image file extensions
+fix SongArtists Sortnames
+fix hybrid nodes for MusicArtists
+
+
+
+12.3.6
+=============
+add analyze db to vaccum option
+add option to disable Kodi Companion warning
+fix xbox sync issue
+
+
+
+12.3.5
+=============
+Update Chinese language
+Add play random (context menu)
+Change addom mode to http (as default)
+
+
+
+12.3.4
+=============
+fix remove Musicgenre sync
+
+
+
+12.3.3
+=============
+fix playlist remove
+fix song, musicvideo realtime remove
+
+
+
+12.3.2
+=============
+fix cast
+fix timeouts on content selections
+
+
+
+12.3.1
+=============
+fix sync issue when Item has no Id
+
+
+
+12.3.0
+=============
+fix tvshow boxset assignment
+fix musicgenres sync
+fix playlist sync upgrade issue
+
+
+
+12.2.1
+=============
+fix delayed dynamic views
+fix dynamic nodes updates when using multiple servers
+improve caching
+fix transcoding for dyanmic node content
+add playcount info for dynamic music nodes
+fix audiosync when same song is assigned to multiple Emby libraries
+fix dynamic nodes resume position
+fix several music sync issues
+rewrite playlist sync
+fix Kodi favorites bug
+improve database performance
+fix one offline server blocks all others
+fix overlay image file extension
+fix delete on Kodi events for multi-servers
+
+
+
+12.1.2
+=============
+fix episode metadata in hybrid mode
+fix translations
+add option to enable accurate TVShow and Season progress information in dynamic nodes. Views might be slower refreshed (optional, default is on)
+
+
+
+12.1.1
+=============
+fix server re-conenct on server hard reset
+add "goto album" in context menu
+add "goto artist" in context menu
+fix timestamp issue for backups (files < year 1980)
+fix canceled backup restore
+fix sync pause for multi servers (single busy servers blocked all server)
+improve logging
+Add sync pause when playback is about to end (2 seconds)
+fix ssl connection issues
+fix MPAA Rating for hybrid nodes
+fix Ratings for hybrid nodes
+fix date added for hybrid nodes
+fix cast for hybrid nodes
+Update chinese language
+fix offline content playback when Emby server is offline
+fix playlists when container contains slashes
+fix Kodi content type for hybrid nodes (solves the delete issue)
+support rating for songs
+support hybrid nodes for NextUp
+support hybrid nodes for recommendations
+fix cached items content type, when content is mixed
+fix compatibility issues
+replace "SELECT *" by column names (prevent Kodi database incompatibility issues)
+support rating for MusicAlbum
+fix dynamic audio nodes for mixed content Emby libraries
+assign photo and video to kodi specific image/video helper addons (Emby homevideo library)
+add "more like this" option in context menu
+fix Kodi nodes for mixed content views (also improves stability)
+fix dynamic nodes when content type is Program
+
+
+
+12.1.0
+=============
+Kodi 21 and 22 support
+sort iconnodes
+fix node labels when label is a number
+improve incremental sync performance
+fix minor incremental sync issues
+add dynamic nodes option to disable local trailers (default off, cause it's slow)
+fix dynamic node multi-favorites
+update Chinese langague file, thanks wabisabi926
+fix Kodi favorites when quotes used in names
+add transcoding options by resolution
+support davs native content
+support webdav protocol as internal webservice (which is now default)
+hide dummy sources from views
+fix minor server login issue
+fix minor watch together bug
+lower progress updates to 50 seconds (less server traffic)
+add multiversion selection option in context menu for episodes and musicvideos
+add time sync check < year 2000
+add support musicvideo links for songs based on MusicBrainzId, Fallback -> Artists/Title (default on)
+fix c22 in database in movies table -> filepath
+re-download userimage when deleted from temp folder
+fix song remove sync issue (edge case)
+fix updates for downloaded content
+use xbmcvfs wherever possible (Kodi's virtual file system)
+fix folder views
+fix dynamic tag node for picture
+rewrite backup function, it's possible to restore between major releases
+fix cinema intros, skip youtube trailers
+fix cinema intros, playback progress issue
+improve tvtunes integration
+support livetv remote playback
+improve remote playback performance for dynamic content
+fix remote playback disconnects
+minor http server communication improvements for async requests
+set custom resume points
+
+
+
+12.0.0
+=============
+fix Kodi 22 incompatibilities
+
+
+
+11.2.1
+=============
+fix genre images for dynamic nodes
+add extra nodes for Genre, MusicGenre, Tags and Studios synced nodes including the icon images
+fix music genre synced node
+fix musicvideo genres
+fix Chinese language file
+fix MusicGenre and Folder realtime updates
+fix folder view for dynamic nodes
+improve large incremental updates via websocket
+
+
+
+11.2.0
+=============
+improve webservice http communication
+clean code
+fix minor episode season number issue
+minor performance improvements for addon mode playback start
+add priority options for server requests
+improve Kodi scan (busy) detection
+new node for recently added musicvideo albums
+fix minor shutdown issue
+auto resync on mandatory DB resets
+fix year node
+fix disabled certificate verification
+support http deflate compression
+improve library artwork caching
+adjust database PRAGMAs 
+add option to disable BusyDialog (default on)
+add option to set TOS/DSCP IP headers (default best efford)
+add option to auto cache artwork for incremental synced content (default off)
+fix transcoding for newer ffmpeg versions
+fix favorites
+fix minor sync issue after wake when Kodi sync was in progress when sleep was activated and Emby removed an item while sleep
+fix incompatibilities with latest Emby server beta version
+
+
+11.1.30
+=============
+fix Chinese language file
+
+
+
+11.1.29
+=============
+fix genre images for dynamic nodes
+fix music genre nodes
+
+
+
+11.1.27
+=============
+fix sync issue for multiversion content when width info is not available
+
+
+
+11.1.26
+=============
+fix dynamic node for musicvideo artists
+fix https EOF issues
+fix forced resyncs on Emby server updates
+
+
+
+11.1.25
+=============
+fix hibernate mode
+fix subtitle issue
+
+
+
+11.1.24
+=============
+fix minor http communication issue
+increase http timeouts to 20 minutes -> Emby MusicAlbum queries are very slow
+
+
+
+11.1.23
+=============
+fix playback cancel on multiselection for episodes and musicvideo not respected
+add option to cancel artwork cache
+
+
+
+11.1.22
+=============
+update Chinese language file
+fix http communication issue, when server connection was dropped
+fix sort order for mixed content playlists
+
+
+
+11.1.21
+=============
+fix shuffle playback session info
+fix lastplayed date updates when playcount was not modified
+update Chinese langague file
+fix sync when a content item has no name (invalid item reported by Emby server)
+fix edge case http communication issue when Emby server connection was inerrupted
+add warning message when Kodi companion addon is not installed on Emby server
+
+
+
+11.1.20
+=============
+fix sync folder removal issue in native mode
+
+
+
+11.1.19
+=============
+fix multiversion update issue
+
+
+
+11.1.18
+=============
+Fix movie update issue
+
+
+
+11.1.17
+=============
+fix reset cache for playlists on updates
+add option to prefer local content over "plugin" links (default is on)
+fix minor multiversion sync issues
+fix special features for multiversion content assigned to multiple libraries
+support Kodi's player default version setting for episodes, musicvideos and videos
+fix edge case endless sync loop
+
+
+
+11.1.16
+=============
+fix music nodes
+fix playlist nodes
+
+
+
+11.1.15
+=============
+disable path substituion for audio content (not necessary for audio content and improves playback performance and stability)
+improve node caching
+skip Emby userdata updates for MusicAlbum when sending = receiving device
+fix root nodes when using multiple Emby servers
+fix EPG refresh on events
+fix minor shutdown issue
+fix minor progress update issue
+fix remote playback position accuracy
+spare unnecessary skin refreshes on progress updates -> Less Kodi load when using same Emby account on multiple devices
+
+
+
+11.1.14
+=============
+fix embedded nodes in homescreen (some special nodes had issues)
+fix dynamic nodes order (e.g for playlists)
+improve hybrid nodes for playlists
+fix synced playlists nodes (avoid using Kodi's native m3u playlists due to lag of metadata, use the synced playlist node)
+fix playlist sorting
+fix audioplayback issue on some devices
+
+
+
+11.1.13
+=============
+minor http improvements
+fix server reconnect when using proxies
+fix dynamic content issue
+fix Kodi shutdown issue
+fix sync timing issue
+
+
+
+11.1.12
+=============
+faster http communication
+fix http chunked transfer encoding
+
+
+
+11.1.11
+=============
+fix song selection via dynamic nodes when same song is assigned to multiple Emby libraries
+improve playlists
+fix subcontent realtime updates
+improve sync locks
+fix egde case sync and logging issues
+improve http request locks
+fix async commands ping
+improve progress updates when playback ended or seek
+workaround for Kodi bug when seekposition is higher than runtime -> Kodi stalls for couple of seconds unless stop is pressed
+increase subtitle download timeout to 30 seconds
+fix edge case sync issue, when init sync is in progress, incoming updates might not be processed and results in a sync loop
+
+
+
+11.1.10
+=============
+fix photo nodes
+
+
+
+11.1.9
+=============
+fix delete homevideos via dyanmic nodes
+fix download homevideos
+fix progress updates for homevideo in native mode
+
+
+
+11.1.8
+=============
+fix log issue
+
+
+
+11.1.7
+=============
+fix to many threads running (edge case for slow devices on heavy load)
+fix minor queue issues
+fix deleting files by dynamic nodes
+
+
+
+11.1.6
+=============
+fix to many threads started (edge case when massive and long running updates are pushed via realtime sync)
+improve websocket reconnects on Emby server hard reboot/power cycle
+fix cyclic import
+fix remove client on remote playback
+fix remote playback pause command from clients after init
+fix watch together for multiple participants and one of them stopped the playback -< disabled watch together for all clients
+
+
+
+11.1.5
+=============
+add musicvideo album node
+inject --NO INFO-- when musicvideo album is empty
+improve websocket reconnect
+fix issue when using invalid dynamic nodes
+improve episode debug messages
+improve Kodi shutdown
+fix minor sync pause issue
+
+
+
+11.1.4
+=============
+fix emby connect
+fix music sync when AlbumArtist info is missing
+fix chapter sync issue when using older 4.8.X Emby server versions
+lower ping interval to 3 seconds, as proxy servers (apache) keepalive timeout is by default 5 seconds
+minor https connection improvements
+
+
+
+11.1.3
+=============
+fix websocket close-connection issue
+improve offline-mode notifications
+increase http timeouts from 1 to 3 seconds
+add music content synced-nodes for singles
+add translations
+fix websocket-reconnect issue (edge case)
+fix minor webservice issue when Kodi queries jpeg pictures
+improve strm files playback with embedded http streams
+fix progress updates when using dynamic nodes in native mode
+add follow-http option for remote content e.g. strm and livetv default off -> do not pipe external http links through Emby server. This fixes some edge case playback issues
+fix cinnema mode in native mode
+fix remote playback progress updates when dynamic content remotely played in native mode
+some minor playback performance improvements
+change datetime datetime.utcnow api call, as it's deprecated
+
+
+
+11.1.2
+=============
+minor logging changes
+add SeriesPrimary artwork as fallback for episode thumb artwork
+hold upcoming episode cache for 1 day
+
+
+
+11.1.1
+=============
+fix server remove
+
+
+
+11.1.0
+=============
+change playerbusy threading
+increase aysnc conmmands timeouts to 3 seconds
+set highest resolution for multiversions by Kodi (as an option, default is on)
+autoselect best quality multiversion for episodes etc. (classic multiversions selection) (as an option, default is off)
+improve tvshows deduplication
+notifyall on content add/content updated/content remove/content userdata changed/library add/library remove (option)
+fix delete season/tvshow
+support multiversion content delete
+fix server remove when server is offline
+improve http error messages
+fix edge case http communication issues
+fix sync stalled when plugin content update in progress and Emby server restarted
+
+
+
+11.0.9
+=============
+improve TVShow deduplication
+fix minor http request queue issue
+fix special charecter & issue in nodes
+
+
+
+11.0.8
+=============
+keep plugin settings on forced database resets
+keep Kodi native favorites
+favorites toggle option syncs
+fix dynamic node issue when "dynamic libraries" configuration options set to off
+add de-duplicate function
+
+
+
+11.0.7
+=============
+fix player crash when item was removed from Kodi playlist
+Rename GusetStart to Guest Star
+
+
+
+11.0.6
+=============
+fix guest stars
+fix audio playback
+
+
+
+11.0.5
+=============
+fix database vaccum function
+fix episode remove bug
+
+
+
+11.0.4
+=============
+fix delete after watched
+
+
+
+11.0.3
+=============
+fix folder startup sync issue
+fix removal of abandoned MusicAlbums and MusicArtists
+fix library remove issue
+fix playsession
+fix minor subtitle issue
+fix when no pathsubstitution used
+
+
+
+
+11.0.2
+=============
+fix invalid music album disc numbers
+add fallback for chapters using Emby server 4.8.X
+fix runtime for multiversion content
+fix content ungrouping (mutiversion) sync issue
+
+
+
+11.0.1
+=============
+fix http connection issues
+fix subtitle issue
+
+
+
+11.0.0
+=============
+add movie-tvshowlink support
+option to disable startup sync
+chapters assigned to mediasources (accurate chapter markers for multiversion content)
+support skip credits in native mode
+add Creditstart into database
+change logging modes
+add support Kodi 21 multiversion
+add support Kodi 21 specials
+improve livetv sync menu
+improve themes sync menu
+use original filenames in addon mode (improves Kodi subtitle download)
+support native mode for dynamic nodes
+fix non youtube trailers
+support skipintro for dynamic nodes
+support multiversion selection for dynamic nodes
+filter MusicAlbum update on song play (realtime updates) -> skip double updates (performance)
+rename helper addons
+improve threading priorities (performance)
+fix xml encoding in addon.xml
+improve http connection -> use less tcp sessions (performance)
+support specials in continue last played node (modification by user seashell, thanks)
+improve sync performance for multiversion content
+improve boxset sync (performance)
+improve folder sync (performance)
+improve database priorities (reliability)
+remove Kodi workarounds for bookmarks (Kodi 21.1 seems fixed the issues)
+remove settings migration from 9.X
+reconnect when emby server is down on Kodi start
+fix repeat mode status updates and support repeat remove command
+add support shuffle mode remote commands
+add support remote audio stream selection
+improve player events
+increase default curl timeouts
+
+
+
+10.0.47
+=============
+skip retries on async requests
+
+
+
+10.0.46
+=============
+fix multiversion content assinged to collection
+fix Windows specific connection issues
+
+
+
+10.0.45
+=============
+fix dynamic node recommended (double items)
+fix upcoming dynamic node when not item name is reported
+fix soundtrack tagged as compilation
+add context menu refresh option for seasons and series
+add config redirect from helper plugin
+fix boxset/collection updates
+
+
+
+10.0.44
+=============
+fix init sync for records when recording in progress
+
+
+
+10.0.43
+=============
+fix recently played synced nodes
+
+
+
+10.0.42
+=============
+fix player crash for edge cases
+
+
+
+10.0.41
+=============
+fix http issue when chunked data are received
+
+
+
+10.0.40
+=============
+fix realtime sync issue for unsyncable content e.g. photos
+
+
+
+10.0.39
+=============
+change log modes
+
+
+
+10.0.38
+=============
+rename dialog files
+fix remote playback issue
+
+
+
+10.0.37
+=============
+fix remote playback client selection
+fix remote playback commands
+fix nodes sort order
+fix minor shutdown issue
+add translations
+
+
+
+10.0.36
+=============
+disable Emby server offline msg on wake from sleep mode
+add additional notification options
+fix sync pause issue
+fix queue issue
+
+
+
+10.0.35
+=============
+fix http header recv issue
+fix Kodi profile library folder
+fix Emby server (hard) restart issue
+add settings option in context menu
+
+
+
+10.0.34
+=============
+fix dynamic nodes in hybrid mode
+
+
+
+10.0.33
+=============
+disable remove worker pause
+cache DNS
+fix connection when http prefix is missing
+add tracking of Emby server version (for mandatory resets)
+workaround for dynamic nodes folder browse (Emby server bug)
+
+
+
+10.0.32
+=============
+fix sync paused issue for realtime library updates
+fix http connection
+fix node typo
+
+
+
+10.0.31
+=============
+fix connection issues with SubUrl connection strings (also fixes websocket issues behind proxies)
+fix wrong subtitle index
+fix http head requests
+
+
+
+10.0.30
+=============
+fix transcoding playback
+
+
+
+10.0.29
+=============
+intercept pillow library issue
+
+
+
+10.0.28
+=============
+minor changes in Player session ops
+fix websocket messages delay
+fix session logout
+
+
+
+10.0.27
+=============
+fix several minor http issues
+faster https socket connection
+support http redirects (including websocket connections)
+fix Emby session stop
+sync pause only for Emby scan tasks
+
+
+
+10.0.26
+=============
+rewrite http communication with Emby server (remove urllib3 dependency, http comminicaion is now on low level socket-basis)
+fix context menu
+rewrite emby login handshakes
+fix textoverlay position
+fix minor artwork issues
+remove song artwork from synced content (let Kodi handle it)
+fix menu options in content helper plugins
+fix library Id filters for dynamic nodes
+fix dynamic node Genre for Audiobooks and Podcasts
+
+
+
+10.0.25
+=============
+fix sort orders for dynamic nodes
+improve performance for dynamic nodes
+change plugin structure (fixes content detection issues for dynamic nodes)
+
+
+
+10.0.24
+=============
+fix server busy progress bar when server restarted or shutdown
+fix websocket issue
+fix init sync when server is busy (sync re-started)
+increase paging limit for MusicAlbum
+remove sorting parameter for unlimited synced nodes (performance)
+add Kodi database indexes (performance)
+improve sync performance
+
+
+
+10.0.23
+=============
+fix pillow library issue
+Improve multicontent sync, thanks to Luke for modifications (currently only in Emby server's beta version, will be backported to next stable)
+disable sortby (could give minor sync performance plus). This change breaks Emby server 4.7 support. It's no longer supported by plugin
+fix sync pause while watch-togeter and remote-mode
+fix progress updates -> never delay
+add translations
+
+
+
+10.0.22
+=============
+fix favorite sync issue
+fix Boxset realtime updates
+fix websocket issue
+rollback multiversion content changes from 10.0.21. The performance issue will be addressed in one of the next versions. -> different approach
+add option to adjust the max URI length
+fix delete after watched function
+fix pillow library issue
+
+
+
+10.0.21
+=============
+fix boxset updates for realtime sync when content was added
+unify code
+improve realtime boxset updates sync performance (de-double updates)
+fix favorites linked by sub-content
+fix image overlay for favorites, when added via Kodi's favorite option
+improve internal queue
+fix sync crash
+fix dynamic nodes refresh when content was deleted, added or modified
+supress unnecessary progress updates e.g. after episode playback, season was updated by incoming Emby server notification.
+fix content detection by PresentationUniqueKey
+improve init sync speed for multiversion content
+
+
+
+10.0.20
+=============
+disable http HEAD request forwarding to emby server (less server load for Emby)
+fix dynamic nodes refresh when content was deleted
+fix userdata updates for Tag, Studio, Playlist, Person
+fix favorites and use image overlays
+more reliable delete-after-watched option
+several minor player fixes
+
+
+10.0.19
+=============
+fix strm files including a plugin source
+fix head (mime type) queries from Kodi
+
+
+10.0.18
+=============
+fix boxsets to tags option
+
+
+10.0.17
+=============
+intercept .ifo request in webservice
+fix skip credits jumps (thanks to user skyfish)
+fix webservice threading issues (special thanks to user seashell)
+add EventName into playback session dict
+fix boxsets to tags option
+fix watch together (seek and timezones)
+fix recording syncs
+Add node reset finish notification
+
+
+10.0.16
+=============
+fix webservice threading issues (special thanks to user seashell)
+fix minor multicontent selection issue
+
+
+10.0.15
+=============
+add Next Episodes played node
+fix websocket close issue
+fix recoding library sync
+fix delete episode issue in native mode
+add goto context menu option
+
+
+10.0.14
+=============
+fix recently played nodes
+fix websocket close issue
+fix multiversion episode delete issue
+fix dynamic node search
+fix node cache reset
+fix next episodes node
+fix continue watching node
+fix reset resume position via Kodi when content is marked as watched
+fix watched status for dynamic nodes
+fix strm file issue
+
+
+10.0.13
+=============
+add uniqueids for musicvideos
+add ratings for musicvideos
+fix musicvideo sync issue
+add option to set imdb as default rating provider
+fix minor rating issue (for updated content)
+fix tvshow/season sync issue
+fix nodes
+transcoding livetv, respect bitrate settings
+
+
+10.0.12
+=============
+fix folder view for home video/photos
+close sync progress bars when server connection drops
+urllib3 v1 support
+fix strm file issue when https links are included
+update Chinese language file (thanks to whisperer)
+fix download content episode node
+add download content series node
+fix Kodi shutdown issue
+
+
+10.0.11
+=============
+fix emby connect
+remove sdr from strHdrType
+add transcode option for video: vc1, prores, msmpeg4v2
+add transcode option for audio: aac_latm, dtshd_hra, dtshd_ma, pcm_s16le, truehd, opus
+
+
+10.0.10
+=============
+change hdrtype assignment to "VideoRange"
+change urllib3 dependency to >= 2.0 version
+fix library removal issue for edge case
+
+
+10.0.9
+=============
+fix player crash
+fix date created not updated
+add additional debug log information
+
+
+10.0.8
+=============
+remove kodi workaround option (fixes are added dynamically)
+fix API issues
+replace requests with urllib3
+fix 'FreeTypeFont' object has no attribute 'getsize' -> python pillow api change
+workaround for Kodi chapter bugs for MusicVideos and Movies played via widgets
+remove reuselanguageinvoker -> causes Kodi issues
+fix File name too long issue
+fix playertracker issue
+
+
+10.0.7
+=============
+fix MusicAlbum sync issue
+fix Studio sync issue
+improve incremental boxset sync on Kodi start
+fix BoxSet sync issue
+add remoteplay option
+fix episode intros
+fix player stop issue
+fix extracted bluray and dvd playback
+fix some minor intro issues
+fix A-Z node order
+
+
+10.0.6
+=============
+add support for favorite photos and homevideos
+performance improvement for init sync (disable autoindex, temporary disable database indexes)
+fix multiepisode season detection
+add people for MusicVideos
+remove countries and directors nodes for tvshows (not supported by Kodi)
+keep settings on reset -> not deleting favorites if favorites sync is disabled
+improve support for special charecters in filenames
+fix multiselection filesizes
+fix notification timings
+add translations
+fix MusicAlbum sync issue when album was moved to different library
+fix cinema mode markers and disable intros for in progress content
+
+
+10.0.5
+=============
+fix movie artwork -> backdrop assignment to thumb if thumb not exists
+fix sync issue for invalid episodes metadata
+
+
+10.0.4
+=============
+exclude photos
+fix virtual tv
+fix typo
+
+
+10.0.3
+=============
+fix SesaonId detection by PresentationUniqueKey -> compatibility with 4.9.X Emby server
+
+
+10.0.2
+=============
+fix Emby server 4.9.X episode issue (SeasonId not reported)
+port 9.4.13/14 bugfixed to 10.X
+
+
+10.0.0
+=============
+fix nodes window reload
+fix Kodi content detection
+add additional nodes
+fix nodes
+fix favorites remove
+
+
+9.4.21
+=============
+fix multiversion episode delete issue
+fix strm file issue
+fix websocket close issue
+
+
+9.4.20
+=============
+fix 'FreeTypeFont' object has no attribute 'getsize' -> python pillow api change
+fix playertracker issue
+fix library removal issue for edge case
+fix player crash
+
+
+9.4.19
+=============
+fix Studio sync issue
+fix BoxSet sync issue
+backport MusicAlbum bugfix from 10.X
+fix extracted bluray and dvd playback
+
+
+9.4.18
+=============
+fix sync issue for invalid episodes metadata
+fix nextepisodes synced node
+
+
+9.4.17
+=============
+exclude photos
+fix virtual tv
+
+
+9.4.16
+=============
+fix SesaonId detection by PresentationUniqueKey -> compatibility with 4.9.X Emby server
+
+
+9.4.15
+=============
+fix books and games library issue
+
+
+9.4.14
+=============
+fix stream sync issue
+
+
+9.4.13
+=============
+fix invalid year values sync issue
+
+
+9.4.12
+=============
+fix database option set
+fix favorites remove
+fix content date
+fix musicgenre removal
+
+
+9.4.11
+=============
+fix dynamic node
+
+
+9.4.10
+=============
+fix minor sync issue
+
+
+9.4.9
+=============
+fix dynamic nodes folder selection, when folder has multiple content types included (e.g. pictures)
+fix delete after played option
+
+
+9.4.8
+=============
+fix player crash when content was playerd from an external source (not Emby)
+
+
+9.4.7
+=============
+fix nodes
+
+
+9.4.6
+=============
+fix player issues
+
+
+9.4.5
+=============
+fix initial xmls configuration
+remove overlay from photos
+add bookmark workarounds for episode widgets
+fix cinemamode via widget playback
+fix native mode widget playback
+
+
+9.4.4
+=============
+fix multiversion
+fix player issues
+fix upgrade issue from 8.X version
+
+
+9.4.3
+=============
+fix boxset update issue
+fix favourites update
+fix artwork cache
+fix player issues
+
+
+9.4.2
+=============
+fix minor player issue
+unified player code
+fix sources.xml
+fix artwork cache/remove
+fix player timing issues (stability)
+fix Boxsets synced via Emby server stable version
+fix livetv issues
+
+
+9.4.1
+=============
+fix database vacuum
+fix MusicGenre updates
+fix playlists
+
+
+9.4.0
+=============
+keep advancedsettings.xml on factory reset
+add options to adjust the context menu
+fix watched status
+fix context menu options
+remove (library) label extension from tags
+fix server busy notification when server is shutdown or restarting
+fix favorites issue
+added additional database consitency checks
+fix multipart content
+
+
+9.3.0
+=============
+fix artwork caching
+fix delete downloaded content
+change downloaded content label from downloaded to download
+fix database I/O issue
+fix queue issue/hibernate issue
+support subscontent donwload (via season, tvshow)
+add support for season favorites
+fix favourites "remove" action via Kodi's default favourite view
+add translations
+fix numeric check (e.g. aspect ratio value was not detected)
+fix dynamic node subcontent issue (e.g. movies -> genre)
+make paging factors adjustable by content
+fix dynamic nodes content reports to Emby server
+fix native mode Windows path issue
+fix queue timing issue
+new tvtunes integration
+remove emby server -> clean content settings and nodes
+fix several minor issues
+unify code
+lower MusicAlbum paging value (Emby server > 4.8.0.58 (beta) has performacne issues with subcontent queries)
+fix Kodi nightly database issue
+fix file delete issue
+fix virtual content issue e.g. for upcoming episodes
+fix database reset for Windows
+
+
+9.2.3
+=============
+Fix search cache issue
+Fix minor musicvideo issue
+Fix minor sync issue
+Block .tbn file queries in addon mode, if not a picture query
+Block invalid queries in addon mode
+Add Download option
+Fix player issues
+Fix remote mode issues
+
+
+9.2.2
+=============
+Add additional caching for mixed content in dynamic mode 
+Add search option in dynamic nodes
+Fix dynamic nodes issue
+
+
+9.2.1
+=============
+add additional image fallbacks for landscape
+fix minor sync issue for BoxSet updates
+fix smb pathes (native mode)
+autoupdate Kodi settings for addon mode (myvideos.extractflags=disabled, myvideos.extractthumb=disabled, myvideos.usetags=disabled, musicfiles.findremotethumbs=disabled, musicfiles.usetags=disabled, myvideos.extractchapterthumbs=enabled (if path subsitution is enabled, otherwise myvideos.extractchapterthumbs=false)
+fix picture load issue
+fix realtime (library) update issue for edge case
+
+
+9.2.0
+=============
+fix favorites content playback
+use helper folder for dynacmic nodes including mixed content
+fix sync issue for mixed content libraries
+fix dynamic node for audio content
+fix music sync issue
+option to sync livetv channels on Kodi start
+
+
+9.1.3
+=============
+fix delete option via context menu
+fix sort order for dynamic nodes
+fix sync issue for Videos
+
+
+9.1.2
+=============
+fix kodi source -> http://kodi.emby.tv
+fix Kodi shutdown when Emby server connection was down
+fix dynamic node sort options
+code unification
+fix homevideo/photos dynamic node
+fix init sync crash
+option to disable favorites sync
+
+
+9.1.1
+=============
+clean code
+fix crash on Kodi exit
+fix remote playback issues
+
+
+9.1.0
+=============
+improve plugin startup
+fix BoxSet updates on Kodi startup
+add support for realtime updates of boxsets
+fix/support sync issue for virtual content like BoxSets, MusicAlbum, MusicArtist, Tags, Persons, Genres, MusicGenres etc.
+change Kodi events to a more reliable threading/queueing system
+fix issue with different actors but similar names
+support playlist sync
+added sync tag nodes for collections
+fix sync node issues
+support favorites for all sorts of Emby content
+support MusicGenres for Musicvideos
+less ram usage while sync in progress
+clean and restructure (code) modules
+Subcontent unification changed (Genre, MusicGenre, Tags, MusicArtist, Studios, MusicAlbum)
+Boxsets (Collections) to Tags as Option
+Fix Artwork issue for MusicAlbum 
+xml python api plugin replaced by code. Plugin is a source of issues and not very stable.
+Some livetv sync fixes
+fix/improve cache for dynamic content updates
+fix timeouts (CCurlFile::Stat)
+new combined in progress node
+Patching requests python lib to disable Nagle
+add dynamic node links as xml
+fix release date information
+add continue watching node
+change default sort option for Episodes
+fix folder playback
+
+
+8.2.15
+=============
+use low level API for socket object (performance)
+use low level API for custom queue object (performance)
+optimize/fix init sync
+optimize session commands
+change epg refresh method
+fix livetv for Kodi 21
+
+
+8.2.14
+=============
+(realtime) progress progress updates even if Emby server is busy
+(another) fix dynamic nodes (genre and tags) for mixed content
+fix webdav issue
+add recommendations for dynamic nodes
+fix library updates when "use path substitution" is enabled (plugin) and "extract video information from files" is enabled (Kodi). Actually "extract video information from files" should always be disabled.
+fix remote client selection when Emby server doesn't report a Username
+
+
+8.2.13
+=============
+fix sync issue (changed userdata reported for a folder by Emby server)
+fix minor webservice issue
+fix live tv epg issues
+fix boxset/collection issue
+add option to adjust curl timeouts
+fix dynamic nodes (genre and tags) for mixed content
+fix kodi companion query without admin account
+
+
+8.2.12
+=============
+fix folder view for pictures
+
+
+8.2.11
+=============
+fix minor issue when disconnecting from Emby server
+fix hibernate issue when playing content
+
+
+8.2.10
+=============
+Widget refresh improvement
+fix progress updates, playing native (Kodi) files in combination of Emby content
+fix check artwork update -> https://emby.media/community/index.php?/topic/116208-embyforkodi-next-gen-8xx-support/&do=findComment&comment=1268202
+fix minor sync issue
+
+
+8.2.9
+=============
+add emby sources to sources.xml (fixes Kodi's masterlock issue)
+(re)add Kodi workaround for episode bookmarks (default on)
+disable http2 by default
+fix minor sync issue and improve incremental performance
+fix IPV6 websocket connection -> https://github.com/MediaBrowser/plugin.video.emby/issues/471
+fix media flags (codec infos)
+
+
+8.2.8
+=============
+fix tvtunes
+add option to disable websocket communication
+improve server reconnects
+minor livetv improvements
+minor progress sync updates
+workaround for Emby server issues (http unresponsiveness)
+
+
+8.2.7
+=============
+even more fixes for livetv streamclose issue (for single tuner devices)
+improve channel sorting
+
+
+8.2.6
+=============
+additional fixes for livetv streamclose issue
+
+
+8.2.5
+=============
+fix livetv streamclose issue
+
+
+8.2.4
+=============
+fix crash when invalid remotecontent requested to play
+keep using same connection on Emby server reboot
+minor changes in livetv stream init
+fix livetv stream init issue
+fix local trailers
+
+
+8.2.3
+=============
+fix hls-streams when using (Kodi's) path substitution
+faster hls-streams init
+redefine modi in plugins config menu. Basic and standard mode only shows essential functions (user frendlyness)
+skip intro default enabled
+add option to limit artwork size
+add option to define the artwork compression level
+fix remote playback photos
+fix database close issue
+improve sync pause
+fix remote playback focus screens
+improve incremental sync performance
+add translations    
+
+
+8.2.2
+=============
+fix progress reset issue
+fix artwork compession issue
+fix minor artwork query issue
+
+
+8.2.1
+=============
+improve live tv sync
+fix BoxSet startup sync issue
+
+
+8.2.0
+=============
+support livetv channel numbers
+improve Emby server queries
+improve playlist nodes
+several minor fixes
+fix disable image enhancers
+some performance improvements
+
+
+8.1.4
+=============
+several fixes for dynamic/hybrid nodes
+fix music playlist issue
+fix local trailers
+fix themes
+add relative seek position support (https://emby.media/community/index.php?/topic/118597-new-seekrelative-remote-control-command/)
+fix settings persistance (https://emby.media/community/index.php?/topic/118572-issue-to-memorize-kodi-video-settings-with-native-path-and-default/)
+change content queries for better Emby server >.19 support
+
+
+8.1.3
+=============
+fix live tv via dynamic nodes
+fix watched status issue
+fix issue with native Kodi content (or 3rd party plugin content)
+
+
+8.1.2
+=============
+fix playback progress issue
+async queries for dynamic nodes and Ids queries (performance)
+fix invalid people issue
+fix shutdown/restart issue
+fix livetv sync
+
+
+8.1.1
+=============
+compatibility with Emby server beta 4.8.0.29
+workarounds for .29 performance issues
+use async http queries (for init and startup sync)
+
+
+8.1.0
+=============
+fix rare sync issue
+compatibility with Emby server beta 4.8.0.27
+add HDR flag in Kodi's dynamic listitems
+add HDR flag in Kodi's database
+fix audio sync issue
+fix subtitle issue
+
+
+8.0.4
+=============
+fix multiversion sync issue
+fix access restricted issue
+
+
+8.0.3
+=============
+fix bluray sync
+fix sync isse after remote mode disabled
+add option to disable ssl verification
+
+
+8.0.2
+=============
+fix skip intro
+fix artwork cache issue
+improve http communication
+major changes in player controlls (major changes)
+new remote control function added
+watch together/remote mode, could forward control to supported clients (option) -> multi box control
+add NowPlayingQueue support -> requested here: https://emby.media/community/index.php?/topic/116318-playlist-bei-wiedergabe-auf-anderem-ger%C3%A4t-leer/#comment-1229462
+fix sleep mode
+
+
+8.0.1
+=============
+improve watch together feature (support 3rd party apps)
+improve livetv sync (cache EPG etc.)
+Kodi workaround getting proper progress information
+replace Kodi (python) player API (unreliable) with json rpc commands
+replace Kodi (python) playerlist API (unreliable) with json rpc commands
+added sort of "qos" for http queries (prioritize realtime queries, queue async queries)
+
+
+8.0.0
+=============
+use Kodi 20 improvements for plugin
+change database index (faster music album artwork loading)
+fix search by actor
+keep photos, photoalbums, upcoming always cached
+ask for transcoding audio streams (option)
+fix special content playback via context menu
+rewrite logs -> native xbmc.log
+support chapter bookmarks for all content in addon mode (using Kodi's path substitution, tricking Kodi believing it's local content)
+shorten filenames
+change context menu (add specials as seperate item)
+unify iso, bmdv, plugin detection (maybe side effects, must be reviewed)
+rewrite transcodec options
+improve livetv playback
+cache translations
+improve startup sync (maybe side effects, must be reviewed)
+improve EPG sync (based on iptv-simple scheduler)
+add (basic) livetv recording option
+add support for Favorite Collection
+add support for Favorites combined in one node
+(minor) http session improvements
+add remote control support
+Watch-together E4K implementation
+
+7.13.7
+=============
+fix ivalid people issue
+
+
+7.13.6
+=============
+fix init sync issue
+
+
+7.13.5
+=============
+fix folder remove logging issue
+fix issue when content item has no Name information assigned
+
+
+7.13.4
+=============
+fix boxset issue
+fix edgecase sync issue
+fix edgecase dynamic node (widget) issue
+
+
+7.13.3
+=============
+Fix photoalbum views
+optional invalid (get) request filter (fix for external players)
+
+
+7.13.2
+=============
+fix minor issue when Kodi library clean was triggered (edge case)
+adjust keepalive session tracker interval from 4 to 10 seconds
+
+
+7.13.1
+=============
+Improve dynamic nodes lookup if content is synced to Kodi (e.g. for playlists)
+remove reuselanguageinvoker due to Kodi bug -> https://github.com/xbmc/xbmc/issues/21653
+fix shutdown issue
+fix dynamic movie nodes content, when synced to Kodi (movies, musicvideos progress was wrong)
+add translations
+fix playlist ops for multiselection content
+fix minor websocket issue
+increase websocket timeout from 25 seconds to 60 seconds
+improve factory reset in case of a fatal database inconsitency
+fix sync issue for invalid (Emby server) content
+fix boxset issue when content was updated
+
+
+7.13.0
+=============
+Fix tvshow path assignment
+
+
+7.12.1
+=============
+minor code fixes
+use notification callbacks also for player event
+fix minor player issues
+fix intros in native mode
+change recently added nodes
+
+
+7.12.0
+=============
+remove chapters/bookmarks Kodi workarounds
+several code improvements
+add Kodi workaround for items played via widgets which are not using Kodi's internal functions as nodes (all dynamic nodes and next episode node) should be more stable (addon mode only)
+fix multiselection progress update issue in native mode
+
+
+7.11.2
+=============
+fix remote content playback issue -> https://emby.media/community/index.php?/topic/106853-embyforkodi-next-gen-7xx-support/&do=findComment&comment=1207092
+fixed minor database issues
+
+
+7.11.1
+=============
+add option to disable free space verification
+fix several playback issue for edge cases
+workarounds for kodi issues
+add translations
+
+
+7.11.0
+=============
+fix sync issue when content released from multiversion
+minor init sync performance improvements
+clean code
+
+
+7.10.6
+=============
+fix minor server connection issue when mode switched (e.g. from localaddress to remoteaddress)
+fix variable type for Kodi listitems
+fix youtube links for dynamic items
+fix vacuum db and progress bar
+fix iso playback in addon mode
+remove option to use runtimlimits from Emby server (too experimental) added on the list for 8.x
+add translations
+
+
+7.10.5
+=============
+fix dynamic nodes shown as widgets
+fix dynamic nodes crashes when used as widgets
+add recently added tvshows to dynamic items
+
+
+7.10.4
+=============
+fix dynamic nodes progress for tvshows, season 
+add dynamic nodes support for reset position, set (un)watched
+support realtime updates for dynamic nodes
+fix sets (remove movie after played)
+fix path update if strm file content has changed on content updates
+
+
+7.10.3
+=============
+fix minor issue on factory reset
+fix next episode cache issue
+fix http session close error
+fix progress bar for startup sync
+Improvement http POST and DELETE commands using a threading queue
+fix database init issue
+add progress bar for livetv sync
+respect item limit for next episodes
+add translations
+
+
+7.10.2
+=============
+fix HEAD queries
+Improvement for Emby server login, mainly for multiservers but also for single server
+fix Emby server connection if Emby server is not online at Kodi start
+fix Database (Emby server ID not loaded) for edge case
+use timeouts for some POST and DELETE http queries, instead of threading them (more reliable Kodi playback seeking)
+add server disconnect/remove function
+add startup sync progress bar
+Remove same delays on Wizard
+Avoid removing custom nodes on factory or node reset (don't put you custom nodes in the "emby_*" folders or label the files "emby_*")
+
+
+7.10.1
+=============
+fix playback stop if emby server no loaded
+fix chapter sync issue
+
+
+7.10.0
+=============
+small playback improvement in addon mode for multicontent and transcoding
+improve cinemamode in addon mode
+unify actors/artists for each libraries
+fix dynamic nodes status update
+fix chapter marker image overlay for intros
+add collection support for homevideos and musicvideos
+fix tv tunes
+add option to sync themes locally (tv tunes)
+fix xml issues
+fix boxsets for dynamic nodes when folders are assigned
+image enhancement toggle -> reset artwork
+change default setting for sync while playback to enabled
+change to sync while playback 
+Rewrite Emby login code, fixing issues and remove duplicate http queries. Also fix emby connect and support dynamic IPs. Assign user picture as login icons.
+fix strm plugin issue
+
+
+7.9.4
+=============
+fix strm files with plugin links
+fix episode sync when no seasonid is assigned
+improve content detection for dynamic nodes
+fix folder view for synced content
+improve querycache for dynamic nodes
+improve http requests
+clean connection code
+improve cinema mode path validation (speed up trailer load, if multiple (> 1) trailers are loaded) -> threaded loading
+fix kodi scan event issue
+clear query cache on skin reload
+fix 3d content in cinemamode
+fix cinemamode when autoplay next is enabled
+fix listitem artworks for multiversion episodes
+fix people artwork updates
+
+
+7.9.3
+=============
+add translations
+fix item/library remove issue
+fix playback crash when Emby content is invalid
+fix dynamic nodes for identical content assinged to multiple Emby libraries
+add emby options context menu support for dynamic nodes
+fix music fanart
+
+
+7.9.2
+=============
+Another fix for library repair issue
+Fix music scan disabled for native mode
+
+
+7.9.1
+=============
+Fix library repair issue (also affected some other sync paused issues)
+Fix webservice timeout issue
+fix transcoding issue
+some minor fixes
+
+
+7.9.0
+=============
+Fix coverart issue
+Invert the option to assign TVShow posters to episode artwork. Default is off.
+change plugin startup code
+fix dynamic nodes cast view for episodes
+dynamic nodes tries query content data from internal (Kodi's) database, fallback is Emby server (performance improvement for some nodes)
+remove all Kodi jsonRPC calls and substitude them with faster (direct DB) queries (also could improve (skin) stability)
+
+
+7.7.8
+=============
+fix duplicate track# for songs in database
+fix music album remove issue
+fix genre node charecter limit
+fix skin reload on init sync (and library added)
+add selection for episode poster assignment
+add translations
+add "reuselanguageinvoker" parameter to addon.xml
+
+
+7.7.7
+=============
+fix music composer node
+change episode poster from episode (Emby) primary image to series (Emby) primary
+fix "NO INFO" albumartist injection when actually no albumartist info is available
+
+
+7.7.6
+=============
+fix artwork cache (edge case)
+fix video playback (e.g. IPTV)
+fix translations
+fix Boxsets in dynamic nodes
+fix minor transcoding issue
+fix folder userdata update issue
+performance improvemnt for musicvideos sync
+add manual trigger for db vaccuum
+change music nodes (faster "regular" genres music node)
+
+
+7.7.5
+=============
+animated icon default off
+fix minor music scan issue
+add additional database locks, giving Kodi database ops priority
+fix some database paused flags
+remove realtime boxset updates (too slow -> current approach delays "regular" updates too much)
+
+
+7.7.4
+=============
+Fixes and improvements:
+------
+improve plugin icon toogle 
+
+
+7.7.3
+=============
+Fixes and improvements:
+------
+fix date conversion issue for pictures
+change artwork cache messages order
+remove some unnecessary database records
+use stagger Kodi scan (more reliable due to lower load)
+
+
+7.7.2
+=============
+Fixes and improvements:
+------
+fix artwork cache (special charecter issue)
+fix progress update issue for edge cases
+fix gueststar cast issue
+much faster database reset
+fix add users to session
+fix artwork cache for photos and photoalbum
+fix minor bookmark issue for episodes
+add trailer support for tvshows
+lot of changes in Kodi database (using exactly same pattern as stock Kodi)
+
+
+7.7.1
+=============
+Fixes and improvements:
+------
+Add Channels support for dynamic nodes (Mediathek etc.)
+disable hdd space verification for Windows
+fix Favorites
+some minor fixes
+additional translations
+
+
+7.7.0
+=============
+Fixes and improvements:
+------
+add additional database index for music (faster music database queries)
+add artwork cache disc space verification
+add support for chapter images with text overlay for artwork cache
+fix (regular) boxset refresh option
+add support for realtime boxset updates
+catch invalid databases issue -> trigger database master reset -> this should never appear -> edge case
+add detection for corrupted setting file
+fix next up episodes (now exactly identical view like on Emby server's "next up") and improve node performance
+
+
+7.6.1
+=============
+Fixes and improvements:
+------
+add additional logs
+fix invalid people (cast) issue
+fix invalid aspect ratio issue
+fix alternative device name
+add custom composer node
+improve artwork cache, currently supported format are jpg, png
+fix videoplayer window focus on multiselection
+
+
+7.6.0
+=============
+Fixes and improvements:
+------
+Fix special feature selection
+Add another index in database (improves delete content by parent Id queries)
+Fix multiversion item removal
+Fix Emby server >= 4.8.0.4 Library ID issue
+
+
+7.5.2
+=============
+Fixes and improvements:
+------
+Fix musicvideos update issue
+Fix root folder sync issue
+Fix minor music artist (realtime) sync issue (in very special cases) and only when new content was added.
+Add autoclose option to yes/no messageboxes for: cinnemamode, skip into, skip credits, delete option. Default 5 Seconds, timing adjustable in interface option.
+
+
+7.5.1
+=============
+Fixes and improvements:
+------
+Add landscape image to episodes
+Fix root folder sync issue
+Fix artwork loading issue
+
+
+7.4.0
+=============
+Fixes and improvements:
+------
+Change skip intro implementation (if enabled, no more msg box by default) -> addon mode
+Add skip credits support -> addon mode
+Add skip intro and credits support -> native mode
+Fix cinnemamode -> native mode
+
+
+7.3.1
+=============
+Fixes and improvements:
+------
+Fix realtime content added issue
+
+
+7.3.0
+=============
+Fixes and improvements:
+------
+fix item remove issue (when moving content from one folder to another) -> major improvement (db went out of sync in previous version)
+database performance improvements (adding indexs and reviewed all sql queries)
+add support for same content (same folder) assigned to multiple libraries (major code update, even if this is just for an edge case)
+fix Musicvideo Artist picture issue
+fix Music "single" (album) delete issue
+fix multicontent selection in native mode for edge cases (Item path != Mediasource[0]["Path"]
+fix audio progress in native mode
+add composer support for music
+fix progress update issue when multiple Emby servers are synced to Kodi
+fix content watched state when Kodi resets play position and content is makred as watched (playcount)
+fix special features selection
+fix progress report to Emby server for native mode when multi content is playing
+
+
+7.2.0
+=============
+Fixes and improvements:
+------
+fix Artist Album assignment
+fix Album update -> year not updated
+remove discography in kodi db (not a Kodi stock function, and has no benefit)
+some minor music database fixes
+fix remote playback strm files
+add playable verification for remote content -> if not directplay possible, fallback to transcoding
+remove header queries from picture files
+
+
+7.1.0
+=============
+Fixes and improvements:
+------
+fix End Intro
+add jump to intro end support
+
+
+7.0.8
+=============
+Fixes and improvements:
+------
+fix tag_links
+remove some unnecessary progress updates
+restructure music db sync
+several minor fixes for updated content
+add database vacuum option
+fix sync multiversion (update) sync issue
+fix admin issue
+fix playback stop for some cases
+add option using playback resume options from Emby server
+fix 0-9 Letter node for Musicvideos
+fix subtitle issue
+add ass subtitle support
+fix several nodes
+add "--NO INFO--" when genre is missing
+add "--NO INFO--" when studio is missing
+add remote picture playback
+remove unneseccary database openings
+Clean code
+fix issue when trailer is not available
+fix iso playback for dynamic content
+additional progress/watched fixes
+prepare additional translation
+limit item in recently played node
+add same fixes for progress/watched fixes also on init db sync
+additional progress/watched fixes
+fix next episode node
+modify progress updates for paused content on emby server
+fix progress reset
+some progress update improvements 
+improve dynamic query cache
+minor fixes in custom node declaration
+add landscape artwork to boxsets
+fix sync pause infinite for edge cases
+fix wrong assinged song album and corresponting TVShow issues
+fix library repair sync
+fix progress bar issue
+fix threading issue
+fix threading issue
+fix MusicVideo updates
+fix missing Musicvideo artist
+fix tag links
+wal mode for emby db
+fix realtime sync issues
+song update fixes
+fix db reset
+change default sync settings to 70
+fix tvtunes
+fix add Artists for edge cases
+fix realtime sync issues
+fix livetv sync
+fix movie sync when AspectRation info is missing
+fix http session re-usage
+fix progress update for not synced items
+improve Emby server reconnection
+shorten filenames/URLS
+fix metadata codec issue
+fix artwork update issue
+add dynamic queries cache
+fix season sync for edge case
+add upcoming episode support
+fix musicvideos Artists
+additional emby server notifications
+threading improvements
+db access improvements
+remove 5 minute sync delay
+fix progrss updates
+fix Emby server hard resets
+add option to sync during playback
+fix next episode
+fix out of memory on large incremental syncs
+add progress info when Emby server is busy with syncing and delay realtime updates by 5 minutes
+fix whitelist for mixed content
+fix artwork updates for music content
+add album artist sync for songs
+Delay relatime library updates by 5 minutes due to delayed metadata sync on Emby server (fixes incomplete info)
+additional info for multiselection
+animated artwork disable option
+remove mappings obj_map
+remove Kodi 18 support
+migrate settings
+keepalive -> https://emby.media/community/index.php?/topic/90781-embyforkodi-next-gen-6xx-support/&do=findComment&comment=1109377
+support photoimage tags
+rewrite RestorePoints
+rewirte paging to a factor based selection
+rewrite dynamic content selection
+new content notification disable on init sync
+rewrite Music sync
+reload skin after Kodi start option 
+music node not including libraryid
+
+
+6.2.20
+=============
+Improvements:
+------
+backport progress updates from 7.X
+
+
+6.2.18
+=============
+Fixes:
+------
+Special charecter issue for Kodi 18
+
+
+6.2.17
+=============
+Fixes:
+------
+fix minor playback progress update issue
+
+
+6.2.16
+=============
+Fixes:
+------
+fix delete option after playback
+fix next episode node issue
+backport 7.x progress update functions
+
+
+6.2.15
+=============
+Fixes:
+------
+modify reconnect on Kodi start
+fix subtitle issue for dynamic content
+add option to sync during playback
+
+
+6.2.14
+=============
+Fixes:
+------
+fix forbidden charecters for file folder names
+
+
+
+6.2.13
+=============
+Fixes:
+------
+fix local trailers
+fix FireTV permission issue
+
+
+
+6.2.12
+=============
+Improvements:
+-------------
+sync 
+event queue 
+player
+library nodes
+Music libraries
+multiselection for 3d and native content
+file io changed api 
+
+Fixes:
+------
+multipart iso
+recently added
+watched status
+add user to session
+TV-Show pooling
+Trailers
+timestamp issue <1970 (Windows only)
+musicvideo track info
+trakt issues
+warning notification when websocket connection is offline
+db lockup
+
+New:
+----
+multiserver support
+multivideo selection for native mode
+mixed native/addon content support
+Audiobook support
+iptvsimple sync support
+compatibility mode
+multiselection bluray iso files
+toggle playlist
+local trailers support
+mixed content libs -> added music support
+podcasts sync support
+partial sync for homevideos
+
+Known issues:
+-------------
+probably sync issue on active recordings
+some translations pending
+music sync issues
+
+Feature requests:
+-----------------
+none
+
+Details:
+--------
+sync performance
+event performance
+multiserver support
+menu restructure
+player improvements
+multivideo selection in native mode
+mixed native/addon content supported
+multipart iso fixed
+recently added fixed
+pluginmenu fixed
+watched status fixed
+add user to session fixed
+favorites fixed
+delete option fixed
+multipart videos fixed
+nodes changes (custom skin node updates are required, if library names have spaces in the label)
+sleepmode issue fixed
+dynamic librearies: Added folder node
+Audiobook support (dynamic and synced)
+Music db, multiple fixes and massive sync performance improvements (music db still needs additional testing)
+bugfixes for transcoding
+TV-Show pooling
+Fix artwork issues
+xsp playlist optional
+iptvsimple sync support
+compatibility mode
+livetv stream init changed
+livetv epg fix
+fix artwork for pooling tvshows
+additional fixes for live tv
+configuration files changed (reset required)
+several minor bugfixes
+Added additional nodes (SD, HD, 4K)
+fixes for item updates and item removal
+improvement for multiselection blueray iso files
+sync issues
+Pluginmenu fixes
+blueray multiselection fixes
+Kodi 18 bugfix
+multiselection improvements for 3d and native content
+minor Trailer bugfixes
+starttime fixed for remote content
+add library
+mandatory db reset (on Kodi start)
+manual db reset
+hide password
+tvtunes
+several minor fixes
+sync issues (virtual Emby server)
+toggle playlist
+kodi profile support
+timestamp issue <1970 (Windows only)
+Sync Boxsets
+add option to shows "manage libraries" in plugin menu
+realtime sync issues
+Kodi 18 issue
+code improvements
+fix musicvideo track info
+delete shortcuts
+additional users menu
+context menu
+add/remove season
+add parent artwork for seasons
+added special feature selection to context menu
+favourites
+subtitle selection
+optimize code
+improve progress updates
+redesign sync
+fix trakt issue
+fix invalid content sync
+(edge case) sync issue fixed
+extended info in progress bar for (initial) TV shows syncs
+Kodi 18 fixes
+added a warning notification when websocket connection is offline
+local trailers support for cinnema mode and library sync
+minor sync fixes
+plugin strm files fixed (testing required)
+some websocket fixes
+studio info fixed
+cast fixed
+rating fixed
+fix progress report when playing native Kodi content
+fix for musicvideo progress
+fix unicode loghandler issue
+fix cast tvshows
+fix music progress for native content
+mixed content libs -> added music support
+potcasts syncable (no realtime updates available, on sync on Kodi restart -> seems to be a Emby server limitation)
+some nodes fixes
+music sync is now working also if Artist info not available
+removed local trailers from library sync options (even technically possible, makes no sense to me). Anyway, still available via info screen as it should be.
+music content sync fixes
+minor improvements in http requests
+Timestamps updates to dual mode (boxset fixes)
+artwork cache changes
+tvshow sync issues
+minor realtime syncs issues fixed (doulbe updates in some edge cases)
+Favourite icons added
+unicode issues for Kodi 18
+Minor sync queue improvements
+Add episode info to progress info on init sync
+Fix browseinfo for episodes
+Fix resume for dynamic content
+workaround for native Kodi refresh commands
+podcast fixes in dynamic nodes
+add partial sync for homevideos
+minor sync queue inprovements
+add user when using multi Emby server
+db lockup (important fix)
+multiserver queue jobs
+rollback userrating modification. Value is back from 0-10 not 0-100
+fix xsp playlists
+fix item remove queue issue
+add artwork cache in pluginmenu (optional)
+artwork cache fix
+delete artwork cache optional for mandatory db resyncs
+manual db reset fixes when keeping settings
+artwork cache double start
+add more fucntions to plugin menu
+add update libraries option
+fix multiserver manual db reset
+fix backup restore
+file io changed api
+fix add/remove multi video
+fix tv show removal items
+fix tvshow info
+remove vote counts (not support by Emby server)
+remove useless class abstractions
+add option to reload skin after plugin start -> default = true
+improve music nodes abstraction
+fix photos
+fix homevideo updates
+progress bar value fix for update worker
+fix compatibility mode
+fix doublelogin to Emby server after sleepmode
+minor progress update fixes
+fix music artworks
+music sync (kodi 18)
+mediathek fixes
+progress update fix
+clean code
+fix remove item issue
+fix recording issue
+fix native season path
+fix mutiversion selection
+fix live tv
+reduce (Kodi) DB open time to minimum to avoid (exclusive open) delays
+give kodi priority db access
+add db delete option
+progress bar fixes
+fix unicode issue in native mode
+fix websocket updates (remove item)
+artwork changes
+fix multiple server detection
+improve library remove/repair
+fix subtitle selection
+fix multiversion videos
+fix episode sync if episode season info not matching parent season info
+fix boxset refresh
+fix dynamic lists info
+fix sync updates
+unify musicvideo artists
+disable music scan in native mode
+fix Apple TV issue
+fix progress updates
+use Kodi api for file io
+remove smb and http from sources.xml
+fix node update on librery removal
+fix translations
+add db locks, especially for Android -> thread safty
+fix folder remove
+change landscape artwork for movie content
+update nodes (following Kodi "standard")
+fix playposition on remote controlled playback
+fix Apple TV node issues
+remove unneseccary workers on progress updates
+improve threading
+Plugin start optimized
+Improve wake up -> faster reconnect
+fix resume progress indicator
+connection improvements
+add fallback ports for websocket connection (port 80, 443 is not set for some reason)
+fix Italian language file
+fix db migrate
+fix tvtunes
+add settings translation
+improve threading
+fix German translation
+fix progress updates
+fix mark as watched/unwatched
+add reset resume position support
+fix Xbian filecopy permission issue
+unify playsession Id
+player callbacks threaded
+fix nodes
+fix settings load
+add option to modify last synced date
+fix series removal/inconsistencies
+improve stability
+some minor bugfixes
+fix movie specials
+fix multiserver issues
+fix threading lock issues
+fix workers pause/resume
+add API for external play commands
+fix for remote control (external content)
+fix websocket ping
+limit max itemupdates
+optimize code
+fix homevideos sync
+fix audiobook sync
+fix podcast sync
+fix special features progress updates
+add translations
+add bookmarks
+fix movie progress update
+fix picture issue
+fix cancel option on multiselection
+improve websocket error detection and add additional logging
+fix delete item via context menu
+fix multivideo selection cancel option
+improve multiselection 3D-content loading time
+fix limitindex
+fix invalid timestamps
+improve notification threading
+add trailer infos in cinema mode
+add cinema mode support for native mode
+fix multiserver sync
+fix sync issue
+fix websocket connection timeout
+fix realtime sync
+fix musicvideo letter nodes
+fix shutdown procedure
+add slideshow
+fix websocket connection timeout (part 2)
+enable permanent ssl verification
+disable ssl verification for artwork cache
+lock windowchange on regular ops
+optimize code
+fix multiserver sync issue
+add additional lock for multithreaded syncs
+simplify code and improvements
+fix artwork
+sync performance improvements
+artwork fixes
+minor artwork fix and apply sqlite thread save patches
+fix dbio issue
+add cinema mode option for movies and episodes
+add support for Kodi delete function
+fix artwork issue (landscape)
+fix get_next_episodes
+fix playlist issue
+fix missing bitrates
+fix special charecters issue in device name
+fix database reset when login was denied
+force login after device id reset
+fix multiple Emby server instances on reconnection to same server
+fix artist sync issue
+add additional safty for delete files on Kodi events
+fix remove library on Emby server
+fix remove item issue
+fix audioplayer focus
+fix trakt issue/progress updates
+change season artwork fallback
+disable http2 by default and add config menu option
+fix videoplayer focus
+fix tvtunes
+fix music update sync
+fix fanart artwork
+Change internal ports to 57341 and 57342 due to xbox limitations
+fix item removal issue
+artwork backdrop fixes
+fix item removal
+fix mixed lib init sync
+add skin reload option
+
+
+6.0.13 (beta)
+=============
+Improvements:
+-------------
+sync 
+event queue 
+player
+library nodes
+Music libraries
+multiselection for 3d and native content
+file io changed api 
+
+Fixes:
+------
+multipart iso
+recently added
+watched status
+add user to session
+TV-Show pooling
+Trailers
+timestamp issue <1970 (Windows only)
+musicvideo track info
+trakt issues
+warning notification when websocket connection is offline
+db lockup
+
+New:
+----
+multiserver support
+multivideo selection for native mode
+mixed native/addon content support
+Audiobook support
+iptvsimple sync support
+compatibility mode
+multiselection bluray iso files
+toggle playlist
+local trailers support
+mixed content libs -> added music support
+podcasts sync support
+partial sync for homevideos
+
+Known issues:
+-------------
+probably sync issue on active recordings
+some translations pending
+
+Feature requests:
+-----------------
+none
+
+Details:
+--------
+sync performance
+event performance
+multiserver support
+menu restructure
+player improvements
+multivideo selection in native mode
+mixed native/addon content supported
+multipart iso fixed
+recently added fixed
+pluginmenu fixed
+watched status fixed
+add user to session fixed
+favorites fixed
+delete option fixed
+multipart videos fixed
+nodes changes (custom skin node updates are required, if library names have spaces in the label)
+sleepmode issue fixed
+dynamic librearies: Added folder node
+Audiobook support (dynamic and synced)
+Music db, multiple fixes and massive sync performance improvements (music db still needs additional testing)
+bugfixes for transcoding
+TV-Show pooling
+Fix artwork issues
+xsp playlist optional
+iptvsimple sync support
+compatibility mode
+livetv stream init changed
+livetv epg fix
+fix artwork for pooling tvshows
+additional fixes for live tv
+configuration files changed (reset required)
+several minor bugfixes
+Added additional nodes (SD, HD, 4K)
+fixes for item updates and item removal
+improvement for multiselection blueray iso files
+sync issues
+Pluginmenu fixes
+blueray multiselection fixes
+Kodi 18 bugfix
+multiselection improvements for 3d and native content
+minor Trailer bugfixes
+starttime fixed for remote content
+add library
+mandatory db reset (on Kodi start)
+manual db reset
+hide password
+tvtunes
+several minor fixes
+sync issues (virtual Emby server)
+toggle playlist
+kodi profile support
+timestamp issue <1970 (Windows only)
+Sync Boxsets
+add option to shows "manage libraries" in plugin menu
+realtime sync issues
+Kodi 18 issue
+code improvements
+fix musicvideo track info
+delete shortcuts
+additional users menu
+context menu
+add/remove season
+add parent artwork for seasons
+added special feature selection to context menu
+favourites
+subtitle selection
+optimize code
+improve progress updates
+redesign sync
+fix trakt issue
+fix invalid content sync
+(edge case) sync issue fixed
+extended info in progress bar for (initial) TV shows syncs
+Kodi 18 fixes
+added a warning notification when websocket connection is offline
+local trailers support for cinnema mode and library sync
+minor sync fixes
+plugin strm files fixed (testing required)
+some websocket fixes
+studio info fixed
+cast fixed
+rating fixed
+fix progress report when playing native Kodi content
+fix for musicvideo progress
+fix unicode loghandler issue
+fix cast tvshows
+fix music progress for native content
+mixed content libs -> added music support
+potcasts syncable (no realtime updates available, on sync on Kodi restart -> seems to be a Emby server limitation)
+some nodes fixes
+music sync is now working also if Artist info not available
+removed local trailers from library sync options (even technically possible, makes no sense to me). Anyway, still available via info screen as it should be.
+music content sync fixes
+minor improvements in http requests
+Timestamps updates to dual mode (boxset fixes)
+artwork cache changes
+tvshow sync issues
+minor realtime syncs issues fixed (doulbe updates in some edge cases)
+Favourite icons added
+unicode issues for Kodi 18
+Minor sync queue improvements
+Add episode info to progress info on init sync
+Fix browseinfo for episodes
+Fix resume for dynamic content
+workaround for native Kodi refresh commands
+podcast fixes in dynamic nodes
+add partial sync for homevideos
+minor sync queue inprovements
+add user when using multi Emby server
+db lockup (important fix)
+multiserver queue jobs
+rollback userrating modification. Value is back from 0-10 not 0-100
+fix xsp playlists
+fix item remove queue issue
+add artwork cache in pluginmenu (optional)
+artwork cache fix
+delete artwork cache optional for mandatory db resyncs
+manual db reset fixes when keeping settings
+artwork cache double start
+add more fucntions to plugin menu
+add update libraries option
+fix multiserver manual db reset
+fix backup restore
+file io changed api
+fix add/remove multi video
+fix tv show removal items
+fix tvshow info
+remove vote counts (not support by Emby server)
+remove useless class abstractions
+add option to reload skin after plugin start -> default = true
+improve music nodes abstraction
+fix photos
+fix homevideo updates
+progress bar value fix for update worker
+fix compatibility mode
+fix doublelogin to Emby server after sleepmode
+minor progress update fixes
+fix music artworks
+music sync (kodi 18)
+mediathek fixes
+progress update fix
+clean code
+fix remove item issue
+fix recording issue
+fix native season path
+fix mutiversion selection
+fix live tv
+
+
+6.0.10 (beta)
+=============
+Improvements:
+-------------
+sync 
+event queue 
+player
+library nodes
+Music libraries
+multiselection for 3d and native content
+file io changed api 
+
+Fixes:
+------
+multipart iso
+recently added
+watched status
+add user to session
+TV-Show pooling
+Trailers
+timestamp issue <1970 (Windows only)
+musicvideo track info
+trakt issues
+warning notification when websocket connection is offline
+db lockup
+
+New:
+----
+multiserver support
+multivideo selection for native mode
+mixed native/addon content support
+Audiobook support
+iptvsimple sync support
+compatibility mode
+multiselection bluray iso files
+toggle playlist
+local trailers support
+mixed content libs -> added music support
+podcasts sync support
+partial sync for homevideos
+
+Known issues:
+-------------
+probably sync issue on active recordings
+some translations pending
+
+Feature requests:
+-----------------
+none
+
+Details:
+--------
+sync performance
+event performance
+multiserver support
+menu restructure
+player improvements
+multivideo selection in native mode
+mixed native/addon content supported
+multipart iso fixed
+recently added fixed
+pluginmenu fixed
+watched status fixed
+add user to session fixed
+favorites fixed
+delete option fixed
+multipart videos fixed
+nodes changes (custom skin node updates are required, if library names have spaces in the label)
+sleepmode issue fixed
+dynamic librearies: Added folder node
+Audiobook support (dynamic and synced)
+Music db, multiple fixes and massive sync performance improvements (music db still needs additional testing)
+bugfixes for transcoding
+TV-Show pooling
+Fix artwork issues
+xsp playlist optional
+iptvsimple sync support
+compatibility mode
+livetv stream init changed
+livetv epg fix
+fix artwork for pooling tvshows
+additional fixes for live tv
+configuration files changed (reset required)
+several minor bugfixes
+Added additional nodes (SD, HD, 4K)
+fixes for item updates and item removal
+improvement for multiselection blueray iso files
+sync issues
+Pluginmenu fixes
+blueray multiselection fixes
+Kodi 18 bugfix
+multiselection improvements for 3d and native content
+minor Trailer bugfixes
+starttime fixed for remote content
+add library
+mandatory db reset (on Kodi start)
+manual db reset
+hide password
+tvtunes
+several minor fixes
+sync issues (virtual Emby server)
+toggle playlist
+kodi profile support
+timestamp issue <1970 (Windows only)
+Sync Boxsets
+add option to shows "manage libraries" in plugin menu
+realtime sync issues
+Kodi 18 issue
+code improvements
+fix musicvideo track info
+delete shortcuts
+additional users menu
+context menu
+add/remove season
+add parent artwork for seasons
+added special feature selection to context menu
+favourites
+subtitle selection
+optimize code
+improve progress updates
+redesign sync
+fix trakt issue
+fix invalid content sync
+(edge case) sync issue fixed
+extended info in progress bar for (initial) TV shows syncs
+Kodi 18 fixes
+added a warning notification when websocket connection is offline
+local trailers support for cinnema mode and library sync
+minor sync fixes
+plugin strm files fixed (testing required)
+some websocket fixes
+studio info fixed
+cast fixed
+rating fixed
+fix progress report when playing native Kodi content
+fix for musicvideo progress
+fix unicode loghandler issue
+fix cast tvshows
+fix music progress for native content
+mixed content libs -> added music support
+potcasts syncable (no realtime updates available, on sync on Kodi restart -> seems to be a Emby server limitation)
+some nodes fixes
+music sync is now working also if Artist info not available
+removed local trailers from library sync options (even technically possible, makes no sense to me). Anyway, still available via info screen as it should be.
+music content sync fixes
+minor improvements in http requests
+Timestamps updates to dual mode (boxset fixes)
+artwork cache changes
+tvshow sync issues
+minor realtime syncs issues fixed (doulbe updates in some edge cases)
+Favourite icons added
+unicode issues for Kodi 18
+Minor sync queue improvements
+Add episode info to progress info on init sync
+Fix browseinfo for episodes
+Fix resume for dynamic content
+workaround for native Kodi refresh commands
+podcast fixes in dynamic nodes
+add partial sync for homevideos
+minor sync queue inprovements
+add user when using multi Emby server
+db lockup (important fix)
+multiserver queue jobs
+rollback userrating modification. Value is back from 0-10 not 0-100
+fix xsp playlists
+fix item remove queue issue
+add artwork cache in pluginmenu (optional)
+artwork cache fix
+delete artwork cache optional for mandatory db resyncs
+manual db reset fixes when keeping settings
+artwork cache double start
+add more fucntions to plugin menu
+add update libraries option
+fix multiserver manual db reset
+fix backup restore
+file io changed api
+fix add/remove multi video
+fix tv show removal items
+fix tvshow info
+remove vote counts (not support by Emby server)
+remove useless class abstractions
+add option to reload skin after plugin start -> default = true
+improve music nodes abstraction
+fix photos
+fix homevideo updates
+progress bar value fix for update worker
+fix compatibility mode
+fix doublelogin to Emby server after sleepmode
+minor progress update fixes
+fix music artworks
+music sync (kodi 18)
+mediathek fixes
+progress update fix
+clean code
+
+
+5.2.07 (beta)
+=============
+
+Fixes:
+------
+Connection when server is offline on Kodi start
+Kodi 18 unicode issues fixed
+remove episode fixed
+TV Shows repair sync fixed
+music sync (single) issue
+Trakt dublette issue
+timeout advancedsettings issue
+readded and optimized nextepisode node
+fix subtitle preselection
+re-add favourites
+fix sources.xml
+reduced skinreloads to a minimum
+fix Kodi restart issues
+Crash if Emby server is not up on Kodi startup
+Crash on Emby Server shutdown
+User login issue (no admin privileges)
+delete item (Context menu)
+add user
+taglines bugfix
+hibernate mode
+Login issues
+Userlogin without password
+backdrops
+progress updates
+
+
+New:
+----
+Delete Show/Season after watched
+New content notifications
+Static nodes opimized
+Dynamic nodes opimized
+Subtitle enabled/disabled default settings based on guisettings.xml
+iso, bdmw support in addon mode (fallback to native mode)
+
+
+Known issues:
+-------------
+Multiserver not working
+Changelog not working
+1970 issue (Windows only)
+
+
+Feature requests:
+-----------------
+PVR support
+Remove TV-Shows etc after fully watched
+Audiobook support
+Autodetect Speed for Transcoding
+Improve Subtitle selection
+Add Playcount option for musicvideos
+
+
+5.2.06 (beta)
+=============
+
+Fixes:
+------
+sleep/hibernate
+backup
+sync issues
+New content Notification
+Threading limtation
+remove items while sync
+update TV-Show season
+Musicvideo realtime sync issue (no Presentation Key)
+
+New:
+----
+alphabet/first letter nodes
+Icon(s) in rootfolder
+Remove artwork optional when DB reset
+Boost initial sync
+
+Known issues:
+-------------
+Loghandler mask not working
+Multiserver not working
+Dynamic lists slow/artwork
+Distributed TV-Shows not synced correctly
+Review Artwork/Backdrops
+Changelog not working
+Crash if Emby server is not up on Kodi startup
+Crash on Emby Server shutdown
+Trakt issue
+1970 issue (Windows only)
+User login issue (no admin privileges)
+delete item (Context menu) fixed
+add user fixed
+taglines fixed
+hibernate fixed
+sync performance
+Login fixes (to be tested)
+Dynamic list performance
+Subtitle enabled/disabled should now work based on settings
+Userlogin with no passwords works
+ISO (to be tested) -> DB reset required
+backdrops fixed
+progress updates fixed
+
+Feature requests:
+-----------------
+PVR support
+Remove TV-Shows etc after fully watched
+Audiobook support
+Autodetect Speed for Transcoding
+Improve Subtitle selection
+Boost Repair sync
+New content notifications
+Add Playcount option for musicvideos
+Delete Show/Season after finished
+
+
+5.2.05 (beta)
+=============
+
+Fixes:
+------
+sleep/hibernate
+backup
+sync issues
+New content Notification
+Threading limtation
+remove items while sync
+update TV-Show season
+Musicvideo realtime sync issue (no Presentation Key)
+
+New:
+----
+alphabet/first letter nodes
+Icon(s) in rootfolder
+Remove artwork optional when DB reset
+Boost initial sync
+
+Known issues:
+-------------
+Loghandler mask not working
+Multiserver not working
+Dynamic lists slow/artwork
+Distributed TV-Shows not synced correctly
+Review Artwork/Backdrops
+Changelog not working
+Crash if Emby server is not up on Kodi startup
+Crash on Emby Server shutdown
+Trakt issue
+1970 issue (Windows only)
+User login issue (no admin privileges)
+
+Feature requests:
+-----------------
+PVR support
+Remove TV-Shows etc after fully watched
+Audiobook support
+Autodetect Speed for Transcoding
+Improve Subtitle selection
+Boost Repair sync
+New content notifications
+Add Playcount option for musicvideos
+Delete Show/Season after finished
+
+
+5.2.04 (beta)
+=============
+
+Fixes:
+------
+sleep/hibernate
+backup
+sync issues
+New content Notification
+Threading limtation
+remove items while sync
+update TV-Show season
+
+New:
+----
+alphabet/first letter nodes
+Icon(s) in rootfolder
+Remove artwork optional when DB reset
+Boost initial sync
+
+Known issues:
+-------------
+Loghandler mask not working
+Multiserver not working
+Dynamic lists slow/artwork
+Distributed TV-Shows not synced correctly
+Review Artwork/Backdrops
+Changelog not working
+Crash if Emby server is not up on Kodi startup
+Crash on Emby Server shutdown
+Trakt issue
+1970 issue (Windows only)
+User login issue (no admin privileges)
+
+Feature requests:
+-----------------
+PVR support
+Remove TV-Shows etc after fully watched
+Audiobook support
+Autodetect Speed for Transcoding
+Improve Subtitle selection
+Boost Repair sync
+New content notifications
+Add Playcount option for musicvideos
+Delete Show/Season after finished
+
+
+5.2.03 (beta)
+=============
+
+Fixes:
+------
+sleep/hibernate
+backup
+sync issues
+New content Notification
+Threading limtation
+
+New:
+----
+alphabet/first letter nodes
+Icon(s) in rootfolder
+Remove artwork optional when DB reset
+Boost initial sync
+
+Known issues:
+-------------
+Loghandler mask not working
+Multiserver not working
+Dynamic lists slow/artwork
+Distributed TV-Shows not synced correctly
+Review Artwork/Backdrops
+Changelog not working
+Crash if Emby server is not up on Kodi startup
+Crash on Emby Server shutdown
+Trakt issue
+1970 issue (Windows only)
+User login issue (no admin privileges)
+
+Feature requests (pending):
+---------------------------
+PVR support
+Remove TV-Shows etc after fully watched
+Audiobook support
+Autodetect Speed for Transcoding
+Improve Subtitle selection
+Boost Repair sync
+New content notifications
+Add Playcount option for musicvideos
+Delete Show/Season after finished
+
+
+5.2.02 (beta)
+=============
+
+Fixes:
+------
+sleep/hibernate fixed
+backup fixed
+sync issues fixed
+
+New:
+----
+alphabet/first letter nodes
+Icon(s) in rootfolder
+Remove artwork optional when DB reset
+Boost initial sync
+
+Known issues:
+-------------
+Loghandler mask not working
+Multiserver not working
+Dynamic lists slow/artwork
+Distributed TV-Shows not synced correctly
+Review Artwork/Backdrops
+Changelog not working
+Crash if Emby server is not up on Kodi startup
+Crash on Emby Server shutdown
+Trakt issue
+1970 issue (Windows only)
+User login issue (no admin privileges)
+
+Feature requests (pending):
+---------------------------
+PVR support
+Remove TV-Shows etc after fully watched
+Audiobook support
+Autodetect Speed for Transcoding
+Improve Subtitle selection
+Boost Repair sync
+New content notifications
+Add Playcount option for musicvideos
+Delete Show/Season after finished
+

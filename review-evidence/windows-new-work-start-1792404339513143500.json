@@ -1,0 +1,78 @@
+{
+  "record": {
+    "test": {
+      "title": "A Separation",
+      "tmdb_id": 60243,
+      "kind": "movie",
+      "year": 2011
+    },
+    "prior_request": null,
+    "started": 112296.687,
+    "ordinary_ui": true,
+    "force_select": false,
+    "helper_sha256": "fbe7c3d737261d083995f9cf180f72a3335aa9fc531eebef239036cf7a5ea713",
+    "home": {
+      "generation": 6,
+      "intent": 0,
+      "retired_generation": 6,
+      "observed_at": 112297.328
+    },
+    "launched_at": 112297.328,
+    "picker": {
+      "window": 13000,
+      "generation": 7,
+      "intent": 0,
+      "tmdb_id": 60243,
+      "kind": "movie"
+    },
+    "picker_observed_at": 112298.578
+  },
+  "observations": [
+    {
+      "wall": 112297.468,
+      "window": 10000,
+      "labels": {
+        "Window.Property(info.ids)": "",
+        "Window.Property(info.media_type)": "",
+        "Window.Property(info.mode)": "",
+        "Window.Property(info.query)": "",
+        "Window.Property(info.tv_data)": "",
+        "Window.Property(info.year)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "",
+        "Window.Property(source_loading)": ""
+      }
+    },
+    {
+      "wall": 112298.578,
+      "window": 13000,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 60243}",
+        "Window.Property(info.media_type)": "movie",
+        "Window.Property(info.mode)": "movies",
+        "Window.Property(info.query)": "A Separation",
+        "Window.Property(info.tv_data)": "{}",
+        "Window.Property(info.year)": "2011",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "4",
+        "Window.Property(source_loading)": "true"
+      }
+    },
+    {
+      "wall": 112299.656,
+      "window": 13000,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 60243}",
+        "Window.Property(info.media_type)": "movie",
+        "Window.Property(info.mode)": "movies",
+        "Window.Property(info.query)": "A Separation",
+        "Window.Property(info.tv_data)": "{}",
+        "Window.Property(info.year)": "2011",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13",
+        "Window.Property(source_loading)": "false"
+      }
+    }
+  ],
+  "auto_play_observed": false
+}

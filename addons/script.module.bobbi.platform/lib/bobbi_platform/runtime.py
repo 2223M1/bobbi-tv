@@ -105,7 +105,9 @@ class Handler(BaseHTTPRequestHandler):
 
 class Runtime:
     def __init__(self, dispatch, path=None):
+        from .instance_lock import InstanceLock
         self.path = Path(path) if path else profile(name='runtime.json')
+        self.lease = InstanceLock(str(self.path) + '.lock')
         self.server = Server(('127.0.0.1', 0), Handler)
         self.server.token = secrets.token_hex(32)
         self.server.dispatch, self.server.slots = dispatch, BoundedSemaphore(4)
@@ -113,12 +115,16 @@ class Runtime:
         self.started = False
         self.closed = False
 
-    def start(self):
+    def start(self, prepare=None):
         if self.started or self.closed:
             raise RuntimeError('Runtime is not restartable')
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        fd, name = tempfile.mkstemp(dir=str(self.path.parent), prefix='.runtime-')
+        self.lease.acquire()
+        name = None
         try:
+            if prepare is not None:
+                prepare()
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            fd, name = tempfile.mkstemp(dir=str(self.path.parent), prefix='.runtime-')
             with os.fdopen(fd, 'w') as stream:
                 json.dump({'port': self.server.server_port, 'token': self.server.token}, stream)
                 stream.flush()
@@ -126,8 +132,11 @@ class Runtime:
             self.thread.start()
             self.started = True
             os.replace(name, self.path)
+        except BaseException:
+            self.close()
+            raise
         finally:
-            if os.path.exists(name):
+            if name and os.path.exists(name):
                 os.unlink(name)
 
     def close(self):
@@ -145,3 +154,4 @@ class Runtime:
                 self.path.unlink()
         except (OSError, ValueError, KeyError):
             pass
+        self.lease.close()

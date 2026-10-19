@@ -73,6 +73,6 @@ class ResolveLane:
                 self.future = self.executor.submit(self.resolver.perform, self.records[key]['plan'])
 
     def close(self):
-        self.executor.shutdown(wait=True, cancel_futures=True)
+        self.executor.shutdown(wait=True)  # Python 3.8; at most one IO future.
         for key in list(self.records):
             self._drop(key)

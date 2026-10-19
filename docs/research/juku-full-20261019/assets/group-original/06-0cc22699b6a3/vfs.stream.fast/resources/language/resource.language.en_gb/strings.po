@@ -1,0 +1,34 @@
+# Kodi Media Center language file
+# Addon Name: vfs.stream.fast
+# Addon id: vfs.stream.fast
+# Addon Provider: hezi
+msgid ""
+msgstr ""
+
+msgctxt "#30001"
+msgid "Cache Settings"
+msgstr "Cache Settings"
+
+msgctxt "#30005"
+msgid "Read-Ahead Buffer Size (MB)"
+msgstr "Read-Ahead Buffer Size (MB)"
+
+msgctxt "#30009"
+msgid "Fast Timeout Mode"
+msgstr "Fast Timeout Mode"
+
+msgctxt "#30011"
+msgid "LRU Block Size (MB)"
+msgstr "LRU Block Size (MB)"
+
+msgctxt "#30012"
+msgid "LRU Total Cache Size (MB)"
+msgstr "LRU Total Cache Size (MB)"
+
+msgctxt "#30013"
+msgid "Use Kodi Proxy Settings"
+msgstr "Use Kodi Proxy Settings"
+
+msgctxt "#30014"
+msgid "Enable HTTP/2"
+msgstr "Enable HTTP/2"

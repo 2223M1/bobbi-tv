@@ -1,0 +1,1 @@
+(?i)[#?&/](?:sub_fid|sub_id|subtitle_id)=([^&#\s]+)

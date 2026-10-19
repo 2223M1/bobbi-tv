@@ -1,0 +1,52 @@
+{
+  "read_only": true,
+  "host": "raw.githubusercontent.com",
+  "system_dns": [
+    "185.199.108.133",
+    "185.199.109.133",
+    "185.199.110.133",
+    "185.199.111.133"
+  ],
+  "doh": [
+    {
+      "resolver": "dns.alidns.com",
+      "addresses": [
+        "185.199.110.133",
+        "185.199.111.133",
+        "185.199.108.133",
+        "185.199.109.133"
+      ]
+    },
+    {
+      "resolver": "cloudflare-dns.com",
+      "error": "URLError"
+    }
+  ],
+  "https_checks": [
+    {
+      "address": "185.199.108.133",
+      "certificate_and_hostname_verified": true,
+      "status_line": "HTTP/1.1 200 OK",
+      "seconds": 1.146
+    },
+    {
+      "address": "185.199.109.133",
+      "certificate_and_hostname_verified": true,
+      "status_line": "HTTP/1.1 200 OK",
+      "seconds": 0.754
+    },
+    {
+      "address": "185.199.110.133",
+      "certificate_and_hostname_verified": true,
+      "status_line": "HTTP/1.1 200 OK",
+      "seconds": 0.804
+    },
+    {
+      "address": "185.199.111.133",
+      "certificate_and_hostname_verified": true,
+      "status_line": "HTTP/1.1 200 OK",
+      "seconds": 0.774
+    }
+  ],
+  "kodi_proxy_enabled": "false"
+}

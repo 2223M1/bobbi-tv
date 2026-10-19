@@ -1,0 +1,3001 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频搜索 - 巨库</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/logo-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.cn">
+    <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin>
+    <link href="https://fonts.googleapis.cn/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.cn/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/static/kodi-remote.css">
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-hover: #4F46E5;
+            --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #311042 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --input-focus: #6366F1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px calc(100px + env(safe-area-inset-bottom)) 16px;
+            position: relative;
+        }
+
+        /* Ambient Orbs */
+        .bg-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        .orb-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: #6366F1;
+        }
+
+        .orb-2 {
+            bottom: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: #D946EF;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(50px) scale(1.1); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #6366F1 0%, #D946EF 100%);
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(to right, #FFFFFF, #C7D2FE);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        /* Search Input */
+        .search-box {
+            position: relative;
+            margin-bottom: 24px;
+            width: 100%;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+            border: none;
+            color: white;
+            padding: 0 24px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* Search Results Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        @media (min-width: 480px) {
+            .video-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .video-cover-wrap {
+            position: relative;
+            width: 100%;
+            padding-top: 140%; /* 5:7 ratio */
+            background: rgba(15, 23, 42, 0.4);
+            overflow: hidden;
+        }
+
+        .video-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .video-card:hover .video-cover {
+            transform: scale(1.05);
+        }
+
+        .video-info {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .video-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .video-tag {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Message and Spinner */
+        .msg-box {
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .spinner-large {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+
+        /* Modal Detail Dialog */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 92vh;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalSlide 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes modalSlide {
+            from { transform: scale(0.9) translateY(20px); }
+            to { transform: scale(1) translateY(0); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .detail-meta-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        @media (max-width: 576px) {
+            .modal-body {
+                padding: 16px !important;
+            }
+            .detail-meta-row {
+                gap: 12px !important;
+                margin-bottom: 16px !important;
+            }
+            .detail-cover-wrap {
+                width: 90px !important;
+                height: 126px !important;
+                border-radius: 8px !important;
+            }
+            .detail-title {
+                font-size: 15px !important;
+            }
+            .pan-sort-bar {
+                background: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 4px 8px 4px !important;
+            }
+            .sort-btn {
+                font-size: 10px !important;
+                padding: 3px 6px !important;
+            }
+        }
+
+        .detail-cover-wrap {
+            width: 110px;
+            height: 154px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            background: rgba(15, 23, 42, 0.6);
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detail-cover-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .detail-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+        }
+
+        .detail-cover.no-cover {
+            opacity: 0;
+        }
+
+        .detail-meta-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .detail-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .detail-extra-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .detail-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 36px;
+        }
+
+        .detail-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 16px;
+            gap: 16px;
+        }
+
+        .detail-tab-btn {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            padding: 8px 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .detail-tab-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .source-panel {
+            display: none;
+            text-align: left;
+            padding-right: 4px;
+        }
+
+        .source-panel.active {
+            display: block;
+        }
+
+        .pan-sub-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        .pan-sub-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .pan-sub-tab {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .pan-sub-tab:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .pan-sub-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .hls-line-section {
+            margin-bottom: 16px;
+        }
+
+        .hls-line-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #818cf8;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 8px;
+        }
+
+        .ep-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ep-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .pan-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .pan-item-row:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: scale(1.01);
+        }
+
+        .pan-item-row:active {
+            transform: scale(0.99);
+        }
+
+        .pan-sort-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 8px 12px;
+            margin: 4px 12px 12px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .sort-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            transition: all 0.2s ease;
+            user-select: none;
+            border-radius: 4px;
+        }
+        .sort-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .sort-btn.active {
+            color: var(--primary);
+            font-weight: 700;
+            background: rgba(99, 102, 241, 0.08);
+        }
+        .sort-arrow {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+            display: inline-block;
+        }
+
+        .pan-name-tag {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+
+        .pan-ali { background-color: #fca5a5; color: #7f1d1d; }
+        .pan-qk { background-color: #93c5fd; color: #1e3a8a; }
+        .pan-uc { background-color: #fde047; color: #713f12; }
+        .pan-bd { background-color: #a7f3d0; color: #064e3b; }
+        .pan-xl { background-color: #c084fc; color: #581c87; }
+        .pan-other { background-color: rgba(255,255,255,0.1); color: var(--text-main); }
+
+        .pan-item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Scrollable long pan link remarks */
+        .pan-remark-scrollable {
+            display: inline-block;
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        .pan-remark-scrollable::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pan-push-btn {
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pan-push-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        /* Scrollable long filenames */
+        .pan-file-name-scrollable {
+            display: inline-block;
+            max-width: 250px;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        .pan-file-name-scrollable::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cloud-down-tasks-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cloud-down-tasks-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .down-item-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .down-item-card:hover {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: rgba(99, 102, 241, 0.35);
+            transform: scale(1.005);
+        }
+        .down-item-card:active {
+            transform: scale(0.995);
+        }
+        .down-item-main {
+            flex: 1;
+            overflow: hidden;
+        }
+        .down-item-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.5;
+        }
+        .down-item-tag {
+            color: #818cf8;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+        .down-item-url {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 0.8;
+        }
+
+        .task-action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .task-action-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            color: white;
+        }
+        .task-action-btn.btn-play {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #818cf8;
+        }
+        .task-action-btn.btn-play:hover {
+            background: rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+        .task-action-btn.btn-del {
+            color: #ff3b30;
+            border-color: rgba(255, 59, 48, 0.2);
+        }
+        .task-action-btn.btn-del:hover {
+            background: rgba(255, 59, 48, 0.15);
+            border-color: #ff3b30;
+        }
+
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.toast-error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        /* Bottom Nav Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: calc(20px + env(safe-area-inset-bottom));
+            left: 20px;
+            right: 20px;
+            width: auto;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        @media (min-width: 400px) {
+            .nav-bar {
+                left: calc(50% - 190px);
+                right: auto;
+                width: 380px;
+            }
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            gap: 4px;
+            transition: all 0.3s ease;
+            width: 55px;
+            margin: 0;
+            padding: 4px 0;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            color: #6366F1;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            transition: stroke 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            stroke: #6366F1;
+            filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.6));
+        }
+
+        @media (max-height: 480px) {
+            .nav-bar {
+                display: none;
+            }
+        }
+
+        /* Pagination Container */
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .pagination-container.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .page-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Tab Bar Styles */
+        .tabs-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .tab-item {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            color: var(--text-muted);
+            transition: all 0.25s ease;
+        }
+
+        .tab-item.active {
+            background: var(--primary);
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Settings Gear Icon Button */
+        .settings-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: rotate(45deg);
+        }
+
+        .settings-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Form Controls */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-main);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Pansou Results Sub Tabs */
+        .pansou-sub-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            width: 100%;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        
+        .pansou-sub-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pansou-sub-tab {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .pansou-sub-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .pansou-sub-tab.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Pansou Resource Item Row */
+        .pansou-item {
+            display: flex;
+            gap: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .pansou-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(30, 41, 59, 0.85);
+        }
+
+        .pansou-cover {
+            width: 72px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: rgba(15, 23, 42, 0.6);
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pansou-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pansou-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-all;
+        }
+
+        .pansou-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pansou-meta span {
+            display: flex;
+            align-items: center;
+        }
+
+        .pansou-meta .dot {
+            width: 3px;
+            height: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .pansou-url {
+            font-size: 12px;
+            color: var(--primary);
+            opacity: 0.85;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-all;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-badge">搜</div>
+            <h1>视频搜索</h1>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <div class="tab-item active" id="tab-internal" onclick="switchSearchTab('internal')">站内搜索</div>
+            <div class="tab-item" id="tab-pansou" onclick="switchSearchTab('pansou')">盘搜</div>
+        </div>
+
+        <!-- Search Input Bar -->
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索电影、电视剧、动漫..." />
+            <button class="search-btn" onclick="triggerSearch()">搜索</button>
+            <button class="settings-btn" id="pansouSettingsBtn" style="display: none;" onclick="openPansouConfigModal()" title="盘搜设置">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Search Results Grid -->
+        <div id="resultsContent">
+            <div class="msg-box">输入关键字并点击搜索开始，指令将同步推送到 Kodi</div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container" id="pagination">
+            <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">上一页</button>
+            <span class="page-info" id="pageInfo">第 1 / 1 页</span>
+            <button class="page-btn" id="nextPageBtn" onclick="changePage(1)">下一页</button>
+        </div>
+    </div>
+
+
+    <!-- Detail Dialog -->
+    <div class="modal" id="detailModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div class="modal-body" id="modalContent">
+                <!-- Content will be injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Description Full Text Dialog -->
+    <div class="modal" id="descModal" style="z-index: 1010;">
+        <div class="modal-card" style="max-width: 400px; max-height: 60vh;">
+            <button class="modal-close" onclick="closeDescModal()">×</button>
+            <div class="modal-body" style="padding: 24px; text-align: left;">
+                <div class="detail-title" style="margin-bottom: 16px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">剧情简介</div>
+                <div id="descModalText" style="font-size: 13px; color: var(--text-main); line-height: 1.7; white-space: pre-wrap; max-height: 40vh; overflow-y: auto; padding-right: 4px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pan Files Dialog -->
+    <div class="modal" id="panFilesModal" style="z-index: 1010;">
+        <div class="modal-card" style="max-width: 450px; max-height: 70vh;">
+            <button class="modal-close" onclick="closePanFilesModal()">×</button>
+            <div class="modal-body" style="padding: 24px; text-align: left; display: flex; flex-direction: column;">
+                <div class="detail-title" id="panFilesModalTitle" style="margin-bottom: 16px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">网盘文件列表</div>
+                <div id="panFilesContent" style="flex: 1; overflow-y: auto; max-height: 50vh; padding-right: 4px;">
+                    <!-- Files will render here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 115 Cloud Down Tasks Dialog -->
+    <div class="modal" id="cloudDownTasksModal" style="z-index: 1010;">
+        <div class="modal-card" style="max-width: 480px; max-height: 75vh;">
+            <button class="modal-close" onclick="closeCloudDownTasksModal()">×</button>
+            <div class="modal-body" style="padding: 20px; text-align: left; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; padding-right: 42px;">
+                    <div class="detail-title" style="font-size: 15px; margin: 0;">115 云下载任务列表</div>
+                    <button class="task-action-btn" onclick="loadCloudDownTasks()">🔄 刷新</button>
+                </div>
+                <div id="cloudDownTasksContent" style="flex: 1; overflow-y: auto; max-height: 55vh; padding-right: 4px;">
+                    <!-- Tasks will render here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Tree Modal -->
+    <div class="modal" id="shareTreeModal" style="z-index: 1010;">
+        <div class="modal-card" style="max-height: 80vh;">
+            <button class="modal-close" onclick="closeShareTreeModal()">×</button>
+            <div class="modal-body" style="padding: 24px; text-align: left; display: flex; flex-direction: column;">
+                <div id="shareTreeModalTitle" style="margin-bottom: 4px; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white;">网盘资源文件列表</div>
+                <div id="shareTreeSubTitle" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;"></div>
+                <div id="shareTreeContent" style="flex: 1; overflow-y: auto; max-height: 55vh;"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Pansou Config Modal -->
+    <div class="modal" id="pansouConfigModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closePansouConfigModal()">×</button>
+            <div class="modal-body" style="text-align: left;">
+                <h2 style="margin-bottom: 20px; font-weight: 800; font-size: 20px; text-align: center;">盘搜设置</h2>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-size: 14px; color: var(--text-muted);">盘搜地址</label>
+                    <input type="text" id="pansouAddr" class="search-input" style="width: 100%;" placeholder="默认 https://so.252035.xyz" />
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-size: 14px; color: var(--text-muted);">账号 (选填)</label>
+                    <input type="text" id="pansouUser" class="search-input" style="width: 100%;" placeholder="认证站点的用户名" />
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-size: 14px; color: var(--text-muted);">密码 (选填)</label>
+                    <input type="password" id="pansouPass" class="search-input" style="width: 100%;" placeholder="认证站点的密码" />
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-muted);">搜索网盘 (多选)</label>
+                    <div id="pansouPanTypes" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <!-- Checkboxes dynamically populated -->
+                    </div>
+                </div>
+                <button class="search-btn" style="width: 100%; padding: 14px; border-radius: 16px;" onclick="savePansouConfig()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">已同步搜索指令到 Kodi</div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="nav-bar">
+        <a href="/" class="nav-item" id="nav-home">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>推荐</span>
+        </a>
+        <a href="/l" class="nav-item" id="nav-lists">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>片单</span>
+        </a>
+        <a href="/c" class="nav-item" id="nav-category">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>分类</span>
+        </a>
+        <a href="/sq" class="nav-item" id="nav-share">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>广场</span>
+        </a>
+        <a href="/private" class="nav-item" id="nav-private">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+            <span>私有库</span>
+        </a>
+        <a href="/s" class="nav-item active" id="nav-search">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>搜索</span>
+        </a>
+        <a href="/p" class="nav-item" id="nav-push">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>推送</span>
+        </a>
+        <a href="/qr" class="nav-item" id="nav-pan">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span>网盘</span>
+        </a>
+    </div>
+
+    <script>
+        let currentSearchType = 'internal';
+        let currentPansouResults = {};
+
+        const ALL_PANS = [
+            { id: 'aliyun', name: '阿里云盘' },
+            { id: 'quark', name: '夸克网盘' },
+            { id: 'uc', name: 'UC网盘' },
+            { id: 'baidu', name: '百度网盘' },
+            { id: 'xunlei', name: '迅雷网盘' },
+            { id: '123', name: '123云盘' },
+            { id: '115', name: '115网盘' },
+            { id: 'mobile', name: '移动云盘' },
+            { id: 'tianyi', name: '天翼云盘' },
+            { id: 'guangya', name: '光鸭云盘' },
+            { id: 'magnet', name: '磁力链接' },
+            { id: 'ed2k', name: '电驴链接' }
+        ];
+
+        // Press Enter to search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                triggerSearch();
+            }
+        });
+
+        // Switch Search Tab
+        function switchSearchTab(type) {
+            if (currentSearchType === type) return;
+            currentSearchType = type;
+            
+            document.getElementById('tab-internal').classList.toggle('active', type === 'internal');
+            document.getElementById('tab-pansou').classList.toggle('active', type === 'pansou');
+            
+            const settingsBtn = document.getElementById('pansouSettingsBtn');
+            const searchInput = document.getElementById('searchInput');
+            const resultsContent = document.getElementById('resultsContent');
+            const pagination = document.getElementById('pagination');
+            
+            pagination.classList.remove('active');
+            
+            if (type === 'internal') {
+                settingsBtn.style.display = 'none';
+                searchInput.placeholder = '搜索电影、电视剧、动漫...';
+                resultsContent.innerHTML = '<div class="msg-box">输入关键字并点击搜索开始，指令将同步推送到 Kodi</div>';
+            } else {
+                settingsBtn.style.display = 'flex';
+                searchInput.placeholder = '在全网盘搜中寻找资源...';
+                resultsContent.innerHTML = '<div class="msg-box">输入关键字并点击搜索开始全网盘搜</div>';
+            }
+        }
+
+        // Trigger search based on tab
+        function triggerSearch() {
+            if (currentSearchType === 'internal') {
+                startSearch(1);
+            } else {
+                startPansouSearch();
+            }
+        }
+
+        // Pansou Configuration Modal Actions
+        async function openPansouConfigModal() {
+            const modal = document.getElementById('pansouConfigModal');
+            modal.classList.add('active');
+            
+            try {
+                const response = await fetch('/api/pansou/config');
+                if (!response.ok) throw new Error("获取配置失败");
+                const config = await response.json();
+                
+                document.getElementById('pansouAddr').value = config.addr || 'https://so.252035.xyz';
+                document.getElementById('pansouUser').value = config.username || '';
+                document.getElementById('pansouPass').value = config.password || '';
+                
+                const checkedPans = config.pan_types || [];
+                const panTypesContainer = document.getElementById('pansouPanTypes');
+                
+                let checkboxHTML = '';
+                ALL_PANS.forEach(pan => {
+                    const isChecked = checkedPans.length === 0 || checkedPans.includes(pan.id);
+                    checkboxHTML += 
+                        '<label class="checkbox-label">' +
+                            '<input type="checkbox" name="panType" value="' + pan.id + '"' + (isChecked ? ' checked' : '') + ' />' +
+                            pan.name +
+                        '</label>';
+                });
+                panTypesContainer.innerHTML = checkboxHTML;
+            } catch (err) {
+                showToast("加载设置失败: " + err.message, true);
+            }
+        }
+
+        function closePansouConfigModal() {
+            document.getElementById('pansouConfigModal').classList.remove('active');
+        }
+
+        async function savePansouConfig() {
+            const addr = document.getElementById('pansouAddr').value.trim();
+            const username = document.getElementById('pansouUser').value.trim();
+            const password = document.getElementById('pansouPass').value.trim();
+            
+            const checkboxes = document.querySelectorAll('input[name="panType"]:checked');
+            const panTypes = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (panTypes.length === 0) {
+                showToast("请至少选择一个要搜索的网盘", true);
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/pansou/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        addr: addr,
+                        username: username,
+                        password: password,
+                        pan_types: panTypes
+                    })
+                });
+                
+                if (!response.ok) throw new Error("保存配置失败");
+                showToast("盘搜设置保存成功");
+                closePansouConfigModal();
+            } catch (err) {
+                showToast("保存失败: " + err.message, true);
+            }
+        }
+
+        // Show Toast Function
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.toggle('toast-error', isError);
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Start Internal Search
+        async function startSearch(page = 1) {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            currentQuery = query;
+            currentPage = page;
+
+            const resultsContent = document.getElementById('resultsContent');
+            const pagination = document.getElementById('pagination');
+
+            if (page === 1) {
+                resultsContent.innerHTML = '<div class="spinner-large"></div>';
+                pagination.classList.remove('active');
+            }
+
+            try {
+                const response = await fetch('/api/mv/videos/search?q=' + encodeURIComponent(query) + '&page=' + page + '&pageSize=21');
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const rawData = await response.json();
+                
+                const data = rawData.data || {};
+                const videos = data.items || [];
+                const pag = data.pagination || {};
+                
+                totalPages = pag.totalPages || 1;
+                
+                if (videos.length === 0) {
+                    resultsContent.innerHTML = '<div class="msg-box">没有找到相关资源</div>';
+                    pagination.classList.remove('active');
+                    return;
+                }
+
+                // Render grid
+                let gridHTML = '<div class="video-grid">';
+                videos.forEach(v => {
+                    const cover = v.pic || v.coverUrl || v.sourceCoverUrl || '';
+                    const year = v.year || '未知';
+                    const label = v.typeName || '';
+                    gridHTML += 
+                        '<div class="video-card" onclick="openDetail(' + v.id + ')">' +
+                            '<div class="video-cover-wrap">' +
+                                '<img class="video-cover" referrerpolicy="no-referrer" src="' + getAbsoluteCoverUrl(cover) + '" alt="' + v.title + '" onerror="this.src=\'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22140%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23222%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23555%22 font-size=%2212%22 text-anchor=%22middle%22>无封面</text></svg>\'">' +
+                            '</div>' +
+                            '<div class="video-info">' +
+                                '<div class="video-title">' + v.title + '</div>' +
+                                '<div class="video-meta">' +
+                                    '<span>' + year + '</span>' +
+                                    (label ? '<span class="video-tag">' + label + '</span>' : '') +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                });
+                gridHTML += '</div>';
+                
+                resultsContent.innerHTML = gridHTML;
+                
+                // Update pagination controls
+                document.getElementById('pageInfo').innerText = '第 ' + page + ' / ' + totalPages + ' 页';
+                document.getElementById('prevPageBtn').disabled = (page <= 1);
+                document.getElementById('nextPageBtn').disabled = (page >= totalPages);
+                pagination.classList.add('active');
+
+                // Remote control Kodi to search
+                const kodiCmd = 'Container.Update("plugin://plugin.video.juku/?action=search&q=' + encodeURIComponent(query) + '")';
+                sendKodiCommand(kodiCmd, "已遥控 Kodi 同步搜索！");
+
+            } catch (err) {
+                console.error(err);
+                resultsContent.innerHTML = '<div class="msg-box" style="color:var(--color-expired);">搜索失败: ' + err.message + '</div>';
+                pagination.classList.remove('active');
+            }
+        }
+
+        // Start Pansou Search
+        async function startPansouSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = '<div class="spinner-large"></div><div style="text-align:center;color:var(--text-muted);font-size:12px;">正在连接盘搜接口搜索资源...</div>';
+
+            try {
+                const response = await fetch('/api/pansou/search?kw=' + encodeURIComponent(query));
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || ("HTTP " + response.status));
+                }
+                const data = await response.json();
+                
+                currentPansouResults = data.merged_by_type || {};
+                
+                const activePans = [];
+                for (let pan in currentPansouResults) {
+                    if (currentPansouResults[pan] && currentPansouResults[pan].length > 0) {
+                        activePans.push(pan);
+                    }
+                }
+                
+                if (activePans.length === 0) {
+                    resultsContent.innerHTML = '<div class="msg-box">盘搜没有找到相关资源</div>';
+                    return;
+                }
+                
+                activePans.sort((a, b) => {
+                    const idxA = ALL_PANS.findIndex(p => p.id === a);
+                    const idxB = ALL_PANS.findIndex(p => p.id === b);
+                    return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+                });
+                
+                let subTabsHTML = '<div class="pansou-sub-tabs">';
+                activePans.forEach((pan, idx) => {
+                    const panInfo = ALL_PANS.find(p => p.id === pan) || { name: pan };
+                    const count = currentPansouResults[pan].length;
+                    const isActive = idx === 0;
+                    subTabsHTML += '<button class="pansou-sub-tab' + (isActive ? ' active' : '') + '" data-pan="' + pan + '" onclick="switchPansouSubTab(\'' + pan + '\')">' + panInfo.name + ' ' + count + '</button>';
+                });
+                subTabsHTML += '</div><div id="pansouList"></div>';
+                
+                resultsContent.innerHTML = subTabsHTML;
+                
+                renderPansouList(activePans[0]);
+                
+            } catch (err) {
+                console.error(err);
+                resultsContent.innerHTML = '<div class="msg-box" style="color:var(--color-expired);">盘搜搜索失败: ' + err.message + '</div>';
+            }
+        }
+
+        function switchPansouSubTab(panType) {
+            const tabs = document.querySelectorAll('.pansou-sub-tab');
+            tabs.forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-pan') === panType);
+            });
+            renderPansouList(panType);
+        }
+
+        function renderPansouList(panType) {
+            const container = document.getElementById('pansouList');
+            if (!container) return;
+
+            const items = currentPansouResults[panType] || [];
+            let html = '';
+            
+            const panInfo = ALL_PANS.find(p => p.id === panType) || { name: panType };
+            
+            items.forEach((item, idx) => {
+                const coverUrl = (item.images && item.images.length > 0) ? ('/api/img_proxy?url=' + encodeURIComponent(item.images[0])) : '';
+                const displayCover = coverUrl ? ('src="' + coverUrl + '"') : '';
+                
+                let cleanTime = '';
+                let hasTime = false;
+                if (item.datetime) {
+                    let t = item.datetime.replace('T', ' ').replace('Z', '');
+                    t = t.replace(/\+[0-9]{2}:?[0-9]{2}$/, '');
+                    if (t.indexOf('0001-01-01') === -1 && t.trim() !== '') {
+                        hasTime = true;
+                        cleanTime = t.trim();
+                    }
+                }
+                
+                const sourceStr = item.source || '';
+                const urlStr = item.url || '';
+                
+                let metaHTML = '<span>' + panInfo.name + '</span>';
+                if (sourceStr) {
+                    metaHTML += '<span class="dot"></span><span>' + sourceStr + '</span>';
+                }
+                if (hasTime) {
+                    metaHTML += '<span class="dot"></span><span>' + cleanTime + '</span>';
+                }
+                
+                html += 
+                    '<div class="pansou-item" onclick="triggerPansouPlay(\'' + panType + '\', ' + idx + ')">' +
+                        (coverUrl ? 
+                            '<img class="pansou-cover" referrerpolicy="no-referrer" ' + displayCover + ' />' : 
+                            '<div class="pansou-cover" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:10px;background:rgba(255,255,255,0.03);">无海报</div>'
+                        ) +
+                        '<div class="pansou-info">' +
+                            '<div class="pansou-title">' + item.note + '</div>' +
+                            '<div class="pansou-meta">' +
+                                metaHTML +
+                            '</div>' +
+                            '<div class="pansou-url" title="' + urlStr + '">' + urlStr + '</div>' +
+                        '</div>' +
+                    '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function triggerPansouPlay(panType, idx) {
+            const items = currentPansouResults[panType] || [];
+            const item = items[idx];
+            if (!item) return;
+
+            const isCloudDown = (panType === 'magnet' || panType === 'ed2k') || 
+                                (item.url && (item.url.startsWith('magnet:') || item.url.startsWith('ed2k://')));
+
+            if (isCloudDown) {
+                const targetUrl = item.url;
+                const targetTitle = item.note || '盘搜磁力/电驴资源';
+                const playMediaCmd = 'PlayMedia("plugin://plugin.video.juku/?action=cloud_down_play&url=' + encodeURIComponent(targetUrl) + '&title=' + encodeURIComponent(targetTitle) + '&vod_title=' + encodeURIComponent(targetTitle) + '&vod_id=pansou")';
+                sendKodiCommand(playMediaCmd, '已遥控起播磁力/电驴任务: ' + targetTitle);
+                return;
+            }
+
+            currentPanList = {
+                [panType]: [{
+                    url: item.url,
+                    code: item.password || '',
+                    remark: '盘搜资源'
+                }]
+            };
+            currentDetailTitle = item.note;
+            currentDetailId = 0;
+            
+            openPanFiles(0, panType);
+        }
+
+        function changePage(delta) {
+            const targetPage = currentPage + delta;
+            if (targetPage >= 1 && targetPage <= totalPages) {
+                startSearch(targetPage);
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.error('Service Worker registration failed', err));
+            });
+        }
+
+        // Close pansou config modal when clicking background
+        document.getElementById('pansouConfigModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePansouConfigModal();
+            }
+        });
+
+
+        const HLS_LINE_MAP = {
+            "1": "天堂线路", "2": "暴风线路", "3": "木耳线路", "4": "如意线路",
+            "5": "非凡线路", "6": "ikun线路", "7": "量子线路", "8": "淘片线路",
+            "9": "卧龙线路", "10": "无尽线路", "11": "红牛线路", "12": "光速线路",
+            "37": "奇异线路", "38": "猫眼线路", "39": "牛牛线路", "40": "西瓜线路",
+
+            "13": "天堂线路国语", "14": "暴风线路国语", "15": "木耳线路国语", "16": "如意线路国语",
+            "17": "非凡线路国语", "18": "ikun线路国语", "19": "量子线路国语", "20": "淘片线路国语",
+            "21": "卧龙线路国语", "22": "无尽线路国语", "23": "红牛线路国语", "24": "光速线路国语",
+            "137": "奇异线路国语", "138": "猫眼线路国语", "139": "牛牛线路国语",
+
+            "25": "天堂线路粤语", "26": "暴风线路粤语", "27": "木耳线路粤语", "28": "如意线路粤语",
+            "29": "非凡线路粤语", "30": "ikun线路粤语", "31": "量子线路粤语", "32": "淘片线路粤语",
+            "33": "卧龙线路粤语", "34": "无尽线路粤语", "35": "红牛线路粤语", "36": "光速线路粤语",
+            "237": "奇异线路粤语", "238": "猫眼线路粤语", "239": "牛牛线路粤语",
+
+            "325": "天堂线路英语", "326": "暴风线路英语", "327": "木耳线路英语", "328": "如意线路英语",
+            "329": "非凡线路英语", "330": "ikun线路英语", "331": "量子线路英语", "332": "淘片线路英语",
+            "333": "卧龙线路英语", "334": "无尽线路英语", "335": "红牛线路英语", "336": "光速线路英语",
+            "337": "奇异线路英语", "338": "猫眼线路英语", "339": "牛牛线路英语",
+
+            "425": "天堂线路日语", "426": "暴风线路日语", "427": "木耳线路日语", "428": "如意线路日语",
+            "429": "非凡线路日语", "430": "ikun线路日语", "431": "量子线路日语", "432": "淘片线路日语",
+            "433": "卧龙线路日语", "434": "无尽线路日语", "435": "红牛线路日语", "436": "光速线路日语",
+            "437": "奇异线路日语", "438": "猫眼线路日语", "439": "牛牛线路日语",
+
+            "525": "天堂线路中配", "526": "暴风线路中配", "527": "木耳线路中配", "528": "如意线路中配",
+            "529": "非凡线路中配", "530": "ikun线路中配", "531": "量子线路中配", "532": "淘片线路中配",
+            "533": "卧龙线路中配", "534": "无尽线路中配", "535": "红牛线路中配", "536": "光速线路中配",
+            "537": "奇异线路中配", "538": "猫眼线路中配", "539": "牛牛线路中配"
+        };
+
+        const DEFAULT_PAN_ORDER = ["7", "4", "2", "3", "11", "6", "9", "8", "5", "1", "10"];
+        const PAN_ALIAS_TO_ID = {
+            "7": "7", "115": "7", "CLOUD115": "7",
+            "4": "4", "bd": "4", "BAIDU": "4",
+            "2": "2", "qk": "2", "QUARK": "2",
+            "3": "3", "uc": "3", "UC": "3",
+            "11": "11", "gy": "11", "GUANGYA": "11",
+            "6": "6", "123": "6", "CLOUD123": "6",
+            "9": "9", "ty": "9", "CHINA_TELECOM": "9",
+            "8": "8", "yd": "8", "CHINA_MOBILE": "8",
+            "5": "5", "xl": "5", "XUNLEI": "5",
+            "1": "1", "ali": "1", "ALIYUN": "1",
+            "10": "10"
+        };
+
+        let currentPanOrder = [...DEFAULT_PAN_ORDER];
+
+        async function fetchPanOrder() {
+            try {
+                const res = await fetch('/api/pan/order');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.order) && data.order.length > 0) {
+                        currentPanOrder = data.order;
+                    }
+                }
+            } catch (err) {}
+        }
+        fetchPanOrder();
+
+        function getPanOrderIndex(panIdentifier) {
+            const id = PAN_ALIAS_TO_ID[panIdentifier] || panIdentifier;
+            const idx = currentPanOrder.indexOf(id);
+            return idx !== -1 ? idx : 999;
+        }
+
+        const PROVIDER_NAMES = {
+            "1": "阿里", "2": "夸克", "3": "UC", "4": "百度", "5": "迅雷",
+            "6": "123", "7": "115", "8": "移动", "9": "天翼", "11": "光鸭",
+            "ali": "阿里", "qk": "夸克", "uc": "UC", "bd": "百度", "xl": "迅雷",
+            "123": "123", "115": "115", "yd": "移动", "ty": "天翼", "gy": "光鸭",
+            "ALIYUN": "阿里", "QUARK": "夸克", "UC": "UC", "BAIDU": "百度", "XUNLEI": "迅雷",
+            "CLOUD123": "123", "CLOUD115": "115", "CHINA_MOBILE": "移动", "CHINA_TELECOM": "天翼", "GUANGYA": "光鸭"
+        };
+
+        const CLOUD_SHARE_PREFIXES = {
+            "1": "https://www.alipan.com/s/",
+            "2": "https://pan.quark.cn/s/",
+            "3": "https://drive.uc.cn/s/",
+            "4": "https://pan.baidu.com/s/",
+            "5": "https://pan.xunlei.com/s/",
+            "6": "https://www.123pan.com/s/",
+            "7": "https://115.com/s/",
+            "8": "https://caiyun.139.com/m/i?",
+            "9": "https://cloud.189.cn/t/",
+            "11": "https://www.guangyapan.com/s/",
+            
+            "ali": "https://www.alipan.com/s/",
+            "qk": "https://pan.quark.cn/s/",
+            "uc": "https://drive.uc.cn/s/",
+            "bd": "https://pan.baidu.com/s/",
+            "xl": "https://pan.xunlei.com/s/",
+            "123": "https://www.123pan.com/s/",
+            "115": "https://115.com/s/",
+            "yd": "https://caiyun.139.com/m/i?",
+            "ty": "https://cloud.189.cn/t/",
+            "gy": "https://www.guangyapan.com/s/",
+
+            "ALIYUN": "https://www.alipan.com/s/",
+            "QUARK": "https://pan.quark.cn/s/",
+            "UC": "https://drive.uc.cn/s/",
+            "BAIDU": "https://pan.baidu.com/s/",
+            "XUNLEI": "https://pan.xunlei.com/s/",
+            "CLOUD123": "https://www.123pan.com/s/",
+            "CLOUD115": "https://115.com/s/",
+            "CHINA_MOBILE": "https://caiyun.139.com/m/i?",
+            "CHINA_TELECOM": "https://cloud.189.cn/t/",
+            "GUANGYA": "https://www.guangyapan.com/s/"
+        };
+
+        function toShareUrl(rawUrl, panName) {
+            if (!rawUrl) return "";
+            rawUrl = rawUrl.trim();
+            if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
+                return rawUrl;
+            }
+            const prefix = CLOUD_SHARE_PREFIXES[panName];
+            if (prefix) {
+                if ((panName === "8" || panName === "CHINA_MOBILE" || panName === "yd") && !rawUrl.startsWith("cid=")) {
+                    return prefix + "cid=" + rawUrl;
+                }
+                return prefix + rawUrl;
+            }
+            return rawUrl;
+        }
+
+        let currentPanList = {};
+        let currentDetailTitle = '';
+        let currentDetailId = '';
+        let currentDetailTypeId = 1;
+        let currentFullDesc = '';
+
+        let currentResolvingUrl = '';
+        let currentResolvingCode = '';
+        let currentResolvingPanName = '';
+
+        // Helper to format absolute cover image url
+        function getAbsoluteCoverUrl(url) {
+            if (!url) return '';
+            if (url.indexOf('image.tmdb.org') !== -1 && url.indexOf('/api/image/proxy') === -1) {
+                return '/api/image/proxy?url=' + encodeURIComponent(url);
+            }
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return url;
+            }
+            if (url.startsWith('//')) {
+                return 'https:' + url;
+            }
+            if (url.startsWith('/')) {
+                return '/api/image/proxy?url=' + encodeURIComponent('https://image.tmdb.org/t/p/original' + url);
+            }
+            return '/api/image/proxy?url=' + encodeURIComponent(url);
+        }
+
+        function getAbsoluteBackdropUrl(url) {
+            if (!url) return '';
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return getAbsoluteCoverUrl(url);
+            }
+            return getAbsoluteCoverUrl('https://image.tmdb.org/t/p/original' + (url.startsWith('/') ? url : ('/' + url)));
+        }
+
+        // Send Command to Kodi
+        async function sendKodiCommand(cmd, successMsg) {
+            try {
+                const res = await fetch('/api/push', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cmd: cmd, title: "遥控指令" })
+                });
+                if (res.ok) {
+                    showToast(successMsg || "指令已同步至 Kodi");
+                } else {
+                    showToast("同步到 Kodi 失败", true);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("连接守护后台出错", true);
+            }
+        }
+
+        let currentCoverUrl = '';
+        let currentBackdropUrl = '';
+
+        // Open Detail Modal
+        async function openDetail(id) {
+            const modal = document.getElementById('detailModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.innerHTML = '<div class="spinner-large"><\/div><div style="text-align:center;color:var(--text-muted);padding-top:20px;">正在调取线路与网盘资源...<\/div>';
+            modal.classList.add('active');
+
+            try {
+                const response = await fetch('/api/mv/videos/' + id);
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const rawData = await response.json();
+                const detail = rawData.data || {};
+                
+                const title = detail.title || '未知视频';
+                const cover = detail.pic || detail.coverUrl || detail.sourceCoverUrl || '';
+                const backdropPath = detail.backdropPath || detail.backdrop_path || '';
+                currentCoverUrl = cover || '';
+                currentBackdropUrl = backdropPath || '';
+                const typeId = detail.typeId || detail.type_id || 1;
+                
+                // Get correct content/desc field
+                const desc = detail.content || detail.desc || detail.introduction || '暂无视频简介。';
+                currentFullDesc = desc; // Assign to global variable safely
+                
+                const year = detail.year || '';
+                const area = detail.area || '';
+                const typeName = detail.typeName || '';
+
+                // Extra details
+                const director = detail.director || '';
+                const starring = detail.starring || '';
+                let tagsText = '';
+                if (detail.tags) {
+                    tagsText = Array.isArray(detail.tags) ? detail.tags.join(' / ') : detail.tags;
+                }
+
+                const playListByLine = detail.playListByLine || detail.playList || {};
+                const panList = detail.panList || {};
+                const downList = detail.downList || [];
+
+                currentPanList = panList || {};
+                currentDetailTitle = title;
+                currentDetailId = id;
+                currentDetailTypeId = typeId;
+
+                // Generate Detail View HTML
+                let bodyHTML = 
+                    '<div class="detail-meta-row">' +
+                        '<div class="detail-cover-wrap">' +
+                            '<img class="detail-cover" referrerpolicy="no-referrer" src="' + getAbsoluteCoverUrl(cover) + '" alt="' + title + '" onerror="this.classList.add(\'no-cover\')">' +
+                            '<div class="detail-cover-placeholder">无封面<\/div>' +
+                        '<\/div>' +
+                        '<div class="detail-meta-info">' +
+                            '<div class="detail-title" title="' + title + '">' + title + '<\/div>' +
+                            '<div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:2px;">' + year + ' ' + area + ' ' + typeName + '<\/div>' +
+                            (director ? '<div class="detail-extra-meta">导演：' + director + '<\/div>' : '') +
+                            (starring ? '<div class="detail-extra-meta">主演：' + starring + '<\/div>' : '') +
+                            (tagsText ? '<div class="detail-extra-meta">类型：' + tagsText + '<\/div>' : '') +
+                            '<div class="detail-desc" style="cursor:pointer;" onclick="showFullDesc()" title="点击查看完整简介">' + desc + '<\/div>' +
+                        '<\/div>' +
+                    '<\/div>' +
+                    '<div class="detail-tabs">' +
+                        '<button class="detail-tab-btn active" id="tab-btn-pan" onclick="switchDetailTab(\'pan\')">网盘播放<\/button>' +
+                        (downList.length > 0 ? '<button class="detail-tab-btn" id="tab-btn-down" onclick="switchDetailTab(\'down\')">磁力和ED2K (' + downList.length + ')<\/button>' : '') +
+                        '<button class="detail-tab-btn" id="tab-btn-hls" onclick="switchDetailTab(\'hls\')">在线播放<\/button>' +
+                    '<\/div>' +
+                    '<div class="source-panel active" id="panel-pan">';
+
+                // Generate horizontal sub-tabs
+                let tabCount = 0;
+                let activeTabName = '';
+                let subTabsHTML = '<div class="pan-sub-tabs" id="panSubTabs">';
+                
+                let sortedPanNames = Object.keys(currentPanList).sort((a, b) => {
+                    return getPanOrderIndex(a) - getPanOrderIndex(b);
+                });
+
+                for (let panName of sortedPanNames) {
+                    const links = currentPanList[panName] || [];
+                    if (links.length > 0) {
+                        tabCount++;
+                        const shortName = PROVIDER_NAMES[panName] || panName;
+                        const isActive = tabCount === 1;
+                        if (isActive) {
+                            activeTabName = panName;
+                        }
+                        subTabsHTML += '<button class="pan-sub-tab' + (isActive ? ' active' : '') + '" data-pan="' + panName + '" onclick="switchPanSubTab(\'' + panName + '\')">' + shortName + '<\/button>';
+                    }
+                }
+                subTabsHTML += '<\/div>';
+
+                if (tabCount > 0) {
+                    let sortBarHTML = 
+                        '<div class="pan-sort-bar">' +
+                            '<button class="sort-btn" id="sort-btn-id" onclick="togglePanSort(\'id\')">时间 <span class="sort-arrow"><\/span><\/button>' +
+                            '<button class="sort-btn" id="sort-btn-fileNum" onclick="togglePanSort(\'fileNum\')">数量 <span class="sort-arrow"><\/span><\/button>' +
+                            '<button class="sort-btn" id="sort-btn-avgFileSize" onclick="togglePanSort(\'avgFileSize\')">大小 <span class="sort-arrow"><\/span><\/button>' +
+                            '<button class="sort-btn" id="sort-btn-avgDuration" onclick="togglePanSort(\'avgDuration\')">码率 <span class="sort-arrow"><\/span><\/button>' +
+                        '<\/div>';
+                    bodyHTML += subTabsHTML + sortBarHTML + '<div class="pan-links-list" id="panLinksList"><\/div>';
+                } else {
+                    bodyHTML += '<div style="color:var(--text-muted);font-size:12px;padding:20px 0;text-align:center;">暂无网盘资源分享<\/div>';
+                }
+
+                let backdropFull = getAbsoluteBackdropUrl(backdropPath);
+
+                // 磁力和ED2K链接 Panel
+                bodyHTML += '<\/div><div class="source-panel" id="panel-down">';
+                if (downList.length > 0) {
+                    bodyHTML += 
+                        '<div style="display:flex;justify-content:flex-end;margin-bottom:10px;">' +
+                            '<button class="cloud-down-tasks-btn" onclick="openCloudDownTasksModal()">' +
+                                '<span>📋<\/span> 查看 115 云下载任务列表' +
+                            '<\/button>' +
+                        '<\/div>' +
+                        '<div class="down-links-list">';
+                    
+                    downList.forEach((item, idx) => {
+                        const rawUrl = item.url || '';
+                        const itemTitle = item.title || ('资源 ' + (idx + 1));
+                        const quality = item.quality || '';
+                        const sizeMb = item.size || 0;
+                        let sizeBytes = 0;
+                        try {
+                            sizeBytes = Math.floor(parseFloat(sizeMb) * 1024 * 1024);
+                        } catch(e) {}
+                        const sizeLabel = formatBytes(sizeBytes);
+
+                        let tagParts = [];
+                        if (quality) tagParts.push('[' + quality + ']');
+                        if (sizeLabel) tagParts.push('[' + sizeLabel + ']');
+                        const tagStr = tagParts.join(' ');
+
+                        const playCmd = 'PlayMedia("plugin://plugin.video.juku/?action=cloud_down_play&url=' + encodeURIComponent(rawUrl) + '&title=' + encodeURIComponent(itemTitle) + '&vod_title=' + encodeURIComponent(title) + '&vod_id=' + id + '&type_id=' + typeId + '&pic=' + encodeURIComponent(getAbsoluteCoverUrl(cover || '')) + '&fanart=' + encodeURIComponent(backdropFull) + '")';
+                        const safePlayCmd = playCmd.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        const safeTitle = (title + ' ' + itemTitle).replace(/'/g, "\\'");
+
+                        bodyHTML += 
+                            '<div class="down-item-card" title="' + itemTitle + '" onclick="playCloudDownVideo(\'' + safePlayCmd + '\', \'' + safeTitle + '\')">' +
+                                '<div class="down-item-main">' +
+                                    '<div class="down-item-title">' +
+                                        (tagStr ? '<span class="down-item-tag">' + tagStr + '<\/span>' : '') +
+                                        itemTitle +
+                                    '<\/div>' +
+                                    '<div class="down-item-url">' + rawUrl + '<\/div>' +
+                                '<\/div>' +
+                            '<\/div>';
+                    });
+                    bodyHTML += '<\/div>';
+                } else {
+                    bodyHTML += '<div style="color:var(--text-muted);font-size:12px;padding:20px 0;text-align:center;">暂无磁力与ED2K资源<\/div>';
+                }
+
+                bodyHTML += 
+                    '<\/div>' +
+                    '<div class="source-panel" id="panel-hls">';
+
+                // Render HLS Lines & Episodes
+                let hlsLinesCount = 0;
+                for (let line in playListByLine) {
+                    hlsLinesCount++;
+                    const episodes = playListByLine[line] || [];
+                    const lineName = HLS_LINE_MAP[line] || ("线路 " + line);
+                    bodyHTML += 
+                        '<div class="hls-line-section">' +
+                            '<div class="hls-line-title">▶ ' + lineName + '<\/div>' +
+                            '<div class="episodes-grid">';
+                    let backdropFull = getAbsoluteBackdropUrl(backdropPath);
+                    episodes.forEach(ep => {
+                        const epName = ep.name || ('第 ' + ep.episode + ' 集');
+                        const epUrl = ep.url || '';
+                        
+                        const playHlsCmd = 'PlayMedia("plugin://plugin.video.juku/?action=play_hls&url=' + encodeURIComponent(epUrl) + '&title=' + encodeURIComponent(epName) + '&vod_title=' + encodeURIComponent(title) + '&vod_id=' + id + '&line=' + encodeURIComponent(line) + '&type_id=' + typeId + '&pic=' + encodeURIComponent(getAbsoluteCoverUrl(cover || '')) + '&fanart=' + encodeURIComponent(backdropFull) + '")';
+                        
+                        // Escape single quotes for js inline function call safely
+                        const safePlayHlsCmd = playHlsCmd.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        const safeEpLabel = (title + ' ' + epName).replace(/'/g, "\\'");
+                        
+                        bodyHTML += 
+                            '<button class="ep-btn" title="' + epName + '" onclick="playVideo(\'' + safePlayHlsCmd + '\', \'' + safeEpLabel + '\')">' +
+                                epName +
+                            '<\/button>';
+                    });
+                    bodyHTML += 
+                            '<\/div>' +
+                        '<\/div>';
+                }
+                if (hlsLinesCount === 0) {
+                    bodyHTML += '<div style="color:var(--text-muted);font-size:12px;padding:20px 0;text-align:center;">暂无在线播放线路<\/div>';
+                }
+
+                bodyHTML += '<\/div>';
+
+                modalContent.innerHTML = bodyHTML;
+                
+                if (activeTabName) {
+                    updateSortBarUI();
+                    renderPanLinks(activeTabName);
+                }
+
+            } catch (err) {
+                console.error(err);
+                modalContent.innerHTML = '<div class="msg-box" style="color:var(--color-expired);">调取视频详情失败: ' + err.message + '<\/div>';
+            }
+        }
+
+        // Sorting state and controllers for pan links
+        let currentSortField = localStorage.getItem('juku_pan_sort_field') || 'avgFileSize';
+        let currentSortOrder = localStorage.getItem('juku_pan_sort_order') || 'desc';
+
+        function updateSortBarUI() {
+            const fields = ['id', 'fileNum', 'avgFileSize', 'avgDuration'];
+            fields.forEach(f => {
+                const btn = document.getElementById('sort-btn-' + f);
+                if (!btn) return;
+                if (f === currentSortField) {
+                    btn.classList.add('active');
+                    const arrow = btn.querySelector('.sort-arrow');
+                    if (arrow) {
+                        arrow.innerText = currentSortOrder === 'desc' ? '▼' : '▲';
+                    }
+                } else {
+                    btn.classList.remove('active');
+                    const arrow = btn.querySelector('.sort-arrow');
+                    if (arrow) {
+                        arrow.innerText = '';
+                    }
+                }
+            });
+        }
+
+        function togglePanSort(field) {
+            if (currentSortField === field) {
+                currentSortOrder = currentSortOrder === 'desc' ? 'asc' : 'desc';
+            } else {
+                currentSortField = field;
+                currentSortOrder = 'desc';
+            }
+            localStorage.setItem('juku_pan_sort_field', currentSortField);
+            localStorage.setItem('juku_pan_sort_order', currentSortOrder);
+            
+            updateSortBarUI();
+            
+            const activeTab = document.querySelector('.pan-sub-tab.active');
+            if (activeTab) {
+                renderPanLinks(activeTab.getAttribute('data-pan'));
+            }
+        }
+
+        // Render pan links inside the sub-tab container
+        function renderPanLinks(panName) {
+            const container = document.getElementById('panLinksList');
+            if (!container) return;
+
+            let sortedLinks = (currentPanList[panName] || []).map((link, index) => {
+                return { ...link, _originalIdx: index };
+            });
+
+            sortedLinks.sort((a, b) => {
+                let valA = a[currentSortField];
+                let valB = b[currentSortField];
+
+                if (valA === undefined || valA === null) valA = 0;
+                if (valB === undefined || valB === null) valB = 0;
+
+                if (currentSortField === 'id') {
+                    const intA = parseInt(valA) || 0;
+                    const intB = parseInt(valB) || 0;
+                    return currentSortOrder === 'desc' ? intB - intA : intA - intB;
+                }
+
+                if (currentSortField === 'avgDuration') {
+                    const sizeA = Number(a.avgFileSize) || 0;
+                    const durA = Number(a.avgDuration) || 0;
+                    const bitrateA = durA > 0 ? (sizeA * 8) / durA : 0;
+
+                    const sizeB = Number(b.avgFileSize) || 0;
+                    const durB = Number(b.avgDuration) || 0;
+                    const bitrateB = durB > 0 ? (sizeB * 8) / durB : 0;
+
+                    return currentSortOrder === 'desc' ? bitrateB - bitrateA : bitrateA - bitrateB;
+                }
+
+                const numA = Number(valA);
+                const numB = Number(valB);
+                return currentSortOrder === 'desc' ? numB - numA : numA - numB;
+            });
+
+            let html = '';
+            const shortName = PROVIDER_NAMES[panName] || panName;
+            const displayClass = ('pan-' + panName) in { 'pan-ali': 1, 'pan-qk': 1, 'pan-uc': 1, 'pan-bd': 1, 'pan-xl': 1 } ? ('pan-' + panName) : 'pan-other';
+            
+            sortedLinks.forEach((link, idx) => {
+                // const remark = link.remark ? (' [' + link.remark + ']') : '';
+                const label = '链接' + (idx + 1) + link.remark;
+                
+                html += 
+                    '<div class="pan-item-row" onclick="openPanFiles(' + link._originalIdx + ', \'' + panName + '\')">' +
+                        '<div class="pan-item-info">' +
+                            '<span class="pan-name-tag ' + displayClass + '">' + shortName + '<\/span>' +
+                            '<span class="pan-remark-scrollable" title="' + label + ', 左右滑动可查看完整备注">' + label + '<\/span>' +
+                        '<\/div>' +
+                        '<span style="font-size: 14px; color: var(--text-muted); opacity: 0.6; padding-right: 4px; flex-shrink: 0;">&gt;<\/span>' +
+                    '<\/div>';
+            });
+            container.innerHTML = html || '<div style="color:var(--text-muted);font-size:12px;padding:20px 0;text-align:center;">该网盘下暂无链接<\/div>';
+        }
+
+        // Switch Tabs inside modal
+        function switchPanSubTab(panName) {
+            const tabs = document.querySelectorAll('.pan-sub-tab');
+            tabs.forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-pan') === panName);
+            });
+            renderPanLinks(panName);
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes <= 0) return '';
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let val = parseFloat(bytes);
+            let idx = 0;
+            while (val >= 1024 && idx < units.length - 1) {
+                val /= 1024;
+                idx++;
+            }
+            return (idx === 0 ? val.toFixed(0) : val.toFixed(1)) + ' ' + units[idx];
+        }
+
+        // Switch Detail Tabs inside modal
+        function switchDetailTab(tab) {
+            const btnHls = document.getElementById('tab-btn-hls');
+            const btnPan = document.getElementById('tab-btn-pan');
+            const btnDown = document.getElementById('tab-btn-down');
+            const panelHls = document.getElementById('panel-hls');
+            const panelPan = document.getElementById('panel-pan');
+            const panelDown = document.getElementById('panel-down');
+
+            if (btnHls) btnHls.classList.toggle('active', tab === 'hls');
+            if (btnPan) btnPan.classList.toggle('active', tab === 'pan');
+            if (btnDown) btnDown.classList.toggle('active', tab === 'down');
+            if (panelHls) panelHls.classList.toggle('active', tab === 'hls');
+            if (panelPan) panelPan.classList.toggle('active', tab === 'pan');
+            if (panelDown) panelDown.classList.toggle('active', tab === 'down');
+        }
+
+        // Trigger HLS play on Kodi
+        function playVideo(cmd, label) {
+            sendKodiCommand(cmd, '已遥控 Kodi 播放: ' + label);
+        }
+
+        function playCloudDownVideo(cmd, label) {
+            sendKodiCommand(cmd, '已遥控 Kodi 云下载秒播: ' + label);
+        }
+
+        function openCloudDownTasksModal() {
+            const modal = document.getElementById('cloudDownTasksModal');
+            if (modal) {
+                modal.classList.add('active');
+                loadCloudDownTasks();
+            }
+        }
+
+        function closeCloudDownTasksModal() {
+            const modal = document.getElementById('cloudDownTasksModal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        async function loadCloudDownTasks() {
+            const container = document.getElementById('cloudDownTasksContent');
+            if (!container) return;
+            container.innerHTML = '<div style="text-align:center;padding:25px 0;color:var(--text-muted);font-size:12px;">正在获取 115 任务列表...<\/div>';
+
+            try {
+                const res = await fetch('/api/115/offline/tasks?page=1');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                const tasks = data.tasks || [];
+                if (tasks.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;padding:35px 0;color:var(--text-muted);font-size:12px;">暂无 115 云下载任务<\/div>';
+                    return;
+                }
+
+                let html = '';
+                tasks.forEach(t => {
+                    const name = t.name || t.url || '未知任务';
+                    const sizeStr = formatBytes(t.size);
+                    const status = t.status;
+                    const percent = t.display_percent || t.percent_done || 0;
+                    const rate = t.rate_download || 0;
+                    const speedStr = rate > 0 ? (formatBytes(rate) + '/s') : '';
+                    const hash = t.info_hash || '';
+                    const vodTitle = t.vod_title || '';
+                    const displayName = (vodTitle && !name.startsWith(vodTitle)) ? (vodTitle + '：（' + name + '）') : name;
+
+                    let statusBadge = '';
+                    let actionBtn = '';
+                    if (status === 2) {
+                        statusBadge = '<span style="background:rgba(52,199,89,0.15);color:#34c759;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">已完成<\/span>';
+                        const fileId = t.file_id || '';
+                        const pickCode = t.pick_code || '';
+                        const safeFileId = (fileId || '').replace(/'/g, "\\'");
+                        const safePickCode = (pickCode || '').replace(/'/g, "\\'");
+                        const safeDisplayName = displayName.replace(/'/g, "\\'");
+                        const safeVodTitle = vodTitle.replace(/'/g, "\\'");
+                        actionBtn = '<button class="task-action-btn btn-play" style="margin-right:6px;" onclick="handlePlayCloudDownTask(\'' + safeFileId + '\', \'' + safePickCode + '\', \'' + safeDisplayName + '\', \'' + safeVodTitle + '\')">▶ 播放<\/button>';
+                    } else if (status === 0 || status === 1) {
+                        const statusTxt = t.status_text || '下载中';
+                        statusBadge = '<span style="background:rgba(0,122,255,0.15);color:#007aff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">' + statusTxt + ' ' + Math.floor(percent) + '%' + (speedStr ? (' · ' + speedStr) : '') + '<\/span>';
+                    } else {
+                        statusBadge = '<span style="background:rgba(255,59,48,0.15);color:#ff3b30;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">下载失败<\/span>';
+                    }
+
+                    html += 
+                        '<div style="padding:10px 12px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;">' +
+                            '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">' +
+                                '<div style="font-size:12px;font-weight:600;color:var(--text-main);word-break:break-all;line-height:1.4;" title="' + displayName + '">' + displayName + '<\/div>' +
+                                '<div style="flex-shrink:0;">' + statusBadge + '<\/div>' +
+                            '<\/div>' +
+                            '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">' +
+                                '<div style="font-size:11px;color:var(--text-muted);">' + (sizeStr || '--') + '<\/div>' +
+                                '<div style="display:flex;align-items:center;">' +
+                                    actionBtn +
+                                    '<button class="task-action-btn btn-del" onclick="deleteCloudDownTask(\'' + hash + '\')">删除<\/button>' +
+                                '<\/div>' +
+                            '<\/div>' +
+                        '<\/div>';
+                });
+                container.innerHTML = html;
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = '<div style="text-align:center;padding:25px 0;color:var(--color-expired);font-size:12px;">加载失败: ' + e.message + '<\/div>';
+            }
+        }
+
+        async function handlePlayCloudDownTask(fileId, pickCode, displayName, vodTitle) {
+            showToast('正在解析任务播放地址...');
+            try {
+                const res = await fetch('/api/115/offline/resolve?file_id=' + encodeURIComponent(fileId) + '&pick_code=' + encodeURIComponent(pickCode));
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || ('HTTP ' + res.status));
+                }
+                const data = await res.json();
+                if (data.is_dir && data.sub_files && data.sub_files.length > 1) {
+                    const modal = document.getElementById('panFilesModal');
+                    const titleEl = document.getElementById('panFilesModalTitle');
+                    const contentEl = document.getElementById('panFilesContent');
+                    titleEl.innerText = (vodTitle || displayName) + ' - 选集列表';
+                    let filesHtml = '';
+                    data.sub_files.forEach((f, idx) => {
+                        const epName = f.file_name || ('第 ' + (idx + 1) + ' 集');
+                        const fSizeStr = formatBytes(f.file_size);
+                        const targetSubFid = f.file_id || '';
+                        const targetSubPick = f.pick_code || '';
+                        const playCmd = 'PlayMedia("plugin://plugin.video.juku/?action=cloud_down_task_play&file_id=' + encodeURIComponent(targetSubFid) + '&pick_code=' + encodeURIComponent(targetSubPick) + '&title=' + encodeURIComponent(epName) + '&vod_title=' + encodeURIComponent(vodTitle || displayName) + '")';
+                        const safePlayCmd = playCmd.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        const safeEpName = ((vodTitle || displayName) + ' ' + epName).replace(/'/g, "\\'");
+                        filesHtml += 
+                            '<div class="pan-file-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;margin-bottom:6px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:6px;cursor:pointer;" onclick="playCloudDownVideo(\'' + safePlayCmd + '\', \'' + safeEpName + '\')">' +
+                                '<div style="font-size:12px;color:var(--text-main);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px;" title="' + epName + '">▶ ' + epName + '<\/div>' +
+                                '<div style="font-size:11px;color:var(--text-muted);flex-shrink:0;">' + fSizeStr + '<\/div>' +
+                            '<\/div>';
+                    });
+                    contentEl.innerHTML = filesHtml;
+                    modal.classList.add('active');
+                    return;
+                }
+
+                const targetFileId = (data.sub_files && data.sub_files.length === 1 && data.sub_files[0].file_id) ? data.sub_files[0].file_id : fileId;
+                const targetPick = (data.sub_files && data.sub_files.length === 1 && data.sub_files[0].pick_code) ? data.sub_files[0].pick_code : pickCode;
+                const targetTitle = data.file_name || displayName;
+                const playCmd = 'PlayMedia("plugin://plugin.video.juku/?action=cloud_down_task_play&file_id=' + encodeURIComponent(targetFileId) + '&pick_code=' + encodeURIComponent(targetPick) + '&title=' + encodeURIComponent(targetTitle) + '&vod_title=' + encodeURIComponent(vodTitle) + '")';
+                const safePlayCmd = playCmd.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitle = (vodTitle ? (vodTitle + ' ' + targetTitle) : targetTitle).replace(/'/g, "\\'");
+                playCloudDownVideo(safePlayCmd, safeTitle);
+            } catch (e) {
+                console.error(e);
+                showToast('解析播放失败: ' + e.message, true);
+            }
+        }
+
+        async function deleteCloudDownTask(hash) {
+            if (!hash) return;
+            if (!confirm('确定要删除此 115 云下载任务吗？')) return;
+            try {
+                const res = await fetch('/api/115/offline/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hash: hash, hashes: [hash], info_hash: hash, delete_files: false })
+                });
+                if (res.ok) {
+                    showToast('已删除云下载任务');
+                    loadCloudDownTasks();
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    const errMsg = errData.error || ('HTTP ' + res.status);
+                    showToast('删除任务失败: ' + errMsg, true);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('删除请求出错: ' + e.message, true);
+            }
+        }
+
+        // Verify if error message indicates invalid sharing
+        function shouldMarkPanLinkInvalid(errMsg) {
+            if (!errMsg) return false;
+            
+            // Need login should NOT mark invalid
+            if (errMsg.indexOf('登录') !== -1 || errMsg.indexOf('login') !== -1 || errMsg.indexOf('cookie') !== -1 || errMsg.indexOf('Cookie') !== -1) {
+                return false;
+            }
+            
+            const normalized = errMsg.replace(/：/g, ':');
+            const isExplicitlyInvalid = normalized.indexOf('分享') !== -1 && (normalized.indexOf('已失效') !== -1 || normalized.indexOf('无可播放文件') !== -1 || normalized.indexOf('不存在') !== -1 || normalized.indexOf('取消') !== -1);
+            const isShareTokenError = normalized.indexOf('分享 token 失败: HTTP 404') !== -1 || normalized.indexOf('分享 token 失败: HTTP 403') !== -1 || normalized.indexOf('404 Not Found') !== -1;
+            
+            return isExplicitlyInvalid || isShareTokenError;
+        }
+
+        // Report invalid link to main API and remove from display list
+        async function reportAndRemoveInvalidLink(idx, panName, errMsg) {
+            const links = currentPanList[panName] || [];
+            const link = links[idx];
+            if (!link) return;
+
+            const linkId = link.id || "";
+            
+            // 1. Report invalid if we have linkId via local Go proxy proxying to main API
+            if (linkId) {
+                fetch('/api/mv/videos/pan-links/' + linkId + '/invalid', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ invalidReason: errMsg })
+                }).catch(e => console.error("Report invalid failed:", e));
+            }
+
+            // 2. Remove from global state
+            links.splice(idx, 1);
+            currentPanList[panName] = links;
+
+            // 3. Close the pan files modal since it is invalid
+            closePanFilesModal();
+
+            // 4. Re-render the links list to visually remove it
+            renderPanLinks(panName);
+
+            // 5. Toast feedback
+            showToast("链接已失效，已自动上报并移除", true);
+        }
+
+        // Parse share link files list and open modal
+        async function openPanFiles(idx, panName) {
+            const links = currentPanList[panName] || [];
+            const link = links[idx];
+            if (!link) return;
+
+            const rawUrl = link.url || '';
+            const shareUrl = toShareUrl(rawUrl, panName);
+            const code = link.code || link.pwd || '';
+
+            const fileNum = (link.fileNum !== undefined && link.fileNum !== null) ? Number(link.fileNum) : ((link.file_num !== undefined && link.file_num !== null) ? Number(link.file_num) : null);
+            if (fileNum !== null && fileNum >= 50) {
+                openShareTreeModal(link.id || 0, rawUrl, currentDetailTitle || '网盘资源', panName, code);
+                return;
+            }
+
+            currentResolvingUrl = shareUrl;
+            currentResolvingCode = code;
+            currentResolvingPanName = panName;
+
+            const modal = document.getElementById('panFilesModal');
+            const titleEl = document.getElementById('panFilesModalTitle');
+            const contentEl = document.getElementById('panFilesContent');
+
+            const shortName = PROVIDER_NAMES[panName] || panName;
+            titleEl.innerText = shortName + "网盘 - 文件解析";
+            contentEl.innerHTML = '<div class="spinner-large"><\/div><div style="text-align:center;color:var(--text-muted);font-size:12px;">正在调取网盘驱动解析目录树...<\/div>';
+            modal.classList.add('active');
+
+            try {
+                // Fetch list from local backend API
+                const reqUrl = '/api/list?share_url=' + encodeURIComponent(shareUrl) + '&code=' + encodeURIComponent(code);
+                const response = await fetch(reqUrl);
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    const errMsg = errData.error || ("HTTP " + response.status);
+                    
+                    // If link is expired/invalid, report to API and remove it
+                    if (shouldMarkPanLinkInvalid(errMsg)) {
+                        if (currentDetailId === 0) {
+                            contentEl.innerHTML = '<div style="color:var(--color-expired);font-size:12px;padding:30px 0;text-align:center;">该链接已失效<\/div>';
+                            return;
+                        }
+                        await reportAndRemoveInvalidLink(idx, panName, errMsg);
+                        return;
+                    }
+                    throw new Error(errMsg);
+                }
+                const data = await response.json();
+                const files = data.files || [];
+                
+                if (files.length === 0) {
+                    if (currentDetailId === 0) {
+                        contentEl.innerHTML = '<div style="color:var(--color-expired);font-size:12px;padding:30px 0;text-align:center;">该链接已失效（无可播放文件）<\/div>';
+                        return;
+                    }
+                    // Empty list indicates no playable files, report invalid
+                    await reportAndRemoveInvalidLink(idx, panName, "无可播放文件");
+                    return;
+                }
+
+                // Render files list
+                let html = '';
+                files.forEach(f => {
+                    const isFolder = f.is_folder;
+                    const icon = isFolder ? '📁 ' : '🎬 ';
+                    
+                    if (isFolder) {
+                        html += 
+                            '<div class="pan-item-row" style="opacity: 0.6;">' +
+                                '<div class="pan-item-info">' +
+                                    '<span style="font-size: 14px;">' + icon + '<\/span>' +
+                                    '<span class="pan-file-name-scrollable" style="color: var(--text-muted);" title="' + f.file_name + '">' + f.file_name + '<\/span>' +
+                                '<\/div>' +
+                            '<\/div>';
+                    } else {
+                        const safeFileName = f.file_name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        const safeFileId = f.file_id.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        
+                        html += 
+                            '<div class="pan-item-row" style="cursor: pointer;" onclick="playPanFile(\'' + safeFileId + '\', \'' + safeFileName + '\')">' +
+                                '<div class="pan-item-info">' +
+                                    '<span style="font-size: 14px;">' + icon + '<\/span>' +
+                                    '<span class="pan-file-name-scrollable" title="' + f.file_name + ', 左右滑动可查看全名">' + f.file_name + '<\/span>' +
+                                '<\/div>' +
+                                '<div style="font-size: 10px; color: var(--text-muted); font-weight: 600; flex-shrink: 0; padding-left: 10px;">' + f.size_label + '<\/div>' +
+                            '<\/div>';
+                    }
+                });
+
+                contentEl.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                contentEl.innerHTML = '<div style="color:var(--color-expired);font-size:12px;padding:30px 0;text-align:center;">解析失败: ' + err.message + '<\/div>';
+            }
+        }
+
+        // Send pan file play command to Kodi
+        async function playPanFile(fileId, fileName) {
+            let backdropFull = getAbsoluteBackdropUrl(currentBackdropUrl);
+            const typeId = currentDetailTypeId || 1;
+            const isTv = (typeId == 2 || typeId === '2') ? '1' : '0';
+            const cmdVal = 'PlayMedia("plugin://plugin.video.juku/?action=pan_play&url=' + encodeURIComponent(currentResolvingUrl) + 
+                                '&code=' + encodeURIComponent(currentResolvingCode) + 
+                                '&file_id=' + encodeURIComponent(fileId) + 
+                                '&pan_name=' + encodeURIComponent(currentResolvingPanName) + 
+                                '&file_name=' + encodeURIComponent(fileName) + 
+                                '&vod_title=' + encodeURIComponent(currentDetailTitle) + 
+                                '&vod_id=' + currentDetailId + 
+                                '&type_id=' + typeId + 
+                                '&is_tv=' + isTv + 
+                                '&pic=' + encodeURIComponent(getAbsoluteCoverUrl(currentCoverUrl || '')) + 
+                                '&fanart=' + encodeURIComponent(backdropFull) + 
+                                '&from_share=1")';
+
+            sendKodiCommand(cmdVal, '已遥控 Kodi 播放网盘文件: ' + fileName);
+        }
+
+        function showFullDesc() {
+            const descModal = document.getElementById('descModal');
+            const descModalText = document.getElementById('descModalText');
+            if (descModal && descModalText) {
+                descModalText.innerText = currentFullDesc;
+                descModal.classList.add('active');
+            }
+        }
+
+        function closeDescModal() {
+            const descModal = document.getElementById('descModal');
+            if (descModal) {
+                descModal.classList.remove('active');
+            }
+        }
+
+        function closePanFilesModal() {
+            const modal = document.getElementById('panFilesModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // Close modal when clicking background
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close desc modal when clicking background
+        document.getElementById('descModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDescModal();
+            }
+        });
+
+        // Close pan files modal when clicking background
+        document.getElementById('panFilesModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePanFilesModal();
+            }
+        });
+
+        // Close cloud down tasks modal when clicking background
+        const cloudDownTasksModal = document.getElementById('cloudDownTasksModal');
+        if (cloudDownTasksModal) {
+            cloudDownTasksModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeCloudDownTasksModal();
+                }
+            });
+        }
+
+        // ==============================================================================
+        // Share Tree Modal & Functions (for file_num >= 100)
+        // ==============================================================================
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function escapeJsString(str) {
+            if (!str) return '';
+            return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        function isMediaFile(name) {
+            if (!name) return false;
+            const ext = name.split('.').pop().toLowerCase();
+            const mediaExts = ['mp4', 'mkv', 'avi', 'flv', 'mov', 'wmv', 'ts', 'm2ts', 'rmvb', 'iso', 'm3u8', 'mpd', 'webm', 'mp3', 'flac', 'wav', 'ape', 'dts', 'm4a', 'aac', 'ogg', 'wma', 'opus', 'alac', 'aiff', 'dsf', 'dff', 'ac3', 'pcm', 'mid', 'midi', 'mka'];
+            return mediaExts.indexOf(ext) !== -1;
+        }
+
+        let currentShareTreeContext = {
+            shareId: 0,
+            url: '',
+            pwd: '',
+            panType: '',
+            vodTitle: '',
+            breadcrumbs: []
+        };
+
+        let shareTreeState = {
+            page: 1,
+            pageSize: 50,
+            hasMore: true,
+            loading: false,
+            armed: true,
+            currentParentId: ''
+        };
+
+        function openShareTreeModal(shareId, url, title, panType, pwd) {
+            const modal = document.getElementById('shareTreeModal');
+            if (!modal) return;
+            document.getElementById('shareTreeModalTitle').innerText = title;
+            try { document.body.style.overflow = 'hidden'; } catch(e) {}
+            
+            currentShareTreeContext = {
+                shareId: shareId,
+                url: url,
+                pwd: pwd,
+                panType: panType,
+                vodTitle: title,
+                typeId: currentDetailTypeId || 1,
+                breadcrumbs: [{ id: '', name: '根目录' }]
+            };
+
+            const content = document.getElementById('shareTreeContent');
+            if (content) {
+                content.onscroll = () => {
+                    if (!shareTreeState.hasMore || shareTreeState.loading) return;
+                    const distanceToBottom = content.scrollHeight - (content.scrollTop + content.clientHeight);
+                    if (distanceToBottom > 200) {
+                        shareTreeState.armed = true;
+                    }
+                    if (distanceToBottom <= 50 && shareTreeState.armed) {
+                        shareTreeState.armed = false;
+                        loadShareFiles(shareTreeState.currentParentId, true);
+                    }
+                };
+            }
+
+            modal.classList.add('active');
+            renderShareBreadcrumbs();
+            loadShareFiles('');
+        }
+
+        function closeShareTreeModal() {
+            const modal = document.getElementById('shareTreeModal');
+            if (modal) modal.classList.remove('active');
+            try { document.body.style.overflow = ''; } catch(e) {}
+        }
+
+        function renderShareBreadcrumbs() {
+            const subTitle = document.getElementById('shareTreeSubTitle');
+            if (!subTitle) return;
+            const { panType, url, breadcrumbs } = currentShareTreeContext;
+            const panName = PROVIDER_NAMES[panType] || panType;
+
+            let html = '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;">';
+            html += '<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--text-muted);">';
+            html += '<span>' + panName + '</span>';
+
+            breadcrumbs.forEach((b, idx) => {
+                if (idx === breadcrumbs.length - 1) {
+                    html += ' <span style="color:white;font-weight:700;">/ ' + escapeHtml(b.name) + '</span>';
+                } else {
+                    html += ' <span style="cursor:pointer;color:#818cf8;text-decoration:underline;" onclick="navToShareBreadcrumb(' + idx + ')">/ ' + escapeHtml(b.name) + '</span>';
+                }
+            });
+            html += '</div>';
+
+            if (breadcrumbs.length > 1) {
+                html += '<button class="share-tool-btn" style="padding:2px 8px;font-size:11px;flex-shrink:0;" onclick="navBackShareFolder()">⬅️ 返回</button>';
+            }
+            html += '</div>';
+            subTitle.innerHTML = html;
+        }
+
+        function enterShareFolder(fileId, folderName) {
+            currentShareTreeContext.breadcrumbs.push({ id: fileId, name: folderName });
+            renderShareBreadcrumbs();
+            loadShareFiles(fileId);
+        }
+
+        function navBackShareFolder() {
+            if (currentShareTreeContext.breadcrumbs.length > 1) {
+                currentShareTreeContext.breadcrumbs.pop();
+                renderShareBreadcrumbs();
+                const last = currentShareTreeContext.breadcrumbs[currentShareTreeContext.breadcrumbs.length - 1];
+                loadShareFiles(last.id);
+            }
+        }
+
+        function navToShareBreadcrumb(index) {
+            if (index >= 0 && index < currentShareTreeContext.breadcrumbs.length) {
+                currentShareTreeContext.breadcrumbs = currentShareTreeContext.breadcrumbs.slice(0, index + 1);
+                renderShareBreadcrumbs();
+                const target = currentShareTreeContext.breadcrumbs[currentShareTreeContext.breadcrumbs.length - 1];
+                loadShareFiles(target.id);
+            }
+        }
+
+        async function loadShareFiles(parentFileId = '', append = false) {
+            if (shareTreeState.loading) return;
+
+            const content = document.getElementById('shareTreeContent');
+            if (!content) return;
+            
+            if (!append) {
+                shareTreeState.loading = true;
+                shareTreeState.page = 1;
+                shareTreeState.hasMore = true;
+                shareTreeState.armed = true;
+                shareTreeState.currentParentId = parentFileId;
+                content.scrollTop = 0;
+                content.innerHTML = '<div class="spinner-large"></div><div style="text-align:center;color:var(--text-muted);font-size:12px;">正在调取网盘驱动加载目录...</div>';
+            } else {
+                if (!shareTreeState.hasMore) return;
+                shareTreeState.loading = true;
+                shareTreeState.page += 1;
+                let existingLoader = document.getElementById('shareTreeBottomLoader');
+                if (!existingLoader) {
+                    const loaderDiv = document.createElement('div');
+                    loaderDiv.id = 'shareTreeBottomLoader';
+                    loaderDiv.style.cssText = 'text-align:center;padding:12px;color:var(--text-muted);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px;';
+                    loaderDiv.innerHTML = '<div class="spinner-small"></div> 正在加载下一页...';
+                    content.appendChild(loaderDiv);
+                }
+            }
+
+            const { url, pwd, panType, vodTitle } = currentShareTreeContext;
+
+            try {
+                const fullUrl = toShareUrl(url, panType);
+                const queryUrl = '/api/list?share_url=' + encodeURIComponent(fullUrl) + 
+                                '&code=' + encodeURIComponent(pwd || '') + 
+                                '&parent_file_id=' + encodeURIComponent(parentFileId || '') + 
+                                '&flat=0' +
+                                '&page=' + shareTreeState.page +
+                                '&page_size=' + shareTreeState.pageSize;
+
+                const res = await fetch(queryUrl);
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    const errMsg = errData.error || ("HTTP " + res.status);
+                    throw new Error(errMsg);
+                }
+                const data = await res.json();
+                const files = data.files || [];
+                
+                if (typeof data.has_more === 'boolean') {
+                    shareTreeState.hasMore = data.has_more;
+                } else {
+                    shareTreeState.hasMore = files.length >= shareTreeState.pageSize;
+                }
+
+                let bottomLoader = document.getElementById('shareTreeBottomLoader');
+                if (bottomLoader) {
+                    bottomLoader.remove();
+                }
+
+                if (!append && files.length === 0) {
+                    content.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--text-muted);font-size:12px;">此目录下暂无可播放文件或子文件夹</div>';
+                    return;
+                }
+
+                let itemsHtml = '';
+                files.forEach(f => {
+                    const fName = f.file_name || '未命名文件';
+                    const fSize = f.size_label || '';
+                    const isMedia = !f.is_folder && isMediaFile(fName);
+
+                    if (f.is_folder) {
+                        itemsHtml += 
+                            '<div class="pan-user-file-item" onclick="enterShareFolder(\'' + escapeJsString(f.file_id || '') + '\', \'' + escapeJsString(fName) + '\')">' +
+                                '<div class="pan-user-file-info">' +
+                                    '<span class="pan-user-file-icon">📁</span>' +
+                                    '<span class="pan-user-file-name" style="font-weight:700;color:white;">' + escapeHtml(fName) + '</span>' +
+                                '</div>' +
+                                '<span style="font-size: 13px; color: var(--text-muted); padding-right: 4px;">&gt;</span>' +
+                            '</div>';
+                    } else if (isMedia) {
+                        itemsHtml += 
+                            '<div class="pan-user-file-item" onclick="playShareFile(\'' + escapeJsString(f.file_id || '') + '\', \'' + escapeJsString(fName) + '\')">' +
+                                '<div class="pan-user-file-info">' +
+                                    '<span class="pan-user-file-icon">🎬</span>' +
+                                    '<span class="pan-user-file-name">' + escapeHtml(fName) + '</span>' +
+                                '</div>' +
+                                '<div class="pan-user-file-meta">' + fSize + '</div>' +
+                            '</div>';
+                    } else {
+                        itemsHtml += 
+                            '<div class="pan-user-file-item disabled" onclick="showToast(\'非音视频文件，暂不支持播放\', true)">' +
+                                '<div class="pan-user-file-info">' +
+                                    '<span class="pan-user-file-icon">📄</span>' +
+                                    '<span class="pan-user-file-name" style="color:var(--text-muted);">' + escapeHtml(fName) + '</span>' +
+                                '</div>' +
+                                '<div class="pan-user-file-meta">' + fSize + '</div>' +
+                            '</div>';
+                    }
+                });
+
+                if (!append) {
+                    let html = '<div class="pan-user-file-list" id="shareTreeList">' + itemsHtml + '</div>';
+                    if (shareTreeState.hasMore) {
+                        html += '<div id="shareTreeEndHint" style="text-align:center;padding:12px;color:var(--text-muted);font-size:11px;">下拉滚动加载更多...</div>';
+                    } else if (files.length > 0) {
+                        html += '<div id="shareTreeEndHint" style="text-align:center;padding:12px;color:var(--text-muted);font-size:11px;">已加载全部内容</div>';
+                    }
+                    content.innerHTML = html;
+                } else {
+                    const listContainer = document.getElementById('shareTreeList');
+                    if (listContainer) {
+                        listContainer.insertAdjacentHTML('beforeend', itemsHtml);
+                    }
+                    if (files.length > 0) {
+                        shareTreeState.armed = true;
+                    }
+                    const endHint = document.getElementById('shareTreeEndHint');
+                    if (endHint) {
+                        if (shareTreeState.hasMore) {
+                            endHint.innerText = '下拉滚动加载更多...';
+                        } else {
+                            endHint.innerText = '已加载全部内容';
+                        }
+                    }
+                }
+            } catch (err) {
+                if (!append) {
+                    content.innerHTML = '<div style="text-align:center;color:#fca5a5;padding:30px 0;">获取文件列表失败: ' + escapeHtml(err.message) + '</div>';
+                } else {
+                    showToast('加载下一页失败: ' + err.message, true);
+                }
+            } finally {
+                shareTreeState.loading = false;
+            }
+        }
+
+        async function playShareFile(fileId, fileName) {
+            const { url, pwd, panType, vodTitle } = currentShareTreeContext;
+            const fullUrl = toShareUrl(url, panType);
+            const vodId = currentDetailId || 0;
+            const typeId = (currentShareTreeContext && currentShareTreeContext.typeId) || currentDetailTypeId || 1;
+            const isTv = (typeId == 2 || typeId === '2') ? '1' : '0';
+            const cover = currentCoverUrl || '';
+            let backdropFull = getAbsoluteBackdropUrl(currentBackdropUrl);
+            
+            const cmdVal = 'PlayMedia("plugin://plugin.video.juku/?action=pan_play&url=' + encodeURIComponent(fullUrl) + 
+                                '&code=' + encodeURIComponent(pwd || '') + 
+                                '&file_id=' + encodeURIComponent(fileId) + 
+                                '&pan_name=' + encodeURIComponent(panType) + 
+                                '&file_name=' + encodeURIComponent(fileName) + 
+                                '&vod_title=' + encodeURIComponent(vodTitle || currentDetailTitle || '') + 
+                                '&vod_id=' + vodId + 
+                                '&type_id=' + typeId + 
+                                '&is_tv=' + isTv + 
+                                '&pic=' + encodeURIComponent(getAbsoluteCoverUrl(cover || '')) + 
+                                '&fanart=' + encodeURIComponent(backdropFull) + 
+                                '&from_share=1")';
+
+            sendKodiCommand(cmdVal, '已遥控 Kodi 播放网盘文件: ' + fileName);
+        }
+
+        // Close share tree modal when clicking background
+        const shareTreeModalEl = document.getElementById('shareTreeModal');
+        if (shareTreeModalEl) {
+            shareTreeModalEl.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeShareTreeModal();
+                }
+            });
+        }
+
+    </script>
+    <script src="/static/kodi-remote.js"></script>
+</body>
+</html>

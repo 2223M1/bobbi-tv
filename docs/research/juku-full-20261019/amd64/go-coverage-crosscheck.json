@@ -1,0 +1,37 @@
+{
+  "binary_sha256": "fc7ba96b40f4da9d33c02b7c67f8617d26b0982166df515e429d94c97cba1433",
+  "pclntab_magic": "fffffff1",
+  "pclntab_header_text_start": "00000000",
+  "effective_text_base": "00401000",
+  "text_base_source": "ELF .text sh_addr; pcHeader.textStart is zero",
+  "pclntab_function_count": 19092,
+  "pclntab_source_file_count": 1422,
+  "elf_function_symbols": 19094,
+  "elf_distinct_function_addresses": 19093,
+  "pclntab_entries_matching_elf_symbol_name_and_address": 18870,
+  "pclntab_entries_matching_elf_after_abi0_and_middle_dot_normalization": 19092,
+  "ghidra_identified_functions": 19104,
+  "pclntab_missing_in_ghidra": 0,
+  "elf_function_addresses_missing_in_ghidra": 0,
+  "ghidra_functions_not_in_pclntab": 12,
+  "text_start": "00401000",
+  "text_end_exclusive": "00d6c6b1",
+  "text_bytes": 9877169,
+  "text_bytes_outside_go_function_spans": 16,
+  "text_ranges_outside_go_function_spans": [
+    [
+      "00d6c6a1",
+      "00d6c6b1"
+    ]
+  ],
+  "text_bytes_outside_ghidra_function_bodies": 365137,
+  "text_ranges_outside_ghidra_function_bodies": 25831,
+  "unassigned_text_bytes_matching_padding_pattern": 316766,
+  "unassigned_text_bytes_not_classified": 48371,
+  "limitations": [
+    "Function-table spans include alignment padding; they are not a decoded instruction coverage claim",
+    "Unassigned text ranges are preserved for review, not automatically classified as missing code",
+    "Inlined source functions do not necessarily have independent pclntab entries",
+    "Neither table coverage nor successful C emission recovers the original Go source"
+  ]
+}

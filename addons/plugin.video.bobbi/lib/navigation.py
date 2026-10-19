@@ -989,6 +989,39 @@ def _open_resume_picker(data, params):
     return True
 
 
+def _reselect_cached_torrent(data, params):
+    """Stored child URLs are one-use handoffs, never durable playback rights."""
+    from urllib.parse import urlsplit
+    value = data.get('url')
+    if not isinstance(value, str):
+        return False
+    try:
+        parts = urlsplit(value)
+    except ValueError:
+        return False
+    if parts.scheme != 'plugin' or parts.netloc not in (
+            'plugin.video.bobbi.torrent', 'plugin.video.jacktorr'):
+        return False
+    search = _resume_search_params(data, params)
+    ids, tv = data.get('ids'), data.get('tv_data')
+    def number(value, minimum):
+        return (type(value) in (int, str) and len(str(value)) <= 12 and str(value).isascii()
+                and str(value).isdigit() and minimum <= int(value) <= 999999999999)
+    valid = (isinstance(ids, dict) and number(ids.get('tmdb_id'), 1)
+             and isinstance(search['query'], str) and 0 < len(search['query'].strip()) <= 512
+             and search['mode'] in ('movies', 'movie', 'tv'))
+    if search['mode'] == 'tv':
+        valid = (valid and isinstance(tv, dict) and number(tv.get('season'), 0)
+                 and number(tv.get('episode'), 1))
+    if not valid:
+        notification('这条 BT 历史缺少完整作品资料，请重新进入作品选源；观看记录未修改。')
+        return True
+    # Preserve the existing progress/start-over forwarding. No old proof is
+    # rewritten, no request is reserved for the child URL, and no source opens.
+    _open_resume_picker(data, params)
+    return True
+
+
 def _resume_failure_still_current(player, data):
     if (getattr(player, '_startup_failed_for_reselect', False) is not True
             or getattr(player, '_start_notified', False)
@@ -999,8 +1032,7 @@ def _resume_failure_still_current(player, data):
         try:
             failure = getattr(player, '_startup_failure_receipt', None)
             if failure:
-                from lib.cinema.playback_request import startup_failure
-                return startup_failure(player._owner_context) == failure
+                return player._read_startup_failure() == failure
             snapshot = call({'operation': 'snapshot'})
             owner = player._owner_context
             return (snapshot['boot_id'] == owner['boot_id']
@@ -1018,6 +1050,8 @@ def play_media(params):
         for field in ('current_time', 'progress', 'resume', 'simkl_resume_progress', 'trakt_resume_progress', 'nuvio_resume_percent'):
             data.pop(field, None)
         data['_bobi_start_over'] = True
+    if _reselect_cached_torrent(data, params):
+        return
     if continuing:
         # Signed transport URLs and one-use handoff state are not durable
         # history. Reselect the catalogue work, never replay a stored token.
