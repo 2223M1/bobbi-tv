@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "components": {
+    "plugin.video.bobbi.library": [
+      "LICENSE",
+      "addon.xml",
+      "default.py"
+    ],
+    "script.bobbi.setup": [
+      "LICENSE",
+      "addon.xml",
+      "default.py"
+    ],
+    "script.module.bobbi.platform": [
+      "LICENSE",
+      "addon.xml",
+      "lib/bobbi_platform/__init__.py",
+      "lib/bobbi_platform/_vendor/__init__.py",
+      "lib/bobbi_platform/_vendor/segno/LICENSE",
+      "lib/bobbi_platform/_vendor/segno/__init__.py",
+      "lib/bobbi_platform/_vendor/segno/consts.py",
+      "lib/bobbi_platform/_vendor/segno/encoder.py",
+      "lib/bobbi_platform/_vendor/segno/utils.py",
+      "lib/bobbi_platform/_vendor/segno/writers.py",
+      "lib/bobbi_platform/capabilities.py",
+      "lib/bobbi_platform/cloud115.py",
+      "lib/bobbi_platform/cloud_ui.py",
+      "lib/bobbi_platform/downloads.py",
+      "lib/bobbi_platform/environment.py",
+      "lib/bobbi_platform/kodi.py",
+      "lib/bobbi_platform/libraries.py",
+      "lib/bobbi_platform/library_ui.py",
+      "lib/bobbi_platform/native_engine.py",
+      "lib/bobbi_platform/onboarding.py",
+      "lib/bobbi_platform/pair_code.py",
+      "lib/bobbi_platform/pairing.py",
+      "lib/bobbi_platform/paths.py",
+      "lib/bobbi_platform/playback.py",
+      "lib/bobbi_platform/runtime.py",
+      "lib/bobbi_platform/signatures.py",
+      "lib/bobbi_platform/torrserver.py",
+      "lib/bobbi_platform/updates.py"
+    ]
+  }
+}

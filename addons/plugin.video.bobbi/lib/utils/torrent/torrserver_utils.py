@@ -1,0 +1,543 @@
+import hashlib
+import json
+import os
+from datetime import timedelta
+from io import BytesIO
+from urllib.parse import quote
+
+import requests
+import xbmc
+import xbmcgui
+from xbmcgui import Dialog
+from xbmcplugin import addDirectoryItem
+
+from lib.clients.subtitle.deepl import DeepLTranslator  # noqa: F401 — imported for test mocking
+from lib.clients.subtitle.submanager import SubtitleManager
+from lib.db.cached import cache
+from lib.utils.kodi.paths import join_kodi_path
+from lib.utils.general.utils import (
+    USER_AGENT_HEADER,
+    build_list_item,
+    get_info_hash_from_magnet,
+    set_pluging_category,
+)
+from lib.utils.kodi.kodi_formats import (
+    is_displayable,
+    is_music,
+    is_picture,
+    is_text,
+    is_video,
+    strip_common_folder_prefix,
+)
+from lib.utils.kodi.utils import (
+    ADDON_HANDLE,
+    ADDON_PROFILE_PATH,
+    JACKTORR_ADDON,
+    action_url_run,
+    buffer_and_play,
+    build_url,
+    end_of_directory,
+    get_setting,  # noqa: F401 — imported for test mocking
+    kodilog,
+    notification,
+    refresh,
+    show_picture,
+    translation,
+)
+from lib.utils.torrent.torrserver_init import get_torrserver_api
+from lib.utils.torrent.display_metadata import (
+    delete_display_metadata,
+    get_display_metadata,
+    save_display_metadata,
+)
+from lib.utils.torrent import flatbencode as bencodepy
+
+
+def _buffer_and_play_url(info_hash, file_id, path):
+    return (
+        "plugin://plugin.video.jacktorr/buffer_and_play"
+        f"?info_hash={info_hash}&file_id={file_id}&path={quote(path or '')}"
+    )
+
+
+def _select_torrent_video_file(info_hash):
+    info = get_torrserver_api().get_torrent_info(link=info_hash)
+    files = info.get("file_stats") or []
+    video_files = [f for f in files if is_video(f.get("path", ""))]
+    if not video_files:
+        notification("No video files found")
+        return None
+    if len(video_files) == 1:
+        return video_files[0]
+
+    selected = Dialog().select("Select file", [f.get("path", "") for f in video_files])
+    if selected < 0:
+        return None
+    return video_files[selected]
+
+
+def torrent_status(info_hash):
+    status = get_torrserver_api().get_torrent_info(link=info_hash)
+    notification(
+        "{}".format(status.get("stat_string")),
+        status.get("name"),
+        sound=False,
+    )
+
+
+def torrent_files(params):
+    info_hash = params.get("info_hash")
+
+    api = get_torrserver_api()
+    info = api.get_torrent_info(link=info_hash)
+    display_metadata = get_display_metadata(api._base_url, info_hash)
+    display_title = display_metadata.get("title") or info.get("title", "")
+    display_plot = display_metadata.get("plot", "")
+    display_poster = display_metadata.get("poster") or info.get("poster") or ""
+    file_stats = info.get("file_stats")
+    file_stats = [f for f in file_stats if is_displayable(f.get("path", ""))]
+    display_names = strip_common_folder_prefix(file_stats)
+
+    set_pluging_category(display_title)
+
+    for f, display_name in zip(file_stats, display_names):
+        name = f.get("path")
+        id = f.get("id")
+        serve_url = api.get_stream_url(
+            link=info_hash, path=f.get("path"), file_id=id
+        )
+        file_li = build_list_item(display_name, "download.png", poster_path=display_poster)
+        file_li.setPath(serve_url)
+
+        context_menu_items = []
+        info_type = None
+        info_labels = {"title": display_title}
+        kwargs = dict(info_hash=info_hash, file_id=id, path=name)
+
+        if is_picture(name):
+            url = build_url("display_picture", **kwargs)
+            file_li.setInfo("pictures", info_labels)
+        elif is_text(name):
+            url = build_url("display_text", **kwargs)
+        else:
+            url = serve_url
+            if is_video(name):
+                info_type = "video"
+            elif is_music(name):
+                info_type = "music"
+
+            if info_type is not None:
+                jacktorr_url = _buffer_and_play_url(info_hash, id, name)
+                if info_type == "video":
+                    file_li.getVideoInfoTag().setTitle(info_labels.get("title", ""))
+                    if display_plot:
+                        file_li.getVideoInfoTag().setPlot(display_plot)
+                elif info_type == "music":
+                    file_li.getMusicInfoTag().setTitle(info_labels.get("title", ""))
+                file_li.setProperty("IsPlayable", "true")
+                file_li.setPath(jacktorr_url)
+
+                context_menu_items.append(
+                    (
+                        translation(30700),
+                        buffer_and_play(**kwargs),
+                    )
+                )
+
+                if info_type == "video":
+                    parsed_data = _parse_torrent_meta(info)
+                    parsed_ids = (
+                        parsed_data.get("ids", {})
+                        if isinstance(parsed_data.get("ids", {}), dict)
+                        else {}
+                    )
+                    meta = {
+                        "title": parsed_data.get("title") or display_title,
+                        "mode": parsed_data.get("mode", ""),
+                        "ids": {
+                            "tmdb_id": parsed_ids.get("tmdb_id", ""),
+                            "tvdb_id": parsed_ids.get("tvdb_id", ""),
+                            "imdb_id": parsed_ids.get("imdb_id"),
+                            "original_id": parsed_ids.get("original_id", ""),
+                        },
+                        "tv_data": parsed_data.get("tv_data", {}),
+                    }
+                    context_menu_items.append(
+                        (
+                            translation(90082),
+                            action_url_run(
+                                "download_and_play_subtitles",
+                                hash=info_hash,
+                                file_id=id,
+                                path=name,
+                                meta=json.dumps(meta),
+                            ),
+                        )
+                    )
+
+                context_menu_items.append(
+                    (
+                        translation(30705),
+                        action_url_run(
+                            "torrent_action",
+                            info_hash=info_hash,
+                            action_str="remove_torrent",
+                        ),
+                    )
+                )
+                context_menu_items.append(
+                    (
+                        translation(30707),
+                        action_url_run(
+                            "torrent_action",
+                            info_hash=info_hash,
+                            action_str="torrent_status",
+                        ),
+                    )
+                )
+
+                file_li.addContextMenuItems(context_menu_items)
+
+        if info_type is not None:
+            addDirectoryItem(
+                ADDON_HANDLE,
+                jacktorr_url,
+                file_li,
+            )
+        else:
+            addDirectoryItem(ADDON_HANDLE, url, file_li)
+    end_of_directory()
+
+
+def torrent_action(params):
+    info_hash = params.get("info_hash")
+    action_str = params.get("action_str")
+
+    needs_refresh = True
+
+    if action_str == "drop":
+        get_torrserver_api().drop_torrent(info_hash)
+    elif action_str == "remove_torrent":
+        api = get_torrserver_api()
+        response = api.remove_torrent(info_hash)
+        if getattr(response, "status_code", None) == 200:
+            delete_display_metadata(api._base_url, info_hash)
+    elif action_str == "torrent_status":
+        torrent_status(info_hash)
+        needs_refresh = False
+    else:
+        kodilog(f"Unknown action: {action_str}")
+        needs_refresh = False
+
+    if needs_refresh:
+        refresh()
+
+
+def display_picture(params):
+    show_picture(
+        get_torrserver_api().get_stream_url(
+            link=params.get("info_hash"),
+            path=params.get("path"),
+            file_id=params.get("file_id"),
+        )
+    )
+
+
+def display_text(params):
+    r = requests.get(
+        get_torrserver_api().get_stream_url(
+            link=params.get("info_hash"),
+            path=params.get("path"),
+            file_id=params.get("file_id"),
+        )
+    )
+    Dialog().textviewer(params.get("path"), r.text)
+
+
+def _normalize_torrserver_category(mode):
+    if not isinstance(mode, str):
+        return None
+    return {
+        "movie": "movie",
+        "movies": "movie",
+        "tv": "tv",
+        "music": "music",
+        "other": "other",
+    }.get(mode.strip().lower())
+
+
+def add_source_to_torrserver(magnet="", url="", info_hash="", title="", poster="", data="", category=None):
+    if not JACKTORR_ADDON:
+        notification(translation(30253))
+        return None
+
+    api = get_torrserver_api()
+    if api is None:
+        notification(translation(30253))
+        return None
+
+    try:
+        added_hash = None
+        meta = json.loads(data) if isinstance(data, str) and data else {}
+        meta = meta if isinstance(meta, dict) else {}
+        category = _normalize_torrserver_category(category)
+        magnet_hash = ""
+        if magnet:
+            try:
+                magnet_hash = get_info_hash_from_magnet(magnet)
+            except Exception as exc:
+                kodilog(f"Failed to extract metadata hash from magnet: {exc}")
+        display_title = meta.get("title") or title
+        display_plot = meta.get("plot") or meta.get("description") or meta.get("overview") or ""
+        display_poster = meta.get("poster") or poster
+        for hash_candidate in _metadata_hash_candidates(info_hash, magnet_hash):
+            save_display_metadata(
+                api._base_url,
+                hash_candidate,
+                title=display_title,
+                plot=display_plot,
+                poster=display_poster,
+            )
+        kodilog(
+            f"add_source_to_torrserver input: info_hash={info_hash!r}, title={title!r}, has_magnet={bool(magnet)}, has_url={bool(url)}, has_data={bool(data)}"
+        )
+
+        if url and url.startswith("http"):
+            try:
+                response = requests.get(url, timeout=15, headers=USER_AGENT_HEADER)
+                response.raise_for_status()
+                torrent_obj = BytesIO(response.content)
+                torrent_obj.name = "torrent.torrent"
+                add_kwargs = {"title": title, "poster": poster}
+                if category:
+                    add_kwargs["category"] = category
+                added_hash = api.add_torrent_obj(torrent_obj, **add_kwargs)
+                kodilog(f"add_source_to_torrserver added torrent URL: returned_hash={added_hash!r}")
+            except Exception as exc:
+                kodilog(f"Failed to add torrent URL to TorrServer: {exc}")
+
+        if not added_hash:
+            if not magnet and info_hash:
+                magnet = convert_info_hash_to_magnet(info_hash)
+
+            if magnet:
+                add_kwargs = {"title": title, "poster": poster}
+                if category:
+                    add_kwargs["category"] = category
+                added_hash = api.add_magnet(magnet, **add_kwargs)
+                kodilog(f"add_source_to_torrserver added magnet: returned_hash={added_hash!r}")
+            else:
+                notification(translation(90361))
+                return None
+
+        for hash_candidate in _metadata_hash_candidates(added_hash, info_hash, magnet_hash):
+            save_torrent_meta(hash_candidate, meta)
+            save_display_metadata(
+                api._base_url,
+                hash_candidate,
+                title=display_title,
+                plot=display_plot,
+                poster=display_poster,
+            )
+
+        notification(translation(90360))
+        return added_hash
+    except Exception as exc:
+        kodilog(f"Failed to add source to TorrServer: {exc}")
+        notification(str(exc))
+        return None
+
+
+def extract_magnet_from_url(url: str):
+    try:
+        response = requests.get(url, timeout=10, headers=USER_AGENT_HEADER)
+        if response.status_code == 200:
+            return extract_torrent_metadata(response.content)
+        else:
+            kodilog(f"Failed to fetch content from URL: {url}")
+            return None
+    except Exception as e:
+        kodilog(f"Failed to fetch content from URL: {url}, Error: {e}")
+        return None
+
+
+def extract_torrent_metadata(content: bytes):
+    kodilog("Extracting torrent metadata...")
+    try:
+        torrent_data = bencodepy.decode(content)
+        info = torrent_data[b"info"]
+        info_encoded = bencodepy.encode(info)
+        info_hash = hashlib.sha1(info_encoded).hexdigest()
+        return convert_info_hash_to_magnet(info_hash)
+    except Exception as e:
+        kodilog(f"Error occurred extracting torrent metadata: {e}")
+        return None
+
+
+def convert_info_hash_to_magnet(info_hash: str) -> str:
+    return f"magnet:?xt=urn:btih:{info_hash}"
+
+
+_TORRENT_META_CACHE_PREFIX = "torrent_meta:"
+
+
+def _normalize_torrent_hash(info_hash):
+    return str(info_hash or "").strip().lower()
+
+
+def _metadata_hash_candidates(*hashes):
+    candidates = []
+    for info_hash in hashes:
+        normalized = _normalize_torrent_hash(info_hash)
+        if normalized and normalized not in candidates:
+            candidates.append(normalized)
+    return candidates
+
+
+def save_torrent_meta(info_hash, meta):
+    """Persist torrent metadata locally, keyed by info hash.
+
+    This avoids reliance on TorrServer's undocumented ``data`` field.
+    """
+    info_hash = _normalize_torrent_hash(info_hash)
+    if not info_hash:
+        return
+
+    key = f"{_TORRENT_META_CACHE_PREFIX}{info_hash}"
+    try:
+        meta = meta if isinstance(meta, dict) else {}
+        cache.set(
+            key,
+            {
+                "mode": meta.get("mode", ""),
+                "ids": meta.get("ids", {}) if isinstance(meta.get("ids", {}), dict) else {},
+                "tv_data": meta.get("tv_data", {}) if isinstance(meta.get("tv_data", {}), dict) else {},
+            },
+            expires=timedelta(days=365),
+        )
+    except Exception as exc:
+        kodilog(f"Failed to save torrent meta for {info_hash}: {exc}")
+
+
+def get_torrent_meta(info_hash):
+    """Retrieve torrent metadata from local cache.
+
+    Returns the stored dict or an empty dict if not found.
+    """
+    info_hash = _normalize_torrent_hash(info_hash)
+    if not info_hash:
+        return {}
+
+    key = f"{_TORRENT_META_CACHE_PREFIX}{info_hash}"
+    try:
+        result = cache.get(key)
+        if result and isinstance(result, dict):
+            return result
+    except Exception as exc:
+        kodilog(f"Failed to load torrent meta for {info_hash}: {exc}")
+    return {}
+
+
+def _parse_torrent_meta(info):
+    """Retrieve torrent metadata from local cache, keyed by hash."""
+    info_hash = info.get("hash")
+    if info_hash:
+        local_meta = get_torrent_meta(info_hash)
+        if local_meta:
+            return local_meta
+    return {}
+
+
+def _normalize_media_ids(ids):
+    normalized = ids.copy() if isinstance(ids, dict) else {}
+    normalized.setdefault("tmdb_id", "")
+    normalized.setdefault("tvdb_id", "")
+    normalized.setdefault("imdb_id", "")
+    normalized.setdefault("original_id", "")
+    return normalized
+
+
+def download_torrent_subtitles(params):
+    info_hash = params.get("hash")
+    meta_str = params.get("meta", "{}")
+    try:
+        meta = json.loads(meta_str)
+    except Exception:
+        meta = {}
+
+    ids = _normalize_media_ids(meta.get("ids", {}))
+    imdb_id = ids.get("imdb_id")
+    title = meta.get("title")
+    mode = meta.get("mode") or ("tv" if meta.get("tv_data", {}).get("season") else "movies")
+    tv_data = meta.get("tv_data", {})
+
+    if not imdb_id and not title:
+        notification("Insufficient metadata")
+        return
+
+    data = {"title": title, "mode": mode, "ids": ids, "tv_data": tv_data}
+
+    folder_path = join_kodi_path(ADDON_PROFILE_PATH, "subtitles", info_hash)
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    manager = SubtitleManager(data=data, notification=notification)
+    result = manager.fetch_subtitles(auto_select=False, folder_path=folder_path)
+
+    if result:
+        notification("Subtitles downloaded successfully")
+        selected_file = _select_torrent_video_file(info_hash)
+        if selected_file:
+            playback_url = _buffer_and_play_url(
+                info_hash, selected_file.get("id"), selected_file.get("path")
+            )
+            listitem = xbmcgui.ListItem(label=title, path=playback_url)
+            listitem.setSubtitles(result)
+            xbmc.Player().play(playback_url, listitem)
+    else:
+        if manager.last_fetch_status == "not_found":
+            notification(translation(90252))
+        elif manager.last_fetch_status == "not_selected":
+            notification(translation(90253))
+        elif manager.last_fetch_status == "no_imdb":
+            notification(translation(90299))
+        else:
+            notification(translation(90252))
+
+
+def download_and_play_subtitles(params):
+    info_hash = params.get("hash")
+    file_id = params.get("file_id")
+    path = params.get("path")
+    meta_str = params.get("meta", "{}")
+    try:
+        meta = json.loads(meta_str)
+    except Exception:
+        meta = {}
+
+    ids = _normalize_media_ids(meta.get("ids", {}))
+    imdb_id = ids.get("imdb_id")
+    title = meta.get("title")
+    mode = meta.get("mode") or ("tv" if meta.get("tv_data", {}).get("season") else "movies")
+    tv_data = meta.get("tv_data", {})
+
+    if not imdb_id and not title:
+        notification("Insufficient metadata")
+        return
+
+    data = {"title": title, "mode": mode, "ids": ids, "tv_data": tv_data}
+
+    manager = SubtitleManager(data=data, notification=notification)
+    subtitle_paths = manager.fetch_subtitles(auto_select=False)
+
+    if not subtitle_paths:
+        if manager.last_fetch_status == "no_imdb":
+            notification(translation(90299))
+        else:
+            notification(translation(90252))
+        return
+
+    playback_url = _buffer_and_play_url(info_hash, file_id, path)
+    listitem = xbmcgui.ListItem(label=title, path=playback_url)
+    listitem.setSubtitles(subtitle_paths)
+    xbmc.Player().play(playback_url, listitem)

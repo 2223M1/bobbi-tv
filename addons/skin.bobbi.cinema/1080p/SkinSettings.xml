@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">9000</defaultcontrol>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <control type="group">
+      <left>96</left><top>136</top>
+      <control type="label">
+        <left>0</left><top>0</top><width>1200</width><height>64</height>
+        <label>波比TV 外观</label>
+        <font>Display56</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>2</left><top>70</top><width>1600</width><height>36</height>
+        <label>确认 切换   ·   返回 保存并退出</label>
+        <font>Meta24</font><textcolor>text3</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+    <control type="grouplist" id="9000">
+      <left>96</left><top>272</top><width>1100</width><height>760</height>
+      <orientation>vertical</orientation><itemgap>4</itemgap>
+      <usecontrolcoords>true</usecontrolcoords>
+      <onleft>noop</onleft><onright>noop</onright>
+      <control type="label" id="9190">
+        <width>1100</width><height>56</height>
+        <label>动效</label>
+        <font>Label24</font><textcolor>accent_text</textcolor><aligny>bottom</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <include content="SkinToggle">
+        <param name="id">9101</param><param name="setting">BobiReduceMotion</param>
+        <param name="label">减少动效</param>
+        <param name="hint">关闭焦点放大、面板滑入；焦点框和状态标记保持不变</param>
+      </include>
+      <control type="label" id="9191">
+        <width>1100</width><height>56</height>
+        <label>播放</label>
+        <font>Label24</font><textcolor>accent_text</textcolor><aligny>bottom</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <include content="SkinToggle">
+        <param name="id">9102</param><param name="setting">OSDAutoClose</param>
+        <param name="label">控制栏 5 秒无操作自动隐藏</param>
+        <param name="hint">字幕、音轨面板打开时不会隐藏</param>
+      </include>
+      <include content="SkinToggle">
+        <param name="id">9103</param><param name="setting">autovideotosdr</param><param name="invert">true</param>
+        <param name="label">非 HDR 电视自动转为 SDR</param>
+        <param name="hint">电视不支持 HDR 时，自动对 HDR / 杜比视界片源执行 VS10 → SDR</param>
+      </include>
+      <include content="SkinToggle">
+        <param name="id">9104</param><param name="setting">backstopplay</param>
+        <param name="label">返回键直接停止播放</param>
+        <param name="hint">仅对使用“返回确认”键位的遥控器生效；Yatse 和默认键位中返回键只收起控制栏</param>
+      </include>
+    </control>
+    <!-- focused setting explanation -->
+    <control type="group">
+      <left>1260</left><top>328</top>
+      <control type="image">
+        <left>0</left><top>0</top><width>564</width><height>300</height>
+        <texture colordiffuse="surface" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="image">
+        <left>36</left><top>36</top><width>40</width><height>40</height>
+        <texture colordiffuse="text3">bobi/icons/info.png</texture>
+      </control>
+      <control type="textbox">
+        <left>36</left><top>100</top><width>492</width><height>170</height>
+        <label>$VAR[SkinSettingHint]</label>
+        <font>Body26</font><textcolor>text2</textcolor>
+      </control>
+    </control>
+    <include content="KeyHint">
+      <param name="label">皮肤版本 $INFO[System.AddonVersion(skin.bobbi.cinema)]   ·   Kodi $INFO[System.BuildVersionShort]</param>
+      <param name="y">1032</param>
+    </include>
+  </controls>
+</window>

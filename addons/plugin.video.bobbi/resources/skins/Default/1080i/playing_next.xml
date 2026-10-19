@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Up-next card (Jacktook PlayNext). Bottom-right over the end credits.
+  Ids: 3001 play now (default), 3002 close, 3014 countdown progress.
+  Reads next.* properties and timer_label.
+-->
+<window>
+  <defaultcontrol always="true">3001</defaultcontrol>
+  <coordinates><left>1064</left><top>612</top></coordinates>
+  <animation type="WindowOpen" reversible="false">
+    <effect type="fade" start="0" end="100" time="200" />
+    <effect type="slide" start="40,0" end="0,0" time="240" tween="cubic" easing="out" />
+  </animation>
+  <animation effect="fade" start="100" end="0" time="160">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>760</width><height>380</height>
+      <texture colordiffuse="FF15171C" border="20">bobi/r20.png</texture>
+    </control>
+    <control type="image">
+      <left>24</left><top>24</top><width>320</width><height>180</height>
+      <texture colordiffuse="FF1E2128" border="12">bobi/r10.png</texture>
+    </control>
+    <control type="image">
+      <left>24</left><top>24</top><width>320</width><height>180</height>
+      <aspectratio scalediffuse="false">scale</aspectratio>
+      <texture background="true" diffuse="bobi/mask-320x180.png">$INFO[Window().Property(next.fanart)]</texture>
+    </control>
+    <control type="progress" id="3014">
+      <left>24</left><top>212</top><width>320</width><height>6</height>
+      <texturebg colordiffuse="33FFFFFF" border="4,0,4,0">bobi/bar8.png</texturebg>
+      <midtexture colordiffuse="FFFF8A3D" border="4,0,4,0">bobi/bar8.png</midtexture>
+    </control>
+    <control type="label">
+      <left>372</left><top>24</top><width>364</width><height>32</height>
+      <label>下一集   $INFO[Window().Property(timer_label)]</label>
+      <font>Label24</font><textcolor>FFFFB27F</textcolor>
+    </control>
+    <control type="label">
+      <left>372</left><top>60</top><width>364</width><height>44</height>
+      <label>$INFO[Window().Property(next.title)]</label>
+      <font>Head30</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>372</left><top>106</top><width>364</width><height>36</height>
+      <label>$INFO[Window().Property(next.episode_label)]</label>
+      <font>Label28</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+    </control>
+    <control type="textbox">
+      <left>372</left><top>146</top><width>364</width><height>64</height>
+      <label>$INFO[Window().Property(next.episode_name)]</label>
+      <font>Meta22</font><textcolor>FFB4B2AD</textcolor>
+    </control>
+    <control type="grouplist">
+      <left>24</left><top>284</top><width>712</width><height>72</height>
+      <orientation>horizontal</orientation><itemgap>16</itemgap>
+      <control type="button" id="3001">
+        <width>340</width><height>72</height>
+        <label>立即播放</label>
+        <font>Button28</font><textcolor>FF0A0B0E</textcolor><focusedcolor>FF0A0B0E</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="32">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="FFFF8A3D" border="32">bobi/pill.png</texturenofocus>
+      </control>
+      <control type="button" id="3002">
+        <width>200</width><height>72</height>
+        <label>继续看片尾</label>
+        <font>Button24</font><textcolor>FFF5F3EF</textcolor><focusedcolor>FF0A0B0E</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="32">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="FF2A2E37" border="32">bobi/pill.png</texturenofocus>
+      </control>
+    </control>
+  </controls>
+</window>

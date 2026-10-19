@@ -1,0 +1,510 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <variable name="CinemaHeroArt">
+    <value condition="Control.HasFocus(9810)">$INFO[Container(9810).ListItem.Art(fanart)]</value>
+    <value condition="Control.HasFocus(9820)">$INFO[Container(9820).ListItem.Art(fanart)]</value>
+    <value condition="Control.HasFocus(9830)">$INFO[Container(9830).ListItem.Art(fanart)]</value>
+    <value condition="Control.HasFocus(9840)">$INFO[Container(9840).ListItem.Art(fanart)]</value>
+    <value condition="Control.HasFocus(9850)">$INFO[Container(9850).ListItem.Art(fanart)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Art(fanart)]</value>
+    <value />
+  </variable>
+  <variable name="CinemaHeroTitle">
+    <value condition="Control.HasFocus(9810)">$INFO[Container(9810).ListItem.Label]</value>
+    <value condition="Control.HasFocus(9820)">$INFO[Container(9820).ListItem.Label]</value>
+    <value condition="Control.HasFocus(9830)">$INFO[Container(9830).ListItem.Label]</value>
+    <value condition="Control.HasFocus(9840)">$INFO[Container(9840).ListItem.Label]</value>
+    <value condition="Control.HasFocus(9850)">$INFO[Container(9850).ListItem.Label]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Label]</value>
+    <value>好故事，值得一块好屏幕</value>
+  </variable>
+  <variable name="CinemaHeroOriginal">
+    <value condition="Control.HasFocus(9810)">$INFO[Container(9810).ListItem.Label2]</value>
+    <value condition="Control.HasFocus(9820)">$INFO[Container(9820).ListItem.Label2]</value>
+    <value condition="Control.HasFocus(9830)">$INFO[Container(9830).ListItem.Label2]</value>
+    <value condition="Control.HasFocus(9840)">$INFO[Container(9840).ListItem.Label2]</value>
+    <value condition="Control.HasFocus(9850)">$INFO[Container(9850).ListItem.Label2]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Label2]</value>
+    <value />
+  </variable>
+  <variable name="CinemaHeroPlot">
+    <value condition="Control.HasFocus(9810)">$INFO[Container(9810).ListItem.Plot]</value>
+    <value condition="Control.HasFocus(9820)">$INFO[Container(9820).ListItem.Plot]</value>
+    <value condition="Control.HasFocus(9830)">$INFO[Container(9830).ListItem.Plot]</value>
+    <value condition="Control.HasFocus(9840)">$INFO[Container(9840).ListItem.Plot]</value>
+    <value condition="Control.HasFocus(9850)">$INFO[Container(9850).ListItem.Plot]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Plot]</value>
+    <value>电影、剧集与动漫，在这里找到今晚想看的故事。</value>
+  </variable>
+  <variable name="CinemaHeroMeta">
+    <value condition="Control.HasFocus(9810)">$INFO[Container(9810).ListItem.Year]</value>
+    <value condition="Control.HasFocus(9820)">$INFO[Container(9820).ListItem.Year]</value>
+    <value condition="Control.HasFocus(9830)">$INFO[Container(9830).ListItem.Year]</value>
+    <value condition="Control.HasFocus(9840)">$INFO[Container(9840).ListItem.Year]</value>
+    <value condition="Control.HasFocus(9850)">$INFO[Container(9850).ListItem.Year]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Year]</value>
+    <value />
+  </variable>
+  <include name="CinemaTopNav">
+    <param name="down" default="9810" />
+    <definition>
+      <control type="group" id="19700">
+        <left>0</left>
+        <top>0</top>
+        <width>1920</width>
+        <height>126</height>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>1920</width>
+          <height>126</height>
+          <texture colordiffuse="F50D0D10">am6b/white.png</texture>
+        </control>
+        <control type="image">
+          <left>80</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <visible>[Window.IsActive(11196)] + !Control.HasFocus(9701)</visible>
+          <texture colordiffuse="FF303030" border="14">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="button" id="9701">
+          <left>80</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <label>搜索</label>
+          <font>font12</font>
+          <textcolor>FFB8B8C2</textcolor>
+          <focusedcolor>FF101014</focusedcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <onleft>9701</onleft>
+          <onright>9702</onright>
+          <onup>9701</onup>
+          <ondown>$PARAM[down]</ondown>
+          <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+          <texturenofocus>am6b/transparent.png</texturenofocus>
+          <onclick>SetProperty(BobiNavSection,9701,Home)</onclick>
+          <onclick>RunPlugin(plugin://plugin.video.bobbi/?action=bobi_search_prompt&amp;section=multi)</onclick>
+          <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+        </control>
+        <control type="image">
+          <left>248</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <visible>[Window.IsActive(Home)] + !Control.HasFocus(9702)</visible>
+          <texture colordiffuse="FF303030" border="14">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="button" id="9702">
+          <left>248</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <label>首页</label>
+          <font>font12</font>
+          <textcolor>FFB8B8C2</textcolor>
+          <focusedcolor>FF101014</focusedcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <onleft>9701</onleft>
+          <onright>9703</onright>
+          <onup>9702</onup>
+          <ondown>$PARAM[down]</ondown>
+          <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+          <texturenofocus>am6b/transparent.png</texturenofocus>
+          <onclick>SetProperty(BobiNavSection,9702,Home)</onclick>
+          <onclick>ActivateWindow(Home)</onclick>
+          <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+        </control>
+        <control type="image">
+          <left>416</left>
+          <top>38</top>
+          <width>174</width>
+          <height>64</height>
+          <visible>[String.Contains(Container.FolderPath,section=tv)] + !Control.HasFocus(9703)</visible>
+          <texture colordiffuse="FF303030" border="14">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="button" id="9703">
+          <left>416</left>
+          <top>38</top>
+          <width>174</width>
+          <height>64</height>
+          <label>电视剧</label>
+          <font>font12</font>
+          <textcolor>FFB8B8C2</textcolor>
+          <focusedcolor>FF101014</focusedcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <onleft>9702</onleft>
+          <onright>9704</onright>
+          <onup>9703</onup>
+          <ondown>$PARAM[down]</ondown>
+          <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+          <texturenofocus>am6b/transparent.png</texturenofocus>
+          <onclick>SetProperty(BobiNavSection,9703,Home)</onclick>
+          <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1",return)</onclick>
+          <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+        </control>
+        <control type="image">
+          <left>604</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <visible>[String.Contains(Container.FolderPath,section=movie)] + !Control.HasFocus(9704)</visible>
+          <texture colordiffuse="FF303030" border="14">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="button" id="9704">
+          <left>604</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <label>电影</label>
+          <font>font12</font>
+          <textcolor>FFB8B8C2</textcolor>
+          <focusedcolor>FF101014</focusedcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <onleft>9703</onleft>
+          <onright>9705</onright>
+          <onup>9704</onup>
+          <ondown>$PARAM[down]</ondown>
+          <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+          <texturenofocus>am6b/transparent.png</texturenofocus>
+          <onclick>SetProperty(BobiNavSection,9704,Home)</onclick>
+          <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1",return)</onclick>
+          <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+        </control>
+        <control type="image">
+          <left>772</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <visible>[Window.IsActive(11198)] + !Control.HasFocus(9705)</visible>
+          <texture colordiffuse="FF303030" border="14">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="button" id="9705">
+          <left>772</left>
+          <top>38</top>
+          <width>154</width>
+          <height>64</height>
+          <label>动漫</label>
+          <font>font12</font>
+          <textcolor>FFB8B8C2</textcolor>
+          <focusedcolor>FF101014</focusedcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <onleft>9704</onleft>
+          <onright>9706</onright>
+          <onup>9705</onup>
+          <ondown>$PARAM[down]</ondown>
+          <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+          <texturenofocus>am6b/transparent.png</texturenofocus>
+          <onclick>SetProperty(BobiNavSection,9705,Home)</onclick>
+          <onclick>ActivateWindow(1198)</onclick>
+          <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+        </control>
+        <control type="image">
+          <left>940</left>
+          <top>38</top>
+          <width>254</width>
+          <height>64</height>
+          <visible>[Window.IsActive(11197)] + !Control.HasFocus(9706)</visible>
+          <texture colordiffuse="FF303030" border="14">am6b/cinema/rounded.png</texture>
+        </control>
+        <control type="button" id="9706">
+          <left>940</left>
+          <top>38</top>
+          <width>254</width>
+          <height>64</height>
+          <label>我的波比TV</label>
+          <font>font12</font>
+          <textcolor>FFB8B8C2</textcolor>
+          <focusedcolor>FF101014</focusedcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <onleft>9705</onleft>
+          <onright>9707</onright>
+          <onup>9706</onup>
+          <ondown>$PARAM[down]</ondown>
+          <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+          <texturenofocus>am6b/transparent.png</texturenofocus>
+          <onclick>SetProperty(BobiNavSection,9706,Home)</onclick>
+          <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=am6b_home",return)</onclick>
+          <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+        </control>
+        <control type="button" id="9707">
+          <left>1220</left>
+          <top>38</top>
+          <width>254</width>
+          <height>64</height>
+          <label>影院设置</label>
+          <font>font12</font>
+          <textcolor>FFB8B8C2</textcolor>
+          <focusedcolor>FF101014</focusedcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <onleft>9706</onleft>
+          <onright>9707</onright>
+          <onup>9707</onup>
+          <ondown>$PARAM[down]</ondown>
+          <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
+          <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+          <onclick>ActivateWindow(Settings)</onclick>
+        </control>
+        <control type="group">
+          <left>1560</left>
+          <top>45</top>
+          <width>158</width>
+          <height>48</height>
+          <description>BobiCompactWordmark</description>
+          <control type="image">
+            <left>0</left>
+            <top>10</top>
+            <width>3</width>
+            <height>27</height>
+            <texture colordiffuse="FFE50924">am6b/white.png</texture>
+          </control>
+          <control type="label">
+            <left>14</left>
+            <top>0</top>
+            <width>80</width>
+            <height>48</height>
+            <label>波比</label>
+            <font>BobiLogo</font>
+            <textcolor>FFF4F4F5</textcolor>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>97</left>
+            <top>1</top>
+            <width>52</width>
+            <height>48</height>
+            <label>TV</label>
+            <font>BobiLogoLatin</font>
+            <textcolor>FFE50924</textcolor>
+            <aligny>center</aligny>
+          </control>
+        </control>
+        <control type="label">
+          <left>1740</left>
+          <top>47</top>
+          <width>100</width>
+          <height>44</height>
+          <label>$INFO[System.Time(hh:mm)]</label>
+          <font>font11</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>right</align>
+          <aligny>center</aligny>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="CinemaPosterRow">
+    <param name="id" />
+    <param name="title" />
+    <param name="content" />
+    <param name="up" />
+    <param name="down" />
+    <definition>
+      <control type="group">
+        <left>0</left>
+        <top>0</top>
+        <width>1920</width>
+        <height>824</height>
+        <control type="label">
+          <left>96</left>
+          <top>0</top>
+          <width>1420</width>
+          <height>50</height>
+          <label>$PARAM[title]</label>
+          <font>font16</font>
+          <textcolor>FFF4F4F5</textcolor>
+        </control>
+        <control type="label">
+          <left>1596</left>
+          <top>10</top>
+          <width>240</width>
+          <height>34</height>
+          <label>$INFO[Container($PARAM[id]).CurrentItem, , / ]$INFO[Container($PARAM[id]).NumItems]</label>
+          <font>font10</font>
+          <textcolor>FFB3B3B3</textcolor>
+          <align>right</align>
+          <visible>Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="fixedlist" id="$PARAM[id]">
+          <left>88</left>
+          <top>64</top>
+          <width>1832</width>
+          <height>553</height>
+          <orientation>horizontal</orientation>
+          <focusposition>0</focusposition>
+          <scrolltime>180</scrolltime>
+          <preloaditems>1</preloaditems>
+          <onleft>$PARAM[id]</onleft>
+          <onright>$PARAM[id]</onright>
+          <onup>$PARAM[up]</onup>
+          <ondown>$PARAM[down]</ondown>
+          <onback>SetFocus(9702)</onback>
+          <itemlayout width="372" height="553">
+            <control type="group">
+              <left>0</left>
+              <top>0</top>
+              <width>366</width>
+              <height>553</height>
+              <control type="image">
+                <left>8</left>
+                <top>8</top>
+                <width>350</width>
+                <height>537</height>
+                <texture background="true" fallback="am6b/cinema/movies.png">$INFO[ListItem.Art(poster)]</texture>
+                <aspectratio>scale</aspectratio>
+              </control>
+            </control>
+          </itemlayout>
+          <focusedlayout width="980" height="553">
+            <control type="group">
+              <left>0</left>
+              <top>0</top>
+              <width>974</width>
+              <height>553</height>
+              <control type="image">
+                <left>2</left>
+                <top>2</top>
+                <width>962</width>
+                <height>549</height>
+                <texture colordiffuse="FFF5F5F5" border="28">am6b/cinema/outline.png</texture>
+              </control>
+              <control type="image">
+                <left>8</left>
+                <top>8</top>
+                <width>950</width>
+                <height>537</height>
+                <texture background="true" fallback="am6b/cinema/movies.png">$INFO[ListItem.Art(fanart)]</texture>
+                <aspectratio>scale</aspectratio>
+              </control>
+              <control type="image">
+                <left>8</left>
+                <top>215</top>
+                <width>950</width>
+                <height>330</height>
+                <texture colordiffuse="FF080808">am6b/cinema/fade-bottom.png</texture>
+              </control>
+              <control type="textbox">
+                <left>40</left>
+                <top>390</top>
+                <width>864</width>
+                <height>116</height>
+                <label>$INFO[ListItem.Label]</label>
+                <font>BobiHero</font>
+                <textcolor>FFF5F5F5</textcolor>
+              </control>
+            </control>
+          </focusedlayout>
+          <content target="video" limit="8" browse="never">$PARAM[content]</content>
+        </control>
+        <control type="label">
+          <left>100</left>
+          <top>634</top>
+          <width>1500</width>
+          <height>40</height>
+          <label>$INFO[Container($PARAM[id]).ListItem.Year]$INFO[Container($PARAM[id]).ListItem.Genre,  ·  ]</label>
+          <font>font12</font>
+          <textcolor>FFDADADA</textcolor>
+        </control>
+        <control type="textbox">
+          <left>100</left>
+          <top>686</top>
+          <width>1440</width>
+          <height>72</height>
+          <font>font11</font>
+          <textcolor>FFB3B3B3</textcolor>
+          <label>$INFO[Container($PARAM[id]).ListItem.Plot]</label>
+        </control>
+        <control type="label">
+          <left>1510</left>
+          <top>776</top>
+          <width>320</width>
+          <height>34</height>
+          <label>确认键进入详情  ›</label>
+          <font>font10</font>
+          <textcolor>FFB3B3B3</textcolor>
+          <align>right</align>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="CinemaHome">
+    <control type="group" id="9800">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1920</width>
+        <height>1080</height>
+        <texture colordiffuse="FF080808">am6b/white.png</texture>
+      </control>
+      <control type="grouplist" id="9790">
+        <left>0</left>
+        <top>183</top>
+        <width>1920</width>
+        <height>814</height>
+        <orientation>vertical</orientation>
+        <itemgap>18</itemgap>
+        <scrolltime>200</scrolltime>
+        <include content="CinemaPosterRow">
+          <param name="id" value="9810" />
+          <param name="title" value="当季新番" />
+          <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" />
+          <param name="up" value="9702" />
+          <param name="down" value="9820" />
+        </include>
+        <include content="CinemaPosterRow">
+          <param name="id" value="9820" />
+          <param name="title" value="已准备资源" />
+          <param name="content" value="plugin://plugin.video.bobbi/?action=bobi_library&amp;view=ready" />
+          <param name="up" value="9810" />
+          <param name="down" value="9830" />
+        </include>
+        <include content="CinemaPosterRow">
+          <param name="id" value="9830" />
+          <param name="title" value="热门电影" />
+          <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" />
+          <param name="up" value="9820" />
+          <param name="down" value="9840" />
+        </include>
+        <include content="CinemaPosterRow">
+          <param name="id" value="9840" />
+          <param name="title" value="热门剧集" />
+          <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" />
+          <param name="up" value="9830" />
+          <param name="down" value="9850" />
+        </include>
+        <include content="CinemaPosterRow">
+          <param name="id" value="9850" />
+          <param name="title" value="动漫电影" />
+          <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=movies&amp;category=Anime_Movies_New" />
+          <param name="up" value="9840" />
+          <param name="down" value="9850" />
+        </include>
+      </control>
+      <control type="label">
+        <left>980</left>
+        <top>133</top>
+        <width>850</width>
+        <height>30</height>
+        <label>在线片单 · 进入作品后选择来源</label>
+        <font>font10</font>
+        <textcolor>FFB3B3B3</textcolor>
+        <align>right</align>
+      </control>
+      <include content="CinemaTopNav">
+        <param name="down" value="9810" />
+      </include>
+    </control>
+  </include>
+</includes>

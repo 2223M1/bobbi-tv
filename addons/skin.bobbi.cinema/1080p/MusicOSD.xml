@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">100</defaultcontrol>
+  <onload condition="!MusicPlayer.Content(LiveTV)">SetFocus(602)</onload>
+  <include>dialogeffect</include>
+  <depth>DepthOSD</depth>
+  <coordinates>
+    <left>0</left>
+    <top>0</top>
+  </coordinates>
+  <controls>
+    <control type="slider" id="87">
+      <depth>DepthOSD+</depth>
+      <description>Seek Slider</description>
+      <left>645</left>
+      <top>123r</top>
+      <width>1080</width>
+      <height>24</height>
+      <onup>702</onup>
+      <ondown>26</ondown>
+      <action>seek</action>
+      <texturesliderbar>seekslider2.png</texturesliderbar>
+      <textureslidernib>osd_slider_nibNF.png</textureslidernib>
+      <textureslidernibfocus>osd_slider_nib.png</textureslidernibfocus>
+      <animation effect="fade" time="150" condition="!Skin.HasSetting(BobiReduceMotion)">VisibleChange</animation>
+      <visible>![Window.IsVisible(AddonSettings) | Window.IsVisible(SelectDialog) | Window.IsVisible(VisualisationPresetList) | Window.IsVisible(PVROSDChannels) | Window.IsVisible(PVRChannelGuide) | Window.IsVisible(PVRRadioRDSInfo)]</visible>
+    </control>
+    <control type="grouplist" id="100">
+      <left>488</left>
+      <top>90r</top>
+      <ondown>Dialog.Close(all)</ondown>
+      <ondown>ActivateWindow(musicplaylist)</ondown>
+      <orientation>horizontal</orientation>
+      <itemgap>0</itemgap>
+      <animation effect="fade" time="150" condition="!Skin.HasSetting(BobiReduceMotion)">VisibleChange</animation>
+      <control type="button" id="300">
+        <width>83</width>
+        <height>83</height>
+        <label>210</label>
+        <font />
+        <texturefocus>am6b/icon-up-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-up.png</texturenofocus>
+        <onclick>PlayerControl(Previous)</onclick>
+        <visible>MusicPlayer.Content(LiveTV)</visible>
+      </control>
+      <control type="button" id="301">
+        <width>83</width>
+        <height>83</height>
+        <label>209</label>
+        <font />
+        <texturefocus>am6b/icon-down-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-down.png</texturenofocus>
+        <onclick>PlayerControl(Next)</onclick>
+        <visible>MusicPlayer.Content(LiveTV)</visible>
+      </control>
+      <control type="button" id="600">
+        <width>83</width>
+        <height>83</height>
+        <label>210</label>
+        <font />
+        <texturefocus>am6b/icon-previous-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-previous.png</texturenofocus>
+        <onclick>PlayerControl(Previous)</onclick>
+        <visible>!MusicPlayer.Content(LiveTV)</visible>
+      </control>
+      <control type="button" id="601">
+        <width>83</width>
+        <height>83</height>
+        <label>31354</label>
+        <font />
+        <texturefocus>am6b/icon-rewind-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-rewind.png</texturenofocus>
+        <animation effect="fade" start="100" end="50" time="75" condition="[!Player.SeekEnabled] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <onclick>PlayerControl(Rewind)</onclick>
+        <enable>Player.SeekEnabled</enable>
+      </control>
+      <control type="togglebutton" id="602">
+        <width>83</width>
+        <height>83</height>
+        <label>31351</label>
+        <altlabel>208</altlabel>
+        <font />
+        <texturefocus>am6b/icon-pause-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-pause.png</texturenofocus>
+        <usealttexture>Player.Paused | Player.Forwarding | Player.Rewinding</usealttexture>
+        <alttexturefocus>am6b/icon-play-focus.png</alttexturefocus>
+        <alttexturenofocus>am6b/icon-play.png</alttexturenofocus>
+        <animation effect="fade" start="100" end="50" time="75" condition="[!Player.PauseEnabled] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <onclick>PlayerControl(Play)</onclick>
+        <enable>Player.PauseEnabled</enable>
+      </control>
+      <control type="button" id="603">
+        <width>83</width>
+        <height>83</height>
+        <label>31352</label>
+        <font />
+        <texturefocus>am6b/icon-stop-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-stop.png</texturenofocus>
+        <onclick>PlayerControl(Stop)</onclick>
+      </control>
+      <control type="button" id="604">
+        <width>83</width>
+        <height>83</height>
+        <label>31353</label>
+        <font />
+        <texturefocus>am6b/icon-forward-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-forward.png</texturenofocus>
+        <animation effect="fade" start="100" end="50" time="75" condition="[!Player.SeekEnabled] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <onclick>PlayerControl(Forward)</onclick>
+        <enable>Player.SeekEnabled</enable>
+      </control>
+      <control type="button" id="605">
+        <width>83</width>
+        <height>83</height>
+        <label>209</label>
+        <font />
+        <texturefocus>am6b/icon-next-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-next.png</texturenofocus>
+        <visible>!MusicPlayer.Content(LiveTV)</visible>
+        <onclick>PlayerControl(Next)</onclick>
+      </control>
+      <control type="button" id="608">
+        <width>83</width>
+        <height>83</height>
+        <label>209</label>
+        <font />
+        <texturefocus>am6b/icon-list-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-list.png</texturenofocus>
+        <visible>!MusicPlayer.Content(LiveTV)</visible>
+        <onclick>Dialog.Close(all)</onclick>
+        <onclick>ActivateWindow(musicplaylist)</onclick>
+      </control>
+      <control type="button" id="306">
+        <width>83</width>
+        <height>83</height>
+        <label>19019</label>
+        <font />
+        <texturefocus>am6b/icon-list-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-list.png</texturenofocus>
+        <onclick>ActivateWindow(PVROSDChannels)</onclick>
+        <visible>MusicPlayer.Content(LiveTV)</visible>
+      </control>
+      <control type="button" id="307">
+        <width>83</width>
+        <height>83</height>
+        <label>$LOCALIZE[19029]$INFO[MusicPlayer.ChannelName, - ]</label>
+        <font />
+        <texturefocus>am6b/icon-list-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-list.png</texturenofocus>
+        <onclick>ActivateWindow(PVRChannelGuide)</onclick>
+        <visible>MusicPlayer.Content(LiveTV) + !RDS.HasRadiotextPlus</visible>
+      </control>
+      <control type="button" id="308">
+        <visible>RDS.HasRadiotextPlus</visible>
+        <width>83</width>
+        <height>83</height>
+        <label>209</label>
+        <font />
+        <texturefocus>am6b/icon-info-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-info.png</texturenofocus>
+        <onclick>ActivateWindow(PVRRadioRDSInfo)</onclick>
+        <visible>MusicPlayer.Content(LiveTV) + RDS.HasRadiotextPlus</visible>
+      </control>
+      <control type="group" id="699">
+        <width>83</width>
+        <height>83</height>
+        <visible>!MusicPlayer.Content(LiveTV)</visible>
+        <control type="button" id="606">
+          <left>0</left>
+          <top>0</top>
+          <width>83</width>
+          <height>83</height>
+          <label>$LOCALIZE[486]$INFO[Playlist.Repeat, : ]</label>
+          <font />
+          <texturefocus />
+          <texturenofocus />
+          <onleft>605</onleft>
+          <onright>607</onright>
+          <onclick>PlayerControl(Repeat)</onclick>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>83</width>
+          <height>83</height>
+          <texture>am6b/icon-list.png</texture>
+          <visible>!Playlist.IsRepeat + !Playlist.IsRepeatOne</visible>
+          <visible>!Control.HasFocus(606)</visible>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>83</width>
+          <height>83</height>
+          <texture>am6b/icon-list-focus.png</texture>
+          <visible>!Playlist.IsRepeat + !Playlist.IsRepeatOne</visible>
+          <visible>Control.HasFocus(606)</visible>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>83</width>
+          <height>83</height>
+          <texture>am6b/icon-list.png</texture>
+          <visible>Playlist.IsRepeatOne</visible>
+          <visible>!Control.HasFocus(606)</visible>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>83</width>
+          <height>83</height>
+          <texture>am6b/icon-list-focus.png</texture>
+          <visible>Playlist.IsRepeatOne</visible>
+          <visible>Control.HasFocus(606)</visible>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>83</width>
+          <height>83</height>
+          <texture>am6b/icon-list.png</texture>
+          <visible>Playlist.IsRepeat</visible>
+          <visible>!Control.HasFocus(606)</visible>
+        </control>
+        <control type="image">
+          <left>0</left>
+          <top>0</top>
+          <width>83</width>
+          <height>83</height>
+          <texture>am6b/icon-list-focus.png</texture>
+          <visible>Playlist.IsRepeat</visible>
+          <visible>Control.HasFocus(606)</visible>
+        </control>
+      </control>
+      <control type="togglebutton" id="607">
+        <width>83</width>
+        <height>83</height>
+        <label>$LOCALIZE[590]$INFO[Playlist.Random, : ]</label>
+        <font />
+        <texturefocus>am6b/icon-list-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-list.png</texturenofocus>
+        <usealttexture>Playlist.IsRandom</usealttexture>
+        <alttexturefocus>am6b/icon-list-focus.png</alttexturefocus>
+        <alttexturenofocus>am6b/icon-list.png</alttexturenofocus>
+        <visible>!MusicPlayer.Content(LiveTV)</visible>
+        <onclick>PlayerControl(Random)</onclick>
+      </control>
+      <control type="image" id="2300">
+        <width>158</width>
+        <texture />
+      </control>
+      <control type="image" id="2400">
+        <width>83</width>
+        <texture />
+      </control>
+      <control type="image" id="2500">
+        <width>83</width>
+        <texture />
+        <visible>MusicPlayer.Content(LiveTV)</visible>
+      </control>
+      <control type="image" id="2600">
+        <width>83</width>
+        <texture />
+        <visible>!PVR.CanRecordPlayingChannel</visible>
+      </control>
+      <control type="togglebutton" id="701">
+        <width>83</width>
+        <height>83</height>
+        <label>31128</label>
+        <font />
+        <texturefocus>am6b/icon-info-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-info.png</texturenofocus>
+        <alttexturefocus>am6b/icon-info-focus.png</alttexturefocus>
+        <alttexturenofocus>am6b/icon-info.png</alttexturenofocus>
+        <onclick>Close</onclick>
+        <onclick>RunScript($INFO[Skin.String(LyricScript_Path)])</onclick>
+        <altclick>Skin.SetAddon(LyricScript_Path,xbmc.python.lyrics)</altclick>
+        <altclick>Close</altclick>
+        <altclick>RunScript($INFO[Skin.String(LyricScript_Path)])</altclick>
+        <usealttexture>String.IsEmpty(Skin.String(LyricScript_Path))</usealttexture>
+        <visible>!MusicPlayer.Content(LiveTV)</visible>
+      </control>
+      <control type="button" id="500">
+        <width>83</width>
+        <height>83</height>
+        <label>12006</label>
+        <font />
+        <texturefocus>am6b/icon-settings-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-settings.png</texturenofocus>
+      </control>
+      <control type="button" id="702">
+        <width>83</width>
+        <height>83</height>
+        <label>$LOCALIZE[250] $LOCALIZE[21417]</label>
+        <font />
+        <texturefocus>am6b/icon-settings-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-settings.png</texturenofocus>
+        <onclick>Addon.Default.OpenSettings(xbmc.player.musicviz)</onclick>
+      </control>
+      <control type="button" id="703">
+        <width>83</width>
+        <height>83</height>
+        <label>31048</label>
+        <font />
+        <texturefocus>am6b/icon-previous-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-previous.png</texturenofocus>
+        <onclick>ActivateWindow(visualisationpresetlist)</onclick>
+        <enable>Visualisation.HasPresets</enable>
+        <animation effect="fade" start="100" end="50" time="75" condition="[!Visualisation.HasPresets] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+      </control>
+      <control type="togglebutton" id="704">
+        <width>83</width>
+        <height>83</height>
+        <label>264</label>
+        <altlabel>265</altlabel>
+        <font />
+        <texturefocus>am6b/icon-record-focus.png</texturefocus>
+        <texturenofocus>am6b/icon-record.png</texturenofocus>
+        <usealttexture>PVR.IsRecordingPlayingChannel | PVR.IsPlayingActiveRecording</usealttexture>
+        <alttexturefocus>am6b/icon-record-focus.png</alttexturefocus>
+        <alttexturenofocus>am6b/icon-record.png</alttexturenofocus>
+        <onclick>PVR.ToggleRecordPlayingChannel</onclick>
+        <visible>PVR.CanRecordPlayingChannel</visible>
+      </control>
+    </control>
+  </controls>
+</window>

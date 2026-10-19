@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="repository.bobbi" version="0.1.0" name="bobbi TV · 波比影院" provider-name="bobbi TV contributors">
+  <extension point="xbmc.addon.repository" name="bobbi TV">
+    <dir minversion="21.0.0">
+      <info compressed="false">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/addons.xml</info>
+      <checksum>https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/addons.xml.md5</checksum>
+      <datadir zip="true">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">CoreELEC 与 Android 共用影院组件仓库</summary>
+    <description lang="zh_CN">从本仓库安装“bobbi 开始使用”，自动获取整套影院组件。公开测试版；建议只通知更新，停止播放后手动安装。</description>
+    <license>GPL-3.0-or-later</license><platform>all</platform>
+    <source>https://github.com/2223M1/bobbi-tv</source>
+  </extension>
+</addon>

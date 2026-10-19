@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">52</defaultcontrol>
+  <coordinates>
+    <left>0</left>
+    <top>0</top>
+  </coordinates>
+  <controls>
+    <include>CommonBackground</include>
+    <control type="group">
+      <include>Window_OpenClose_Animation</include>
+      <control type="image">
+        <left>0</left>
+        <top>150r</top>
+        <width>1920</width>
+        <height>150</height>
+        <texture>am6b/footer.png</texture>
+        <animation effect="slide" start="0,15" end="0,0" time="150" condition="[Window.Previous(Home)] + !Skin.HasSetting(BobiReduceMotion)">WindowOpen</animation>
+        <animation effect="slide" start="0,0" end="0,15" time="150" condition="[Window.Next(Home)] + !Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
+      </control>
+      <control type="image">
+        <description>LOGO</description>
+        <left>15</left>
+        <top>15</top>
+        <width>150</width>
+        <height>75</height>
+        <aspectratio aligny="top" align="left">keep</aspectratio>
+        <texture>kodi-logo.png</texture>
+        <include>Window_OpenClose_Animation</include>
+      </control>
+      <control type="image">
+        <left>398</left>
+        <top>90</top>
+        <width>1125</width>
+        <height>900</height>
+        <texture colordiffuse="FF161616">am6b/white.png</texture>
+      </control>
+      <control type="image">
+        <left>398</left>
+        <top>978</top>
+        <width>1125</width>
+        <height>96</height>
+        <texture colordiffuse="FF161616">am6b/white.png</texture>
+      </control>
+      <control type="label">
+        <left>443</left>
+        <top>150</top>
+        <width>1035</width>
+        <height>60</height>
+        <font>font13</font>
+        <textcolor>grey2</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <label>$LOCALIZE[31421]</label>
+      </control>
+      <control type="list" id="52">
+        <left>443</left>
+        <top>255</top>
+        <width>1035</width>
+        <height>602</height>
+        <onleft>20</onleft>
+        <onright>20</onright>
+        <onup>52</onup>
+        <ondown>52</ondown>
+        <viewtype label="535">list</viewtype>
+        <pagecontrol>60</pagecontrol>
+        <scrolltime>180</scrolltime>
+        <itemlayout height="150" width="1035">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1035</width>
+            <height>143</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+          </control>
+          <control type="image">
+            <left>15</left>
+            <top>15</top>
+            <width>120</width>
+            <height>113</height>
+            <texture>$INFO[ListItem.Icon]</texture>
+            <aspectratio>keep</aspectratio>
+          </control>
+          <control type="label">
+            <left>165</left>
+            <top>15</top>
+            <width>870</width>
+            <height>60</height>
+            <font>font24_title</font>
+            <textcolor>grey2</textcolor>
+            <selectedcolor>selected</selectedcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+          </control>
+          <control type="label">
+            <left>165</left>
+            <top>75</top>
+            <width>870</width>
+            <height>38</height>
+            <font>font13</font>
+            <textcolor>grey2</textcolor>
+            <selectedcolor>selected</selectedcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label2]</label>
+          </control>
+        </itemlayout>
+        <focusedlayout height="150" width="870">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1035</width>
+            <height>143</height>
+            <texture colordiffuse="FF242424">am6b/white.png</texture>
+            <visible>!Control.HasFocus(52)</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1035</width>
+            <height>143</height>
+            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <visible>Control.HasFocus(52)</visible>
+            <include>VisibleFadeEffect</include>
+          </control>
+          <control type="image">
+            <left>15</left>
+            <top>15</top>
+            <width>120</width>
+            <height>113</height>
+            <texture>$INFO[ListItem.Icon]</texture>
+            <aspectratio>keep</aspectratio>
+          </control>
+          <control type="label">
+            <left>165</left>
+            <top>15</top>
+            <width>870</width>
+            <height>60</height>
+            <font>font24_title</font>
+            <textcolor>white</textcolor>
+            <selectedcolor>selected</selectedcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label]</label>
+          </control>
+          <control type="label">
+            <left>165</left>
+            <top>75</top>
+            <width>870</width>
+            <height>38</height>
+            <font>font13</font>
+            <textcolor>grey2</textcolor>
+            <selectedcolor>selected</selectedcolor>
+            <align>left</align>
+            <aligny>center</aligny>
+            <label>$INFO[ListItem.Label2]</label>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="group">
+        <description>LOGO</description>
+        <left>398</left>
+        <top>870</top>
+        <control type="label">
+          <left>0</left>
+          <top>0</top>
+          <width>79</width>
+          <height>46</height>
+          <label>波比</label>
+          <font>BobiLogo</font>
+          <textcolor>FFF5F5F5</textcolor>
+          <aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>82</left>
+          <top>1</top>
+          <width>48</width>
+          <height>46</height>
+          <label>TV</label>
+          <font>BobiLogoLatin</font>
+          <textcolor>FFE50914</textcolor>
+          <aligny>center</aligny>
+        </control>
+      </control>
+      <control type="group">
+        <left>1410</left>
+        <top>900</top>
+        <control type="label">
+          <left>-870</left>
+          <top>0</top>
+          <width>870</width>
+          <height>68</height>
+          <font>font12</font>
+          <textcolor>grey2</textcolor>
+          <align>right</align>
+          <aligny>center</aligny>
+          <label>$LOCALIZE[31003]</label>
+        </control>
+        <control type="button" id="20">
+          <description>Power push button</description>
+          <left>15</left>
+          <top>0</top>
+          <width>68</width>
+          <height>68</height>
+          <label />
+          <font />
+          <onclick>ActivateWindow(ShutdownMenu)</onclick>
+          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+          <onleft>52</onleft>
+          <onright>52</onright>
+          <onup>52</onup>
+          <ondown>52</ondown>
+          <colordiffuse>CCFFFFFF</colordiffuse>
+        </control>
+        <control type="image">
+          <description>Power Icon</description>
+          <left>23</left>
+          <top>8</top>
+          <width>53</width>
+          <height>53</height>
+          <aspectratio>keep</aspectratio>
+          <texture>icon_power.png</texture>
+        </control>
+      </control>
+    </control>
+    <control type="group">
+      <depth>DepthHeader</depth>
+      <include>Clock</include>
+      <control type="label">
+        <description>Date label</description>
+        <right>30</right>
+        <top>53</top>
+        <width>300</width>
+        <height>23</height>
+        <align>right</align>
+        <aligny>center</aligny>
+        <font>font10</font>
+        <textcolor>white</textcolor>
+        <shadowcolor>black</shadowcolor>
+        <label>$INFO[System.Date]</label>
+        <include>Window_OpenClose_Animation</include>
+        <animation effect="slide" start="0,0" end="-60,0" time="75" condition="[Player.Muted] + !Skin.HasSetting(BobiReduceMotion)">conditional</animation>
+      </control>
+    </control>
+  </controls>
+</window>

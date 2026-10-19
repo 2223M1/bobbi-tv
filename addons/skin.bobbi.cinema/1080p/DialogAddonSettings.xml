@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">5</defaultcontrol>
+  <depth>DepthDialog</depth>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="99000000">bobi/white.png</texture>
+      <animation effect="fade" start="0" end="100" time="160">WindowOpen</animation>
+      <animation effect="fade" start="100" end="0" time="120">WindowClose</animation>
+    </control>
+    <control type="group">
+      <left>160</left><top>60</top><width>1600</width><height>960</height>
+      <include content="PanelOpen"><param name="slide">0,16</param></include>
+      <control type="image">
+        <left>0</left><top>0</top><width>1600</width><height>960</height>
+        <texture colordiffuse="FF121419" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>440</width><height>960</height>
+        <texture colordiffuse="FF15171C" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="label" id="2">
+        <left>40</left><top>36</top><width>380</width><height>56</height>
+        <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="grouplist" id="3">
+        <left>20</left><top>112</top><width>400</width><height>720</height>
+        <orientation>vertical</orientation><itemgap>4</itemgap>
+        <usecontrolcoords>true</usecontrolcoords>
+        <onleft>noop</onleft><onright>5</onright>
+        <onup>3</onup><ondown>20</ondown>
+      </control>
+      <control type="button" id="10">
+        <width>400</width><height>72</height>
+        <font>Label28</font><textcolor>text2</textcolor><focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>24</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus />
+      </control>
+      <control type="radiobutton" id="20">
+        <left>20</left><top>864</top><width>400</width><height>72</height>
+        <font>Label24</font><textcolor>text3</textcolor><focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>24</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus />
+        <radiowidth>1</radiowidth><radioheight>1</radioheight>
+        <textureradioonfocus /><textureradioonnofocus /><textureradioofffocus /><textureradiooffnofocus />
+        <onclick>SettingsLevelChange</onclick>
+        <onup>3</onup><ondown>noop</ondown><onright>5</onright><onleft>noop</onleft>
+      </control>
+      <control type="grouplist" id="5">
+        <left>480</left><top>40</top><width>1080</width><height>700</height>
+        <orientation>vertical</orientation><itemgap>4</itemgap>
+        <pagecontrol>60</pagecontrol>
+        <scrolltime tween="cubic" easing="out">160</scrolltime>
+        <onleft>3</onleft><onright>noop</onright>
+        <onup>5</onup><ondown>9000</ondown>
+      </control>
+      <control type="scrollbar" id="60">
+        <left>1572</left><top>44</top><width>4</width><height>692</height>
+        <orientation>vertical</orientation><showonepage>false</showonepage>
+        <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+        <onleft>5</onleft>
+      </control>
+      <control type="textbox" id="6">
+        <left>508</left><top>756</top><width>1040</width><height>80</height>
+        <font>Meta22</font><textcolor>text3</textcolor>
+      </control>
+      <control type="grouplist" id="9000">
+        <left>480</left><top>860</top><width>1080</width><height>72</height>
+        <orientation>horizontal</orientation><itemgap>12</itemgap><align>right</align>
+        <onup>5</onup><onleft>3</onleft><onright>noop</onright>
+        <include content="DialogButton"><param name="id">28</param><param name="width">220</param></include>
+        <include content="DialogButton"><param name="id">29</param><param name="width">220</param></include>
+        <include content="DialogButton"><param name="id">30</param><param name="width">260</param></include>
+      </control>
+    </control>
+    <control type="group">
+      <left>-3000</left>
+      <include content="SettingTemplates"><param name="w">1080</param><param name="radiox">988</param></include>
+    </control>
+  </controls>
+</window>

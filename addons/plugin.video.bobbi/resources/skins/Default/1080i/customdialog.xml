@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog">
+  <coordinates>
+    <left>460</left>
+    <top>290</top>
+    <width>1000</width>
+    <height>500</height>
+  </coordinates>
+  <defaultcontrol always="true">32503</defaultcontrol>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="zoom" start="80" end="100" center="50%,50%" delay="160" tween="back" time="180" />
+    <effect type="fade" delay="160" end="100" time="180" />
+  </animation>
+  <animation type="WindowClose" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+    <effect type="zoom" start="100" end="80" center="50%,50%" easing="in" tween="back" time="180" />
+    <effect type="fade" start="100" end="0" time="180" />
+  </animation>
+  <depth>0.40</depth>
+  <controls>
+    <control type="group">
+      <width>1000</width>
+      <height>500</height>
+      <control type="image">
+        <width>1000</width>
+        <height>500</height>
+        <texture border="30">circle.png</texture>
+        <colordiffuse>CC000000</colordiffuse>
+      </control>
+      <control type="label" id="32500">
+        <top>20</top>
+        <width>1000</width>
+        <height>50</height>
+        <font>font28_title</font>
+        <align>center</align>
+        <textcolor>white</textcolor>
+        <shadowcolor>AA000000</shadowcolor>
+      </control>
+      <control type="image" id="32504">
+        <top>95</top>
+        <left>55</left>
+        <width>330</width>
+        <height>330</height>
+        <texture>qr_placeholder.png</texture>
+        <aspectratio>keep</aspectratio>
+      </control>
+      <control type="label" id="32501">
+        <font>font14</font>
+        <top>100</top>
+        <left>430</left>
+        <width>510</width>
+        <height>185</height>
+        <align>left</align>
+        <textcolor>white</textcolor>
+        <shadowcolor>AA000000</shadowcolor>
+        <wrapmultiline>true</wrapmultiline>
+      </control>
+      <control type="button" id="32503">
+        <left>940</left>
+        <top>10</top>
+        <width>50</width>
+        <height>50</height>
+        <texturefocus colordiffuse="FF12A0C7">Button/close.png</texturefocus>
+        <texturenofocus colordiffuse="EEFFFFFF">Button/close.png</texturenofocus>
+      </control>
+    </control>
+    <control type="group">
+      <width>510</width>
+      <height>110</height>
+      <top>355</top>
+      <left>430</left>
+      <control type="image">
+        <right>-6</right>
+        <bottom>-2</bottom>
+        <texture border="30">circle.png</texture>
+        <colordiffuse>DD12A0C7</colordiffuse>
+      </control>
+      <control type="label" id="32505">
+        <font>font13</font>
+        <top>10</top>
+        <align>center</align>
+        <height>25</height>
+        <textcolor>white</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+      </control>
+      <control type="label" id="32502">
+        <font>font14</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <top>48</top>
+        <height>55</height>
+        <textcolor>white</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <wrap>true</wrap>
+      </control>
+    </control>
+  </controls>
+</window>

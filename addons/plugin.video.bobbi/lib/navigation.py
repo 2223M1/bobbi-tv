@@ -1,0 +1,2060 @@
+import json
+import os
+import time
+from threading import Thread
+
+import xbmcgui
+from xbmcgui import ListItem
+from xbmcplugin import (
+    addDirectoryItem,
+)
+
+import lib.nav.debrid as debrid_navigation
+import lib.nav.library_history as library_history_navigation
+from lib.api.trakt.trakt import ProviderException, TraktAPI
+from lib.api.trakt.trakt_utils import is_trakt_auth
+from lib.clients.catalog_hub import list_merged_catalogs
+from lib.clients.stremio.playback import resolve_stremio_playback_url
+from lib.clients.tmdb.tmdb import (
+    TmdbClient,
+)
+from lib.clients.trakt.trakt import TraktClient
+from lib.clients.youtube_resolver import (
+    extract_video_id,
+    resolve_item_trailer,
+)
+from lib.db.cached import RuntimeCache, cache
+from lib.gui.custom_dialogs import (
+    CustomDialog,
+    download_dialog_mock,
+    resume_dialog_mock,
+    run_next_mock,
+    source_select_mock,
+)
+from lib.player import JacktookPLayer
+from lib.updater import updates_check_addon
+from lib.utils.general.items_menus import (
+    animation_items,
+    anime_items,
+    movie_items,
+    nuvio_menu_items,
+    root_menu_items,
+    trakt_movie_discovery_items,
+    trakt_movie_library_items,
+    trakt_tv_discovery_items,
+    trakt_tv_library_items,
+    tv_items,
+)
+from lib.utils.general.utils import (
+    build_list_item,
+    clear_all_cache,
+    clear_trakt_db_cache,
+    make_listing,
+    set_content_type,
+    set_pluging_category,
+    show_log_export_dialog,
+)
+from lib.utils.general.utils import (
+    clear_database_cache as utils_clear_database_cache,
+)
+from lib.utils.general.utils import (
+    clear_debrid_cache as utils_clear_debrid_cache,
+)
+from lib.utils.general.utils import (
+    clear_mdblist_cache as utils_clear_mdblist_cache,
+)
+from lib.utils.general.utils import (
+    clear_stremio_cache as utils_clear_stremio_cache,
+)
+from lib.utils.general.utils import (
+    clear_tmdb_cache as utils_clear_tmdb_cache,
+)
+from lib.utils.kodi.settings import addon_settings, subtitle_automation_enabled
+from lib.utils.torrent.display_metadata import get_display_metadata, prune_display_metadata
+from lib.utils.kodi.settings_backup import (
+    export_settings_backup as kodi_export_settings_backup,
+)
+from lib.utils.kodi.settings_backup import (
+    factory_reset_action as kodi_factory_reset_action,
+)
+from lib.utils.kodi.settings_backup import (
+    reset_all_settings_action as kodi_reset_all_settings_action,
+)
+from lib.utils.kodi.settings_backup import (
+    restore_settings_backup as kodi_restore_settings_backup,
+)
+from lib.utils.kodi.utils import (
+    ADDON_HANDLE,
+    ADDON_PATH,
+    ADDON_VERSION,
+    CHANGELOG_PATH,
+    JACKTORR_ADDON,
+    action_url_run,
+    add_directory_items_batch,
+    apply_section_view,
+    build_url,
+    burst_addon_settings,
+    capture_current_view_id,
+    clear_cached_settings,
+    dialog_text,
+    end_of_directory,
+    execute_builtin,
+    finish_action,
+    get_setting,
+    is_youtube_addon_enabled,
+    kodilog,
+    make_list_item,
+    notification,
+    play_info_hash,
+    reset_saved_views,
+    save_view_id,
+    set_setting,
+    translation,
+)
+from lib.utils.torrent.torrserver_init import get_torrserver_api
+from lib.utils.torrentio.utils import open_providers_selection
+
+
+def _menu_condition_signature(items):
+    signature = []
+    for item in items:
+        condition = item.get("condition")
+        signature.append(True if condition is None else bool(condition()))
+    return tuple(signature)
+
+
+def _get_cached_menu_entries(cache_key, builder, *builder_args, **builder_kwargs):
+    cached_menu_entries = RuntimeCache.get(cache_key)
+    if cached_menu_entries is not None:
+        return cached_menu_entries
+
+    menu_entries = builder(*builder_args, **builder_kwargs)
+    RuntimeCache.set(cache_key, menu_entries)
+    return menu_entries
+
+
+def _build_search_item_menu_entries(items, mode=None, filter_api=None):
+    menu_entries = []
+    for item in items:
+        if filter_api and item.get("api") != filter_api:
+            continue
+        menu_entries.append(
+            {
+                "url": build_url(
+                    "search_item",
+                    category=item["category"],
+                    mode=item["mode"],
+                    submode=mode,
+                    api=item["api"],
+                ),
+                "name": item["name"],
+                "icon": item["icon"],
+                "is_folder": True,
+            }
+        )
+    return menu_entries
+
+
+def _build_media_menu_entries(items):
+    menu_entries = []
+    for item in items:
+        if item.get("action"):
+            url = build_url(item["action"], **item.get("params", {}))
+        else:
+            url = build_url(
+                "search_item",
+                mode=item["mode"],
+                submode=item.get("submode", ""),
+                query=item["query"],
+                api=item["api"],
+            )
+        menu_entries.append(
+            {
+                "url": url,
+                "name": item["name"],
+                "icon": item["icon"],
+                "is_folder": True,
+            }
+        )
+    return menu_entries
+
+
+def _tv_menu_entries():
+    return _build_media_menu_entries(tv_items)
+
+
+def _movie_menu_entries():
+    return _build_media_menu_entries(movie_items)
+
+
+def _animation_item_menu_entries(mode):
+    return _build_search_item_menu_entries(
+        animation_items,
+        mode=mode,
+        filter_api=None if mode == "tv" else "tmdb",
+    )
+
+
+def _animation_menu_entries():
+    return [
+        {
+            "url": build_url("animation_item", mode="tv"),
+            "name": translation(90007),
+            "icon": "tv.png",
+            "is_folder": True,
+        },
+        {
+            "url": build_url("animation_item", mode="movies"),
+            "name": translation(90008),
+            "icon": "movies.png",
+            "is_folder": True,
+        },
+    ]
+
+
+def _anime_menu_entries():
+    return [
+        {
+            "url": build_url("anime_item", mode="tv"),
+            "name": translation(90007),
+            "icon": "tv.png",
+            "is_folder": True,
+        },
+        {
+            "url": build_url("anime_item", mode="movies"),
+            "name": translation(90008),
+            "icon": "movies.png",
+            "is_folder": True,
+        },
+    ]
+
+
+def _anime_item_menu_entries(mode):
+    return _build_search_item_menu_entries(anime_items, mode=mode)
+
+
+def _render_cached_menu_entries(menu_entries, cache=True):
+    directory_items = []
+    for menu_entry in menu_entries:
+        directory_items.append(
+            (
+                menu_entry["url"],
+                build_list_item(menu_entry["name"], menu_entry["icon"]),
+                menu_entry.get("is_folder", True),
+            )
+        )
+    add_directory_items_batch(directory_items)
+
+
+def render_menu(items, cache=True, cache_key=None, condition_results=None):
+    def _build_menu_entries():
+        menu_entries = []
+        for index, item in enumerate(items):
+            condition_met = (
+                condition_results[index]
+                if condition_results is not None
+                else "condition" not in item or bool(item["condition"]())
+            )
+            if not condition_met:
+                continue
+            name = item["name"]
+            if isinstance(name, int):
+                name = translation(name)
+            menu_entries.append(
+                {
+                    "name": name,
+                    "icon": item["icon"],
+                    "url": build_url(item["action"], **item.get("params", {})),
+                    "is_folder": item.get("is_folder", True),
+                }
+            )
+        return menu_entries
+
+    menu_entries = (
+        _build_menu_entries()
+        if not cache_key
+        else _get_cached_menu_entries(cache_key, _build_menu_entries)
+    )
+    _render_cached_menu_entries(menu_entries)
+    end_of_directory(cache=cache)
+
+
+def _translate_view_label(label):
+    if isinstance(label, str) and label.isdigit():
+        return translation(int(label))
+    return label or translation(90712)
+
+
+def _set_chooser_content(content_type):
+    chooser_modes = {
+        "movies": "movies",
+        "tvshows": "tv",
+        "seasons": "season",
+        "episodes": "episode",
+        "files": "files",
+    }
+    chooser_mode = chooser_modes.get(content_type)
+    if chooser_mode:
+        set_content_type(chooser_mode)
+
+
+def choose_view(params):
+    view_key = params.get("view_key", "view.main")
+    content_type = params.get("content_type", "")
+    label = _translate_view_label(params.get("label", "90712"))
+    set_pluging_category(label)
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(
+            "save_view",
+            view_key=view_key,
+            content_type=content_type,
+            label=params.get("label", "90712"),
+        ),
+        build_list_item(translation(90721), "settings.png"),
+        isFolder=False,
+    )
+    _set_chooser_content(content_type)
+    end_of_directory(cache=False)
+    apply_section_view(view_key, content_type=content_type)
+
+
+def settings_menu(params):
+    set_pluging_category(translation(90016))
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url("settings"),
+        build_list_item(translation(90742), "settings.png"),
+        isFolder=False,
+    )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url("views_menu"),
+        build_list_item(translation(90743), "settings.png"),
+        isFolder=True,
+    )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url("donate"),
+        build_list_item(translation(90815), "donate.png"),
+        isFolder=False,
+    )
+    end_of_directory(cache=False)
+    apply_section_view("view.main")
+
+
+def views_menu(params):
+    set_pluging_category(translation(90712))
+    view_items = (
+        ("view.main", "", "90713"),
+        ("view.movies", "movies", "90714"),
+        ("view.tvshows", "tvshows", "90715"),
+        ("view.seasons", "seasons", "90716"),
+        ("view.episodes", "episodes", "90717"),
+        ("view.library", "tvshows", "90718"),
+        ("view.history", "", "90719"),
+        ("view.downloads", "files", "90720"),
+    )
+    for view_key, content_type, label in view_items:
+        addDirectoryItem(
+            ADDON_HANDLE,
+            build_url(
+                "choose_view",
+                view_key=view_key,
+                content_type=content_type,
+                label=label,
+            ),
+            build_list_item(_translate_view_label(label), "settings.png"),
+            isFolder=True,
+        )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url("reset_views"),
+        build_list_item(translation(90725), "settings.png"),
+        isFolder=False,
+    )
+    end_of_directory(cache=False)
+    apply_section_view("view.main")
+
+
+def save_view(params):
+    view_key = params.get("view_key", "view.main")
+    label = _translate_view_label(params.get("label", "90712"))
+    view_id = capture_current_view_id()
+    if not view_id or not save_view_id(view_key, view_id):
+        notification(label, translation(90723))
+        return
+    notification(label, translation(90722))
+
+
+def reset_views(params):
+    reset_saved_views()
+    notification(translation(90712), translation(90724))
+
+
+def root_menu():
+    maybe_show_donation_prompt()
+    set_pluging_category(translation(90069))
+    condition_results = _menu_condition_signature(root_menu_items)
+    render_menu(
+        root_menu_items,
+        cache=False,
+        cache_key=f"nav.root:{condition_results}",
+        condition_results=condition_results,
+    )
+    apply_section_view("view.main")
+
+
+def maybe_show_donation_prompt():
+    if not ADDON_VERSION:
+        return
+
+    if get_setting("donation_prompt_last_version") == ADDON_VERSION:
+        return
+
+    set_setting("donation_prompt_last_version", ADDON_VERSION)
+    if xbmcgui.Dialog().yesno(translation(90023), translation(90818)):
+        donate({})
+
+
+def animation_menu(params):
+    _render_cached_menu_entries(
+        _get_cached_menu_entries(
+            "nav.animation_menu",
+            _animation_menu_entries,
+        )
+    )
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def animation_item(params):
+    mode = params.get("mode")
+    _render_cached_menu_entries(
+        _get_cached_menu_entries(
+            f"nav.animation_item:{mode}",
+            _animation_item_menu_entries,
+            mode,
+        )
+    )
+    end_of_directory()
+    if mode == "tv":
+        apply_section_view("view.tvshows")
+    else:
+        apply_section_view("view.movies")
+
+
+def telegram_menu(params):
+    set_pluging_category(translation(90013))
+    add_directory_items_batch(
+        [
+            (
+                build_url("search_jackgram", mode="direct"),
+                build_list_item(translation(30262), "search.png"),
+                True,
+            ),
+            (
+                build_url("list_jackgram_latest_movies", page=1),
+                build_list_item(translation(90369), "movies.png"),
+                True,
+            ),
+            (
+                build_url("list_jackgram_latest_series", page=1),
+                build_list_item(translation(90370), "tv.png"),
+                True,
+            ),
+            (
+                build_url("list_jackgram_raw_files", page=1),
+                build_list_item(translation(90371), "cloud.png"),
+                True,
+            ),
+            (
+                build_url("test_jackgram_connection"),
+                build_list_item(translation(30259), "settings.png"),
+                False,
+            ),
+        ]
+    )
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def search_jackgram(params):
+    jparams = dict(params)
+    jparams["jackgram_only"] = "true"
+    jparams["history_key"] = "direct_jackgram"
+    jparams.setdefault("mode", "direct")
+    jparams["label_id"] = 30262
+    return library_history_navigation.search_direct(jparams)
+
+
+def search_tmdb_year(params):
+    mode = params["mode"]
+    submode = params["submode"]
+    page = int(params["page"])
+    year = int(params["year"])
+
+    set_content_type(mode)
+
+    TmdbClient.tmdb_search_year(mode, submode, year, page)
+
+
+def search_tmdb_genres(params):
+    mode = params["mode"]
+    submode = params["submode"]
+    genre_id = params["genre_id"]
+    page = int(params["page"])
+
+    set_content_type(mode)
+
+    TmdbClient.tmdb_search_genres(mode, genre_id, page, submode=submode)
+
+
+def tv_shows_items(params):
+    set_pluging_category(translation(90007))
+    stremio_only = get_setting("stremio_only_catalogs", False)
+
+    if not stremio_only:
+        _render_cached_menu_entries(
+            _get_cached_menu_entries(
+                "nav.tv_items:default",
+                _tv_menu_entries,
+            )
+        )
+    list_merged_catalogs(menu_type="series", sub_menu_type="series")
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def movies_items(params):
+    set_pluging_category(translation(90008))
+    stremio_only = get_setting("stremio_only_catalogs", False)
+
+    if not stremio_only:
+        _render_cached_menu_entries(
+            _get_cached_menu_entries(
+                "nav.movie_items:default",
+                _movie_menu_entries,
+            )
+        )
+    list_merged_catalogs(menu_type="movie", sub_menu_type="movie")
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def direct_menu(params):
+    search_direct({"mode": "direct"})
+
+
+def trakt_group_menu(params):
+    mode = params["mode"]
+    group = params["group"]
+
+    def _group_items(items):
+        return [
+            {
+                "name": item["name"],
+                "icon": item["icon"],
+                "action": "search_item",
+                "params": {
+                    "mode": item["mode"],
+                    "submode": item.get("submode", ""),
+                    "query": item["query"],
+                    "api": item["api"],
+                },
+            }
+            for item in items
+        ]
+
+    if group == "library" and not (get_setting("trakt_enabled") and is_trakt_auth()):
+        notification(translation(90998), time=3000)
+        end_of_directory(cache=False)
+        return
+
+    if mode == "tv" and group == "library":
+        set_pluging_category(translation(90292))
+        render_menu(_group_items(trakt_tv_library_items), cache=False)
+        apply_section_view("view.tvshows")
+        return
+
+    if mode == "tv" and group == "discovery":
+        set_pluging_category(translation(90293))
+        render_menu(_group_items(trakt_tv_discovery_items), cache=False)
+        apply_section_view("view.tvshows")
+        return
+
+    if mode == "movies" and group == "library":
+        set_pluging_category(translation(90292))
+        render_menu(_group_items(trakt_movie_library_items), cache=False)
+        apply_section_view("view.movies")
+        return
+
+    if mode == "movies" and group == "discovery":
+        set_pluging_category(translation(90293))
+        render_menu(_group_items(trakt_movie_discovery_items), cache=False)
+        apply_section_view("view.movies")
+        return
+
+    end_of_directory(cache=False)
+
+
+def search_menu(params):
+    set_pluging_category(translation(90006))
+    directory_items = []
+
+    directory_items.append(
+        (
+            build_url("handle_tmdb_search", mode="multi", page=1),
+            build_list_item(translation(90207), "search.png"),
+            True,
+        )
+    )
+
+    # -- Direct Search --
+    directory_items.append(
+        (
+            build_url("search_direct", mode="direct"),
+            build_list_item(translation(90011), "search.png"),
+            True,
+        )
+    )
+
+    # -- Keyword Search --
+    directory_items.append(
+        (
+            build_url("handle_keyword_search", mode="multi"),
+            build_list_item(translation(90368), "tmdb.png"),
+            True,
+        )
+    )
+
+    # -- Recent TMDb Searches --
+    tmdb_history = cache.get_list(key="multi")
+    if tmdb_history:
+        header = make_list_item(label=f"[B][COLOR gray]— {translation(90208)} —[/COLOR][/B]")
+        header.setProperty("IsPlayable", "false")
+        directory_items.append(("", header, False))
+
+        for _, text in tmdb_history[:5]:
+            list_item = make_list_item(label=f"[I]{text}[/I]")
+            list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "tmdb.png")})
+            list_item.setProperty("IsPlayable", "false")
+            directory_items.append(
+                (
+                    build_url("handle_tmdb_search", mode="multi", page=1, query=text),
+                    list_item,
+                    True,
+                )
+            )
+
+    # -- Recent Direct Searches --
+    direct_history = cache.get_list(key="direct")
+    if direct_history:
+        header = make_list_item(label=f"[B][COLOR gray]— {translation(90209)} —[/COLOR][/B]")
+        header.setProperty("IsPlayable", "false")
+        directory_items.append(("", header, False))
+
+        for mode, text in direct_history[:5]:
+            list_item = make_list_item(label=f"[I]{text}[/I]")
+            list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "search.png")})
+            list_item.setProperty("IsPlayable", "true")
+            directory_items.append(
+                (
+                    build_url("search", mode=mode, query=text, direct=True),
+                    list_item,
+                    False,
+                )
+            )
+
+    # -- Clear All Search History --
+    if tmdb_history or direct_history:
+        clear_li = make_list_item(label=translation(90210))
+        clear_li.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "clear.png")})
+        directory_items.append((build_url("clear_search_history"), clear_li, False))
+
+    add_directory_items_batch(directory_items)
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def anime_menu(params):
+    set_pluging_category(translation(90009))
+    _render_cached_menu_entries(
+        _get_cached_menu_entries(
+            "nav.anime_menu",
+            _anime_menu_entries,
+        )
+    )
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def history_menu(params):
+    return library_history_navigation.history_menu(params)
+
+
+def library_menu(params):
+    return library_history_navigation.library_menu(params)
+
+
+def continue_watching_menu(params):
+    return library_history_navigation.continue_watching_menu(params)
+
+
+def remove_from_continue_watching(params):
+    return library_history_navigation.remove_from_continue_watching(params)
+
+
+def library_shows(params):
+    return library_history_navigation.library_shows(params)
+
+
+def library_movies(params):
+    return library_history_navigation.library_movies(params)
+
+
+def library_calendar(params):
+    return library_history_navigation.library_calendar(params)
+
+
+def remove_from_library(params):
+    return library_history_navigation.remove_from_library(params)
+
+
+def clear_library(params):
+    return library_history_navigation.clear_library(params)
+
+
+def add_to_library(params):
+    return library_history_navigation.add_to_library(params)
+
+
+def anime_item(params):
+    set_pluging_category(translation(90009))
+    mode = params.get("mode")
+    stremio_only = get_setting("stremio_only_catalogs", False)
+
+    if mode == "tv":
+        if not stremio_only:
+            _render_cached_menu_entries(
+                _get_cached_menu_entries(
+                    "nav.anime_item:tv",
+                    _anime_item_menu_entries,
+                    mode,
+                )
+            )
+        list_merged_catalogs(menu_type="anime", sub_menu_type="series")
+    if mode == "movies":
+        if not stremio_only:
+            _render_cached_menu_entries(
+                _get_cached_menu_entries(
+                    "nav.anime_item:movies",
+                    _anime_item_menu_entries,
+                    mode,
+                )
+            )
+        list_merged_catalogs(menu_type="anime", sub_menu_type="movie")
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def tv_menu(params):
+    set_pluging_category(translation(90010))
+    list_merged_catalogs(menu_type="tv")
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def search_direct(params):
+    return library_history_navigation.search_direct(params)
+
+
+def search(params):
+    from lib.search import run_search_entry
+
+    run_search_entry(params)
+
+
+def cloud_details(params):
+    return debrid_navigation.cloud_details(params)
+
+
+def cloud(params):
+    return debrid_navigation.cloud(params)
+
+
+def real_debrid_info(params):
+    return debrid_navigation.real_debrid_info(params)
+
+
+def alldebrid_info(params):
+    return debrid_navigation.alldebrid_info(params)
+
+
+def debrider_info(params):
+    return debrid_navigation.debrider_info(params)
+
+
+def easynews_info(params):
+    return debrid_navigation.easynews_info(params)
+
+
+def get_rd_downloads(params):
+    return debrid_navigation.get_rd_downloads(params)
+
+
+def get_tb_downloads(params):
+    return debrid_navigation.get_tb_downloads(params)
+
+
+def get_oc_downloads(params):
+    return debrid_navigation.get_oc_downloads(params)
+
+
+def _normalize_torrent_category(category):
+    if not isinstance(category, str):
+        return None
+    category = category.strip()
+    return category or None
+
+
+def _torrent_categories(torrent_list):
+    categories = {_normalize_torrent_category(torrent.get("category")) for torrent in torrent_list}
+    return sorted(
+        (category for category in categories if category is not None),
+        key=lambda category: (category.casefold(), category),
+    ) + ([None] if None in categories else [])
+
+
+def _add_torrent_items(torrent_list):
+    api = get_torrserver_api()
+    for torrent in torrent_list:
+        info_hash = torrent.get("hash")
+        display_metadata = get_display_metadata(api._base_url, info_hash)
+        display_title = display_metadata.get("title") or torrent.get("title", "")
+        display_plot = display_metadata.get("plot", "")
+        display_poster = display_metadata.get("poster") or torrent.get("poster") or ""
+
+        context_menu_items = [(translation(30700), play_info_hash(info_hash))]
+
+        # Build meta for subtitle download from local cache
+        parsed_data = {}
+        if info_hash:
+            from lib.utils.torrent.torrserver_utils import get_torrent_meta
+
+            parsed_data = get_torrent_meta(info_hash)
+
+        parsed_ids = (
+            parsed_data.get("ids", {}) if isinstance(parsed_data.get("ids", {}), dict) else {}
+        )
+        meta = {
+            "title": parsed_data.get("title") or display_title,
+            "mode": parsed_data.get("mode", ""),
+            "ids": {
+                "tmdb_id": parsed_ids.get("tmdb_id", ""),
+                "tvdb_id": parsed_ids.get("tvdb_id", ""),
+                "imdb_id": parsed_ids.get("imdb_id"),
+                "original_id": parsed_ids.get("original_id", ""),
+            },
+            "tv_data": parsed_data.get("tv_data", {}),
+        }
+        context_menu_items.append(
+            (
+                translation(90082),
+                action_url_run(
+                    "download_torrent_subtitles",
+                    hash=info_hash,
+                    meta=json.dumps(meta),
+                ),
+            )
+        )
+
+        if torrent.get("stat") not in [0, 4, 8]:
+            context_menu_items.append(
+                (
+                    translation(30709),
+                    action_url_run("torrent_action", info_hash=info_hash, action_str="drop"),
+                )
+            )
+
+        context_menu_items.extend(
+            [
+                (
+                    translation(30705),
+                    action_url_run(
+                        "torrent_action",
+                        info_hash=info_hash,
+                        action_str="remove_torrent",
+                    ),
+                ),
+                (
+                    translation(30707),
+                    action_url_run(
+                        "torrent_action",
+                        info_hash=info_hash,
+                        action_str="torrent_status",
+                    ),
+                ),
+            ]
+        )
+
+        torrent_li = build_list_item(display_title, "magnet.png", poster_path=display_poster)
+        get_video_info_tag = getattr(torrent_li, "getVideoInfoTag", None)
+        if callable(get_video_info_tag):
+            video_info_tag = get_video_info_tag()
+            video_info_tag.setTitle(display_title)
+            if display_plot:
+                video_info_tag.setPlot(display_plot)
+        else:
+            torrent_li.setInfo("video", {"title": display_title, "plot": display_plot})
+        torrent_li.addContextMenuItems(context_menu_items)
+        addDirectoryItem(
+            ADDON_HANDLE,
+            build_url("torrent_files", info_hash=info_hash),
+            torrent_li,
+            isFolder=True,
+        )
+
+
+def torrents(params):
+    if not JACKTORR_ADDON:
+        notification(translation(30253))
+        end_of_directory(cache=False)
+        return
+
+    api = get_torrserver_api()
+    torrent_list = api.torrents()
+    prune_display_metadata(api._base_url)
+    uncategorized = str(params.get("uncategorized", "")).lower() == "true"
+    selected_category = _normalize_torrent_category(params.get("category"))
+
+    if uncategorized or selected_category:
+        category_label = translation(90963) if uncategorized else selected_category
+        set_pluging_category(f"{translation(90012)}: {category_label}")
+        if uncategorized:
+            torrent_list = (
+                torrent
+                for torrent in torrent_list
+                if _normalize_torrent_category(torrent.get("category")) is None
+            )
+        else:
+            torrent_list = (
+                torrent
+                for torrent in torrent_list
+                if _normalize_torrent_category(torrent.get("category")) == selected_category
+            )
+        _add_torrent_items(torrent_list)
+    else:
+        set_pluging_category(translation(90012))
+        for category in _torrent_categories(torrent_list):
+            label = category or translation(90963)
+            torrent_li = build_list_item(label, "magnet.png")
+            params = {"uncategorized": True} if category is None else {"category": category}
+            addDirectoryItem(
+                ADDON_HANDLE, build_url("torrents", **params), torrent_li, isFolder=True
+            )
+    end_of_directory()
+    apply_section_view("view.downloads", content_type="files")
+
+
+def _resume_search_params(data, params):
+    ids = data.get("ids") or {}
+    tv_data = data.get("tv_data") or {}
+    search_params = {
+        "query": data.get("query") or data.get("title") or "",
+        "mode": params.get("mode") or data.get("mode") or "",
+        "media_type": params.get("media_type") or data.get("media_type") or "",
+        "ids": json.dumps(ids),
+        "rescrape": True,
+        "force_select": True,
+    }
+    if tv_data:
+        search_params["tv_data"] = json.dumps(tv_data)
+    if params.get('start_over') == 'true' or data.get('_bobi_start_over') is True:
+        search_params['_bobi_start_over'] = True
+    else:
+        from lib.cinema.frontend_contract import progress
+        percent = progress(data)
+        if 0 < percent < 100:
+            search_params['_bobi_resume_percent'] = percent
+    return search_params
+
+
+def _open_resume_picker(data, params):
+    search = _resume_search_params(data, params)
+    if not search['query'] or not json.loads(search['ids']):
+        return False
+    from lib.search import run_search_entry
+    run_search_entry(search)
+    return True
+
+
+def _resume_failure_still_current(player, data):
+    if (getattr(player, '_startup_failed_for_reselect', False) is not True
+            or getattr(player, '_start_notified', False)
+            or getattr(player, '_was_superseded', False)):
+        return False
+    if data.get('selection_policy') == 'exact':
+        from lib.cinema.playback_ipc import call
+        try:
+            failure = getattr(player, '_startup_failure_receipt', None)
+            if failure:
+                from lib.cinema.playback_request import startup_failure
+                return startup_failure(player._owner_context) == failure
+            snapshot = call({'operation': 'snapshot'})
+            owner = player._owner_context
+            return (snapshot['boot_id'] == owner['boot_id']
+                    and snapshot['epoch'] == owner['epoch']
+                    and (snapshot.get('desired') or {}).get('request_id') == data.get('request_id'))
+        except (OSError, RuntimeError, ValueError, KeyError, AttributeError):
+            return False
+    return player._owns_playback_session()
+
+
+def play_media(params):
+    data = json.loads(params["data"])
+    continuing = params.get('continue_watching') == 'true'
+    if params.get('start_over') == 'true':
+        for field in ('current_time', 'progress', 'resume', 'simkl_resume_progress', 'trakt_resume_progress', 'nuvio_resume_percent'):
+            data.pop(field, None)
+        data['_bobi_start_over'] = True
+    if continuing:
+        # Signed transport URLs and one-use handoff state are not durable
+        # history. Reselect the catalogue work, never replay a stored token.
+        if data.get('transient_url') and _open_resume_picker(data, params):
+            return
+        from lib.clients.cinema_ui import is_ui_action
+        data['direct_playback_handoff'] = is_ui_action()
+        if not data.get('_bobi_start_over'):
+            from lib.cinema.frontend_contract import progress
+            percent = progress(data)
+            if 0 < percent < 100:
+                data['_bobi_resume_percent'] = percent
+    from lib.cinema.playback_request import reserve_ui_entry
+    try:
+        data = reserve_ui_entry(data)
+    except (OSError, RuntimeError, ValueError):
+        notification('播放请求未能建立，请返回后重试。')
+        return
+    data = resolve_stremio_playback_url(data)
+    if not data:
+        notification("Failed to resolve playback URL")
+        fallback_params = _resume_search_params(json.loads(params["data"]), params)
+        has_search_identity = bool(fallback_params["query"]) and bool(
+            json.loads(fallback_params["ids"])
+        )
+        if not has_search_identity:
+            kodilog("play_media: cannot fall back to search, missing query/ids")
+            return
+        kodilog("play_media: playback URL resolution failed, falling back to search")
+        from lib.search import run_search_entry
+
+        run_search_entry(fallback_params)
+        return
+    player = JacktookPLayer()
+    player.run(data=data)
+    if continuing and _resume_failure_still_current(player, data):
+        _open_resume_picker(data, params)
+    del player
+
+
+def play_autoscraped(params):
+    from lib.utils.kodi.settings import auto_play_enabled
+    from lib.utils.player.utils import get_autoscrape_cache_key, get_autoscrape_results_cache_key
+
+    ids = json.loads(params.get("ids", "{}"))
+    tv_data = json.loads(params.get("tv_data", "{}"))
+    autoplay_context = params.get("autoplay_context")
+
+    id_value = ids.get("original_id") or ids.get("imdb_id") or ids.get("tmdb_id")
+    season = tv_data.get("season")
+    episode = tv_data.get("episode")
+
+    if id_value is not None and season is not None and episode is not None:
+        cache_key = get_autoscrape_cache_key(id_value, season, episode)
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            if auto_play_enabled():
+                play_data = dict(cached_data)
+                if autoplay_context:
+                    play_data["autoplay"] = True
+                    play_data["playnext_context"] = True
+                    play_data["direct_play"] = True
+                player = JacktookPLayer()
+                player.run(data=play_data)
+                del player
+                return
+            # Autoplay disabled: show source select with cached raw results
+            results_cache_key = get_autoscrape_results_cache_key(id_value, season, episode)
+            cached_results = cache.get(results_cache_key)
+            if cached_results:
+                mode = params.get("mode", "tv")
+                kodilog(
+                    "PlayAutoscraped: showing source select with"
+                    f" {len(cached_results)} cached results (mode={mode})"
+                )
+                from lib.search import show_source_select
+
+                show_source_select(
+                    cached_results,
+                    mode=mode,
+                    ids=ids,
+                    tv_data=tv_data,
+                    query=params.get("query", ""),
+                    media_type=params.get("media_type", ""),
+                    rescrape=False,
+                    direct=False,
+                    autoplay_context=autoplay_context,
+                )
+                return
+            kodilog("PlayAutoscraped: no cached results, falling back to search")
+
+    from lib.search import run_search_entry
+
+    run_search_entry(params)
+
+
+def play_url(params):
+    url = params.get("url")
+    from xbmc import Player
+
+    list_item = ListItem(label=params.get("name"), path=url)
+    list_item.setPath(url)
+    list_item.setProperty("IsPlayable", "true")
+    Player().play(url, list_item)
+
+
+def play_trailer(params):
+    ids = json.loads(params.get("ids", "{}")) if params.get("ids") else {}
+    media_type = params.get("media_type") or params.get("mode")
+    tmdb_id = params.get("tmdb_id") or ids.get("tmdb_id")
+    yt_id = params.get("yt_id") or ids.get("trailer_yt_id") or ids.get("yt_id")
+    youtube_url = params.get("youtube_url") or ids.get("trailer_url") or ids.get("youtube_url")
+    title = params.get("title") or ids.get("title") or ids.get("name")
+
+    kodilog(
+        f"Trailer: resolving title={title!r} media_type={media_type!r} tmdb_id={tmdb_id!r} yt_id={yt_id!r} youtube_url={youtube_url!r}"
+    )
+    resolved = resolve_item_trailer(
+        yt_id=yt_id,
+        youtube_url=youtube_url,
+        tmdb_id=tmdb_id,
+        media_type=media_type,
+    )
+    playback = (resolved or {}).get("playback") or {}
+    trailer = (resolved or {}).get("trailer") or {}
+    video_url = playback.get("video_url") if playback else None
+    if not video_url:
+        fallback_yt_id = extract_video_id(
+            trailer.get("yt_id") or trailer.get("youtube_url") or yt_id or youtube_url
+        )
+        kodilog(
+            f"Trailer: fallback attempt title={title!r} media_type={media_type!r} tmdb_id={tmdb_id!r} fallback_yt_id={fallback_yt_id!r}"
+        )
+        addon_available = False
+        if fallback_yt_id:
+            addon_available = is_youtube_addon_enabled()
+        if fallback_yt_id and addon_available:
+            execute_builtin(
+                f"PlayMedia(plugin://plugin.video.youtube/play/?video_id={fallback_yt_id})"
+            )
+            return
+        if fallback_yt_id and not addon_available:
+            kodilog(
+                f"Trailer: youtube addon unavailable title={title!r} media_type={media_type!r} tmdb_id={tmdb_id!r} fallback_yt_id={fallback_yt_id!r}"
+            )
+        kodilog(
+            f"Trailer: unavailable title={title!r} media_type={media_type!r} tmdb_id={tmdb_id!r} yt_id={yt_id!r} youtube_url={youtube_url!r}"
+        )
+        notification(translation(90673))
+        return
+
+    kodilog(
+        f"Trailer: resolved title={title!r} source_type={playback.get('source_type')!r} video_url={video_url!r}"
+    )
+    list_item = ListItem(label=title, path=video_url)
+    list_item.setPath(video_url)
+    list_item.setProperty("IsPlayable", "true")
+    if playback.get("source_type") == "adaptive" and playback.get("audio_url"):
+        list_item.setProperty("inputstream.adaptive.manifest_type", "mpd")
+    from xbmc import Player
+
+    Player().play(video_url, list_item)
+
+
+def play_from_pack(params):
+    data = json.loads(params.get("data"))
+    from lib.cinema.playback_request import reserve_ui_entry
+    try:
+        data = reserve_ui_entry(data)
+    except (OSError, RuntimeError, ValueError):
+        notification('播放请求未能建立，请返回后重试。')
+        return
+    data = resolve_stremio_playback_url(data)
+    if not data:
+        return
+    player = JacktookPLayer()
+    player.run(data=data)
+    del player
+
+
+def people_menu(mode):
+    set_pluging_category(translation(90078))
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(
+            "search_item",
+            mode=mode,
+            api="tmdb",
+            query="tmdb_people",
+            subquery="search_people",
+        ),
+        build_list_item(translation(90081), "search.png"),
+        isFolder=True,
+    )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(
+            "search_item",
+            mode=mode,
+            api="tmdb",
+            query="tmdb_people",
+            subquery="latest_people",
+        ),
+        build_list_item(translation(90080), "tmdb.png"),
+        isFolder=True,
+    )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(
+            "search_item",
+            mode=mode,
+            api="tmdb",
+            query="tmdb_people",
+            subquery="popular_people",
+        ),
+        build_list_item(translation(90079), "tmdb.png"),
+        isFolder=True,
+    )
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def mdblist_menu(mode):
+    set_pluging_category(translation(90372))
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(
+            "search_mdbd_lists",
+            mode=mode,
+            page=1,
+        ),
+        build_list_item(translation(90076), "search.png"),
+        isFolder=True,
+    )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(
+            "top_mdbd_lists",
+            mode=mode,
+            page=1,
+        ),
+        build_list_item(translation(90074), "mdblist.png"),
+        isFolder=True,
+    )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(
+            "user_mdbd_lists",
+            mode=mode,
+            page=1,
+        ),
+        build_list_item(translation(90075), "mdblist.png"),
+        isFolder=True,
+    )
+    end_of_directory()
+    apply_section_view("view.main")
+
+
+def _notify_trakt_request_failure(error):
+    notification(error.user_message, time=3500)
+
+
+def search_item(params):
+    query = params.get("query", "")
+    category = params.get("category", None)
+    api = params["api"]
+    mode = params["mode"]
+    submode = params.get("submode", "")
+    page = int(params.get("page", 1))
+
+    if api == "trakt":
+        try:
+            result = TraktClient.handle_trakt_query(
+                query, category, mode, page, submode, api, params=params
+            )
+            if result is not None:
+                TraktClient.process_trakt_result(
+                    result,
+                    query,
+                    category,
+                    mode,
+                    submode,
+                    api,
+                    page,
+                    search_term=params.get("search_term", ""),
+                )
+        except ProviderException as error:
+            _notify_trakt_request_failure(error)
+            end_of_directory(cache=False)
+    elif api == "tmdb":
+        if submode == "people_menu":
+            people_menu(mode)
+        else:
+            TmdbClient.handle_tmdb_query(params)
+    elif api == "mdblist":
+        mdblist_menu(mode)
+    else:
+        notification("Unsupported API")
+
+
+def trakt_list_content(params):
+    mode = params.get("mode")
+    set_content_type(mode)
+    try:
+        TraktClient.show_trakt_list_content(
+            params.get("list_type"),
+            mode,
+            params.get("user"),
+            params.get("slug"),
+            params.get("with_auth", ""),
+            params.get("page", 1),
+            params.get("trakt_id"),
+        )
+    except ProviderException as error:
+        _notify_trakt_request_failure(error)
+        end_of_directory(cache=False)
+
+
+def list_trakt_page(params):
+    mode = params.get("mode")
+    set_content_type(mode)
+    try:
+        TraktClient.show_list_trakt_page(
+            int(params.get("page", "")),
+            mode,
+            params.get("list_type"),
+            params.get("user"),
+            params.get("slug"),
+            params.get("with_auth", ""),
+            params.get("trakt_id"),
+        )
+    except ProviderException as error:
+        _notify_trakt_request_failure(error)
+        end_of_directory(cache=False)
+
+
+def anime_search(params):
+    mode = params.get("mode")
+    page = params.get("page", 1)
+    category = params.get("category")
+    set_content_type(mode)
+    TmdbClient.handle_tmdb_anime_query(category, mode, submode=mode, page=page)
+
+
+def next_page_anime(params):
+    mode = params.get("mode")
+    set_content_type(mode)
+    TmdbClient.handle_tmdb_anime_query(
+        params.get("category"),
+        mode,
+        params.get("submode"),
+        page=int(params.get("page", 1)) + 1,
+    )
+
+
+def download(magnet, type):
+    return debrid_navigation.download(magnet, type)
+
+
+def downloads_menu(params):
+    set_pluging_category(translation(90015))
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url("downloads_viewer"),
+        build_list_item(translation(90806), "download2.png"),
+        isFolder=True,
+    )
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url("open_download_manager"),
+        build_list_item(translation(90805), "download2.png"),
+        isFolder=False,
+    )
+    end_of_directory(cache=False)
+    apply_section_view("view.main")
+
+
+def open_download_manager(params):
+    from lib.gui.download_manager_window import DownloadManagerWindow
+
+    window = DownloadManagerWindow("download_manager.xml", ADDON_PATH)
+    window.doModal()
+    del window
+
+
+def addon_update(params):
+    import xbmc
+    xbmc.executebuiltin('RunScript(script.bobbi.setup,updates)')
+
+
+def show_changelog(params):
+    dialog_text(translation(90577), file=CHANGELOG_PATH)
+
+
+def donate(params):
+    from lib.utils.debrid.qrcode_utils import make_qrcode
+
+    donation_url = "https://ko-fi.com/sammax09"
+    qr_code = make_qrcode(donation_url)
+
+    dialog = CustomDialog(
+        "customdialog.xml",
+        ADDON_PATH,
+        heading=translation(90023),
+        text=translation(90022),
+        call_to_action=translation(90817),
+        url=f"[COLOR snow]{donation_url}[/COLOR]",
+        qrcode=qr_code,
+    )
+    dialog.doModal()
+
+
+def settings(params):
+    finish_action()
+    subtitle_automation_enabled()
+    addon_settings()
+    clear_cached_settings()
+
+
+def export_settings_backup(params):
+    kodi_export_settings_backup(params)
+
+
+def restore_settings_backup(params):
+    kodi_restore_settings_backup(params)
+
+
+def reset_all_settings(params):
+    kodi_reset_all_settings_action(params)
+
+
+def factory_reset(params):
+    kodi_factory_reset_action(params)
+
+
+def clear_all_cached(params):
+    clear_all_cache()
+    notification(translation(30244))
+
+
+def clear_trakt_cache(params):
+    clear_trakt_db_cache()
+
+
+def clear_tmdb_cache(params):
+    utils_clear_tmdb_cache()
+
+
+def clear_stremio_cache(params):
+    utils_clear_stremio_cache()
+
+
+def clear_debrid_cache(params):
+    utils_clear_debrid_cache()
+
+
+def clear_mdblist_cache(params):
+    utils_clear_mdblist_cache()
+
+
+def clear_database_cache(params):
+    utils_clear_database_cache()
+
+
+def clear_history(params):
+    return library_history_navigation.clear_history(params)
+
+
+def clear_search_history(params):
+    return library_history_navigation.clear_search_history(params)
+
+
+def kodi_logs(params):
+    show_log_export_dialog(params)
+
+
+def files_history(params):
+    return library_history_navigation.files_history(params)
+
+
+def titles_history(params):
+    return library_history_navigation.titles_history(params)
+
+
+def titles_calendar(params):
+    return library_history_navigation.titles_calendar(params)
+
+
+def rd_auth(params):
+    return debrid_navigation.rd_auth(params)
+
+
+def ad_auth(params):
+    return debrid_navigation.ad_auth(params)
+
+
+def rd_remove_auth(params):
+    return debrid_navigation.rd_remove_auth(params)
+
+
+def ad_remove_auth(params):
+    return debrid_navigation.ad_remove_auth(params)
+
+
+def debrider_auth(params):
+    return debrid_navigation.debrider_auth(params)
+
+
+def debrider_remove_auth(params):
+    return debrid_navigation.debrider_remove_auth(params)
+
+
+def pm_auth(params):
+    return debrid_navigation.pm_auth(params)
+
+
+def pm_remove_auth(params):
+    return debrid_navigation.pm_remove_auth(params)
+
+
+def trakt_auth(params):
+    TraktAPI().auth.trakt_authenticate()
+
+
+def trakt_auth_revoke(params):
+    try:
+        TraktAPI().auth.trakt_revoke_authentication()
+    except ProviderException as error:
+        _notify_trakt_request_failure(error)
+
+
+def simkl_auth(params):
+    from lib.api.simkl import SimklClient
+
+    SimklClient().authenticate()
+
+
+def simkl_logout(params):
+    from lib.api.simkl import SimklClient
+
+    SimklClient().logout()
+
+
+def nuvio_auth(params):
+    from lib.api.nuvio import NuvioClient
+
+    NuvioClient().authenticate()
+
+
+def nuvio_logout(params):
+    from lib.api.nuvio import NuvioClient
+
+    NuvioClient().logout()
+
+
+def nuvio_toggle_addons(params):
+    from lib.clients.nuvio.addon_selection import nuvio_toggle_addons as select_nuvio_addons
+
+    select_nuvio_addons(params)
+
+
+def simkl_continue_watching(params):
+    from lib.utils.views.simkl_continue_watching import show_simkl_continue_watching
+
+    show_simkl_continue_watching()
+
+
+def simkl_library(params):
+    from lib.utils.views.simkl_library import show_simkl_library
+
+    show_simkl_library(params)
+
+
+def simkl_library_statuses(params):
+    from lib.utils.views.simkl_library import show_simkl_library_statuses
+
+    show_simkl_library_statuses(params)
+
+
+def simkl_library_items(params):
+    from lib.utils.views.simkl_library import show_simkl_library_items
+
+    show_simkl_library_items(params)
+
+
+def simkl_move_to_status(params):
+    from lib.utils.views.simkl_library import move_simkl_item_to_status
+
+    move_simkl_item_to_status(params)
+
+
+def simkl_update_history(params):
+    from lib.utils.views.simkl_history import update_simkl_history
+
+    update_simkl_history(params)
+
+
+def simkl_resume(params):
+    from lib.search import run_search_entry
+
+    run_search_entry(_prepare_resume_search_params(params))
+
+
+def simkl_discard_playback(params):
+    from lib.utils.views.simkl_continue_watching import discard_simkl_playback
+
+    discard_simkl_playback(params)
+
+
+def trakt_continue_watching(params):
+    from lib.utils.views.trakt_continue_watching import show_trakt_continue_watching
+
+    show_trakt_continue_watching()
+
+
+def trakt_resume(params):
+    from lib.search import run_search_entry
+
+    run_search_entry(_prepare_resume_search_params(params))
+
+
+def _prepare_resume_search_params(params):
+    """Prepare params coming from a Trakt/Simkl "continue watching" resume
+    for a reliable search.
+
+    Two problems fixed here:
+
+    1. The playback items built by TraktScrobble.get_playback() and
+       SimklClient.get_playback() never set "rescrape", so resuming an
+       episode/movie could silently return a stale (possibly empty)
+       cached search result instead of searching again.
+    2. Those same items only carry a bare {"tmdb_id": ...} in "ids" -
+       no imdb_id/tvdb_id at all. Sources that match by IMDB id (e.g.
+       Stremio addons like Torrentio) then find nothing, even though a
+       normal search for the same title works fine. We resolve the
+       missing ids from TMDB before searching, same as rescrape_tmdb_media
+       already does for the regular "Scrape again" context menu action.
+    """
+    import json
+
+    from lib.utils.general.utils import safe_json_loads
+
+    params = dict(params)
+    ids = safe_json_loads(params.get("ids")) or {}
+
+    if ids.get("tmdb_id") and not ids.get("imdb_id"):
+        try:
+            from lib.clients.tmdb.tmdb import TmdbClient
+
+            mode = params.get("mode", "")
+            media_type = params.get("media_type", "")
+            tmdb_obj = TmdbClient._get_tmdb_metadata(mode, media_type, ids["tmdb_id"])
+            external_ids = (tmdb_obj or {}).get("external_ids") or {}
+            if external_ids.get("imdb_id"):
+                ids["imdb_id"] = external_ids["imdb_id"]
+            if external_ids.get("tvdb_id"):
+                ids["tvdb_id"] = external_ids["tvdb_id"]
+        except Exception as error:
+            kodilog(f"resume: failed to resolve imdb/tvdb id from tmdb_id: {error}")
+
+    params["ids"] = json.dumps(ids)
+    params["rescrape"] = True
+    return params
+
+
+def trakt_discard_playback(params):
+    from lib.utils.views.trakt_continue_watching import discard_trakt_playback
+
+    discard_trakt_playback(params)
+
+
+def nuvio_menu(params):
+    set_pluging_category(translation(91038))
+    render_menu(nuvio_menu_items, cache=False)
+    apply_section_view("view.main")
+
+
+def nuvio_continue_watching(params):
+    from lib.utils.views.nuvio_continue_watching import show_nuvio_continue_watching
+
+    show_nuvio_continue_watching()
+
+
+def nuvio_history(params):
+    from lib.utils.views.nuvio_history import show_nuvio_history
+
+    show_nuvio_history(params)
+
+
+def nuvio_library(params):
+    from lib.utils.views.nuvio_library import show_nuvio_library
+
+    show_nuvio_library(params)
+
+
+def nuvio_collections(params):
+    from lib.utils.views.nuvio_collections import show_nuvio_collections
+
+    show_nuvio_collections(params)
+
+
+def nuvio_collection_folders(params):
+    from lib.utils.views.nuvio_collections import show_nuvio_collection_folders
+
+    show_nuvio_collection_folders(params)
+
+
+def nuvio_collection_sources(params):
+    from lib.utils.views.nuvio_collections import show_nuvio_collection_sources
+
+    show_nuvio_collection_sources(params)
+
+
+def nuvio_collection_discover(params):
+    from lib.utils.views.nuvio_collections import show_nuvio_collection_discover
+
+    show_nuvio_collection_discover(params)
+
+
+def nuvio_update_history(params):
+    from lib.utils.views.nuvio_history import update_nuvio_history
+
+    update_nuvio_history(params)
+
+
+def nuvio_remove_progress(params):
+    from lib.api.nuvio import NuvioClient
+
+    if NuvioClient().delete_watch_progress(params.get("progress_key")):
+        notification(translation(91028), time=3000)
+        execute_builtin("Container.Refresh")
+        return
+    notification(translation(91029), time=3000)
+
+
+def nuvio_collection_source_unavailable(params):
+    params = params or {}
+    if params.get("reason") == "unsupported":
+        notification(translation(91055), time=3000)
+        return
+    notification(translation(91053), time=3000)
+
+
+_NUVIO_LIBRARY_POSTER_SIZE = "w500"
+_NUVIO_LIBRARY_BACKGROUND_SIZE = "original"
+
+
+def _refresh_nuvio_library():
+    execute_builtin("Container.Refresh")
+
+
+def _enrich_nuvio_library_item(item, data):
+    """Best-effort TMDB enrichment; keeps the provided context fields on failure."""
+    try:
+        from lib.api.nuvio import NuvioClient
+        from lib.clients.tmdb.utils.utils import tmdb_get
+        from lib.utils.general.utils import tmdb_url
+
+        tmdb_id = None
+        ids = data.get("ids")
+        if isinstance(ids, dict):
+            tmdb_id = ids.get("tmdb_id")
+        if tmdb_id in (None, ""):
+            tmdb_id = NuvioClient._tmdb_id_from_content_id(item["content_id"])
+        tmdb_id = NuvioClient._positive_integer(tmdb_id)
+        if not tmdb_id:
+            return
+
+        details = tmdb_get(
+            "tv_details" if item["content_type"] == "series" else "movie_details",
+            tmdb_id,
+        )
+        if not details:
+            return
+
+        name = details.get("name") or details.get("title")
+        if name:
+            item["name"] = str(name)
+        overview = details.get("overview")
+        if overview:
+            item["description"] = str(overview)
+        poster = tmdb_url(details.get("poster_path"), _NUVIO_LIBRARY_POSTER_SIZE)
+        if poster:
+            item["poster"] = poster
+        background = tmdb_url(details.get("backdrop_path"), _NUVIO_LIBRARY_BACKGROUND_SIZE)
+        if background:
+            item["background"] = background
+        release = details.get("release_date") or details.get("first_air_date")
+        if isinstance(release, str) and len(release) >= 4:
+            item["release_info"] = release[:4]
+        rating = details.get("vote_average")
+        if isinstance(rating, (int, float)) and not isinstance(rating, bool) and rating:
+            item["imdb_rating"] = float(rating)
+        genres = details.get("genres")
+        if isinstance(genres, list):
+            names = [
+                str(genre.get("name"))
+                for genre in genres
+                if isinstance(genre, dict) and genre.get("name")
+            ]
+            if names:
+                item["genres"] = names
+    except Exception as error:
+        kodilog(f"[NUVIO] library enrichment skipped ({type(error).__name__})")
+
+
+def _nuvio_tmdb_id(data, content_id):
+    """Resolve the TMDB id for an added library item, or None when unusable."""
+    ids = data.get("ids") if isinstance(data, dict) else None
+    candidate = ids.get("tmdb_id") if isinstance(ids, dict) else None
+    if candidate in (None, ""):
+        prefix, _, raw = str(content_id).partition(":")
+        candidate = raw if prefix.lower() == "tmdb" else None
+    try:
+        value = int(candidate)
+    except (TypeError, ValueError):
+        return None
+    return value if value > 0 else None
+
+
+def _build_nuvio_library_item(data):
+    """Build the API-shaped library item from a context-menu JSON payload."""
+    if not isinstance(data, dict):
+        return None
+    content_id = data.get("content_id")
+    content_type = data.get("content_type")
+    if content_type not in ("movie", "series"):
+        return None
+    if not isinstance(content_id, str) or not content_id.strip():
+        return None
+
+    item = {"content_id": content_id.strip(), "content_type": content_type}
+    # The mirror routes by tmdb_id, so persist it alongside the API fields;
+    # otherwise an added item would never render in the offline library view.
+    item["tmdb_id"] = _nuvio_tmdb_id(data, item["content_id"])
+    title = data.get("title")
+    if isinstance(title, str) and title.strip():
+        item["name"] = title.strip()
+    for field in ("poster", "background", "description", "release_info"):
+        value = data.get(field)
+        if isinstance(value, str) and value.strip():
+            item[field] = value.strip()
+    rating = data.get("imdb_rating")
+    if isinstance(rating, (int, float)) and not isinstance(rating, bool) and rating:
+        item["imdb_rating"] = float(rating)
+    genres = data.get("genres")
+    if isinstance(genres, list):
+        cleaned = [entry.strip() for entry in genres if isinstance(entry, str) and entry.strip()]
+        if cleaned:
+            item["genres"] = cleaned
+    added_at = data.get("added_at")
+    item["added_at"] = (
+        int(added_at)
+        if isinstance(added_at, (int, float)) and not isinstance(added_at, bool) and added_at > 0
+        else int(time.time() * 1000)
+    )
+    _enrich_nuvio_library_item(item, data)
+    return item
+
+
+def _to_nuvio_mirror_item(item):
+    """Map an API-shaped item onto the mirror column shape."""
+    return {
+        "content_type": item.get("content_type"),
+        "content_id": item.get("content_id"),
+        "tmdb_id": item.get("tmdb_id"),
+        "title": item.get("name"),
+        "poster": item.get("poster"),
+        "background": item.get("background"),
+        "description": item.get("description"),
+        "release_info": item.get("release_info"),
+        "imdb_rating": item.get("imdb_rating"),
+        "genres": item.get("genres") or [],
+        "added_at_ms": item.get("added_at"),
+    }
+
+
+def _apply_nuvio_add_result(data):
+    """Push one library item then update the local mirror on success.
+
+    Runs on a daemon thread; failures never touch the mirror and never raise.
+    """
+    from lib.api.nuvio import NuvioClient
+    from lib.api.nuvio_store import NuvioStore, invalidate_nuvio_library_cache
+
+    item = _build_nuvio_library_item(data)
+    if item is None:
+        notification(translation(91043), time=3000)
+        return
+
+    store = None
+    try:
+        client = NuvioClient()
+        profile_id = client.profile_id
+        if not profile_id:
+            notification(translation(91043), time=3000)
+            return
+        store = NuvioStore()
+        store.setup_nuvio_database()
+        origin_client_id = store.get_or_create_origin_client_id()
+        if not client.add_library_items(
+            profile_id=profile_id,
+            items=[item],
+            origin_client_id=origin_client_id,
+        ):
+            notification(translation(91043), time=3000)
+            return
+        store.upsert_items(profile_id, [_to_nuvio_mirror_item(item)])
+        invalidate_nuvio_library_cache()
+        _refresh_nuvio_library()
+        notification(translation(91041), time=3000)
+    except Exception as error:
+        kodilog(f"[NUVIO] add to library failed ({type(error).__name__})")
+        notification(translation(91043), time=3000)
+    finally:
+        if store is not None:
+            store.close()
+
+
+def _apply_nuvio_remove_result(content_id, content_type):
+    """Push one library delete then update the local mirror on success.
+
+    Runs on a daemon thread; failures never touch the mirror and never raise.
+    """
+    from lib.api.nuvio import NuvioClient
+    from lib.api.nuvio_store import NuvioStore, invalidate_nuvio_library_cache
+
+    key = {"content_id": content_id, "content_type": content_type}
+    store = None
+    try:
+        client = NuvioClient()
+        profile_id = client.profile_id
+        if not profile_id:
+            notification(translation(91043), time=3000)
+            return
+        store = NuvioStore()
+        store.setup_nuvio_database()
+        origin_client_id = store.get_or_create_origin_client_id()
+        if not client.remove_library_items(
+            profile_id=profile_id,
+            keys=[key],
+            origin_client_id=origin_client_id,
+        ):
+            notification(translation(91043), time=3000)
+            return
+        store.delete_items(profile_id, [key])
+        invalidate_nuvio_library_cache()
+        _refresh_nuvio_library()
+        notification(translation(91042), time=3000)
+    except Exception as error:
+        kodilog(f"[NUVIO] remove from library failed ({type(error).__name__})")
+        notification(translation(91043), time=3000)
+    finally:
+        if store is not None:
+            store.close()
+
+
+def nuvio_add_to_library(params):
+    from lib.utils.general.utils import safe_json_loads
+
+    data = safe_json_loads((params or {}).get("data"), {})
+    if not isinstance(data, dict):
+        data = {}
+    thread = Thread(target=_apply_nuvio_add_result, args=(data,))
+    thread.daemon = True
+    thread.start()
+
+
+def nuvio_remove_from_library(params):
+    params = params or {}
+    content_id = params.get("content_id")
+    content_type = params.get("content_type")
+    if (
+        content_type not in ("movie", "series")
+        or not isinstance(content_id, str)
+        or not content_id.strip()
+    ):
+        notification(translation(91043), time=3000)
+        return
+    thread = Thread(target=_apply_nuvio_remove_result, args=(content_id.strip(), content_type))
+    thread.daemon = True
+    thread.start()
+
+
+def nuvio_resume(params):
+    from lib.search import run_search_entry
+
+    search_params = _prepare_resume_search_params(params)
+    percent = search_params.pop("nuvio_resume_percent", "")
+    if percent not in ("", None):
+        search_params["nuvio_resume_percent"] = percent
+    run_search_entry(search_params)
+
+
+def tb_auth(params):
+    return debrid_navigation.tb_auth(params)
+
+
+def tb_remove_auth(params):
+    return debrid_navigation.tb_remove_auth(params)
+
+
+def oc_auth(params):
+    return debrid_navigation.oc_auth(params)
+
+
+def oc_remove_auth(params):
+    return debrid_navigation.oc_remove_auth(params)
+
+
+def torbox_info(params):
+    return debrid_navigation.torbox_info(params)
+
+
+def offcloud_info(params):
+    return debrid_navigation.offcloud_info(params)
+
+
+def open_burst_config(params):
+    burst_addon_settings()
+
+
+def torrentio_selection(params):
+    open_providers_selection()
+
+
+def test_run_next(params):
+    run_next_mock()
+
+
+def test_source_select(params):
+    source_select_mock()
+
+
+def test_resume_dialog(params):
+    resume_dialog_mock()
+
+
+def test_download_dialog(params):
+    download_dialog_mock()

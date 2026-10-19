@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <depth>DepthOSD</depth>
+  <visible>[Player.Seeking | Player.DisplayAfterSeek | Player.Paused | Player.Forwarding | Player.Rewinding | Player.HasPerformedSeek(3) | !String.IsEmpty(Player.SeekNumeric)] + !Window.IsActive(videoosd) + !Window.IsActive(1144) + !Window.IsActive(1145) + !Window.IsActive(1114) + !Window.IsActive(1115) + !Window.IsActive(osdsubtitlesettings) + !Window.IsActive(osdaudiosettings) + !Window.IsActive(osdvideosettings)</visible>
+  <animation effect="fade" start="0" end="100" time="140">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="200" delay="300">WindowClose</animation>
+  <controls>
+    <include content="OSDScrim"><param name="top">700</param></include>
+    <control type="group">
+      <left>96</left><top>880</top>
+      <!-- state icon -->
+      <control type="image">
+        <left>0</left><top>-4</top><width>48</width><height>48</height>
+        <texture colordiffuse="text">$VAR[SeekStateIcon]</texture>
+      </control>
+      <control type="label">
+        <left>64</left><top>0</top><width>900</width><height>40</height>
+        <label>$VAR[SeekStateLabel]</label>
+        <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>828</left><top>0</top><width>900</width><height>40</height>
+        <label>$VAR[SeekTimeLabel]</label>
+        <font>Mono30</font><textcolor>text</textcolor><align>right</align><aligny>center</aligny>
+      </control>
+    </control>
+    <control type="progress">
+      <left>96</left><top>944</top><width>1728</width><height>8</height>
+      <info>Player.ProgressCache</info>
+      <texturebg colordiffuse="33FFFFFF" border="4,0,4,0">bobi/bar8.png</texturebg>
+      <midtexture colordiffuse="40FFFFFF" border="4,0,4,0">bobi/bar8.png</midtexture>
+    </control>
+    <control type="progress">
+      <left>96</left><top>944</top><width>1728</width><height>8</height>
+      <info>Player.Progress</info>
+      <texturebg colordiffuse="00FFFFFF" border="4,0,4,0">bobi/bar8.png</texturebg>
+      <midtexture colordiffuse="accent" border="4,0,4,0">bobi/bar8.png</midtexture>
+    </control>
+    <control type="label">
+      <left>96</left><top>972</top><width>1728</width><height>32</height>
+      <label>$INFO[Player.Chapter,第 , 章]$INFO[Player.ChapterName,  ·  ]</label>
+      <font>Meta22</font><textcolor>text3</textcolor>
+      <visible>Player.ChapterCount</visible>
+    </control>
+  </controls>
+</window>

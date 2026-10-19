@@ -1,0 +1,1485 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <variable name="AM6BTitleZH">
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.zh))">$INFO[ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.Label)">$INFO[ListItem.Label]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleEnglish">
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]">$INFO[ListItem.Property(AM6B.Title.en)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleOriginal">
+    <value condition="![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]">$INFO[ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(ListItem.OriginalTitle) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Label)]]">$INFO[ListItem.OriginalTitle]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleSecondary">
+    <value condition="[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]">$INFO[ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]">$INFO[ListItem.Property(AM6B.Title.original)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BBilingualTitleInline">
+    <value condition="[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]">$VAR[AM6BTitleZH] · $INFO[ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]">$VAR[AM6BTitleZH] · $INFO[ListItem.Property(AM6B.Title.original)]</value>
+    <value>$VAR[AM6BTitleZH]</value>
+  </variable>
+  <variable name="AM6BTitleZH9810">
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9810).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Label)">$INFO[Container(9810).ListItem.Label]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleEnglish9810">
+    <value condition="!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Label)]]">$INFO[Container(9810).ListItem.Property(AM6B.Title.en)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleOriginal9810">
+    <value condition="![String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Label)]]">$INFO[Container(9810).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="![String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9810).ListItem.OriginalTitle) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.OriginalTitle,Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.OriginalTitle,Container(9810).ListItem.Label)]]">$INFO[Container(9810).ListItem.OriginalTitle]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleSecondary9810">
+    <value condition="[String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Label)]]">$INFO[Container(9810).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Label)]]">$INFO[Container(9810).ListItem.Property(AM6B.Title.original)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BBilingualTitleInline9810">
+    <value condition="[String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Label)]]">$VAR[AM6BTitleZH9810] · $INFO[Container(9810).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9810).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.original),Container(9810).ListItem.Label)]]">$VAR[AM6BTitleZH9810] · $INFO[Container(9810).ListItem.Property(AM6B.Title.original)]</value>
+    <value>$VAR[AM6BTitleZH9810]</value>
+  </variable>
+  <variable name="AM6BTitleZH9820">
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9820).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Label)">$INFO[Container(9820).ListItem.Label]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleEnglish9820">
+    <value condition="!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Label)]]">$INFO[Container(9820).ListItem.Property(AM6B.Title.en)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleOriginal9820">
+    <value condition="![String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Label)]]">$INFO[Container(9820).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="![String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9820).ListItem.OriginalTitle) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.OriginalTitle,Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.OriginalTitle,Container(9820).ListItem.Label)]]">$INFO[Container(9820).ListItem.OriginalTitle]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleSecondary9820">
+    <value condition="[String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Label)]]">$INFO[Container(9820).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Label)]]">$INFO[Container(9820).ListItem.Property(AM6B.Title.original)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BBilingualTitleInline9820">
+    <value condition="[String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Label)]]">$VAR[AM6BTitleZH9820] · $INFO[Container(9820).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9820).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.original),Container(9820).ListItem.Label)]]">$VAR[AM6BTitleZH9820] · $INFO[Container(9820).ListItem.Property(AM6B.Title.original)]</value>
+    <value>$VAR[AM6BTitleZH9820]</value>
+  </variable>
+  <variable name="AM6BTitleZH9830">
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9830).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Label)">$INFO[Container(9830).ListItem.Label]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleEnglish9830">
+    <value condition="!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Label)]]">$INFO[Container(9830).ListItem.Property(AM6B.Title.en)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleOriginal9830">
+    <value condition="![String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Label)]]">$INFO[Container(9830).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="![String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9830).ListItem.OriginalTitle) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.OriginalTitle,Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.OriginalTitle,Container(9830).ListItem.Label)]]">$INFO[Container(9830).ListItem.OriginalTitle]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleSecondary9830">
+    <value condition="[String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Label)]]">$INFO[Container(9830).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Label)]]">$INFO[Container(9830).ListItem.Property(AM6B.Title.original)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BBilingualTitleInline9830">
+    <value condition="[String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Label)]]">$VAR[AM6BTitleZH9830] · $INFO[Container(9830).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Label)]]">$VAR[AM6BTitleZH9830] · $INFO[Container(9830).ListItem.Property(AM6B.Title.original)]</value>
+    <value>$VAR[AM6BTitleZH9830]</value>
+  </variable>
+  <variable name="AM6BTitleZH9840">
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9840).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Label)">$INFO[Container(9840).ListItem.Label]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleEnglish9840">
+    <value condition="!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Label)]]">$INFO[Container(9840).ListItem.Property(AM6B.Title.en)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleOriginal9840">
+    <value condition="![String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Label)]]">$INFO[Container(9840).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="![String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9840).ListItem.OriginalTitle) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.OriginalTitle,Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.OriginalTitle,Container(9840).ListItem.Label)]]">$INFO[Container(9840).ListItem.OriginalTitle]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleSecondary9840">
+    <value condition="[String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Label)]]">$INFO[Container(9840).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Label)]]">$INFO[Container(9840).ListItem.Property(AM6B.Title.original)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BBilingualTitleInline9840">
+    <value condition="[String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Label)]]">$VAR[AM6BTitleZH9840] · $INFO[Container(9840).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Label)]]">$VAR[AM6BTitleZH9840] · $INFO[Container(9840).ListItem.Property(AM6B.Title.original)]</value>
+    <value>$VAR[AM6BTitleZH9840]</value>
+  </variable>
+  <variable name="AM6BTitleZH9850">
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh))">$INFO[Container(9850).ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Label)">$INFO[Container(9850).ListItem.Label]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleEnglish9850">
+    <value condition="!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Label)]]">$INFO[Container(9850).ListItem.Property(AM6B.Title.en)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleOriginal9850">
+    <value condition="![String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Label)]]">$INFO[Container(9850).ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="![String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9850).ListItem.OriginalTitle) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.OriginalTitle,Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.OriginalTitle,Container(9850).ListItem.Label)]]">$INFO[Container(9850).ListItem.OriginalTitle]</value>
+    <value />
+  </variable>
+  <variable name="AM6BTitleSecondary9850">
+    <value condition="[String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Label)]]">$INFO[Container(9850).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Label)]]">$INFO[Container(9850).ListItem.Property(AM6B.Title.original)]</value>
+    <value />
+  </variable>
+  <variable name="AM6BBilingualTitleInline9850">
+    <value condition="[String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Label)]]">$VAR[AM6BTitleZH9850] · $INFO[Container(9850).ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="![String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + !String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Label)]]">$VAR[AM6BTitleZH9850] · $INFO[Container(9850).ListItem.Property(AM6B.Title.original)]</value>
+    <value>$VAR[AM6BTitleZH9850]</value>
+  </variable>
+  <include name="AM6BStreamingHome">
+    <control type="group" id="9800">
+      <visible>true</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1920</width>
+        <height>1080</height>
+        <texture colordiffuse="FF080808">am6b/white.png</texture>
+      </control>
+      <control type="image">
+        <left>820</left>
+        <top>0</top>
+        <width>1100</width>
+        <height>420</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" fallback="backgrounds/media-overlay.jpg">$INFO[Container(9810).ListItem.Art(fanart)]</texture>
+        <visible>Control.HasFocus(9810) | Control.HasFocus(9811)</visible>
+        <animation effect="fade" start="0" end="100" time="180" condition="!Skin.HasSetting(BobiReduceMotion)">Visible</animation>
+      </control>
+      <control type="image">
+        <left>820</left>
+        <top>0</top>
+        <width>1100</width>
+        <height>420</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" fallback="backgrounds/media-overlay.jpg">$INFO[Container(9820).ListItem.Art(fanart)]</texture>
+        <visible>Control.HasFocus(9820) | Control.HasFocus(9821)</visible>
+        <animation effect="fade" start="0" end="100" time="180" condition="!Skin.HasSetting(BobiReduceMotion)">Visible</animation>
+      </control>
+      <control type="image">
+        <left>820</left>
+        <top>0</top>
+        <width>1100</width>
+        <height>420</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" fallback="backgrounds/media-overlay.jpg">$INFO[Container(9830).ListItem.Art(fanart)]</texture>
+        <visible>Control.HasFocus(9830) | Control.HasFocus(9831)</visible>
+        <animation effect="fade" start="0" end="100" time="180" condition="!Skin.HasSetting(BobiReduceMotion)">Visible</animation>
+      </control>
+      <control type="image">
+        <left>820</left>
+        <top>0</top>
+        <width>1100</width>
+        <height>420</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" fallback="backgrounds/media-overlay.jpg">$INFO[Container(9840).ListItem.Art(fanart)]</texture>
+        <visible>Control.HasFocus(9840) | Control.HasFocus(9841)</visible>
+        <animation effect="fade" start="0" end="100" time="180" condition="!Skin.HasSetting(BobiReduceMotion)">Visible</animation>
+      </control>
+      <control type="image">
+        <left>820</left>
+        <top>0</top>
+        <width>1100</width>
+        <height>420</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" fallback="backgrounds/media-overlay.jpg">$INFO[Container(9850).ListItem.Art(fanart)]</texture>
+        <visible>Control.HasFocus(9850) | Control.HasFocus(9851)</visible>
+        <animation effect="fade" start="0" end="100" time="180" condition="!Skin.HasSetting(BobiReduceMotion)">Visible</animation>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1920</width>
+        <height>460</height>
+        <texture colordiffuse="D608090D">am6b/black.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>300</top>
+        <width>1920</width>
+        <height>780</height>
+        <texture colordiffuse="F208090D">am6b/black.png</texture>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>34</top>
+        <width>620</width>
+        <height>40</height>
+        <font>font16</font>
+        <label>AM6B 家庭影院</label>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>72</top>
+        <width>620</width>
+        <height>24</height>
+        <font>font8</font>
+        <label>STREAMING CINEMA</label>
+        <textcolor>8FFFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>101</top>
+        <width>720</width>
+        <height>28</height>
+        <font>font10</font>
+        <label>动漫 · 电视剧 · 电影 · 观看历史 · 高画质直放</label>
+        <textcolor>99FFFFFF</textcolor>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>150</top>
+        <width>710</width>
+        <height>64</height>
+        <font>font28_title</font>
+        <label>$VAR[AM6BTitleZH9810]</label>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>B0000000</shadowcolor>
+        <scroll>true</scroll>
+        <visible>Control.HasFocus(9810) | Control.HasFocus(9811)</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>210</top>
+        <width>710</width>
+        <height>34</height>
+        <font>font13</font>
+        <label>$VAR[AM6BTitleEnglish9810]</label>
+        <textcolor>AFFFFFFF</textcolor>
+        <scroll>true</scroll>
+        <visible>[Control.HasFocus(9810) | Control.HasFocus(9811)] + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Label)]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>250</top>
+        <width>690</width>
+        <height>82</height>
+        <font>font11</font>
+        <label>$INFO[Container(9810).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9810) | Control.HasFocus(9811)] + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Label)]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>222</top>
+        <width>690</width>
+        <height>110</height>
+        <font>font11</font>
+        <label>$INFO[Container(9810).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9810) | Control.HasFocus(9811)] + [![[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9810).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9810).ListItem.Label) + !String.IsEqual(Container(9810).ListItem.Property(AM6B.Title.en),Container(9810).ListItem.Label)]]]]]</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>150</top>
+        <width>710</width>
+        <height>64</height>
+        <font>font28_title</font>
+        <label>$VAR[AM6BTitleZH9820]</label>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>B0000000</shadowcolor>
+        <scroll>true</scroll>
+        <visible>Control.HasFocus(9820) | Control.HasFocus(9821)</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>210</top>
+        <width>710</width>
+        <height>34</height>
+        <font>font13</font>
+        <label>$VAR[AM6BTitleEnglish9820]</label>
+        <textcolor>AFFFFFFF</textcolor>
+        <scroll>true</scroll>
+        <visible>[Control.HasFocus(9820) | Control.HasFocus(9821)] + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Label)]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>250</top>
+        <width>690</width>
+        <height>82</height>
+        <font>font11</font>
+        <label>$INFO[Container(9820).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9820) | Control.HasFocus(9821)] + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Label)]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>222</top>
+        <width>690</width>
+        <height>110</height>
+        <font>font11</font>
+        <label>$INFO[Container(9820).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9820) | Control.HasFocus(9821)] + [![[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9820).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9820).ListItem.Label) + !String.IsEqual(Container(9820).ListItem.Property(AM6B.Title.en),Container(9820).ListItem.Label)]]]]]</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>150</top>
+        <width>710</width>
+        <height>64</height>
+        <font>font28_title</font>
+        <label>$VAR[AM6BTitleZH9830]</label>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>B0000000</shadowcolor>
+        <scroll>true</scroll>
+        <visible>Control.HasFocus(9830) | Control.HasFocus(9831)</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>210</top>
+        <width>710</width>
+        <height>34</height>
+        <font>font13</font>
+        <label>$VAR[AM6BTitleSecondary9830]</label>
+        <textcolor>AFFFFFFF</textcolor>
+        <scroll>true</scroll>
+        <visible>[Control.HasFocus(9830) | Control.HasFocus(9831)] + [[[String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Label)]]]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>250</top>
+        <width>690</width>
+        <height>82</height>
+        <font>font11</font>
+        <label>$INFO[Container(9830).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9830) | Control.HasFocus(9831)] + [[[String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Label)]]]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>222</top>
+        <width>690</width>
+        <height>110</height>
+        <font>font11</font>
+        <label>$INFO[Container(9830).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9830) | Control.HasFocus(9831)] + [![[[String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.en),Container(9830).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9830).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9830).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9830).ListItem.Label) + !String.IsEqual(Container(9830).ListItem.Property(AM6B.Title.original),Container(9830).ListItem.Label)]]]]]]]</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>150</top>
+        <width>710</width>
+        <height>64</height>
+        <font>font28_title</font>
+        <label>$VAR[AM6BTitleZH9840]</label>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>B0000000</shadowcolor>
+        <scroll>true</scroll>
+        <visible>Control.HasFocus(9840) | Control.HasFocus(9841)</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>210</top>
+        <width>710</width>
+        <height>34</height>
+        <font>font13</font>
+        <label>$VAR[AM6BTitleSecondary9840]</label>
+        <textcolor>AFFFFFFF</textcolor>
+        <scroll>true</scroll>
+        <visible>[Control.HasFocus(9840) | Control.HasFocus(9841)] + [[[String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Label)]]]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>250</top>
+        <width>690</width>
+        <height>82</height>
+        <font>font11</font>
+        <label>$INFO[Container(9840).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9840) | Control.HasFocus(9841)] + [[[String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Label)]]]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>222</top>
+        <width>690</width>
+        <height>110</height>
+        <font>font11</font>
+        <label>$INFO[Container(9840).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9840) | Control.HasFocus(9841)] + [![[[String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.en),Container(9840).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9840).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9840).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9840).ListItem.Label) + !String.IsEqual(Container(9840).ListItem.Property(AM6B.Title.original),Container(9840).ListItem.Label)]]]]]]]</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>150</top>
+        <width>710</width>
+        <height>64</height>
+        <font>font28_title</font>
+        <label>$VAR[AM6BTitleZH9850]</label>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>B0000000</shadowcolor>
+        <scroll>true</scroll>
+        <visible>Control.HasFocus(9850) | Control.HasFocus(9851)</visible>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>210</top>
+        <width>710</width>
+        <height>34</height>
+        <font>font13</font>
+        <label>$VAR[AM6BTitleSecondary9850]</label>
+        <textcolor>AFFFFFFF</textcolor>
+        <scroll>true</scroll>
+        <visible>[Control.HasFocus(9850) | Control.HasFocus(9851)] + [[[String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Label)]]]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>250</top>
+        <width>690</width>
+        <height>82</height>
+        <font>font11</font>
+        <label>$INFO[Container(9850).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9850) | Control.HasFocus(9851)] + [[[String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Label)]]]]]]</visible>
+      </control>
+      <control type="textbox">
+        <left>72</left>
+        <top>222</top>
+        <width>690</width>
+        <height>110</height>
+        <font>font11</font>
+        <label>$INFO[Container(9850).ListItem.Plot]</label>
+        <textcolor>C8FFFFFF</textcolor>
+        <visible>[Control.HasFocus(9850) | Control.HasFocus(9851)] + [![[[String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.en),Container(9850).ListItem.Label)]]]]] | [[![String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(Container(9850).ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(Container(9850).ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(Container(9850).ListItem.Label) + !String.IsEqual(Container(9850).ListItem.Property(AM6B.Title.original),Container(9850).ListItem.Label)]]]]]]]</visible>
+      </control>
+      <control type="button" id="9802">
+        <right>370</right>
+        <top>42</top>
+        <width>150</width>
+        <height>58</height>
+        <font>font10</font>
+        <label>搜索[CR]SEARCH</label>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+        <onclick>RunScript(script.globalsearch)</onclick>
+        <onleft>9804</onleft>
+        <onright>9803</onright>
+        <onup>9802</onup>
+        <ondown>9810</ondown>
+      </control>
+      <control type="button" id="9803">
+        <right>205</right>
+        <top>42</top>
+        <width>150</width>
+        <height>58</height>
+        <font>font10</font>
+        <label>浏览[CR]BROWSE</label>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+        <onclick>ActivateWindow(Videos)</onclick>
+        <onleft>9802</onleft>
+        <onright>9804</onright>
+        <onup>9803</onup>
+        <ondown>9810</ondown>
+      </control>
+      <control type="button" id="9804">
+        <right>40</right>
+        <top>42</top>
+        <width>150</width>
+        <height>58</height>
+        <font>font10</font>
+        <label>设置[CR]SETTINGS</label>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+        <onclick>ActivateWindow(Settings)</onclick>
+        <onleft>9803</onleft>
+        <onright>9802</onright>
+        <onup>9804</onup>
+        <ondown>9810</ondown>
+      </control>
+      <control type="group" id="9808">
+        <left>0</left>
+        <top>332</top>
+        <animation effect="slide" start="0,0" end="0,-210" time="150" tween="quadratic" easing="out" condition="[Control.HasFocus(9820) | Control.HasFocus(9821)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <animation effect="slide" start="0,0" end="0,-500" time="150" tween="quadratic" easing="out" condition="[Control.HasFocus(9830) | Control.HasFocus(9831)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <animation effect="slide" start="0,0" end="0,-790" time="150" tween="quadratic" easing="out" condition="[Control.HasFocus(9840) | Control.HasFocus(9841)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <animation effect="slide" start="0,0" end="0,-1080" time="150" tween="quadratic" easing="out" condition="[Control.HasFocus(9850) | Control.HasFocus(9851)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <animation effect="slide" start="0,0" end="0,-1370" time="150" tween="quadratic" easing="out" condition="[Control.HasFocus(9860)] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <control type="label">
+          <left>72</left>
+          <top>0</top>
+          <width>1320</width>
+          <height>30</height>
+          <font>font16</font>
+          <label>本季度动漫上新</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <shadowcolor>90000000</shadowcolor>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>29</top>
+          <width>1320</width>
+          <height>18</height>
+          <font>font8</font>
+          <label>THIS SEASON'S ANIME</label>
+          <textcolor>8FFFFFFF</textcolor>
+        </control>
+        <control type="label">
+          <right>72</right>
+          <top>6</top>
+          <width>420</width>
+          <height>40</height>
+          <font>font8</font>
+          <align>right</align>
+          <aligny>center</aligny>
+          <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
+          <textcolor>99FFFFFF</textcolor>
+        </control>
+        <control type="button" id="9811">
+          <left>72</left>
+          <top>52</top>
+          <width>205</width>
+          <height>238</height>
+          <font>font11</font>
+          <align>center</align>
+          <aligny>center</aligny>
+          <label>动漫分类与往季[CR]ANIME &amp; PAST SEASONS</label>
+          <textcolor>CCFFFFFF</textcolor>
+          <focusedcolor>FFFFFFFF</focusedcolor>
+          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+          <onclick>SetProperty(AM6BHub,anime,home)</onclick>
+          <onclick>ActivateWindow(1195)</onclick>
+          <onleft>9811</onleft>
+          <onright>9810</onright>
+          <onup>9802</onup>
+          <ondown>9820</ondown>
+          <animation effect="zoom" start="100" end="106" time="150" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+        </control>
+        <control type="fixedlist" id="9810">
+          <left>302</left>
+          <top>40</top>
+          <width>1546</width>
+          <height>266</height>
+          <orientation>horizontal</orientation>
+          <focusposition>1</focusposition>
+          <movement>3</movement>
+          <scrolltime>160</scrolltime>
+          <onleft>9811</onleft>
+          <onright>9810</onright>
+          <onup>9802</onup>
+          <ondown>9820</ondown>
+          <viewtype label="">list</viewtype>
+          <itemlayout width="188" height="266">
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <texture colordiffuse="FF242424">am6b/white.png</texture>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>226</top>
+              <width>172</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>247</top>
+              <width>172</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleEnglish]</label>
+              <textcolor>8FFFFFFF</textcolor>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>236</top>
+              <width>172</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>![[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]</visible>
+            </control>
+          </itemlayout>
+          <focusedlayout width="188" height="266">
+            <control type="image">
+              <left>3</left>
+              <top>5</top>
+              <width>182</width>
+              <height>224</height>
+              <texture colordiffuse="FF454545">am6b/white.png</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>226</top>
+              <width>188</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>247</top>
+              <width>188</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleEnglish]</label>
+              <textcolor>BFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>236</top>
+              <width>188</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>![[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]</visible>
+            </control>
+          </focusedlayout>
+          <content target="video" limit="8">plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Current_Quarter&amp;mode=anime&amp;submode=tv&amp;api=tmdb</content>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>302</top>
+          <width>1320</width>
+          <height>30</height>
+          <font>font16</font>
+          <label>动漫电影</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <shadowcolor>90000000</shadowcolor>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>331</top>
+          <width>1320</width>
+          <height>18</height>
+          <font>font8</font>
+          <label>ANIME FILMS</label>
+          <textcolor>8FFFFFFF</textcolor>
+        </control>
+        <control type="label">
+          <right>72</right>
+          <top>308</top>
+          <width>420</width>
+          <height>40</height>
+          <font>font8</font>
+          <align>right</align>
+          <aligny>center</aligny>
+          <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
+          <textcolor>99FFFFFF</textcolor>
+        </control>
+        <control type="button" id="9821">
+          <left>72</left>
+          <top>354</top>
+          <width>205</width>
+          <height>238</height>
+          <font>font11</font>
+          <align>center</align>
+          <aligny>center</aligny>
+          <label>动漫电影分类[CR]BROWSE ANIME FILMS</label>
+          <textcolor>CCFFFFFF</textcolor>
+          <focusedcolor>FFFFFFFF</focusedcolor>
+          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+          <onclick>SetProperty(AM6BHub,anime_movie,home)</onclick>
+          <onclick>ActivateWindow(1195)</onclick>
+          <onleft>9821</onleft>
+          <onright>9820</onright>
+          <onup>9810</onup>
+          <ondown>9830</ondown>
+          <animation effect="zoom" start="100" end="106" time="150" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+        </control>
+        <control type="fixedlist" id="9820">
+          <left>302</left>
+          <top>342</top>
+          <width>1546</width>
+          <height>266</height>
+          <orientation>horizontal</orientation>
+          <focusposition>1</focusposition>
+          <movement>3</movement>
+          <scrolltime>160</scrolltime>
+          <onleft>9821</onleft>
+          <onright>9820</onright>
+          <onup>9810</onup>
+          <ondown>9830</ondown>
+          <viewtype label="">list</viewtype>
+          <itemlayout width="188" height="266">
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <texture colordiffuse="FF242424">am6b/white.png</texture>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>226</top>
+              <width>172</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>247</top>
+              <width>172</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleEnglish]</label>
+              <textcolor>8FFFFFFF</textcolor>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>236</top>
+              <width>172</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>![[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]</visible>
+            </control>
+          </itemlayout>
+          <focusedlayout width="188" height="266">
+            <control type="image">
+              <left>3</left>
+              <top>5</top>
+              <width>182</width>
+              <height>224</height>
+              <texture colordiffuse="FF454545">am6b/white.png</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>226</top>
+              <width>188</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>247</top>
+              <width>188</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleEnglish]</label>
+              <textcolor>BFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>236</top>
+              <width>188</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>![[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]</visible>
+            </control>
+          </focusedlayout>
+          <content target="video" limit="8">plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Movies_New&amp;mode=anime&amp;submode=movies&amp;api=tmdb</content>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>604</top>
+          <width>1320</width>
+          <height>30</height>
+          <font>font16</font>
+          <label>电视剧上新推荐</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <shadowcolor>90000000</shadowcolor>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>633</top>
+          <width>1320</width>
+          <height>18</height>
+          <font>font8</font>
+          <label>NEW &amp; RECOMMENDED SERIES</label>
+          <textcolor>8FFFFFFF</textcolor>
+        </control>
+        <control type="label">
+          <right>72</right>
+          <top>610</top>
+          <width>420</width>
+          <height>40</height>
+          <font>font8</font>
+          <align>right</align>
+          <aligny>center</aligny>
+          <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
+          <textcolor>99FFFFFF</textcolor>
+        </control>
+        <control type="button" id="9831">
+          <left>72</left>
+          <top>656</top>
+          <width>205</width>
+          <height>238</height>
+          <font>font11</font>
+          <align>center</align>
+          <aligny>center</aligny>
+          <label>电视剧分类[CR]BROWSE SERIES</label>
+          <textcolor>CCFFFFFF</textcolor>
+          <focusedcolor>FFFFFFFF</focusedcolor>
+          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+          <onclick>SetProperty(AM6BHub,tv,home)</onclick>
+          <onclick>ActivateWindow(1195)</onclick>
+          <onleft>9831</onleft>
+          <onright>9830</onright>
+          <onup>9820</onup>
+          <ondown>9840</ondown>
+          <animation effect="zoom" start="100" end="106" time="150" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+        </control>
+        <control type="fixedlist" id="9830">
+          <left>302</left>
+          <top>644</top>
+          <width>1546</width>
+          <height>266</height>
+          <orientation>horizontal</orientation>
+          <focusposition>1</focusposition>
+          <movement>3</movement>
+          <scrolltime>160</scrolltime>
+          <onleft>9831</onleft>
+          <onright>9830</onright>
+          <onup>9820</onup>
+          <ondown>9840</ondown>
+          <viewtype label="">list</viewtype>
+          <itemlayout width="188" height="266">
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <texture colordiffuse="FF242424">am6b/white.png</texture>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>226</top>
+              <width>172</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>247</top>
+              <width>172</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleSecondary]</label>
+              <textcolor>8FFFFFFF</textcolor>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>236</top>
+              <width>172</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>![[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]]</visible>
+            </control>
+          </itemlayout>
+          <focusedlayout width="188" height="266">
+            <control type="image">
+              <left>3</left>
+              <top>5</top>
+              <width>182</width>
+              <height>224</height>
+              <texture colordiffuse="FF454545">am6b/white.png</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>226</top>
+              <width>188</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>247</top>
+              <width>188</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleSecondary]</label>
+              <textcolor>BFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>236</top>
+              <width>188</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>![[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]]</visible>
+            </control>
+          </focusedlayout>
+          <content target="video" limit="8">plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1</content>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>906</top>
+          <width>1320</width>
+          <height>30</height>
+          <font>font16</font>
+          <label>电影上新</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <shadowcolor>90000000</shadowcolor>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>935</top>
+          <width>1320</width>
+          <height>18</height>
+          <font>font8</font>
+          <label>NEW FILMS</label>
+          <textcolor>8FFFFFFF</textcolor>
+        </control>
+        <control type="label">
+          <right>72</right>
+          <top>912</top>
+          <width>420</width>
+          <height>40</height>
+          <font>font8</font>
+          <align>right</align>
+          <aligny>center</aligny>
+          <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
+          <textcolor>99FFFFFF</textcolor>
+        </control>
+        <control type="button" id="9841">
+          <left>72</left>
+          <top>958</top>
+          <width>205</width>
+          <height>238</height>
+          <font>font11</font>
+          <align>center</align>
+          <aligny>center</aligny>
+          <label>电影分类[CR]BROWSE FILMS</label>
+          <textcolor>CCFFFFFF</textcolor>
+          <focusedcolor>FFFFFFFF</focusedcolor>
+          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+          <onclick>SetProperty(AM6BHub,movie,home)</onclick>
+          <onclick>ActivateWindow(1195)</onclick>
+          <onleft>9841</onleft>
+          <onright>9840</onright>
+          <onup>9830</onup>
+          <ondown>9850</ondown>
+          <animation effect="zoom" start="100" end="106" time="150" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+        </control>
+        <control type="fixedlist" id="9840">
+          <left>302</left>
+          <top>946</top>
+          <width>1546</width>
+          <height>266</height>
+          <orientation>horizontal</orientation>
+          <focusposition>1</focusposition>
+          <movement>3</movement>
+          <scrolltime>160</scrolltime>
+          <onleft>9841</onleft>
+          <onright>9840</onright>
+          <onup>9830</onup>
+          <ondown>9850</ondown>
+          <viewtype label="">list</viewtype>
+          <itemlayout width="188" height="266">
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <texture colordiffuse="FF242424">am6b/white.png</texture>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>226</top>
+              <width>172</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>247</top>
+              <width>172</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleSecondary]</label>
+              <textcolor>8FFFFFFF</textcolor>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>236</top>
+              <width>172</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>![[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]]</visible>
+            </control>
+          </itemlayout>
+          <focusedlayout width="188" height="266">
+            <control type="image">
+              <left>3</left>
+              <top>5</top>
+              <width>182</width>
+              <height>224</height>
+              <texture colordiffuse="FF454545">am6b/white.png</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>226</top>
+              <width>188</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>247</top>
+              <width>188</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleSecondary]</label>
+              <textcolor>BFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>236</top>
+              <width>188</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>![[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]]</visible>
+            </control>
+          </focusedlayout>
+          <content target="video" limit="8">plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1</content>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>1208</top>
+          <width>1320</width>
+          <height>30</height>
+          <font>font16</font>
+          <label>观看历史记录</label>
+          <textcolor>FFFFFFFF</textcolor>
+          <shadowcolor>90000000</shadowcolor>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>1237</top>
+          <width>1320</width>
+          <height>18</height>
+          <font>font8</font>
+          <label>WATCH HISTORY</label>
+          <textcolor>8FFFFFFF</textcolor>
+        </control>
+        <control type="label">
+          <right>72</right>
+          <top>1214</top>
+          <width>420</width>
+          <height>40</height>
+          <font>font8</font>
+          <align>right</align>
+          <aligny>center</aligny>
+          <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
+          <textcolor>99FFFFFF</textcolor>
+        </control>
+        <control type="button" id="9851">
+          <left>72</left>
+          <top>1260</top>
+          <width>205</width>
+          <height>238</height>
+          <font>font11</font>
+          <align>center</align>
+          <aligny>center</aligny>
+          <label>历史记录分类[CR]BROWSE HISTORY</label>
+          <textcolor>CCFFFFFF</textcolor>
+          <focusedcolor>FFFFFFFF</focusedcolor>
+          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+          <onclick>SetProperty(AM6BHub,history,home)</onclick>
+          <onclick>ActivateWindow(1195)</onclick>
+          <onleft>9851</onleft>
+          <onright>9850</onright>
+          <onup>9840</onup>
+          <ondown>9860</ondown>
+          <animation effect="zoom" start="100" end="106" time="150" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+        </control>
+        <control type="fixedlist" id="9850">
+          <left>302</left>
+          <top>1248</top>
+          <width>1546</width>
+          <height>266</height>
+          <orientation>horizontal</orientation>
+          <focusposition>1</focusposition>
+          <movement>3</movement>
+          <scrolltime>160</scrolltime>
+          <onleft>9851</onleft>
+          <onright>9850</onright>
+          <onup>9840</onup>
+          <ondown>9860</ondown>
+          <viewtype label="">list</viewtype>
+          <itemlayout width="188" height="266">
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <texture colordiffuse="FF242424">am6b/white.png</texture>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>226</top>
+              <width>172</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>247</top>
+              <width>172</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleSecondary]</label>
+              <textcolor>8FFFFFFF</textcolor>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>8</left>
+              <top>236</top>
+              <width>172</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>D9FFFFFF</textcolor>
+              <visible>![[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]]</visible>
+            </control>
+          </itemlayout>
+          <focusedlayout width="188" height="266">
+            <control type="image">
+              <left>3</left>
+              <top>5</top>
+              <width>182</width>
+              <height>224</height>
+              <texture colordiffuse="FF454545">am6b/white.png</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="image">
+              <left>8</left>
+              <top>10</top>
+              <width>172</width>
+              <height>214</height>
+              <aspectratio>scale</aspectratio>
+              <texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.Art(poster)]</texture>
+              <animation effect="zoom" start="100" end="106" time="150" center="94,117" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>226</top>
+              <width>188</width>
+              <height>22</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>247</top>
+              <width>188</width>
+              <height>18</height>
+              <font>font8</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleSecondary]</label>
+              <textcolor>BFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]</visible>
+            </control>
+            <control type="label">
+              <left>0</left>
+              <top>236</top>
+              <width>188</width>
+              <height>24</height>
+              <font>font10</font>
+              <align>center</align>
+              <label>$VAR[AM6BTitleZH]</label>
+              <textcolor>FFFFFFFF</textcolor>
+              <scroll>true</scroll>
+              <visible>![[[String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Label)]]]]] | [[![String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_series) | String.IsEqual(ListItem.Property(AM6B.Media.kind),anime_movie)]] + [[!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + [[!String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh))] | [String.IsEmpty(ListItem.Property(AM6B.Title.zh)) + !String.IsEmpty(ListItem.Label) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Label)]]]]]]</visible>
+            </control>
+          </focusedlayout>
+          <content target="video" limit="8">plugin://plugin.video.bobbi/?action=continue_watching_menu&amp;</content>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>1510</top>
+          <width>1540</width>
+          <height>30</height>
+          <font>font16</font>
+          <label>搜索</label>
+          <textcolor>FFFFFFFF</textcolor>
+        </control>
+        <control type="label">
+          <left>72</left>
+          <top>1539</top>
+          <width>1540</width>
+          <height>18</height>
+          <font>font8</font>
+          <label>SEARCH</label>
+          <textcolor>8FFFFFFF</textcolor>
+        </control>
+        <control type="fixedlist" id="9860">
+          <left>72</left>
+          <top>1558</top>
+          <width>1776</width>
+          <height>148</height>
+          <orientation>horizontal</orientation>
+          <focusposition>1</focusposition>
+          <movement>3</movement>
+          <scrolltime>150</scrolltime>
+          <onleft>9860</onleft>
+          <onright>9860</onright>
+          <onup>9850</onup>
+          <ondown>9860</ondown>
+          <viewtype label="">list</viewtype>
+          <itemlayout width="292" height="140">
+            <control type="image">
+              <left>6</left>
+              <top>8</top>
+              <width>278</width>
+              <height>112</height>
+              <texture colordiffuse="FF242424">am6b/white.png</texture>
+            </control>
+            <control type="label">
+              <left>20</left>
+              <top>8</top>
+              <width>250</width>
+              <height>112</height>
+              <font>font11</font>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Label]</label>
+              <textcolor>CFFFFFFF</textcolor>
+            </control>
+          </itemlayout>
+          <focusedlayout width="292" height="140">
+            <control type="image">
+              <left>3</left>
+              <top>5</top>
+              <width>284</width>
+              <height>118</height>
+              <texture colordiffuse="FF454545">am6b/white.png</texture>
+              <animation effect="zoom" start="100" end="104" time="150" center="146,64" condition="!Skin.HasSetting(BobiReduceMotion)">Focus</animation>
+            </control>
+            <control type="label">
+              <left>20</left>
+              <top>8</top>
+              <width>250</width>
+              <height>112</height>
+              <font>font11</font>
+              <align>center</align>
+              <aligny>center</aligny>
+              <label>$INFO[ListItem.Label]</label>
+              <textcolor>FFFFFFFF</textcolor>
+            </control>
+          </focusedlayout>
+          <content>
+            <item id="1">
+              <label>全局搜索[CR]GLOBAL SEARCH</label>
+              <onclick>RunScript(script.globalsearch)</onclick>
+            </item>
+            <item id="2">
+              <label>搜动漫[CR]SEARCH ANIME</label>
+              <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=am6b_streaming_search&amp;section=anime_tv",return)</onclick>
+            </item>
+            <item id="3">
+              <label>搜动漫电影[CR]SEARCH ANIME FILMS</label>
+              <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=am6b_streaming_search&amp;section=anime_movie",return)</onclick>
+            </item>
+            <item id="4">
+              <label>搜电视剧[CR]SEARCH SERIES</label>
+              <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=am6b_streaming_search&amp;section=tv",return)</onclick>
+            </item>
+            <item id="5">
+              <label>搜电影[CR]SEARCH FILMS</label>
+              <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=am6b_streaming_search&amp;section=movie",return)</onclick>
+            </item>
+            <item id="6">
+              <label>BT 候选[CR]BT SOURCES</label>
+              <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=torrents&amp;",return)</onclick>
+            </item>
+          </content>
+        </control>
+      </control>
+    </control>
+  </include>
+</includes>

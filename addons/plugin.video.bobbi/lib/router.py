@@ -1,0 +1,1122 @@
+"""
+Jacktook addon router — lazy-loading dispatcher.
+
+Uses prefix-based routing with lazy imports to avoid loading all addon
+modules on every invocation. Only the modules needed for the current
+action are imported.
+"""
+
+import sys
+from urllib import parse
+
+# ---------------------------------------------------------------------------
+# Action sets for set-based lookups
+# ---------------------------------------------------------------------------
+
+_TRAKT_EXTRAS = frozenset(
+    {
+        "add_to_collection",
+        "remove_from_collection",
+        "list_trakt_page",
+    }
+)
+
+_DEBRID_ACTIONS = frozenset(
+    {
+        "rd_auth",
+        "rd_remove_auth",
+        "ad_auth",
+        "ad_remove_auth",
+        "real_debrid_info",
+        "alldebrid_info",
+        "debrider_auth",
+        "debrider_remove_auth",
+        "debrider_info",
+        "get_rd_downloads",
+        "get_tb_downloads",
+        "get_oc_downloads",
+        "cloud",
+        "cloud_details",
+        "pm_auth",
+        "pm_remove_auth",
+        "tb_auth",
+        "tb_remove_auth",
+        "oc_auth",
+        "oc_remove_auth",
+        "torbox_info",
+        "offcloud_info",
+        "easynews_info",
+    }
+)
+
+_TORRSERVER_ACTIONS = frozenset(
+    {
+        "torrents",
+        "torrent_action",
+        "torrent_files",
+        "torrentio_selection",
+        "display_picture",
+        "display_text",
+        "download_torrent_subtitles",
+        "download_and_play_subtitles",
+    }
+)
+
+_WEBDAV_ACTIONS = frozenset(
+    {
+        "list_webdav",
+        "webdav_provider_test",
+        "display_text_webdav",
+        "show_picture_webdav",
+    }
+)
+
+_DOWNLOAD_ACTIONS = frozenset(
+    {
+        "download_video",
+        "handle_download_file",
+        "handle_cancel_download",
+        "handle_pause_download",
+        "handle_delete_file",
+        "downloads_menu",
+        "resume_download",
+        "download_cloud_file",
+        "open_download_manager",
+        "downloads_viewer",
+    }
+)
+
+_GUI_ACTIONS = frozenset(
+    {
+        "run_next_dialog",
+        "run_resume_dialog",
+        "run_skip_intro_dialog",
+        "test_source_select",
+        "test_run_next",
+        "test_resume_dialog",
+        "test_download_dialog",
+        "extras",
+    }
+)
+
+_MDBLIST_ACTIONS = frozenset(
+    {
+        "search_mdbd_lists",
+        "user_mdbd_lists",
+        "top_mdbd_lists",
+        "show_mdblist_list",
+    }
+)
+
+
+_AM6B_FAST_ACTIONS = frozenset(
+    {
+        "am6b_streaming_catalog",
+        "am6b_streaming_search",
+        "am6b_open_streaming_item",
+        "am6b_refresh_anime_catalog",
+        "am6b_refresh_anime_search",
+        "am6b_refresh_season_cards",
+        "bobi_refresh_metadata",
+        "bobi_continue_action",
+    }
+)
+
+
+def _is_stremio_action(action):
+    return action.startswith(("stremio_", "list_stremio")) or action in {
+        "clear_stremio_search_history",
+        "list_catalog",
+        "list_catalog_genres",
+        "search_catalog",
+        "add_custom_stremio_addon",
+        "configure_stremio_addon",
+        "remove_custom_stremio_addon",
+        "rename_stremio_addon",
+        "rename_stremio_catalog",
+        "torrentio_toggle_providers",
+        "stremio_bypass_addons_select",
+        "stremio_subtitle_addons_select",
+    }
+
+
+def _is_tmdb_action(action):
+    return action in (
+        "tmdb_search_modes",
+        "tmdb_episode_search_modes",
+    ) or action.startswith(
+        (
+            "handle_tmdb",
+            "search_tmdb",
+            "search_tmbd",
+            "rescrape_tmdb",
+            "show_tmdb",
+            "handle_collection",
+            "search_people",
+            "handle_keyword",
+            "show_keyword",
+        )
+    )
+
+
+def _is_trakt_action(action):
+    return action.startswith("trakt_") or action in _TRAKT_EXTRAS
+
+
+def _is_simkl_action(action):
+    return action in (
+        "simkl_auth",
+        "simkl_logout",
+        "simkl_continue_watching",
+        "simkl_library",
+        "simkl_library_statuses",
+        "simkl_library_items",
+        "simkl_move_to_status",
+        "simkl_update_history",
+        "simkl_resume",
+        "simkl_discard_playback",
+    )
+
+
+def _is_nuvio_action(action):
+    return action in (
+        "nuvio_auth",
+        "nuvio_logout",
+        "nuvio_toggle_addons",
+        "nuvio_menu",
+        "nuvio_continue_watching",
+        "nuvio_history",
+        "nuvio_library",
+        "nuvio_remove_progress",
+        "nuvio_resume",
+        "nuvio_add_to_library",
+        "nuvio_remove_from_library",
+        "nuvio_update_history",
+        "nuvio_collections",
+        "nuvio_collection_folders",
+        "nuvio_collection_sources",
+        "nuvio_collection_discover",
+        "nuvio_collection_source_unavailable",
+    )
+
+
+def _is_debrid_action(action):
+    return action in _DEBRID_ACTIONS
+
+
+def _is_telegram_action(action):
+    return (
+        action.startswith(
+            ("telegram_", "list_telegram", "list_jackgram", "test_jackgram", "search_jackgram")
+        )
+        or action == "test_jackgram_connection"
+    )
+
+
+def _is_torrserver_action(action):
+    return action in _TORRSERVER_ACTIONS
+
+
+def _is_webdav_action(action):
+    return action in _WEBDAV_ACTIONS
+
+
+def _is_download_action(action):
+    return action in _DOWNLOAD_ACTIONS
+
+
+def _is_mdblist_action(action):
+    return action in _MDBLIST_ACTIONS
+
+
+def _is_cache_action(action):
+    return action.startswith("clear_")
+
+
+def _is_gui_action(action):
+    return action in _GUI_ACTIONS
+
+
+def _is_source_manager_action(action):
+    return action == "source_manager_toggle"
+
+
+def _get_route_handler(action):
+    for matcher, handler in ROUTE_GROUPS:
+        if matcher(action):
+            return handler
+    return _route_core
+
+
+def _is_am6b_anime_catalog_action(action, params):
+    locked_categories = {"Anime_Current_Quarter", "Anime_Movies_New"}
+    if action == "next_page_anime":
+        return params.get("mode") == "anime" and params.get("category") in locked_categories
+    return (
+        action == "search_item"
+        and params.get("api") == "tmdb"
+        and params.get("mode") == "anime"
+        and params.get("category") in locked_categories
+    )
+
+
+def _route_am6b_anime_catalog(action, params):
+    """Route the locked anime catalogs without importing all navigation clients."""
+    from lib.clients.tmdb.anime_fast_catalog import handle_am6b_anime_catalog
+
+    handle_am6b_anime_catalog(params, next_page=action == "next_page_anime")
+
+
+def _route_am6b_warmup():
+    """Pre-import the lightweight catalog graph without opening a Kodi window."""
+    from lib.clients.tmdb import anime_fast_catalog  # noqa: F401
+
+
+def _route_am6b_fast(action, params):
+    """Dispatch AM6B first-screen catalogs before the generic TMDb graph."""
+    if action == "bobi_refresh_metadata":
+        from lib.clients.tmdb.frontend_metadata import hydrate
+        hydrate(params)
+        return
+    if action == "bobi_continue_action":
+        from lib.utils.views.continue_watching import continue_action
+        continue_action(params)
+        return
+    if action == "am6b_refresh_season_cards":
+        from lib.clients.tmdb.season_cards import hydrate
+        hydrate(params)
+        return
+    from lib.clients.tmdb.anime_fast_catalog import (
+        handle_am6b_open_item,
+        handle_am6b_streaming_catalog,
+        handle_am6b_streaming_search,
+        hydrate_am6b_anime_catalog,
+        hydrate_am6b_anime_search,
+    )
+
+    actions = {
+        "am6b_streaming_catalog": handle_am6b_streaming_catalog,
+        "am6b_streaming_search": handle_am6b_streaming_search,
+        "am6b_open_streaming_item": handle_am6b_open_item,
+        "am6b_refresh_anime_catalog": hydrate_am6b_anime_catalog,
+        "am6b_refresh_anime_search": hydrate_am6b_anime_search,
+    }
+    actions[action](params)
+
+
+# ---------------------------------------------------------------------------
+# Main router
+# ---------------------------------------------------------------------------
+
+
+def addon_router():
+    param_string = sys.argv[2][1:]
+
+    if param_string:
+        params = dict(parse.parse_qsl(param_string))
+        action = params.get("action", "")
+
+        if action == "am6b_helper_pick":
+            from lib.clients.maintainable_ui import helper_pick
+            helper_pick(params)
+            return
+
+        if action in {"am6b_home", "am6b_discovery", "bobbi_setup"}:
+            from lib.clients.maintainable_ui import handle
+            handle(params)
+            return
+
+        if action == "bobi_order_episodes":
+            from lib.clients.tmdb.episode_order import show_order_episodes
+            show_order_episodes(params)
+            return
+
+        if action == "bobi_related_movies":
+            from lib.clients.tmdb.related_movies import show_related_movies
+            show_related_movies(params)
+            return
+
+        if action == "bobi_search_prompt":
+            from lib.clients.cinema_ui import search_prompt
+
+            search_prompt(params)
+            return
+        if action == "bobi_ui_row":
+            from lib.clients.cinema_ui import handle
+
+            handle(params)
+            return
+        if action in {"bobi_library", "bobi_open"}:
+            from lib.clients.bobi_library import handle
+            handle(params)
+            return
+
+        if action == "am6b_warm":
+            _route_am6b_warmup()
+            return
+        if action in _AM6B_FAST_ACTIONS:
+            _route_am6b_fast(action, params)
+            return
+        if _is_am6b_anime_catalog_action(action, params):
+            _route_am6b_anime_catalog(action, params)
+            return
+
+        from lib.utils.tmdb_init import ensure_tmdb_init
+
+        ensure_tmdb_init()
+
+        route_handler = _get_route_handler(action)
+        route_handler(action, params)
+        return
+
+    from lib.navigation import root_menu
+
+    root_menu()
+
+
+# ---------------------------------------------------------------------------
+# Route handlers — each lazily imports only the modules it needs
+# ---------------------------------------------------------------------------
+
+
+def _route_stremio(action, params):
+    if action in (
+        "stremio_toggle_addons",
+        "stremio_toggle_catalogs",
+        "stremio_toggle_tv_addons",
+        "stremio_filtered_selection",
+        "add_custom_stremio_addon",
+        "configure_stremio_addon",
+        "remove_custom_stremio_addon",
+        "rename_stremio_addon",
+        "rename_stremio_catalog",
+        "stremio_bypass_addons_select",
+        "stremio_subtitle_addons_select",
+    ):
+        from lib.clients.stremio.addon_selection import (
+            add_custom_stremio_addon,
+            configure_stremio_addon,
+            remove_custom_stremio_addon,
+            rename_stremio_addon,
+            rename_stremio_catalog,
+            stremio_bypass_addons_select,
+            stremio_filtered_selection,
+            stremio_subtitle_addons_select,
+            stremio_toggle_addons,
+            stremio_toggle_catalogs,
+            stremio_toggle_tv_addons,
+        )
+
+        actions = {
+            "stremio_toggle_addons": stremio_toggle_addons,
+            "stremio_toggle_catalogs": stremio_toggle_catalogs,
+            "stremio_toggle_tv_addons": stremio_toggle_tv_addons,
+            "stremio_filtered_selection": stremio_filtered_selection,
+            "add_custom_stremio_addon": add_custom_stremio_addon,
+            "configure_stremio_addon": configure_stremio_addon,
+            "remove_custom_stremio_addon": remove_custom_stremio_addon,
+            "rename_stremio_addon": rename_stremio_addon,
+            "rename_stremio_catalog": rename_stremio_catalog,
+            "stremio_bypass_addons_select": stremio_bypass_addons_select,
+            "stremio_subtitle_addons_select": stremio_subtitle_addons_select,
+        }
+        actions[action](params)
+    elif action == "stremio_manage_phone":
+        from lib.clients.stremio.manage_phone import stremio_manage_phone
+
+        stremio_manage_phone(params)
+    elif action in ("stremio_login", "stremio_logout", "stremio_update"):
+        from lib.clients.stremio.authentication import (
+            stremio_login,
+            stremio_logout,
+            stremio_update,
+        )
+
+        actions = {
+            "stremio_login": stremio_login,
+            "stremio_logout": stremio_logout,
+            "stremio_update": stremio_update,
+        }
+        actions[action](params)
+    elif action == "torrentio_toggle_providers":
+        from lib.clients.stremio.torrentio import torrentio_toggle_providers
+
+        torrentio_toggle_providers(params)
+    else:
+        from lib.clients.catalog_hub import (
+            list_catalog,
+            list_catalog_genres,
+            search_catalog,
+        )
+        from lib.clients.stremio.catalog_menus import (
+            clear_stremio_search_history,
+            list_stremio_episodes,
+            list_stremio_movie,
+            list_stremio_seasons,
+            list_stremio_tv,
+            list_stremio_tv_streams,
+        )
+
+        actions = {
+            "clear_stremio_search_history": clear_stremio_search_history,
+            "list_catalog": list_catalog,
+            "list_catalog_genres": list_catalog_genres,
+            "list_stremio_seasons": list_stremio_seasons,
+            "list_stremio_episodes": list_stremio_episodes,
+            "list_stremio_movie": list_stremio_movie,
+            "list_stremio_tv_streams": list_stremio_tv_streams,
+            "list_stremio_tv": list_stremio_tv,
+            "search_catalog": search_catalog,
+        }
+        action_func = actions.get(action)
+        if action_func:
+            action_func(params)
+
+
+def _route_tmdb(action, params):
+
+    if action in ("search_tmdb_year", "search_tmdb_genres"):
+        from lib.clients.tmdb.tmdb import TmdbClient
+        from lib.utils.general.utils import set_content_type
+
+        if action == "search_tmdb_year":
+            mode = params["mode"]
+            set_content_type(mode)
+            TmdbClient.tmdb_search_year(
+                mode, params["submode"], int(params["year"]), int(params["page"])
+            )
+        else:
+            mode = params["mode"]
+            set_content_type(mode)
+            TmdbClient.tmdb_search_genres(
+                mode,
+                params["genre_id"],
+                int(params["page"]),
+                submode=params.get("submode"),
+            )
+    elif action in (
+        "search_people_by_id",
+        "handle_tmdb_person_details",
+        "handle_tmdb_person_info",
+    ):
+        from lib.clients.tmdb.people_client import PeopleClient
+
+        actions = {
+            "search_people_by_id": PeopleClient.search_people_by_id,
+            "handle_tmdb_person_details": PeopleClient.handle_tmdb_person_details,
+            "handle_tmdb_person_info": PeopleClient.handle_tmdb_person_info,
+        }
+        actions[action](params)
+    elif action == "handle_collection_details":
+        from lib.clients.tmdb.collections import TmdbCollections
+
+        TmdbCollections.add_collection_details(params)
+    else:
+        from lib.clients.tmdb.tmdb import TmdbClient
+
+        actions = {
+            "handle_tmdb_search": TmdbClient.handle_tmdb_search,
+            "handle_tmdb_query": TmdbClient.handle_tmdb_query,
+            "search_tmdb_lang": TmdbClient.show_lang_items,
+            "search_tmbd_network": TmdbClient.show_network_items,
+            "search_tmdb_recommendations": TmdbClient.search_tmdb_recommendations,
+            "search_tmdb_similar": TmdbClient.search_tmdb_similar,
+            "tmdb_search_modes": TmdbClient.tmdb_search_modes,
+            "tmdb_episode_search_modes": TmdbClient.tmdb_episode_search_modes,
+            "rescrape_tmdb_media": TmdbClient.rescrape_tmdb_media,
+            "show_tmdb_item": TmdbClient.show_tmdb_item,
+            "handle_collection_query": TmdbClient.handle_collection_query,
+            "handle_keyword_search": TmdbClient.handle_keyword_search,
+            "show_keyword_results": TmdbClient.show_keyword_results,
+        }
+        action_func = actions.get(action)
+        if action_func:
+            action_func(params)
+
+
+def _route_trakt(action, params):
+    if action in (
+        "trakt_add_to_watchlist",
+        "trakt_remove_from_watchlist",
+        "trakt_add_to_favorites",
+        "trakt_remove_from_favorites",
+        "trakt_mark_as_watched",
+        "trakt_mark_as_unwatched",
+        "add_to_collection",
+        "remove_from_collection",
+        "trakt_create_list",
+        "trakt_delete_list",
+        "trakt_like_list",
+        "trakt_unlike_list",
+        "trakt_add_item_to_list",
+        "trakt_remove_item_from_list",
+    ):
+        from lib.clients.trakt.trakt import TraktClient
+
+        actions = {
+            "trakt_add_to_watchlist": TraktClient.trakt_add_to_watchlist,
+            "trakt_remove_from_watchlist": TraktClient.trakt_remove_from_watchlist,
+            "trakt_add_to_favorites": TraktClient.trakt_add_to_favorites,
+            "trakt_remove_from_favorites": TraktClient.trakt_remove_from_favorites,
+            "trakt_mark_as_watched": TraktClient.trakt_mark_as_watched,
+            "trakt_mark_as_unwatched": TraktClient.trakt_mark_as_unwatched,
+            "add_to_collection": TraktClient.trakt_add_to_collection,
+            "remove_from_collection": TraktClient.trakt_remove_from_collection,
+            "trakt_create_list": TraktClient.trakt_create_list,
+            "trakt_delete_list": TraktClient.trakt_delete_list,
+            "trakt_like_list": TraktClient.trakt_like_list,
+            "trakt_unlike_list": TraktClient.trakt_unlike_list,
+            "trakt_add_item_to_list": TraktClient.trakt_add_item_to_list,
+            "trakt_remove_item_from_list": TraktClient.trakt_remove_item_from_list,
+        }
+        actions[action](params)
+    else:
+        from lib.navigation import (
+            list_trakt_page,
+            trakt_auth,
+            trakt_auth_revoke,
+            trakt_continue_watching,
+            trakt_discard_playback,
+            trakt_group_menu,
+            trakt_list_content,
+            trakt_resume,
+        )
+
+        actions = {
+            "trakt_auth": trakt_auth,
+            "trakt_auth_revoke": trakt_auth_revoke,
+            "trakt_continue_watching": trakt_continue_watching,
+            "trakt_discard_playback": trakt_discard_playback,
+            "trakt_group_menu": trakt_group_menu,
+            "trakt_list_content": trakt_list_content,
+            "trakt_resume": trakt_resume,
+            "list_trakt_page": list_trakt_page,
+        }
+        action_func = actions.get(action)
+        if action_func:
+            action_func(params)
+
+
+def _route_debrid(action, params):
+    from lib.navigation import (
+        ad_auth,
+        ad_remove_auth,
+        alldebrid_info,
+        cloud,
+        cloud_details,
+        debrider_auth,
+        debrider_info,
+        debrider_remove_auth,
+        easynews_info,
+        get_oc_downloads,
+        get_rd_downloads,
+        get_tb_downloads,
+        oc_auth,
+        oc_remove_auth,
+        offcloud_info,
+        pm_auth,
+        pm_remove_auth,
+        rd_auth,
+        rd_remove_auth,
+        real_debrid_info,
+        tb_auth,
+        tb_remove_auth,
+        torbox_info,
+    )
+
+    actions = {
+        "rd_auth": rd_auth,
+        "rd_remove_auth": rd_remove_auth,
+        "ad_auth": ad_auth,
+        "ad_remove_auth": ad_remove_auth,
+        "real_debrid_info": real_debrid_info,
+        "alldebrid_info": alldebrid_info,
+        "debrider_auth": debrider_auth,
+        "debrider_remove_auth": debrider_remove_auth,
+        "debrider_info": debrider_info,
+        "get_rd_downloads": get_rd_downloads,
+        "get_tb_downloads": get_tb_downloads,
+        "get_oc_downloads": get_oc_downloads,
+        "cloud": cloud,
+        "cloud_details": cloud_details,
+        "pm_auth": pm_auth,
+        "pm_remove_auth": pm_remove_auth,
+        "tb_auth": tb_auth,
+        "tb_remove_auth": tb_remove_auth,
+        "oc_auth": oc_auth,
+        "oc_remove_auth": oc_remove_auth,
+        "torbox_info": torbox_info,
+        "offcloud_info": offcloud_info,
+        "easynews_info": easynews_info,
+    }
+    actions[action](params)
+
+
+def _route_telegram(action, params):
+    if action == "telegram_menu":
+        from lib.navigation import telegram_menu
+
+        telegram_menu(params)
+    elif action == "search_jackgram":
+        from lib.navigation import search_jackgram
+
+        search_jackgram(params)
+    elif action == "test_jackgram_connection":
+        from lib.clients.jackgram.utils import test_jackgram_connection
+
+        test_jackgram_connection(params)
+    else:
+        from lib.clients.jackgram.utils import (
+            list_jackgram_latest_movies,
+            list_jackgram_latest_series,
+            list_jackgram_raw_files,
+            list_jackgram_title_sources,
+        )
+
+        actions = {
+            "list_jackgram_raw_files": list_jackgram_raw_files,
+            "list_jackgram_latest_movies": list_jackgram_latest_movies,
+            "list_jackgram_latest_series": list_jackgram_latest_series,
+            "list_jackgram_title_sources": list_jackgram_title_sources,
+        }
+        action_func = actions.get(action)
+        if action_func:
+            action_func(params)
+
+
+def _route_simkl(action, params):
+    from lib.navigation import (
+        simkl_auth,
+        simkl_continue_watching,
+        simkl_discard_playback,
+        simkl_library,
+        simkl_library_items,
+        simkl_library_statuses,
+        simkl_logout,
+        simkl_move_to_status,
+        simkl_resume,
+        simkl_update_history,
+    )
+
+    actions = {
+        "simkl_auth": simkl_auth,
+        "simkl_logout": simkl_logout,
+        "simkl_continue_watching": simkl_continue_watching,
+        "simkl_library": simkl_library,
+        "simkl_library_statuses": simkl_library_statuses,
+        "simkl_library_items": simkl_library_items,
+        "simkl_move_to_status": simkl_move_to_status,
+        "simkl_update_history": simkl_update_history,
+        "simkl_resume": simkl_resume,
+        "simkl_discard_playback": simkl_discard_playback,
+    }
+    actions[action](params)
+
+
+def _route_nuvio(action, params):
+    from lib.navigation import (
+        nuvio_add_to_library,
+        nuvio_auth,
+        nuvio_collection_discover,
+        nuvio_collection_folders,
+        nuvio_collection_source_unavailable,
+        nuvio_collection_sources,
+        nuvio_collections,
+        nuvio_continue_watching,
+        nuvio_history,
+        nuvio_library,
+        nuvio_logout,
+        nuvio_menu,
+        nuvio_remove_from_library,
+        nuvio_remove_progress,
+        nuvio_resume,
+        nuvio_toggle_addons,
+        nuvio_update_history,
+    )
+
+    {
+        "nuvio_auth": nuvio_auth,
+        "nuvio_logout": nuvio_logout,
+        "nuvio_toggle_addons": nuvio_toggle_addons,
+        "nuvio_menu": nuvio_menu,
+        "nuvio_continue_watching": nuvio_continue_watching,
+        "nuvio_history": nuvio_history,
+        "nuvio_library": nuvio_library,
+        "nuvio_remove_progress": nuvio_remove_progress,
+        "nuvio_resume": nuvio_resume,
+        "nuvio_add_to_library": nuvio_add_to_library,
+        "nuvio_remove_from_library": nuvio_remove_from_library,
+        "nuvio_update_history": nuvio_update_history,
+        "nuvio_collections": nuvio_collections,
+        "nuvio_collection_folders": nuvio_collection_folders,
+        "nuvio_collection_sources": nuvio_collection_sources,
+        "nuvio_collection_discover": nuvio_collection_discover,
+        "nuvio_collection_source_unavailable": nuvio_collection_source_unavailable,
+    }[action](params)
+
+
+def _route_torrserver(action, params):
+    if action in ("torrent_action", "torrent_files", "display_picture", "display_text"):
+        from lib.utils.torrent.torrserver_utils import (
+            display_picture,
+            display_text,
+            torrent_action,
+            torrent_files,
+        )
+
+        actions = {
+            "torrent_action": torrent_action,
+            "torrent_files": torrent_files,
+            "display_picture": display_picture,
+            "display_text": display_text,
+        }
+        actions[action](params)
+    elif action in ("download_torrent_subtitles", "download_and_play_subtitles"):
+        from lib.utils.torrent.torrserver_utils import (
+            download_and_play_subtitles,
+            download_torrent_subtitles,
+        )
+
+        actions = {
+            "download_torrent_subtitles": download_torrent_subtitles,
+            "download_and_play_subtitles": download_and_play_subtitles,
+        }
+        actions[action](params)
+    elif action == "torrents":
+        from lib.navigation import torrents
+
+        torrents(params)
+    elif action == "torrentio_selection":
+        from lib.navigation import torrentio_selection
+
+        torrentio_selection(params)
+
+
+def _route_webdav(action, params):
+    from lib.clients.webdav.client import (
+        display_text_webdav,
+        list_webdav,
+        show_picture_webdav,
+        webdav_provider_test,
+    )
+
+    actions = {
+        "list_webdav": list_webdav,
+        "webdav_provider_test": webdav_provider_test,
+        "display_text_webdav": display_text_webdav,
+        "show_picture_webdav": show_picture_webdav,
+    }
+    actions[action](params)
+
+
+def _route_downloads(action, params):
+    if action in (
+        "download_video",
+        "handle_download_file",
+        "handle_cancel_download",
+        "handle_pause_download",
+        "handle_delete_file",
+        "resume_download",
+        "download_cloud_file",
+        "downloads_viewer",
+    ):
+        from lib.downloader import (
+            download_cloud_file,
+            download_video,
+            downloads_viewer,
+            handle_cancel_download,
+            handle_delete_file,
+            handle_download_file,
+            handle_pause_download,
+            resume_download,
+        )
+
+        actions = {
+            "download_video": download_video,
+            "handle_download_file": handle_download_file,
+            "handle_cancel_download": handle_cancel_download,
+            "handle_pause_download": handle_pause_download,
+            "handle_delete_file": handle_delete_file,
+            "resume_download": resume_download,
+            "download_cloud_file": download_cloud_file,
+            "downloads_viewer": downloads_viewer,
+        }
+        actions[action](params)
+    elif action == "downloads_menu":
+        from lib.navigation import downloads_menu
+
+        downloads_menu(params)
+    elif action == "open_download_manager":
+        from lib.navigation import open_download_manager
+
+        open_download_manager(params)
+
+
+def _route_mdblist(action, params):
+    from lib.clients.mdblist.mdblist import (
+        search_mdbd_lists,
+        show_mdblist_list,
+        top_mdbd_lists,
+        user_mdbd_lists,
+    )
+
+    actions = {
+        "search_mdbd_lists": search_mdbd_lists,
+        "user_mdbd_lists": user_mdbd_lists,
+        "top_mdbd_lists": top_mdbd_lists,
+        "show_mdblist_list": show_mdblist_list,
+    }
+    actions[action](params)
+
+
+def _route_cache(action, params):
+    from lib.navigation import (
+        clear_all_cached,
+        clear_database_cache,
+        clear_debrid_cache,
+        clear_history,
+        clear_mdblist_cache,
+        clear_search_history,
+        clear_stremio_cache,
+        clear_tmdb_cache,
+        clear_trakt_cache,
+    )
+
+    actions = {
+        "clear_all_cached": clear_all_cached,
+        "clear_trakt_cache": clear_trakt_cache,
+        "clear_tmdb_cache": clear_tmdb_cache,
+        "clear_stremio_cache": clear_stremio_cache,
+        "clear_debrid_cache": clear_debrid_cache,
+        "clear_mdblist_cache": clear_mdblist_cache,
+        "clear_database_cache": clear_database_cache,
+        "clear_history": clear_history,
+        "clear_search_history": clear_search_history,
+    }
+    action_func = actions.get(action)
+    if action_func:
+        action_func(params)
+
+
+def _route_gui(action, params):
+    if action in ("run_next_dialog", "run_resume_dialog", "run_skip_intro_dialog"):
+        from lib.gui.custom_dialogs import (
+            run_next_dialog,
+            run_resume_dialog,
+            run_skip_intro_dialog,
+        )
+
+        actions = {
+            "run_next_dialog": run_next_dialog,
+            "run_resume_dialog": run_resume_dialog,
+            "run_skip_intro_dialog": run_skip_intro_dialog,
+        }
+        actions[action](params)
+    elif action == "extras":
+        from lib.gui.extras_window import ExtrasWindow
+        from lib.bobbi.utils import ADDON_PATH
+
+        # Load the metadata properties needed by the Extras window
+        item_information = {
+            "tmdb_id": params.get("id"),
+            "imdb_id": params.get("imdb_id"),
+            "media_type": params.get("media_type"),
+            "title": params.get("title"),
+            "plot": params.get("plot", ""),
+            "genre": params.get("genre", ""),
+            "rating": params.get("rating", ""),
+            "tv_data": params.get("tv_data", "{}"),
+        }
+        xml_file = "extras.xml"
+        window = ExtrasWindow(xml_file, ADDON_PATH, item_information=item_information)
+        window.doModal()
+        del window
+    else:
+        from lib.navigation import (
+            test_download_dialog,
+            test_resume_dialog,
+            test_run_next,
+            test_source_select,
+        )
+
+        actions = {
+            "test_source_select": test_source_select,
+            "test_run_next": test_run_next,
+            "test_resume_dialog": test_resume_dialog,
+            "test_download_dialog": test_download_dialog,
+        }
+        action_func = actions.get(action)
+        if action_func:
+            action_func(params)
+
+
+def _route_source_manager(action, params):
+    from lib.gui.source_manager_dialog import open_source_manager_dialog
+
+    open_source_manager_dialog()
+
+
+def _route_core(action, params):
+    if action == "open_excluded_languages_dialog":
+        from lib.gui.excluded_languages_dialog import open_excluded_languages_dialog
+
+        open_excluded_languages_dialog()
+        return
+    if action == "choose_external_scraper":
+        from lib.gui.external_scraper_dialog import choose_external_scraper
+
+        choose_external_scraper()
+        return
+    if action == "open_external_scraper_settings":
+        from lib.gui.external_scraper_dialog import open_external_scraper_settings
+
+        open_external_scraper_settings()
+        return
+    if action in ("resolve_for_pack_selection", "resolve_for_subtitles"):
+        from lib.actions import resolve_for_pack_selection, resolve_for_subtitles
+
+        actions = {
+            "resolve_for_pack_selection": resolve_for_pack_selection,
+            "resolve_for_subtitles": resolve_for_subtitles,
+        }
+        actions[action](params)
+    elif action in ("show_episodes_details", "show_seasons_details"):
+        from lib.utils.views.shows import (
+            show_episodes_details,
+            show_seasons_details,
+        )
+
+        actions = {
+            "show_episodes_details": show_episodes_details,
+            "show_seasons_details": show_seasons_details,
+        }
+        actions[action](params)
+    elif action == "delete_last_title_entry":
+        from lib.utils.views.last_titles import delete_last_title_entry
+
+        delete_last_title_entry(params)
+    else:
+        from lib.navigation import (
+            add_to_library,
+            addon_update,
+            animation_item,
+            animation_menu,
+            anime_item,
+            anime_menu,
+            anime_search,
+            choose_view,
+            clear_library,
+            continue_watching_menu,
+            direct_menu,
+            donate,
+            easynews_info,
+            export_settings_backup,
+            factory_reset,
+            files_history,
+            history_menu,
+            kodi_logs,
+            library_calendar,
+            library_menu,
+            library_movies,
+            library_shows,
+            movies_items,
+            next_page_anime,
+            open_burst_config,
+            play_autoscraped,
+            play_from_pack,
+            play_media,
+            play_trailer,
+            play_url,
+            remove_from_continue_watching,
+            remove_from_library,
+            reset_all_settings,
+            reset_views,
+            restore_settings_backup,
+            save_view,
+            search,
+            search_direct,
+            search_item,
+            search_menu,
+            settings,
+            settings_menu,
+            show_changelog,
+            titles_calendar,
+            titles_history,
+            trakt_group_menu,
+            tv_menu,
+            tv_shows_items,
+            views_menu,
+        )
+
+        actions = {
+            "tv_shows_items": tv_shows_items,
+            "movies_items": movies_items,
+            "trakt_group_menu": trakt_group_menu,
+            "direct_menu": direct_menu,
+            "search_menu": search_menu,
+            "anime_menu": anime_menu,
+            "anime_item": anime_item,
+            "anime_search": anime_search,
+            "animation_menu": animation_menu,
+            "animation_item": animation_item,
+            "tv_menu": tv_menu,
+            "search": search,
+            "search_direct": search_direct,
+            "search_item": search_item,
+            "next_page_anime": next_page_anime,
+            "play_media": play_media,
+            "play_autoscraped": play_autoscraped,
+            "play_from_pack": play_from_pack,
+            "play_trailer": play_trailer,
+            "play_url": play_url,
+            "settings_menu": settings_menu,
+            "settings": settings,
+            "export_settings_backup": export_settings_backup,
+            "restore_settings_backup": restore_settings_backup,
+            "reset_all_settings": reset_all_settings,
+            "factory_reset": factory_reset,
+            "history_menu": history_menu,
+            "files_history": files_history,
+            "titles_history": titles_history,
+            "titles_calendar": titles_calendar,
+            "library_menu": library_menu,
+            "continue_watching_menu": continue_watching_menu,
+            "library_shows": library_shows,
+            "library_movies": library_movies,
+            "library_calendar": library_calendar,
+            "remove_from_library": remove_from_library,
+            "clear_library": clear_library,
+            "remove_continue_watching": remove_from_continue_watching,
+            "add_to_library": add_to_library,
+            "donate": donate,
+            "addon_update": addon_update,
+            "show_changelog": show_changelog,
+            "open_burst_config": open_burst_config,
+            "kodi_logs": kodi_logs,
+            "easynews_info": easynews_info,
+            "choose_view": choose_view,
+            "save_view": save_view,
+            "reset_views": reset_views,
+            "views_menu": views_menu,
+        }
+        action_func = actions.get(action)
+        if action_func:
+            action_func(params)
+
+
+ROUTE_GROUPS = (
+    (_is_stremio_action, _route_stremio),
+    (_is_tmdb_action, _route_tmdb),
+    (_is_trakt_action, _route_trakt),
+    (_is_simkl_action, _route_simkl),
+    (_is_nuvio_action, _route_nuvio),
+    (_is_debrid_action, _route_debrid),
+    (_is_telegram_action, _route_telegram),
+    (_is_torrserver_action, _route_torrserver),
+    (_is_webdav_action, _route_webdav),
+    (_is_download_action, _route_downloads),
+    (_is_mdblist_action, _route_mdblist),
+    (_is_cache_action, _route_cache),
+    (_is_gui_action, _route_gui),
+    (_is_source_manager_action, _route_source_manager),
+)

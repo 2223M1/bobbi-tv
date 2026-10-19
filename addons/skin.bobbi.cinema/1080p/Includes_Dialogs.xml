@@ -1,0 +1,470 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <!-- right-side sheet (720 wide) used by OSD tools, context actions, filters -->
+  <include name="SideSheet">
+    <param name="title" />
+    <param name="subtitle" />
+    <param name="width">720</param>
+    <definition>
+      <control type="group">
+        <right>0</right><top>0</top><width>$PARAM[width]</width><height>1080</height>
+        <include content="PanelOpen"><param name="slide">48,0</param></include>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[width]</width><height>1080</height>
+          <texture colordiffuse="panel">bobi/white.png</texture>
+        </control>
+        <control type="label">
+          <left>48</left><top>72</top><width>624</width><height>56</height>
+          <label>$PARAM[title]</label><font>Head40</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>48</left><top>128</top><width>624</width><height>36</height>
+          <label>$PARAM[subtitle]</label><font>Meta24</font><textcolor>text3</textcolor>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- sheet row: icon + label + value (right). focus = white fill -->
+  <include name="SheetRow">
+    <param name="id" />
+    <param name="icon" />
+    <param name="label" />
+    <param name="value" />
+    <param name="visible">true</param>
+    <param name="enable">true</param>
+    <param name="selected">false</param>
+    <param name="onclick">noop</param>
+    <param name="onclick2">noop</param>
+    <param name="onclick3">noop</param>
+    <definition>
+      <control type="group" id="$PARAM[id]9">
+        <width>624</width><height>88</height>
+        <visible>$PARAM[visible]</visible>
+        <control type="button" id="$PARAM[id]">
+          <left>0</left><top>0</top><width>624</width><height>88</height>
+          <label>$PARAM[label]</label>
+          <label2>$PARAM[value]</label2>
+          <font>Label28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+          <disabledcolor>text_disabled</disabledcolor>
+          <textoffsetx>80</textoffsetx><aligny>center</aligny>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+          <texturenofocus />
+          <enable>$PARAM[enable]</enable>
+          <onclick>$PARAM[onclick]</onclick>
+          <onclick>$PARAM[onclick2]</onclick>
+          <onclick>$PARAM[onclick3]</onclick>
+        </control>
+        <control type="image">
+          <left>24</left><top>26</top><width>36</width><height>36</height>
+          <texture colordiffuse="text2">$PARAM[icon]</texture>
+          <visible>!Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="image">
+          <left>24</left><top>26</top><width>36</width><height>36</height>
+          <texture colordiffuse="on_focus">$PARAM[icon]</texture>
+          <visible>Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>12</width><height>88</height>
+          <texture colordiffuse="accent">bobi/selected-bar.png</texture>
+          <visible>$PARAM[selected]</visible>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- centered modal panel -->
+  <include name="ModalPanel">
+    <param name="w">960</param>
+    <param name="h">560</param>
+    <param name="title" />
+    <definition>
+      <control type="group">
+        <centerleft>50%</centerleft><centertop>50%</centertop>
+        <width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <include content="PanelOpen"><param name="slide">0,16</param></include>
+        <control type="image">
+          <left>-28</left><top>-20</top><width>1016</width><height>616</height>
+          <texture colordiffuse="99000000" border="40">bobi/shadow-r14.png</texture>
+          <visible>false</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="surface" border="20">bobi/r20.png</texture>
+        </control>
+        <control type="label" id="1">
+          <left>48</left><top>36</top><width>864</width><height>52</height>
+          <label>$PARAM[title]</label><font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- footer button inside modal dialogs -->
+  <include name="DialogButton">
+    <param name="id" />
+    <param name="label" />
+    <param name="width">220</param>
+    <param name="visible">true</param>
+    <definition>
+      <control type="button" id="$PARAM[id]">
+        <width>$PARAM[width]</width><height>68</height>
+        <label>$PARAM[label]</label>
+        <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <disabledcolor>text_disabled</disabledcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="32">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi" border="32">bobi/pill.png</texturenofocus>
+        <visible>$PARAM[visible]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== right sheet shell for core dialogs (settings, select) =====
+       Video / page stays visible on the left; a soft shadow separates the sheet. -->
+  <include name="SheetShell">
+    <param name="width">840</param>
+    <param name="headingid">2</param>
+    <param name="heading" />
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture colordiffuse="66000000">bobi/white.png</texture>
+        <animation effect="fade" start="0" end="100" time="160">WindowOpen</animation>
+        <animation effect="fade" start="100" end="0" time="120">WindowClose</animation>
+      </control>
+      <control type="group">
+        <right>0</right><top>0</top><width>$PARAM[width]</width><height>1080</height>
+        <include content="PanelOpen"><param name="slide">48,0</param></include>
+        <control type="image">
+          <left>-160</left><top>0</top><width>160</width><height>1080</height>
+          <texture colordiffuse="80000000">bobi/fade-right.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[width]</width><height>1080</height>
+          <texture colordiffuse="FF121419">bobi/white.png</texture>
+        </control>
+        <control type="label" id="$PARAM[headingid]">
+          <left>48</left><top>64</top><width>744</width><height>56</height>
+          <label>$PARAM[heading]</label>
+          <font>Head40</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== templates for core-generated setting rows (DialogSettings family) =====
+       Focus = raised fill + white ring (text cannot recolour on spin/slider rows).
+       Value sits on the right; toggles are pills (accent = on). -->
+  <include name="SettingTemplates">
+    <param name="w">744</param>
+    <param name="radiox">652</param>
+    <definition>
+      <control type="button" id="7">
+        <width>$PARAM[w]</width><height>80</height>
+        <font>Label28</font><textcolor>text</textcolor><focusedcolor>text</focusedcolor><disabledcolor>text_disabled</disabledcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus border="20">bobi/row-focus.png</texturefocus>
+        <texturenofocus />
+      </control>
+      <control type="radiobutton" id="8">
+        <width>$PARAM[w]</width><height>80</height>
+        <font>Label28</font><textcolor>text</textcolor><focusedcolor>text</focusedcolor><disabledcolor>text_disabled</disabledcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus border="20">bobi/row-focus.png</texturefocus>
+        <texturenofocus />
+        <radioposx>$PARAM[radiox]</radioposx>
+        <radiowidth>64</radiowidth><radioheight>36</radioheight>
+        <textureradioonfocus colordiffuse="accent">bobi/toggle-on.png</textureradioonfocus>
+        <textureradioonnofocus colordiffuse="accent">bobi/toggle-on.png</textureradioonnofocus>
+        <textureradioofffocus colordiffuse="text2">bobi/toggle-off.png</textureradioofffocus>
+        <textureradiooffnofocus colordiffuse="text3">bobi/toggle-off.png</textureradiooffnofocus>
+        <textureradioondisabled colordiffuse="text_disabled">bobi/toggle-on.png</textureradioondisabled>
+        <textureradiooffdisabled colordiffuse="text_disabled">bobi/toggle-off.png</textureradiooffdisabled>
+      </control>
+      <control type="spincontrolex" id="9">
+        <width>$PARAM[w]</width><height>80</height>
+        <font>Label28</font><textcolor>text</textcolor><disabledcolor>text_disabled</disabledcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus border="20">bobi/row-focus.png</texturefocus>
+        <texturenofocus />
+        <spinwidth>32</spinwidth><spinheight>32</spinheight>
+        <reverse>yes</reverse>
+        <textureup colordiffuse="text3">bobi/icons/chevron-right.png</textureup>
+        <texturedown colordiffuse="text3">bobi/icons/chevron-left.png</texturedown>
+        <textureupfocus colordiffuse="focus">bobi/icons/chevron-right.png</textureupfocus>
+        <texturedownfocus colordiffuse="focus">bobi/icons/chevron-left.png</texturedownfocus>
+        <textureupdisabled colordiffuse="text_disabled">bobi/icons/chevron-right.png</textureupdisabled>
+        <texturedowndisabled colordiffuse="text_disabled">bobi/icons/chevron-left.png</texturedowndisabled>
+      </control>
+      <control type="image" id="11">
+        <width>$PARAM[w]</width><height>2</height>
+        <texture colordiffuse="surface_line">bobi/white.png</texture>
+      </control>
+      <control type="edit" id="12">
+        <width>$PARAM[w]</width><height>80</height>
+        <font>Label28</font><textcolor>text</textcolor><disabledcolor>text_disabled</disabledcolor><invalidcolor>error</invalidcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus border="20">bobi/row-focus.png</texturefocus>
+        <texturenofocus />
+      </control>
+      <control type="sliderex" id="13">
+        <width>$PARAM[w]</width><height>80</height>
+        <font>Label28</font><textcolor>text</textcolor><disabledcolor>text_disabled</disabledcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus border="20">bobi/row-focus.png</texturefocus>
+        <texturenofocus />
+        <sliderwidth>240</sliderwidth><sliderheight>24</sliderheight>
+        <texturesliderbar colordiffuse="4DFFFFFF" border="12,0,12,0">bobi/slider-track.png</texturesliderbar>
+        <texturesliderbardisabled colordiffuse="1AFFFFFF" border="12,0,12,0">bobi/slider-track.png</texturesliderbardisabled>
+        <textureslidernib colordiffuse="text2">bobi/dot.png</textureslidernib>
+        <textureslidernibfocus colordiffuse="accent">bobi/dot.png</textureslidernibfocus>
+        <textureslidernibdisabled colordiffuse="text_disabled">bobi/dot.png</textureslidernibdisabled>
+      </control>
+      <control type="label" id="14">
+        <width>$PARAM[w]</width><height>64</height>
+        <font>Label24</font><textcolor>accent_text</textcolor>
+        <textoffsetx>28</textoffsetx><aligny>bottom</aligny>
+      </control>
+      <control type="colorbutton" id="15">
+        <width>$PARAM[w]</width><height>80</height>
+        <font>Label28</font><textcolor>text</textcolor><disabledcolor>text_disabled</disabledcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus border="20">bobi/row-focus.png</texturefocus>
+        <texturenofocus />
+        <colorwidth>64</colorwidth><colorheight>36</colorheight>
+        <texturecolormask>bobi/pill.png</texturecolormask>
+        <texturecolordisabledmask colordiffuse="text_disabled">bobi/pill.png</texturecolordisabledmask>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== list row for select-style lists (I own the layout, so focus = white fill) ===== -->
+  <include name="SelectRow">
+    <param name="w">744</param>
+    <param name="h">80</param>
+    <param name="focused">false</param>
+    <param name="list">3</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>4</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="focus" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>4</top><width>12</width><height>$PARAM[h]</height>
+        <texture colordiffuse="accent">bobi/selected-bar.png</texture>
+        <visible>ListItem.IsSelected + ![$PARAM[focused] + Control.HasFocus($PARAM[list])]</visible>
+      </control>
+      <control type="label">
+        <left>28</left><top>4</top><width>600</width><height>$PARAM[h]</height>
+        <label>$INFO[ListItem.Label]</label>
+        <font>Label28</font><textcolor>text</textcolor><aligny>center</aligny>
+        <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+      </control>
+      <control type="label">
+        <left>28</left><top>4</top><width>600</width><height>$PARAM[h]</height>
+        <label>$INFO[ListItem.Label]</label>
+        <font>Label28</font><textcolor>on_focus</textcolor><aligny>center</aligny><scroll>true</scroll>
+        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+      </control>
+      <control type="image">
+        <right>24</right><top>28</top><width>32</width><height>32</height>
+        <texture colordiffuse="accent">bobi/icons/check.png</texture>
+        <visible>ListItem.IsSelected</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- select dialog sheet (DialogSelect default case) -->
+  <include name="BobiSelectSheet">
+    <control type="group">
+      <include content="SheetShell"><param name="width">840</param><param name="headingid">1</param></include>
+      <control type="group">
+        <right>0</right><top>0</top><width>840</width><height>1080</height>
+        <include content="PanelOpen"><param name="slide">48,0</param></include>
+        <control type="label" id="2">
+          <left>48</left><top>120</top><width>744</width><height>34</height>
+          <font>Meta24</font><textcolor>text3</textcolor>
+        </control>
+        <control type="list" id="3">
+          <left>48</left><top>172</top><width>744</width><height>784</height>
+          <orientation>vertical</orientation>
+          <scrolltime tween="cubic" easing="out">160</scrolltime>
+          <pagecontrol>61</pagecontrol>
+          <onleft>noop</onleft><onright>61</onright>
+          <onup>3</onup><ondown>9000</ondown>
+          <itemlayout width="744" height="88"><include content="SelectRow" /></itemlayout>
+          <focusedlayout width="744" height="88"><include content="SelectRow"><param name="focused">true</param></include></focusedlayout>
+        </control>
+        <control type="list" id="6">
+          <left>48</left><top>172</top><width>744</width><height>784</height>
+          <orientation>vertical</orientation>
+          <scrolltime tween="cubic" easing="out">160</scrolltime>
+          <pagecontrol>61</pagecontrol>
+          <onleft>noop</onleft><onright>61</onright>
+          <onup>6</onup><ondown>9000</ondown>
+          <itemlayout width="744" height="112"><include content="SelectRowDetailed" /></itemlayout>
+          <focusedlayout width="744" height="112"><include content="SelectRowDetailed"><param name="focused">true</param></include></focusedlayout>
+        </control>
+        <control type="scrollbar" id="61">
+          <left>808</left><top>176</top><width>4</width><height>776</height>
+          <orientation>vertical</orientation>
+          <showonepage>false</showonepage>
+          <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+          <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+          <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+          <onleft>3</onleft>
+        </control>
+        <control type="grouplist" id="9000">
+          <left>48</left><top>972</top><width>744</width><height>68</height>
+          <orientation>horizontal</orientation><itemgap>12</itemgap>
+          <onup>3</onup><onleft>noop</onleft><onright>noop</onright>
+          <include content="DialogButton"><param name="id">5</param><param name="width">220</param></include>
+          <include content="DialogButton"><param name="id">8</param><param name="width">220</param></include>
+          <include content="DialogButton"><param name="id">7</param><param name="width">220</param></include>
+        </control>
+      </control>
+    </control>
+  </include>
+
+  <!-- detailed select row: icon/thumb + label + label2 -->
+  <include name="SelectRowDetailed">
+    <param name="focused">false</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>4</top><width>744</width><height>104</height>
+        <texture colordiffuse="focus" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused] + Control.HasFocus(6)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>4</top><width>12</width><height>104</height>
+        <texture colordiffuse="accent">bobi/selected-bar.png</texture>
+        <visible>ListItem.IsSelected + ![$PARAM[focused] + Control.HasFocus(6)]</visible>
+      </control>
+      <control type="image">
+        <left>24</left><top>20</top><width>72</width><height>72</height>
+        <aspectratio>keep</aspectratio>
+        <texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+        <visible>!String.IsEmpty(ListItem.Art(thumb))</visible>
+      </control>
+      <control type="grouplist">
+        <left>24</left><top>16</top><width>690</width><height>84</height>
+        <orientation>vertical</orientation><itemgap>0</itemgap>
+        <animation effect="slide" end="88,0" time="0" condition="!String.IsEmpty(ListItem.Art(thumb))">Conditional</animation>
+        <control type="label">
+          <width>600</width><height>44</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>text</textcolor><aligny>center</aligny>
+          <visible>!$PARAM[focused] | !Control.HasFocus(6)</visible>
+        </control>
+        <control type="label">
+          <width>600</width><height>44</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>on_focus</textcolor><aligny>center</aligny><scroll>true</scroll>
+          <visible>$PARAM[focused] + Control.HasFocus(6)</visible>
+        </control>
+        <control type="label">
+          <width>600</width><height>36</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+          <visible>!$PARAM[focused] | !Control.HasFocus(6)</visible>
+        </control>
+        <control type="label">
+          <width>600</width><height>36</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>Meta22</font><textcolor>B30A0B0E</textcolor><aligny>center</aligny>
+          <visible>$PARAM[focused] + Control.HasFocus(6)</visible>
+        </control>
+      </control>
+      <control type="image">
+        <right>24</right><top>40</top><width>32</width><height>32</height>
+        <texture colordiffuse="accent">bobi/icons/check.png</texture>
+        <visible>ListItem.IsSelected</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== settings hub tile ===== -->
+  <include name="SettingsTile">
+    <param name="focused">false</param>
+    <definition>
+      <control type="group">
+        <left>24</left><top>16</top>
+        <control type="image">
+          <left>0</left><top>0</top><width>420</width><height>204</height>
+          <texture colordiffuse="surface" border="20">bobi/r20.png</texture>
+          <visible>!$PARAM[focused] | !Control.HasFocus(9000)</visible>
+        </control>
+        <control type="group">
+          <visible>$PARAM[focused] + Control.HasFocus(9000)</visible>
+          <include content="Lift"><param name="center">210,102</param><param name="zoom">104</param></include>
+          <control type="image">
+            <left>0</left><top>0</top><width>420</width><height>204</height>
+            <texture colordiffuse="focus" border="20">bobi/r20.png</texture>
+          </control>
+          <control type="image">
+            <left>32</left><top>32</top><width>48</width><height>48</height>
+            <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>32</left><top>104</top><width>360</width><height>48</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Head34</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>32</left><top>150</top><width>360</width><height>34</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>Meta22</font><textcolor>B30A0B0E</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+        <control type="group">
+          <visible>!$PARAM[focused] | !Control.HasFocus(9000)</visible>
+          <control type="image">
+            <left>32</left><top>32</top><width>48</width><height>48</height>
+            <texture colordiffuse="text2">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>32</left><top>104</top><width>360</width><height>48</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>32</left><top>150</top><width>360</width><height>34</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== skin setting toggle row (direct radiobutton: navigable in a grouplist) ===== -->
+  <include name="SkinToggle">
+    <param name="id" />
+    <param name="setting" />
+    <param name="label" />
+    <param name="hint" />
+    <param name="invert">false</param>
+    <definition>
+      <control type="radiobutton" id="$PARAM[id]">
+        <left>0</left><top>0</top>
+        <width>1100</width><height>88</height>
+        <label>$PARAM[label]</label>
+        <font>Label30</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus />
+        <radioposx>1000</radioposx>
+        <radiowidth>64</radiowidth><radioheight>36</radioheight>
+        <textureradioonfocus colordiffuse="accent">bobi/toggle-on.png</textureradioonfocus>
+        <textureradioonnofocus colordiffuse="accent">bobi/toggle-on.png</textureradioonnofocus>
+        <textureradioofffocus colordiffuse="on_focus">bobi/toggle-off.png</textureradioofffocus>
+        <textureradiooffnofocus colordiffuse="text3">bobi/toggle-off.png</textureradiooffnofocus>
+        <selected>[!$PARAM[invert] + Skin.HasSetting($PARAM[setting])] | [$PARAM[invert] + !Skin.HasSetting($PARAM[setting])]</selected>
+        <onclick>Skin.ToggleSetting($PARAM[setting])</onclick>
+      </control>
+    </definition>
+  </include>
+</includes>

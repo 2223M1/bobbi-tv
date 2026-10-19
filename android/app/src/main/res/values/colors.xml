@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Exact design tokens from the reviewed new cinema skin, not legacy Minsk. -->
+    <color name="cinema_bg">#0A0B0E</color>
+    <color name="cinema_surface">#15171C</color>
+    <color name="cinema_surface_hi">#1E2128</color>
+    <color name="cinema_line">#2A2E37</color>
+    <color name="cinema_text">#F5F3EF</color>
+    <color name="cinema_text_secondary">#B4B2AD</color>
+    <color name="cinema_text_muted">#7E7D79</color>
+    <color name="cinema_disabled">#54545A</color>
+    <color name="cinema_focus">#FFFFFF</color>
+    <color name="cinema_accent">#FF8A3D</color>
+    <color name="cinema_accent_text">#FFB27F</color>
+</resources>

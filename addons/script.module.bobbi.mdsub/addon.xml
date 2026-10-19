@@ -1,0 +1,9 @@
+<addon id="script.module.bobbi.mdsub" name="AM6B 漫迪片库" version="0.1.0" provider-name="AM6B">
+  <requires><import addon="xbmc.python" version="3.0.0" /></requires>
+  <extension point="xbmc.python.module" library="lib" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">将漫迪公开片库加入现有影院选源</summary>
+    <description lang="zh_CN">按 TMDb 作品身份、季集和版本匹配。仅添加可选直连来源，不自动换源，不转存、不创建云任务。目录快照可独立更新；字幕组和画质以原始文件名为准，实际字幕需播放验收。</description>
+    <license>MIT</license><platform>all</platform>
+  </extension>
+</addon>

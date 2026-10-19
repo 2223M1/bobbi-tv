@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Source filter: choose a value (Jacktook FilterWindow, picked by position). Right sheet over the picker.
+     Ids: 2000 list (required), 2100 scrollbar, 1210 hint label. -->
+<window type="dialog">
+  <defaultcontrol always="true">2000</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <animation effect="fade" start="0" end="100" time="160">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="66000000">bobi/white.png</texture>
+    </control>
+    <control type="group">
+      <left>1200</left><top>0</top>
+      <animation type="WindowOpen" reversible="false">
+        <effect type="slide" start="48,0" end="0,0" time="200" tween="cubic" easing="out" />
+      </animation>
+      <control type="image">
+        <left>-160</left><top>0</top><width>160</width><height>1080</height>
+        <texture colordiffuse="80000000">bobi/fade-right.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>720</width><height>1080</height>
+        <texture colordiffuse="FC121419">bobi/white.png</texture>
+      </control>
+      <control type="label">
+        <left>48</left><top>64</top><width>624</width><height>56</height>
+        <label>选择条件</label>
+        <font>Head40</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label" id="1200">
+        <left>48</left><top>120</top><width>624</width><height>34</height>
+        <label>确认 应用   ·   返回 上一步</label>
+        <font>Meta24</font><textcolor>FF7E7D79</textcolor>
+      </control>
+      <control type="list" id="2000">
+        <left>48</left><top>184</top><width>624</width><height>840</height>
+        <orientation>vertical</orientation>
+        <scrolltime tween="cubic" easing="out">160</scrolltime>
+        <pagecontrol>2100</pagecontrol>
+        <onleft>noop</onleft><onright>2100</onright>
+        <itemlayout width="624" height="88">
+          <control type="label">
+            <left>28</left><top>4</top><width>520</width><height>80</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Label28</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+          </control>
+        </itemlayout>
+        <focusedlayout width="624" height="88">
+          <control type="image">
+            <left>0</left><top>4</top><width>624</width><height>80</height>
+            <texture colordiffuse="FFFFFFFF" border="14">bobi/r14.png</texture>
+            <visible>Control.HasFocus(2000)</visible>
+          </control>
+          <control type="label">
+            <left>28</left><top>4</top><width>520</width><height>80</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Label28</font><textcolor>FF0A0B0E</textcolor><aligny>center</aligny>
+            <visible>Control.HasFocus(2000)</visible>
+          </control>
+          <control type="label">
+            <left>28</left><top>4</top><width>520</width><height>80</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Label28</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+            <visible>!Control.HasFocus(2000)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="scrollbar" id="2100">
+        <left>688</left><top>188</top><width>4</width><height>832</height>
+        <orientation>vertical</orientation><showonepage>false</showonepage>
+        <onleft>2000</onleft>
+        <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+      </control>
+    </control>
+  </controls>
+</window>

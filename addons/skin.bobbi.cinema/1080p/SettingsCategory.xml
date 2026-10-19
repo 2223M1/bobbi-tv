@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">3</defaultcontrol>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <control type="image">
+      <left>0</left><top>0</top><width>560</width><height>1080</height>
+      <texture colordiffuse="surface">bobi/white.png</texture>
+    </control>
+    <!-- left column -->
+    <control type="group">
+      <left>72</left><top>0</top>
+      <control type="label">
+        <left>24</left><top>64</top><width>440</width><height>56</height>
+        <label>$VAR[SettingsSectionTitle]</label>
+        <font>Head40</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="grouplist" id="3">
+        <left>0</left><top>152</top><width>440</width><height>760</height>
+        <orientation>vertical</orientation><itemgap>4</itemgap>
+        <usecontrolcoords>true</usecontrolcoords>
+        <onleft>noop</onleft><onright>5</onright>
+        <onup>3</onup><ondown>20</ondown>
+      </control>
+      <control type="button" id="10">
+        <width>440</width><height>76</height>
+        <font>Label30</font><textcolor>text2</textcolor><focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus />
+      </control>
+      <control type="radiobutton" id="20">
+        <left>0</left><top>936</top><width>440</width><height>76</height>
+        <font>Label24</font><textcolor>text3</textcolor><focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus />
+        <radiowidth>1</radiowidth><radioheight>1</radioheight>
+        <textureradioonfocus /><textureradioonnofocus /><textureradioofffocus /><textureradiooffnofocus />
+        <onclick>SettingsLevelChange</onclick>
+        <onup>3</onup><ondown>noop</ondown><onright>5</onright><onleft>noop</onleft>
+      </control>
+    </control>
+    <!-- right column -->
+    <!-- Native id 2 contains the section name, already shown at left. -->
+    <control type="label" id="2"><visible>false</visible></control>
+    <control type="label">
+      <label>设置选项</label>
+      <left>624</left><top>64</top><width>1200</width><height>56</height>
+      <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+    </control>
+    <control type="grouplist" id="5">
+      <left>624</left><top>152</top><width>1200</width><height>720</height>
+      <orientation>vertical</orientation><itemgap>4</itemgap>
+      <pagecontrol>60</pagecontrol>
+      <scrolltime tween="cubic" easing="out">160</scrolltime>
+      <onleft>3</onleft><onright>noop</onright>
+      <onup>5</onup><ondown>5</ondown>
+    </control>
+    <control type="scrollbar" id="60">
+      <left>1840</left><top>156</top><width>4</width><height>712</height>
+      <orientation>vertical</orientation><showonepage>false</showonepage>
+      <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+      <onleft>5</onleft>
+    </control>
+    <control type="image">
+      <left>624</left><top>892</top><width>1200</width><height>2</height>
+      <texture colordiffuse="surface_line">bobi/white.png</texture>
+    </control>
+    <control type="textbox" id="6">
+      <left>652</left><top>912</top><width>1144</width><height>112</height>
+      <font>Meta24</font><textcolor>text2</textcolor>
+    </control>
+    <control type="group">
+      <left>-3000</left>
+      <include content="SettingTemplates"><param name="w">1200</param><param name="radiox">1108</param></include>
+    </control>
+  </controls>
+</window>

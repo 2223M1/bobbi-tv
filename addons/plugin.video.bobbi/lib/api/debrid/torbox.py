@@ -1,0 +1,269 @@
+import datetime
+
+import requests
+from requests.adapters import HTTPAdapter
+
+from lib.api.debrid.base import DebridClient, ProviderException
+from lib.services.debrid.auth import run_torbox_auth
+from lib.utils.kodi.utils import (
+    dialog_ok,
+    kodilog,
+    notification,
+    set_setting,
+    translation,
+)
+
+
+class Torbox(DebridClient):
+    def __init__(self, token, timeout=15):
+        session = requests.Session()
+        adapter = HTTPAdapter(max_retries=1)
+        session.mount("https://", adapter)
+        super().__init__(token, timeout, session)
+
+    BASE_URL = "https://api.torbox.app/v1/api"
+
+    def initialize_headers(self):
+        self.headers = {
+            "User-Agent": "Jacktook/1.0",
+            "Accept": "application/json",
+        }
+        if self.token:
+            self.headers["Authorization"] = f"Bearer {self.token}"
+
+    def disable_access_token(self):
+        pass
+
+    def _handle_service_specific_errors(self, error_data: dict, status_code: int):
+        error_code = error_data.get("error")
+        if error_code in {"BAD_TOKEN", "AUTH_ERROR", "OAUTH_VERIFICATION_ERROR"}:
+            raise ProviderException("Invalid Torbox token")
+        elif error_code == "DOWNLOAD_TOO_LARGE":
+            raise ProviderException("Download size too large for the user plan")
+        elif error_code in {"ACTIVE_LIMIT", "MONTHLY_LIMIT"}:
+            raise ProviderException("Download limit exceeded")
+        elif error_code in {"DOWNLOAD_SERVER_ERROR", "DATABASE_ERROR"}:
+            raise ProviderException("Torbox server error")
+
+    def _make_request(
+        self,
+        method,
+        url,
+        data=None,
+        params=None,
+        json=None,
+        is_return_none=False,
+        is_expected_to_fail=False,
+    ):
+        params = params or {}
+        url = self.BASE_URL + url
+        response = self._perform_request(method, url, data, params, json)
+        validated_response = self._validate_error_response(response)
+        if validated_response is not None:
+            return validated_response
+        self._handle_errors(response, is_expected_to_fail)
+        return self._parse_response(response, is_return_none)
+
+    def _validate_error_response(self, response):
+        if response.ok:
+            return None
+
+        content_type = response.headers.get("Content-Type", "")
+        if not content_type.startswith("application/json"):
+            return None
+
+        try:
+            error_data = response.json()
+        except ValueError:
+            return None
+
+        if not isinstance(error_data, dict):
+            return None
+
+        error_code = error_data.get("error", "")
+        error_detail = str(error_data.get("detail", "")).lower()
+
+        if (
+            response.status_code == 400
+            and error_code == "DIFF_ISSUE"
+            and "already queued" in error_detail
+        ):
+            kodilog(
+                "Torbox._validate_error_response: treating duplicate queued torrent as recoverable state"
+            )
+            normalized = dict(error_data)
+            normalized["success"] = True
+            normalized["queued"] = True
+            return normalized
+
+        return None
+
+    def add_magnet_link(self, magnet_link):
+        return self._make_request(
+            "POST",
+            "/torrents/createtorrent",
+            data={"magnet": magnet_link, "seed": 3, "allow_zip": "false"},
+            is_expected_to_fail=False,
+        )
+
+    def add_torrent_file(self, torrent_data, torrent_name="torrent.torrent"):
+        response = self.session.request(
+            method="POST",
+            url=f"{self.BASE_URL}/torrents/createtorrent",
+            data={
+                "seed": 3,
+                "allow_zip": "false",
+                "name": torrent_name or "torrent.torrent",
+            },
+            files={
+                "file": (
+                    torrent_name or "torrent.torrent",
+                    torrent_data,
+                    "application/x-bittorrent",
+                )
+            },
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        self._handle_errors(response, is_expected_to_fail=False)
+        return self._parse_response(response, is_return_none=False)
+
+    def get_user_torrent_list(self):
+        try:
+            return self._make_request(
+                "GET",
+                "/torrents/mylist",
+                params={"bypass_cache": "true"},
+            )
+        except ProviderException as exc:
+            if "Request timed out" in str(exc):
+                raise ProviderException(
+                    "Torbox timed out while checking your cloud torrents. Please try again."
+                ) from exc
+            raise
+
+    def get_torrent_info(self, magnet_id):
+        response = self.get_user_torrent_list()
+        torrent_list = response.get("data", {})
+        for torrent in torrent_list:
+            if torrent.get("magnet", "") == magnet_id:
+                return torrent
+
+    def get_available_torrent(self, info_hash):
+        try:
+            response = self.get_user_torrent_list()
+        except ProviderException:
+            raise
+        torrent_list = response.get("data", {})
+        for torrent in torrent_list:
+            if torrent.get("hash", "") == info_hash:
+                return torrent
+
+    def get_torrent_instant_availability(self, torrent_hashes):
+        return self._make_request(
+            "POST",
+            "/torrents/checkcached",
+            params={"format": "list"},
+            json={"hashes": torrent_hashes},
+        )
+
+    def create_download_link(self, torrent_id, filename, user_ip=None):
+        params = {
+            "token": self.token,
+            "torrent_id": torrent_id,
+            "file_id": filename,
+        }
+        if user_ip:
+            params["user_ip"] = user_ip
+
+        response = self._make_request(
+            "GET",
+            "/torrents/requestdl",
+            params=params,
+            is_expected_to_fail=True,
+        )
+        if response.get("success"):
+            return response
+        else:
+            detail = response.get("detail", "Unknown error")
+            notification(f"Failed to create download link: {detail}")
+            return None
+
+    def delete_torrent(self, torrent_id):
+        self._make_request(
+            "POST",
+            "/torrents/controltorrent",
+            data={"torrent_id": torrent_id, "operation": "Delete"},
+            is_expected_to_fail=False,
+        )
+
+    def download(self, magnet_link):
+        pass
+
+    def get_device_code(self):
+        return self._make_request(
+            "GET",
+            "/user/auth/device/start",
+            params={"app": "Jacktook"},
+        )
+
+    def get_token(self, device_code, is_expected_to_fail=False):
+        return self._make_request(
+            "POST",
+            "/user/auth/device/token",
+            json={"device_code": device_code},
+            is_expected_to_fail=is_expected_to_fail,
+        )
+
+    def authorize(self, device_code):
+        response_data = self.get_token(device_code, is_expected_to_fail=True)
+        if response_data.get("success"):
+            token_data = response_data.get("data", {})
+            if isinstance(token_data, dict):
+                return {"token": token_data.get("access_token")}
+            return {"token": token_data}
+        return response_data
+
+    def remove_auth(self):
+        self.token = ""
+        set_setting("torbox_token", "")
+        set_setting("torbox_user", "")
+        set_setting("torbox_enabled", "false")
+        dialog_ok(translation(90544), translation(90561))
+
+    def auth(self):
+        run_torbox_auth(self)
+
+    def get_user(self):
+        return self._make_request("GET", "/user/me")
+
+    def days_remaining(self):
+        try:
+            account_info = self.get_user()
+            if not account_info.get("success"):
+                return None
+
+            data = account_info.get("data", {})
+            expires_at = data.get("premium_expires_at")
+            if not expires_at:
+                return None
+
+            # Try common ISO formats
+            for fmt in (
+                "%Y-%m-%dT%H:%M:%S.%fZ",
+                "%Y-%m-%dT%H:%M:%SZ",
+                "%Y-%m-%dT%H:%M:%S",
+            ):
+                try:
+                    expires = datetime.datetime.strptime(expires_at, fmt)
+                    break
+                except ValueError:
+                    continue
+            else:
+                return None
+
+            days = (expires - datetime.datetime.utcnow()).days
+            return days
+        except Exception as e:
+            kodilog(f"Error calculating days remaining: {e}")
+            return None

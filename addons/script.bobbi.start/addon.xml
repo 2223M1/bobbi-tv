@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="script.bobbi.start" version="0.1.0" name="bobbi 开始使用" provider-name="bobbi TV contributors">
+  <requires>
+    <import addon="xbmc.python" version="3.0.1"/>
+    <import addon="script.bobbi.setup" version="0.1.0"/>
+    <import addon="skin.bobbi.cinema" version="0.1.0"/>
+  </requires>
+  <extension point="xbmc.python.script" library="default.py"><provides>executable</provides></extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="zh_CN">安装整套波比影院，跟着提示连接自己的媒体</summary>
+    <description lang="zh_CN">自动安装影院、皮肤、片库与设置向导。不刷机，不覆盖个人账号，不改变音画设置。Android 需另装本机助手以使用 BT；网盘和 NAS 可直接使用。公开测试版，实机能力以发行说明为准。</description>
+    <license>GPL-3.0-or-later</license><platform>all</platform>
+    <source>https://github.com/2223M1/bobbi-tv</source>
+  </extension>
+</addon>

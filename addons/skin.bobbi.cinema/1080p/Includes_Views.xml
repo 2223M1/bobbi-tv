@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <variable name="DirHeading">
+    <value condition="Container.Content(episodes) + !String.IsEmpty(ListItem.TVShowTitle)">$INFO[ListItem.TVShowTitle]</value>
+    <value condition="Container.Content(seasons) + !String.IsEmpty(ListItem.TVShowTitle)">$INFO[ListItem.TVShowTitle]</value>
+    <value condition="[Container.Content(seasons) | Container.Content(episodes)] + !String.IsEmpty(Container.FolderName)">$INFO[Container.FolderName]</value>
+    <value condition="!String.IsEmpty(Container.PluginCategory)">$INFO[Container.PluginCategory]</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiSection),tv)">电视剧</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiSection),movie)">电影</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiSection),anime)">动漫</value>
+    <value condition="String.IsEqual(Window(Home).Property(BobiSection),mine)">我的</value>
+    <value>$INFO[Container.FolderName]</value>
+  </variable>
+  <variable name="DirKicker">
+    <value condition="Container.Content(seasons)">选择季</value>
+    <value condition="Container.Content(episodes)">$VAR[SeasonLabel]   ·   选择集</value>
+  </variable>
+  <variable name="WallSubline">
+    <value condition="Container.Content(seasons)">$INFO[ListItem.Year]$INFO[ListItem.Property(Bobi.EpisodeCount),  ·  共 , 集]</value>
+    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0)">已看 $INFO[ListItem.Property(PercentPlayed)]%</value>
+    <value condition="Integer.IsGreater(ListItem.PercentPlayed,0)">已看 $INFO[ListItem.PercentPlayed]%</value>
+    <value condition="!String.IsEmpty(ListItem.Season) + Container.Content(tvshows)">$INFO[ListItem.Year]  ·  第$INFO[ListItem.Season]季</value>
+    <value>$INFO[ListItem.Year]</value>
+  </variable>
+  <variable name="WallTitle">
+    <value condition="Container.Content(seasons)">$VAR[SeasonLabel]</value>
+    <value>$VAR[TitlePrimary]</value>
+  </variable>
+  <variable name="EpisodeMeta">
+    <value>$INFO[ListItem.Duration(mins),, 分钟]$INFO[ListItem.Premiered,   ·   ]$INFO[ListItem.Rating,   ·   ★ ]</value>
+  </variable>
+
+  <!-- ===== header band ===== -->
+  <include name="DirectoryHeader">
+    <!-- focused item's art, quiet, top-right -->
+    <control type="group">
+      <visible>!Container.Content(episodes)</visible>
+      <control type="image">
+        <left>760</left><top>0</top><width>1160</width><height>652</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" colordiffuse="B3FFFFFF">$VAR[FanartImage]</texture>
+        <include>ArtFade</include>
+      </control>
+    </control>
+    <control type="group">
+      <visible>Container.Content(episodes)</visible>
+      <control type="image">
+        <left>760</left><top>0</top><width>1160</width><height>652</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" colordiffuse="99FFFFFF">$INFO[ListItem.Art(tvshow.fanart)]</texture>
+        <include>ArtFade</include>
+      </control>
+    </control>
+    <control type="image">
+      <left>760</left><top>0</top><width>900</width><height>652</height>
+      <texture colordiffuse="bg">bobi/scrim-left.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>140</top><width>1920</width><height>520</height>
+      <texture colordiffuse="bg">bobi/scrim-bottom.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>180</height>
+      <texture colordiffuse="bg">bobi/scrim-top.png</texture>
+    </control>
+
+    <control type="group">
+      <left>96</left><top>128</top>
+      <!-- kicker (season / episode context) -->
+      <control type="label">
+        <left>0</left><top>0</top><width>1200</width><height>32</height>
+        <label>$VAR[DirKicker]</label>
+        <font>Label24</font><textcolor>accent_text</textcolor>
+      </control>
+      <!-- heading -->
+      <control type="label">
+        <left>0</left><top>30</top><width>1300</width><height>64</height>
+        <label>$VAR[DirHeading]</label>
+        <font>Display56</font><textcolor>text</textcolor><shadowcolor>80000000</shadowcolor>
+        <aligny>center</aligny>
+      </control>
+      <!-- focused item strip (walls) -->
+      <control type="grouplist">
+        <left>2</left><top>100</top><width>1500</width><height>44</height>
+        <orientation>horizontal</orientation><itemgap>18</itemgap>
+        <usecontrolcoords>true</usecontrolcoords>
+        <visible>!Container.Content(episodes) + !String.IsEmpty(Container.Content)</visible>
+        <control type="label">
+          <width>auto</width><height>44</height>
+          <label>$VAR[TitlePrimary]</label>
+          <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+          <visible>!Container.Content(seasons)</visible>
+        </control>
+        <control type="label">
+          <width>auto</width><height>44</height>
+          <label>$VAR[TitleSecondary]</label>
+          <font>Label24</font><textcolor>text2</textcolor><aligny>center</aligny>
+          <visible>!Container.Content(seasons)</visible>
+        </control>
+        <control type="label">
+          <width>auto</width><height>44</height>
+          <label>$VAR[SeasonLabel]</label>
+          <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+          <visible>Container.Content(seasons)</visible>
+        </control>
+        <control type="label">
+          <width>auto</width><height>44</height>
+          <label>$INFO[ListItem.Year]$INFO[ListItem.Genre,   ·   ]$INFO[ListItem.Rating,   ·   ★ ]</label>
+          <font>Label24</font><textcolor>text3</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    </control>
+    <!-- position -->
+    <control type="label">
+      <left>1424</left><top>128</top><width>400</width><height>32</height>
+      <label>$INFO[Container.CurrentItem]$INFO[Container.NumItems, / ,]</label>
+      <font>Label24</font><textcolor>text3</textcolor><align>right</align><aligny>center</aligny>
+      <visible>Integer.IsGreater(Container.NumItems,0)</visible>
+    </control>
+  </include>
+
+  <!-- ===== tiles ===== -->
+  <include name="WallTile">
+    <param name="focused">false</param>
+    <definition>
+      <control type="group">
+        <left>23</left><top>14</top>
+        <control type="group">
+          <visible>$PARAM[focused]</visible>
+          <include content="CardShadow"><param name="w">256</param><param name="h">344</param></include>
+        </control>
+        <include content="PosterArt"><param name="w">200</param><param name="h">300</param></include>
+        <include content="ArtBadges"><param name="barw">168</param><param name="bary">282</param></include>
+        <control type="group">
+          <visible>$PARAM[focused]</visible>
+          <include content="FocusRing"><param name="w">216</param><param name="h">316</param></include>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="WallCaption">
+    <param name="focused">false</param>
+    <param name="color">text2</param>
+    <definition>
+      <control type="label">
+        <left>23</left><top>334</top><width>200</width><height>32</height>
+        <label>$VAR[WallTitle]</label>
+        <font>Label24</font><textcolor>$PARAM[color]</textcolor><aligny>center</aligny>
+        <scroll>$PARAM[focused]</scroll>
+      </control>
+      <control type="label">
+        <left>23</left><top>362</top><width>200</width><height>28</height>
+        <label>$VAR[WallSubline]</label>
+        <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+      </control>
+    </definition>
+  </include>
+
+  <include name="EpisodeRow">
+    <param name="focused">false</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>4</top><width>1728</width><height>196</height>
+        <texture colordiffuse="surface_hi" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="group">
+        <left>16</left><top>12</top>
+        <control type="image">
+          <left>0</left><top>0</top><width>320</width><height>180</height>
+          <texture colordiffuse="surface" border="12">bobi/r10.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>320</width><height>180</height>
+          <aspectratio scalediffuse="false">scale</aspectratio>
+          <texture background="true" diffuse="bobi/mask-320x180.png">$VAR[LandscapeImage]</texture>
+          <include>ArtFade</include>
+        </control>
+        <include content="ArtBadges"><param name="barw">288</param><param name="bary">164</param></include>
+        <control type="group">
+          <visible>$PARAM[focused]</visible>
+          <include content="FocusRing"><param name="w">336</param><param name="h">196</param></include>
+        </control>
+      </control>
+      <control type="label">
+        <left>368</left><top>16</top><width>1200</width><height>44</height>
+        <label>[COLOR accent_text]$VAR[EpisodeLabel][/COLOR]$VAR[EpisodeTitleSep]</label>
+        <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+        <scroll>$PARAM[focused]</scroll>
+      </control>
+      <control type="label">
+        <left>368</left><top>62</top><width>1200</width><height>32</height>
+        <label>$VAR[EpisodeMeta]</label>
+        <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+      </control>
+      <control type="textbox">
+        <left>368</left><top>102</top><width>1240</width><height>72</height>
+        <label>$INFO[ListItem.Plot]</label>
+        <font>Meta24</font><textcolor>text2</textcolor>
+      </control>
+      <control type="group">
+        <visible>Integer.IsGreater(ListItem.PlayCount,0) + !Integer.IsGreater(ListItem.PercentPlayed,0) + !Integer.IsGreater(ListItem.Property(PercentPlayed),0)</visible>
+        <control type="image">
+          <left>1648</left><top>22</top><width>32</width><height>32</height>
+          <texture colordiffuse="ok">bobi/icons/check.png</texture>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <include name="MenuRow">
+    <param name="focused">false</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>4</top><width>1728</width><height>88</height>
+        <texture colordiffuse="focus" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>24</left><top>24</top><width>48</width><height>48</height>
+        <aspectratio>keep</aspectratio>
+        <texture background="true">$INFO[ListItem.Art(icon)]</texture>
+      </control>
+      <control type="label">
+        <left>96</left><top>4</top><width>1240</width><height>88</height>
+        <label>$INFO[ListItem.Label]</label>
+        <font>Label30</font><textcolor>text</textcolor><aligny>center</aligny>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>96</left><top>4</top><width>1240</width><height>88</height>
+        <label>$INFO[ListItem.Label]</label>
+        <font>Label30</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>1300</left><top>4</top><width>360</width><height>88</height>
+        <label>$INFO[ListItem.Label2]</label>
+        <font>Meta22</font><textcolor>text3</textcolor><align>right</align><aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>1672</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="text3">bobi/icons/chevron-right.png</texture>
+        <visible>ListItem.IsFolder + !$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>1672</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="on_focus">bobi/icons/chevron-right.png</texture>
+        <visible>ListItem.IsFolder + $PARAM[focused]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== cast tile (detail page, OSD cast) ===== -->
+  <include name="CastTile">
+    <param name="focused">false</param>
+    <definition>
+      <control type="group">
+        <left>20</left><top>8</top>
+        <control type="image">
+          <left>0</left><top>0</top><width>160</width><height>160</height>
+          <texture colordiffuse="surface_hi">bobi/mask-160x160.png</texture>
+        </control>
+        <control type="image">
+          <left>52</left><top>52</top><width>56</width><height>56</height>
+          <texture colordiffuse="text3">bobi/icons/user.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>160</width><height>160</height>
+          <aspectratio scalediffuse="false">scale</aspectratio>
+          <texture background="true" diffuse="bobi/mask-160x160.png">$INFO[ListItem.Art(thumb)]</texture>
+          <include>ArtFade</include>
+        </control>
+        <control type="image">
+          <left>-6</left><top>-6</top><width>172</width><height>172</height>
+          <texture colordiffuse="focus">bobi/dot-ring.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>-20</left><top>176</top><width>200</width><height>34</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label24</font><textcolor>text</textcolor><align>center</align><aligny>center</aligny>
+          <scroll>$PARAM[focused]</scroll>
+        </control>
+        <control type="label">
+          <left>-20</left><top>208</top><width>200</width><height>30</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>Meta22</font><textcolor>text3</textcolor><align>center</align><aligny>center</aligny>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== the panel ===== -->
+  <include name="DirectoryPanel">
+    <control type="panel" id="50">
+      <left>72</left><top>290</top><width>1776</width><height>790</height>
+      <orientation>vertical</orientation>
+      <scrolltime tween="cubic" easing="out">200</scrolltime>
+      <preloaditems>2</preloaditems>
+      <onup>9701</onup>
+      <onleft>noop</onleft>
+      <onright>noop</onright>
+      <viewtype label="波比">wall</viewtype>
+      <!-- episodes -->
+      <itemlayout width="1776" height="208" condition="Container.Content(episodes)">
+        <control type="group"><left>24</left><include content="EpisodeRow" /></control>
+      </itemlayout>
+      <focusedlayout width="1776" height="208" condition="Container.Content(episodes)">
+        <control type="group"><left>24</left><include content="EpisodeRow"><param name="focused">Control.HasFocus(50)</param></include></control>
+      </focusedlayout>
+      <!-- poster wall -->
+      <itemlayout width="253" height="395" condition="Container.Content(movies) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(sets) | Container.Content(videos)">
+        <include content="WallTile" />
+        <include content="WallCaption" />
+      </itemlayout>
+      <focusedlayout width="253" height="395" condition="Container.Content(movies) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(sets) | Container.Content(videos)">
+        <control type="group">
+          <include content="Lift"><param name="center">123,164</param><param name="zoom">106</param></include>
+          <include content="WallTile"><param name="focused">Control.HasFocus(50)</param></include>
+        </control>
+        <include content="WallCaption"><param name="focused">Control.HasFocus(50)</param><param name="color">text</param></include>
+      </focusedlayout>
+      <!-- menus -->
+      <itemlayout width="1776" height="96">
+        <control type="group"><left>24</left><include content="MenuRow" /></control>
+      </itemlayout>
+      <focusedlayout width="1776" height="96">
+        <control type="group"><left>24</left><include content="MenuRow"><param name="focused">Control.HasFocus(50)</param></include></control>
+      </focusedlayout>
+    </control>
+  </include>
+</includes>

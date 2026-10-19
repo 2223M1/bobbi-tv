@@ -1,0 +1,527 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1197">
+  <defaultcontrol always="false">9101</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="FF080808">am6b/white.png</texture>
+    </control>
+    <control type="group">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <animation effect="fade" start="0" end="100" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">WindowOpen</animation>
+      <control type="label">
+        <left>96</left>
+        <top>182</top>
+        <width>1540</width>
+        <height>80</height>
+        <label>我的波比TV</label>
+        <font>BobiHero</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>100</left>
+        <top>274</top>
+        <width>1580</width>
+        <height>40</height>
+        <label>继续你的故事，也照顾好你的家庭影院。</label>
+        <font>font12</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9101">
+        <left>96</left>
+        <top>377</top>
+        <width>552</width>
+        <height>182</height>
+        <label>播放历史</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9101</onleft>
+        <onright>9102</onright>
+        <onup>9706</onup>
+        <ondown>9104</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=files_history",return)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>93</left>
+        <top>374</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9101)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>117</left>
+        <top>405</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/discover.png</texture>
+      </control>
+      <control type="label">
+        <left>222</left>
+        <top>417</top>
+        <width>399</width>
+        <height>48</height>
+        <label>播放历史</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>224</left>
+        <top>480</top>
+        <width>395</width>
+        <height>37</height>
+        <label>找到看过的影片与续播位置</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9102">
+        <left>678</left>
+        <top>377</top>
+        <width>552</width>
+        <height>182</height>
+        <label>我的网盘</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9101</onleft>
+        <onright>9103</onright>
+        <onup>9706</onup>
+        <ondown>9105</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=bobi_library&amp;section=all",return)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>675</left>
+        <top>374</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9102)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>699</left>
+        <top>405</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/cloud.png</texture>
+      </control>
+      <control type="label">
+        <left>804</left>
+        <top>417</top>
+        <width>399</width>
+        <height>48</height>
+        <label>我的网盘</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>806</left>
+        <top>480</top>
+        <width>395</width>
+        <height>37</height>
+        <label>查看 115 中已经保存的内容</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9103">
+        <left>1260</left>
+        <top>377</top>
+        <width>552</width>
+        <height>182</height>
+        <label>我的收藏</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9102</onleft>
+        <onright>9103</onright>
+        <onup>9706</onup>
+        <ondown>9106</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(favouritesbrowser)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>1257</left>
+        <top>374</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9103)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>1281</left>
+        <top>405</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
+      </control>
+      <control type="label">
+        <left>1386</left>
+        <top>417</top>
+        <width>399</width>
+        <height>48</height>
+        <label>我的收藏</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>1388</left>
+        <top>480</top>
+        <width>395</width>
+        <height>37</height>
+        <label>常看的内容，随时回来</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9104">
+        <left>96</left>
+        <top>589</top>
+        <width>552</width>
+        <height>182</height>
+        <label>媒体与插件</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9104</onleft>
+        <onright>9105</onright>
+        <onup>9101</onup>
+        <ondown>9107</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(Programs)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>93</left>
+        <top>586</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9104)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>117</left>
+        <top>617</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/addons.png</texture>
+      </control>
+      <control type="label">
+        <left>222</left>
+        <top>629</top>
+        <width>399</width>
+        <height>48</height>
+        <label>媒体与插件</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>224</left>
+        <top>692</top>
+        <width>395</width>
+        <height>37</height>
+        <label>直播、音乐和扩展功能</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9105">
+        <left>678</left>
+        <top>589</top>
+        <width>552</width>
+        <height>182</height>
+        <label>影院设置</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9104</onleft>
+        <onright>9106</onright>
+        <onup>9102</onup>
+        <ondown>9108</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(Settings)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>675</left>
+        <top>586</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9105)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>699</left>
+        <top>617</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/settings.png</texture>
+      </control>
+      <control type="label">
+        <left>804</left>
+        <top>629</top>
+        <width>399</width>
+        <height>48</height>
+        <label>影院设置</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>806</left>
+        <top>692</top>
+        <width>395</width>
+        <height>37</height>
+        <label>画面、音频与系统选项</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9106">
+        <left>1260</left>
+        <top>589</top>
+        <width>552</width>
+        <height>182</height>
+        <label>文件管理</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9105</onleft>
+        <onright>9106</onright>
+        <onup>9103</onup>
+        <ondown>9109</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(FileManager)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>1257</left>
+        <top>586</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9106)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>1281</left>
+        <top>617</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
+      </control>
+      <control type="label">
+        <left>1386</left>
+        <top>629</top>
+        <width>399</width>
+        <height>48</height>
+        <label>文件管理</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>1388</left>
+        <top>692</top>
+        <width>395</width>
+        <height>37</height>
+        <label>挂载路径与本地文件</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9107">
+        <left>96</left>
+        <top>801</top>
+        <width>552</width>
+        <height>182</height>
+        <label>减少动态效果</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9107</onleft>
+        <onright>9108</onright>
+        <onup>9104</onup>
+        <ondown>9107</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>Skin.ToggleSetting(BobiReduceMotion)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>93</left>
+        <top>798</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9107)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>117</left>
+        <top>829</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/settings.png</texture>
+      </control>
+      <control type="label">
+        <left>222</left>
+        <top>841</top>
+        <width>399</width>
+        <height>48</height>
+        <label>减少动态效果</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>224</left>
+        <top>904</top>
+        <width>395</width>
+        <height>37</height>
+        <label>开关轻量淡入与焦点动画</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9108">
+        <left>678</left>
+        <top>801</top>
+        <width>552</width>
+        <height>182</height>
+        <label>存储管理</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9107</onleft>
+        <onright>9109</onright>
+        <onup>9105</onup>
+        <ondown>9108</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(systeminfo)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>675</left>
+        <top>798</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9108)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>699</left>
+        <top>829</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/cinema/cloud.png</texture>
+      </control>
+      <control type="label">
+        <left>804</left>
+        <top>841</top>
+        <width>399</width>
+        <height>48</height>
+        <label>存储管理</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>806</left>
+        <top>904</top>
+        <width>395</width>
+        <height>37</height>
+        <label>清理策略将在下一轮接入</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="button" id="9109">
+        <left>1260</left>
+        <top>801</top>
+        <width>552</width>
+        <height>182</height>
+        <label>电源</label>
+        <font>font12</font>
+        <textcolor>00000000</textcolor>
+        <focusedcolor>00000000</focusedcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onleft>9108</onleft>
+        <onright>9109</onright>
+        <onup>9106</onup>
+        <ondown>9109</ondown>
+        <texturefocus border="14" colordiffuse="FF3D3D3D">am6b/cinema/rounded.png</texturefocus>
+        <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
+        <onclick>ActivateWindow(shutdownmenu)</onclick>
+        <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
+      </control>
+      <control type="image">
+        <left>1257</left>
+        <top>798</top>
+        <width>558</width>
+        <height>188</height>
+        <visible>Control.HasFocus(9109)</visible>
+        <texture colordiffuse="FFF5F5F5" border="14">am6b/cinema/outline.png</texture>
+      </control>
+      <control type="image">
+        <left>1281</left>
+        <top>829</top>
+        <width>90</width>
+        <height>90</height>
+        <texture colordiffuse="FFF5F5F5">am6b/icon-power.png</texture>
+      </control>
+      <control type="label">
+        <left>1386</left>
+        <top>841</top>
+        <width>399</width>
+        <height>48</height>
+        <label>电源</label>
+        <font>font16</font>
+        <textcolor>FFF4F4F5</textcolor>
+      </control>
+      <control type="label">
+        <left>1388</left>
+        <top>904</top>
+        <width>395</width>
+        <height>37</height>
+        <label>睡眠、关机与重新启动</label>
+        <font>font11</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+      <control type="label">
+        <left>100</left>
+        <top>1020</top>
+        <width>1530</width>
+        <height>35</height>
+        <label>返回键回到上一页 · 方向键移动 · 确认键进入</label>
+        <font>font10</font>
+        <textcolor>FFB3B3B3</textcolor>
+      </control>
+    </control>
+    <include content="CinemaTopNav">
+      <param name="down" value="9101" />
+    </include>
+  </controls>
+</window>

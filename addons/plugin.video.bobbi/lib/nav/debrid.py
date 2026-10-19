@@ -1,0 +1,486 @@
+from datetime import timedelta
+from threading import Thread
+from typing import Any, Dict, List
+
+from xbmcplugin import addDirectoryItem
+
+from lib.api.debrid.alldebrid import AllDebrid
+from lib.api.debrid.debrider import Debrider
+from lib.api.debrid.offcloud import Offcloud
+from lib.api.debrid.premiumize import Premiumize
+from lib.api.debrid.realdebrid import RealDebrid
+from lib.api.debrid.torbox import Torbox
+from lib.clients.debrid.alldebrid import AllDebridHelper
+from lib.clients.debrid.debrider import DebriderHelper
+from lib.clients.debrid.offcloud import OffcloudHelper
+from lib.clients.debrid.realdebrid import RealDebridHelper
+from lib.clients.debrid.torbox import TorboxHelper
+from lib.db.cached import cache
+from lib.services.debrid.auth import (
+    run_alldebrid_auth,
+    run_debrider_auth,
+    run_offcloud_auth,
+    run_premiumize_auth,
+    run_realdebrid_auth,
+    run_torbox_auth,
+)
+from lib.services.debrid.download import run_realdebrid_download
+from lib.utils.general.utils import (
+    DebridType,
+    IndexerType,
+    build_list_item,
+    check_debrid_enabled,
+    get_public_ip,
+    get_random_color,
+    set_pluging_category,
+)
+from lib.utils.kodi.utils import (
+    ADDON_HANDLE,
+    action_url_run,
+    apply_section_view,
+    build_url,
+    end_of_directory,
+    finish_action,
+    get_setting,
+    kodilog,
+    notification,
+    translation,
+)
+
+
+def _start_realdebrid_download(magnet):
+    rd_client = RealDebrid(token=str(get_setting("real_debrid_token", "")))
+    thread = Thread(target=run_realdebrid_download, args=(rd_client, magnet, False))
+    thread.start()
+
+
+def _start_torbox_download(magnet):
+    tb_client = Torbox(token=str(get_setting("torbox_token")))
+    thread = Thread(target=tb_client.download, args=(magnet,))
+    thread.start()
+
+
+def _start_offcloud_download(magnet):
+    oc_client = Offcloud(token=str(get_setting("offcloud_token") or ""))
+    thread = Thread(target=oc_client.add_cloud_download, args=(magnet,))
+    thread.start()
+
+
+def _start_premiumize_download(magnet):
+    pm_client = Premiumize(token=str(get_setting("premiumize_token")))
+    thread = Thread(target=pm_client.download, args=(magnet,), kwargs={"pack": False})
+    thread.start()
+
+
+DEBRID_CLOUD_ACTIONS = {
+    DebridType.RD: {"downloads": "get_rd_downloads", "info": "real_debrid_info"},
+    DebridType.DB: {"info": "debrider_info"},
+    DebridType.AD: {"info": "alldebrid_info"},
+    DebridType.TB: {"downloads": "get_tb_downloads", "info": "torbox_info"},
+    DebridType.OC: {"downloads": "get_oc_downloads", "info": "offcloud_info"},
+}
+
+DEBRID_DOWNLOAD_HANDLERS = {
+    "RD": _start_realdebrid_download,
+    "TB": _start_torbox_download,
+    "OC": _start_offcloud_download,
+    "PM": _start_premiumize_download,
+}
+
+DEBRID_INFO_HANDLERS = {
+    DebridType.RD: lambda: RealDebridHelper().get_info(),
+    DebridType.AD: lambda: AllDebridHelper().get_info(),
+    DebridType.DB: lambda: DebriderHelper().get_info(),
+    DebridType.TB: lambda: TorboxHelper().get_info(),
+    DebridType.OC: lambda: OffcloudHelper().get_info(),
+}
+
+
+DEBRID_CLOUD_CACHE_EXPIRY = timedelta(hours=1)
+
+
+def _cloud_downloads_cache_key(provider: str, page: int = 1) -> str:
+    return f"cloud_downloads|{provider}|{page}"
+
+
+def cloud_details(params):
+    debrid_name = params.get("debrid_name")
+    if debrid_name == DebridType.PM:
+        notification(translation(90423))
+        return
+
+    actions = DEBRID_CLOUD_ACTIONS.get(debrid_name)
+    if not actions:
+        notification(translation(90424))
+        return
+
+    downloads_action = actions.get("downloads")
+    if not downloads_action:
+        end_of_directory(cache=False)
+        DEBRID_INFO_HANDLERS[debrid_name]()
+        return
+
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url(downloads_action),
+        build_list_item("Downloads", "download.png"),
+        isFolder=True,
+    )
+    end_of_directory()
+    apply_section_view("view.downloads", content_type="files")
+
+
+def cloud(params):
+    set_pluging_category(translation(90014))
+    activated_debrids = [debrid for debrid in DebridType.values() if check_debrid_enabled(debrid)]
+    for debrid in activated_debrids:
+        torrent_li = build_list_item(debrid, "download.png")
+        actions = DEBRID_CLOUD_ACTIONS.get(debrid, {})
+        info_action = actions.get("info")
+        if info_action:
+            torrent_li.addContextMenuItems([("Account Info", action_url_run(info_action))])
+        addDirectoryItem(
+            ADDON_HANDLE,
+            build_url("cloud_details", debrid_name=debrid),
+            torrent_li,
+            isFolder=True,
+        )
+
+    addDirectoryItem(
+        ADDON_HANDLE,
+        build_url("list_webdav"),
+        build_list_item("Webdav", "download.png"),
+        isFolder=True,
+    )
+
+    end_of_directory()
+    apply_section_view("view.downloads", content_type="files")
+
+
+def real_debrid_info(params):
+    finish_action()
+    DEBRID_INFO_HANDLERS[DebridType.RD]()
+
+
+def alldebrid_info(params):
+    finish_action()
+    DEBRID_INFO_HANDLERS[DebridType.AD]()
+
+
+def debrider_info(params):
+    finish_action()
+    DEBRID_INFO_HANDLERS[DebridType.DB]()
+
+
+def easynews_info(params):
+    from lib.clients.easynews import Easynews
+
+    finish_action()
+
+    user = str(get_setting("easynews_user") or "")
+    password = str(get_setting("easynews_password") or "")
+    timeout = int(get_setting("easynews_timeout", "25") or "25")
+
+    if not user or not password:
+        notification(translation(90425))
+        return
+
+    Easynews(user, password, timeout, notification).get_info()
+
+
+def get_rd_downloads(params):
+    page = int(params.get("page", 1))
+    debrid_type = DebridType.RD
+    debrid_color = get_random_color(debrid_type, formatted=False)
+    formatted_type = f"[B][COLOR {debrid_color}]{debrid_type}[/COLOR][/B]"
+
+    cache_key = _cloud_downloads_cache_key(DebridType.RD, page)
+    raw_downloads = cache.get(cache_key)
+    if raw_downloads is None:
+        rd_client = RealDebrid(token=str(get_setting("real_debrid_token", "")))
+        raw_downloads = rd_client.get_user_downloads_list(page=page)
+        cache.set(cache_key, raw_downloads, DEBRID_CLOUD_CACHE_EXPIRY)
+    downloads: List[Dict[str, Any]] = [item for item in raw_downloads if isinstance(item, dict)]
+
+    sorted_downloads = sorted(
+        downloads, key=lambda item: str(item.get("filename", "")), reverse=False
+    )
+    for download in sorted_downloads:
+        filename = download.get("filename", "")
+        torrent_li = build_list_item(f"{formatted_type} - {filename}", "download.png")
+        torrent_li.setProperty("IsPlayable", "true")
+        direct_url = download.get("download", "")
+        context_menu = [
+            (
+                translation(90791),
+                action_url_run(
+                    "download_cloud_file",
+                    url=direct_url,
+                    filename=filename,
+                    mode="movie",
+                    debrid_type=debrid_type,
+                ),
+            )
+        ]
+        torrent_li.addContextMenuItems(context_menu)
+        addDirectoryItem(
+            ADDON_HANDLE,
+            build_url(
+                "play_info_hash",
+                url=direct_url,
+                title=filename,
+                debrid_type=debrid_type,
+            ),
+            torrent_li,
+            isFolder=False,
+        )
+
+    if downloads:
+        addDirectoryItem(
+            ADDON_HANDLE,
+            build_url("get_rd_downloads", page=page + 1),
+            build_list_item("Next Page", "next.png"),
+            isFolder=True,
+        )
+
+    end_of_directory()
+    apply_section_view("view.downloads", content_type="files")
+
+
+def get_tb_downloads(params):
+    debrid_type = DebridType.TB
+    debrid_color = get_random_color(debrid_type, formatted=False)
+    formatted_type = f"[B][COLOR {debrid_color}]{debrid_type}[/COLOR][/B]"
+
+    cache_key = _cloud_downloads_cache_key(DebridType.TB)
+    raw_downloads = cache.get(cache_key)
+    if raw_downloads is None:
+        raw_downloads = TorboxHelper().get_cloud_downloads()
+        cache.set(cache_key, raw_downloads, DEBRID_CLOUD_CACHE_EXPIRY)
+    downloads: List[Dict[str, Any]] = [item for item in raw_downloads if isinstance(item, dict)]
+
+    def _torbox_sort_key(item: Dict[str, Any]):
+        return (
+            str(item.get("updated_at") or item.get("created_at") or ""),
+            str(item.get("name", "")),
+        )
+
+    sorted_downloads = sorted(
+        downloads,
+        key=_torbox_sort_key,
+        reverse=True,
+    )
+
+    notification(
+        f"Torbox Cloud: {len(sorted_downloads)} playable items found",
+        time=2500,
+        sound=False,
+    ) if params.get("debug") else None
+
+    for download in sorted_downloads:
+        name = download.get("name", "")
+        torrent_li = build_list_item(f"{formatted_type} - {name}", "download.png")
+        torrent_li.setProperty("IsPlayable", "true")
+        context_menu = [
+            (
+                translation(90791),
+                action_url_run(
+                    "download_cloud_file",
+                    torrent_id=download.get("torrent_id", ""),
+                    file_id=download.get("file_id", ""),
+                    filename=name,
+                    mode="movie",
+                    debrid_type=debrid_type,
+                ),
+            )
+        ]
+        torrent_li.addContextMenuItems(context_menu)
+        addDirectoryItem(
+            ADDON_HANDLE,
+            build_url(
+                "play_media",
+                data={
+                    "title": name,
+                    "url": "",
+                    "mode": "movie",
+                    "type": IndexerType.DEBRID,
+                    "debrid_type": debrid_type,
+                    "torrent_id": download.get("torrent_id"),
+                    "file_id": download.get("file_id"),
+                    "info_hash": download.get("info_hash", ""),
+                },
+            ),
+            torrent_li,
+            isFolder=False,
+        )
+
+    end_of_directory()
+    apply_section_view("view.downloads", content_type="files")
+
+
+def get_oc_downloads(params):
+    debrid_type = DebridType.OC
+    debrid_color = get_random_color(debrid_type, formatted=False)
+    formatted_type = f"[B][COLOR {debrid_color}]{debrid_type}[/COLOR][/B]"
+
+    cache_key = _cloud_downloads_cache_key(DebridType.OC)
+    raw_downloads = cache.get(cache_key)
+    if raw_downloads is None:
+        raw_downloads = OffcloudHelper().get_cloud_downloads()
+        cache.set(cache_key, raw_downloads, DEBRID_CLOUD_CACHE_EXPIRY)
+    downloads: List[Dict[str, Any]] = [item for item in raw_downloads if isinstance(item, dict)]
+
+    sorted_downloads = sorted(
+        downloads,
+        key=lambda item: (str(item.get("created_at") or ""), str(item.get("name", ""))),
+        reverse=True,
+    )
+
+    for download in sorted_downloads:
+        name = download.get("name", "")
+        direct_url = download.get("url", "")
+        torrent_li = build_list_item(f"{formatted_type} - {name}", "download.png")
+        torrent_li.setProperty("IsPlayable", "true")
+        torrent_li.addContextMenuItems(
+            [
+                (
+                    translation(90791),
+                    action_url_run(
+                        "download_cloud_file",
+                        url=direct_url,
+                        filename=name,
+                        mode="movie",
+                        debrid_type=debrid_type,
+                    ),
+                )
+            ]
+        )
+        addDirectoryItem(
+            ADDON_HANDLE,
+            build_url(
+                "play_media",
+                data={
+                    "title": name,
+                    "url": direct_url,
+                    "mode": "movie",
+                    "type": IndexerType.DEBRID,
+                    "debrid_type": debrid_type,
+                    "request_id": download.get("request_id", ""),
+                },
+            ),
+            torrent_li,
+            isFolder=False,
+        )
+
+    end_of_directory()
+    apply_section_view("view.downloads", content_type="files")
+
+
+def download(magnet, debrid_type):
+    handler = DEBRID_DOWNLOAD_HANDLERS.get(debrid_type)
+    if not handler:
+        notification(translation(90424))
+        return
+    handler(magnet)
+
+
+def resolve_cloud_download_url(data):
+    debrid_type = data.get("debrid_type", "")
+    if debrid_type in ("RD", "RealDebrid"):
+        url = data.get("url", "")
+        return url if url else None
+    elif debrid_type in ("TB", "Torbox"):
+        torrent_id = data.get("torrent_id", "")
+        file_id = data.get("file_id", "")
+        if not torrent_id or not file_id:
+            return None
+        cache_key = f"tb_download_link|{torrent_id}|{file_id}"
+        cached_url = cache.get(cache_key)
+        if cached_url:
+            return cached_url
+        try:
+            response = TorboxHelper().client.create_download_link(
+                torrent_id, file_id, get_public_ip()
+            )
+            if response:
+                url = response.get("data", "")
+                if url:
+                    cache.set(cache_key, url, timedelta(minutes=5))
+                    return url
+        except Exception as e:
+            kodilog(f"[resolve_cloud_download_url] TB link resolution failed: {e}")
+        return None
+    elif debrid_type in ("OC", "Offcloud"):
+        url = data.get("url", "")
+        return url if url else None
+    return None
+
+
+def rd_auth(params):
+    rd_client = RealDebrid(token=str(get_setting("real_debrid_token", "")))
+    run_realdebrid_auth(rd_client)
+
+
+def ad_auth(params):
+    ad_client = AllDebrid(token=str(get_setting("alldebrid_token", "")))
+    run_alldebrid_auth(ad_client)
+
+
+def rd_remove_auth(params):
+    rd_client = RealDebrid(token=str(get_setting("real_debrid_token", "")))
+    rd_client.remove_auth()
+
+
+def ad_remove_auth(params):
+    ad_client = AllDebrid(token=str(get_setting("alldebrid_token", "")))
+    ad_client.remove_auth()
+
+
+def debrider_auth(params):
+    debrider_client = Debrider(token=str(get_setting("debrider_token")))
+    run_debrider_auth(debrider_client)
+
+
+def debrider_remove_auth(params):
+    debrider_client = Debrider(token=str(get_setting("debrider_token")))
+    debrider_client.remove_auth()
+
+
+def pm_auth(params):
+    pm_client = Premiumize(token=str(get_setting("premiumize_token")))
+    run_premiumize_auth(pm_client)
+
+
+def pm_remove_auth(params):
+    pm_client = Premiumize(token=str(get_setting("premiumize_token", "")))
+    pm_client.remove_auth()
+
+
+def tb_auth(params):
+    torbox_client = Torbox(token=str(get_setting("torbox_token")))
+    run_torbox_auth(torbox_client)
+
+
+def tb_remove_auth(params):
+    torbox_client = Torbox(token=str(get_setting("torbox_token")))
+    torbox_client.remove_auth()
+
+
+def oc_auth(params):
+    offcloud_client = Offcloud(token=str(get_setting("offcloud_token") or ""))
+    run_offcloud_auth(offcloud_client)
+
+
+def oc_remove_auth(params):
+    offcloud_client = Offcloud(token=str(get_setting("offcloud_token") or ""))
+    offcloud_client.remove_auth()
+
+
+def torbox_info(params):
+    finish_action()
+    DEBRID_INFO_HANDLERS[DebridType.TB]()
+
+
+def offcloud_info(params):
+    finish_action()
+    DEBRID_INFO_HANDLERS[DebridType.OC]()
