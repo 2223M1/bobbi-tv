@@ -15,6 +15,6 @@
 
 本轮已完成可公开源码、13 组件原生 Kodi 仓库、Android Release APK、个人
 115 / NAS / 片库入口、六位码配对、固定 CE 引擎、源清单及许可证补全。
-366 项 Python 测试通过（Windows symlink 1 项跳过），11 项 Java 测试通过。
+367 项 Python 测试通过（Windows symlink 1 项跳过），11 项 Java 测试通过。
 干净目录仓库重建逐字节一致，个人数据扫描与对应源码分类复核完成。
 发布 alpha，不放开稳定门禁；私人后台的自动字幕 / 续播没有伪装成已移植。

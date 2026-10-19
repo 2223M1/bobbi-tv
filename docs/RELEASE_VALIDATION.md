@@ -4,13 +4,13 @@
 
 ## 已执行
 
-- Python 离线回归：366 项通过，1 项因 Windows 无创建符号链接权限跳过。覆盖安装清单、组件依赖、路径约束、单次播放交接、NAS / 片库管理、115 登录状态机、本机服务、BT 配对与更新引擎。
+- Python 离线回归：367 项通过，1 项因 Windows 无创建符号链接权限跳过。覆盖安装清单、组件依赖、路径约束、单次播放交接、NAS / 片库管理、115 登录状态机、本机服务、BT 配对与更新引擎。
 - Android Release 构建成功；11 个 Java 单元测试通过，含六位码有效期、错误次数、单次兑换与浏览器跨来源拒绝。lint 无错误，4 个非阻断警告（banner 兼容建议与未使用资源）。
 - ARM32 / ARM64 APK 内实际 TorrServer ELF 与固定 SHA-256 一致；不是空壳或下载后执行任意二进制。APK v2 签名验证通过，`debuggable=false`。签名指纹见 `release/android-signing-certificate.sha256`。
 - Kodi 仓库含 13 个依赖闭合组件。安装入口依赖完整皮肤、核心、片库与设置；Requests / routing 等常规依赖由 Kodi 官方仓库提供。
 - 清洁目录：286,170 entries、243 shares、1,489,566 terms、108,753 term_counts、40 availability rows；漫迪 5,067 文件。新建 SQLite 白名单表并重建索引，不复制原始数据库页、登录态或私人证据表。
 - Gitleaks 扫描公开源码及嵌套发行 ZIP；仅放行 MIT 元数据中的精确 Python 包名，以及两个清单中已与实际源码复核的 SHA-256 文件摘要，不放行任意代码目录。
-- 从 Git 暂存区导出的独立干净目录（不含 `.private`、`staging`、旧备份）完成测试和重建，24 个仓库文件逐字节一致，包括 13 个 ZIP、索引、校验和及图标。
+- 从 Git 暂存区导出的独立干净目录（不含 `.private`、`staging`、旧备份）完成测试和重建，仓库文件逐字节一致。Kodi 21 仓库按官方协议启用索引及每个 ZIP 的 SHA-256 核验。
 - Release 资产深层扫描中，TorrServer 对应源码有 5 个上游命中：curl 认证示例、TLS 单测密钥、浏览器 Firebase 公共配置。逐文件与固定上游提交核对，分类证据见 `release/upstream-scan-review.json`。保留原对应源码，未把这些称作用户账号泄漏，也没有屏蔽整个第三方目录。
 
 ## 尚未执行，不能推定通过
