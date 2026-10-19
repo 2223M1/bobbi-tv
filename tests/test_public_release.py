@@ -30,6 +30,17 @@ def test_public_inventory_is_exact():
         assert build_release.files(path) == recorded[addon], addon
 
 
+def test_repository_uses_kodi21_index_and_package_hashes():
+    import hashlib
+    root = ET.parse(ROOT / 'addons/repository.bobbi/addon.xml').getroot()
+    assert root.findtext('./extension/dir/hashes') == 'sha256'
+    assert root.find('./extension/dir/checksum').get('verify') == 'sha256'
+    repository = ROOT / 'repository'
+    for path in repository.glob('*/*.zip'):
+        assert path.with_suffix('.zip.sha256').read_text() == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert (repository / 'addons.xml.sha256').read_text() == hashlib.sha256((repository / 'addons.xml').read_bytes()).hexdigest()
+
+
 @pytest.mark.parametrize('value', ['', 'abcdef', '12345', '1234567', '123456\n', 123456])
 def test_pair_code_rejects_non_codes(value):
     with pytest.raises(ValueError):

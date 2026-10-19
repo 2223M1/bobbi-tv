@@ -21,8 +21,8 @@
       "id": "repository.bobbi",
       "version": "0.1.0",
       "file": "repository.bobbi/repository.bobbi-0.1.0.zip",
-      "sha256": "93f86b637e3b683607fae751d5e551a375003d3d336c1ad9d4259fa42a30a9fa",
-      "bytes": 12959
+      "sha256": "c64943649bb2310fba648660298a3b6f517b07351f278cae40b058754709646c",
+      "bytes": 12980
     },
     {
       "id": "script.bobbi.setup",

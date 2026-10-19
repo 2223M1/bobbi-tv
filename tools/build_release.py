@@ -78,6 +78,8 @@ def build(destination):
         filename = addon + '-' + version + '.zip'
         output = destination / addon / filename
         archive(root, inventory[addon], output)
+        output.with_suffix(output.suffix + '.sha256').write_text(
+            hashlib.sha256(output.read_bytes()).hexdigest(), encoding='ascii')
         # Kodi uses raw artwork alongside repository zip paths.
         for node in meta.findall('./extension/assets/*'):
             if node.text and node.text in inventory[addon]:
@@ -91,6 +93,7 @@ def build(destination):
     (destination / 'addons.xml').write_bytes(raw)
     # Kodi's checksum file is a change detector, not a security signature.
     (destination / 'addons.xml.md5').write_text(hashlib.md5(raw).hexdigest(), encoding='ascii')
+    (destination / 'addons.xml.sha256').write_text(hashlib.sha256(raw).hexdigest(), encoding='ascii')
     (destination / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     return manifest
 
