@@ -153,7 +153,8 @@ CA 证书、没有私钥标记，并已列入源码/依赖清单。不得整体�
 只读核对 `https://github.com/2223M1/bobbi-tv` 为 **PRIVATE**、非 fork，默认分支 `main`。
 工作分支 `codex/private-three-platform-20261019` 用于独立审查；主任务已 fetch，
 `origin/main` 为 `71ea55831c58f26cd6ab89ff5331b86ae33ca869`（`Update README.md`）。
-本轮发布独立审查分支和私库 prerelease `audit-20261019-private-ce1909`，不覆盖 `main`；
+本轮计划发布独立审查分支和私库 prerelease，不覆盖 `main`；计划交付地址为
+[audit-20261019-private-ce1909](https://github.com/2223M1/bobbi-tv/releases/tag/audit-20261019-private-ce1909)。
 上传完成前不能把计划中的分支/附件写成已经交付。发布说明见
 [审查发行说明](WEB-REVIEW-RELEASE-NOTES-20261019.md)。
 
