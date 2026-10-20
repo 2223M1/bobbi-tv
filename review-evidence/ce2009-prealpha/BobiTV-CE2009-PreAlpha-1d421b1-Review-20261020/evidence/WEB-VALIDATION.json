@@ -1,0 +1,41 @@
+{
+  "source_commit": "1d421b101bdc3b940bdd5870caaac49a5fc49394",
+  "source_tree": "f013b350c62352ad2ac03c7fde94932d0c408344",
+  "independent": {
+    "cases": 15,
+    "passed": 9,
+    "failed": 6,
+    "errors": 0,
+    "exit_code": 1,
+    "represents": "four open product findings, not six device incidents"
+  },
+  "full_source_blobs_verified": 6,
+  "extracted_replay": {
+    "cases": 15,
+    "passed": 9,
+    "failed": 6,
+    "errors": 0,
+    "exit_code": 1
+  },
+  "tampered_source_rejected_before_output": true,
+  "downloaded_remote_ci": {
+    "run": 39410984018,
+    "passed": 2575,
+    "skipped": 5,
+    "failures": 0,
+    "errors": 0,
+    "archive_sha256_verified": true,
+    "crc_ok": true,
+    "local_full_suite_rerun": false
+  },
+  "boundaries": [
+    "Kodi/account/history IO doubles",
+    "signature/archive parser/interprocess lock doubles in installer probes",
+    "real temp files and rename/journal; real child os._exit",
+    "no real device, cloud, remote GitHub writes",
+    "no entry ZIP byte-level inspection",
+    "no product fix provided"
+  ],
+  "repetitions_not_additional_coverage": true,
+  "verdict": "HOLD_CE2009_PACKAGE_FOR_A01_A02_A03_FOCUSED_FIX; keep generic CE policy; A04 same-batch P2"
+}

@@ -185,3 +185,92 @@ def test_product_next_loader_uses_shared_exact_cloud_policy(product, monkeypatch
         assert result['url'] == '/media/Series/E02.mkv'
         assert result['request_id'] != data['request_id']
         assert result['_account'] == data['_account']
+
+
+def ended_with_next(product):
+    product.actor.session.next_loader = None
+    data = selected(product)
+    handoff(product, data)
+    product.state.position = 99
+    product.actor.tick()
+    successor = dict(data, request_id='b'*32, url='https://media.example/b.mkv')
+    product.actor.session.current['next_data'] = successor
+    product.state.playing = False
+    product.actor.player.onPlayBackEnded()
+    product.actor.tick()
+    return data, successor
+
+
+def test_foreign_video_then_stop_never_resurrects_old_episode(product):
+    data, successor = ended_with_next(product)
+    product.clock[0] += .1
+    product.state.item.props.clear()
+    product.state.item.tag.ids.clear()
+    product.state.url = 'https://media.example/external.mkv'
+    product.state.playing = True
+    product.actor.tick()
+    assert product.actor.session.current['state'] == 'retired'
+    assert product.actor.session.current['next_data'] is None
+    product.clock[0] += 60
+    product.state.playing = False
+    product.actor.player.onPlayBackStopped()
+    product.actor.tick()
+    assert len(product.state.opened) == 1
+
+
+@pytest.mark.parametrize('gap', ['read_failure', 'empty_path', 'missing_request'])
+def test_seek_observation_gap_is_not_foreign_takeover(product, monkeypatch, gap):
+    product.actor.session.next_loader = None
+    data = selected(product)
+    handoff(product, data)
+    if gap == 'read_failure':
+        def failed(): raise RuntimeError('seek/open transient')
+        monkeypatch.setattr(product.actor.player, 'getTime', failed)
+    elif gap == 'empty_path': product.state.url = ''
+    else:
+        product.state.item.props.clear()
+        product.state.item.tag.ids.clear()
+    product.actor.tick()
+    assert product.actor.session.current_request(data['request_id'])
+    assert product.actor.session.current['state'] == 'playing'
+
+
+@pytest.mark.parametrize('boundary,status', [('item', 'before_submission_failed'),
+    ('play', 'submission_unknown')])
+def test_successor_exception_stays_in_request_and_host_keeps_running(product, monkeypatch, boundary, status):
+    import bobbi_platform.kodi as kodi
+    from lib import portable_runtime
+    data, successor = ended_with_next(product)
+    product.clock[0] += .3
+    if boundary == 'play':
+        original = sys.modules['xbmc'].Player.play
+        def fail(player, url, item):
+            original(player, url, item)
+            raise RuntimeError('API failed after command may have been sent')
+        monkeypatch.setattr(sys.modules['xbmc'].Player, 'play', fail)
+    else:
+        def fail(*args, **kwargs): raise RuntimeError('ListItem failed before send')
+        monkeypatch.setattr(sys.modules['xbmcgui'], 'ListItem', fail)
+    # Run the actual resident main/finally; only host IO and monitor are fake.
+    state = SimpleNamespace(ticks=0, closed=False, abort=False)
+    host = product.actor.host
+    host.start = lambda: None
+    host.configure_preparation = lambda *a: None
+    host.configure_catalog_refresh = lambda *a: None
+    def tick(): state.ticks += 1
+    def close(): state.closed = True
+    host.tick, host.close = tick, close
+    def wait(seconds):
+        state.abort = state.ticks >= 4
+        return state.abort
+    monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **kw: host))
+    monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a, **kw: '/test-profile'))
+    monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(
+        configure=lambda *a, **kw: None, native_subtitle_abi=lambda *a: None))
+    monkeypatch.setattr(sys.modules['xbmc'], 'Monitor', lambda: SimpleNamespace(waitForAbort=wait), raising=False)
+    monkeypatch.setitem(sys.modules, 'lib.services.standard_playback', SimpleNamespace(StandardPlayback=lambda h: product.actor))
+    portable_runtime.main({'native_contract_available': False})
+    assert state.abort and state.ticks == 4 and state.closed
+    assert product.actor.last_handoff == dict(request_id=successor['request_id'], status=status)
+    assert len(product.state.opened) == (2 if boundary == 'play' else 1)
+    assert product.state.reports[-1] == 'STANDARD_NEXT_' + status.upper()

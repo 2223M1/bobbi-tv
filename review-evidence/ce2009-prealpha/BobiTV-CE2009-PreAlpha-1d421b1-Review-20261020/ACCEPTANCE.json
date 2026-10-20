@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "source_commit": "1d421b101bdc3b940bdd5870caaac49a5fc49394",
+  "required_before_replacing_distribution": [
+    {
+      "id": "GENERIC",
+      "requirement": "未知型号/SoC/非F9哈希不影响正常入口，无额外警告、确认或强制模式",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "INSTALL_PENDING",
+      "requirement": "完成文件换代但尚未启用时，持久状态仍有可恢复动作，入口不会误判全部完成",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "RESTORE_PENDING",
+      "requirement": "恢复启用/皮肤的第一次RPC失败后，重开入口可幂等补齐并核对",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "BOOT_GATE",
+      "requirement": "待激活状态不会阻断新代次服务启动；未核验或混合代码不会被开放",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "NO_USERDATA_ROLLBACK",
+      "requirement": "升级/回退不覆盖账号、观影/媒体库或用户已发生的新设置",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "OUTSIDE_PLAYBACK",
+      "requirement": "外部用户视频明确接管后，旧后继永不因其停播而复活",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "REQUEST_EXCEPTION",
+      "requirement": "后继API异常只结束本请求，不退出平台宿主，不自动重发结果不明命令",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "RETRY_DISCOVERY",
+      "requirement": "初次缺失、后续同版可用能被有界发现；仍保留单worker和账号/取消检查",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "KNOWN_CONTROLS",
+      "requirement": "自然EOF正常一次续播；STOP/ERROR/早Ended/换号/新请求不自动续旧片",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "ENTRY_REBUILD",
+      "requirement": "入口bootstrap与签名payload同代，完整ZIP可导入并核验；不得仅重命名2009",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "REMOTE_CI",
+      "requirement": "新候选与实际集成树CI通过；source-check不冒充安装包",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    },
+    {
+      "id": "HONEST_RECEIPTS",
+      "requirement": "原失败保留；构建、模拟、CI、实机分别记账；物理条件未覆盖不假报",
+      "status": "NOT_EXECUTED_ON_FIXED_CANDIDATE"
+    }
+  ],
+  "scope": "CE only; same continuous candidate",
+  "not_required_before_friend_testing": [
+    "other device model certification",
+    "all sources buffering-free",
+    "all HDR/audio/ASS/PGS physical combinations"
+  ],
+  "forbidden_substitutions": [
+    "F9 hash gate",
+    "unknown-model warning/confirmation",
+    "disable continuation on all stock Kodi",
+    "rewrite historic failures",
+    "fake native receipts",
+    "automatic reissue of submission_unknown"
+  ]
+}
