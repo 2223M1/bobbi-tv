@@ -1,0 +1,38 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "lain",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Serial Experiments Lain - Episode 01 [Ghosty6464].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "6.64 GB",
+        "Container(1000).ListItem.Property(source_key)": "742d9bb471772d1cb149a1689e10b27f113eb8b0786deaabacb25a8e61d0a37c",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Serial Experiments Lain - Episode 01 [Ghosty6464].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "6.64 GB",
+        "Container(1000).ListItem.Property(source_key)": "ba35c3e1e17493dc3a20f3ff55fd9b53cd3f048bd1d7bb2ddcf10798e15d42bf",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 2,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "lain",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

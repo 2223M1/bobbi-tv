@@ -173,6 +173,11 @@ def main():
             elif choice == 1:
                 addon.openSettings()
         elif action == 'cinema':
+            from bobbi_platform.ce_installer import blocked
+            from bobbi_platform.paths import profile
+            if blocked(profile('script.bobbi.start')):
+                dialog.ok('安装尚未完成', '请先打开“波比开始使用”恢复安装。原皮肤保持不变。')
+                continue
             if xbmc.Player().isPlaying():
                 dialog.ok('请先停止播放', '切换皮肤会关闭当前界面。')
                 continue
@@ -207,7 +212,7 @@ def show_updates(dialog):
     choice = dialog.select('更新与恢复 · 原版与定制分开维护', [
         '原版依赖 · Kodi 依赖管理 / 更新',
         '已装插件 · Kodi 我的插件 / 原仓库更新',
-        '波比定制组件 · 签名包更新与回退说明',
+        '波比定制组件 · 安装签名包 / 回退程序',
     ])
     if choice in (0, 1):
         dialog.ok('打开 Kodi 原生插件管理',
@@ -221,12 +226,10 @@ def show_updates(dialog):
         xbmc.executebuiltin('ActivateWindow(addonbrowser,%s,return)' % target)
         return True
     if choice == 2:
-        dialog.ok('波比定制组件 · 私人签名包',
-                  '原版依赖使用 Kodi 原生管理；波比定制组件使用维护者提供的同代完整签名包。\n'
-                  '这里只提供说明，不下载、不安装，也不刷新仓库。先校验完整签名包，再退出播放器切换。\n'
-                  'Windows：退出影院后使用 bobbi.exe --apply 签名包；--rollback 回退程序。\n'
-                  'CE：由维护工具停播校验后切换；Android：安装同签名完整 APK，不要卸载原应用。\n'
-                  '回退仅恢复波比程序，不覆盖账号、片库和观看数据；不代替原版插件的更新管理。')
+        if xbmc.Player().isPlaying():
+            return False
+        xbmc.executebuiltin('RunScript(script.bobbi.start)')
+        return True  # The installer asks before applying any signed package.
     return False
 
 

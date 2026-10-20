@@ -186,7 +186,7 @@ class Host:
             if len(json.dumps(result, ensure_ascii=True).encode('utf-8')) > 15500:
                 raise ValueError('SHARE_SEARCH_REPLY_LIMIT')
             return self.accounts.run_if_current(expected, lambda: result)
-        if action == 'playback':
+        if action in ('playback', 'standard_playback'):
             return self._owner_request(body)
         if action == 'preparation':
             from bobbi_core.capabilities import IPC_PROTOCOL
@@ -206,11 +206,15 @@ class Host:
                 if (not isinstance(body['body'], dict)
                         or body['body'].get('request_id') != desired.get('request_id')
                         or desired.get('cancelled')
+                        or (snapshot.get('adapter') == 'standard'
+                            and desired.get('file_evidence') != 'AUTO_VERIFIED_FILE')
                         or desired.get('file_evidence') == 'USER_CONFIRMED_FILE'):
                     raise ValueError('PREPARATION_CURRENT_VERIFIED_SELECTION_REQUIRED')
             return self.preparation.request(body['method'], body['body'], scope)
         if action == 'status' and not body:
-            return dict(ready=True, version='0.1.0', native_owner=self.owner is not None,
+            return dict(ready=True, version='0.1.0', native_owner=self.owner is not None and self.native_rpc is not None,
+                        playback_adapter=('starting' if self.owner is None else
+                                          'native' if self.native_rpc is not None else 'standard'),
                         preparation=self.preparation is not None, shares=self.streams is not None,
                         account=self.accounts.snapshot())
         raise ValueError('UNSUPPORTED_ACTION')

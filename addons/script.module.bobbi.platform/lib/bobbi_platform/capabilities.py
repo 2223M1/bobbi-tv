@@ -31,13 +31,28 @@ def probe(rpc, os_name='unknown'):
     except (ValueError, TypeError, OSError, RuntimeError):
         methods = {}
         errors.append('RPC_INTROSPECTION_UNAVAILABLE')
-    standard = major == 21 and STANDARD_METHODS.issubset(methods)
-    native = standard and NATIVE_METHODS.issubset(methods)
+    # Version/model/hash are diagnostics, never admission criteria. Probe the
+    # read-only protocol too: a method name alone does not establish its ABI.
+    standard = STANDARD_METHODS.issubset(methods)
+    missing = sorted(STANDARD_METHODS - methods.keys())
+    errors.extend('MISSING_API:' + method for method in missing)
+    native = False
+    if standard and NATIVE_METHODS.issubset(methods):
+        try:
+            state = rpc('Player.BobiState', {})
+            native = (isinstance(state, dict) and type(state.get('protocol')) is int
+                and state['protocol'] == 1 and type(state.get('selection_epoch')) is int
+                and state['selection_epoch'] >= 0 and 'playback' in state)
+            if native and state['playback'] is not None:
+                from bobbi_core.native_receipt import receipt
+                native = receipt(state['playback']) is not None
+        except (ImportError, ValueError, TypeError, OSError, RuntimeError):
+            native = False
     return {
         'schema': 1, 'platform': os_name, 'kodi_major': major,
         'standard_playback': standard, 'native_contract_available': native,
         'native_contract_healthy': False,
-        'automatic_continuation': False, 'zidoo_player_verified': False,
+        'automatic_continuation': standard, 'zidoo_player_verified': False,
         'bt_backend_ready': False, 'cloud_account_ready': False,
         'errors': errors,
     }

@@ -1,5 +1,7 @@
 {
   "schema": 1,
+  "record_status": "historical CE1909 evidence, not current qualification policy",
+  "current_record": "release/ce-general-2009.json",
   "product": "bobbi-tv",
   "version": "0.2.0-private.1",
   "component_sequence": 2026101909,
