@@ -12,10 +12,26 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.core/lib'))
 from bobbi_core import runtime_paths as paths
 
+DEPLOYED_F9_ROOT = paths.CE_F9_ROOT
+
 
 @pytest.fixture(autouse=True)
-def isolated(monkeypatch):
+def isolated(monkeypatch, tmp_path):
     monkeypatch.setattr(paths, '_profile', None)
+    # A synthetic CE host must not create /storage on the developer/CI machine.
+    # Keep the real ABI literal covered separately; exercise its filesystem
+    # lifecycle in a distinct legacy-root fixture, not in the selected profile.
+    monkeypatch.setattr(paths, 'CE_F9_ROOT', str(tmp_path / 'ce-f9-native/subtitle-browser'))
+    real_mkdir = Path.mkdir
+    def bounded_mkdir(path, *args, **kwargs):
+        absolute = path.absolute()
+        assert absolute == tmp_path or tmp_path in absolute.parents, 'Test escaped its filesystem fixture'
+        return real_mkdir(path, *args, **kwargs)
+    monkeypatch.setattr(Path, 'mkdir', bounded_mkdir)
+
+
+def test_deployed_f9_abi_literal_is_not_changed_by_fixture():
+    assert DEPLOYED_F9_ROOT == '/storage/.kodi/userdata/addon_data/plugin.video.jacktook/subtitle-browser'
 
 
 def test_current_native_root_and_other_paths_stay_in_selected_profile(tmp_path):
