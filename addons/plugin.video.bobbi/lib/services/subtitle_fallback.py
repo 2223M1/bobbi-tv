@@ -34,6 +34,39 @@ def receipt_key(row):
                                     'url_sha256', 'subtitle_intent', 'subtitle_auto_intent'))
 
 
+def discover_candidate(context, deadline, cancelled, provider, share_provider=None,
+                       torrent_receipt=None, clock=time.monotonic):
+    """Shared discovery only. No native receipt creation or Kodi mutations."""
+    context = dict(context)
+    context.pop('_movie_years', None)
+    if context.get('mode') == 'movie':
+        from lib.clients.tmdb.movie_years import cached_movie_years
+        evidence = cached_movie_years(context.get('tmdb'))
+        if evidence is not None:
+            context.update(year=evidence.primary_year, _movie_years=evidence)
+    candidate = None
+    if context.get('_share') and share_provider is not None:
+        try:
+            candidate = share_provider(context['_share'], context, deadline, cancelled)
+        except (ValueError, OSError, RuntimeError):
+            if cancelled() or clock() >= deadline:
+                raise
+    if candidate is None and context.get('_torrent') and torrent_receipt is not None:
+        try:
+            from bobbi_core.torrent_subtitles import fetch_candidate
+            from bobbi_torrent.backend import subtitle_connection
+            base, auth = subtitle_connection()
+            candidate = fetch_candidate(None, base, auth, context['_torrent'], torrent_receipt,
+                context, deadline, cancelled)
+        except (ImportError, OSError, ValueError, RuntimeError) as error:
+            if hasattr(provider, 'note'):
+                from bobbi_core.subtitle_candidates import public_failure_reason
+                provider.note('inspect', public_failure_reason(error))
+    if candidate is None:
+        candidate = provider.candidates(context, deadline, cancelled)
+    return candidate
+
+
 class SubtitleFallback:
     def __init__(self, factory=None, clock=time.monotonic):
         self.factory, self.clock = factory, clock
@@ -121,16 +154,6 @@ class SubtitleFallback:
         session = None
         provider = None
         try:
-            # JSON/IPC may supply the selected label/year, never a year whitelist.
-            # Rebuild evidence from the existing ID-bound TMDb detail cache;
-            # this optional enhancement performs no network request.
-            context = dict(context)
-            context.pop('_movie_years', None)
-            if context.get('mode') == 'movie':
-                from lib.clients.tmdb.movie_years import cached_movie_years
-                evidence = cached_movie_years(context.get('tmdb'))
-                if evidence is not None:
-                    context.update(year=evidence.primary_year, _movie_years=evidence)
             if self.factory:
                 provider = self.factory()
             else:
@@ -139,27 +162,8 @@ class SubtitleFallback:
                 # interpreter's Requests socket/read or a daemon helper.
                 from bobbi_core.runtime_paths import ProfilePath
                 provider = AssrtCandidates(None, ProfilePath('subtitle-cache283'), accounts=self.accounts)
-            candidate = None
-            if context.get('_share') and self.share_provider is not None:
-                try:
-                    candidate = self.share_provider(context['_share'], context, deadline, cancelled.is_set)
-                except (ValueError, OSError, RuntimeError):
-                    if cancelled.is_set() or self.clock() >= deadline:
-                        raise
-            if candidate is None and context.get('_torrent') and self.factory is None:
-                try:
-                    from bobbi_core.torrent_subtitles import fetch_candidate
-                    from bobbi_torrent.backend import subtitle_connection
-                    base, auth = subtitle_connection()
-                    candidate = fetch_candidate(session, base, auth, context['_torrent'], row,
-                        context, deadline, cancelled.is_set)
-                except (ImportError, OSError, ValueError, RuntimeError) as error:
-                    # Optional discovery keeps the original shared deadline.
-                    if hasattr(provider, 'note'):
-                        from bobbi_core.subtitle_candidates import public_failure_reason
-                        provider.note('inspect', public_failure_reason(error))
-            if candidate is None:
-                candidate = provider.candidates(context, deadline, cancelled.is_set)
+            candidate = discover_candidate(context, deadline, cancelled.is_set, provider,
+                self.share_provider, row if self.factory is None else None, self.clock)
             answer = dict(state='candidate', file=candidate['file'], origin=candidate.get('origin'),
                           bilingual=candidate.get('bilingual', False), native_instance=row['native_instance'],
                           request_id=row['request_id'], subtitle_intent=row['subtitle_intent'])

@@ -33,8 +33,14 @@ def main(capabilities=None):
             from lib.services.background_service import JacktookMOnitor
             JacktookMOnitor().run_owner_loop(host=host)
         else:
+            from lib.services.standard_playback import StandardPlayback
+            standard = StandardPlayback(host)
             monitor = xbmc.Monitor()
-            while not monitor.waitForAbort(.1):
-                host.tick()
+            try:
+                while not monitor.waitForAbort(.1):
+                    host.tick()
+                    standard.tick()
+            finally:
+                standard.close()
     finally:
         host.close()

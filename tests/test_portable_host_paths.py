@@ -82,6 +82,7 @@ class Monitor:
  def waitForAbort(self, seconds): self.n+=1; return self.n>1
 class Player:
  def isPlaying(self): return False
+ def isPlayingVideo(self): return False
 xbmc=types.SimpleNamespace(Monitor=Monitor,Player=Player,getGlobalIdleTime=lambda:0,
  log=lambda *a:None,LOGINFO=1)
 sys.modules['xbmc']=xbmc

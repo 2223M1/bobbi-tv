@@ -23,6 +23,8 @@ def source(**values):
 
 @pytest.fixture
 def picker(monkeypatch):
+    monkeypatch.syspath_prepend(str(ROOT / 'addons/plugin.video.bobbi'))
+    monkeypatch.syspath_prepend(str(ROOT / 'addons/script.module.bobbi.core/lib'))
     state = SimpleNamespace(aborted=False, calls=[], resolutions=[], dialogs=[], opened=[],
                             handles=[], identities=[], sources=[], native_imports=[], window_props={})
     xbmc = ModuleType('xbmc')
@@ -46,6 +48,20 @@ def picker(monkeypatch):
         ROOT / 'addons/plugin.video.bobbi/lib/portable.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    from bobbi_platform.standard_session import StandardSession
+    account = dict(account_id='', authenticated=False, epoch=0)
+    actor = StandardSession(SimpleNamespace(is_current=lambda value: value == account,
+        require_current=lambda *args, **kwargs: None))
+    def call(action, body):
+        if action == 'account_status':
+            return dict(account)
+        assert action == 'standard_playback'
+        if body['operation'] == 'subtitle_start':
+            return {'state': 'pending'}
+        return actor.dispatch(body)
+    monkeypatch.setattr(module, 'call', call)
+    monkeypatch.setattr('bobbi_platform.runtime.call', call)
+    state.actor = actor
 
     def handoff(identity, handle, **kwargs):
         state.handles.append(handle)
@@ -71,7 +87,8 @@ def picker(monkeypatch):
             state.sources.append(chosen)
             if resolver:
                 return resolver(chosen)
-            return {'url': chosen.url, 'is_torrent': False, 'is_pack': chosen.isPack}
+            return dict(result.item_information, url=chosen.url, is_torrent=chosen.type == 'Torrent',
+                is_pack=chosen.isPack, require_catalog_episode_binding=chosen.requiresCatalogEpisodeProof)
         result._ensure_playback_info = ensure
         def modal():
             state.calls.append('modal')
@@ -110,7 +127,7 @@ def test_one_stock_handoff_preserves_exact_chosen_object_identity(picker, handle
     assert len(picker.opened) == 1
     assert picker.opened[0][0] == ('resolve' if handle >= 0 else 'play')
     assert not picker.native_imports
-    assert window.item_information['selection_policy'] == 'portable_manual'
+    assert window.item_information['selection_policy'] == 'exact'
     assert not window._auto_select_pending
 
 
@@ -148,10 +165,8 @@ def test_explicit_second_choice_after_resolution_failure_only(picker):
     assert picker.identities == [selected_identity(good.guid)]
 
 
-@pytest.mark.parametrize('values', [{'type': 'Torrent'}, {'requiresCatalogEpisodeProof': True},
-    {'preparedResourceId': 'private-cloud-id'}, {'directCloudKey': 'cloud-binding'},
-    {'debridType': 'RealDebrid'}])
-def test_unimplemented_backend_rejected_before_legacy_resolver(picker, values):
+@pytest.mark.parametrize('values', [{'type': 'Unknown'}])
+def test_missing_actual_resolver_is_rejected(picker, values):
     chosen = source(**values)
     window = picker.window([chosen, None])
     assert picker.module.manual_modal(window, window.base_modal) is False
@@ -168,7 +183,7 @@ def test_actual_stremio_enum_is_supported_as_direct_candidate(picker):
     assert len(picker.opened) == 1
 
 
-def test_paired_bt_uses_exact_returned_file_and_no_legacy_resolver(picker, monkeypatch):
+def test_paired_bt_uses_shared_source_data_then_exact_returned_file(picker, monkeypatch):
     from bobbi_platform.torrserver import VideoFile
     digest = 'a' * 40
     chosen = source(type='Torrent', infoHash=digest, url='magnet:?xt=urn:btih:' + digest, isPack=True)
@@ -184,7 +199,7 @@ def test_paired_bt_uses_exact_returned_file_and_no_legacy_resolver(picker, monke
     monkeypatch.setattr(picker.module, 'local_client', lambda: SimpleNamespace(select_source=select))
     window = picker.window([chosen])
     assert picker.module.manual_modal(window, window.base_modal) is True
-    assert picker.sources == []
+    assert picker.sources == [chosen]
     assert calls == [(digest, chosen.url)]
     assert picker.identities == [selected_identity('bt:' + digest + ':2')]
     assert len(picker.opened) == 1
@@ -201,18 +216,23 @@ def test_bt_file_cancel_returns_to_sources_without_playback(picker, monkeypatch)
     monkeypatch.setattr(picker.module, 'local_client', lambda: SimpleNamespace(select_source=select))
     window = picker.window([chosen, None], progressive=True)
     assert picker.module.manual_modal(window, window.base_modal) is False
-    assert picker.sources == picker.opened == picker.dialogs == []
+    assert picker.sources == [chosen]
+    assert picker.opened == picker.dialogs == []
     assert picker.calls == ['modal', 'reopen', 'modal', 'pump_cancel', 'session_cancel']
 
 
-def test_restricted_catalogue_episode_never_bypasses_proof_via_bt(picker, monkeypatch):
+def test_restricted_catalogue_episode_without_proof_requires_manual_file(picker, monkeypatch):
+    from bobbi_platform.torrserver import VideoFile, Cancelled
     chosen = source(type='Torrent', infoHash='a' * 40, requiresCatalogEpisodeProof=True)
-    def forbidden():
-        pytest.fail('Restricted unproven source reached BT backend')
-    monkeypatch.setattr(picker.module, 'local_client', forbidden)
+    picker.file_choice = -1
+    def select(expected, **kwargs):
+        assert kwargs['choose_file']((VideoFile(1, 'S01E01.mkv', 100),)) is None
+        raise Cancelled('USER_CANCELLED_FILE_CHOICE')
+    monkeypatch.setattr(picker.module, 'local_client', lambda: SimpleNamespace(select_source=select))
     window = picker.window([chosen, None])
     assert picker.module.manual_modal(window, window.base_modal) is False
-    assert picker.sources == picker.opened == []
+    assert picker.file_prompts == [['S01E01.mkv']]
+    assert picker.opened == []
 
 
 def test_bt_bad_supplied_magnet_cannot_be_discarded_for_hash(picker, monkeypatch):
@@ -229,7 +249,7 @@ def test_unresolved_pack_is_rejected_before_any_backend_work(picker):
     chosen = source(isPack=True)
     window = picker.window([chosen, None])
     assert picker.module.manual_modal(window, window.base_modal) is False
-    assert picker.sources == []
+    assert picker.sources == [chosen]
     assert picker.opened == []
 
 
@@ -300,13 +320,13 @@ def test_uncertain_submission_is_not_reopened_as_unused_resolver_handle(picker, 
     assert picker.calls == ['modal']
 
 
-def test_advanced_action_does_not_queue_or_resolve(picker):
+def test_explicit_file_picker_is_forwarded_not_disabled_by_adapter(picker):
     window = picker.window([])
     picker.module.queue_selected(window, source(), pack_select=True)
-    assert window._pending_selection is None
-    assert not window._selection_locked
-    assert window.closed == 0
-    assert window.props['playback_error']
+    assert window._pending_selection is not None
+    assert window._selection_locked
+    assert window.closed == 1
+    assert window._standard_options['pack_select']
 
 
 def load_player():
