@@ -1,0 +1,270 @@
+verify	Primary tests	﻿2026-10-20T08:46:53.9332237Z ##[group]Run python -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=review-evidence/ci-primary.xml
+verify	Primary tests	2026-10-20T08:46:53.9332826Z ^[[36;1mpython -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=review-evidence/ci-primary.xml^[[0m
+verify	Primary tests	2026-10-20T08:46:53.9373404Z shell: /usr/bin/bash -e {0}
+verify	Primary tests	2026-10-20T08:46:53.9373546Z env:
+verify	Primary tests	2026-10-20T08:46:53.9373696Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+verify	Primary tests	2026-10-20T08:46:53.9373924Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+verify	Primary tests	2026-10-20T08:46:53.9374151Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+verify	Primary tests	2026-10-20T08:46:53.9374355Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+verify	Primary tests	2026-10-20T08:46:53.9374569Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+verify	Primary tests	2026-10-20T08:46:53.9374773Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+verify	Primary tests	2026-10-20T08:46:53.9374942Z ##[endgroup]
+verify	Primary tests	2026-10-20T08:46:56.6872525Z ........................................................................ [  4%]
+verify	Primary tests	2026-10-20T08:46:57.0989723Z ........................................................................ [  8%]
+verify	Primary tests	2026-10-20T08:46:57.9242550Z ........................................................................ [ 13%]
+verify	Primary tests	2026-10-20T08:47:01.0972926Z ........................................................................ [ 17%]
+verify	Primary tests	2026-10-20T08:47:04.2194010Z ........................................................................ [ 22%]
+verify	Primary tests	2026-10-20T08:47:05.0961717Z ........................................................................ [ 26%]
+verify	Primary tests	2026-10-20T08:47:06.1285578Z ........................................................................ [ 31%]
+verify	Primary tests	2026-10-20T08:47:10.9805057Z ........................................................................ [ 35%]
+verify	Primary tests	2026-10-20T08:47:11.2774363Z ........................................................................ [ 40%]
+verify	Primary tests	2026-10-20T08:47:14.8780976Z ........................................................................ [ 44%]
+verify	Primary tests	2026-10-20T08:47:17.8898399Z ........................................................................ [ 49%]
+verify	Primary tests	2026-10-20T08:47:17.9623544Z ........................................................................ [ 53%]
+verify	Primary tests	2026-10-20T08:47:21.8540955Z .....................................................sssss.............. [ 58%]
+verify	Primary tests	2026-10-20T08:47:22.3351223Z ........................................................................ [ 62%]
+verify	Primary tests	2026-10-20T08:47:24.1902901Z ........................................................................ [ 67%]
+verify	Primary tests	2026-10-20T08:47:27.3641575Z ........................................................................ [ 71%]
+verify	Primary tests	2026-10-20T08:47:29.9916834Z ........................................................................ [ 76%]
+verify	Primary tests	2026-10-20T08:47:30.7850911Z ......................................................................F. [ 80%]
+verify	Primary tests	2026-10-20T08:47:30.8819353Z ...........F............................................................ [ 85%]
+verify	Primary tests	2026-10-20T08:47:31.0748651Z ........................................................................ [ 89%]
+verify	Primary tests	2026-10-20T08:47:31.9481642Z ........................................................................ [ 94%]
+verify	Primary tests	2026-10-20T08:47:40.1051629Z ........................................................................ [ 98%]
+verify	Primary tests	2026-10-20T08:47:40.5341583Z ....................                                                     [100%]
+verify	Primary tests	2026-10-20T08:47:40.5342019Z =================================== FAILURES ===================================
+verify	Primary tests	2026-10-20T08:47:40.5342385Z ___________ test_only_old_ce_abi_selects_exact_legacy_subtitle_root ____________
+verify	Primary tests	2026-10-20T08:47:40.5342661Z 
+verify	Primary tests	2026-10-20T08:47:40.5342881Z self = PosixPath('/storage/.kodi/userdata/addon_data/plugin.video.jacktook/subtitle-browser')
+verify	Primary tests	2026-10-20T08:47:40.5343328Z mode = 448, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5343484Z 
+verify	Primary tests	2026-10-20T08:47:40.5343613Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5344220Z         """
+verify	Primary tests	2026-10-20T08:47:40.5344405Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5344624Z         """
+verify	Primary tests	2026-10-20T08:47:40.5344771Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5344937Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5345390Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata/addon_data/plugin.video.jacktook/subtitle-browser'
+verify	Primary tests	2026-10-20T08:47:40.5345774Z 
+verify	Primary tests	2026-10-20T08:47:40.5345979Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5346245Z 
+verify	Primary tests	2026-10-20T08:47:40.5346391Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5346606Z 
+verify	Primary tests	2026-10-20T08:47:40.5346786Z self = PosixPath('/storage/.kodi/userdata/addon_data/plugin.video.jacktook')
+verify	Primary tests	2026-10-20T08:47:40.5347127Z mode = 511, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5347290Z 
+verify	Primary tests	2026-10-20T08:47:40.5347418Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5347687Z         """
+verify	Primary tests	2026-10-20T08:47:40.5347875Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5348106Z         """
+verify	Primary tests	2026-10-20T08:47:40.5348255Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5348425Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5348839Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata/addon_data/plugin.video.jacktook'
+verify	Primary tests	2026-10-20T08:47:40.5349202Z 
+verify	Primary tests	2026-10-20T08:47:40.5349406Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5349694Z 
+verify	Primary tests	2026-10-20T08:47:40.5349841Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5350071Z 
+verify	Primary tests	2026-10-20T08:47:40.5350215Z self = PosixPath('/storage/.kodi/userdata/addon_data'), mode = 511
+verify	Primary tests	2026-10-20T08:47:40.5350682Z parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5350814Z 
+verify	Primary tests	2026-10-20T08:47:40.5350939Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5351153Z         """
+verify	Primary tests	2026-10-20T08:47:40.5351272Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5351419Z         """
+verify	Primary tests	2026-10-20T08:47:40.5351514Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5351626Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5351851Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata/addon_data'
+verify	Primary tests	2026-10-20T08:47:40.5352043Z 
+verify	Primary tests	2026-10-20T08:47:40.5352175Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5352352Z 
+verify	Primary tests	2026-10-20T08:47:40.5352450Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5352589Z 
+verify	Primary tests	2026-10-20T08:47:40.5352687Z self = PosixPath('/storage/.kodi/userdata'), mode = 511, parents = True
+verify	Primary tests	2026-10-20T08:47:40.5353035Z exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5353103Z 
+verify	Primary tests	2026-10-20T08:47:40.5353185Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5353351Z         """
+verify	Primary tests	2026-10-20T08:47:40.5353471Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5353619Z         """
+verify	Primary tests	2026-10-20T08:47:40.5353716Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5353824Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5354030Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata'
+verify	Primary tests	2026-10-20T08:47:40.5354200Z 
+verify	Primary tests	2026-10-20T08:47:40.5354329Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5354508Z 
+verify	Primary tests	2026-10-20T08:47:40.5354601Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5354742Z 
+verify	Primary tests	2026-10-20T08:47:40.5354851Z self = PosixPath('/storage/.kodi'), mode = 511, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5355012Z 
+verify	Primary tests	2026-10-20T08:47:40.5355093Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5355266Z         """
+verify	Primary tests	2026-10-20T08:47:40.5355382Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5355639Z         """
+verify	Primary tests	2026-10-20T08:47:40.5355733Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5355840Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5356031Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi'
+verify	Primary tests	2026-10-20T08:47:40.5356191Z 
+verify	Primary tests	2026-10-20T08:47:40.5356318Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5356493Z 
+verify	Primary tests	2026-10-20T08:47:40.5356585Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5356726Z 
+verify	Primary tests	2026-10-20T08:47:40.5356857Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_only_old_ce_abi_selects_e0')
+verify	Primary tests	2026-10-20T08:47:40.5357142Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f7818646c90>
+verify	Primary tests	2026-10-20T08:47:40.5357299Z 
+verify	Primary tests	2026-10-20T08:47:40.5357424Z     def test_only_old_ce_abi_selects_exact_legacy_subtitle_root(tmp_path, monkeypatch):
+verify	Primary tests	2026-10-20T08:47:40.5357676Z         monkeypatch.setattr(paths, '_coreelec', lambda: True)
+verify	Primary tests	2026-10-20T08:47:40.5357895Z >       paths.configure(tmp_path, subtitle_root=paths.CE_F9_ROOT)
+verify	Primary tests	2026-10-20T08:47:40.5358029Z 
+verify	Primary tests	2026-10-20T08:47:40.5358089Z tests/test_subtitle_runtime_paths.py:41: 
+verify	Primary tests	2026-10-20T08:47:40.5358266Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+verify	Primary tests	2026-10-20T08:47:40.5358516Z addons/script.module.bobbi.core/lib/bobbi_core/runtime_paths.py:111: in configure
+verify	Primary tests	2026-10-20T08:47:40.5358834Z     export.mkdir(mode=0o700, parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.5359101Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.5359331Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.5359554Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.5359782Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.5360003Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.5360230Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.5371009Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.5371461Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.5371821Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.5372183Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.5372477Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+verify	Primary tests	2026-10-20T08:47:40.5372676Z 
+verify	Primary tests	2026-10-20T08:47:40.5372832Z self = PosixPath('/storage'), mode = 511, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5373076Z 
+verify	Primary tests	2026-10-20T08:47:40.5373211Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5373692Z         """
+verify	Primary tests	2026-10-20T08:47:40.5374097Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5374329Z         """
+verify	Primary tests	2026-10-20T08:47:40.5374477Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5374647Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5374932Z E           PermissionError: [Errno 13] Permission denied: '/storage'
+verify	Primary tests	2026-10-20T08:47:40.5375158Z 
+verify	Primary tests	2026-10-20T08:47:40.5375362Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: PermissionError
+verify	Primary tests	2026-10-20T08:47:40.5375824Z __________ test_reviewed_native_descendant_records_actual_binary_pin ___________
+verify	Primary tests	2026-10-20T08:47:40.5376084Z 
+verify	Primary tests	2026-10-20T08:47:40.5376320Z self = PosixPath('/storage/.kodi/userdata/addon_data/plugin.video.jacktook/subtitle-browser')
+verify	Primary tests	2026-10-20T08:47:40.5376720Z mode = 448, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5376891Z 
+verify	Primary tests	2026-10-20T08:47:40.5377021Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5377299Z         """
+verify	Primary tests	2026-10-20T08:47:40.5377483Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5377723Z         """
+verify	Primary tests	2026-10-20T08:47:40.5377876Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5378048Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5378533Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata/addon_data/plugin.video.jacktook/subtitle-browser'
+verify	Primary tests	2026-10-20T08:47:40.5379107Z 
+verify	Primary tests	2026-10-20T08:47:40.5379322Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5379610Z 
+verify	Primary tests	2026-10-20T08:47:40.5379766Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5379998Z 
+verify	Primary tests	2026-10-20T08:47:40.5380170Z self = PosixPath('/storage/.kodi/userdata/addon_data/plugin.video.jacktook')
+verify	Primary tests	2026-10-20T08:47:40.5380611Z mode = 511, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5380773Z 
+verify	Primary tests	2026-10-20T08:47:40.5380902Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5381178Z         """
+verify	Primary tests	2026-10-20T08:47:40.5381365Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5381600Z         """
+verify	Primary tests	2026-10-20T08:47:40.5381750Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5381915Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5382346Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata/addon_data/plugin.video.jacktook'
+verify	Primary tests	2026-10-20T08:47:40.5382728Z 
+verify	Primary tests	2026-10-20T08:47:40.5382936Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5383233Z 
+verify	Primary tests	2026-10-20T08:47:40.5383384Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5383618Z 
+verify	Primary tests	2026-10-20T08:47:40.5383762Z self = PosixPath('/storage/.kodi/userdata/addon_data'), mode = 511
+verify	Primary tests	2026-10-20T08:47:40.5384077Z parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5384217Z 
+verify	Primary tests	2026-10-20T08:47:40.5384345Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5384618Z         """
+verify	Primary tests	2026-10-20T08:47:40.5384802Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5385039Z         """
+verify	Primary tests	2026-10-20T08:47:40.5385186Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5385351Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5385706Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata/addon_data'
+verify	Primary tests	2026-10-20T08:47:40.5386018Z 
+verify	Primary tests	2026-10-20T08:47:40.5386227Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5386522Z 
+verify	Primary tests	2026-10-20T08:47:40.5386681Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5386914Z 
+verify	Primary tests	2026-10-20T08:47:40.5387072Z self = PosixPath('/storage/.kodi/userdata'), mode = 511, parents = True
+verify	Primary tests	2026-10-20T08:47:40.5387376Z exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5387481Z 
+verify	Primary tests	2026-10-20T08:47:40.5387605Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5387874Z         """
+verify	Primary tests	2026-10-20T08:47:40.5388181Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5388420Z         """
+verify	Primary tests	2026-10-20T08:47:40.5388573Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5388742Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5389079Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi/userdata'
+verify	Primary tests	2026-10-20T08:47:40.5389370Z 
+verify	Primary tests	2026-10-20T08:47:40.5389581Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5389869Z 
+verify	Primary tests	2026-10-20T08:47:40.5390027Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5390258Z 
+verify	Primary tests	2026-10-20T08:47:40.5392997Z self = PosixPath('/storage/.kodi'), mode = 511, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.5393293Z 
+verify	Primary tests	2026-10-20T08:47:40.5393429Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.5393700Z         """
+verify	Primary tests	2026-10-20T08:47:40.5393889Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.5394127Z         """
+verify	Primary tests	2026-10-20T08:47:40.5394284Z         try:
+verify	Primary tests	2026-10-20T08:47:40.5394455Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.5394778Z E           FileNotFoundError: [Errno 2] No such file or directory: '/storage/.kodi'
+verify	Primary tests	2026-10-20T08:47:40.5395065Z 
+verify	Primary tests	2026-10-20T08:47:40.5395275Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: FileNotFoundError
+verify	Primary tests	2026-10-20T08:47:40.5395728Z 
+verify	Primary tests	2026-10-20T08:47:40.5395881Z During handling of the above exception, another exception occurred:
+verify	Primary tests	2026-10-20T08:47:40.5396115Z 
+verify	Primary tests	2026-10-20T08:47:40.5396320Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_reviewed_native_descendan0')
+verify	Primary tests	2026-10-20T08:47:40.5396782Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f78189d0d50>
+verify	Primary tests	2026-10-20T08:47:40.5397031Z 
+verify	Primary tests	2026-10-20T08:47:40.5397245Z     def test_reviewed_native_descendant_records_actual_binary_pin(tmp_path, monkeypatch):
+verify	Primary tests	2026-10-20T08:47:40.5397604Z         digest = 'a' * 64
+verify	Primary tests	2026-10-20T08:47:40.5397850Z         monkeypatch.setattr(paths, '_coreelec', lambda: True)
+verify	Primary tests	2026-10-20T08:47:40.5398235Z         monkeypatch.setattr(paths, 'CE_F9_REVIEWED_PATCHES', frozenset((digest,)))
+verify	Primary tests	2026-10-20T08:47:40.5398664Z         monkeypatch.setattr(paths, 'native_executable_sha256', lambda _: digest)
+verify	Primary tests	2026-10-20T08:47:40.6153131Z         abi = paths.native_subtitle_abi({'native_contract_available': True})
+verify	Primary tests	2026-10-20T08:47:40.6153988Z         assert abi == dict(root=paths.CE_F9_ROOT, sha256=digest)
+verify	Primary tests	2026-10-20T08:47:40.6154706Z >       paths.configure(tmp_path, subtitle_root=abi['root'], native_sha256=abi['sha256'])
+verify	Primary tests	2026-10-20T08:47:40.6155053Z 
+verify	Primary tests	2026-10-20T08:47:40.6155232Z tests/test_subtitle_runtime_paths.py:138: 
+verify	Primary tests	2026-10-20T08:47:40.6155575Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+verify	Primary tests	2026-10-20T08:47:40.6156034Z addons/script.module.bobbi.core/lib/bobbi_core/runtime_paths.py:111: in configure
+verify	Primary tests	2026-10-20T08:47:40.6156501Z     export.mkdir(mode=0o700, parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.6157149Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.6157605Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.6158027Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.6158443Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.6158868Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.6159291Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.6159703Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.6160121Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.6160715Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1120: in mkdir
+verify	Primary tests	2026-10-20T08:47:40.6161225Z     self.parent.mkdir(parents=True, exist_ok=True)
+verify	Primary tests	2026-10-20T08:47:40.6161570Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+verify	Primary tests	2026-10-20T08:47:40.6162267Z 
+verify	Primary tests	2026-10-20T08:47:40.6182228Z self = PosixPath('/storage'), mode = 511, parents = True, exist_ok = True
+verify	Primary tests	2026-10-20T08:47:40.6182739Z 
+verify	Primary tests	2026-10-20T08:47:40.6182961Z     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+verify	Primary tests	2026-10-20T08:47:40.6183284Z         """
+verify	Primary tests	2026-10-20T08:47:40.6183537Z         Create a new directory at this given path.
+verify	Primary tests	2026-10-20T08:47:40.6183824Z         """
+verify	Primary tests	2026-10-20T08:47:40.6184039Z         try:
+verify	Primary tests	2026-10-20T08:47:40.6184270Z >           os.mkdir(self, mode)
+verify	Primary tests	2026-10-20T08:47:40.6184594Z E           PermissionError: [Errno 13] Permission denied: '/storage'
+verify	Primary tests	2026-10-20T08:47:40.6184865Z 
+verify	Primary tests	2026-10-20T08:47:40.6185130Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1116: PermissionError
+verify	Primary tests	2026-10-20T08:47:40.6185573Z =============================== warnings summary ===============================
+verify	Primary tests	2026-10-20T08:47:40.6186118Z tests/test_ce_progressive_http.py::test_progressive_first_byte_precedes_whole_block
+verify	Primary tests	2026-10-20T08:47:40.6186753Z   tests/test_ce_progressive_http.py:147: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+verify	Primary tests	2026-10-20T08:47:40.6187370Z     def test_progressive_first_byte_precedes_whole_block(record_property):
+verify	Primary tests	2026-10-20T08:47:40.6187660Z 
+verify	Primary tests	2026-10-20T08:47:40.6187913Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+verify	Primary tests	2026-10-20T08:47:40.6188742Z =========================== short test summary info ============================
+verify	Primary tests	2026-10-20T08:47:40.6189186Z SKIPPED [5] tests/test_maintenance_lease.py:81: real Windows inherited-pipe API binding
+verify	Primary tests	2026-10-20T08:47:40.6189615Z 2 failed, 1597 passed, 5 skipped, 1 warning in 46.09s
+verify	Primary tests	2026-10-20T08:47:40.7268996Z ##[error]Process completed with exit code 1.
