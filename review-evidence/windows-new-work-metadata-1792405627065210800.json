@@ -1,0 +1,37 @@
+{
+  "works": {
+    "a_separation": {
+      "title": "A Separation",
+      "tmdb_id": 60243,
+      "kind": "movie",
+      "year": 2011
+    },
+    "haibane_renmei": {
+      "title": "Haibane Renmei",
+      "tmdb_id": 34164,
+      "kind": "tv",
+      "year": 2002,
+      "season": 1,
+      "episode": 1
+    },
+    "dennou_coil": {
+      "title": "Den-noh Coil",
+      "tmdb_id": 13265,
+      "kind": "tv",
+      "year": 2007,
+      "season": 1,
+      "episode": 1
+    }
+  },
+  "metadata_fetched": true,
+  "personal_key_printed": false,
+  "anime_original_name": "灰羽連盟",
+  "season_episode_count": 13,
+  "alternate_anime_original_name": "電脳コイル",
+  "alternate_season_episode_count": 26,
+  "installed_generation": {
+    "sequence": 2026101905,
+    "path": "D:\\AM6B-Project\\bobbi-tv-private-20261019\\native\\build\\windows-installer-1905",
+    "frozen_build_receipt_sha256": "ac8236c91a27e18cc48eb2db2df4ae64170eaa69fee03bebffc4bb75397f530c"
+  }
+}

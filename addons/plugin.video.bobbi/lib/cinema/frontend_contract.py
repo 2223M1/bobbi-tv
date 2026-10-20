@@ -35,13 +35,8 @@ def clean_title(value):
 
 
 def image_url(value, size):
-    value = text(value)
-    if value.startswith('/') and not value.startswith('//'):
-        return 'https://image.tmdb.org/t/p/' + size + value
-    parsed = urlsplit(value)
-    if parsed.hostname == 'image.tmdb.org' and re.match(r'^/t/p/[^/]+/', parsed.path):
-        return urlunsplit(('https', parsed.netloc, re.sub(r'^/t/p/[^/]+/', '/t/p/' + size + '/', parsed.path), parsed.query, parsed.fragment))
-    return value
+    from bobbi_core.image_cache import image_url as tmdb_image_url
+    return tmdb_image_url(text(value), size)
 
 
 def history_identity(data, fallback=''):
@@ -77,7 +72,12 @@ def history_rows(items, time_key):
         if identity not in groups:
             groups[identity] = [key, data, []]
         groups[identity][2].append(key)
-    return [row for row in groups.values() if 5 < progress(row[1]) < 90]
+    # New exact-player rows carry an explicit terminal-derived completion bit.
+    # A network error at 97% must retain its true resume point. Old records keep
+    # their historical threshold; no database-wide rewrite or fake percentage.
+    return [row for row in groups.values()
+            if ((progress(row[1]) > 0 and not row[1]['completed'])
+                if type(row[1].get('completed')) is bool else 5 < progress(row[1]) < 90)]
 
 
 def history_digest(data):

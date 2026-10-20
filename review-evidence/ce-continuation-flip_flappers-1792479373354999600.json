@@ -1,0 +1,548 @@
+{
+  "result": {
+    "samples": [
+      {
+        "at": 2209235.754356926,
+        "native": {
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "monotonic_us": 2209202398845,
+          "native_instance": "60d6bda3-5e30-434b-a234-68696139c6cb",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "02b0c76a450599e7b77b3f4314baa02ea6a075ae3c9b679d7c489f88fc0c3906",
+          "subtitle_intent": 0,
+          "url_sha256": "8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "user_intent": 0
+        },
+        "selection_epoch": 2,
+        "terminal": {},
+        "desired": {
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "epoch": 2,
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "selection_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "02b0c76a450599e7b77b3f4314baa02e （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 318,
+            "minutes": 0,
+            "seconds": 33
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 504,
+            "minutes": 23,
+            "seconds": 40
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Flip Flappers",
+          "season": 1,
+          "showtitle": "Flip Flappers",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "68272"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2209240.877077017,
+        "native": {
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "monotonic_us": 2209202398845,
+          "native_instance": "60d6bda3-5e30-434b-a234-68696139c6cb",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "02b0c76a450599e7b77b3f4314baa02ea6a075ae3c9b679d7c489f88fc0c3906",
+          "subtitle_intent": 0,
+          "url_sha256": "8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "user_intent": 0
+        },
+        "selection_epoch": 2,
+        "terminal": {},
+        "desired": {
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "epoch": 2,
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "selection_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "02b0c76a450599e7b77b3f4314baa02e （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 406,
+            "minutes": 0,
+            "seconds": 38
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 504,
+            "minutes": 23,
+            "seconds": 40
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Flip Flappers",
+          "season": 1,
+          "showtitle": "Flip Flappers",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "68272"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2209245.994467033,
+        "native": {
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "monotonic_us": 2209202398845,
+          "native_instance": "60d6bda3-5e30-434b-a234-68696139c6cb",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "02b0c76a450599e7b77b3f4314baa02ea6a075ae3c9b679d7c489f88fc0c3906",
+          "subtitle_intent": 0,
+          "url_sha256": "8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "user_intent": 0
+        },
+        "selection_epoch": 2,
+        "terminal": {},
+        "desired": {
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "epoch": 2,
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "selection_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "02b0c76a450599e7b77b3f4314baa02e （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 536,
+            "minutes": 0,
+            "seconds": 43
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 504,
+            "minutes": 23,
+            "seconds": 40
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Flip Flappers",
+          "season": 1,
+          "showtitle": "Flip Flappers",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "68272"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2209251.134434033,
+        "native": {
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "monotonic_us": 2209202398845,
+          "native_instance": "60d6bda3-5e30-434b-a234-68696139c6cb",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "02b0c76a450599e7b77b3f4314baa02ea6a075ae3c9b679d7c489f88fc0c3906",
+          "subtitle_intent": 0,
+          "url_sha256": "8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "user_intent": 0
+        },
+        "selection_epoch": 2,
+        "terminal": {},
+        "desired": {
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "epoch": 2,
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "selection_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "02b0c76a450599e7b77b3f4314baa02e （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 666,
+            "minutes": 0,
+            "seconds": 48
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 504,
+            "minutes": 23,
+            "seconds": 40
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Flip Flappers",
+          "season": 1,
+          "showtitle": "Flip Flappers",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "68272"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2209256.261340656,
+        "native": {
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "monotonic_us": 2209202398845,
+          "native_instance": "60d6bda3-5e30-434b-a234-68696139c6cb",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "02b0c76a450599e7b77b3f4314baa02ea6a075ae3c9b679d7c489f88fc0c3906",
+          "subtitle_intent": 0,
+          "url_sha256": "8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "user_intent": 0
+        },
+        "selection_epoch": 2,
+        "terminal": {},
+        "desired": {
+          "request_id": "48e0f2dde1a945e39656b44248e263b8",
+          "epoch": 2,
+          "file_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a|transport:8548d1c1a5009886acd97db54df6546f1da3162e08c4648eecbb6b20209d97fa",
+          "selection_identity": "prepared:143912db60b94343cdc40eb839a13b14515e64e5070f337e04e62643bda3e91a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "02b0c76a450599e7b77b3f4314baa02e （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 796,
+            "minutes": 0,
+            "seconds": 53
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 504,
+            "minutes": 23,
+            "seconds": 40
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Flip Flappers",
+          "season": 1,
+          "showtitle": "Flip Flappers",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "68272"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      }
+    ]
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

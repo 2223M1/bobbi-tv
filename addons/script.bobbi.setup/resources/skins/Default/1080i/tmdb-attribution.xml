@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog">
+  <defaultcontrol>9001</defaultcontrol>
+  <coordinates><system>1</system></coordinates>
+  <controls>
+    <control type="image"><left>0</left><top>0</top><width>1920</width><height>1080</height><texture colordiffuse="F20D253F">special://home/addons/script.bobbi.setup/resources/white.png</texture></control>
+    <control type="image"><left>240</left><top>220</top><width>400</width><height>29</height><texture>special://home/addons/script.bobbi.setup/resources/tmdb-logo.png</texture></control>
+    <control type="label"><left>240</left><top>300</top><width>1400</width><height>60</height><font>font30</font><label>影视资料来自 TMDB</label><textcolor>FFFFFFFF</textcolor></control>
+    <control type="textbox" id="100"><left>240</left><top>400</top><width>1400</width><height>320</height><font>font13</font><textcolor>FFFFFFFF</textcolor></control>
+    <control type="button" id="9001"><left>240</left><top>780</top><width>280</width><height>70</height><label>返回影院设置</label><font>font13</font><onleft>9001</onleft><onright>9001</onright><onup>9001</onup><ondown>9001</ondown></control>
+  </controls>
+</window>

@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "scope": "Real product code and actual signed archives; device claims are separate. Reference-policy tests are not counted.",
+  "U01_U04_U27": {"result": "product_tests_passed", "evidence": "test_ce_general_installer: same signed installation for model, hash and tested-label variations; test_platform actual API probes"},
+  "U05_U09": {"result": "product_and_actual_adapter_passed", "evidence": "test_portable_host_paths empty profile, test_platform missing/partial/wrong native protocol, test_standard_product; real Kodi fixture 1792493020915359500"},
+  "U10_U12": {"result": "product_and_archive_tests_passed", "evidence": "test_ce_general_installer real signed seed/dependency failure; ce2009-entry isolated bootstrap. Kodi owns pycryptodome ABI installation.", "clean_device": "not_run"},
+  "U13_U14": {"result": "product_tests_passed", "evidence": "test_runtime_host, test_account_ui, test_cloud115, test_account_streams, test_accounts, test_standard_session; existing account preserved on real device", "second_real_account": "not_run"},
+  "U15_U19": {"result": "product_tests_and_standard_adapter_fixture_passed", "evidence": "test_standard_product, test_standard_session, test_portable_picker; actual Kodi ListItem identity and two EOFs", "real_series_complete_EOF": "not_run", "subtitle_visual_synchronization": "not_claimed"},
+  "U20_U21": {"result": "product_tests_passed", "evidence": "test_native_engine mixed kernel/process pointer ABI; test_portable_host_paths no optional engines; actual AM6B 32-bit only"},
+  "U22": {"result": "existing_native_regressions_passed_with_media_limitations", "evidence": "757 baseline plus 177 preparation; new movie/anime reach AV; startup anomalies and Lain Chinese subtitle remain open"},
+  "U23_U24_U25_U28": {"result": "transaction_and_actual_artifact_tests_passed", "evidence": "test_ce_general_installer recovery/rollback/replay; ce2009-artifacts and ce2009-entry signed ZIP checks; real existing-instance upgrade", "clean_Kodi_ZIP_UI_install": "not_run", "power_loss_device": "not_run"},
+  "U26": {"result": "no_extra_hardware_gate", "evidence": "No model/test flag admission. Same-box stock adapter fixture is explicitly not another CE device. Private friend testing allowed; stable/public release closed."}
+}

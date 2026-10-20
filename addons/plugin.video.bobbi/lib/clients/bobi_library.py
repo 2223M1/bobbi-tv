@@ -129,12 +129,15 @@ def to_source(data, entry, identity=None):
     from lib.utils.general.source_resolution import bind_prepared_profile
     source.preparedMediaProfile = bind_prepared_profile(source, entry)
     if source.preparedResourceId and entry.get('prepared_subtitle'):
-        from lib.cinema.subtitle_binding import checked_video
+        from bobbi_core.video_context import checked_video
         from lib.cinema.subtitle_projection import checked
-        video = checked_video(entry.get('subtitle_video'))
-        if (video['release_key'] == source.preparedVersionKey
-                and video['selected']['source_info_hash'] == source.preparedInfoHash):
-            source.preparedSubtitle = checked(entry['prepared_subtitle'], video)
+        try:
+            video = checked_video(entry.get('video_context'))
+            if (video['release_key'] == source.preparedVersionKey
+                    and video['selected']['source_info_hash'] == source.preparedInfoHash):
+                source.preparedSubtitle = checked(entry['prepared_subtitle'], video)
+        except (ValueError, KeyError, TypeError):
+            pass  # Invalid optional subtitle projection does not hide the video.
     # Existing resolver accepts native filesystem Direct sources. No debrid
     # "cached" claim or signed URL persistence. Explicit BT-anime provenance
     # preserves preference after the verified release is copied into 115.

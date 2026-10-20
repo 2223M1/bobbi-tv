@@ -1,43 +1,46 @@
-"""Stock Kodi long-lived service: renewable 115 reads, no private native IPC."""
-import xbmc
-from bobbi_platform.runtime import Runtime
-from bobbi_core.share_stream import ShareStream
-from bobbi_catalog.catalog import selected, resolve
-from bobbi_catalog.api import valid_cdn
+"""One portable host; retain the existing native owner when actually present."""
 
 
-def arguments(body):
-    return {key: body[key] for key in ('locator', 'guid', 'title', 'size', 'media')}
-
-
-def main():
-    monitor = xbmc.Monitor()
-    from lib.api.trakt.base_cache import setup_databases
-    setup_databases()  # Local tables only; never migrate or authenticate accounts.
-    from bobbi_platform.native_engine import Engine
-    engine = Engine()
-    streams = ShareStream(validate=lambda body: selected(**arguments(body)),
-        resolve=lambda body: resolve(**arguments(body)), validate_url=valid_cdn,
-        report=lambda phase: xbmc.log('[bobbi] share: ' + phase, xbmc.LOGINFO),
-        observer=lambda row: None)
-    def dispatch(action, body):
-        if monitor.abortRequested():
-            raise ValueError('Runtime stopping')
-        if action == 'share_open':
-            return streams.register(body)
-        if action == 'status':
-            return {'ready': True, 'version': '0.1.0'}
-        raise ValueError('Unsupported action')
-    runtime = Runtime(dispatch)
+def main(capabilities=None):
+    import xbmc
+    from bobbi_platform.host import Host
+    from bobbi_platform.paths import profile
+    from bobbi_platform.kodi import rpc
+    from bobbi_core.runtime_paths import configure, native_subtitle_abi
+    capabilities = capabilities or {}
+    native = capabilities.get('native_contract_available') is True
+    abi = native_subtitle_abi(capabilities)
+    configure(profile('plugin.video.bobbi'), subtitle_root=abi['root'] if abi else None,
+              native_sha256=abi['sha256'] if abi else None)
+    host = Host(profile(), report=lambda code: xbmc.log('[bobbi] ' + code, xbmc.LOGINFO),
+                native_rpc=rpc if native else None)
     try:
-        runtime.start()
-        while not monitor.waitForAbort(1):
-            if not xbmc.getCondVisibility('System.Platform.Android'):
-                try:
-                    engine.tick()
-                except (ValueError, OSError):
-                    xbmc.log('[bobbi] local engine unavailable; existing services untouched', xbmc.LOGWARNING)
+        host.start()
+        host.configure_preparation(profile('plugin.video.bobbi'))
+        def refresh_catalog(**kwargs):
+            from bobbi_core.share_catalog import juku_enabled
+            if not juku_enabled():
+                return {'state': 'DISABLED'}
+            from bobbi_core.juku_catalog import refresh_one
+            return refresh_one(**kwargs)
+        def idle():
+            host.playing = xbmc.Player().isPlaying()
+            return not host.playing and xbmc.getGlobalIdleTime() >= 30
+        host.configure_catalog_refresh(refresh_catalog, idle)
+        if native:
+            # Keep the original actor on the Kodi thread, including ordered
+            # events, subtitles and continuation. No stock fake receipt path.
+            from lib.services.background_service import JacktookMOnitor
+            JacktookMOnitor().run_owner_loop(host=host)
+        else:
+            from lib.services.standard_playback import StandardPlayback
+            standard = StandardPlayback(host)
+            monitor = xbmc.Monitor()
+            try:
+                while not monitor.waitForAbort(.1):
+                    host.tick()
+                    standard.tick()
+            finally:
+                standard.close()
     finally:
-        runtime.close()
-        streams.close()
-        engine.close()
+        host.close()

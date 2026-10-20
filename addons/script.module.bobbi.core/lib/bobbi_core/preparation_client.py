@@ -1,11 +1,11 @@
-"""Small Unix IPC client; cloud credentials and publication are never exposed."""
+"""Bounded portable host client; explicit legacy Unix transport stays opt-in."""
 import json
 import socket
 import time
 from uuid import uuid4
 from bobbi_core.capabilities import IPC_PROTOCOL, compatible
 
-SOCKET_PATH = '/storage/.local/share/bobitv/preparation/prepare.sock'
+SOCKET_PATH = None  # Optional preparation is registered with the local host.
 
 
 def call(method, body, socket_path=SOCKET_PATH, timeout=0.3):
@@ -14,6 +14,20 @@ def call(method, body, socket_path=SOCKET_PATH, timeout=0.3):
         raise ValueError('Unsupported preparation command')
     if type(timeout) not in (int, float) or not 0 < timeout <= 0.3:
         raise ValueError('Bounded preparation IPC timeout required')
+    if socket_path is None:
+        from bobbi_platform.runtime import call as host_call
+        deadline = time.monotonic() + timeout
+        scope = host_call('account_status', {}, timeout=min(.1, timeout))
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError('Preparation account budget exceeded')
+        value = host_call('preparation', dict(method=method, body=body, protocol=IPC_PROTOCOL,
+                          account=scope), timeout=remaining)
+        if not isinstance(value, dict) or not compatible(value.get('component')):
+            raise ValueError('Preparation service component is incompatible')
+        return value
+    if not hasattr(socket, 'AF_UNIX'):
+        raise OSError('Explicit Unix preparation transport unavailable')
     raw = json.dumps(dict(method=method, body=body, protocol=IPC_PROTOCOL), ensure_ascii=False, separators=(',', ':')).encode('utf-8') + b'\n'
     if len(raw) > 16384:
         raise ValueError('Preparation request exceeds byte budget')
@@ -45,15 +59,21 @@ def call(method, body, socket_path=SOCKET_PATH, timeout=0.3):
 
 
 def prepare_fonts(data, context, cancelled=lambda: False):
-    """Only verified prepared files, after the native old-player barrier.
+    """Bounded local font working-set handoff, never a network font download.
 
-    This stage never downloads fonts. Each poll reuses the same request; the
-    service verifies immutable inputs off its IPC thread and rejects late work.
+    Preserve previously working ASS styles before creating the AV renderer.
+    The three-second ceiling is not an unconditional delay: a completed local
+    check or an unavailable cache returns immediately and cannot fail video.
     """
+    if cancelled():
+        raise RuntimeError('本次播放已取消')
     if not data.get('prepared_resource_id'):
         return dict(state='not_applicable')
-    body = dict(context, resource_id=data['prepared_resource_id'],
-                source_info_hash=data['prepared_source_info_hash'])
+    try:
+        body = dict(context, resource_id=data['prepared_resource_id'],
+                    source_info_hash=data['prepared_source_info_hash'])
+    except (KeyError, TypeError, ValueError):
+        return dict(state='unavailable', reason='FONT_PREFLIGHT_CONTEXT_UNAVAILABLE')
     deadline = time.monotonic() + 3
     while not cancelled():
         remaining = deadline - time.monotonic()
@@ -63,11 +83,15 @@ def prepare_fonts(data, context, cancelled=lambda: False):
             result = call('font_preflight', body, timeout=min(0.3, remaining))
         except OSError:
             result = dict(state='pending')
+        except (ValueError, TypeError, RuntimeError):
+            result = dict(state='unavailable', reason='FONT_PREFLIGHT_SERVICE_UNAVAILABLE')
         if cancelled():
             break
+        if not isinstance(result, dict):
+            return dict(state='unavailable', reason='FONT_PREFLIGHT_REPLY_INVALID')
         if result.get('state') != 'pending':
             if result.get('state') == 'ready' and result.get('request_id') != context['request_id']:
-                raise ValueError('Font preflight answered a different playback request')
+                return dict(state='unavailable', reason='FONT_PREFLIGHT_REPLY_MISMATCH')
             return result
         time.sleep(min(0.05, max(0, deadline - time.monotonic())))
     raise RuntimeError('本次播放已取消，未应用迟到的字体结果')
@@ -75,6 +99,8 @@ def prepare_fonts(data, context, cancelled=lambda: False):
 
 def resolve_entry(data, snapshot, entry, cancelled=lambda: False):
     from bobbi_core.preparation import MEDIA
+    from bobbi_core.video_context import migrate_entry
+    migrate_entry(entry)
     television = data.get('tv_data') or {}
     identifier = (data.get('ids') or {}).get('tmdb_id')
     media_id = ('tmdb:tv:{}:s{}:e{}'.format(identifier, television.get('season'), television.get('episode'))
@@ -99,13 +125,14 @@ def resolve_entry(data, snapshot, entry, cancelled=lambda: False):
         except OSError:
             result = {'state': 'pending'}
         if result.get('state') == 'ready':
+            migrate_entry(result)
             expected = dict(request_id=data['request_id'], verification_id=verification, resource_id=entry['key'], generation=snapshot['generation'],
                             account=snapshot['account'], file_id=entry['prepared_file_id'], path=entry['path'],
                             bytes=entry['bytes'], version_key=entry['prepared_version_key'])
             if 'qualification' in body:
                 expected['qualification'] = body['qualification']
-            if 'subtitle_video' in entry:
-                expected['subtitle_video'] = entry['subtitle_video']
+            if 'video_context' in entry:
+                expected['video_context'] = entry['video_context']
             return entry if all(result.get(key) == value for key, value in expected.items()) and not cancelled() else None
         if result.get('state') != 'pending':
             return None

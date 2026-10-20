@@ -1,7 +1,8 @@
-<addon id="script.module.bobbi.core" name="AM6B Shared Core" version="0.1.0" provider-name="AM6B local adaptation">
+<addon id="script.module.bobbi.core" name="AM6B Shared Core" version="0.1.12" provider-name="AM6B local adaptation">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />
     <import addon="script.module.requests" version="2.25.1" />
+    <import addon="script.module.pycryptodome" version="3.4.3" />
   </requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.addon.metadata">

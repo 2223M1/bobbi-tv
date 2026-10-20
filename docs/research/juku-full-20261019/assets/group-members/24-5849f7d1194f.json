@@ -1,0 +1,43 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\repository.chinesesubtitles-1.0.0.zip",
+  "bytes": 662,
+  "sha256": "5849f7d1194f4b897e1bc2d4216bda922be9707dbee4a3a278b401e99dff1d54",
+  "members": [
+    {
+      "path": "repository.chinesesubtitles/addon.xml",
+      "type": "file",
+      "bytes": 1147,
+      "compressed_bytes": 490,
+      "sha256": "136ed8415cc60bf3d738d45c9fefb8928fca45abbac8ba6c865a31076c056b76",
+      "copy": "group-original/24-5849f7d1194f/repository.chinesesubtitles/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "repository.chinesesubtitles",
+        "name": "ChineseSub Repository",
+        "version": "1.0.0",
+        "provider-name": "qzydustin",
+        "extensions": [
+          {
+            "point": "xbmc.addon.repository"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": []
+      }
+    }
+  ],
+  "python": [],
+  "summary": {
+    "files": 1,
+    "directories": 0,
+    "uncompressed_bytes": 1147,
+    "extensions": {
+      ".xml": 1
+    },
+    "copy_status": {
+      "original-byte-copy": 1
+    }
+  }
+}

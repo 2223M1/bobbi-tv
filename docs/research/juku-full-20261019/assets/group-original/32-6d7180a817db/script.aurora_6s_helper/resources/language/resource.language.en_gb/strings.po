@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en_gb\n"
+
+msgctxt "#32000"
+msgid "Lighting"
+msgstr "Lighting"
+
+msgctxt "#32001"
+msgid "Enable lighting control"
+msgstr "Enable lighting control"
+
+msgctxt "#32002"
+msgid "Normal"
+msgstr "Normal"
+
+msgctxt "#32003"
+msgid "Playback (including pause)"
+msgstr "Playback (including pause)"
+
+msgctxt "#32004"
+msgid "Color (palette)"
+msgstr "Color (palette)"
+
+msgctxt "#32005"
+msgid "Brightness (%)"
+msgstr "Brightness (%)"
+
+msgctxt "#32006"
+msgid "Effect"
+msgstr "Effect"
+
+msgctxt "#32007"
+msgid "Steady"
+msgstr "Steady"
+
+msgctxt "#32008"
+msgid "Breathing"
+msgstr "Breathing"
+
+msgctxt "#32009"
+msgid "Breathing speed"
+msgstr "Breathing speed"
+
+msgctxt "#32010"
+msgid "Fast"
+msgstr "Fast"
+
+msgctxt "#32011"
+msgid "Medium"
+msgstr "Medium"
+
+msgctxt "#32012"
+msgid "Slow"
+msgstr "Slow"
+
+msgctxt "#32013"
+msgid "Disabling restores the previous lighting. Saved settings apply to the current playback state."
+msgstr "Disabling restores the previous lighting. Saved settings apply to the current playback state."
+
+msgctxt "#32014"
+msgid "Press OK to choose a color. Exact hex input is available from the lighting menu; actual LED color may differ."
+msgstr "Press OK to choose a color. Exact hex input is available from the lighting menu; actual LED color may differ."
+
+msgctxt "#32015"
+msgid "Set brightness to zero to turn the strip off."
+msgstr "Set brightness to zero to turn the strip off."
+
+msgctxt "#32016"
+msgid "Used during audio/video playback, including pause. Stop restores the normal profile."
+msgstr "Used during audio/video playback, including pause. Stop restores the normal profile."
+
+msgctxt "#32017"
+msgid "View current lighting status"
+msgstr "View current lighting status"
+
+
+msgctxt "#32018"
+msgid "Off"
+msgstr "Off"
+
+msgctxt "#32019"
+msgid "Prefer smooth breathing"
+msgstr "Prefer smooth breathing"
+
+msgctxt "#32020"
+msgid "Use hardware fading; some colors are approximated. Disable to preserve RGB levels with stepped software fading. Steady colors are unchanged."
+msgstr "Use hardware fading; some colors are approximated. Disable to preserve RGB levels with stepped software fading. Steady colors are unchanged."

@@ -1,0 +1,41 @@
+
+</head>
+<body>
+    <div class="bg-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="container">
+        <!-- Playlists List View (Level 1) -->
+        <div id="playlistsView">
+            <div class="lists-title-container">
+                <span style="font-size: 20px;">📚</span>
+                <h2 class="lists-main-title">精选主题片单</h2>
+            </div>
+            
+            <div class="category-tabs" id="playlistCategoryTabs">
+                <!-- Dynamic Tabs -->
+            </div>
+            
+            <div class="playlists-grid" id="playlistsGrid">
+                <!-- Dynamic Playlists Card list -->
+            </div>
+        </div>
+
+        <!-- Playlist Detail View (Level 2) -->
+        <div id="playlistDetailView" class="playlist-detail-container" style="display: none;">
+            <div class="detail-header-row">
+                <button class="back-btn" onclick="goBackToPlaylists()">← 返回片单</button>
+                <div class="playlist-detail-title" id="currentPlaylistTitle">片单名称</div>
+            </div>
+            <div class="playlist-description-box" id="currentPlaylistDescBox" style="display: none;">
+                <div class="desc-tag">📚 介绍</div>
+                <div class="desc-text" id="currentPlaylistDesc"></div>
+            </div>
+            
+            <div class="playlist-video-list" id="playlistVideosGrid">
+                <!-- Videos Grid -->
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,15 @@
+{
+  "signed_apply": true,
+  "exact_byte_rollback": true,
+  "same_sequence_replay_rejected": true,
+  "replay_after_rollback_rejected": true,
+  "tampered_signature_rejected": true,
+  "concurrent_profile_lock_rejected": true,
+  "recovery_after_unlock": true,
+  "real_native_launcher": true,
+  "real_embedded_python": true,
+  "compared_files": 3059,
+  "signed_bundle_sha256": "b1f370687ae215637a86c45958c9974c1c4666465ebc7e59d6cb7cb9b5c2fbd3",
+  "profile": "throwaway test fixture only",
+  "real_playback_verified": false
+}

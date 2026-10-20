@@ -49,19 +49,13 @@ conservative content gate, not proof of translation quality or complete speech.
     if not isinstance(raw, bytes) or len(raw) != selection['subtitle_file']['length']:
         raise ValueError('Sidecar bytes differ from selected release tuple')
     extension = PurePosixPath(selection['subtitle_file']['path']).suffix.casefold()
-    cues = parse(raw, extension, duration)
-    windows = [0] * 6
-    chinese = 0
-    for cue in cues:
-        if re.search(r'[\u3400-\u9fff]', cue['text']):
-            chinese += 1
-            windows[min(5, int(cue['start'] * 6 / duration))] += 1
+    cues = parse(raw, extension)
+    chinese = sum(bool(re.search(r'[\u3400-\u9fff]', cue['text'])) for cue in cues)
     proof = dict(kind='same_release', video_key=video['key'],
                  subtitle_sha256=hashlib.sha256(raw).hexdigest(), selection=selection,
-                 duration=duration, dialogue_cues=len(cues), chinese_cues=chinese,
-                 chinese_windows=windows)
-    proof['state'] = ('SAME_RELEASE_TIMELINE_NOT_VISUAL_PROOF'
-                      if chinese * 2 >= len(cues) and min(windows) >= 5
+                 dialogue_cues=len(cues), chinese_cues=chinese)
+    proof['state'] = ('SAME_RELEASE_CHINESE_TEXT'
+                      if chinese
                       else 'CHINESE_DIALOGUE_NOT_PROVEN')
     validate(video, raw, proof)
     return proof
@@ -74,9 +68,10 @@ Membership and uniqueness are checked by select() against the immutable
 MetadataCache before IO. They must not be inferred from this compact record.
 """
     checked_video(video)
-    required = {'kind', 'video_key', 'subtitle_sha256', 'selection', 'duration',
-                'dialogue_cues', 'chinese_cues', 'chinese_windows', 'state'}
-    if not isinstance(proof, dict) or set(proof) != required or proof['kind'] != 'same_release':
+    required = {'kind', 'video_key', 'subtitle_sha256', 'selection',
+                'dialogue_cues', 'chinese_cues', 'state'}
+    legacy = required | {'duration', 'chinese_windows'}
+    if not isinstance(proof, dict) or set(proof) not in (required, legacy) or proof['kind'] != 'same_release':
         raise ValueError('Complete release sidecar evidence required')
     selection = proof['selection']
     fields = {'video_key', 'source_info_hash', 'metadata_sha256', 'video_file', 'subtitle_file'}
@@ -97,18 +92,11 @@ MetadataCache before IO. They must not be inferred from this compact record.
     if len(raw) != file['length'] or not 0 < len(raw) <= 2 * 1024 * 1024:
         raise ValueError('Release subtitle length changed')
     extension = PurePosixPath(file['path']).suffix.casefold()
-    cues = parse(raw, extension, proof['duration'])
-    windows = [0] * 6
-    for cue in cues:
-        if re.search(r'[\u3400-\u9fff]', cue['text']):
-            windows[min(5, int(cue['start'] * 6 / proof['duration']))] += 1
-    state = ('SAME_RELEASE_TIMELINE_NOT_VISUAL_PROOF'
-             if sum(windows) * 2 >= len(cues) and min(windows) >= 5
-             else 'CHINESE_DIALOGUE_NOT_PROVEN')
+    cues = parse(raw, extension)
+    chinese = sum(bool(re.search(r'[\u3400-\u9fff]', cue['text'])) for cue in cues)
+    state = 'SAME_RELEASE_CHINESE_TEXT' if chinese else 'CHINESE_DIALOGUE_NOT_PROVEN'
     if (type(proof['dialogue_cues']) is not int or type(proof['chinese_cues']) is not int
-            or not isinstance(proof['chinese_windows'], list)
-            or any(type(n) is not int for n in proof['chinese_windows'])
-            or proof['dialogue_cues'] != len(cues) or proof['chinese_cues'] != sum(windows)
-            or proof['chinese_windows'] != windows or proof['state'] != state):
+            or proof['dialogue_cues'] != len(cues) or proof['chinese_cues'] != chinese
+            or (set(proof) == required and proof['state'] != state)):
         raise ValueError('Release subtitle verdict differs from actual dialogue')
-    return state == 'SAME_RELEASE_TIMELINE_NOT_VISUAL_PROOF'
+    return bool(chinese)

@@ -1,0 +1,26 @@
+{
+  "exit_code": 0,
+  "result": {
+    "error": "AssertionError",
+    "reason": "PICKER_REPLACED",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 4
+      },
+      {
+        "function": "<module>",
+        "line": 465
+      },
+      {
+        "function": "bind_picker",
+        "line": 372
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "lives_of_others",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

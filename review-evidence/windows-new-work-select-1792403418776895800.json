@@ -1,0 +1,2209 @@
+{
+  "selected": true,
+  "record": {
+    "test": {
+      "title": "A Separation",
+      "tmdb_id": 60243,
+      "kind": "movie",
+      "year": 2011
+    },
+    "prior_request": null,
+    "started": 111183.531,
+    "ordinary_ui": true,
+    "force_select": false,
+    "helper_sha256": "5b31ea314733201b260ab51a71bf0d5040c30a6e3d6c9a016dbd506eb32ddb5f",
+    "home": {
+      "generation": 7,
+      "intent": 0,
+      "retired_generation": 7,
+      "observed_at": 111184.093
+    },
+    "launched_at": 111184.093,
+    "picker": {
+      "window": 13000,
+      "generation": 9,
+      "intent": 0,
+      "tmdb_id": 60243,
+      "kind": "movie"
+    },
+    "picker_observed_at": 111293.515,
+    "selected_card": {
+      "Container(1000).ListItem.Label": "A.Separation.2011.BluRay.1080p.x265.10bit.2Audio.MNHD-FRDS.mkv",
+      "Container(1000).ListItem.Property(resolution)": "",
+      "Container(1000).ListItem.Property(size)": "5.1 GB",
+      "Container(1000).ListItem.Property(source_key)": "3aa51fbc82c49da139c25741d4064028220884892aaeb538f330b1ae02888041",
+      "Container(1000).ListItem.Property(source_site)": "115 网盘",
+      "Container(1000).ListItem.Property(subtitle_badge)": ""
+    },
+    "selected_at": 111339.015,
+    "request_id": "892110e53086475c8470cdf909764136",
+    "selection_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5",
+    "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+    "first_av_observed_at": 111344.562,
+    "select_to_av_observed_seconds": 5.547000000005937
+  },
+  "samples": [
+    {
+      "wall": 111339.062,
+      "phase": null,
+      "native": {},
+      "cancelled": null,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "",
+        "Player.Process(videodecoder)": "",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111339.562,
+      "phase": null,
+      "native": {},
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13001,
+          "label": "Immediate HDD spindown"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "",
+        "Player.Process(videodecoder)": "",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111340.093,
+      "phase": null,
+      "native": {},
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13001,
+          "label": "Immediate HDD spindown"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "",
+        "Player.Process(videodecoder)": "",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111340.578,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111341.062,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111341.593,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111342.078,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111342.593,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111343.171,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111343.562,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111344.046,
+      "phase": "OPEN",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "OPEN",
+        "protocol": 1,
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111344.562,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "monotonic_us": 111344269452,
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "seconds": 0.107,
+      "duration": 7378.592,
+      "currentaudiostream": {
+        "bitrate": 448000,
+        "channels": 3,
+        "codec": "ac3",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "per",
+        "name": "AC3 3.0",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 1,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": ""
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1038,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "window": {
+        "currentwindow": {
+          "id": 10000,
+          "label": "Home"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "ff-ac3",
+        "Player.Process(pixformat)": "d3d11va_vld",
+        "Player.Process(videodecoder)": "ff-hevc-d3d11va",
+        "Player.Process(videoheight)": "1,040",
+        "Player.Process(videowidth)": "1,920",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111345.078,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "monotonic_us": 111344269452,
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "seconds": 0.732,
+      "duration": 7378.592,
+      "currentaudiostream": {
+        "bitrate": 448000,
+        "channels": 3,
+        "codec": "ac3",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "per",
+        "name": "AC3 3.0",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 1,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": ""
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1038,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "window": {
+        "currentwindow": {
+          "id": 10000,
+          "label": "Home"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "ff-ac3",
+        "Player.Process(pixformat)": "d3d11va_vld",
+        "Player.Process(videodecoder)": "ff-hevc-d3d11va",
+        "Player.Process(videoheight)": "1,040",
+        "Player.Process(videowidth)": "1,920",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      }
+    },
+    {
+      "wall": 111345.593,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "monotonic_us": 111344269452,
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": true,
+      "failure": null,
+      "seconds": 1.145,
+      "duration": 7378.592,
+      "currentaudiostream": {
+        "bitrate": 448000,
+        "channels": 3,
+        "codec": "ac3",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "per",
+        "name": "AC3 3.0",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 1,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": ""
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1038,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "ff-ac3",
+        "Player.Process(pixformat)": "d3d11va_vld",
+        "Player.Process(videodecoder)": "ff-hevc-d3d11va",
+        "Player.Process(videoheight)": "1,040",
+        "Player.Process(videowidth)": "1,920",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111346.093,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "monotonic_us": 111344269452,
+        "native_instance": "b54060ac-ddb6-429a-a5f0-25e03a61367b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "892110e53086475c8470cdf909764136",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "678816ba779463125415c64d9ac4f4c7059895a9f58cfa7b745337092ef25961",
+        "user_intent": 0
+      },
+      "cancelled": true,
+      "failure": null,
+      "seconds": 1.145,
+      "duration": 7378.592,
+      "currentaudiostream": {
+        "bitrate": 448000,
+        "channels": 3,
+        "codec": "ac3",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "per",
+        "name": "AC3 3.0",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 1,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": ""
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1038,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "ff-ac3",
+        "Player.Process(pixformat)": "d3d11va_vld",
+        "Player.Process(videodecoder)": "ff-hevc-d3d11va",
+        "Player.Process(videoheight)": "1,040",
+        "Player.Process(videowidth)": "1,920",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111346.562,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111347.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111347.562,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111348.078,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111348.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111349.078,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111349.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111350.062,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111350.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111351.109,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111351.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111352.078,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111352.578,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111353.062,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111353.609,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111354.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111354.562,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111355.078,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111355.609,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111356.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111356.578,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111357.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111357.578,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111358.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111358.609,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111359.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111359.609,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111360.078,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111360.625,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111361.171,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111361.578,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111362.125,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111362.609,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111363.109,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111363.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111364.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111364.578,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111365.093,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111365.609,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111366.109,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111366.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111367.109,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111367.609,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111368.125,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111368.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111369.109,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111369.625,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111370.109,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111370.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111371.109,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111371.625,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111372.14,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111372.625,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111373.14,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111373.64,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111374.156,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111374.593,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111375.156,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111375.656,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111376.14,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111376.625,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111377.125,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111377.64,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111378.125,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    },
+    {
+      "wall": 111378.625,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "window": {
+        "currentwindow": {
+          "id": 13000,
+          "label": "System"
+        }
+      },
+      "labels": {
+        "Player.Process(audiodecoder)": "",
+        "Player.Process(pixformat)": "unknown",
+        "Player.Process(videodecoder)": "unknown",
+        "Player.Process(videoheight)": "0",
+        "Player.Process(videowidth)": "0",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "13"
+      }
+    }
+  ],
+  "trace_health": {
+    "no_observed_stall": true,
+    "max_observed_stall_seconds": 0.5,
+    "clock_discontinuities": 0,
+    "observation_gaps": 0,
+    "stall_threshold_seconds": 1
+  },
+  "trace_coverage": {
+    "legacy_health": {
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.5,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "av_sample_count": 4,
+    "positive_av_sample_count": 4,
+    "positive_adjacent_interval_count": 3,
+    "longest_contiguous_positive_av_span_seconds": 1.5309999999881256,
+    "whole_startup_or_render_continuity_proven": false,
+    "status": "no_anomaly_in_observed_window",
+    "reason": "BOUNDED_OBSERVATION_ONLY",
+    "passed": true
+  },
+  "decoder_frame_counts_available": false,
+  "renderer_continuity_certified": false
+}

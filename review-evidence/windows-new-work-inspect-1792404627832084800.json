@@ -1,0 +1,128 @@
+{
+  "record": {
+    "test": {
+      "title": "A Separation",
+      "tmdb_id": 60243,
+      "kind": "movie",
+      "year": 2011
+    },
+    "prior_request": null,
+    "started": 112509.609,
+    "ordinary_ui": true,
+    "force_select": false,
+    "helper_sha256": "fbe7c3d737261d083995f9cf180f72a3335aa9fc531eebef239036cf7a5ea713",
+    "home": {
+      "generation": 6,
+      "intent": 0,
+      "retired_generation": 6,
+      "observed_at": 112510.218
+    },
+    "launched_at": 112510.218,
+    "picker": {
+      "window": 13000,
+      "generation": 7,
+      "intent": 0,
+      "tmdb_id": 60243,
+      "kind": "movie"
+    },
+    "picker_observed_at": 112511.437,
+    "selected_card": {
+      "Container(1000).ListItem.Label": "A.Separation.2011.BluRay.1080p.x265.10bit.2Audio.MNHD-FRDS.mkv",
+      "Container(1000).ListItem.Property(resolution)": "",
+      "Container(1000).ListItem.Property(size)": "5.1 GB",
+      "Container(1000).ListItem.Property(source_key)": "3aa51fbc82c49da139c25741d4064028220884892aaeb538f330b1ae02888041",
+      "Container(1000).ListItem.Property(source_site)": "115 网盘",
+      "Container(1000).ListItem.Property(subtitle_badge)": ""
+    },
+    "selected_at": 112514.64,
+    "request_id": "1e9d1cf75c524715a99c00a28d6b635f",
+    "selection_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5",
+    "native_instance": "339c95ee-2899-4a51-9d0c-9d5b4bf5c9c6",
+    "first_av_observed_at": 112517.671,
+    "select_to_av_observed_seconds": 3.0310000000026776
+  },
+  "sample": {
+    "wall": 112587.984,
+    "phase": "AV_STARTED",
+    "native": {
+      "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:4481220863884d1621ae89099ac172bf8a2b754e127d34acba8645444d164636",
+      "monotonic_us": 112517468391,
+      "native_instance": "339c95ee-2899-4a51-9d0c-9d5b4bf5c9c6",
+      "open_epoch": 1,
+      "paused": false,
+      "phase": "AV_STARTED",
+      "protocol": 1,
+      "reason": "",
+      "request_id": "1e9d1cf75c524715a99c00a28d6b635f",
+      "sequence": 2,
+      "subtitle_auto_intent": 0,
+      "subtitle_intent": 0,
+      "url_sha256": "4481220863884d1621ae89099ac172bf8a2b754e127d34acba8645444d164636",
+      "user_intent": 0
+    },
+    "cancelled": false,
+    "failure": null,
+    "native_gui": {
+      "selection_epoch": 1,
+      "gui_generation": 14,
+      "gui_user_intent": 0,
+      "fullscreen_instance": "339c95ee-2899-4a51-9d0c-9d5b4bf5c9c6",
+      "windows": []
+    },
+    "dialogs": {
+      "System.HasModalDialog": false,
+      "Window.IsVisible(10138)": false,
+      "Window.IsVisible(13000)": false,
+      "Window.IsVisible(13001)": false
+    },
+    "seconds": 70.292,
+    "duration": 7378.592,
+    "currentaudiostream": {
+      "bitrate": 448000,
+      "channels": 3,
+      "codec": "ac3",
+      "index": 0,
+      "isdefault": true,
+      "isimpaired": false,
+      "isoriginal": false,
+      "language": "per",
+      "name": "AC3 3.0",
+      "samplerate": 0
+    },
+    "currentsubtitle": {
+      "index": 1,
+      "isdefault": false,
+      "isforced": false,
+      "isimpaired": false,
+      "language": "chi",
+      "name": ""
+    },
+    "currentvideostream": {
+      "codec": "hevc",
+      "height": 1038,
+      "index": 0,
+      "language": "",
+      "name": "",
+      "width": 1920
+    },
+    "speed": 1,
+    "subtitleenabled": true,
+    "caching": false,
+    "window": {
+      "currentwindow": {
+        "id": 12005,
+        "label": "Fullscreen video"
+      }
+    },
+    "labels": {
+      "Player.Process(audiodecoder)": "ff-ac3",
+      "Player.Process(pixformat)": "d3d11va_vld",
+      "Player.Process(videodecoder)": "ff-hevc-d3d11va",
+      "Player.Process(videoheight)": "1,040",
+      "Player.Process(videowidth)": "1,920",
+      "Window(10000).Property(AM6B.SubtitleState)": "",
+      "Window.Property(playback_error)": "",
+      "Window.Property(source_count)": ""
+    }
+  }
+}

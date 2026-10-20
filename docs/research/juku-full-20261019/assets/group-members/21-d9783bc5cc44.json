@@ -1,0 +1,807 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\plugin.video.juku-0.78.6-linux-arm64.zip",
+  "bytes": 16721898,
+  "sha256": "d9783bc5cc449d2715255e73bbdbbfa4bf4ee28073f4089ca3a35981d54b98c8",
+  "members": [
+    {
+      "path": "plugin.video.juku/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/service.py",
+      "type": "file",
+      "bytes": 50771,
+      "compressed_bytes": 12614,
+      "sha256": "504f1494cced70c6d9cb3251b3c8abd8cdcfbdd46c474fd4389dba3fe2a90e9b",
+      "copy": "group-original/21-d9783bc5cc44/plugin.video.juku/service.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/addon.xml",
+      "type": "file",
+      "bytes": 1077,
+      "compressed_bytes": 628,
+      "sha256": "77b99bbf7f7e85ff9b428f486afbbb6e0fae5a24f6581d02b84afe0f2c80b3b4",
+      "copy": "group-original/21-d9783bc5cc44/plugin.video.juku/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "plugin.video.juku",
+        "name": "巨库",
+        "version": "0.78.6",
+        "provider-name": "juku",
+        "extensions": [
+          {
+            "point": "xbmc.python.pluginsource",
+            "library": "default.py"
+          },
+          {
+            "point": "xbmc.service",
+            "library": "service.py"
+          },
+          {
+            "point": "xbmc.metadata.scraper.movies",
+            "library": "resources/lib/scraper.py"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": [
+          {
+            "addon": "xbmc.python",
+            "version": "3.0.0"
+          }
+        ]
+      }
+    },
+    {
+      "path": "plugin.video.juku/.DS_Store",
+      "type": "file",
+      "bytes": 6148,
+      "compressed_bytes": 221,
+      "sha256": "206489a52b0974b8e0b882d271d46676a0d2c27efea42696be801a66b753074f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/bin/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/bin/daemon-linux-arm64",
+      "type": "file",
+      "bytes": 29252919,
+      "compressed_bytes": 14581114,
+      "sha256": "9b0fd7e347204e1bb6ccf8f3c7397fad58d44680e162c4e1d8a9d3d6c8acf131",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/addon.xml.metadata.json",
+      "type": "file",
+      "bytes": 143,
+      "compressed_bytes": 127,
+      "sha256": "11cf296944fa8d691dc5c5d10fb0c2338564c532adf19c816db689ce9ab34545",
+      "copy": "original/arm64/plugin.video.juku/addon.xml.metadata.json",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/resources/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/fanart.webp",
+      "type": "file",
+      "bytes": 108698,
+      "compressed_bytes": 108718,
+      "sha256": "44000a79e4c22925d17ac229f1997bf0478846f5988a891d4875285cbcd602ef",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/icon.png",
+      "type": "file",
+      "bytes": 30296,
+      "compressed_bytes": 28299,
+      "sha256": "f8cc60d8f062fab763e1ae02a721bda32761d800150c13fe6a828fef018288be",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/.DS_Store",
+      "type": "file",
+      "bytes": 6148,
+      "compressed_bytes": 195,
+      "sha256": "2d644f7ee57294fc3ba506b399a8913136a1583218b4fc4dc15c8a6f2bc0f1fd",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/settings.xml",
+      "type": "file",
+      "bytes": 1135,
+      "compressed_bytes": 559,
+      "sha256": "c19001ac9bf131d5ceb73c3bf286d7059c4d385c13d24090b52e3c049e9e192a",
+      "copy": "group-original/21-d9783bc5cc44/plugin.video.juku/resources/settings.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_thumb.jpg",
+      "type": "file",
+      "bytes": 21958,
+      "compressed_bytes": 19402,
+      "sha256": "7f48bf96d4c0e4cfdccec2ca76f2a7f7a1ef723e1998c3e2067704311a361fcb",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 36870,
+      "compressed_bytes": 31878,
+      "sha256": "c69cadc4557ec4320f07b965bf8fdf5f8e58771261e0715fab2301a75b88337d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/settings_thumb.jpg",
+      "type": "file",
+      "bytes": 20891,
+      "compressed_bytes": 17920,
+      "sha256": "93299b1f8f42c19c8d7b85742d262f086ccabd18fe35a4226057972ceffa2c42",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/favorites_thumb.jpg",
+      "type": "file",
+      "bytes": 27175,
+      "compressed_bytes": 24580,
+      "sha256": "1adbf8a2e2b64bc6031309880d5a7e90e2087e63e2b2e5084f09a65fe5e0168d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/connect_phone_thumb.jpg",
+      "type": "file",
+      "bytes": 27616,
+      "compressed_bytes": 25161,
+      "sha256": "2a553d2e15866e0b72198162b0222e8dc4d4aed365e31409ed74cbcc91ba3c73",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_fanart.jpg",
+      "type": "file",
+      "bytes": 39363,
+      "compressed_bytes": 34444,
+      "sha256": "c5574fd2b6fdcc22a225e87018abbcb6241dc392f014503e2fa91ee6dc901975",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/playlists_thumb.jpg",
+      "type": "file",
+      "bytes": 26762,
+      "compressed_bytes": 23902,
+      "sha256": "eb56ac7f0289e52881dc63e4b64d140e2b8326e9e18d1736c5304ec456ae545b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/private_libraries_thumb.jpg",
+      "type": "file",
+      "bytes": 27722,
+      "compressed_bytes": 25048,
+      "sha256": "1a908d01d388649467488d291a4e79f139a15d4924cd57815bc91c021ed099c2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/shared_libraries_thumb.jpg",
+      "type": "file",
+      "bytes": 28061,
+      "compressed_bytes": 25440,
+      "sha256": "d41d5ccfad27d176860e516b88741302813c57f6dd9c5d203d8e19a563dedecf",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_doc_fanart.jpg",
+      "type": "file",
+      "bytes": 32543,
+      "compressed_bytes": 27112,
+      "sha256": "8c0d32d7f45b02516ac7d39f9cbed0392c46e27a4ed4a2c9c9c0a75fe80ac91c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/connect_phone_fanart.jpg",
+      "type": "file",
+      "bytes": 38654,
+      "compressed_bytes": 34059,
+      "sha256": "97e2dd84a3365628652edb7f3e04c79cec66bbe9718b89ca8517d736a67213e2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_thumb.jpg",
+      "type": "file",
+      "bytes": 27931,
+      "compressed_bytes": 25336,
+      "sha256": "240848d8bca207c20622df55c84a9b5265119fcb27f32c6601ee1d4114172295",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_short_fanart.jpg",
+      "type": "file",
+      "bytes": 33167,
+      "compressed_bytes": 27793,
+      "sha256": "4373ebd70414bd11ac468bcd1b17c4f27439171998720c2d19b6509adda24159",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/filter_thumb.jpg",
+      "type": "file",
+      "bytes": 20913,
+      "compressed_bytes": 18281,
+      "sha256": "979362a9a85f8d185ff13c8df9b59925c6b1c218d26e77d3e4fd8d267cda2d41",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_doc_thumb.jpg",
+      "type": "file",
+      "bytes": 21934,
+      "compressed_bytes": 19158,
+      "sha256": "0ae3dced61e476d16de2b735f93bea96beb7a7e9012daaa7a65f1eaccb65d5ef",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/root_fanart.jpg",
+      "type": "file",
+      "bytes": 31840,
+      "compressed_bytes": 26626,
+      "sha256": "9d3403dfc5ff6bfadca277be3bc0ba75c8a78f6298dcf44d161ac21cc8f5173b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_variety_thumb.jpg",
+      "type": "file",
+      "bytes": 22319,
+      "compressed_bytes": 19507,
+      "sha256": "393cf21a379680b50d56de947849dcc297fcb5421fa43b564837933c6219d5b3",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/login_thumb.jpg",
+      "type": "file",
+      "bytes": 22907,
+      "compressed_bytes": 20228,
+      "sha256": "b8a5cd0c371185b713e7fbe35ef68f011a40d447e459f763d964a823e287610b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/playlists_fanart.jpg",
+      "type": "file",
+      "bytes": 37418,
+      "compressed_bytes": 32405,
+      "sha256": "b7dcb08c84bec437948040312d9cb8fd3b93a7b516b75d3955b16b95dbbe852f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 24914,
+      "compressed_bytes": 22256,
+      "sha256": "2054bf1614cf5edde4fec4a0ae30d74d560b0dabf581f7077fc85a0ea97a8eb1",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_anime_fanart.jpg",
+      "type": "file",
+      "bytes": 33069,
+      "compressed_bytes": 27843,
+      "sha256": "0993da45ceb5d470db694904e7fb47bf7f5563180f27baa3a0256dc1f7448910",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_thumb.jpg",
+      "type": "file",
+      "bytes": 25910,
+      "compressed_bytes": 23196,
+      "sha256": "e0a6f804589159c22b846e229366182c7db2d412620d01c13b5ee6cce65f6f6c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_fanart.jpg",
+      "type": "file",
+      "bytes": 37893,
+      "compressed_bytes": 32820,
+      "sha256": "7ee2f047d67314a729daace3b0a2c149917c59778f8ad36c58a27f6599ae2f84",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/favorites_fanart.jpg",
+      "type": "file",
+      "bytes": 39331,
+      "compressed_bytes": 34590,
+      "sha256": "10aa6bb6f9e799e8df430522a67ab0206eb442659ab9eea4d1b2f584ad296a02",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/recommend_fanart.jpg",
+      "type": "file",
+      "bytes": 38504,
+      "compressed_bytes": 33753,
+      "sha256": "6ee026ccfe10eeeb9acd2ca117ff3a5610ec0f0fda6943c1a74049da1460fdce",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_movie_fanart.jpg",
+      "type": "file",
+      "bytes": 33216,
+      "compressed_bytes": 28042,
+      "sha256": "bebae5d81c59d99ea71977e8c8933ab9ff304f63da31375c411335e85626ecb9",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/root_thumb.jpg",
+      "type": "file",
+      "bytes": 21738,
+      "compressed_bytes": 18824,
+      "sha256": "5ad109ef4df562113cae13aa710a3f0d0796299f35bba87bd7cc880ac0b2a753",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_fanart.jpg",
+      "type": "file",
+      "bytes": 33558,
+      "compressed_bytes": 28561,
+      "sha256": "c53cde03f6e657d7475fc11d3f456cc763b6321a7bfb3e1c7676fb493caa28aa",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_tv_thumb.jpg",
+      "type": "file",
+      "bytes": 23562,
+      "compressed_bytes": 20794,
+      "sha256": "226353e56731aa1c2688c50ea7f7bcb80345d9e870138b73f1fc2593bd075713",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 26101,
+      "compressed_bytes": 23347,
+      "sha256": "bf5ab6fc87ea1b53f8815239063d512f9019eba0028d91b317e17dd220b65b7b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/home_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 28186,
+      "compressed_bytes": 25540,
+      "sha256": "12f05a281385ce26553091cf3f16e855987a302b63b9fba822e783b261b9e040",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/share_square_thumb.jpg",
+      "type": "file",
+      "bytes": 25103,
+      "compressed_bytes": 22310,
+      "sha256": "563819c33b07ed552a33d5b0ca826286ee48c386057d376b3eef38f7755b43b2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_short_thumb.jpg",
+      "type": "file",
+      "bytes": 22800,
+      "compressed_bytes": 20123,
+      "sha256": "85f4bb9ec850dfb4ce1bc5539b000f075a8938b22b809ff5fe0eeb62c69045c4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/recommend_thumb.jpg",
+      "type": "file",
+      "bytes": 27865,
+      "compressed_bytes": 25407,
+      "sha256": "f987228096d29eb6055b2e2208dd96f2f4a6f55fd08b1d6e5d8f427ec02ae323",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/login_fanart.jpg",
+      "type": "file",
+      "bytes": 33048,
+      "compressed_bytes": 27630,
+      "sha256": "faeb902eb7ce61f5a1228a4aab62f676bd395c92481fdfd5bd29774f503fe86f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/home_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 38450,
+      "compressed_bytes": 33525,
+      "sha256": "dbb4a45d323e114e80128061adcc19a79f829dce47ab5629438131c5aa261437",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/private_libraries_fanart.jpg",
+      "type": "file",
+      "bytes": 40009,
+      "compressed_bytes": 34885,
+      "sha256": "116763383a042e0115efcbdc9b2e3b7fe32609462306c8a01ce6888926e85b86",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_tv_fanart.jpg",
+      "type": "file",
+      "bytes": 33540,
+      "compressed_bytes": 28360,
+      "sha256": "121993034b084d6d806bef6cdb22e36591b3c34f6ae5cf0573038dd7be90d589",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/history_thumb.jpg",
+      "type": "file",
+      "bytes": 28355,
+      "compressed_bytes": 25733,
+      "sha256": "9fb5b747a905ef50e903eb039d455605cd8219e0638694d077b1195c572e244b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_thumb.jpg",
+      "type": "file",
+      "bytes": 27394,
+      "compressed_bytes": 24753,
+      "sha256": "afb418c7f83d245924b92cdb4cc7af21187e4d8740c2ac06ff2cbb7a66dfc702",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_fanart.jpg",
+      "type": "file",
+      "bytes": 38660,
+      "compressed_bytes": 33805,
+      "sha256": "1a32210e24446ce8c4a215034e0b0e83c2cd3ee4121c1c50cb2a092e4f840285",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/share_square_fanart.jpg",
+      "type": "file",
+      "bytes": 36033,
+      "compressed_bytes": 31027,
+      "sha256": "bee98feaeefa00b6cbf1d8f307f06251dbade7219db6dcddd7baf0acf8c87f92",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_variety_fanart.jpg",
+      "type": "file",
+      "bytes": 34285,
+      "compressed_bytes": 29431,
+      "sha256": "275c289e2509c0d648635df5317d9fd10aa53d32e61e6d7b7d569cafc2c00de4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/push_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 36795,
+      "compressed_bytes": 31830,
+      "sha256": "f34be92ae1ee8763cadf5e9cc990779d904b50c5882726a53baf429773fbb1b0",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/pansou_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 24772,
+      "compressed_bytes": 22249,
+      "sha256": "9b6385298353e103b7b6dbe79303ee40b89459d0ed693eb8a2460531de76cc28",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_menu_thumb.jpg",
+      "type": "file",
+      "bytes": 25271,
+      "compressed_bytes": 22693,
+      "sha256": "53667b5b0eeb72d1b85da1f50061701228bb597f172322ca13357d7656951769",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/my_pans_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 38611,
+      "compressed_bytes": 33397,
+      "sha256": "7e4922464bfac5361f2542608b538310d2ab50a70a8a36eae9774f333eb48eb7",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/settings_fanart.jpg",
+      "type": "file",
+      "bytes": 31689,
+      "compressed_bytes": 25633,
+      "sha256": "53b47cadb589ca872b4349334895e1e80e89e0919c869a5481ebb835a9f557b5",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_anime_thumb.jpg",
+      "type": "file",
+      "bytes": 22552,
+      "compressed_bytes": 19823,
+      "sha256": "50dc5175f445a0db2557a92577985f2d4220b09decf3c7fbd40cd4ea6d531eeb",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/category_movie_thumb.jpg",
+      "type": "file",
+      "bytes": 22868,
+      "compressed_bytes": 20392,
+      "sha256": "d3d5f45fa1afcf4aec3de059b9c34b2466fe914cfa3cbfe52f006d001228d646",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/search_menu_fanart.jpg",
+      "type": "file",
+      "bytes": 36926,
+      "compressed_bytes": 31797,
+      "sha256": "5fbbe6f3e653191bab0c5dcebab2f387403272804e47f46378bcb63ce5b29836",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/filter_fanart.jpg",
+      "type": "file",
+      "bytes": 32285,
+      "compressed_bytes": 26520,
+      "sha256": "96a06d5e156107f5a7f280396b8cd9eaa1fc0287ce265bef492ecc9e7ff8365a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/shared_libraries_fanart.jpg",
+      "type": "file",
+      "bytes": 40211,
+      "compressed_bytes": 35208,
+      "sha256": "0b0a29fcc206910565515ea91913b6bf9b2e4742dd65ac2afd2bd619b967c690",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/images/history_fanart.jpg",
+      "type": "file",
+      "bytes": 39156,
+      "compressed_bytes": 34396,
+      "sha256": "34279b5dbe50ad4d703b84c9ceaa0859cf2df1d0dab67bad70e1a86960986c0e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/scraper.py",
+      "type": "file",
+      "bytes": 10116,
+      "compressed_bytes": 3413,
+      "sha256": "61cd052155823684b62683e92ddd6d38a28c25ba2781069ca51e0adfeee98a32",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/scraper.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/qrcode_dialog.py",
+      "type": "file",
+      "bytes": 20191,
+      "compressed_bytes": 4359,
+      "sha256": "4430b690652333ad31e518aef035df81e7f6fe05cdf2fa168aa33a18c887c32b",
+      "copy": "group-original/21-d9783bc5cc44/plugin.video.juku/resources/lib/qrcode_dialog.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/api_client.py.metadata.json",
+      "type": "file",
+      "bytes": 147,
+      "compressed_bytes": 131,
+      "sha256": "dd7636b753dc9ec486754516fc437a265db78d24bb413e3dbdb3a26bfec9bc89",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/api_client.py.metadata.json",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/vfs_adapter.py",
+      "type": "file",
+      "bytes": 19023,
+      "compressed_bytes": 5266,
+      "sha256": "5715d252e483dd72c9cfb27dafdd6525df8ecced6b3f2d01b90d2ea0c9bcfa20",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/vfs_adapter.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/qrcode_dialog.py.metadata.json",
+      "type": "file",
+      "bytes": 150,
+      "compressed_bytes": 134,
+      "sha256": "5a1fe9c0d5c9ef12c9c9beb8aebb174e5ed4fc20ce7b60182ad6f3ae1073d021",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/qrcode_dialog.py.metadata.json",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/vfs_adapter.py.metadata.json",
+      "type": "file",
+      "bytes": 148,
+      "compressed_bytes": 132,
+      "sha256": "51434b752c0adf24c7ce2b18b4885177c673192ef2f4e6d03ec078e65aaae9e5",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/vfs_adapter.py.metadata.json",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/router.py.metadata.json",
+      "type": "file",
+      "bytes": 143,
+      "compressed_bytes": 127,
+      "sha256": "93995e2c8915b9fa51d82f647691d2396e8ed456bda1ee2dceb5e1f3ce441f09",
+      "copy": "original/arm64/plugin.video.juku/resources/lib/router.py.metadata.json",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/api_client.cpython-314.pyc",
+      "type": "file",
+      "bytes": 56557,
+      "compressed_bytes": 18831,
+      "sha256": "b19c438ccd0777f9122d30d50b63e22d58aef05b20570a55794691cfcc747ff5",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/vfs_adapter.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 26453,
+      "compressed_bytes": 11928,
+      "sha256": "dd04daa5ecbbeeb5ff56f46575b8bc6e27214767d4ddefd2eb2e1ba1560932f4",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/qrcode_dialog.cpython-314.pyc",
+      "type": "file",
+      "bytes": 27825,
+      "compressed_bytes": 11473,
+      "sha256": "f2225c0d305b9403effa349e42873cc574535fe73beef387b69321f5a5c9a03d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/vfs_adapter.cpython-314.pyc",
+      "type": "file",
+      "bytes": 26461,
+      "compressed_bytes": 11898,
+      "sha256": "2bbabb9f0bf2fa60ee1a7a1101e2ef9643e559856916b074d0ef0ca7e2e50f6c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/qrcode_dialog.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 28359,
+      "compressed_bytes": 11412,
+      "sha256": "822fb34223651646f7f90041003fba01ef33939d9a29ab4b62d52223de189b48",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/api_client.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 60272,
+      "compressed_bytes": 18945,
+      "sha256": "920b96d60585be299873eae026b6d355b31e4528df8b5da111d39a2978f7b5cf",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/router.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 365903,
+      "compressed_bytes": 147522,
+      "sha256": "3e0728a0563f3cd223c51c4113f137b7eb58eff6df50317641a3ae20dfe6968e",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/daemon.cpython-311.opt-1.pyc",
+      "type": "file",
+      "bytes": 30810,
+      "compressed_bytes": 12337,
+      "sha256": "7ba6eaa984c72587f91a4705e5afa7ea9cafcbc6af814b048eaa85fc546284e7",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/router.cpython-314.pyc",
+      "type": "file",
+      "bytes": 353942,
+      "compressed_bytes": 145435,
+      "sha256": "6aae9809b0e5b207badd087207e7c83ff77874d601d3698a6805d84d41414b64",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/daemon.cpython-314.pyc",
+      "type": "file",
+      "bytes": 29228,
+      "compressed_bytes": 12166,
+      "sha256": "33df6dde74292ee64f334460561689b5e01a2aec5fab496f15568aea6d28f420",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/__pycache__/scraper.cpython-314.pyc",
+      "type": "file",
+      "bytes": 14665,
+      "compressed_bytes": 7608,
+      "sha256": "13a852d61a7b2c499be114228674876f1652f1f04831c00123363c46811d7f06",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/router.py",
+      "type": "file",
+      "bytes": 334962,
+      "compressed_bytes": 64190,
+      "sha256": "4299ebd3be569941f1df15a401f5520cd73ae7c38f3a7db3c1a28b7da81dede2",
+      "copy": "group-original/21-d9783bc5cc44/plugin.video.juku/resources/lib/router.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/api_client.py",
+      "type": "file",
+      "bytes": 38891,
+      "compressed_bytes": 7181,
+      "sha256": "74ae2b3fdf166a90a8de4b04b48a877452cce6d820b8d5a87ce540cea6227445",
+      "copy": "group-original/21-d9783bc5cc44/plugin.video.juku/resources/lib/api_client.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/resources/lib/daemon.py",
+      "type": "file",
+      "bytes": 19049,
+      "compressed_bytes": 5452,
+      "sha256": "28ab0dd27190d31460f4aff5d2fccbd3a275d3c2c8a1e4835adde32f651a453c",
+      "copy": "group-original/21-d9783bc5cc44/plugin.video.juku/resources/lib/daemon.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.juku/__pycache__/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.juku/__pycache__/service.cpython-314.pyc",
+      "type": "file",
+      "bytes": 59735,
+      "compressed_bytes": 27366,
+      "sha256": "e9cf2676dfac80b55bc0d2dad3dc14257d05811fc2ea48e11f25fa8503e96f04",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.juku/device_key.pem",
+      "type": "file",
+      "bytes": 227,
+      "compressed_bytes": 190,
+      "sha256": "cbfa45135067d134d1ca247e538b7594b5317988aa5d0947aba6676d5542c4b1",
+      "copy_status": "key-or-runtime-state-not-copied"
+    },
+    {
+      "path": "plugin.video.juku/default.py",
+      "type": "file",
+      "bytes": 1650,
+      "compressed_bytes": 912,
+      "sha256": "17f10c1a98d10b8bd0fc04016e7a15323d62a65705851e07321fb2c9502205b3",
+      "copy": "original/arm64/plugin.video.juku/default.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.juku/default.py.metadata.json",
+      "type": "file",
+      "bytes": 144,
+      "compressed_bytes": 128,
+      "sha256": "67d3999b9a64a0bc44c93c9681d6535a33151d8a1306e0aba13e1263ac49c69d",
+      "copy": "original/arm64/plugin.video.juku/default.py.metadata.json",
+      "copy_status": "byte-identical-reference"
+    }
+  ],
+  "python": [],
+  "summary": {
+    "files": 88,
+    "directories": 7,
+    "uncompressed_bytes": 32631090,
+    "extensions": {
+      ".py": 8,
+      ".xml": 2,
+      "<none>": 3,
+      ".json": 6,
+      ".webp": 1,
+      ".png": 1,
+      ".jpg": 54,
+      ".pyc": 12,
+      ".pem": 1
+    },
+    "copy_status": {
+      "original-byte-copy": 7,
+      "indexed-only": 71,
+      "byte-identical-reference": 9,
+      "key-or-runtime-state-not-copied": 1
+    }
+  }
+}

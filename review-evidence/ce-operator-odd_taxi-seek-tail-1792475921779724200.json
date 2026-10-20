@@ -1,0 +1,378 @@
+{
+  "result": {
+    "operation": "seek-tail",
+    "before": {
+      "at": 2205792.277198165,
+      "native": {
+        "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+        "monotonic_us": 2205672898001,
+        "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+        "open_epoch": 2,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "027c2c61368e4b0c80362e116a83c185",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+        "user_intent": 0
+      },
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "properties": {
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "dkl070418@VCB-SC"
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "time": {
+          "hours": 0,
+          "milliseconds": 822,
+          "minutes": 1,
+          "seconds": 48
+        },
+        "totaltime": {
+          "hours": 0,
+          "milliseconds": 15,
+          "minutes": 23,
+          "seconds": 51
+        }
+      }
+    },
+    "atomic_instance_control": false,
+    "operator_test": true,
+    "command_result": {
+      "percentage": 7.604532241821289,
+      "time": {
+        "hours": 0,
+        "milliseconds": 822,
+        "minutes": 1,
+        "seconds": 48
+      },
+      "totaltime": {
+        "hours": 0,
+        "milliseconds": 15,
+        "minutes": 23,
+        "seconds": 51
+      }
+    },
+    "target_seconds": 1406,
+    "observations": [
+      {
+        "at": 2205794.801632148,
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "monotonic_us": 2205672898001,
+          "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "027c2c61368e4b0c80362e116a83c185",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 601,
+            "minutes": 23,
+            "seconds": 25
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 23,
+            "seconds": 51
+          }
+        }
+      },
+      {
+        "at": 2205796.820970313,
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "monotonic_us": 2205672898001,
+          "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "027c2c61368e4b0c80362e116a83c185",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 352,
+            "minutes": 23,
+            "seconds": 27
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 23,
+            "seconds": 51
+          }
+        }
+      },
+      {
+        "at": 2205798.833571325,
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "monotonic_us": 2205672898001,
+          "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "027c2c61368e4b0c80362e116a83c185",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 438,
+            "minutes": 23,
+            "seconds": 29
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 23,
+            "seconds": 51
+          }
+        }
+      },
+      {
+        "at": 2205800.84574354,
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "monotonic_us": 2205672898001,
+          "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "027c2c61368e4b0c80362e116a83c185",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 607,
+            "minutes": 23,
+            "seconds": 31
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 23,
+            "seconds": 51
+          }
+        }
+      },
+      {
+        "at": 2205802.853794444,
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "monotonic_us": 2205672898001,
+          "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "027c2c61368e4b0c80362e116a83c185",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 567,
+            "minutes": 23,
+            "seconds": 33
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 23,
+            "seconds": 51
+          }
+        }
+      },
+      {
+        "at": 2205804.861707762,
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "monotonic_us": 2205672898001,
+          "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "027c2c61368e4b0c80362e116a83c185",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 444,
+            "minutes": 23,
+            "seconds": 35
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 23,
+            "seconds": 51
+          }
+        }
+      }
+    ],
+    "same_instance_after": true
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

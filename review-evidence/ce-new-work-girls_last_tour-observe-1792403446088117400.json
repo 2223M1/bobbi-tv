@@ -1,0 +1,620 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "girls_last_tour",
+    "operation": "observe",
+    "target": null,
+    "settle": [],
+    "samples": [
+      {
+        "wall": 2133298.66605619,
+        "phase": "AV_STARTED",
+        "cancelled": false,
+        "failure": null,
+        "native": {
+          "file_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca|transport:1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "monotonic_us": 2133104405478,
+          "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3d71949ca4b84851915bda192c004314",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "user_intent": 0
+        },
+        "seconds": 194.02,
+        "duration": 1422.005,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 2,
+          "codec": "pcm_s24le",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日版BD",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "UHA-WINGS-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "日版BD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 4683,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        }
+      },
+      {
+        "wall": 2133308.747486868,
+        "phase": "AV_STARTED",
+        "cancelled": false,
+        "failure": null,
+        "native": {
+          "file_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca|transport:1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "monotonic_us": 2133104405478,
+          "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3d71949ca4b84851915bda192c004314",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "user_intent": 0
+        },
+        "seconds": 204.156,
+        "duration": 1422.005,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 2,
+          "codec": "pcm_s24le",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日版BD",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "UHA-WINGS-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "日版BD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 4926,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        }
+      },
+      {
+        "wall": 2133318.853825378,
+        "phase": "AV_STARTED",
+        "cancelled": false,
+        "failure": null,
+        "native": {
+          "file_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca|transport:1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "monotonic_us": 2133104405478,
+          "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3d71949ca4b84851915bda192c004314",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "user_intent": 0
+        },
+        "seconds": 214.207,
+        "duration": 1422.005,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 2,
+          "codec": "pcm_s24le",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日版BD",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "UHA-WINGS-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "日版BD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 5167,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        }
+      },
+      {
+        "wall": 2133328.953088706,
+        "phase": "AV_STARTED",
+        "cancelled": false,
+        "failure": null,
+        "native": {
+          "file_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca|transport:1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "monotonic_us": 2133104405478,
+          "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3d71949ca4b84851915bda192c004314",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+          "user_intent": 0
+        },
+        "seconds": 224.301,
+        "duration": 1422.005,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 2,
+          "codec": "pcm_s24le",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日版BD",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "UHA-WINGS-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "日版BD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 5410,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        }
+      }
+    ],
+    "passed": true,
+    "startup_clock": {
+      "stable": true,
+      "budget_seconds": 5,
+      "elapsed_seconds": 0.7505252677947283,
+      "samples": [
+        {
+          "wall": 2133297.91955908,
+          "phase": "AV_STARTED",
+          "cancelled": false,
+          "failure": null,
+          "native": {
+            "file_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca|transport:1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+            "monotonic_us": 2133104405478,
+            "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+            "open_epoch": 2,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "3d71949ca4b84851915bda192c004314",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+            "user_intent": 0
+          },
+          "seconds": 193.437,
+          "duration": 1422.005,
+          "currentaudiostream": {
+            "bitrate": 2304000,
+            "channels": 2,
+            "codec": "pcm_s24le",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "日版BD",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "UHA-WINGS-SC"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "日版BD",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 4665,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          }
+        },
+        {
+          "wall": 2133298.242783373,
+          "phase": "AV_STARTED",
+          "cancelled": false,
+          "failure": null,
+          "native": {
+            "file_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca|transport:1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+            "monotonic_us": 2133104405478,
+            "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+            "open_epoch": 2,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "3d71949ca4b84851915bda192c004314",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+            "user_intent": 0
+          },
+          "seconds": 193.645,
+          "duration": 1422.005,
+          "currentaudiostream": {
+            "bitrate": 2304000,
+            "channels": 2,
+            "codec": "pcm_s24le",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "日版BD",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "UHA-WINGS-SC"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "日版BD",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 4673,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          }
+        },
+        {
+          "wall": 2133298.582062226,
+          "phase": "AV_STARTED",
+          "cancelled": false,
+          "failure": null,
+          "native": {
+            "file_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca|transport:1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+            "monotonic_us": 2133104405478,
+            "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+            "open_epoch": 2,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "3d71949ca4b84851915bda192c004314",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "1ebc3dd636b026fc14f2fc7b598c91240de7fab0dd2ec4b315731d9508fbf227",
+            "user_intent": 0
+          },
+          "seconds": 194.02,
+          "duration": 1422.005,
+          "currentaudiostream": {
+            "bitrate": 2304000,
+            "channels": 2,
+            "codec": "pcm_s24le",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "日版BD",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "UHA-WINGS-SC"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "日版BD",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 4681,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          }
+        }
+      ],
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "record": {
+      "test": {
+        "title": "Girls' Last Tour",
+        "tmdb_id": 74185,
+        "kind": "tv",
+        "year": 2017,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "d8b187a550f24b9eb29f7cd6e0b7df8e",
+      "started": 2132946.56031028,
+      "home": {
+        "generation": 21,
+        "intent": 0,
+        "retired_generation": 21,
+        "observed_at": 2132946.936960979
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2132946.937300829,
+      "picker": {
+        "window": 13001,
+        "generation": 22,
+        "intent": 0,
+        "tmdb_id": 74185,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2132953.557658597,
+      "picker_idle": {
+        "passed": true,
+        "seconds": 35.06304215313867,
+        "observations": 64,
+        "picker": {
+          "window": 13001,
+          "generation": 22,
+          "intent": 0,
+          "tmdb_id": 74185,
+          "kind": "tv"
+        },
+        "query_finished": true
+      },
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Shoujo Shuumatsu Ryokou S01E01 (BDRemux 1920x1080 AVC LPCM).mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "6.76 GB",
+        "Container(1000).ListItem.Property(source_key)": "8ca0ef7fdec844613134ad5a133eabbe14e4b2d3b690d0a2c6d9e6cb5ebc8694",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2133081.858081031,
+      "request_id": "3d71949ca4b84851915bda192c004314",
+      "selection_identity": "transport:d70b801950eba3afe29690c53e6be8db83fd103c88efaed236ae68a8ac3e24ca",
+      "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+      "first_av_observed_at": 2133104.905236595,
+      "select_to_av_observed_seconds": 23.04715556371957
+    },
+    "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+    "wall_seconds": 30.287,
+    "play_seconds": 30.281,
+    "decoder": "vdec channel 0 statistics:\n  device name : ammvdec_h264-00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 22\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 5410\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+    "crashes": [
+      "kodi_crashlog_20261011215526.log",
+      "kodi_crashlog_20261011230638.log",
+      "kodi_crashlog_20261012021405.log",
+      "kodi_crashlog_20261012135249.log"
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "girls_last_tour",
+  "operation": "observe"
+}

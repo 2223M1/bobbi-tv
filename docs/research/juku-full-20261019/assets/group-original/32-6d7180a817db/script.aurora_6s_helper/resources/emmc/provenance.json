@@ -1,0 +1,17 @@
+{
+  "backend": "adapted from local CE_android/tools",
+  "ampart_repository": "https://github.com/7Ji/ampart",
+  "ampart_commit": "1539ff2f6fa73ef78dfde3ac585fb9c93244e85e",
+  "ampart_binary_sha256": "a23a8b2c955a0acd300458e5f26938210bf48b01b5cad920953b324929853047",
+  "ampart_binary_source": "CE_android/research/ce-native-simulation/ampart-aarch64-static",
+  "ampart_use": "only regular-file simulation, never a /dev path",
+  "am9_review_commit": "581ca4f7a441461b957d814cc9beb1a1cca6cfe5",
+  "ota_retry_sources": {
+    "snapshot_format": "https://android.googlesource.com/platform/system/core/+/refs/heads/android11-release/fs_mgr/libsnapshot/snapshot.proto",
+    "lp_format": "https://android.googlesource.com/platform/system/core/+/refs/heads/android11-release/fs_mgr/liblp/include/liblp/metadata_format.h",
+    "implementation": "Local independent parsers and persistent dm-snapshot userspace reader; validated A4111/NG trial, 2026-09-30; no OTA image or device-specific identities embedded."
+  },
+  "ampart_release": "v1.4.1",
+  "ampart_download_url": "https://github.com/7Ji/ampart/releases/download/v1.4.1/ampart-v1.4.1-aarch64-static.gz",
+  "ampart_source_distribution": "Bundled in the addon ZIP under resources/emmc/vendor/ampart, including license and build files"
+}

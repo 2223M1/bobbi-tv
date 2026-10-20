@@ -1,0 +1,52 @@
+{
+  "record": {
+    "test": {
+      "title": "A Separation",
+      "tmdb_id": 60243,
+      "kind": "movie",
+      "year": 2011
+    },
+    "prior_request": null,
+    "started": 111183.531,
+    "ordinary_ui": true,
+    "force_select": false,
+    "helper_sha256": "5b31ea314733201b260ab51a71bf0d5040c30a6e3d6c9a016dbd506eb32ddb5f",
+    "home": {
+      "generation": 7,
+      "intent": 0,
+      "retired_generation": 7,
+      "observed_at": 111184.093
+    },
+    "launched_at": 111184.093,
+    "picker": {
+      "window": 13000,
+      "generation": 9,
+      "intent": 0,
+      "tmdb_id": 60243,
+      "kind": "movie"
+    },
+    "picker_observed_at": 111293.515
+  },
+  "view": {
+    "window": 13000,
+    "generation": 9,
+    "intent": 0,
+    "labels": {
+      "Window.Property(info.ids)": "{'tmdb_id': 60243}",
+      "Window.Property(info.media_type)": "movie",
+      "Window.Property(info.mode)": "movies",
+      "Window.Property(info.query)": "A Separation",
+      "Window.Property(info.tv_data)": "{}",
+      "Window.Property(info.year)": "2011",
+      "Window.Property(playback_error)": "",
+      "Window.Property(source_count)": "13",
+      "Window.Property(source_loading)": "false"
+    },
+    "modal": false,
+    "visible": [
+      13000
+    ],
+    "stable": true
+  },
+  "diagnostic_note": "Bind the existing exact-identity ordinary picker after accepting observed Windows dialog ID 13000; no new search or playback."
+}

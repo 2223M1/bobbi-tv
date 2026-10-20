@@ -1,0 +1,249 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "odd_taxi",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "ODDTAXI",
+        "tmdb_id": 116727,
+        "kind": "tv",
+        "year": 2021,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": null,
+      "started": 2206040.303477324,
+      "home": {
+        "generation": 10,
+        "intent": 0,
+        "retired_generation": 10,
+        "observed_at": 2206040.759826159
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 2206040.760568827,
+      "picker": {
+        "window": 13001,
+        "generation": 11,
+        "intent": 0,
+        "tmdb_id": 116727,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2206045.225796145
+    },
+    "samples": [
+      {
+        "wall": 2206041.002871412,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206040.978501207,
+          "decoder_started": 2206041.026209073,
+          "decoder_completed": 2206041.027008533,
+          "sample_completed": 2206041.0270112
+        }
+      },
+      {
+        "wall": 2206043.13315113,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206043.083862054,
+          "decoder_started": 2206043.165473471,
+          "decoder_completed": 2206043.165776597,
+          "sample_completed": 2206043.165778555
+        }
+      },
+      {
+        "wall": 2206045.243983256,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Lilith-Raws] Odd Taxi - 01 [Baha][WEB-DL][1080p][AVC AAC][CHT][MP4].mp4",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "4",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "4"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206045.226670605,
+          "decoder_started": 2206045.267370251,
+          "decoder_completed": 2206045.267598834,
+          "sample_completed": 2206045.267600668
+        }
+      },
+      {
+        "wall": 2206047.406882318,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Lilith-Raws] Odd Taxi - 01 [Baha][WEB-DL][1080p][AVC AAC][CHT][MP4].mp4",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "7"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206047.332610663,
+          "decoder_started": 2206047.435949071,
+          "decoder_completed": 2206047.436533363,
+          "sample_completed": 2206047.436538363
+        }
+      },
+      {
+        "wall": 2206049.572896822,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Lilith-Raws] Odd Taxi - 01 [Baha][WEB-DL][1080p][AVC AAC][CHT][MP4].mp4",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "7"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206049.55505517,
+          "decoder_started": 2206049.598854069,
+          "decoder_completed": 2206049.59933257,
+          "sample_completed": 2206049.599336237
+        }
+      },
+      {
+        "wall": 2206051.701649041,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Lilith-Raws] Odd Taxi - 01 [Baha][WEB-DL][1080p][AVC AAC][CHT][MP4].mp4",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "9",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "9"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206051.682220053,
+          "decoder_started": 2206051.717096814,
+          "decoder_completed": 2206051.717389398,
+          "sample_completed": 2206051.717391981
+        }
+      },
+      {
+        "wall": 2206053.801346823,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Lilith-Raws] Odd Taxi - 01 [Baha][WEB-DL][1080p][AVC AAC][CHT][MP4].mp4",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "9",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "9"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206053.788195344,
+          "decoder_started": 2206053.814887176,
+          "decoder_completed": 2206053.815305843,
+          "sample_completed": 2206053.815309552
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "odd_taxi",
+  "operation": "start",
+  "attempt": 2,
+  "regression_attempt": true
+}

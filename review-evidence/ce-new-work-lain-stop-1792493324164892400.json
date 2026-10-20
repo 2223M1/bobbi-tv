@@ -1,0 +1,99 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "lain",
+    "stopped": true,
+    "before": {
+      "wall": 2223206.551192976,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:6fb19ed50820221e503b6e1182501528ca493949b961a512bfa0eb4688ed41ff|transport:1ec5083d8a616fe298668a39610a8435117db0733d5302fca61848ea89cd9119",
+        "monotonic_us": 2223010912437,
+        "native_instance": "6147ea0e-988a-4a85-a8a7-cfc9376be312",
+        "open_epoch": 5,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "2fa9a9c7e1834a7685c10f93bddb55d0",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "1ec5083d8a616fe298668a39610a8435117db0733d5302fca61848ea89cd9119",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 187.171,
+      "duration": 1436.94,
+      "currentaudiostream": {
+        "bitrate": 528321,
+        "channels": 2,
+        "codec": "flac",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "jpn",
+        "name": "2.0 Japanese",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 0,
+        "isdefault": true,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "eng",
+        "name": "Stylized Subtitles [Nipkow]"
+      },
+      "currentvideostream": {
+        "codec": "h264",
+        "height": 1080,
+        "index": 0,
+        "language": "jpn",
+        "name": "JP-BD [Ghosty6464]",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": false,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 4598,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "observation_times": {
+        "sample_started": 2223206.523460667,
+        "player_time_started": 2223206.553898816,
+        "player_time_completed": 2223206.556724079,
+        "caching_started": 2223206.556747747,
+        "caching_completed": 2223206.579836163,
+        "decoder_started": 2223206.625135535,
+        "decoder_completed": 2223206.626068206,
+        "sample_completed": 2223206.626071039
+      }
+    },
+    "seconds": 0.26
+  },
+  "diagnostic_present": false,
+  "work": "lain",
+  "operation": "stop",
+  "attempt": 1,
+  "regression_attempt": false
+}

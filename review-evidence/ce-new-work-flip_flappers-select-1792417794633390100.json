@@ -1,0 +1,34 @@
+{
+  "exit_code": 0,
+  "result": {
+    "error": "AssertionError",
+    "reason": "PICKER_REPLACED",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 4
+      },
+      {
+        "function": "<module>",
+        "line": 568
+      },
+      {
+        "function": "rewind_picker",
+        "line": 469
+      },
+      {
+        "function": "require_picker",
+        "line": 462
+      },
+      {
+        "function": "bind_picker",
+        "line": 450
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "select",
+  "attempt": 6,
+  "regression_attempt": true
+}

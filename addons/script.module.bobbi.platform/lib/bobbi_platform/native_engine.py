@@ -111,8 +111,8 @@ class Engine:
         self.process = None
         self.attempted = False
 
-    def tick(self):
-        if self.attempted:
+    def tick(self, cancelled=lambda: False):
+        if self.attempted or cancelled():
             return
         root = profile(name='engine')
         if not (root / 'enabled').is_file():
@@ -125,6 +125,8 @@ class Engine:
         size, digest = BINARIES[arch]
         if binary.is_symlink() or binary.stat().st_size != size or hashlib.sha256(binary.read_bytes()).hexdigest() != digest:
             raise ValueError('Installed engine does not match lock')
+        if cancelled():
+            return
         pairing = load(profile(name='helper-pairing.json'))
         try:
             TorrServerClient(engine_document(pairing)).ready()
@@ -133,6 +135,8 @@ class Engine:
             pass
         with socket.socket() as check:
             check.bind(('127.0.0.1', 8090))  # Busy port is a failure, never kill another service.
+        if cancelled():
+            return
         self.process = subprocess.Popen([str(binary), '-i', '127.0.0.1', '-p', '8090', '-d', str(root),
             '-a', '-l', '/dev/null', '-w', '/dev/null'], stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)

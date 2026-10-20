@@ -4,7 +4,8 @@ from pathlib import Path
 import time
 from uuid import uuid4
 
-SNAPSHOT = Path('/storage/.kodi/userdata/addon_data/plugin.video.bobbi/bobi-direct.json')
+from .runtime_paths import ProfilePath
+SNAPSHOT = ProfilePath('bobi-direct.json')
 
 
 def intent(data):
@@ -25,11 +26,15 @@ def intent(data):
 
 def snapshot():
     try:
-        with SNAPSHOT.open('rb') as stream:
+        with Path(SNAPSHOT).open('rb') as stream:
             raw = stream.read(8 * 1024**2 + 1)
         if len(raw) > 8 * 1024**2:
             return {}
         data = json.loads(raw)
+        if 'account_scope' in data:
+            from .prepared_index import scope_is_current
+            if not scope_is_current(data['account_scope']):
+                return {}
         return data if data.get('schema') == 1 and isinstance(data.get('entries'), list) else {}
     except (OSError, ValueError, TypeError, AttributeError):
         return {}

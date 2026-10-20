@@ -1,0 +1,1727 @@
+diff --git a/xbmc/application/Application.cpp b/xbmc/application/Application.cpp
+index a05ffab..cbc48e3 100644
+--- a/xbmc/application/Application.cpp
++++ b/xbmc/application/Application.cpp
+@@ -7,6 +7,8 @@
+  */
+ 
+ #include "Application.h"
++#include "cores/BobiOpenGate.h"
++#include "cores/BobiGuiGate.h"
+ 
+ #include "Autorun.h"
+ #include "CompileInfo.h"
+@@ -929,6 +931,9 @@ void CApplication::Render()
+ 
+ bool CApplication::OnAction(const CAction &action)
+ {
++  if (action.GetID() == ACTION_NAV_BACK || action.GetID() == ACTION_PREVIOUS_MENU ||
++      action.GetID() == ACTION_SHOW_GUI || action.GetID() == ACTION_STOP)
++    CBobiGuiGate::Get().UserReturn();
+   // special case for switching between GUI & fullscreen mode.
+   if (action.GetID() == ACTION_SHOW_GUI)
+   { // Switch to fullscreen mode if we can
+@@ -1583,6 +1588,29 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
+     break;
+ 
+ 
++  case TMSG_BOBI_FULLSCREEN:
++  {
++    const std::unique_ptr<CVariant> command(static_cast<CVariant*>(pMsg->lpVoid));
++    if (!command)
++      break;
++    auto& gate = CBobiOpenGate::Get();
++    std::lock_guard<std::recursive_mutex> lock(gate.Mutex());
++    const auto player = GetComponent<CApplicationPlayer>();
++    const CVariant row = player->GetBobiState();
++    CGUIComponent* gui = CServiceBroker::GetGUI();
++    const std::string instance = (*command)["native_instance"].asString();
++    if (!gui || row["native_instance"].asString() != instance ||
++        row["request_id"] != (*command)["request_id"] || row["phase"].asString() != "AV_STARTED" ||
++        gate.Epoch() != (*command)["selection_epoch"].asUnsignedInteger() ||
++        gui->GetWindowManager().HasModalDialog(false) ||
++        !CBobiGuiGate::Get().Claim((*command)["gui_generation"].asUnsignedInteger(),
++                                 (*command)["gui_user_intent"].asUnsignedInteger(), instance))
++      break;
++    gui->GetWindowManager().SwitchToFullScreen(true);
++    if (gui->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
++      CBobiGuiGate::Get().Confirm(instance);
++    break;
++  }
+   case TMSG_SWITCHTOFULLSCREEN:
+   {
+     CGUIComponent* gui = CServiceBroker::GetGUI();
+@@ -2367,6 +2395,8 @@ bool CApplication::PlayStack(CFileItem& item, bool bRestart)
+ 
+ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRestart)
+ {
++  if (!CBobiOpenGate::Get().Allowed(item.GetProperty("bobitv.request_id").asString()))
++    return false;
+   // Ensure the MIME type has been retrieved for http:// and shout:// streams
+   if (item.GetMimeType().empty())
+     item.FillInMimeType();
+@@ -2377,12 +2407,12 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
+   if (!bRestart)
+   {
+     // bRestart will be true when called from PlayStack(), skipping this block
+-    appPlayer->SetPlaySpeed(1);
++    // Do not resume the old video while a new plugin is still resolving.
+ 
+     m_nextPlaylistItem = -1;
+     stackHelper->Clear();
+ 
+-    if (item.IsVideo())
++    if (item.IsVideo() && item.GetProperty("bobitv.request_id").asString().empty())
+       CUtil::ClearSubtitles();
+   }
+ 
+@@ -2401,6 +2431,11 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
+     return false;
+   }
+ 
++  if (!CBobiOpenGate::Get().Allowed(item.GetProperty("bobitv.request_id").asString()))
++    return false;
++  if (!bRestart && item.GetProperty("bobitv.request_id").asString().empty())
++    appPlayer->SetPlaySpeed(1);
++
+   // if we have a stacked set of files, we need to setup our stack routines for
+   // "seamless" seeking and total time of the movie etc.
+   // will recall with restart set to true
+@@ -2561,6 +2596,10 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
+     options.fullscreen = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->
+         m_fullScreenOnMovieStart && !CMediaSettings::GetInstance().DoesMediaStartWindowed();
+ 
++  // Exact requests hand off once through the conditional GUI-thread command.
++  if (!item.GetProperty("bobitv.request_id").asString().empty())
++    options.fullscreen = false;
++
+   // stereo streams may have lower quality, i.e. 32bit vs 16 bit
+   options.preferStereo = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoPreferStereoStream &&
+                          CServiceBroker::GetActiveAE()->HasStereoAudioChannelCount();
+diff --git a/xbmc/application/ApplicationPlayer.cpp b/xbmc/application/ApplicationPlayer.cpp
+index 9d14233..b4cea19 100644
+--- a/xbmc/application/ApplicationPlayer.cpp
++++ b/xbmc/application/ApplicationPlayer.cpp
+@@ -11,6 +11,7 @@
+ #include "ServiceBroker.h"
+ #include "cores/DataCacheCore.h"
+ #include "cores/IPlayer.h"
++#include "cores/BobiOpenGate.h"
+ #include "cores/VideoPlayer/VideoPlayer.h"
+ #include "cores/playercorefactory/PlayerCoreFactory.h"
+ #include "guilib/GUIComponent.h"
+@@ -34,6 +35,30 @@ std::shared_ptr<IPlayer> CApplicationPlayer::GetInternal()
+   return m_pPlayer;
+ }
+ 
++CVariant CApplicationPlayer::GetBobiState() const
++{
++  const auto player = GetInternal();
++  return player ? player->GetBobiState() : CVariant();
++}
++
++bool CApplicationPlayer::BobiControl(const CVariant& command)
++{
++  const auto player = GetInternal();
++  return player && player->BobiControl(command);
++}
++
++CVariant CApplicationPlayer::GetBobiSubtitles() const
++{
++  const auto player = GetInternal();
++  return player ? player->GetBobiSubtitles() : CVariant();
++}
++
++CVariant CApplicationPlayer::ReserveBobiSubtitle(const CVariant& expected)
++{
++  const auto player = GetInternal();
++  return player ? player->ReserveBobiSubtitle(expected) : CVariant();
++}
++
+ void CApplicationPlayer::ClosePlayer()
+ {
+   m_nextItem.pItem.reset();
+@@ -85,6 +110,13 @@ bool CApplicationPlayer::OpenFile(const CFileItem& item, const CPlayerOptions& o
+                                   const CPlayerCoreFactory &factory,
+                                   const std::string &playerName, IPlayerCallback& callback)
+ {
++  auto& gate = CBobiOpenGate::Get();
++  std::lock_guard<std::recursive_mutex> reservation(gate.Mutex());
++  const auto request = item.GetProperty("bobitv.request_id").asString();
++  const auto active = GetInternal();
++  // Tagged exact playback must finish its conditional old-instance stop first.
++  if ((!request.empty() && active && active->IsPlaying()) || !gate.Claim(request))
++    return false;
+   // get player type
+   std::string newPlayer;
+   if (!playerName.empty())
+diff --git a/xbmc/application/ApplicationPlayer.h b/xbmc/application/ApplicationPlayer.h
+index 2a641d0..7688550 100644
+--- a/xbmc/application/ApplicationPlayer.h
++++ b/xbmc/application/ApplicationPlayer.h
+@@ -42,6 +42,10 @@ public:
+   float GetPlaySpeed() const;
+   float GetPlayTempo() const;
+   bool HasPlayer() const;
++  CVariant GetBobiState() const;
++  CVariant GetBobiSubtitles() const;
++  CVariant ReserveBobiSubtitle(const CVariant& expected);
++  bool BobiControl(const CVariant& command);
+   bool OpenFile(const CFileItem& item, const CPlayerOptions& options,
+                 const CPlayerCoreFactory &factory,
+                 const std::string &playerName, IPlayerCallback& callback);
+diff --git a/xbmc/cores/BobiGuiGate.h b/xbmc/cores/BobiGuiGate.h
+new file mode 100644
+index 0000000..4832658
+--- /dev/null
++++ b/xbmc/cores/BobiGuiGate.h
+@@ -0,0 +1,71 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#pragma once
++#include <cstdint>
++#include <mutex>
++#include <string>
++#include <map>
++
++// GUI lifecycle, not a reusable window id. Updates are cheap and bounded.
++class CBobiGuiGate
++{
++public:
++  struct Window
++  {
++    std::string token, role, request, instance;
++  };
++  struct State
++  {
++    uint64_t generation{0};
++    uint64_t userIntent{0};
++    std::string fullscreenInstance;
++    std::map<int, Window> windows;
++  };
++  static CBobiGuiGate& Get() { static CBobiGuiGate gate; return gate; }
++  State Snapshot() const { std::lock_guard<std::mutex> lock(m_mutex); return m_state; }
++  void WindowChanged() { std::lock_guard<std::mutex> lock(m_mutex); ++m_state.generation; }
++  void UserReturn() { std::lock_guard<std::mutex> lock(m_mutex); ++m_state.userIntent; }
++  void OpenWindow(int id, const Window& window)
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    if (m_state.windows.size() < 8 || m_state.windows.count(id))
++      m_state.windows[id] = window;
++  }
++  bool CloseWindow(int id)
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    return m_state.windows.erase(id) != 0;
++  }
++  bool AllowsPause(const std::string& action, const std::string& token, const std::string& instance) const
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    if (token.empty())
++      return false;
++    bool ownWindow = false, anyWindow = false;
++    for (const auto& [id, window] : m_state.windows)
++      if (window.instance == instance)
++      {
++        anyWindow = true;
++        ownWindow = ownWindow || window.token == token;
++      }
++    return action == "pause" ? ownWindow : action == "resume" && !anyWindow;
++  }
++  bool Claim(uint64_t generation, uint64_t intent, const std::string& instance)
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    if (generation != m_state.generation || intent != m_state.userIntent ||
++        instance.empty() || instance == m_attempted)
++      return false;
++    m_attempted = instance;
++    return true;
++  }
++  void Confirm(const std::string& instance)
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    if (instance == m_attempted)
++      m_state.fullscreenInstance = instance;
++  }
++private:
++  mutable std::mutex m_mutex;
++  State m_state;
++  std::string m_attempted;
++};
+diff --git a/xbmc/cores/BobiOpenGate.h b/xbmc/cores/BobiOpenGate.h
+new file mode 100644
+index 0000000..519a40e
+--- /dev/null
++++ b/xbmc/cores/BobiOpenGate.h
+@@ -0,0 +1,77 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#pragma once
++
++#include <cstdint>
++#include <atomic>
++#include <mutex>
++#include <string>
++
++inline bool BobiControlEpochAllows(const std::string& action, uint64_t playerEpoch,
++                                  uint64_t commandEpoch, uint64_t currentEpoch)
++{
++  // B may stop A at B's current selection epoch. Old A pause/resume may not
++  // resume A after B was selected, nor may B's delayed stop survive C.
++  return commandEpoch == currentEpoch && (action == "stop" ||
++      ((action == "pause" || action == "resume") && playerEpoch == commandEpoch));
++}
++
++// Process-local selection fence, not an audio/video player id. Network and
++// plugin resolution must happen outside this lock. Only the final native open
++// consumes a reservation. An ordinary untagged open invalidates pending work.
++class CBobiOpenGate
++{
++public:
++  static CBobiOpenGate& Get()
++  {
++    static CBobiOpenGate gate;
++    return gate;
++  }
++
++  bool Reserve(uint64_t expected, const std::string& request)
++  {
++    std::lock_guard<std::recursive_mutex> lock(m_mutex);
++    if (expected != m_epoch || (!request.empty() && (request.size() != 32 ||
++        request.find_first_not_of("0123456789abcdef") != std::string::npos)))
++      return false;
++    ++m_epoch;
++    m_request = request;
++    m_claimed = false;
++    return true;
++  }
++
++  bool Allowed(const std::string& request) const
++  {
++    std::lock_guard<std::recursive_mutex> lock(m_mutex);
++    return request.empty() || (request == m_request && !m_claimed);
++  }
++
++  bool Claim(const std::string& request)
++  {
++    std::lock_guard<std::recursive_mutex> lock(m_mutex);
++    if (request.empty())
++    {
++      ++m_epoch;
++      m_request.clear();
++      m_claimed = false;
++      return true;
++    }
++    if (!Allowed(request))
++      return false;
++    m_claimed = true;
++    return true;
++  }
++
++  uint64_t Epoch() const
++  {
++    // Player actors must not wait on a gate held by OpenFile/CloseFile callers.
++    return m_epoch.load();
++  }
++
++  std::recursive_mutex& Mutex() { return m_mutex; }
++
++private:
++  mutable std::recursive_mutex m_mutex;
++  std::atomic<uint64_t> m_epoch{0};
++  std::string m_request;
++  bool m_claimed{false};
++};
+diff --git a/xbmc/cores/BobiReadStatus.h b/xbmc/cores/BobiReadStatus.h
+new file mode 100644
+index 0000000..e009438
+--- /dev/null
++++ b/xbmc/cores/BobiReadStatus.h
+@@ -0,0 +1,37 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#pragma once
++#include <cstdint>
++
++// Preserve signed failures before converting bytes to Blu-ray sectors. A short
++// read can be completed, but a fractional sector must never look like EOF.
++template<class Reader>
++int BobiReadBlocks(Reader&& read, uint8_t* buffer, int requested)
++{
++  if (requested < 0 || requested % 2048 != 0)
++    return -1;
++  int total = 0;
++  for (unsigned reads = 0; total < requested && reads < 32; ++reads)
++  {
++    const int got = read(buffer + total, requested - total);
++    if (got < 0 || got > requested - total)
++      return -1;
++    if (got == 0)
++      return total % 2048 == 0 ? total / 2048 : -1;
++    total += got;
++  }
++  return total == requested ? total / 2048 : -1;
++}
++
++inline int BobiDemuxReadFailure(int result, int ioError, int eof, int again, int interrupted)
++{
++  if (result >= 0 || result == again || result == interrupted)
++    return 0;
++  if (result != eof)
++    return result;
++  return ioError < 0 && ioError != eof && ioError != again && ioError != interrupted ? ioError : 0;
++}
++
++inline bool BobiClearInputReadError(int bytes, bool disc)
++{
++  return bytes > 0 && !disc;
++}
+diff --git a/xbmc/cores/IPlayer.h b/xbmc/cores/IPlayer.h
+index 9b04674..a3e4ac7 100644
+--- a/xbmc/cores/IPlayer.h
++++ b/xbmc/cores/IPlayer.h
+@@ -12,6 +12,7 @@
+ #include "Interface/StreamInfo.h"
+ #include "MenuType.h"
+ #include "VideoSettings.h"
++#include "utils/Variant.h"
+ 
+ #include <memory>
+ #include <string>
+@@ -95,6 +96,12 @@ public:
+   virtual void OnNothingToQueueNotify() {}
+   virtual bool CloseFile(bool reopen = false) = 0;
+   virtual bool IsPlaying() const { return false;}
++  // A player id or a URL is not a unique open instance. Unsupported cores
++  // return null; callers must not fall back to unscoped playback controls.
++  virtual CVariant GetBobiState() const { return {}; }
++  virtual CVariant GetBobiSubtitles() const { return {}; }
++  virtual CVariant ReserveBobiSubtitle(const CVariant&) { return {}; }
++  virtual bool BobiControl(const CVariant& command) { return false; }
+   virtual bool CanPause() const { return true; }
+   virtual void Pause() = 0;
+   virtual bool HasVideo() const = 0;
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h
+index a1d229b..21ef510 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h
+@@ -249,6 +249,7 @@ public:
+    *
+    */
+   virtual DemuxPacket* Read() = 0;
++  virtual int BobiReadError() const { return 0; }
+ 
+   /*
+    * Seek, time in msec calculated from stream start
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index 1aebc3d..b3685b5 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include "DVDDemuxFFmpeg.h"
++#include "cores/BobiReadStatus.h"
+ 
+ #include "DVDDemuxUtils.h"
+ #include "DVDInputStreams/DVDInputStream.h"
+@@ -172,6 +173,10 @@ static int dvd_file_read(void* h, uint8_t* buf, int size)
+ 
+   std::shared_ptr<CDVDInputStream> pInputStream = static_cast<CDVDDemuxFFmpeg*>(h)->m_pInput;
+   int len = pInputStream->Read(buf, size);
++  if (len < 0 && len != AVERROR(EAGAIN) && len != AVERROR(EINTR) && !interrupt_cb(h))
++    pInputStream->BobiSetReadError(len);
++  else if (BobiClearInputReadError(len, pInputStream->IsStreamType(DVDSTREAM_TYPE_BLURAY)))
++    pInputStream->BobiSetReadError(0);
+   if (len == 0)
+     return AVERROR_EOF;
+   else
+@@ -235,6 +240,7 @@ bool CDVDDemuxFFmpeg::Aborted()
+ 
+ bool CDVDDemuxFFmpeg::Open(const std::shared_ptr<CDVDInputStream>& pInput, bool fileinfo)
+ {
++  m_bobiReadError.store(0);
+   const AVInputFormat* iformat = nullptr;
+   std::string strFile;
+   m_streaminfo = !pInput->IsRealtime() && !m_reopen;
+@@ -1026,6 +1032,7 @@ double CDVDDemuxFFmpeg::ConvertTimestamp(int64_t pts, int den, int num)
+ 
+ DemuxPacket* CDVDDemuxFFmpeg::ReadInternal(bool keep)
+ {
++  m_bobiReadError.store(0);
+   DemuxPacket* pPacket = NULL;
+   // on some cases where the received packet is invalid we will need to return an empty packet (0 length) otherwise the main loop (in CVideoPlayer)
+   // would consider this the end of stream and stop.
+@@ -1051,6 +1058,9 @@ DemuxPacket* CDVDDemuxFFmpeg::ReadInternal(bool keep)
+         m_timeout.SetInfinite();
+       }
+ 
++      m_bobiReadError.store(BobiDemuxReadFailure(m_pkt.result,
++          m_pFormatContext->pb ? m_pFormatContext->pb->error : 0,
++          AVERROR_EOF, AVERROR(EAGAIN), AVERROR(EINTR)));
+       if (m_pkt.result == AVERROR(EINTR) || m_pkt.result == AVERROR(EAGAIN))
+       {
+         // timeout, probably no real error, return empty packet
+@@ -1075,7 +1085,10 @@ DemuxPacket* CDVDDemuxFFmpeg::ReadInternal(bool keep)
+           Flush();
+         }
+         else
++        {
+           CLog::Log(LOGERROR, "CDVDDemuxFFmpeg::Read() returned invalid packet and eof reached");
++          m_bobiReadError.store(AVERROR_INVALIDDATA);
++        }
+ 
+         m_pkt.result = -1;
+         av_packet_unref(&m_pkt.pkt);
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.h b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.h
+index 03fb985..67f6d9a 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.h
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.h
+@@ -12,6 +12,7 @@
+ #include "threads/CriticalSection.h"
+ #include "threads/SystemClock.h"
+ #include <map>
++#include <atomic>
+ #include <memory>
+ #include <vector>
+ 
+@@ -92,6 +93,7 @@ public:
+   std::string GetFileName() override;
+ 
+   DemuxPacket* Read() override;
++  int BobiReadError() const override { return m_bobiReadError.load(); }
+   DemuxPacket* ReadInternal(bool keep);
+ 
+   bool SeekTime(double time, bool backwards = false, double* startpts = NULL) override;
+@@ -152,6 +154,7 @@ protected:
+   bool     m_bMatroska;
+   bool     m_bAVI;
+   bool     m_bSup;
++  std::atomic<int> m_bobiReadError{0};
+   int      m_speed;
+   unsigned int m_program;
+   unsigned int m_streamsInProgram;
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.h b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.h
+index 4633757..281e354 100644
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.h
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStream.h
+@@ -15,6 +15,7 @@
+ #include "utils/BitstreamStats.h"
+ #include "utils/Geometry.h"
+ 
++#include <atomic>
+ #include <string>
+ #include <vector>
+ 
+@@ -188,6 +189,8 @@ public:
+ 
+   bool IsStreamType(DVDStreamType type) const { return m_streamType == type; }
+   virtual bool IsEOF() = 0;
++  int BobiReadError() const { return m_bobiReadError.load(); }
++  void BobiSetReadError(int error) { m_bobiReadError.store(error); }
+   virtual BitstreamStats GetBitstreamStats() const { return m_stats; }
+ 
+   bool ContentLookup() { return m_contentLookup; }
+@@ -207,6 +210,7 @@ public:
+ 
+ protected:
+   DVDStreamType m_streamType;
++  std::atomic<int> m_bobiReadError{0};
+   BitstreamStats m_stats;
+   std::string m_content;
+   CFileItem m_item;
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStreamBluray.cpp b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStreamBluray.cpp
+index f554ee4..3226613 100644
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStreamBluray.cpp
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/DVDInputStreamBluray.cpp
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include "DVDInputStreamBluray.h"
++#include "cores/BobiReadStatus.h"
+ 
+ #include "DVDCodecs/Overlay/DVDOverlay.h"
+ #include "DVDCodecs/Overlay/DVDOverlayImage.h"
+@@ -136,6 +137,7 @@ BLURAY_TITLE_INFO* CDVDInputStreamBluray::GetTitleFile(const std::string& filena
+ 
+ bool CDVDInputStreamBluray::Open()
+ {
++  BobiSetReadError(0);
+   if(m_player == nullptr)
+     return false;
+ 
+@@ -432,6 +434,7 @@ void CDVDInputStreamBluray::ProcessEvent() {
+    /* errors */
+ 
+   case BD_EVENT_ERROR:
++    BobiSetReadError(-1);
+     switch (m_event.param)
+     {
+     case BD_ERROR_HDMV:
+@@ -446,10 +449,12 @@ void CDVDInputStreamBluray::ProcessEvent() {
+     break;
+ 
+   case BD_EVENT_READ_ERROR:
++    BobiSetReadError(-1);
+     CLog::Log(LOGERROR, "CDVDInputStreamBluray - BD_EVENT_READ_ERROR");
+     break;
+ 
+   case BD_EVENT_ENCRYPTED:
++    BobiSetReadError(-1);
+     CLog::Log(LOGERROR, "CDVDInputStreamBluray - BD_EVENT_ENCRYPTED");
+     switch (m_event.param)
+     {
+@@ -652,6 +657,7 @@ int CDVDInputStreamBluray::Read(uint8_t* buf, int buf_size)
+ 
+       if(result < 0)
+       {
++        BobiSetReadError(result);
+         m_hold = HOLD_ERROR;
+         return result;
+       }
+@@ -695,14 +701,19 @@ int CDVDInputStreamBluray::Read(uint8_t* buf, int buf_size)
+     while (bd_get_event(m_bd, &m_event))
+       ProcessEvent();
+   }
+-  return result;
++  if (result < 0)
++    BobiSetReadError(result);
++  return result == 0 && BobiReadError() < 0 ? -1 : result;
+ }
+ 
+ int CDVDInputStreamBluray::ReadBlocks(uint8_t* buf, int lba, int num_blocks)
+ {
+   CDVDInputStreamFile* lpstream = m_pstream.get();
+-  if (!lpstream)
++  if (!lpstream || lba < 0 || num_blocks < 0)
++  {
++    BobiSetReadError(-1);
+     return -1;
++  }
+   int result = -1;
+   int64_t offset = static_cast<int64_t>(lba) * 2048;
+   std::unique_lock<CCriticalSection> lock(m_readBlocksLock);
+@@ -710,8 +721,12 @@ int CDVDInputStreamBluray::ReadBlocks(uint8_t* buf, int lba, int num_blocks)
+   {
+     int64_t size = static_cast<int64_t>(num_blocks) * 2048;
+     if (size <= std::numeric_limits<int>::max())
+-      result = lpstream->Read(buf, static_cast<int>(size)) / 2048;
++      result = BobiReadBlocks([lpstream](uint8_t* out, int bytes) {
++        return lpstream->Read(out, bytes);
++      }, buf, static_cast<int>(size));
+   }
++  if (result < 0)
++    BobiSetReadError(result);
+   return result;
+ }
+ 
+diff --git a/xbmc/cores/VideoPlayer/DVDMessage.h b/xbmc/cores/VideoPlayer/DVDMessage.h
+index 5b1dcf7..7a3b438 100644
+--- a/xbmc/cores/VideoPlayer/DVDMessage.h
++++ b/xbmc/cores/VideoPlayer/DVDMessage.h
+@@ -48,6 +48,7 @@ public:
+     PLAYER_SETSPEED,                // set the playback speed
+     PLAYER_REQUEST_STATE,
+     PLAYER_OPENFILE,
++    PLAYER_BOBI_CONTROL,            // compared and executed by the video actor
+     PLAYER_STARTED,                 // sent whenever a sub player has finished it's first frame after open
+     PLAYER_AVCHANGE,                // signal a change in audio, video or subtitle parameters
+     PLAYER_ABORT,
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.cpp b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+index 5a42065..efe67be 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+@@ -7,6 +7,12 @@
+  */
+ 
+ #include "VideoPlayer.h"
++#include "cores/BobiGuiGate.h"
++#include "cores/BobiOpenGate.h"
++#include "dialogs/BobiSubtitleFile.h"
++#include "filesystem/SpecialProtocol.h"
++#include "interfaces/AnnouncementManager.h"
++#include "utils/Digest.h"
+ 
+ #include "DVDCodecs/DVDCodecUtils.h"
+ #include "DVDDemuxers/DVDDemux.h"
+@@ -664,6 +670,151 @@ CVideoPlayer::~CVideoPlayer()
+   }
+ }
+ 
++namespace
++{
++void AnnounceBobiReceipt(const CVariant& receipt)
++{
++  // Immutable data only: no URL, no mutable m_item and no callback-time lookup
++  // of a Python property that may already belong to the next selection.
++  CServiceBroker::GetAnnouncementManager()->Announce(
++      ANNOUNCEMENT::Player, "OnBobiState", receipt);
++}
++
++std::string BobiSubtitleKey(const SelectionStream& stream, const std::string& instance)
++{
++  std::string value = instance;
++  for (const auto& field : {std::to_string(stream.source), std::to_string(stream.demuxerId),
++       std::to_string(stream.id), std::to_string(static_cast<unsigned int>(stream.flags)),
++       stream.filename, stream.filename2, stream.language, stream.name, stream.codec})
++    value += std::to_string(field.size()) + ":" + field;
++  return KODI::UTILITY::CDigest::Calculate(KODI::UTILITY::CDigest::Type::SHA256, value);
++}
++}
++
++CVariant CVideoPlayer::GetBobiState() const
++{
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  return m_bobiState;
++}
++
++CVariant CVideoPlayer::GetBobiSubtitles() const
++{
++  const auto selectionEpoch = CBobiOpenGate::Get().Epoch();
++  const auto before = GetBobiState();
++  if (before["phase"].asString() != "AV_STARTED") return CVariant();
++  CVariant result(CVariant::VariantTypeObject);
++  result["receipt"] = before;
++  result["selection_epoch"] = selectionEpoch;
++  result["streams"] = CVariant(CVariant::VariantTypeArray);
++  {
++    // Never nest the playback-receipt and content locks.
++    std::unique_lock<CCriticalSection> lock(m_content.m_section);
++    const int count = m_content.m_selectionStreams.CountType(STREAM_SUBTITLE);
++    if (count > 256) { result["status"] = "CATALOG_LIMIT"; return result; }
++    result["current_index"] = m_content.m_subtitleIndex;
++    for (int index = 0; index < count; ++index)
++    {
++      const auto& stream = m_content.m_selectionStreams.Get(STREAM_SUBTITLE, index);
++      CVariant item(CVariant::VariantTypeObject);
++      item["index"] = index;
++      item["stream_key"] = BobiSubtitleKey(stream, before["native_instance"].asString());
++      item["language"] = stream.language.substr(0, 32);
++      item["name"] = stream.name.substr(0, 128);
++      item["isforced"] = (stream.flags & StreamFlags::FLAG_FORCED) != StreamFlags::FLAG_NONE;
++      item["isimpaired"] = (stream.flags & StreamFlags::FLAG_HEARING_IMPAIRED) != StreamFlags::FLAG_NONE;
++      result["streams"].push_back(item);
++    }
++  }
++  result["visible"] = GetSubtitleVisible();
++  const auto after = GetBobiState();
++  if (before["native_instance"] != after["native_instance"] ||
++      before["subtitle_intent"] != after["subtitle_intent"] ||
++      selectionEpoch != CBobiOpenGate::Get().Epoch() ||
++      after["phase"].asString() != "AV_STARTED")
++    return CVariant();
++  result["status"] = "READY";
++  return result;
++}
++
++void CVideoPlayer::BeginBobiInstance(const CFileItem& file)
++{
++  using KODI::UTILITY::CDigest;
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  m_bobiState = CVariant(CVariant::VariantTypeObject);
++  m_bobiState["protocol"] = 1;
++  m_bobiState["native_instance"] = StringUtils::CreateUUID();
++  m_bobiState["open_epoch"] = CBobiOpenGate::Get().Epoch();
++  const auto request = file.GetProperty("bobitv.request_id").asString();
++  const auto identity = file.GetProperty("bobitv.file_identity").asString();
++  m_bobiState["request_id"] = request.size() == 32 ? request : "";
++  m_bobiState["file_identity"] = identity.size() <= 1024 ? identity : "";
++  // PluginDirectory retains GetPath() as the original plugin route and puts
++  // setResolvedUrl's real transport in GetDynPath(). Hash exactly the path
++  // DVDInputStreamFile opens, not a per-request plugin URL or an addon claim.
++  m_bobiState["url_sha256"] = CDigest::Calculate(CDigest::Type::SHA256, file.GetDynPath());
++  m_bobiState["user_intent"] = static_cast<uint64_t>(0);
++  m_bobiState["subtitle_intent"] = static_cast<uint64_t>(0);
++  m_bobiState["subtitle_auto_intent"] = static_cast<uint64_t>(0);
++  m_bobiState["sequence"] = static_cast<uint64_t>(0);
++  m_bobiState["phase"] = "OPEN";
++  m_bobiState["paused"] = false;
++}
++
++CVariant CVideoPlayer::BobiEvent(const std::string& phase, const std::string& reason)
++{
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  if (phase == "AV_STARTED" && m_bobiState["phase"].asString() == "OPEN")
++    m_bobiState["subtitle_auto_intent"] = m_bobiState["subtitle_intent"];
++  m_bobiState["sequence"] = m_bobiState["sequence"].asUnsignedInteger() + 1;
++  m_bobiState["phase"] = phase;
++  m_bobiState["reason"] = reason;
++  m_bobiState["monotonic_us"] = static_cast<uint64_t>(
++      std::chrono::duration_cast<std::chrono::microseconds>(
++          std::chrono::steady_clock::now().time_since_epoch()).count());
++  return m_bobiState;
++}
++
++void CVideoPlayer::BobiUserIntent()
++{
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  if (m_bobiState.isObject())
++    m_bobiState["user_intent"] = m_bobiState["user_intent"].asUnsignedInteger() + 1;
++}
++
++void CVideoPlayer::BobiSubtitleIntent()
++{
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  if (m_bobiState.isObject())
++    m_bobiState["subtitle_intent"] = m_bobiState["subtitle_intent"].asUnsignedInteger() + 1;
++}
++
++CVariant CVideoPlayer::ReserveBobiSubtitle(const CVariant& expected)
++{
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  if (m_bobiState["phase"].asString() != "AV_STARTED" ||
++      expected["native_instance"] != m_bobiState["native_instance"] ||
++      expected["subtitle_intent"] != m_bobiState["subtitle_intent"] ||
++      m_bobiState["open_epoch"].asUnsignedInteger() != CBobiOpenGate::Get().Epoch())
++    return CVariant();
++  m_bobiState["subtitle_intent"] = m_bobiState["subtitle_intent"].asUnsignedInteger() + 1;
++  return m_bobiState;
++}
++
++bool CVideoPlayer::BobiControl(const CVariant& command)
++{
++  // Queue acceptance is not execution success. The actor emits the result.
++  const auto action = command["action"].asString();
++  if (!m_messenger.IsInited() ||
++      (action != "stop" && action != "pause" && action != "resume" &&
++       action != "subtitle_stream" && action != "subtitle_file" && action != "subtitle_file_auto") ||
++      command["native_instance"].asString().size() != 36 ||
++      command["command_id"].asString().size() != 32)
++    return false;
++  m_messenger.Put(std::make_shared<CDVDMsgType<CVariant>>(
++      CDVDMsg::PLAYER_BOBI_CONTROL, command), 1);
++  return true;
++}
++
+ bool CVideoPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
+ {
+   CLog::Log(LOGINFO, "VideoPlayer::OpenFile: {}", CURL::GetRedacted(file.GetPath()));
+@@ -680,6 +831,7 @@ bool CVideoPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options
+   }
+ 
+   m_item = file;
++  BeginBobiInstance(m_item);
+   m_playerOptions = options;
+ 
+   m_processInfo->SetPlayTimes(0,0,0,0);
+@@ -698,6 +850,7 @@ bool CVideoPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options
+ 
+ bool CVideoPlayer::CloseFile(bool reopen)
+ {
++  BobiUserIntent();
+   CLog::Log(LOGINFO, "CVideoPlayer::CloseFile()");
+ 
+   // set the abort request so that other threads can finish up
+@@ -1486,6 +1639,21 @@ void CVideoPlayer::Process()
+ 
+     if (!pPacket)
+     {
++      const int readError = m_pInputStream->BobiReadError() < 0
++          ? m_pInputStream->BobiReadError() : (m_pDemuxer ? m_pDemuxer->BobiReadError() : 0);
++      if (readError < 0 && !m_bAbortRequest)
++      {
++        // Explicit IO/demux failure is not natural EOF. Preserve the error on
++        // the immutable playback instance before inputs/demuxers are closed.
++        {
++          std::unique_lock<CCriticalSection> lock(m_bobiLock);
++          m_bobiState["read_error"] = readError;
++        }
++        CLog::Log(LOGERROR, "VideoPlayer: terminal input/demux read error {}", readError);
++        m_error = true;
++        m_bAbortRequest = true;
++        break;
++      }
+       // when paused, demuxer could be be returning empty
+       if (m_playSpeed == DVD_PLAYSPEED_PAUSE)
+         continue;
+@@ -2100,7 +2268,9 @@ void CVideoPlayer::HandlePlaySpeed()
+ 
+         IPlayerCallback *cb = &m_callback;
+         CFileItem fileItem = m_item;
++        const auto receipt = BobiEvent("AV_STARTED");
+         m_outboundEvents->Submit([=]() {
++          AnnounceBobiReceipt(receipt);
+           cb->OnAVStarted(fileItem);
+         });
+         m_State.streamsReady = true;
+@@ -2587,7 +2757,9 @@ void CVideoPlayer::OnExit()
+ 
+   bool error = m_error;
+   bool close = m_bCloseRequest;
++  const auto terminal = BobiEvent("TERMINAL", error ? "ERROR" : (close ? "STOP" : "NATURAL_EOF"));
+   m_outboundEvents->Submit([=]() {
++    AnnounceBobiReceipt(terminal);
+     if (close)
+       cb->OnPlayBackStopped();
+     else if (error)
+@@ -2603,6 +2775,142 @@ void CVideoPlayer::HandleMessages()
+ 
+   while (m_messenger.Get(pMsg, 0ms) == MSGQ_OK)
+   {
++    if (pMsg->IsType(CDVDMsg::PLAYER_BOBI_CONTROL))
++    {
++      const auto command = std::static_pointer_cast<CDVDMsgType<CVariant>>(pMsg)->m_value;
++      const auto state = GetBobiState();
++      const auto action = command["action"].asString();
++      if (action == "subtitle_file" || action == "subtitle_file_auto")
++      {
++        const bool automatic = action == "subtitle_file_auto";
++        const std::string cache = CSpecialProtocol::TranslatePath(
++            "special://profile/addon_data/plugin.video.bobbi/subtitle-browser");
++        const auto path = command["path"].asString();
++        const auto current = [&]() {
++          const auto now = GetBobiState();
++          return now["phase"].asString() == "AV_STARTED" && !m_bAbortRequest &&
++              now["native_instance"] == command["native_instance"] &&
++              now["request_id"] == command["request_id"] &&
++              now["subtitle_intent"] == command["subtitle_intent"] &&
++              (!automatic || (now["subtitle_intent"] == now["subtitle_auto_intent"] &&
++                              !now["subtitle_file_applied"].asBoolean())) &&
++              now["open_epoch"] == command["selection_epoch"] &&
++              command["selection_epoch"].asUnsignedInteger() == CBobiOpenGate::Get().Epoch();
++        };
++        bool applied = false;
++        bool verified = false;
++        if (automatic && current())
++        {
++          const auto sha = command["sha256"].asString();
++          // PGS/IDX needs companion/display validation not supplied by this API.
++          if (sha.size() == 64 && sha.find_first_not_of("0123456789abcdef") == std::string::npos &&
++              URIUtils::HasExtension(path, ".srt|.ass|.ssa|.vtt"))
++          {
++            KODI::UTILITY::CDigest digest(KODI::UTILITY::CDigest::Type::SHA256);
++            verified = BobiReadVerifiedSubtitle(cache, path, command["bytes"].asUnsignedInteger(),
++                [&](const void* data, size_t bytes) { digest.Update(data, bytes); }, current);
++            verified = verified && digest.Finalize() == sha;
++          }
++        }
++        else if (!automatic)
++          verified = BobiVerifiedSubtitleFile(cache, path);
++        if (current() && verified)
++        {
++          const auto companion = URIUtils::HasExtension(path, ".idx") ? URIUtils::ReplaceExtension(path, ".sub") : "";
++          if (companion.empty() || BobiVerifiedSubtitleFile(cache, companion))
++          {
++            const int index = AddSubtitleFile(path, companion);
++            if (index >= 0 && current())
++            {
++              auto& stream = m_SelectionStreams.Get(STREAM_SUBTITLE, index);
++              if (stream.source != STREAM_SOURCE_NONE)
++              {
++                CloseStream(m_CurrentSubtitle, false);
++                applied = OpenStream(m_CurrentSubtitle, stream.demuxerId, stream.id, stream.source);
++                if (applied && current())
++                {
++                  m_processInfo->GetVideoSettingsLocked().SetSubtitleStream(index);
++                  m_processInfo->GetVideoSettingsLocked().SetSubtitleVisible(true);
++                  SetSubtitleVisibleInternal(true);
++                  if (automatic)
++                  {
++                    std::unique_lock<CCriticalSection> lock(m_bobiLock);
++                    m_bobiState["subtitle_file_applied"] = true;
++                    m_bobiState["subtitle_file_sha256"] = command["sha256"];
++                  }
++                }
++                else applied = false;
++              }
++            }
++          }
++        }
++        CVariant result = GetBobiState();
++        result["command_id"] = command["command_id"];
++        result["action"] = action;
++        result["accepted"] = applied;
++        m_outboundEvents->Submit([result]() {
++          CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "OnBobiControl", result);
++        });
++        continue;
++      }
++      const bool subtitleCommand = action == "subtitle_stream";
++      const int subtitleIndex = static_cast<int>(command["index"].asInteger(-1));
++      const bool subtitleMatches = subtitleCommand && subtitleIndex >= 0 &&
++          subtitleIndex < m_SelectionStreams.CountType(STREAM_SUBTITLE) &&
++          command["stream_key"].asString() == BobiSubtitleKey(
++              m_SelectionStreams.Get(STREAM_SUBTITLE, subtitleIndex), state["native_instance"].asString());
++      const bool subtitleAllowed = subtitleMatches && state["phase"].asString() == "AV_STARTED" &&
++          state["request_id"] == command["request_id"] &&
++          command["selection_epoch"].asUnsignedInteger() == CBobiOpenGate::Get().Epoch() &&
++          state["subtitle_intent"].asUnsignedInteger() == command["subtitle_intent"].asUnsignedInteger();
++      const bool controlAllowed =
++          BobiControlEpochAllows(action, state["open_epoch"].asUnsignedInteger(),
++              command["selection_epoch"].asUnsignedInteger(), CBobiOpenGate::Get().Epoch()) &&
++          state["user_intent"].asUnsignedInteger() == command["user_intent"].asUnsignedInteger() &&
++          state["sequence"].asUnsignedInteger() == command["expected_sequence"].asUnsignedInteger() &&
++          (action == "stop" || (state["phase"].asString() == "AV_STARTED" && CanPause() &&
++              CBobiGuiGate::Get().AllowsPause(action, command["window_token"].asString(),
++                                             state["native_instance"].asString())));
++      const bool accepted = state["native_instance"] == command["native_instance"] &&
++          state["phase"].asString() != "TERMINAL" && !m_bAbortRequest &&
++          (subtitleCommand ? subtitleAllowed : controlAllowed);
++      CVariant result = state;
++      result["command_id"] = command["command_id"];
++      result["action"] = action;
++      result["accepted"] = accepted;
++      // Acknowledgement of the comparison, not a claim that stop completed.
++      m_outboundEvents->Submit([result]() {
++        CServiceBroker::GetAnnouncementManager()->Announce(
++            ANNOUNCEMENT::Player, "OnBobiControl", result);
++      });
++      if (!accepted)
++        continue;
++      if (action == "stop")
++      {
++        m_bCloseRequest = true;
++        m_bAbortRequest = true;
++        break; // Never consume a newer queued open after accepting this stop.
++      }
++      if (subtitleCommand)
++      {
++        // Same actor turn, no second queue and no global Python playerid lookup.
++        SetSubtitleVisibleInternal(true);
++        m_processInfo->GetVideoSettingsLocked().SetSubtitleVisible(true);
++        pMsg = std::make_shared<CDVDMsgPlayerSetSubtitleStream>(subtitleIndex);
++      }
++      else
++      {
++        const int speed = action == "pause" ? DVD_PLAYSPEED_PAUSE : DVD_PLAYSPEED_NORMAL;
++        m_processInfo->SetNewSpeed(action == "pause" ? 0.0f : 1.0f);
++        // Execute in this actor turn; re-enqueueing would create a new TOCTOU gap.
++        CDVDMsgPlayerSetSpeed::SpeedParams params{speed, false};
++        pMsg = std::make_shared<CDVDMsgPlayerSetSpeed>(params);
++        if (action == "pause")
++          m_callback.OnPlayBackPaused();
++        else
++          m_callback.OnPlayBackResumed();
++      }
++    }
+     if (pMsg->IsType(CDVDMsg::PLAYER_OPENFILE) &&
+         m_messenger.GetPacketCount(CDVDMsg::PLAYER_OPENFILE) == 0)
+     {
+@@ -2630,13 +2938,17 @@ void CVideoPlayer::HandleMessages()
+         cb->OnPlayerCloseFile(fileItem, bookmark);
+       });
+ 
++      const auto superseded = BobiEvent("TERMINAL", "SUPERSEDED");
++      m_outboundEvents->Submit([superseded]() { AnnounceBobiReceipt(superseded); });
+       m_item = msg.GetItem();
++      BeginBobiInstance(m_item);
+       m_playerOptions = msg.GetOptions();
+ 
+       m_processInfo->SetPlayTimes(0,0,0,0);
+ 
+-      m_outboundEvents->Submit([this]() {
+-        m_callback.OnPlayBackStarted(m_item);
++      const CFileItem openedItem(m_item);
++      m_outboundEvents->Submit([cb, openedItem]() {
++        cb->OnPlayBackStarted(openedItem);
+       });
+ 
+       FlushBuffers(DVD_NOPTS_VALUE, true, true);
+@@ -2871,6 +3183,7 @@ void CVideoPlayer::HandleMessages()
+     else if (pMsg->IsType(CDVDMsg::PLAYER_SET_SUBTITLESTREAM))
+     {
+       auto pMsg2 = std::static_pointer_cast<CDVDMsgPlayerSetSubtitleStream>(pMsg);
++      m_processInfo->GetVideoSettingsLocked().SetSubtitleStream(pMsg2->GetStreamId());
+ 
+       SelectionStream& st = m_SelectionStreams.Get(STREAM_SUBTITLE, pMsg2->GetStreamId());
+       if(st.source != STREAM_SOURCE_NONE)
+@@ -2894,6 +3207,7 @@ void CVideoPlayer::HandleMessages()
+     else if (pMsg->IsType(CDVDMsg::PLAYER_SET_SUBTITLESTREAM_VISIBLE))
+     {
+       bool isVisible = std::static_pointer_cast<CDVDMsgBool>(pMsg)->m_value;
++      m_processInfo->GetVideoSettingsLocked().SetSubtitleVisible(isVisible);
+ 
+       // SetEnableStream only if not visible, when visible OpenStream already implied that stream is enabled
+       if (!isVisible)
+@@ -2997,6 +3311,12 @@ void CVideoPlayer::HandleMessages()
+       m_VideoPlayerAudio->SetSpeed(speed);
+       m_VideoPlayerVideo->SetSpeed(speed);
+       m_streamPlayerSpeed = speed;
++      {
++        std::unique_lock<CCriticalSection> lock(m_bobiLock);
++        m_bobiState["paused"] = speed == DVD_PLAYSPEED_PAUSE;
++      }
++      const auto speedReceipt = BobiEvent(GetBobiState()["phase"].asString());
++      m_outboundEvents->Submit([speedReceipt]() { AnnounceBobiReceipt(speedReceipt); });
+     }
+     else if (pMsg->IsType(CDVDMsg::PLAYER_FRAME_ADVANCE))
+     {
+@@ -3069,6 +3389,7 @@ void CVideoPlayer::HandleMessages()
+     }
+     else if (pMsg->IsType(CDVDMsg::PLAYER_ABORT))
+     {
++      m_error = true;
+       CLog::Log(LOGDEBUG, "CVideoPlayer - CDVDMsg::PLAYER_ABORT");
+       m_bAbortRequest = true;
+     }
+@@ -3348,6 +3669,7 @@ float CVideoPlayer::GetAVDelay()
+ 
+ void CVideoPlayer::SetSubTitleDelay(float fValue)
+ {
++  BobiSubtitleIntent();
+   m_processInfo->GetVideoSettingsLocked().SetSubtitleDelay(fValue);
+   m_VideoPlayerVideo->SetSubtitleDelay(static_cast<double>(-fValue) * DVD_TIME_BASE);
+ }
+@@ -3370,9 +3692,9 @@ bool CVideoPlayer::GetSubtitleVisible() const
+ 
+ void CVideoPlayer::SetSubtitleVisible(bool bVisible)
+ {
++  BobiSubtitleIntent();
+   m_messenger.Put(
+       std::make_shared<CDVDMsgBool>(CDVDMsg::PLAYER_SET_SUBTITLESTREAM_VISIBLE, bVisible));
+-  m_processInfo->GetVideoSettingsLocked().SetSubtitleVisible(bVisible);
+ }
+ 
+ void CVideoPlayer::SetEnableStream(CCurrentStream& current, bool isEnabled)
+@@ -3474,6 +3796,7 @@ int64_t CVideoPlayer::GetTime()
+ 
+ void CVideoPlayer::SetSpeed(float speed)
+ {
++  BobiUserIntent(); // Manual/legacy controls revoke any outstanding pause lease.
+   // can't rewind in menu as seeking isn't possible
+   // forward is fine
+   if (speed < 0 && IsInMenu())
+@@ -5368,8 +5691,8 @@ void CVideoPlayer::GetSubtitleStreamInfo(int index, SubtitleStreamInfo& info) co
+ 
+ void CVideoPlayer::SetSubtitle(int iStream)
+ {
++  BobiSubtitleIntent();
+   m_messenger.Put(std::make_shared<CDVDMsgPlayerSetSubtitleStream>(iStream));
+-  m_processInfo->GetVideoSettingsLocked().SetSubtitleStream(iStream);
+ }
+ 
+ int CVideoPlayer::GetSubtitleCount() const
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.h b/xbmc/cores/VideoPlayer/VideoPlayer.h
+index 01cbca0..9e048d3 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.h
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.h
+@@ -254,6 +254,18 @@ public:
+   explicit CVideoPlayer(IPlayerCallback& callback);
+   ~CVideoPlayer() override;
+   bool OpenFile(const CFileItem& file, const CPlayerOptions &options) override;
++  CVariant GetBobiState() const override;
++  CVariant GetBobiSubtitles() const override;
++  CVariant ReserveBobiSubtitle(const CVariant& expected) override;
++  bool BobiControl(const CVariant& command) override;
++private:
++  void BeginBobiInstance(const CFileItem& file);
++  CVariant BobiEvent(const std::string& phase, const std::string& reason = "");
++  void BobiUserIntent();
++  void BobiSubtitleIntent();
++  mutable CCriticalSection m_bobiLock;
++  CVariant m_bobiState;
++public:
+   bool CloseFile(bool reopen = false) override;
+   bool IsPlaying() const override;
+   void Pause() override;
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayerVideo.cpp b/xbmc/cores/VideoPlayer/VideoPlayerVideo.cpp
+index c42f8f3..5ce418e 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayerVideo.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayerVideo.cpp
+@@ -165,6 +165,7 @@ bool CVideoPlayerVideo::OpenStream(CDVDStreamInfo hint)
+ 
+ void CVideoPlayerVideo::OpenStream(CDVDStreamInfo& hint, std::unique_ptr<CDVDVideoCodec> codec)
+ {
++  m_decoderFatalReported = false;
+   CLog::Log(LOGDEBUG, "CVideoPlayerVideo::OpenStream - open stream with codec id: {}", hint.codec);
+ 
+   m_processInfo.GetVideoBufferManager().ReleasePools();
+@@ -609,6 +610,16 @@ void CVideoPlayerVideo::Process()
+ bool CVideoPlayerVideo::ProcessDecoderOutput(double &frametime, double &pts)
+ {
+   CDVDVideoCodec::VCReturn decoderState = m_pVideoCodec->GetPicture(&m_picture);
++  if (decoderState == CDVDVideoCodec::VC_FATAL)
++  {
++    if (!m_decoderFatalReported)
++    {
++      m_decoderFatalReported = true;
++      CLog::Log(LOGERROR, "VideoPlayer: non-recoverable decoder failure");
++      m_messageParent.Put(std::make_shared<CDVDMsg>(CDVDMsg::PLAYER_ABORT));
++    }
++    return false;
++  }
+ 
+   if (decoderState == CDVDVideoCodec::VC_BUFFER)
+   {
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayerVideo.h b/xbmc/cores/VideoPlayer/VideoPlayerVideo.h
+index d0c8317..f76c4d7 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayerVideo.h
++++ b/xbmc/cores/VideoPlayer/VideoPlayerVideo.h
+@@ -123,6 +123,7 @@ protected:
+   float m_fForcedAspectRatio;
+   int m_speed;
+   std::atomic_bool m_stalled = false;
++  bool m_decoderFatalReported = false;
+   std::atomic_bool m_rewindStalled;
+   bool m_paused;
+   IDVDStreamPlayer::ESyncState m_syncState;
+diff --git a/xbmc/dialogs/BobiSubtitleFile.h b/xbmc/dialogs/BobiSubtitleFile.h
+new file mode 100644
+index 0000000..701df78
+--- /dev/null
++++ b/xbmc/dialogs/BobiSubtitleFile.h
+@@ -0,0 +1,132 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#pragma once
++
++#include <algorithm>
++#include <array>
++#include <fstream>
++#include <functional>
++#include <string>
++#if defined(__ANDROID__)
++#include <cerrno>
++#include <climits>
++#include <cstdlib>
++#include <fcntl.h>
++#include <sys/stat.h>
++#include <unistd.h>
++#else
++#include <filesystem>
++#endif
++#ifdef _WIN32
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#include <windows.h>
++#endif
++
++// Only a direct file in Kodi's own profile cache is eligible. This portable
++// boundary does not assume CoreELEC /storage, ext4, or an external CLI runtime.
++inline bool BobiVerifiedSubtitleFile(const std::string& directory, const std::string& value)
++{
++#if defined(__ANDROID__)
++  // NDK 21's libc++ does not export the C++17 filesystem implementation.
++  // Keep the same direct-child/local-file boundary using the POSIX API, not
++  // a newer NDK or a target-library copied from another operating system.
++  if (directory.empty() || value.empty() || directory[0] != '/' || value[0] != '/' ||
++      directory.find("/../") != std::string::npos || directory.back() == '/' ||
++      value.substr(0, value.find_last_of('/')) != directory) return false;
++  const auto name = value.substr(value.find_last_of('/') + 1);
++  const auto dot = name.find('.');
++  const std::string allowed = "|.utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.aqt|.jss|.ass|.vtt|.idx|.sup|";
++  if (dot != 32 || name.substr(0, dot).find_first_not_of("0123456789abcdef") != std::string::npos ||
++      allowed.find("|" + name.substr(dot) + "|") == std::string::npos) return false;
++  struct stat root{}, file{};
++  if (lstat(directory.c_str(), &root) || !S_ISDIR(root.st_mode) ||
++      lstat(value.c_str(), &file) || !S_ISREG(file.st_mode) ||
++      file.st_size <= 0 || file.st_size > 64 * 1024 * 1024) return false;
++  char actualRoot[PATH_MAX], actualFile[PATH_MAX];
++  if (!realpath(directory.c_str(), actualRoot) || !realpath(value.c_str(), actualFile)) return false;
++  const std::string canonicalFile(actualFile);
++  return canonicalFile.substr(0, canonicalFile.find_last_of('/')) == actualRoot;
++#else
++  namespace fs = std::filesystem;
++  try
++  {
++    const auto root = fs::u8path(directory);
++    const auto path = fs::u8path(value);
++    if (!root.is_absolute() || !path.is_absolute() ||
++        path.lexically_normal().parent_path() != root.lexically_normal()) return false;
++#ifdef _WIN32
++    if (root.root_name().native().size() != 2) return false;
++    const auto type = GetDriveTypeW(root.root_path().c_str());
++    if (type != DRIVE_FIXED && type != DRIVE_REMOVABLE && type != DRIVE_RAMDISK) return false;
++    const auto attributes = GetFileAttributesW(path.c_str());
++    if (attributes == INVALID_FILE_ATTRIBUTES || (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) return false;
++#endif
++    const auto name = path.filename().u8string();
++    const auto dot = name.find('.');
++    const std::string allowed = "|.utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.aqt|.jss|.ass|.vtt|.idx|.sup|";
++    if (dot != 32 || name.substr(0, dot).find_first_not_of("0123456789abcdef") != std::string::npos ||
++        allowed.find("|" + name.substr(dot) + "|") == std::string::npos) return false;
++    if (!fs::is_directory(root) || fs::is_symlink(root) || fs::is_symlink(path) ||
++        !fs::is_regular_file(path) || fs::canonical(path).parent_path() != fs::canonical(root)) return false;
++    const auto size = fs::file_size(path);
++    return size > 0 && size <= 64 * 1024 * 1024;
++  }
++  catch (...) { return false; }
++#endif
++}
++
++inline bool BobiReadVerifiedSubtitle(const std::string& directory, const std::string& value,
++    size_t expected, const std::function<void(const void*, size_t)>& consume,
++    const std::function<bool()>& alive)
++{
++#if defined(__ANDROID__)
++  if (!expected || expected > 8 * 1024 * 1024 || !alive() ||
++      !BobiVerifiedSubtitleFile(directory, value)) return false;
++  const int fd = open(value.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
++  if (fd < 0) return false;
++  struct CloseFile { int fd; ~CloseFile() { close(fd); } } closeFile{fd};
++  struct stat before{}, after{}, current{};
++  if (fstat(fd, &before) || !S_ISREG(before.st_mode) ||
++      before.st_size != static_cast<off_t>(expected)) return false;
++  std::array<char, 65536> buffer;
++  size_t total = 0;
++  while (total < expected && alive())
++  {
++    const auto count = read(fd, buffer.data(), std::min(buffer.size(), expected - total));
++    if (count < 0 && errno == EINTR) continue;
++    if (count <= 0) return false;
++    consume(buffer.data(), static_cast<size_t>(count));
++    total += static_cast<size_t>(count);
++  }
++  return total == expected && alive() && !fstat(fd, &after) && !lstat(value.c_str(), &current) &&
++      after.st_dev == current.st_dev && after.st_ino == current.st_ino &&
++      before.st_size == after.st_size && before.st_mtim.tv_sec == after.st_mtim.tv_sec &&
++      before.st_mtim.tv_nsec == after.st_mtim.tv_nsec && BobiVerifiedSubtitleFile(directory, value);
++#else
++  namespace fs = std::filesystem;
++  if (!expected || expected > 8 * 1024 * 1024 || !alive() ||
++      !BobiVerifiedSubtitleFile(directory, value)) return false;
++  try
++  {
++    const auto path = fs::u8path(value);
++    const auto stamp = fs::last_write_time(path);
++    if (fs::file_size(path) != expected) return false;
++    std::ifstream input(path, std::ios::binary);
++    if (!input) return false;
++    std::array<char, 65536> buffer;
++    size_t total = 0;
++    while (total < expected && alive())
++    {
++      input.read(buffer.data(), std::min(buffer.size(), expected - total));
++      const auto count = input.gcount();
++      if (count <= 0) return false;
++      consume(buffer.data(), static_cast<size_t>(count));
++      total += count;
++    }
++    return total == expected && alive() && fs::last_write_time(path) == stamp &&
++           fs::file_size(path) == expected && BobiVerifiedSubtitleFile(directory, value);
++  }
++  catch (...) { return false; }
++#endif
++}
+diff --git a/xbmc/guilib/GUIWindow.cpp b/xbmc/guilib/GUIWindow.cpp
+index ebb133d..8b79d9d 100644
+--- a/xbmc/guilib/GUIWindow.cpp
++++ b/xbmc/guilib/GUIWindow.cpp
+@@ -7,6 +7,10 @@
+  */
+ 
+ #include "GUIWindow.h"
++#include "cores/BobiGuiGate.h"
++#include "application/ApplicationComponents.h"
++#include "application/ApplicationPlayer.h"
++#include "interfaces/AnnouncementManager.h"
+ 
+ #include "GUIAudioManager.h"
+ #include "GUIComponent.h"
+@@ -590,6 +594,23 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
+ 
+   case GUI_MSG_WINDOW_INIT:
+     {
++      CBobiGuiGate::Get().WindowChanged();
++      const int id = GetID();
++      const bool subtitles = id == 11144 || id == WINDOW_DIALOG_SUBTITLE_OSD_SETTINGS;
++      const bool audio = id == 11145 || id == WINDOW_DIALOG_AUDIO_OSD_SETTINGS;
++      if ((subtitles || audio) && CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(popautopause)", id))
++      {
++        const auto player = CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>();
++        const auto row = player->GetBobiState();
++        if (row["phase"].asString() == "AV_STARTED" && !row["request_id"].asString().empty())
++        {
++          std::string token = StringUtils::CreateUUID();
++          StringUtils::Replace(token, "-", "");
++          CBobiGuiGate::Get().OpenWindow(id, {token, subtitles ? "subtitles" : "audio",
++                                            row["request_id"].asString(), row["native_instance"].asString()});
++          CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "OnBobiWindow", CVariant(CVariant::VariantTypeObject));
++        }
++      }
+       CLog::Log(LOGDEBUG, "------ Window Init ({}) ------", GetProperty("xmlfile").asString());
+       if (m_dynamicResourceAlloc || !m_bAllocated) AllocResources(false);
+       OnInitWindow();
+@@ -599,6 +620,9 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
+ 
+   case GUI_MSG_WINDOW_DEINIT:
+     {
++      CBobiGuiGate::Get().WindowChanged();
++      if (CBobiGuiGate::Get().CloseWindow(GetID()))
++        CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "OnBobiWindow", CVariant(CVariant::VariantTypeObject));
+       CLog::Log(LOGDEBUG, "------ Window Deinit ({}) ------", GetProperty("xmlfile").asString());
+       OnDeinitWindow(message.GetParam1());
+       // now free the window
+diff --git a/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp b/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp
+index 0ce49b9..10f7498 100644
+--- a/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp
++++ b/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp
+@@ -59,6 +59,13 @@ JsonRpcMethodMap CJSONServiceDescription::m_methodMaps[] = {
+ 
+   { "Player.PlayPause",                             CPlayerOperations::PlayPause },
+   { "Player.Stop",                                  CPlayerOperations::Stop },
++  { "Player.BobiState",                             CPlayerOperations::BobiState },
++  { "Player.BobiFullscreen",                        CPlayerOperations::BobiFullscreen },
++  { "Player.BobiIntent",                            CPlayerOperations::BobiIntent },
++  { "Player.BobiControl",                           CPlayerOperations::BobiControl },
++  { "Player.BobiSubtitles",                         CPlayerOperations::BobiSubtitles },
++  { "Player.BobiSubtitle",                          CPlayerOperations::BobiSubtitle },
++  { "Player.BobiSubtitleFile",                      CPlayerOperations::BobiSubtitleFile },
+   { "Player.GetAudioDelay",                         CPlayerOperations::GetAudioDelay },
+   { "Player.SetAudioDelay",                         CPlayerOperations::SetAudioDelay },
+   { "Player.SetSpeed",                              CPlayerOperations::SetSpeed },
+diff --git a/xbmc/interfaces/json-rpc/PlayerOperations.cpp b/xbmc/interfaces/json-rpc/PlayerOperations.cpp
+index a7a3cbb..da9e4c4 100644
+--- a/xbmc/interfaces/json-rpc/PlayerOperations.cpp
++++ b/xbmc/interfaces/json-rpc/PlayerOperations.cpp
+@@ -23,6 +23,8 @@
+ #include "application/ApplicationPlayer.h"
+ #include "application/ApplicationPowerHandling.h"
+ #include "cores/playercorefactory/PlayerCoreFactory.h"
++#include "cores/BobiOpenGate.h"
++#include "cores/BobiGuiGate.h"
+ #include "guilib/GUIComponent.h"
+ #include "guilib/GUIWindowManager.h"
+ #include "input/actions/Action.h"
+@@ -77,6 +79,80 @@ void AppendSubtitleStreamFlagsAsBooleans(CVariant& list, StreamFlags flags)
+ 
+ } // namespace
+ 
++JSONRPC_STATUS CPlayerOperations::BobiState(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant& result)
++{
++  const auto player = CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>();
++  result["protocol"] = 1;
++  result["selection_epoch"] = CBobiOpenGate::Get().Epoch();
++  result["playback"] = player->GetBobiState();
++  const auto gui = CBobiGuiGate::Get().Snapshot();
++  result["gui_generation"] = gui.generation;
++  result["gui_user_intent"] = gui.userIntent;
++  result["fullscreen_instance"] = gui.fullscreenInstance;
++  result["windows"] = CVariant(CVariant::VariantTypeArray);
++  for (const auto& [id, window] : gui.windows)
++  {
++    CVariant item(CVariant::VariantTypeObject);
++    item["token"] = window.token;
++    item["role"] = window.role;
++    item["request_id"] = window.request;
++    item["native_instance"] = window.instance;
++    result["windows"].push_back(item);
++  }
++  return OK;
++}
++
++JSONRPC_STATUS CPlayerOperations::BobiFullscreen(const std::string&, ITransportLayer*, IClient*, const CVariant& command, CVariant& result)
++{
++  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_BOBI_FULLSCREEN, -1, -1, new CVariant(command));
++  result["queued"] = true; // Not confirmation: inspect the GUI-thread receipt.
++  return OK;
++}
++
++JSONRPC_STATUS CPlayerOperations::BobiIntent(const std::string&, ITransportLayer*, IClient*, const CVariant& command, CVariant& result)
++{
++  auto& gate = CBobiOpenGate::Get();
++  std::lock_guard<std::recursive_mutex> lock(gate.Mutex());
++  result["reserved"] = gate.Reserve(command["expected_epoch"].asUnsignedInteger(), command["request_id"].asString());
++  result["selection_epoch"] = gate.Epoch();
++  return OK;
++}
++
++JSONRPC_STATUS CPlayerOperations::BobiControl(const std::string&, ITransportLayer*, IClient*, const CVariant& command, CVariant& result)
++{
++  const auto player = CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>();
++  result["queued"] = player->BobiControl(command);
++  result["command_id"] = command["command_id"];
++  return OK;
++}
++
++JSONRPC_STATUS CPlayerOperations::BobiSubtitles(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant& result)
++{
++  const auto player = CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>();
++  result = player->GetBobiSubtitles();
++  return OK;
++}
++
++JSONRPC_STATUS CPlayerOperations::BobiSubtitle(const std::string&, ITransportLayer*, IClient*, const CVariant& command, CVariant& result)
++{
++  const auto player = CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>();
++  CVariant scoped = command;
++  scoped["action"] = "subtitle_stream";
++  result["queued"] = player->BobiControl(scoped);
++  result["command_id"] = command["command_id"];
++  return OK;
++}
++
++JSONRPC_STATUS CPlayerOperations::BobiSubtitleFile(const std::string&, ITransportLayer*, IClient*, const CVariant& command, CVariant& result)
++{
++  const auto player = CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>();
++  CVariant scoped = command;
++  scoped["action"] = "subtitle_file_auto";
++  result["queued"] = player->BobiControl(scoped);
++  result["command_id"] = command["command_id"];
++  return OK;
++}
++
+ JSONRPC_STATUS CPlayerOperations::GetActivePlayers(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+ {
+   int activePlayers = GetActivePlayers();
+diff --git a/xbmc/interfaces/json-rpc/PlayerOperations.h b/xbmc/interfaces/json-rpc/PlayerOperations.h
+index 0a53772..31f17b9 100644
+--- a/xbmc/interfaces/json-rpc/PlayerOperations.h
++++ b/xbmc/interfaces/json-rpc/PlayerOperations.h
+@@ -44,6 +44,13 @@ namespace JSONRPC
+   class CPlayerOperations : CFileItemHandler
+   {
+   public:
++    static JSONRPC_STATUS BobiState(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant&);
++    static JSONRPC_STATUS BobiFullscreen(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant&);
++    static JSONRPC_STATUS BobiIntent(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant&);
++    static JSONRPC_STATUS BobiControl(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant&);
++    static JSONRPC_STATUS BobiSubtitles(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant&);
++    static JSONRPC_STATUS BobiSubtitle(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant&);
++    static JSONRPC_STATUS BobiSubtitleFile(const std::string&, ITransportLayer*, IClient*, const CVariant&, CVariant&);
+     static JSONRPC_STATUS GetActivePlayers(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result);
+     static JSONRPC_STATUS GetPlayers(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result);
+     static JSONRPC_STATUS GetProperties(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result);
+diff --git a/xbmc/interfaces/json-rpc/schema/methods.json b/xbmc/interfaces/json-rpc/schema/methods.json
+index 19be352..6b70705 100644
+--- a/xbmc/interfaces/json-rpc/schema/methods.json
++++ b/xbmc/interfaces/json-rpc/schema/methods.json
+@@ -564,6 +564,96 @@
+       "$ref": "Player.Speed"
+     }
+   },
++  "Player.BobiState": {
++    "type": "method",
++    "description": "BobiTV native open-instance receipt, not a URL or playlist id",
++    "transport": "Response",
++    "permission": "ReadData",
++    "params": [],
++    "returns": {"type": "object"}
++  },
++  "Player.BobiFullscreen": {
++    "type": "method",
++    "description": "Queue one instance-owned GUI handoff; receipt is separate from admission",
++    "transport": "Response",
++    "permission": "ControlPlayback",
++    "params": [
++      {"name": "native_instance", "type": "string", "required": true, "minLength": 36, "maxLength": 36},
++      {"name": "request_id", "type": "string", "required": true, "minLength": 32, "maxLength": 32},
++      {"name": "selection_epoch", "type": "integer", "minimum": 0, "required": true},
++      {"name": "gui_generation", "type": "integer", "minimum": 0, "required": true},
++      {"name": "gui_user_intent", "type": "integer", "minimum": 0, "required": true}
++    ],
++    "returns": {"type": "object"}
++  },
++  "Player.BobiControl": {
++    "type": "method",
++    "description": "Queue a conditional native-instance control; observe execution and terminal receipts separately",
++    "transport": "Response",
++    "permission": "ControlPlayback",
++    "params": [
++      {"name": "native_instance", "type": "string", "required": true, "minLength": 36, "maxLength": 36},
++      {"name": "user_intent", "type": "integer", "minimum": 0, "required": true},
++      {"name": "expected_sequence", "type": "integer", "minimum": 0, "required": true},
++      {"name": "selection_epoch", "type": "integer", "minimum": 0, "required": true},
++      {"name": "window_token", "type": "string", "default": "", "maxLength": 32},
++      {"name": "command_id", "type": "string", "required": true, "minLength": 32, "maxLength": 32},
++      {"name": "action", "type": "string", "enum": ["stop", "pause", "resume"], "required": true}
++    ],
++    "returns": {"type": "object"}
++  },
++  "Player.BobiSubtitles": {
++    "type": "method",
++    "description": "Bounded subtitle catalog bound to one native instance and manual intent",
++    "transport": "Response",
++    "permission": "ReadData",
++    "params": [],
++    "returns": "any"
++  },
++  "Player.BobiSubtitle": {
++    "type": "method",
++    "description": "Queue exact subtitle stream selection; admission is not rendering confirmation",
++    "transport": "Response",
++    "permission": "ControlPlayback",
++    "params": [
++      {"name": "native_instance", "type": "string", "required": true, "minLength": 36, "maxLength": 36},
++      {"name": "request_id", "type": "string", "required": true, "maxLength": 32},
++      {"name": "selection_epoch", "type": "integer", "required": true, "minimum": 0},
++      {"name": "subtitle_intent", "type": "integer", "required": true, "minimum": 0},
++      {"name": "command_id", "type": "string", "required": true, "minLength": 32, "maxLength": 32},
++      {"name": "stream_key", "type": "string", "required": true, "minLength": 64, "maxLength": 64},
++      {"name": "index", "type": "integer", "required": true, "minimum": 0, "maximum": 255}
++    ],
++    "returns": {"type": "object"}
++  },
++  "Player.BobiSubtitleFile": {
++    "type": "method",
++    "description": "Queue one verified local automatic subtitle for the exact active instance; never override manual subtitle intent",
++    "transport": "Response",
++    "permission": "ControlPlayback",
++    "params": [
++      {"name": "native_instance", "type": "string", "required": true, "minLength": 36, "maxLength": 36},
++      {"name": "request_id", "type": "string", "required": true, "minLength": 32, "maxLength": 32},
++      {"name": "selection_epoch", "type": "integer", "required": true, "minimum": 0},
++      {"name": "subtitle_intent", "type": "integer", "required": true, "minimum": 0},
++      {"name": "command_id", "type": "string", "required": true, "minLength": 32, "maxLength": 32},
++      {"name": "path", "type": "string", "required": true, "minLength": 1, "maxLength": 256},
++      {"name": "sha256", "type": "string", "required": true, "minLength": 64, "maxLength": 64},
++      {"name": "bytes", "type": "integer", "required": true, "minimum": 1, "maximum": 8388608}
++    ],
++    "returns": {"type": "object"}
++  },
++  "Player.BobiIntent": {
++    "type": "method",
++    "description": "Reserve one tagged native open or cancel a pending reservation using compare-and-swap",
++    "transport": "Response",
++    "permission": "ControlPlayback",
++    "params": [
++      {"name": "expected_epoch", "type": "integer", "minimum": 0, "required": true},
++      {"name": "request_id", "type": "string", "maxLength": 32, "required": true}
++    ],
++    "returns": {"type": "object"}
++  },
+   "Player.Stop": {
+     "type": "method",
+     "description": "Stops playback",
+diff --git a/xbmc/interfaces/json-rpc/schema/notifications.json b/xbmc/interfaces/json-rpc/schema/notifications.json
+index 58b4023..3390784 100644
+--- a/xbmc/interfaces/json-rpc/schema/notifications.json
++++ b/xbmc/interfaces/json-rpc/schema/notifications.json
+@@ -1,4 +1,31 @@
+ {
++  "Player.OnBobiState": {
++    "type": "notification",
++    "description": "Immutable native open-instance receipt at an AV or terminal boundary",
++    "params": [
++      {"name": "sender", "type": "string", "required": true},
++      {"name": "data", "type": "object", "required": true}
++    ],
++    "returns": null
++  },
++  "Player.OnBobiWindow": {
++    "type": "notification",
++    "description": "Owned OSD lifecycle changed; inspect current native window tokens",
++    "params": [
++      {"name": "sender", "type": "string", "required": true},
++      {"name": "data", "type": "object", "required": true}
++    ],
++    "returns": null
++  },
++  "Player.OnBobiControl": {
++    "type": "notification",
++    "description": "Actor-time conditional-control comparison, not proof of completed stop",
++    "params": [
++      {"name": "sender", "type": "string", "required": true},
++      {"name": "data", "type": "object", "required": true}
++    ],
++    "returns": null
++  },
+   "Player.OnPlay": {
+     "type": "notification",
+     "description":
+diff --git a/xbmc/messaging/ApplicationMessenger.h b/xbmc/messaging/ApplicationMessenger.h
+index f7abf43..2550d2f 100644
+--- a/xbmc/messaging/ApplicationMessenger.h
++++ b/xbmc/messaging/ApplicationMessenger.h
+@@ -91,6 +91,7 @@
+ #define TMSG_SET_VOLUME                   TMSG_MASK_APPLICATION + 36
+ #define TMSG_SET_MUTE                     TMSG_MASK_APPLICATION + 37
+ #define TMSG_RESUMEAPP                    TMSG_MASK_APPLICATION + 38
++#define TMSG_BOBI_FULLSCREEN              TMSG_MASK_APPLICATION + 39
+ 
+ #define TMSG_GUI_INFOLABEL                TMSG_MASK_GUIINFOMANAGER + 0
+ #define TMSG_GUI_INFOBOOL                 TMSG_MASK_GUIINFOMANAGER + 1
+diff --git a/xbmc/platform/win32/BobiHostLease.h b/xbmc/platform/win32/BobiHostLease.h
+new file mode 100644
+index 0000000..a318215
+--- /dev/null
++++ b/xbmc/platform/win32/BobiHostLease.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#pragma once
++#include <windows.h>
++#include <tlhelp32.h>
++#include <cwchar>
++#include <cstdint>
++
++// This excludes ordinary direct launches and accidental concurrent maintenance.
++// It is not a security boundary against a malicious program under the same user.
++inline bool BobiHasHostLease()
++{
++  wchar_t pipeText[32]{}, parentText[32]{}, lockText[32]{}, profile[32768]{};
++  if (!GetEnvironmentVariableW(L"BOBBI_LAUNCHER_PIPE", pipeText, 32) ||
++      !GetEnvironmentVariableW(L"BOBBI_LAUNCHER_PID", parentText, 32) ||
++      !GetEnvironmentVariableW(L"BOBBI_LAUNCHER_LOCK", lockText, 32) ||
++      !GetEnvironmentVariableW(L"BOBBI_PROFILE_PATH", profile, 32768)) return false;
++  const HANDLE pipe = reinterpret_cast<HANDLE>(static_cast<uintptr_t>(_wcstoui64(pipeText, nullptr, 10)));
++  const HANDLE lock = reinterpret_cast<HANDLE>(static_cast<uintptr_t>(_wcstoui64(lockText, nullptr, 10)));
++  const DWORD parent = wcstoul(parentText, nullptr, 10);
++  DWORD available = 0;
++  if (!parent || GetFileType(pipe) != FILE_TYPE_PIPE || GetFileType(lock) != FILE_TYPE_DISK ||
++      !PeekNamedPipe(pipe, nullptr, 0, nullptr, &available, nullptr) || available) return false;
++  const HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
++  if (snapshot == INVALID_HANDLE_VALUE) return false;
++  PROCESSENTRY32W entry{sizeof(PROCESSENTRY32W)};
++  bool isParent = false;
++  if (Process32FirstW(snapshot, &entry)) do {
++    if (entry.th32ProcessID == GetCurrentProcessId()) {
++      isParent = entry.th32ParentProcessID == parent;
++      break;
++    }
++  } while (Process32NextW(snapshot, &entry));
++  CloseHandle(snapshot);
++  if (!isParent) return false;
++  const HANDLE owner = OpenProcess(SYNCHRONIZE, FALSE, parent);
++  if (!owner) return false;
++  const bool alive = WaitForSingleObject(owner, 0) == WAIT_TIMEOUT;
++  CloseHandle(owner);
++  return alive;
++}
+diff --git a/xbmc/platform/win32/WIN32Util.cpp b/xbmc/platform/win32/WIN32Util.cpp
+index cf53d95..1d42fc9 100644
+--- a/xbmc/platform/win32/WIN32Util.cpp
++++ b/xbmc/platform/win32/WIN32Util.cpp
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include "WIN32Util.h"
++#include "platform/Environment.h"
+ 
+ #include "CompileInfo.h"
+ #include "ServiceBroker.h"
+@@ -395,8 +396,17 @@ std::string CWIN32Util::GetProfilePath(const bool platformDirectories)
+ #else
+   std::string strHomePath = CUtil::GetHomePath();
+ 
++  // bobbi's launcher supplies a process-local profile root so a new host
++  // generation never moves or overwrites a user's media/account settings.
++  const std::string bobbiProfile = CEnvironment::getenv("BOBBI_PROFILE_PATH");
++  if (!bobbiProfile.empty())
++  {
++    strProfilePath = bobbiProfile;
++    URIUtils::AddSlashAtEnd(strProfilePath);
++    return strProfilePath;
++  }
+   if (platformDirectories)
+-    strProfilePath = URIUtils::AddFileToFolder(GetSpecialFolder(CSIDL_APPDATA|CSIDL_FLAG_CREATE), CCompileInfo::GetAppName());
++    strProfilePath = URIUtils::AddFileToFolder(GetSpecialFolder(CSIDL_APPDATA|CSIDL_FLAG_CREATE), "bobbi TV");
+   else
+     strProfilePath = URIUtils::AddFileToFolder(strHomePath , "portable_data");
+ 
+diff --git a/xbmc/platform/win32/WinMain.cpp b/xbmc/platform/win32/WinMain.cpp
+index 87dde67..6208284 100644
+--- a/xbmc/platform/win32/WinMain.cpp
++++ b/xbmc/platform/win32/WinMain.cpp
+@@ -17,6 +17,7 @@
+ #include "utils/CharsetConverter.h" // Required to initialize converters before usage
+ 
+ #include "platform/win32/CharsetConverter.h"
++#include "platform/win32/BobiHostLease.h"
+ #include "platform/win32/threads/Win32Exception.h"
+ 
+ #include <Objbase.h>
+@@ -94,6 +95,17 @@ static std::shared_ptr<CAppParams> ParseCommandLine()
+ //-----------------------------------------------------------------------------
+ _Use_decl_annotations_ INT WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
+ {
++  int bobbiArgc = 0;
++  wchar_t** bobbiArgv = CommandLineToArgvW(GetCommandLineW(), &bobbiArgc);
++  const bool bobbiLeaseCheck = bobbiArgc == 2 && wcscmp(bobbiArgv[1], L"--bobbi-lease-check") == 0;
++  LocalFree(bobbiArgv);
++  if (bobbiLeaseCheck) return BobiHasHostLease() ? 0 : 21;
++  if (!BobiHasHostLease())
++  {
++    MessageBoxW(nullptr, L"Please start bobbi TV using bobbi.exe, not host/kodi.exe.",
++                L"bobbi TV", MB_OK | MB_ICONERROR);
++    return 21;
++  }
+   // parse command line parameters
+   const auto params = ParseCommandLine();
+ 

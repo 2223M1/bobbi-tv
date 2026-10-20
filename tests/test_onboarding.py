@@ -17,14 +17,14 @@ def test_steps_never_ask_for_box_model_or_claim_ready_cinema():
     assert len({key for key, _ in rows}) == len(rows)
     text = '\n'.join(label for _, label in rows)
     assert '机型' not in text and '选择型号' not in text
-    assert '还需实播' in text and '扫码登录' in text and '测试版' in text
+    assert '还需实播' in text and '扫码登录' in text and '私人候选' in text
     assert '可跳过' in dict(steps({}))['library']
     assert '需要处理' in dict(steps({}))['check']
 
 
 def test_status_explains_limit_in_plain_language():
     assert '不代表' in summary({'standard_playback': True})
-    assert 'Kodi 21' in summary({})
+    assert '播放器接口' in summary({})
     assert '重新导出' in engine_message('ENGINE_AUTH_REJECTED')
     assert 'unknown-secret-detail' not in engine_message('unknown-secret-detail')
 
@@ -38,8 +38,10 @@ def test_library_status_counts_saved_sources_without_claiming_online():
 @pytest.fixture
 def setup_ui(monkeypatch):
     state = SimpleNamespace(choice=3, selected='selected.json', raw=None, called=[], dialogs=[],
-                            error=None, closed=False, android=True, builtins=[])
+                            error=None, closed=False, android=True, builtins=[], playing=False,
+                            selections=[])
     xbmc = SimpleNamespace(Monitor=lambda: SimpleNamespace(abortRequested=lambda: False),
+        Player=lambda: SimpleNamespace(isPlaying=lambda: state.playing),
         getCondVisibility=lambda _: state.android, executebuiltin=lambda command: state.builtins.append(command))
     stream = SimpleNamespace(readBytes=lambda size: state.raw[:size], close=lambda: setattr(state, 'closed', True))
     monkeypatch.setitem(sys.modules, 'xbmc', xbmc)
@@ -55,7 +57,10 @@ def setup_ui(monkeypatch):
         return True
     monkeypatch.setattr(module, 'TorrServerClient', lambda document: SimpleNamespace(ready=ready))
     state.module = module
-    state.dialog = SimpleNamespace(select=lambda *args: state.choice,
+    def select(*args):
+        state.selections.append(args)
+        return state.choice
+    state.dialog = SimpleNamespace(select=select,
         browse=lambda *args, **kwargs: state.selected,
         ok=lambda *args: state.dialogs.append(args))
     state.value = {'schema': 'bobbi-local-engine-v1', 'engine': 'TorrServer',
@@ -92,10 +97,63 @@ def test_cancel_file_chooser_creates_no_file(setup_ui, tmp_path):
     assert not path.exists() and not setup_ui.called
 
 
-def test_open_helper_is_explicit_android_action(setup_ui, tmp_path):
+def test_full_android_cinema_never_launches_itself_as_legacy_helper(setup_ui, tmp_path):
     setup_ui.choice = 1
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path / 'pairing.json')
-    assert setup_ui.builtins == ['StartAndroidActivity(org.bobbi.helper)']
+    assert setup_ui.builtins == []
+    assert '不是旧助手' in str(setup_ui.dialogs)
     setup_ui.android = False
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path / 'pairing.json')
-    assert len(setup_ui.builtins) == 1
+    assert setup_ui.builtins == []
+
+
+def test_update_label_distinguishes_original_addons_from_bobbi_bundle():
+    label = dict(steps({}))['updates']
+    assert '原版插件管理' in label and '波比签名包' in label
+
+
+@pytest.mark.parametrize('choice,target', [
+    (0, 'addons://dependencies/'),
+    (1, 'addons://user/all/'),
+])
+def test_original_addon_menu_only_opens_native_browser(setup_ui, choice, target):
+    setup_ui.choice = choice
+    assert setup_ui.module.show_updates(setup_ui.dialog) is True
+    assert setup_ui.builtins == ['ActivateWindow(addonbrowser,%s,return)' % target]
+    assert setup_ui.called == []
+    explanation = str(setup_ui.dialogs)
+    assert '原 ID' in explanation and '旧定制 JackTorr' in explanation
+    assert '不能整体用原版覆盖' in explanation
+
+
+def test_bobbi_bundle_menu_opens_real_installer_without_applying(setup_ui):
+    setup_ui.choice = 2
+    assert setup_ui.module.show_updates(setup_ui.dialog) is True
+    assert setup_ui.builtins == ['RunScript(script.bobbi.start)'] and setup_ui.called == []
+
+
+def test_cancel_update_menu_does_nothing(setup_ui):
+    setup_ui.choice = -1
+    assert setup_ui.module.show_updates(setup_ui.dialog) is False
+    assert setup_ui.builtins == [] and setup_ui.called == [] and setup_ui.dialogs == []
+
+
+@pytest.mark.parametrize('choice', [0, 1, 2])
+def test_playing_blocks_update_menu_without_stopping_video(setup_ui, choice):
+    setup_ui.choice = choice
+    setup_ui.playing = True
+    assert setup_ui.module.show_updates(setup_ui.dialog) is False
+    assert setup_ui.selections == [] and setup_ui.builtins == [] and setup_ui.called == []
+    assert '请先停止播放' in str(setup_ui.dialogs)
+
+
+@pytest.mark.parametrize('choice', [0, 1])
+def test_playback_started_during_menu_blocks_native_management(setup_ui, choice):
+    setup_ui.choice = choice
+    def explain_then_start(*args):
+        setup_ui.dialogs.append(args)
+        setup_ui.playing = True
+    setup_ui.dialog.ok = explain_then_start
+    assert setup_ui.module.show_updates(setup_ui.dialog) is False
+    assert setup_ui.builtins == [] and setup_ui.called == []
+    assert '当前已经开始播放' in str(setup_ui.dialogs)

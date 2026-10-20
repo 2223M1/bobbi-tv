@@ -15,6 +15,7 @@ import tempfile
 from threading import Lock
 import time
 from urllib.parse import parse_qs, urlencode, urlsplit
+from bobbi_core.image_cache import image_url as tmdb_image_url
 
 from lib.clients.tmdb.season_card import latest_season, poster_path, title_for
 
@@ -98,9 +99,9 @@ def apply(item, identifier, series_title, english_title='', chinese_title=''):
         tag.setFirstAired(started.isoformat())
     art = poster_path(view.get('poster_path'))
     if art:
-        item.setArt(dict(poster='https://image.tmdb.org/t/p/w342' + art,
-                         thumb='https://image.tmdb.org/t/p/w185' + art,
-                         icon='https://image.tmdb.org/t/p/w185' + art))
+        item.setArt(dict(poster=tmdb_image_url(art, 'w342'),
+                         thumb=tmdb_image_url(art, 'w185'),
+                         icon=tmdb_image_url(art, 'w185')))
     # Keep series synopsis/fanart and identity, rather than mixing a later
     # season plot into the series detail/search contract.
     return True
@@ -115,17 +116,17 @@ def _root():
 
 @contextmanager
 def _lock(name):
-    import fcntl
-    with (_root() / (name + '.lock')).open('a+b') as stream:
-        try:
-            fcntl.flock(stream, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            yield False
-            return
-        try:
-            yield True
-        finally:
-            fcntl.flock(stream, fcntl.LOCK_UN)
+    from bobbi_platform.instance_lock import InstanceLock
+    lease = InstanceLock(_root() / (name + '.lock'))
+    try:
+        lease.acquire()
+    except (BlockingIOError, PermissionError):
+        yield False
+        return
+    try:
+        yield True
+    finally:
+        lease.close()
 
 
 def _queue(add=(), origin='', take=False):
@@ -242,32 +243,30 @@ def _fetch(identifier, deadline):
             params['append_to_response'] = append
         value = client._request_obj(path, params=urlencode(params), call_cached=False, add_lang=False)
         return value.to_dict() if hasattr(value, 'to_dict') else value
-    try:
-        details = request('/tv/' + str(identifier), 'episode_groups')
-        if not isinstance(details, dict) or details.get('id') != identifier:
-            raise ValueError('SEASON_CARD_IDENTITY')
-        order = None
-        if details.get('number_of_seasons') == 1:
-            from lib.clients.tmdb.episode_order import get_order
-            order = get_order(identifier, fetch=False)
-            if not latest_season(details, _am6b_tokyo_today(), order):
-                listing = dict(details.get('episode_groups') or {}, id=identifier)
-                candidates = [row for row in listing.get('results', []) if row.get('type') in (6, 7)
-                              and 1 < row.get('group_count', 0) <= 100]
-                orders = {}
-                if 0 < len(candidates) <= 2:
-                    for row in candidates:
-                        try:
-                            found = validate_group(identifier, listing, request('/tv/episode_group/' + row['id']))
-                            orders[found['digest']] = found
-                        except ValueError:
-                            continue
-                if len(orders) == 1:
-                    order = next(iter(orders.values()))
-        return latest_season(details, _am6b_tokyo_today(), order)
-    finally:
-        if CardClient._session is not None:
-            CardClient._session.close()
+    # metadata_transport.fetch owns and closes every connection. There is no
+    # per-subclass requests.Session lifetime to close after a successful fetch.
+    details = request('/tv/' + str(identifier), 'episode_groups')
+    if not isinstance(details, dict) or details.get('id') != identifier:
+        raise ValueError('SEASON_CARD_IDENTITY')
+    order = None
+    if details.get('number_of_seasons') == 1:
+        from lib.clients.tmdb.episode_order import get_order
+        order = get_order(identifier, fetch=False)
+        if not latest_season(details, _am6b_tokyo_today(), order):
+            listing = dict(details.get('episode_groups') or {}, id=identifier)
+            candidates = [row for row in listing.get('results', []) if row.get('type') in (6, 7)
+                          and 1 < row.get('group_count', 0) <= 100]
+            orders = {}
+            if 0 < len(candidates) <= 2:
+                for row in candidates:
+                    try:
+                        found = validate_group(identifier, listing, request('/tv/episode_group/' + row['id']))
+                        orders[found['digest']] = found
+                    except ValueError:
+                        continue
+            if len(orders) == 1:
+                order = next(iter(orders.values()))
+    return latest_season(details, _am6b_tokyo_today(), order)
 
 
 def hydrate(_params=None):

@@ -81,19 +81,25 @@ def test_validator_rejects_credential_urls_without_echoing_values():
     assert 'synthetic-test-value' not in str(error.value)
 
 
-def test_actual_public_skin_has_only_reviewed_fonts_and_scripts():
+def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
     source = ROOT / 'addons/skin.bobbi.cinema'
     # Store hashes, not private helper contents, so assertion diagnostics can
     # never spill encoded credentials from an excluded input script.
     before = {p.relative_to(source).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
               for p in source.rglob('*') if p.is_file()}
     output = source
-    skin.validate({p.relative_to(source).as_posix(): p.read_bytes()
-                   for p in source.rglob('*') if p.is_file()})
+    import json
+    proof = json.loads((ROOT / 'release/private-assets.json').read_text(encoding='utf-8'))
+    assert proof['source_commit'] == 'ff530e09c34c6285ccb05c1d4179140b097174fb'
+    font_rows = [row for row in proof['files'] if row['target'].endswith('.ttf')]
+    sound_rows = [row for row in proof['files'] if row['target'].endswith('.wav')]
+    assert len(font_rows) == 14 and len(sound_rows) == 8
+    for row in font_rows + sound_rows:
+        assert hashlib.sha256((ROOT / row['target']).read_bytes()).hexdigest() == row['source_sha256'] == row['sha256']
     after = {p.relative_to(source).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
              for p in source.rglob('*') if p.is_file()}
     assert before == after
-    assert {p.name for p in (output / 'fonts').glob('*.ttf')} == skin.FONTS
+    assert {Path(row['target']).name for row in font_rows} <= {p.name for p in (output / 'fonts').glob('*.ttf')}
     assert {p.name for p in (output / 'scripts').glob('*.py')} == skin.SAFE_SCRIPTS
     fonts = ET.parse(output / '1080p/Font.xml')
     assert all((output / 'fonts' / e.text).is_file() for e in fonts.iter('filename'))
@@ -101,6 +107,7 @@ def test_actual_public_skin_has_only_reviewed_fonts_and_scripts():
         assert hashlib.sha256((output / 'fonts' / font).read_bytes()).hexdigest() == before['fonts/' + font]
     assert hashlib.sha256((output / 'fonts' / skin.ICON_FONT).read_bytes()).hexdigest() == skin.ICON_SHA256
     assert (output / 'fonts' / skin.ICON_LICENSE).is_file()
+    assert skin.font_supports((output / 'fonts/BobiAF-Solid.ttf').read_bytes(), '\uf058\uf01b\uf13e\uf1ab\uf6ff\uf55a\uf0a8\uf0a9\uf05c')
     addon = ET.parse(output / 'addon.xml').getroot()
     assert addon.get('id') == 'skin.bobbi.cinema'
     assert addon.get('version') == '0.1.0'

@@ -12,7 +12,7 @@ import re
 from bobbi_core.ledger import checked_cloud_file, encode, resource_id
 from bobbi_core.release_media_profile import checked_profile
 from bobbi_core.resolution import resolution_class
-from bobbi_core.subtitle_binding import checked_video, digest
+from bobbi_core.video_context import checked_video, digest
 
 
 @dataclass(frozen=True)
@@ -66,7 +66,7 @@ def bind_prepared_profile(source, entry):
             return None
         digest(entry.get('prepared_qualification'))
         profile = deepcopy(checked_profile(entry.get('prepared_media_profile')))
-        video = checked_video(entry.get('subtitle_video'))
+        video = checked_video(entry.get('video_context'))
         media = _media_id(source.catalogIdentity)
         file = checked_cloud_file(dict(provider='115', account=entry.get('prepared_account'),
             file_id=entry.get('prepared_file_id'), cloud_path=entry.get('path'),

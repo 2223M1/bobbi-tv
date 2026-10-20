@@ -1,0 +1,143 @@
+diff --git a/cmake/platform/android/android.cmake b/cmake/platform/android/android.cmake
+index 49105e3..deb3857 100644
+--- a/cmake/platform/android/android.cmake
++++ b/cmake/platform/android/android.cmake
+@@ -6,6 +6,6 @@ list(APPEND PLATFORM_OPTIONAL_DEPS LibDovi)
+ # Store SDK compile version
+ set(TARGET_SDK 34)
+ # Minimum supported SDK version
+-set(TARGET_MINSDK 21)
++set(TARGET_MINSDK 26)
+ 
+ set(${CORE_PLATFORM_NAME_LC}_SEARCH_CONFIG NO_DEFAULT_PATH CACHE STRING "")
+diff --git a/system/settings/settings.xml b/system/settings/settings.xml
+index 791e129..21f880a 100755
+--- a/system/settings/settings.xml
++++ b/system/settings/settings.xml
+@@ -519,7 +519,7 @@
+       <group id="1" label="14221">
+         <setting id="locale.audiolanguage" type="string" label="285" help="36119">
+           <level>0</level>
+-          <default>mediadefault</default>
++          <default>original</default>
+           <constraints>
+             <options>audiostreamlanguages</options>
+           </constraints>
+@@ -534,7 +534,7 @@
+       <group id="2" label="287">
+         <setting id="locale.subtitlelanguage" type="string" label="286" help="36120">
+           <level>0</level>
+-          <default>original</default>
++          <default>Chinese</default>
+           <constraints>
+             <options>subtitlestreamlanguages</options>
+           </constraints>
+@@ -3233,7 +3233,7 @@
+         </setting>
+         <setting id="lookandfeel.soundskin" type="addon" label="24006" help="36110">
+           <level>0</level>
+-          <default>resource.uisounds.kodi</default>
++          <default>resource.uisounds.bobbi-modern</default>
+           <dependencies>
+             <dependency type="enable" setting="audiooutput.guisoundmode" operator="!is">0</dependency>
+           </dependencies>
+@@ -3597,7 +3597,7 @@
+       <group id="1" label="16000">
+         <setting id="general.addonupdates" type="integer" label="36605" help="36611">
+           <level>0</level>
+-          <default>0</default>
++          <default>2</default>
+           <constraints>
+             <options>
+               <option label="36606">0</option> <!-- AUTO_UPDATES_ON -->
+@@ -3873,7 +3873,7 @@
+       <group id="1" label="24997">
+         <setting id="lookandfeel.skin" type="addon" label="166" help="36103">
+           <level>0</level>
+-          <default>skin.estuary</default>
++          <default>skin.bobbi.cinema</default>
+           <constraints>
+             <addontype>xbmc.gui.skin</addontype>
+           </constraints>
+diff --git a/tools/android/packaging/Makefile.in b/tools/android/packaging/Makefile.in
+index 98a1522..6462578 100644
+--- a/tools/android/packaging/Makefile.in
++++ b/tools/android/packaging/Makefile.in
+@@ -2,6 +2,7 @@ include ../../depends/Makefile.include
+ 
+ BUILD_TYPE:=@CMAKE_BUILD_TYPE@
+ BUILD_TYPE_LC:=$(shell echo $(BUILD_TYPE) | tr A-Z a-z)
++BOBBI_GRADLE ?= ./gradlew
+ 
+ OBJS = libshairplay.so
+ 
+@@ -97,9 +98,13 @@ java: res
+ 	mkdir -p xbmc/java/$(APP_PACKAGE_DIR) xbmc/obj
+ 	@cp -R xbmc/src/* xbmc/java/$(APP_PACKAGE_DIR)/
+ 
+-package: libs python java
++bobbi_components: sharedapk
++	test -n "$(BOBBI_COMPONENTS_MANIFEST)" && test -n "$(BOBBI_STAGE_TOOL)"
++	python3 "$(BOBBI_STAGE_TOOL)" "$(BOBBI_COMPONENTS_MANIFEST)" xbmc/assets
++
++package: libs python java bobbi_components
+ 	@echo "Gradle build and sign..."
+-	ANDROID_HOME=$(SDKROOT) ./gradlew assemble$(BUILD_TYPE)
++	ANDROID_HOME=$(SDKROOT) $(BOBBI_GRADLE) assemble$(BUILD_TYPE)
+ 	@cp xbmc/build/outputs/apk/$(BUILD_TYPE_LC)/xbmc-$(BUILD_TYPE_LC).apk $(CMAKE_SOURCE_DIR)/@APP_NAME_LC@app-$(CPU)-$(BUILD_TYPE_LC).apk
+ 
+ $(PREFIX)/lib/xbmc/lib@APP_NAME_LC@.so: $(SRCLIBS)
+diff --git a/tools/android/packaging/gradle/wrapper/gradle-wrapper.properties b/tools/android/packaging/gradle/wrapper/gradle-wrapper.properties
+index 0d944d3..f289eea 100644
+--- a/tools/android/packaging/gradle/wrapper/gradle-wrapper.properties
++++ b/tools/android/packaging/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,7 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-networkTimeout=10000
++networkTimeout=120000
++distributionSha256Sum=591855b517fc635b9e04de1d05d5e76ada3f89f5fc76f87978d1b245b4f69225
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+ distributionUrl=https\://services.gradle.org/distributions/gradle-8.3-bin.zip
+diff --git a/tools/android/packaging/xbmc/build.gradle.in b/tools/android/packaging/xbmc/build.gradle.in
+index 14c9c2b..66940f0 100644
+--- a/tools/android/packaging/xbmc/build.gradle.in
++++ b/tools/android/packaging/xbmc/build.gradle.in
+@@ -8,8 +8,8 @@ android {
+         applicationId "@APP_PACKAGE@"
+         minSdk @TARGET_MINSDK@
+         targetSdk @TARGET_SDK@
+-        versionCode @APP_VERSION_CODE_ANDROID@
+-        versionName "@APP_VERSION@"
++        versionCode Integer.parseInt(System.getenv("BOBBI_ANDROID_VERSION_CODE") ?: "2026101901")
++        versionName "0.2.0-private.1 (Kodi @APP_VERSION@)"
+     }
+     signingConfigs {
+         release {
+diff --git a/tools/android/packaging/xbmc/strings.xml.in b/tools/android/packaging/xbmc/strings.xml.in
+index 141a1a3..15b6812 100644
+--- a/tools/android/packaging/xbmc/strings.xml.in
++++ b/tools/android/packaging/xbmc/strings.xml.in
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+ 
+-    <string name="app_name">@APP_NAME@</string>
++    <string name="app_name">bobbi TV</string>
+     <string name="search_hint">@APP_NAME@</string>
+ 
+     <string name="suggestion_channel">Suggestions</string>
+diff --git a/tools/buildsteps/windows/vswhere.bat b/tools/buildsteps/windows/vswhere.bat
+index a682f7c..89b9203 100644
+--- a/tools/buildsteps/windows/vswhere.bat
++++ b/tools/buildsteps/windows/vswhere.bat
+@@ -37,7 +37,7 @@ IF "%arch%" NEQ "x64" (
+ 
+ SET vswhere="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+ 
+-FOR /f "usebackq tokens=1* delims=" %%i in (`%vswhere% -latest -property installationPath`) do (
++FOR /f "usebackq tokens=1* delims=" %%i in (`%vswhere% -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+   IF EXIST "%%i\VC\Auxiliary\Build\vcvarsall.bat" (
+     SET vcvars="%%i\VC\Auxiliary\Build\vcvarsall.bat"
+     SET vsver=15 2017

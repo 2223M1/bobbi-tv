@@ -1,0 +1,6 @@
+{
+  "configured": true,
+  "dedicated_distributable_app": false,
+  "local_only": true,
+  "test_installation": "windows-installer-1905"
+}

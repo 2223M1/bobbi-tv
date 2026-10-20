@@ -12,7 +12,7 @@ from bobbi_core.subtitle_binding import prepared_video, style_reviewable
 from bobbi_core.subtitle_export import export
 
 KEY = 'extension:subtitle-font-preparation:schema'
-ASSET_POLICY = 'nearest-release-directory-128m-v1'
+ASSET_POLICY = 'nearest-release-directory-128m-rar-v2'
 DDL = {'subtitle_font_preparation': '''CREATE TABLE subtitle_font_preparation(
     binding TEXT PRIMARY KEY, resource TEXT NOT NULL, state TEXT NOT NULL,
     attempts INTEGER NOT NULL, next_attempt REAL NOT NULL, detail TEXT NOT NULL)'''}
@@ -72,7 +72,8 @@ class SubtitleFontPreparation:
             JOIN subtitle_revisions r ON r.seq=c.revision
             JOIN prepared_bindings b ON b.resource=s.resource
             LEFT JOIN subtitle_font_preparation f ON f.binding=c.binding_key
-            WHERE s.state='CANDIDATE_NOT_READY' AND (f.binding IS NULL OR
+            WHERE s.state IN ('CANDIDATE_NOT_READY','READY_NOT_VISUAL_PROOF','STYLE_REVIEW_REQUIRED')
+              AND (f.binding IS NULL OR
                 (f.state IN ('RETRY','DEFERRED_IMPORT') AND f.next_attempt<=?))
             ORDER BY c.rowid LIMIT 32''', (self.queue.now(),)).fetchall()
         for row in rows:
@@ -172,7 +173,9 @@ class SubtitleFontPreparation:
         fonts=self.cache.bind(current['release_key'],raw,hashes)
         bound=self.store.put(current,raw,old['extension'],old['language'],old['full_dialogue'],old['forced'],
             old['origin'],timing=old['timing'],font_result=fonts,manual_intent=old['manual_intent'])
-        # Do not mark subtitle_preparation READY or activate Kodi fonts.
+        # Do not change video/subtitle admission or activate Kodi fonts.
+        # Content-only v2 subtitles may already be READY with missing fonts;
+        # the font inputs remain an independent rendering-quality result.
         # A subsequent idle IO pass may publish immutable subtitle bytes;
         # playback preflight still owns activation and readiness independently.
         self._record(plan,'FONT_INPUTS_BOUND' if bound['fonts_ready'] else 'FONT_INPUTS_INCOMPLETE',
