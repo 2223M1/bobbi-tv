@@ -12,6 +12,19 @@ SUPPORTED_VERSIONS = ('MatriX.144.1', 'MatriX.147')
 LEGACY_KEYS = frozenset(('service_host', 'service_port', 'ssl_connection',
     'service_login', 'service_password', 'metadata_timeout', 'buffer_timeout'))
 MAX_RESPONSE = 2 * 1024 * 1024
+MAX_DIAGNOSTIC_NUMBER = 512 * 1024**3
+
+
+def normalize_download_speed(value):
+    """TorrServer float64 B/s -> bounded diagnostic integer, not file readiness.
+
+    Compare before conversion: NaN/Inf/huge integers, negative fractions and
+    values above the bound must not become plausible numbers after truncation.
+    Unknown stays None; a real zero (including 0.0) stays zero.
+    """
+    if type(value) in (int, float) and 0 <= value <= MAX_DIAGNOSTIC_NUMBER:
+        return int(value)
+    return None
 
 
 class BackendError(RuntimeError):
@@ -213,6 +226,9 @@ class Backend:
             body={'action': 'get', 'hash': info_hash}))
         if str(value.get('hash', '')).lower() != info_hash:
             raise BackendError('TORRENT_HASH_MISMATCH', 'source_identity_mismatch')
+        speed = normalize_download_speed(value.pop('download_speed', None))
+        if speed is not None:
+            value['download_speed'] = speed
         return value
 
     def preload(self, info_hash, file_id, deadline, active):
