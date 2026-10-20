@@ -12,6 +12,7 @@
       "lib/bobbi_platform/_vendor/segno/encoder.py",
       "lib/bobbi_platform/_vendor/segno/utils.py",
       "lib/bobbi_platform/_vendor/segno/writers.py",
+      "lib/bobbi_platform/account_dialog.py",
       "lib/bobbi_platform/account_manager.py",
       "lib/bobbi_platform/capabilities.py",
       "lib/bobbi_platform/ce_install_ui.py",
@@ -41,7 +42,8 @@
       "lib/bobbi_platform/torrserver.py",
       "lib/bobbi_platform/transport_preferences.py",
       "lib/bobbi_platform/updates.py",
-      "lib/bobbi_platform/upstream_addons.py"
+      "lib/bobbi_platform/upstream_addons.py",
+      "resources/skins/Default/1080i/account-login.xml"
     ],
     "script.bobbi.setup": [
       "LICENSE",

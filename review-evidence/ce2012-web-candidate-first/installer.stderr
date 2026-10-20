@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "D:\AM6B-Project\review-inputs\ce2011-20261020\BobbiTV-PR2-CE2011-Review-20261020\checks\reproduce_installer_boundaries.py", line 358, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\AM6B-Project\review-inputs\ce2011-20261020\BobbiTV-PR2-CE2011-Review-20261020\checks\reproduce_installer_boundaries.py", line 346, in main
+    results = probe(args.repo.resolve())
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AM6B-Project\review-inputs\ce2011-20261020\BobbiTV-PR2-CE2011-Review-20261020\checks\reproduce_installer_boundaries.py", line 86, in probe
+    actor._activate(state)
+  File "D:\AM6B-Project\bobbi-tv-ce-pr1-20261020\addons\script.module.bobbi.platform\lib\bobbi_platform\ce_installer.py", line 112, in _activate
+    self.host.activate(state['versions'])
+  File "D:\AM6B-Project\bobbi-tv-ce-pr1-20261020\addons\script.module.bobbi.platform\lib\bobbi_platform\ce_install_ui.py", line 152, in activate
+    self.ensure_running()
+  File "D:\AM6B-Project\bobbi-tv-ce-pr1-20261020\addons\script.module.bobbi.platform\lib\bobbi_platform\ce_install_ui.py", line 188, in ensure_running
+    lease = InstanceLock(str(profile(name='runtime.json')) + '.lock')
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AM6B-Project\bobbi-tv-ce-pr1-20261020\addons\script.module.bobbi.platform\lib\bobbi_platform\paths.py", line 13, in profile
+    root.mkdir(parents=True, exist_ok=True)
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\pathlib.py", line 1311, in mkdir
+    os.mkdir(self, mode)
+FileExistsError: [WinError 183] 当文件已存在时，无法创建该文件。: 'C:\\Users\\theon\\AppData\\Local\\Temp\\bobbi-install-review-q5wm9qbs\\work\\installation.json'

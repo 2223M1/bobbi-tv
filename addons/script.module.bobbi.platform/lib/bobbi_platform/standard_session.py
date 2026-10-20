@@ -44,7 +44,8 @@ class StandardSession:
         self.generation += 1
         self.current = dict(request_id=request, account=deepcopy(account),
             generation=self.generation, state='selected', cancel=Event(), data=None,
-            position=0., duration=0., observed=0., next_data=None, terminal=None)
+            position=0., duration=0., observed=0., progress_observed=None,
+            next_data=None, terminal=None)
         return dict(request_id=request, generation=self.generation)
 
     def register(self, request, data):
@@ -90,7 +91,8 @@ class StandardSession:
         row.update(state='playing', observed=self.clock())
         if type(position) in (int, float) and type(duration) in (int, float):
             if 0 <= position <= duration and 0 < duration < 864000:
-                row.update(position=float(position), duration=float(duration))
+                row.update(position=float(position), duration=float(duration),
+                           progress_observed=self.clock())
         if first:
             self._save(row, 'STARTED')
         return True
@@ -125,7 +127,8 @@ class StandardSession:
         # end position is required; a percent threshold alone is not EOF.
         natural = (kind == 'ENDED' and row['duration'] > 0
             and row['duration'] - row['position'] <= 3
-            and self.clock() - row['observed'] <= 3)
+            and row['progress_observed'] is not None
+            and 0 <= self.clock() - row['progress_observed'] <= 3)
         reason = 'NATURAL_EOF' if natural else ('STOP' if kind == 'STOPPED' else 'ERROR')
         row.update(state='ended' if natural else 'retired', terminal=self.clock())
         self._save(row, reason)

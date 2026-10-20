@@ -26,7 +26,10 @@ def resolution_class(title):
                    1080 if tag.startswith("1080") else 720 if tag == "720p" else 480)
     for width, height in _DIMENSIONS.findall(text):
         width, height = int(width), int(height)
-        found = 0
+        # Standard 4:3 HD releases are not low-resolution crops of widescreen
+        # video. Keep exact standard pairs; arbitrary/portrait dimensions and
+        # conflicting tags must still remain unknown.
+        found = {(1440, 1080): 1080, (960, 720): 720}.get((width, height), 0)
         for resolution, min_w, max_w, min_h, max_h in (
             (4320, 7648, 8192, 2880, 4320),
             (2160, 3824, 4096, 1440, 2160),

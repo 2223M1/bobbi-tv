@@ -1,0 +1,9 @@
+{
+  "run": "/storage/.local/share/bobbi-private-deploy/20261020-222715",
+  "hashes": {
+    "candidate.zip": "101cc2185c11493c8c496e82031900c6d966a9418ad0f330a109163b1b3b4a6c",
+    "controller.py": "410c771002c292d16cf800ae5d6b192e1ab029c3a205bdf42a1cb3ae3cb79f41",
+    "ce_state_migration.py": "3ff113a0c4ce9e0bc1f3a25c4c958a7308f9d2d36c9bdcd5d1f5e45113b02a83",
+    "transition-baseline.json": "cf1bb384a96a47b158c372d8e00c2b10c0a7f668728cef747b832f0c0605678c"
+  }
+}

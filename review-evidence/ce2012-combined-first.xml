@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.254" timestamp="2026-10-20T22:16:40.594092+08:00" hostname="Paimon"><testcase classname="" name="tests.test_ce2012_continuation" time="0.000"><error message="collection failure">ImportError while importing test module 'D:\AM6B-Project\bobbi-tv-ce-pr1-20261020\tests\test_ce2012_continuation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_ce2012_continuation.py:11: in &lt;module&gt;
+    from bobbi_core import playback_request as request
+E   ModuleNotFoundError: No module named 'bobbi_core'</error></testcase></testsuite></testsuites>

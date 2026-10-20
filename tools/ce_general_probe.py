@@ -20,7 +20,13 @@ addons={}
 for name in ('plugin.video.bobbi','script.module.bobbi.core','script.module.bobbi.platform'):
     value=rpc('Addons.GetAddonDetails', {'addonid':name,'properties':['version','enabled']})
     addons[name]=value.get('addon',value)
-print(json.dumps(dict(active=rpc('Player.GetActivePlayers'),
+active=rpc('Player.GetActivePlayers')
+playing=[]
+for row in active:
+    playing.append(dict(player=row, item=rpc('Player.GetItem',{'playerid':row['playerid'],
+        'properties':['title','showtitle','season','episode']}),
+        progress=rpc('Player.GetProperties',{'playerid':row['playerid'],'properties':['time','totaltime','speed']})))
+print(json.dumps(dict(active=active,playing=playing,
     window=rpc('GUI.GetProperties',{'properties':['currentwindow']}),
     kodi=rpc('Application.GetProperties',{'properties':['version']}),addons=addons,
     remote_python_bits=struct.calcsize('P')*8,kernel=platform.machine())))

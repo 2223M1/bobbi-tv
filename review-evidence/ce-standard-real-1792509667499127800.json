@@ -1,0 +1,9 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-standard-real-1792509626964476800",
+  "result": {
+    "state": "running",
+    "passed": null
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

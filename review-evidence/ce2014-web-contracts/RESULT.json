@@ -1,0 +1,349 @@
+{
+  "schema": 1,
+  "reference_head": "28819d202b6d4b4ff00367e46c37d8542a1b35af",
+  "scope": "Production Python policies with explicit Kodi/provider IO doubles; real temporary files, processes and OS locks; no device certification",
+  "source": {
+    "git": {
+      "kind": "git-checkout",
+      "commit": "ee65742bfcbaf08831f70306faed11bd1f8d6cc6",
+      "tree": "8444201262d9ab298c901a0ed6f599b9b13735eb",
+      "tracked_changes": "M addons/plugin.video.bobbi/addon.xml\n M addons/plugin.video.bobbi/lib/boot_gate.py\n M addons/plugin.video.bobbi/lib/clients/juku_provider.py\n M addons/plugin.video.bobbi/lib/gui/source_select.py\n M addons/plugin.video.bobbi/lib/gui/terminal_actions.py\n M addons/plugin.video.bobbi/lib/native_player.py\n M addons/plugin.video.bobbi/lib/services/standard_playback.py\n M addons/plugin.video.bobbi/resources/skins/Default/1080i/terminal-actions.xml\n M addons/script.bobbi.setup/addon.xml\n M addons/script.bobbi.setup/resources/skins/Default/1080i/tmdb-attribution.xml\n M addons/script.bobbi.start/addon.xml\n M addons/script.module.bobbi.catalog/addon.xml\n M addons/script.module.bobbi.catalog/lib/bobbi_catalog/api.py\n M addons/script.module.bobbi.core/addon.xml\n M addons/script.module.bobbi.core/lib/bobbi_core/image_cache.py\n M addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py\n M addons/script.module.bobbi.core/lib/bobbi_core/preparation_host.py\n M addons/script.module.bobbi.core/lib/bobbi_core/resolution.py\n M addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py\n M addons/script.module.bobbi.platform/addon.xml\n M addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py\n M addons/script.module.bobbi.platform/lib/bobbi_platform/cloud_ui.py\n M addons/script.module.bobbi.platform/lib/bobbi_platform/host.py\n M addons/script.module.bobbi.platform/lib/bobbi_platform/runtime.py\n M addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py\n M release/preview-inputs.json\n M release/source-inventory.json\n M tests/test_account_ui.py\n M tests/test_ce_general_installer.py\n M tests/test_provider_streaming.py\n M tests/test_runtime_host.py\n M tools/audit_ce_entry.py\n M tools/build_ce_entry.py\n M tools/ce_continuation_trial.py\n M tools/ce_general_probe.py\n M tools/ce_playback_trial.py\n M tools/ce_trial_remote.py\n M tools/ce_upgrade_preflight_probe.py\n M tools/probe_ce_test_identities.py"
+    },
+    "files": [
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py",
+        "bytes": 10538,
+        "git_blob_sha1": "53f1c08afeb8d4cc552203a10eb525e03ade6773",
+        "sha256": "a85fc163d02faf6225af9a2a7bfe30218508e3225bc2c4e5d97c1d21adeedc8d",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py",
+        "bytes": 13788,
+        "git_blob_sha1": "5f87167399d2ae36cc26eef5b3d404a1edd4d2d7",
+        "sha256": "7b8770762c34e961f7baac63861143252c08417af0cce17dc24f8a37a4ed4895",
+        "matches_reference": false
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/runtime.py",
+        "bytes": 6516,
+        "git_blob_sha1": "cf6626c7cb70551ac0d8bb83e142a545501392f2",
+        "sha256": "a470f6007b1a0c7c352de4fcd929d8865e08e3b75a1587ca4b3a8c6023c0d870",
+        "matches_reference": false
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/instance_lock.py",
+        "bytes": 1253,
+        "git_blob_sha1": "307ee23c528e83bc98d73c26e27a42f3d3061bc2",
+        "sha256": "e3395ade1e550e51721d9cc501df09bb5950cbce516b0903546c394caa7a82a7",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/updates.py",
+        "bytes": 33136,
+        "git_blob_sha1": "30826e7d465cf6d7a523a9da0546addda70b2f59",
+        "sha256": "9dcdcad8030f40036af7d22ba1f970cd12da9480331267f943daf65c096cb9ff",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+        "bytes": 9428,
+        "git_blob_sha1": "55dd0faa70bdcf2af04a2d87a59dfc58ed4c47ea",
+        "sha256": "ef7fce315230c62b243858e7d572c6be1f011308acbe5479220134cb7faa7b62",
+        "matches_reference": false
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/playback.py",
+        "bytes": 3711,
+        "git_blob_sha1": "4e67f65734aaaa7454525ce54602ca707e6810ff",
+        "sha256": "e547c552cf9369310ded619614e5c4fd1ad9a3485145ce06f593661f3bd4357b",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/kodi.py",
+        "bytes": 1807,
+        "git_blob_sha1": "d15acf7e2ebf0d93ee848fd2452e712e7b2c8077",
+        "sha256": "c15b58052d2783f670c17755c37293121dacd89faac5b53b424a2d914c136c83",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+        "bytes": 13762,
+        "git_blob_sha1": "a1215ddfc99d24f5a95777264b9d1eff60a20aaa",
+        "sha256": "79d9e8538a0c1d04cdef459842465e1cb89e3f19326870d8d5a7f51085aca64a",
+        "matches_reference": false
+      },
+      {
+        "path": "addons/plugin.video.bobbi/lib/boot_gate.py",
+        "bytes": 624,
+        "git_blob_sha1": "a04398843321d4514fdea86b2dba1351008cd8be",
+        "sha256": "a42925f0efebe03892336de4667eccc396326d376aa0012040eba68fa1804f15",
+        "matches_reference": false
+      },
+      {
+        "path": "addons/plugin.video.bobbi/service.py",
+        "bytes": 509,
+        "git_blob_sha1": "0faa6834c7fb0f3d6c1b0cc42f06d7379031f332",
+        "sha256": "b2798840e40a8cf4985b094484a909ee1716ba48f2b6e6b066fe72ffd78168d6",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+        "bytes": 2045,
+        "git_blob_sha1": "a410df87ce6f0d48461e8dfc11f66150abf74dc1",
+        "sha256": "5aa89cd58211398d09d4fc2dd4f74d94151cc6095d8c04e01f9dfc1af41d88db",
+        "matches_reference": true
+      },
+      {
+        "path": "tools/ce_playback_trial.py",
+        "bytes": 5794,
+        "git_blob_sha1": "96b6de437018890b4a7cf05c55b9e3a6d0f9be64",
+        "sha256": "5061272f6c1aeaac4c774310d72951b8686344ca452d4a53f455cd0ae469fb83",
+        "matches_reference": false
+      },
+      {
+        "path": "tools/ce_trial_remote.py",
+        "bytes": 36375,
+        "git_blob_sha1": "f47f60df3cd64ceb266b1cb712bc1433c338d517",
+        "sha256": "54c3c9e89b9a890ae33ce20a8c300e75ed4d2e9b2e43978473192d43907747c4",
+        "matches_reference": false
+      },
+      {
+        "path": "tools/build_release.py",
+        "bytes": 8217,
+        "git_blob_sha1": "7c70a8dc5b4a7346ca14b132b1309cea21ae8acc",
+        "sha256": "2bc6c6886618e72f5f19c8da7b4f4136668f12fa99af57cd268f766bf250c5ed",
+        "matches_reference": true
+      },
+      {
+        "path": "tools/build_ce_entry.py",
+        "bytes": 3939,
+        "git_blob_sha1": "974858d6bdae4496065536b04931d8310c3b642b",
+        "sha256": "d38268a5df23afce711484aad5555c589f2a44620b049714c1f72efaa070162a",
+        "matches_reference": false
+      },
+      {
+        "path": "tools/ce_standard_fixture_remote.py",
+        "bytes": 4280,
+        "git_blob_sha1": "b3c33760cad456a45f0eb2dcff3d08b56165eeb4",
+        "sha256": "9627a5d46f8c1ccb2850556a12976e1594948126a40c959e1e581210ac54ba11",
+        "matches_reference": true
+      },
+      {
+        "path": "release/source-inventory.json",
+        "bytes": 150814,
+        "git_blob_sha1": "476a7ad7b8c1cf064046410aab530eb52e460317",
+        "sha256": "969773ca16a6a8ce61fe987079f207bc01166e1bf5c71d53069194f54daa35a7",
+        "matches_reference": false
+      }
+    ],
+    "all_match_reference": false
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "packages": {
+      "pytest": "9.1.1",
+      "cryptography": "50.0.1",
+      "requests": "2.34.2"
+    }
+  },
+  "count": 18,
+  "passed": 18,
+  "failed": 0,
+  "errors": 0,
+  "exit_codes": {
+    "installer": 0,
+    "playback": 0,
+    "trial": 0
+  },
+  "tests": [
+    {
+      "suite": "installer",
+      "id": "INSTALL-BOOT-GATE",
+      "expected": "provider starts while its verified activation is pending, or reopening repairs it",
+      "actual": {
+        "events": [
+          "enable_provider",
+          "host_started"
+        ],
+        "phase": "complete",
+        "provider_enabled": true,
+        "reopening_recovered": false
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "INSTALL-BOOT-AFTER-ENABLED-PROCESS-LOSS",
+      "expected": "an already-enabled provider runs after reboot plus pending-activation recovery",
+      "actual": {
+        "events": [
+          "host_started"
+        ],
+        "phase": "complete",
+        "provider_enabled": true,
+        "reopening_recovered": true
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-BLOCK-STAGED",
+      "expected": "unverified file vector cannot start the provider",
+      "actual": {
+        "phase": "staged",
+        "events": [
+          "service_exit:0"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-BLOCK-SWITCHING",
+      "expected": "unverified file vector cannot start the provider",
+      "actual": {
+        "phase": "switching",
+        "events": [
+          "service_exit:0"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-BLOCK-RESTORING",
+      "expected": "unverified file vector cannot start the provider",
+      "actual": {
+        "phase": "restoring",
+        "events": [
+          "service_exit:0"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-RESTORED-HOST-PENDING",
+      "expected": "verified restored files satisfy both the old gate and the actual service gate",
+      "actual": {
+        "events": [
+          "host_started"
+        ],
+        "old_gate": true,
+        "host_pending": "restore"
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-NOOP-ENABLE",
+      "expected": "an acknowledged but ineffective Kodi enable cannot complete the installation",
+      "actual": {
+        "error": "HOST_ACTIVATION_NOT_CONFIRMED",
+        "phase": "activation_pending"
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "INSTALL-STALE-RUNTIME",
+      "expected": "OS-released runtime ownership permits recovery after an actual process loss",
+      "actual": {
+        "child_exit": 73,
+        "marker_after_kill": true,
+        "exclusive_runtime_lease_available": true,
+        "attempts": [
+          {
+            "recovered": true
+          },
+          {
+            "recovered": false
+          }
+        ],
+        "phase": "restored",
+        "marker_remaining": false
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-ACTIVE-RUNTIME-OWNER",
+      "expected": "quiesce does not delete the registration or admit replacement while its OS lease is held",
+      "actual": {
+        "lease_busy": true,
+        "error": "CINEMA_SERVICE_NOT_STOPPED",
+        "marker_unchanged": true,
+        "process_alive": true
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "INSTALL-ENABLE-SNAPSHOT-UNKNOWN",
+      "expected": "transient state-read error aborts snapshot capture or preserves the original enable vector",
+      "actual": {
+        "snapshot_error": "fixture inventory unavailable",
+        "originally_enabled_provider": true,
+        "saved_enabled_provider": false,
+        "final_enabled_provider": true,
+        "all_old_files_restored": true,
+        "phase": null
+      },
+      "passed": true
+    },
+    {
+      "suite": "playback",
+      "id": "test_invalid_progress_sample_cannot_refresh_eof_evidence",
+      "passed": true
+    },
+    {
+      "suite": "playback",
+      "id": "test_ready_next_media_is_not_discarded_by_optional_subtitle_delay",
+      "passed": true
+    },
+    {
+      "suite": "playback",
+      "id": "test_fresh_valid_eof_continues_exact_candidate_once",
+      "passed": true
+    },
+    {
+      "suite": "playback",
+      "id": "test_genuinely_missing_candidate_never_fabricates_continuation",
+      "passed": true
+    },
+    {
+      "suite": "trial",
+      "id": "observe_failed_caching_sample",
+      "name": "observe_failed_caching_sample",
+      "actual_exit_code": 1,
+      "expected": "nonzero",
+      "passed": true
+    },
+    {
+      "suite": "trial",
+      "id": "original_successful_observation",
+      "name": "original_successful_observation",
+      "actual_exit_code": 0,
+      "expected": "zero",
+      "passed": true
+    },
+    {
+      "suite": "trial",
+      "id": "original_successful_stop",
+      "name": "original_successful_stop",
+      "actual_exit_code": 0,
+      "expected": "zero",
+      "passed": true
+    },
+    {
+      "suite": "trial",
+      "id": "stop_wait_timed_out",
+      "name": "stop_wait_timed_out",
+      "actual_exit_code": 1,
+      "expected": "nonzero",
+      "passed": true
+    }
+  ]
+}

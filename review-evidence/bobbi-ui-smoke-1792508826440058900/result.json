@@ -1,0 +1,44 @@
+{
+  "exit_code": 0,
+  "result": {
+    "scope": "real installed UI; synthetic QR/card data; no login exchange or playback",
+    "panels": [
+      {
+        "name": "account",
+        "dialog": 13001,
+        "focus": 9001,
+        "title": "登录自己的 115 网盘",
+        "cancelled": true
+      },
+      {
+        "name": "terminal",
+        "dialog": 13002,
+        "focus": 9003,
+        "title": "本集已播完",
+        "no_play_action": true
+      },
+      {
+        "name": "metadata",
+        "dialog": 13001,
+        "focus": 9001
+      },
+      {
+        "name": "sources-before",
+        "dialog": 13002,
+        "focus": 1000
+      },
+      {
+        "name": "sources-after",
+        "dialog": 13002,
+        "focus": 1000,
+        "resets": 0,
+        "focus_commands": 0,
+        "original_items_retained": true,
+        "selected_key_retained": true,
+        "native_item_count": 7
+      }
+    ],
+    "passed": true
+  },
+  "diagnostic_present": false
+}

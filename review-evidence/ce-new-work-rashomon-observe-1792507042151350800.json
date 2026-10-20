@@ -1,0 +1,700 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "rashomon",
+    "operation": "observe",
+    "target": null,
+    "settle": [],
+    "samples": [
+      {
+        "wall": 2236894.77875642,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d|transport:8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "monotonic_us": 2236830628113,
+          "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+          "open_epoch": 3,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "2c8ab1a1eefeb1fe68ab17917bba6733238be0f43c36d8c99f6fc8dd791a3268",
+          "subtitle_intent": 0,
+          "url_sha256": "8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 57.217,
+        "duration": 5317.355,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 1,
+          "codec": "pcm_bluray",
+          "index": 0,
+          "isdefault": false,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "2c8ab1a1eefeb1fe68ab17917bba6733 （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1493,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2236894.760109909,
+          "player_time_started": 2236894.781203498,
+          "player_time_completed": 2236894.783659285,
+          "caching_started": 2236894.783685159,
+          "caching_completed": 2236894.787940975,
+          "decoder_started": 2236894.832911048,
+          "decoder_completed": 2236894.833316735,
+          "sample_completed": 2236894.833318694
+        }
+      },
+      {
+        "wall": 2236904.861746125,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d|transport:8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "monotonic_us": 2236830628113,
+          "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+          "open_epoch": 3,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "2c8ab1a1eefeb1fe68ab17917bba6733238be0f43c36d8c99f6fc8dd791a3268",
+          "subtitle_intent": 0,
+          "url_sha256": "8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 67.227,
+        "duration": 5317.355,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 1,
+          "codec": "pcm_bluray",
+          "index": 0,
+          "isdefault": false,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "2c8ab1a1eefeb1fe68ab17917bba6733 （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1762,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2236904.833462872,
+          "player_time_started": 2236904.865143409,
+          "player_time_completed": 2236904.872164756,
+          "caching_started": 2236904.87220717,
+          "caching_completed": 2236904.882139826,
+          "decoder_started": 2236904.933590387,
+          "decoder_completed": 2236904.934326849,
+          "sample_completed": 2236904.934331974
+        }
+      },
+      {
+        "wall": 2236914.962421604,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d|transport:8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "monotonic_us": 2236830628113,
+          "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+          "open_epoch": 3,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "2c8ab1a1eefeb1fe68ab17917bba6733238be0f43c36d8c99f6fc8dd791a3268",
+          "subtitle_intent": 0,
+          "url_sha256": "8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 77.488,
+        "duration": 5317.355,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 1,
+          "codec": "pcm_bluray",
+          "index": 0,
+          "isdefault": false,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "2c8ab1a1eefeb1fe68ab17917bba6733 （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 2051,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2236914.934509956,
+          "player_time_started": 2236914.968414763,
+          "player_time_completed": 2236914.979360925,
+          "caching_started": 2236914.979484835,
+          "caching_completed": 2236915.02163423,
+          "decoder_started": 2236915.069218145,
+          "decoder_completed": 2236915.071603734,
+          "sample_completed": 2236915.071608484
+        }
+      },
+      {
+        "wall": 2236925.09815548,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d|transport:8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "monotonic_us": 2236830628113,
+          "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+          "open_epoch": 3,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "2c8ab1a1eefeb1fe68ab17917bba6733238be0f43c36d8c99f6fc8dd791a3268",
+          "subtitle_intent": 0,
+          "url_sha256": "8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 87.539,
+        "duration": 5317.355,
+        "currentaudiostream": {
+          "bitrate": 2304000,
+          "channels": 1,
+          "codec": "pcm_bluray",
+          "index": 0,
+          "isdefault": false,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "2c8ab1a1eefeb1fe68ab17917bba6733 （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 2305,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2236925.071844548,
+          "player_time_started": 2236925.104851447,
+          "player_time_completed": 2236925.115571052,
+          "caching_started": 2236925.115622258,
+          "caching_completed": 2236925.150407488,
+          "decoder_started": 2236925.20450449,
+          "decoder_completed": 2236925.2051555,
+          "sample_completed": 2236925.205160208
+        }
+      }
+    ],
+    "passed": true,
+    "startup_clock": {
+      "stable": true,
+      "budget_seconds": 5,
+      "elapsed_seconds": 0.774285702034831,
+      "samples": [
+        {
+          "wall": 2236893.996806497,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d|transport:8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+            "monotonic_us": 2236830628113,
+            "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+            "open_epoch": 3,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_file_applied": true,
+            "subtitle_file_sha256": "2c8ab1a1eefeb1fe68ab17917bba6733238be0f43c36d8c99f6fc8dd791a3268",
+            "subtitle_intent": 0,
+            "url_sha256": "8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 56.383,
+          "duration": 5317.355,
+          "currentaudiostream": {
+            "bitrate": 2304000,
+            "channels": 1,
+            "codec": "pcm_bluray",
+            "index": 0,
+            "isdefault": false,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "2c8ab1a1eefeb1fe68ab17917bba6733 （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1475,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2236893.985557928,
+            "player_time_started": 2236894.000262896,
+            "player_time_completed": 2236894.008554039,
+            "caching_started": 2236894.008578496,
+            "caching_completed": 2236894.038362495,
+            "decoder_started": 2236894.083401225,
+            "decoder_completed": 2236894.084702447,
+            "sample_completed": 2236894.084706947
+          }
+        },
+        {
+          "wall": 2236894.347761832,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d|transport:8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+            "monotonic_us": 2236830628113,
+            "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+            "open_epoch": 3,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_file_applied": true,
+            "subtitle_file_sha256": "2c8ab1a1eefeb1fe68ab17917bba6733238be0f43c36d8c99f6fc8dd791a3268",
+            "subtitle_intent": 0,
+            "url_sha256": "8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 56.8,
+          "duration": 5317.355,
+          "currentaudiostream": {
+            "bitrate": 2304000,
+            "channels": 1,
+            "codec": "pcm_bluray",
+            "index": 0,
+            "isdefault": false,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "2c8ab1a1eefeb1fe68ab17917bba6733 （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1483,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2236894.334873851,
+            "player_time_started": 2236894.350293823,
+            "player_time_completed": 2236894.353020219,
+            "caching_started": 2236894.353042885,
+            "caching_completed": 2236894.373008281,
+            "decoder_started": 2236894.416420806,
+            "decoder_completed": 2236894.416926362,
+            "sample_completed": 2236894.416928321
+          }
+        },
+        {
+          "wall": 2236894.685067304,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d|transport:8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+            "monotonic_us": 2236830628113,
+            "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+            "open_epoch": 3,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_file_applied": true,
+            "subtitle_file_sha256": "2c8ab1a1eefeb1fe68ab17917bba6733238be0f43c36d8c99f6fc8dd791a3268",
+            "subtitle_intent": 0,
+            "url_sha256": "8606e7243b3c432813bb8ff0a9baa3b3d9f1ad557d83e3118c934de3c3a98f57",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 57.217,
+          "duration": 5317.355,
+          "currentaudiostream": {
+            "bitrate": 2304000,
+            "channels": 1,
+            "codec": "pcm_bluray",
+            "index": 0,
+            "isdefault": false,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "2c8ab1a1eefeb1fe68ab17917bba6733 （外挂）"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1492,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2236894.667190919,
+            "player_time_started": 2236894.687389764,
+            "player_time_completed": 2236894.689902714,
+            "caching_started": 2236894.689923713,
+            "caching_completed": 2236894.704935084,
+            "decoder_started": 2236894.759211373,
+            "decoder_completed": 2236894.759802383,
+            "sample_completed": 2236894.75980655
+          }
+        }
+      ],
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "record": {
+      "test": {
+        "title": "Rashomon",
+        "tmdb_id": 548,
+        "kind": "movie",
+        "year": 1950
+      },
+      "prior_request": "a7e677aec497436a8401702f88fb09fb",
+      "started": 2236759.817905181,
+      "home": {
+        "generation": 30,
+        "intent": 3,
+        "retired_generation": 29,
+        "observed_at": 2236760.68649029
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2236760.687265768,
+      "picker": {
+        "window": 13001,
+        "generation": 31,
+        "intent": 3,
+        "tmdb_id": 548,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2236763.026315732,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Rashomon 1950 CC BluRay REMUX 1080p AVC LPCM1.0-CHD.ts",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "23.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "3097fa83c8d77d33739350fd48bb847716632ee93e934acc66b48289093b70a6",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2236817.969419428,
+      "request_id": "dff71e6fe16c4e5ea818a710b532e641",
+      "selection_identity": "transport:a0ad09366d2d4c7ba11aa58034f71d3a33b027739fcd6ab3f7995d7a99b53c3d",
+      "native_instance": "3eb5dec9-8a56-4079-b6eb-d2adcb70dd27",
+      "first_av_observed_at": 2236830.86521856,
+      "select_to_av_observed_seconds": 12.895799132063985
+    },
+    "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+    "wall_seconds": 30.319,
+    "play_seconds": 30.322,
+    "decoder": "vdec channel 0 statistics:\n  device name : ammvdec_h264-00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 6\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 2305\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+    "crashes": [
+      "kodi_crashlog_20261012021405.log",
+      "kodi_crashlog_20261012135249.log",
+      "kodi_crashlog_20261019200619.log",
+      "kodi_crashlog_20261020222956.log"
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "rashomon",
+  "operation": "observe",
+  "attempt": 1,
+  "regression_attempt": false
+}

@@ -106,6 +106,16 @@ def _manual_source_limit(sources, limit):
     return sources[:limit]
 
 
+class _CardUpdate:
+    """Change fields on the retained native ListItem, never rebind the list."""
+    def __init__(self, item):
+        self.item = item
+
+    def setProperty(self, key, value):
+        if self.item.getProperty(key) != value:
+            self.item.setProperty(key, value)
+
+
 def _has_chinese_candidate(source):
     from lib.utils.general.cinema_source_rank import chinese_subtitle_preference
     return source_has_chinese_subtitles(source) or bool(chinese_subtitle_preference(source)[0])
@@ -200,6 +210,11 @@ class SourceSelect(BaseWindow):
         self._auto_select_pending = False  # Manual source selection is product policy.
 
     def onInit(self) -> None:
+        # Kodi recreates controls when a closed resolver returns to this dialog.
+        self._rendered_cards = {}
+        self._rendered_keys = []
+        self._quality_items = {}
+        self._quality_keys = []
         self.setProperty("playback_error", self.last_error)
         theme_index = get_setting("source_select_theme", "0")
         theme = THEMES.get(str(theme_index), THEMES["0"])
@@ -210,6 +225,7 @@ class SourceSelect(BaseWindow):
         self.setProperty("style.card_accent", theme["card_accent"])
 
         self.display_list: xbmcgui.ControlList = self.getControlList(1000)
+        self.getControl(1300).reset()  # Once per actual window opening.
         if getattr(self, 'source_session', None):
             # Render one current snapshot before accepting GUI focus receipts.
             # selectItem is queued; reading the old native selection here would
@@ -233,17 +249,27 @@ class SourceSelect(BaseWindow):
 
     def populate_qualities_header(self):
         qualities_list = self.getControl(1300)
-        current = qualities_list.getSelectedItem()
-        selected = current.getProperty('quality') if current else '__all__'
-        qualities_list.reset()
+        items = getattr(self, '_quality_items', {})
+        keys = getattr(self, '_quality_keys', [])
+        desired = _quality_tabs(self.sources)
+        wanted = {key for _, key, _ in desired}
+        for position in range(len(keys) - 1, -1, -1):
+            if keys[position] not in wanted:
+                items.pop(keys.pop(position))
+                qualities_list.removeItem(position)
         self.setProperty("quality_item_width", '200')
-        for display, key, count in _quality_tabs(self.sources):
+        for display, key, count in desired:
             label = f"{display} ({count})"
-            list_item = xbmcgui.ListItem(label)
-            list_item.setProperty("quality", key)
-            qualities_list.addItem(list_item)
-        keys = [key for _, key, _ in _quality_tabs(self.sources)]
-        qualities_list.selectItem(keys.index(selected) if selected in keys else 0)
+            if key in items:
+                if items[key].getLabel() != label:
+                    items[key].setLabel(label)
+            else:
+                list_item = xbmcgui.ListItem(label)
+                list_item.setProperty("quality", key)
+                qualities_list.addItem(list_item)
+                items[key] = list_item
+                keys.append(key)
+        self._quality_items, self._quality_keys = items, keys
 
     def doModal(self) -> bool:
         from lib.native_support import available
@@ -390,11 +416,9 @@ class SourceSelect(BaseWindow):
         status = self.source_session.status()
         if not force and status['revision'] == self._source_revision:
             return
-        # Native initial focus is not a user selection. Until the first input,
-        # newly ranked results may replace the provisional first recommendation.
-        # A restored/captured card or actual navigation remains pinned by key.
-        preserve_focus = (getattr(self, '_source_interacted', False)
-                          or self.source_session.focus_key is not None)
+        # Once a card is visible, provider arrivals must not steal its focus.
+        # Recommendation badges can change without moving/rebinding old cards.
+        preserve_focus = bool(self.list_sources)
         if capture_focus and self.list_sources and preserve_focus:
             item = self.display_list.getSelectedItem()
             if item:
@@ -409,8 +433,8 @@ class SourceSelect(BaseWindow):
         self.populate_qualities_header()
         if self.filter_applied and getattr(self, '_filter_spec', None):
             self.filtered_sources = self._apply_source_filter(*self._filter_spec)
-        self.populate_sources_list()
-        if self.list_sources:
+        self.populate_sources_list(incremental=not force)
+        if self.list_sources and not capture_focus:
             keys = [self.source_session.key(source) for source in self.list_sources]
             position = keys.index(self.source_session.focus_key) if self.source_session.focus_key in keys else min(
                 self.source_session.focus_position, len(keys) - 1)
@@ -706,8 +730,7 @@ class SourceSelect(BaseWindow):
             else:
                 self.source_session.reopen()
 
-    def populate_sources_list(self) -> None:
-        self.display_list.reset()
+    def populate_sources_list(self, incremental=False) -> None:
         self.list_sources = (
             self.filtered_sources
             if self.filter_applied and self.filtered_sources is not None
@@ -715,6 +738,23 @@ class SourceSelect(BaseWindow):
         )
         if getattr(self, 'source_session', None):
             self.list_sources = _manual_source_limit(self.list_sources, self.source_session.limit)
+        key_for = (self.source_session.key if getattr(self, 'source_session', None)
+                   else lambda source: str(id(source)))
+        cards = getattr(self, '_rendered_cards', {}) if incremental else {}
+        keys = list(getattr(self, '_rendered_keys', [])) if incremental else []
+        if not incremental:
+            self.display_list.reset()  # Explicit filter/reopen, never provider publication.
+        desired = {key_for(source): source for source in self.list_sources}
+        selected = self.display_list.getSelectedItem() if incremental else None
+        selected_key = selected.getProperty('source_key') if selected else None
+        # Remove only withdrawn/superseded rows (e.g. exact BT -> 115 duplicate).
+        # Every surviving card keeps its native object and relative position.
+        for position in range(len(keys) - 1, -1, -1):
+            if keys[position] not in desired:
+                cards.pop(keys.pop(position))
+                self.display_list.removeItem(position)
+        keys += [key for key in desired if key not in cards]
+        self.list_sources = [desired[key] for key in keys]
         aliases = {}
         with contextlib.suppress(Exception):
             aliases = cache.get(STREMIO_ADDON_ALIASES_KEY) or {}
@@ -729,7 +769,13 @@ class SourceSelect(BaseWindow):
         menu_items = []
         for position, source in enumerate(self.list_sources):
             info = parse_title_info(source.title)
-            menu_item = xbmcgui.ListItem(label=source.title)
+            key = key_for(source)
+            if key not in cards:
+                cards[key] = xbmcgui.ListItem(label=source.title)
+                menu_items.append(cards[key])
+            elif cards[key].getLabel() != source.title:
+                cards[key].setLabel(source.title)
+            menu_item = _CardUpdate(cards[key])
             if getattr(self, 'source_session', None):
                 menu_item.setProperty('source_key', self.source_session.key(source))
             menu_item.setProperty("title", source.title)
@@ -823,8 +869,15 @@ class SourceSelect(BaseWindow):
             menu_item.setProperty("recommendation_status", recommendation_label(recommended, preference['caution'], status))
             menu_item.setProperty("isPack", str(source.isPack))
 
-            menu_items.append(menu_item)
-        self.display_list.addItems(menu_items)
+        if menu_items:
+            self.display_list.addItems(menu_items)
+        self._rendered_cards, self._rendered_keys = cards, keys
+        if incremental and selected_key in keys:
+            # Usually no selection command at all: do not restart scrolling or
+            # focus animation when a provider merely adds results at the end.
+            position = keys.index(selected_key)
+            if self.display_list.getSelectedPosition() != position:
+                self.display_list.selectItem(position)
 
     def _refresh_sources_list(self) -> None:
         if not hasattr(self, "display_list"):

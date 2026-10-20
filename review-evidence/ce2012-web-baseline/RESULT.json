@@ -1,0 +1,325 @@
+{
+  "schema": 1,
+  "reference_head": "28819d202b6d4b4ff00367e46c37d8542a1b35af",
+  "scope": "Production Python policies with explicit Kodi/provider IO doubles; real temporary files, processes and OS locks; no device certification",
+  "source": {
+    "git": {
+      "kind": "git-checkout",
+      "commit": "ee65742bfcbaf08831f70306faed11bd1f8d6cc6",
+      "tree": "8444201262d9ab298c901a0ed6f599b9b13735eb",
+      "tracked_changes": ""
+    },
+    "files": [
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py",
+        "bytes": 10538,
+        "git_blob_sha1": "53f1c08afeb8d4cc552203a10eb525e03ade6773",
+        "sha256": "a85fc163d02faf6225af9a2a7bfe30218508e3225bc2c4e5d97c1d21adeedc8d",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py",
+        "bytes": 8869,
+        "git_blob_sha1": "270bffce9ec1f9ea1b8672524864b7a4c7800043",
+        "sha256": "b397f172d8efe6e37b12636b68da160c049500365c4ba568a0de72ef07c434c1",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/runtime.py",
+        "bytes": 5872,
+        "git_blob_sha1": "22e1caffdb652369e04e1b58d1c154e26c6c9c9f",
+        "sha256": "05204023ebd1c221d1983d314957a1259d78d809dbc7052df10c78f0ae1bfb70",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/instance_lock.py",
+        "bytes": 1253,
+        "git_blob_sha1": "307ee23c528e83bc98d73c26e27a42f3d3061bc2",
+        "sha256": "e3395ade1e550e51721d9cc501df09bb5950cbce516b0903546c394caa7a82a7",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/updates.py",
+        "bytes": 33136,
+        "git_blob_sha1": "30826e7d465cf6d7a523a9da0546addda70b2f59",
+        "sha256": "9dcdcad8030f40036af7d22ba1f970cd12da9480331267f943daf65c096cb9ff",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+        "bytes": 9266,
+        "git_blob_sha1": "4686135a4cacb72bd077d9f52f3c0d43c84b3e6c",
+        "sha256": "64ff60665ca2347699d08f8c93cd174e9ce701cab94b7fd1a301e85718a4f742",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/playback.py",
+        "bytes": 3711,
+        "git_blob_sha1": "4e67f65734aaaa7454525ce54602ca707e6810ff",
+        "sha256": "e547c552cf9369310ded619614e5c4fd1ad9a3485145ce06f593661f3bd4357b",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/kodi.py",
+        "bytes": 1807,
+        "git_blob_sha1": "d15acf7e2ebf0d93ee848fd2452e712e7b2c8077",
+        "sha256": "c15b58052d2783f670c17755c37293121dacd89faac5b53b424a2d914c136c83",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+        "bytes": 12749,
+        "git_blob_sha1": "6b346016b779ad79151f0909ffc2bf2c09f0716b",
+        "sha256": "7b8ec78342c2e0d386de129fb52605cacf6f51fbd0a522162ebba6aef103f0fd",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/plugin.video.bobbi/lib/boot_gate.py",
+        "bytes": 570,
+        "git_blob_sha1": "b9d3b1b0805276befd33980ceda2251931b381fc",
+        "sha256": "89e659c8f74b09d846c0d20f2053c10fc697392a962eefbd4de3a76ccdd677a2",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/plugin.video.bobbi/service.py",
+        "bytes": 509,
+        "git_blob_sha1": "0faa6834c7fb0f3d6c1b0cc42f06d7379031f332",
+        "sha256": "b2798840e40a8cf4985b094484a909ee1716ba48f2b6e6b066fe72ffd78168d6",
+        "matches_reference": true
+      },
+      {
+        "path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+        "bytes": 2045,
+        "git_blob_sha1": "a410df87ce6f0d48461e8dfc11f66150abf74dc1",
+        "sha256": "5aa89cd58211398d09d4fc2dd4f74d94151cc6095d8c04e01f9dfc1af41d88db",
+        "matches_reference": true
+      },
+      {
+        "path": "tools/ce_playback_trial.py",
+        "bytes": 4761,
+        "git_blob_sha1": "f88b77028ef5647024510718f93fcd1dae448aa1",
+        "sha256": "a5c5a3761c8d702905f8a4add1e1ae0f8996bfdbbad7a187aa47ae093b5019bf",
+        "matches_reference": true
+      },
+      {
+        "path": "tools/ce_trial_remote.py",
+        "bytes": 35869,
+        "git_blob_sha1": "237cdcc067fc8be384b386a5b5fff36f55ea02d9",
+        "sha256": "55c143bda3e1b9ba173c673973ce2fa332ea6948c14975b33c75ff7e8bbf7252",
+        "matches_reference": true
+      },
+      {
+        "path": "tools/build_release.py",
+        "bytes": 8217,
+        "git_blob_sha1": "7c70a8dc5b4a7346ca14b132b1309cea21ae8acc",
+        "sha256": "2bc6c6886618e72f5f19c8da7b4f4136668f12fa99af57cd268f766bf250c5ed",
+        "matches_reference": true
+      },
+      {
+        "path": "tools/build_ce_entry.py",
+        "bytes": 3892,
+        "git_blob_sha1": "10fc249f444445d897bd9f3fbd14fa6bd2e4bfc9",
+        "sha256": "c13a96fd810be50752807cf1a841eecc199c0da9d669a7dcde71de687afb0b8f",
+        "matches_reference": true
+      },
+      {
+        "path": "tools/ce_standard_fixture_remote.py",
+        "bytes": 4280,
+        "git_blob_sha1": "b3c33760cad456a45f0eb2dcff3d08b56165eeb4",
+        "sha256": "9627a5d46f8c1ccb2850556a12976e1594948126a40c959e1e581210ac54ba11",
+        "matches_reference": true
+      },
+      {
+        "path": "release/source-inventory.json",
+        "bytes": 150575,
+        "git_blob_sha1": "d537054096169111ad0d117f703d48d96b075700",
+        "sha256": "6da93bc6fe96f23e6e2f0f67a5fb6f3bc5ed23fd4297efc55ce0676dc32dac5c",
+        "matches_reference": true
+      }
+    ],
+    "all_match_reference": true
+  },
+  "environment": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "packages": {
+      "pytest": "9.1.1",
+      "cryptography": "50.0.1",
+      "requests": "2.34.2"
+    }
+  },
+  "count": 15,
+  "passed": 8,
+  "failed": 7,
+  "errors": 1,
+  "exit_codes": {
+    "installer": 1,
+    "playback": 1,
+    "trial": 1
+  },
+  "tests": [
+    {
+      "suite": "installer",
+      "id": "INSTALL-BOOT-GATE",
+      "expected": "provider starts while its verified activation is pending, or reopening repairs it",
+      "actual": {
+        "events": [
+          "enable_provider",
+          "service_exit:0"
+        ],
+        "phase": "complete",
+        "provider_enabled": true,
+        "reopening_recovered": false
+      },
+      "passed": false
+    },
+    {
+      "suite": "installer",
+      "id": "INSTALL-BOOT-AFTER-ENABLED-PROCESS-LOSS",
+      "expected": "an already-enabled provider runs after reboot plus pending-activation recovery",
+      "actual": {
+        "events": [
+          "reboot_service_exit:0"
+        ],
+        "phase": "complete",
+        "provider_enabled": true,
+        "reopening_recovered": true
+      },
+      "passed": false
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-BLOCK-STAGED",
+      "expected": "unverified file vector cannot start the provider",
+      "actual": {
+        "phase": "staged",
+        "events": [
+          "service_exit:0"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-BLOCK-SWITCHING",
+      "expected": "unverified file vector cannot start the provider",
+      "actual": {
+        "phase": "switching",
+        "events": [
+          "service_exit:0"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-BLOCK-RESTORING",
+      "expected": "unverified file vector cannot start the provider",
+      "actual": {
+        "phase": "restoring",
+        "events": [
+          "service_exit:0"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-RESTORED-HOST-PENDING",
+      "expected": "verified restored files satisfy both the old gate and the actual service gate",
+      "actual": {
+        "events": [
+          "host_started"
+        ],
+        "old_gate": true,
+        "host_pending": "restore"
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-NOOP-ENABLE",
+      "expected": "an acknowledged but ineffective Kodi enable cannot complete the installation",
+      "actual": {
+        "error": "HOST_ACTIVATION_NOT_CONFIRMED",
+        "phase": "activation_pending"
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "INSTALL-STALE-RUNTIME",
+      "expected": "OS-released runtime ownership permits recovery after an actual process loss",
+      "actual": {
+        "child_exit": 73,
+        "marker_after_kill": true,
+        "exclusive_runtime_lease_available": true,
+        "attempts": [
+          {
+            "error": "CINEMA_SERVICE_NOT_STOPPED"
+          },
+          {
+            "error": "CINEMA_SERVICE_NOT_STOPPED"
+          }
+        ],
+        "phase": "staged",
+        "marker_remaining": true
+      },
+      "passed": false
+    },
+    {
+      "suite": "installer",
+      "id": "CONTROL-ACTIVE-RUNTIME-OWNER",
+      "expected": "quiesce does not delete the registration or admit replacement while its OS lease is held",
+      "actual": {
+        "lease_busy": true,
+        "error": "CINEMA_SERVICE_NOT_STOPPED",
+        "marker_unchanged": true,
+        "process_alive": true
+      },
+      "passed": true
+    },
+    {
+      "suite": "installer",
+      "id": "INSTALL-ENABLE-SNAPSHOT-UNKNOWN",
+      "expected": "transient state-read error aborts snapshot capture or preserves the original enable vector",
+      "actual": {
+        "snapshot_error": null,
+        "originally_enabled_provider": true,
+        "saved_enabled_provider": false,
+        "final_enabled_provider": false,
+        "all_old_files_restored": true,
+        "phase": "restored"
+      },
+      "passed": false
+    },
+    {
+      "suite": "playback",
+      "id": "test_invalid_progress_sample_cannot_refresh_eof_evidence",
+      "passed": false,
+      "assertion": "AssertionError: Invalid 0/0 refreshed stale end-position evidence\nassert not True"
+    },
+    {
+      "suite": "playback",
+      "id": "test_ready_next_media_is_not_discarded_by_optional_subtitle_delay",
+      "passed": false,
+      "assertion": "AssertionError: Playable next media was lost behind subtitle IO\nassert 0 == 1\n +  where 0 = len([])\n +    where [] = namespace(owner=<bobbi_platform.standard_session.StandardSession object at 0x0000015D3EED4950>, module=<module 'indepe...'https://media.example/S01E02.mkv', 'mode': 'tv', 'tv_data': {'season': 1, 'episode': 2}, 'selection_policy': 'exact'}).opened"
+    },
+    {
+      "suite": "playback",
+      "id": "test_fresh_valid_eof_continues_exact_candidate_once",
+      "passed": true
+    },
+    {
+      "suite": "playback",
+      "id": "test_genuinely_missing_candidate_never_fabricates_continuation",
+      "passed": true
+    },
+    {
+      "suite": "trial",
+      "id": "HARNESS",
+      "passed": false,
+      "error": "Trial probe did not produce a valid receipt"
+    }
+  ]
+}

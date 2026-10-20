@@ -36,13 +36,18 @@ def call(action, body, timeout=3):
         raise ValueError('Local reply too large')
     result = json.loads(reply)
     if result.get('ok') is not True:
+        if result.get('error') == 'unavailable':
+            raise OSError('Local service temporarily unavailable')
         raise ValueError('Local service rejected request')
     return result['result']
 
 
 class Server(ThreadingMixIn, HTTPServer):
-    daemon_threads = True
-    block_on_close = False
+    # A disabled addon is not quiescent until its admitted requests finish.
+    # Socket reads and dispatch IO already have finite deadlines. The installer
+    # keeps its own bounded wait and refuses replacement while this lease lives.
+    daemon_threads = False
+    block_on_close = True
     allow_reuse_address = False
 
     def process_request(self, request, address):
@@ -86,6 +91,10 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(request, dict) or set(request) != {'action', 'body'}:
                 raise ValueError
             response = {'ok': True, 'result': self.server.dispatch(request['action'], request['body'])}
+        except OSError:
+            # Fixed category only. Preserve unavailable vs explicit rejection
+            # so read-only callers may retry; never send exception text/URLs.
+            response = {'ok': False, 'error': 'unavailable'}
         except Exception:
             response = {'ok': False}
         try:
@@ -139,7 +148,7 @@ class Runtime:
             if name and os.path.exists(name):
                 os.unlink(name)
 
-    def close(self):
+    def close(self, release_lease=True):
         if self.closed:
             return
         self.closed = True
@@ -154,4 +163,5 @@ class Runtime:
                 self.path.unlink()
         except (OSError, ValueError, KeyError):
             pass
-        self.lease.close()
+        if release_lease:
+            self.lease.close()

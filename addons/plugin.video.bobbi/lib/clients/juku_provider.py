@@ -101,6 +101,7 @@ def resolve_source(source, item):
     except ShareError as error:
         messages = {'login_required': '115 登录已失效，请重新授权自己的网盘账号',
                     'share_unavailable': '这个分享已失效，请选择其他来源',
+                    'share_revoked': '这个分享已被取消，请选择其他来源',
                     'identity_changed': '分享文件已变化，请刷新片源',
                     'refresh_required': '请刷新片源后重新选择文件'}
         raise RuntimeError(messages.get(error.code, '115 分享暂时无法解析，请重试或选择其他来源')) from None

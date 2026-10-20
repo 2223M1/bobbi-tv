@@ -12,6 +12,7 @@ def ready():
     try:
         if path.is_symlink() or path.stat().st_size > 1024 * 1024:
             return False
-        return json.loads(path.read_text(encoding='utf-8')).get('phase') in ('complete', 'restored')
+        return json.loads(path.read_text(encoding='utf-8')).get('phase') in (
+            'activation_pending', 'restore_pending', 'complete', 'restored')
     except (OSError, ValueError):
         return False

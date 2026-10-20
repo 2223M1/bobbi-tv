@@ -235,6 +235,9 @@ def test_actual_kodi_restore_restores_exact_vector_without_touching_other_addons
     host = KodiHost.__new__(KodiHost)
     host.details = lambda name: dict(enabled=name in enabled)
     host.skin = lambda: skin[0]
+    # This fixture models Kodi settings only; live owner readiness has its own
+    # real HTTP/queue tests, not a filesystem or enabled-flag substitute.
+    host.ensure_running = lambda: None
     host.restore('skin.user.original', desired)
     assert enabled == set(desired) | {'plugin.user.other'}
     assert skin == ['skin.user.original']
