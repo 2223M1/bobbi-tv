@@ -38,13 +38,18 @@ def _subtitle_failure(reason):
         'SUBTITLE_CONTEXT_UNAVAILABLE': {'MEDIA_CONTEXT_MISSING'},
         'SUBTITLE_SERVICE_UNAVAILABLE': {'SUBTITLE_IPC_UNAVAILABLE', 'SUBTITLE_IPC_TIMEOUT',
             'SUBTITLE_IPC_REJECTED', 'SUBTITLE_IO_REAP_FAILED', 'SUBTITLE_IO_BUSY',
-            'SUBTITLE_IO_PYTHON_UNAVAILABLE', 'SUBTITLE_IO_LIFETIME_FAILED'},
+            'SUBTITLE_IO_PYTHON_UNAVAILABLE', 'SUBTITLE_IO_LIFETIME_FAILED', 'SUBTITLE_ACCOUNT_CHANGED'},
         'MANUAL_PRESERVED': {'MANUAL_PRESERVED'},
     }
     if isinstance(reason, str):
         for status, known in groups.items():
             if reason in known:
                 return {'status': status, 'reason': reason}
+        # Unknown HTTP error codes still prove a provider response, not an
+        # empty search or an unknown local failure. Do not infer auth, quota or
+        # retry permission from nonstandard codes such as the observed 493.
+        if re.fullmatch(r'ASSRT_HTTP_[45][0-9]{2}', reason):
+            return {'status': 'SUBTITLE_PROVIDER_UNAVAILABLE', 'reason': reason}
     # Arbitrary provider messages, URLs and exception text cannot cross this
     # presentation boundary. Unknown failure is not proof of an empty search.
     return {'status': 'SUBTITLE_LOOKUP_UNAVAILABLE', 'reason': 'SUBTITLE_REASON_UNKNOWN'}
@@ -70,6 +75,7 @@ class PlaybackAuthority:
         self.continuation = None
         self.reserved_continuation = False
         self.subtitle_pending = None
+        self.subtitle_completed = None
         self.start_receipt = None
         self.start_receipt_consumed = False
         self.loading_close = None
@@ -154,6 +160,15 @@ class PlaybackAuthority:
             self.start_receipt_consumed = True
         if row['phase'] == 'TERMINAL':
             self.terminal_seen_at = monotonic()
+            # Only immutable native receipts reach here. ReceiptHistory already
+            # deduplicates terminal events; log before cancellation can revoke
+            # client reads. Diagnostic failure must never change lifecycle rules.
+            diagnostic = getattr(self.native, 'terminal_diagnostic', None)
+            if diagnostic is not None:
+                try:
+                    diagnostic(row['request_id'], row['native_instance'], row['reason'])
+                except Exception:
+                    pass
             # Startup may fail before the service polls OPEN. An immutable
             # matching terminal can establish OPEN, never invent AV_STARTED.
             desired = owner.desired
@@ -366,7 +381,8 @@ class PlaybackAuthority:
                 raise ValueError('Actual resolved transport digest required, not media hash')
             if self.bound_url is not None and self.bound_url != url_hash:
                 return {'bound': False}
-            accepted = owner.bind_file(*args, message.get('selection_identity'), message.get('file_identity'))
+            accepted = owner.bind_file(*args, message.get('selection_identity'), message.get('file_identity'),
+                                      message.get('file_evidence', 'AUTO_VERIFIED_FILE'))
             if accepted:
                 self.bound_url = url_hash
             return {'bound': accepted}
@@ -493,7 +509,8 @@ class PlaybackAuthority:
             identity = message.get('selection_identity')
             if not isinstance(identity, str) or not identity or len(identity) > 1024:
                 raise ValueError('Exact next-release identity required')
-            if self.continuation or not owner._current(*args):
+            if (self.continuation or not owner._current(*args)
+                    or owner.desired['file_evidence'] == 'USER_CONFIRMED_FILE'):
                 return {'authorized': False}
             if operation == 'authorize_next':
                 row = self._continuation_receipt(row)
@@ -620,6 +637,9 @@ class PlaybackAuthority:
                 return {'status': 'INTENT_PROTOCOL_UNAVAILABLE'}
         if captured['subtitle_intent'] != captured['subtitle_auto_intent']:
             return {'status': 'MANUAL_PRESERVED'}
+        completed_key = (instance, args[2], captured['subtitle_intent'], self.reservation_epoch)
+        if self.subtitle_completed and self.subtitle_completed[0] == completed_key:
+            return dict(self.subtitle_completed[1])
         context_setter = getattr(self.native, 'set_subtitle_context', None)
         if context_setter is not None and context is not None:
             context_setter(captured, context)
@@ -633,8 +653,11 @@ class PlaybackAuthority:
                 return {'status': 'STALE'}
             candidate = (self.subtitle_pending and self.subtitle_pending.get('candidate') is True
                          and self.subtitle_pending['claim'][:2] == (instance, captured.get('subtitle_file_sha256')))
-            return {'status': ('CANDIDATE_LOADED' if candidate else 'CONFIRMED') if catalog.get('visible') is True else 'CONTROL_NOT_CONFIRMED',
-                    'subtitle_sha256': captured.get('subtitle_file_sha256')}
+            result = {'status': ('CANDIDATE_LOADED' if candidate else 'CONFIRMED') if catalog.get('visible') is True else 'CONTROL_NOT_CONFIRMED',
+                      'subtitle_sha256': captured.get('subtitle_file_sha256')}
+            if catalog.get('visible') is True:
+                self.subtitle_completed = (completed_key, result)
+            return result
         streams = catalog.get('streams')
         if not isinstance(streams, list) or len(streams) > 256:
             return {'status': 'CATALOG_UNAVAILABLE'}
@@ -651,10 +674,16 @@ class PlaybackAuthority:
                 or not self.owner.owns_instance(*args, instance)):
             return {'status': 'STALE'}
         if catalog.get('current_index') == track['index'] and catalog.get('visible') is True:
+            cancel_lookup = getattr(self.native, 'cancel_external_subtitle_lookup', None)
+            if cancel_lookup is not None:
+                cancel_lookup()
             self.subtitle_pending = None
-            return {'status': 'CONFIRMED', 'stream_key': track['stream_key']}
+            result = {'status': 'CONFIRMED', 'stream_key': track['stream_key']}
+            self.subtitle_completed = (completed_key, result)
+            return result
         claim = (instance, track['stream_key'], captured['subtitle_intent'], self.reservation_epoch)
-        if self.subtitle_pending and self.subtitle_pending['claim'] == claim:
+        if (self.subtitle_pending and self.subtitle_pending['claim'][0] == instance
+                and self.subtitle_pending['claim'][2:] == claim[2:]):
             return {'status': 'QUEUED' if monotonic() - self.subtitle_pending['submitted'] < 3.0
                     else 'CONTROL_NOT_CONFIRMED', 'stream_key': track['stream_key']}
         command = dict(native_instance=instance, request_id=args[2],
@@ -663,6 +692,9 @@ class PlaybackAuthority:
         accepted = self.native.subtitle(command)
         if isinstance(accepted, dict) and accepted.get('queued') is True:
             self.subtitle_pending = dict(claim=claim, submitted=monotonic(), command_id=command['command_id'])
+            cancel_lookup = getattr(self.native, 'cancel_external_subtitle_lookup', None)
+            if cancel_lookup is not None:
+                cancel_lookup()
         return {'status': 'QUEUED' if isinstance(accepted, dict) and accepted.get('queued') is True
                 else 'CONTROL_UNAVAILABLE', 'stream_key': track['stream_key']}
 
@@ -681,7 +713,10 @@ class PlaybackAuthority:
         if any(result.get(k) != captured[k] for k in ('native_instance', 'request_id', 'subtitle_intent')):
             return {'status': 'STALE'}
         file = result.get('file')
-        root = '/storage/.kodi/userdata/addon_data/plugin.video.bobbi/subtitle-browser/'
+        import os
+        from pathlib import Path
+        from .runtime_paths import ProfilePath
+        root = str(Path(ProfilePath('subtitle-browser'))) + os.sep
         if (not isinstance(file, dict) or set(file) != {'path', 'sha256', 'bytes'}
                 or not isinstance(file['path'], str) or not file['path'].startswith(root)
                 or not re.fullmatch(r'[0-9a-f]{32}\.(?:srt|ass|ssa|vtt)', file['path'][len(root):])
@@ -695,12 +730,17 @@ class PlaybackAuthority:
                 or not self.owner.owns_instance(*args, instance)):
             return {'status': 'STALE'}
         claim = (instance, file['sha256'], captured['subtitle_intent'], self.reservation_epoch)
-        if self.subtitle_pending and self.subtitle_pending['claim'] == claim:
+        if (self.subtitle_pending and self.subtitle_pending['claim'][0] == instance
+                and self.subtitle_pending['claim'][2:] == claim[2:]):
             return {'status': 'QUEUED' if monotonic() - self.subtitle_pending['submitted'] < 3.0
                     else 'CONTROL_NOT_CONFIRMED'}
         command = dict(file, native_instance=instance, request_id=args[2],
             selection_epoch=self.reservation_epoch, subtitle_intent=captured['subtitle_intent'],
             command_id=uuid4().hex)
+        if result.get('account_scope') is not None:
+            current_account = getattr(self.native, 'subtitle_candidate_current', None)
+            if current_account is None or current_account(result) is not True:
+                return {'status': 'STALE'}
         accepted = self.native.subtitle_file(command)
         if isinstance(accepted, dict) and accepted.get('queued') is True:
             self.subtitle_pending = dict(claim=claim, submitted=monotonic(), command_id=command['command_id'],

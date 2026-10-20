@@ -1,0 +1,235 @@
+{
+  "mode": "health",
+  "timestamp": 1792479409.2223463,
+  "players": [],
+  "gui": {
+    "currentcontrol": {
+      "label": "奇巧计程车"
+    },
+    "currentwindow": {
+      "id": 10000,
+      "label": "主界面"
+    },
+    "skin": {
+      "id": "skin.bobbi.cinema",
+      "name": "bobbi TV"
+    }
+  },
+  "application": {
+    "name": "Kodi",
+    "version": {
+      "major": 21,
+      "minor": 3,
+      "revision": "e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+      "tag": "stable"
+    }
+  },
+  "native": {
+    "fullscreen_instance": "60d6bda3-5e30-434b-a234-68696139c6cb",
+    "gui_generation": 30,
+    "gui_user_intent": 0,
+    "playback": null,
+    "protocol": 1,
+    "selection_epoch": 2,
+    "windows": []
+  },
+  "services": {
+    "kodi.service": "active",
+    "bobitv-preparation.service": "inactive"
+  },
+  "programs": {
+    "plugin.video.bobbi": "0.1.5",
+    "plugin.video.bobbi.torrent": "0.1.2",
+    "plugin.video.jacktorr": "1.2.2+am6b.317",
+    "script.module.bobbi.core": "0.1.11",
+    "script.module.bobbi.platform": "0.1.5"
+  },
+  "program_generation": {
+    "sequence": 2026102006,
+    "versions": {
+      "plugin.video.bobbi": "0.1.5",
+      "plugin.video.bobbi.library": "0.1.0",
+      "plugin.video.bobbi.torrent": "0.1.2",
+      "repository.bobbi": "0.1.0",
+      "resource.uisounds.bobbi-modern": "2026.9.6.0",
+      "script.bobbi.opensubtitles": "0.1.0",
+      "script.bobbi.setup": "0.1.2",
+      "script.bobbi.start": "0.1.0",
+      "script.module.bobbi.catalog": "0.1.0",
+      "script.module.bobbi.core": "0.1.11",
+      "script.module.bobbi.mdsub": "0.1.0",
+      "script.module.bobbi.platform": "0.1.5",
+      "skin.bobbi.cinema": "0.1.0"
+    }
+  },
+  "torrent_connection": {
+    "legacy_exists": true,
+    "legacy_loopback": true,
+    "legacy_fields": [
+      "buffer_timeout",
+      "metadata_timeout",
+      "service_host",
+      "service_login",
+      "service_password",
+      "service_port",
+      "ssl_connection"
+    ],
+    "legacy_auth_present": false,
+    "new_config_exists": true,
+    "schema": 1,
+    "auth_present": false,
+    "metadata_seconds": 30,
+    "buffering_seconds": 90,
+    "existing_engine": "MatriX.144.1"
+  },
+  "runtime-paths.json": {
+    "schema": 1,
+    "subtitle_abi": "ce-f9",
+    "native_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b"
+  },
+  "bobi-prepared.json": {
+    "schema": 1,
+    "entry_count": 16,
+    "source_count": 62,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "bobi-direct.json": {
+    "schema": 1,
+    "entry_count": 3,
+    "source_count": 0,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "host_account_status": {
+    "authenticated": true,
+    "epoch": 1
+  },
+  "current_prepared_database_present": true,
+  "trial_subtitle_tasks": [
+    {
+      "media_id": "tmdb:tv:68272:s1:e1",
+      "state": "READY_NOT_VISUAL_PROOF",
+      "attempts": 1,
+      "reason": null,
+      "stage": null,
+      "matcher_policy": null
+    },
+    {
+      "media_id": "tmdb:tv:68272:s1:e2",
+      "state": "READY_NOT_VISUAL_PROOF",
+      "attempts": 1,
+      "reason": null,
+      "stage": null,
+      "matcher_policy": null
+    },
+    {
+      "media_id": "tmdb:tv:68272:s1:e3",
+      "state": "READY_NOT_VISUAL_PROOF",
+      "attempts": 1,
+      "reason": null,
+      "stage": null,
+      "matcher_policy": null
+    }
+  ],
+  "trial_subtitle_fonts": [
+    {
+      "media_id": "tmdb:tv:68272:s1:e1",
+      "state": "FONT_INPUTS_INCOMPLETE",
+      "attempts": 1,
+      "reason": "MISSING_FONTS",
+      "font_count": 5
+    },
+    {
+      "media_id": "tmdb:tv:68272:s1:e2",
+      "state": "FONT_INPUTS_INCOMPLETE",
+      "attempts": 1,
+      "reason": "MISSING_FONTS",
+      "font_count": 5
+    },
+    {
+      "media_id": "tmdb:tv:68272:s1:e3",
+      "state": "FONT_INPUTS_INCOMPLETE",
+      "attempts": 1,
+      "reason": "MISSING_FONTS",
+      "font_count": 5
+    }
+  ],
+  "host_status": {
+    "ready": true,
+    "version": "0.1.0",
+    "native_owner": true,
+    "preparation": true,
+    "shares": false
+  },
+  "preparation_ping": {
+    "ok": true,
+    "state": "RUNNING",
+    "component": {
+      "core_api": 1,
+      "core_version": "1.1.15",
+      "ipc_protocol": 3,
+      "capabilities": [
+        "bounded-resolve-v1",
+        "exact-resource-identity-v1",
+        "reconcile-uncertain-submit-v1",
+        "same-release-next-v1",
+        "single-cloud-ledger-v1",
+        "subtitle-binding-v2",
+        "video-context-v1"
+      ]
+    },
+    "current_account": true
+  },
+  "bobbi_stages": [
+    " startup; standard_playback=True"
+  ],
+  "cinema_stages": [
+    "[CINEMA-TERMINAL] NATURAL_EOF",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"YAMTRACK_STOP_BEGIN\", \"monotonic\": 2209199.221271}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"YAMTRACK_STOP_END\", \"monotonic\": 2209199.241796}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"TRACKING_STOP_END\", \"monotonic\": 2209199.242763}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"HISTORY_SAVE_BEGIN\", \"monotonic\": 2209199.242876}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"HISTORY_SAVE_QUEUED\", \"monotonic\": 2209199.275107}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"HISTORY_SAVE_END\", \"monotonic\": 2209199.275286}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"STOP_BOOKKEEPING_END\", \"monotonic\": 2209199.275368}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"NEXT_CONSTRUCT_BEGIN\", \"monotonic\": 2209199.402855}",
+    "[CINEMA-PHASE] {\"request\": \"5330a3524bdf41feada42ea224808b1c\", \"phase\": \"NEXT_CONSTRUCT_END\", \"monotonic\": 2209199.403939}",
+    "[CINEMA-PREPARE-CONTEXT] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"is_torrent\": false, \"info_hash\": null, \"mode\": \"tv\", \"ids_present\": true, \"title_present\": true, \"release_present\": true}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"SESSION_ACTIVATED\", \"monotonic\": 2209199.436215}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"PREPARED_VERIFY_BEGIN\", \"monotonic\": 2209199.448866}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"PREPARED_VERIFY_END\", \"monotonic\": 2209199.900964}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"LIST_ITEM_READY\", \"monotonic\": 2209199.924356}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"VOLUME_GATE_BEGIN\", \"monotonic\": 2209199.92468}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"VOLUME_GATE_END\", \"monotonic\": 2209199.92686}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"PRE_AV_TRACKING_BEGIN\", \"monotonic\": 2209199.927188}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"PRE_AV_TRACKING_END\", \"monotonic\": 2209199.936779}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"PRE_AV_SUBTITLES_BEGIN\", \"monotonic\": 2209199.936939}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"PRE_AV_SUBTITLES_END\", \"monotonic\": 2209199.936997}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"BIND_AND_CLAIM_BEGIN\", \"monotonic\": 2209199.965856}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"BIND_AND_CLAIM_END\", \"monotonic\": 2209200.058066}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"FONT_PREFLIGHT_BEGIN\", \"monotonic\": 2209200.058246}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"FONT_PREFLIGHT_END\", \"monotonic\": 2209201.169246}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"PLAY_ISSUED\", \"monotonic\": 2209201.177849}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"TARGET_VIDEO_OBSERVED\", \"monotonic\": 2209202.495782}",
+    "[CINEMA-HANDOFF303] request=48e0f2dd stage=REQUEST reason=CONDITIONAL_NATIVE_COMMAND attempt=1",
+    "[CINEMA-HANDOFF303] request=48e0f2dd stage=CONFIRM reason=NATIVE_INSTANCE_RECEIPT attempt=1",
+    "[CINEMA-HANDOFF] target video and fullscreen confirmed 48e0f2dd",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"START_HISTORY_BEGIN\", \"monotonic\": 2209202.904859}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"START_HISTORY_END\", \"monotonic\": 2209203.132617}",
+    "[CINEMA-PREPARE] INTENT_ACCEPTED_NOT_CLOUD_READY request=48e0f2dde1a945e39656b44248e263b8",
+    "[CINEMA-NEXT] SAME_VERSION_RESOLVED",
+    "[BOBBI-TERMINAL] request=48e0f2dde1a945e39656b44248e263b8 instance=60d6bda3-5e30-434b-a234-68696139c6cb reason=STOP",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"TERMINAL_RECONCILIATION_BEGIN\", \"monotonic\": 2209291.195829}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"TERMINAL_RECONCILIATION_END\", \"monotonic\": 2209291.207269}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"STOP_BOOKKEEPING_BEGIN\", \"monotonic\": 2209291.207457}",
+    "[CINEMA-TERMINAL] UNKNOWN",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"YAMTRACK_STOP_BEGIN\", \"monotonic\": 2209291.207567}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"YAMTRACK_STOP_END\", \"monotonic\": 2209291.207617}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"TRACKING_STOP_END\", \"monotonic\": 2209291.450409}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"HISTORY_SAVE_BEGIN\", \"monotonic\": 2209291.450769}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"HISTORY_SAVE_END\", \"monotonic\": 2209291.67024}",
+    "[CINEMA-PHASE] {\"request\": \"48e0f2dde1a945e39656b44248e263b8\", \"phase\": \"STOP_BOOKKEEPING_END\", \"monotonic\": 2209291.670475}"
+  ],
+  "python_failures": []
+}

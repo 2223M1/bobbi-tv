@@ -72,7 +72,8 @@ def validate_catalog(body):
 
 
 class DirectQueue:
-    def __init__(self, path, snapshot, account, destination, io, clock=time.time):
+    def __init__(self, path, snapshot, account, destination, io, clock=time.time, account_scope=None):
+        self.account_scope = account_scope
         self.db = sqlite3.connect(str(path), timeout=.1)
         self.db.row_factory = sqlite3.Row
         self.db.execute('PRAGMA journal_mode=WAL')
@@ -197,7 +198,10 @@ class DirectQueue:
             if row['state'] == 'ready':
                 item.update(file=evidence['file'], proof=evidence['proof'], video=evidence['video'])
             entries.append(item)
-        data = encode(dict(schema=1, account=self.account, destination=self.destination, entries=entries)).encode()
+        document = dict(schema=1, account=self.account, destination=self.destination, entries=entries)
+        if self.account_scope is not None:
+            document['account_scope'] = self.account_scope
+        data = encode(document).encode()
         self.snapshot.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.snapshot.with_suffix('.tmp')
         with temporary.open('wb') as stream:

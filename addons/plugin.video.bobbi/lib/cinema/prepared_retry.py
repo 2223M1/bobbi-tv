@@ -41,7 +41,7 @@ def ready_source(data, category, intent, cancelled=lambda: False):
         # A pack/hash is not sufficient: require the precise file selected by
         # JackTorr before buffering (id + path + bytes), not a sibling variant.
         if (not entry or not isinstance(selected, dict)
-                or selected != (entry.get('subtitle_video') or {}).get('selected')):
+                or selected != (entry.get('video_context') or {}).get('selected')):
             return None
         if not resolve_entry(data, prepared, entry, cancelled) or cancelled():
             return None

@@ -1,0 +1,119 @@
+{
+  "result": {
+    "samples": [
+      {
+        "at": 2208856.410851815,
+        "native": {
+          "file_identity": "transport:b705bcaa887d56c85d39e7ebe7c042485ab089244b80ae24d71e9714717586ea|transport:b15b61999bda9352833fc19607ad61382276259c7ee0bc6ef46f0a258189b73c",
+          "monotonic_us": 2208826298086,
+          "native_instance": "2b92add4-001c-4b3c-a5d3-9dec0adeef79",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "ddc1c5a10ff34f6e9251525f1c4d405e",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "b15b61999bda9352833fc19607ad61382276259c7ee0bc6ef46f0a258189b73c",
+          "user_intent": 0
+        },
+        "selection_epoch": 2,
+        "terminal": {},
+        "desired": {
+          "request_id": "ddc1c5a10ff34f6e9251525f1c4d405e",
+          "epoch": 2,
+          "file_identity": "transport:b705bcaa887d56c85d39e7ebe7c042485ab089244b80ae24d71e9714717586ea|transport:b15b61999bda9352833fc19607ad61382276259c7ee0bc6ef46f0a258189b73c",
+          "selection_identity": "transport:b705bcaa887d56c85d39e7ebe7c042485ab089244b80ae24d71e9714717586ea",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 1332736,
+            "channels": 2,
+            "codec": "flac",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "JPBD-2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "JPBD",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 10,
+            "minutes": 0,
+            "seconds": 21
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 23,
+            "seconds": 51
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "ODDTAXI",
+          "season": 1,
+          "showtitle": "ODDTAXI",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "116727"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      }
+    ],
+    "stop_result": {
+      "command_id": "60e4e9c0276142128b7306aa0311f47d",
+      "queued": true
+    },
+    "stopped": true
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

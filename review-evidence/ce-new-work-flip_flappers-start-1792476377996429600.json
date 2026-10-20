@@ -1,0 +1,220 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Flip Flappers",
+        "tmdb_id": 68272,
+        "kind": "tv",
+        "year": 2016,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "6686a6be42a44240bf39ba7110d2c3cb",
+      "started": 2206249.486360988,
+      "home": {
+        "generation": 20,
+        "intent": 0,
+        "retired_generation": 20,
+        "observed_at": 2206250.005289257
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 2206250.005629215,
+      "picker": {
+        "window": 13001,
+        "generation": 21,
+        "intent": 0,
+        "tmdb_id": 68272,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2206252.380385728
+    },
+    "samples": [
+      {
+        "wall": 2206250.230317297,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206250.221150205,
+          "decoder_started": 2206250.265630496,
+          "decoder_completed": 2206250.266441164,
+          "sample_completed": 2206250.266443539
+        }
+      },
+      {
+        "wall": 2206252.418973055,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206252.381402187,
+          "decoder_started": 2206252.442703327,
+          "decoder_completed": 2206252.44298491,
+          "sample_completed": 2206252.442987619
+        }
+      },
+      {
+        "wall": 2206254.518172847,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206254.505337169,
+          "decoder_started": 2206254.538220616,
+          "decoder_completed": 2206254.538686116,
+          "sample_completed": 2206254.538688283
+        }
+      },
+      {
+        "wall": 2206256.626685014,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "4",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "4"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206256.58852023,
+          "decoder_started": 2206256.639679943,
+          "decoder_completed": 2206256.639962901,
+          "sample_completed": 2206256.639964735
+        }
+      },
+      {
+        "wall": 2206258.748360643,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "4",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "4"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206258.701599059,
+          "decoder_started": 2206258.773569082,
+          "decoder_completed": 2206258.773883666,
+          "sample_completed": 2206258.773885374
+        }
+      },
+      {
+        "wall": 2206260.911444009,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Mehul] Flip Flappers Season 1 (S01) (BD 1080p HEVC 10-bit Opus) [Dual-Audio]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "9",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "9"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2206260.888730322,
+          "decoder_started": 2206261.013416601,
+          "decoder_completed": 2206261.013872393,
+          "sample_completed": 2206261.013877143
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

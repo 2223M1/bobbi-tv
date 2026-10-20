@@ -1,0 +1,101 @@
+{
+  "stopped": true,
+  "before": {
+    "wall": 115254.765,
+    "phase": "AV_STARTED",
+    "native": {
+      "file_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5|transport:fc264c62c0f123d1e0953f8946d211e8887818185c2056d9670a7795baf1dffa",
+      "monotonic_us": 115145022192,
+      "native_instance": "f7bb34c8-9242-487b-9bbf-0f7752e09739",
+      "open_epoch": 1,
+      "paused": false,
+      "phase": "AV_STARTED",
+      "protocol": 1,
+      "reason": "",
+      "request_id": "eb1507acbea34195a28828a3c7fae235",
+      "sequence": 2,
+      "subtitle_auto_intent": 0,
+      "subtitle_intent": 0,
+      "url_sha256": "fc264c62c0f123d1e0953f8946d211e8887818185c2056d9670a7795baf1dffa",
+      "user_intent": 0
+    },
+    "cancelled": false,
+    "failure": null,
+    "native_gui": {
+      "selection_epoch": 1,
+      "gui_generation": 14,
+      "gui_user_intent": 0,
+      "fullscreen_instance": "f7bb34c8-9242-487b-9bbf-0f7752e09739",
+      "windows": []
+    },
+    "dialogs": {
+      "System.HasModalDialog": false,
+      "Window.IsVisible(10138)": false,
+      "Window.IsVisible(13000)": false,
+      "Window.IsVisible(13001)": false
+    },
+    "seconds": 109.528,
+    "duration": 7378.592,
+    "currentaudiostream": {
+      "bitrate": 448000,
+      "channels": 3,
+      "codec": "ac3",
+      "index": 0,
+      "isdefault": true,
+      "isimpaired": false,
+      "isoriginal": false,
+      "language": "per",
+      "name": "AC3 3.0",
+      "samplerate": 0
+    },
+    "currentsubtitle": {
+      "index": 1,
+      "isdefault": false,
+      "isforced": false,
+      "isimpaired": false,
+      "language": "chi",
+      "name": ""
+    },
+    "currentvideostream": {
+      "codec": "hevc",
+      "height": 1038,
+      "index": 0,
+      "language": "",
+      "name": "",
+      "width": 1920
+    },
+    "speed": 1,
+    "subtitleenabled": true,
+    "caching": false,
+    "window": {
+      "currentwindow": {
+        "id": 12005,
+        "label": "Fullscreen video"
+      }
+    },
+    "labels": {
+      "Player.Process(audiodecoder)": "ff-ac3",
+      "Player.Process(pixformat)": "d3d11va_vld",
+      "Player.Process(videodecoder)": "ff-hevc-d3d11va",
+      "Player.Process(videoheight)": "1,040",
+      "Player.Process(videowidth)": "1,920",
+      "Window(10000).Property(AM6B.SubtitleState)": "",
+      "Window.Property(playback_error)": "",
+      "Window.Property(source_count)": ""
+    }
+  },
+  "installed_generation": {
+    "sequence": 2026101905,
+    "path": "D:\\AM6B-Project\\bobbi-tv-private-20261019\\native\\build\\windows-installer-1905",
+    "frozen_build_receipt_sha256": "ac8236c91a27e18cc48eb2db2df4ae64170eaa69fee03bebffc4bb75397f530c",
+    "observed_validation_files": {
+      "host/kodi.exe": "2c3ef427d67be8ea856477563ebb546c226522dc8f4d505aa13f328fdf7cf929",
+      "host/addons/plugin.video.bobbi/lib/gui/resolver_window.py": "e31a69f5f89ae9c1a3fc8508c3e270475d92656171508cce3821854f4a54e08f",
+      "host/addons/plugin.video.bobbi/lib/services/playback_control.py": "461e3481a411f746d42c10e57bcfbfa18493ea3f7ae111256468772c379a3005",
+      "host/addons/script.module.bobbi.core/lib/bobbi_core/playback_authority.py": "e56d33683cfb20770dc813f0273c5a4cd0527e247803caf8268efd652dd30a86"
+    },
+    "diagnostic_or_other_overlay_files": [
+      "host/addons/plugin.video.bobbi/lib/gui/resolver_window.py"
+    ]
+  }
+}

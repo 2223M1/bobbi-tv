@@ -1,0 +1,705 @@
+/* ---------------------------------------------------------------------------
+   TinyPPI dashboard -- the chrome both pages share.
+
+   Palette, page shell, cards, shared empty states, the toast and the token
+   dialog.  Live-player components and page-specific layouts live in their
+   own stylesheets.
+--------------------------------------------------------------------------- */
+
+/* Palette.  Three themes, and every one of them dark: this is watched in a
+   dark room next to a projector, so there is nothing here for a lit one.
+
+   The tokens below are the plain dark theme, which is also what a viewer who
+   has never chosen gets.  The other two restate the tokens and nothing else --
+   never a rule -- so a value changed here changes in all three.  js/theme.js
+   puts the chosen one on <html> as data-theme before the first paint. */
+:root {
+  --bg:        #090b0f;
+  --bg-glow:   #131a23;
+  --panel:     #151a21;
+  --panel-2:   #1c222b;
+  --line:      #2a333f;
+  --line-soft: #202730;
+  --text:      #e8ecf1;
+  --muted:     #d0d5db;
+  --dim:       #aeb3ba;
+  --accent:    #4fc3f7;
+  --accent-2:  #82b1ff;
+  --ok:        #81c784;
+  --warn:      #ffb74d;
+  --bad:       #ff5252;
+  /* The one scrollbar the page draws itself (see .events in live-panels.css):
+     lighter than a line, darker than a reading. */
+  --scroll:    #4b535e;
+  /* The lit edge along the top of a card.  A card here is a surface a little
+     above the page, and this is the one pixel that says so: light catches the
+     top of a raised thing.  It is a colour rather than a lightening of the
+     border, because the border goes all the way round and this does not. */
+  --edge:      rgba(255,255,255,.055);
+  --shadow:    0 1px 0 rgba(255,255,255,.03), 0 10px 28px rgba(0,0,0,.42);
+  /* One step further off the page: what floats over it rather than sitting on
+     it -- the toast, the token dialog, the theme menu -- and what the metadata
+     link lifts to under a pointer.  No card uses it at rest, so the page does
+     not shimmer as a cursor crosses it. */
+  --shadow-lift: 0 1px 0 rgba(255,255,255,.05), 0 14px 34px rgba(0,0,0,.5);
+  --radius:    16px;
+  --radius-sm: 11px;
+  --tap:       44px;
+  /* The air between two cards, wherever two cards meet.  Four grids lay cards
+     out -- main, the two rails, #live and .groups -- and they have to agree,
+     so they read it from here rather than each carrying the number.  A value
+     beats a rule that has to win a cascade: the first attempt at this set
+     #live from a media query that happened to sit above #live's own
+     declaration, and lost. */
+  --gap:       16px;
+}
+@media (max-width: 620px) {
+  :root { --gap: 10px; }
+}
+
+/* Deeper and bluer than the plain dark one, for a room with nothing else lit
+   in it.  The same page, further down. */
+:root[data-theme="midnight"] {
+  --bg:        #03050b;
+  --bg-glow:   #0b1324;
+  --panel:     #0e1420;
+  --panel-2:   #161d2d;
+  --line:      #223050;
+  --line-soft: #19223a;
+  --text:      #e4eaf7;
+  --muted:     #d0d5db;
+  --dim:       #aeb3ba;
+  --accent:    #3b82f6;
+  --accent-2:  #6366f1;
+  --ok:        #34d399;
+  --warn:      #fbbf24;
+  --bad:       #f87171;
+  --scroll:    #38455f;
+  --edge:      rgba(255,255,255,.045);
+  --shadow:    0 1px 0 rgba(255,255,255,.02), 0 12px 32px rgba(0,0,0,.58);
+  --shadow-lift: 0 1px 0 rgba(255,255,255,.04), 0 16px 40px rgba(0,0,0,.66);
+}
+
+/* The plain dark theme, with one exception: the now-playing card takes its
+   colour from the poster of whatever is on screen.  css/theme.css is the only
+   place the two differ -- everything else is inherited from the dark theme
+   deliberately, so the top bar, the tiles and the chart look exactly as they
+   do there.
+
+   js/cover-tint.js reads the poster and hands the colours over as
+   --cover-gradient, along with the accent the cards' own marks take.  The one
+   value here is what a film with no poster leaves that accent at: the plain
+   dark theme's own, rather than a colour that was invented.  A title with no
+   artwork therefore looks exactly as it does on that theme, which is what is
+   true -- there was nothing to take a colour from. */
+:root[data-theme="dark-adaptive"] {
+  --cover-accent-rgb: 79, 195, 247;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  /* No grey-blue box over whatever a finger lands on.  The page answers a
+     press itself -- every key here has its own pressed state -- and the
+     browser's own flash arrives late, squares off the round keys and stays
+     lit after the finger has gone. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  /* A column of two: the bar, and everything else.  main taking what is left
+     of the viewport is what lets the idle page centre itself in the space
+     under the bar rather than over it (see .idlestack). */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  /* Two lights rather than one: a wide wash under the top bar, where the page
+     begins, and a narrower one behind the shoulder of the first card.  Both
+     are the same colour at different sizes, which is what keeps the top of the
+     page from reading as a band with an edge to it. */
+  background-image:
+    radial-gradient(140% 52% at 50% -14%, var(--bg-glow) 0%, transparent 62%),
+    radial-gradient(70% 34% at 82% 2%, var(--bg-glow) 0%, transparent 70%);
+  background-attachment: fixed;
+  padding-bottom: calc(2px + env(safe-area-inset-bottom));
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* --- Top bar ------------------------------------------------------------ */
+
+/* Left where it is at the top of the page rather than pinned to the viewport:
+   it is read once on arrival, and following the reader down cost a strip of
+   every screen for something already read.  Static, so the z-index it used to
+   need against the cards below it goes with it -- nothing stacks over anything
+   any more.  The blur and the part-transparent fill stay: the bar still sits
+   over the page background, and both are what give it its edge. */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  padding-top: calc(12px + env(safe-area-inset-top));
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 650;
+  letter-spacing: .2px;
+  margin-right: auto;
+  min-width: 0;
+  /* Nothing in here reaches past the name-plate it is in.  min-width:0 above
+     lets the plate give way to the keys beside it, but what is inside it does
+     not shrink with it -- a name and a version have the widths they have --
+     and on a phone with the menu unfolded they were simply drawn on top of
+     the keys they had made room for. */
+  overflow: hidden;
+}
+.brand b {
+  font-weight: 700;
+  font-size: 15.5px;
+  /* What the page is called is the last thing in here to give way -- whatever
+     the bar is short of comes off the version beside it first (below) -- and
+     if it ever does have to give, it gives a letter at a time with a mark to
+     say so rather than being cut through the middle of one. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The add-on's own icon, at the size of a line of text.  It is already served
+   for the home screen and the tab (see _static_routes in web/server.py), so the
+   page carries no second copy of it. */
+.brandmark {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
+/* Set apart from the name rather than trailing it: a version is a fact about
+   the page and not part of what it is called. */
+.brand .ver {
+  color: var(--dim);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 1px 7px;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  white-space: nowrap;
+  /* The one thing in the plate that gives, and it gives first: the shrink
+     factor is what puts it ahead of the name beside it, which is the reading
+     that matters.  On a phone it is out of the way before this ever applies --
+     the rule further down takes it off the bar entirely while the menu is
+     unfolded -- so what is left here is the guard for every other width. */
+  flex: 0 100 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+.brand .ver:empty { display: none; }
+@media (max-width: 620px) {
+  .topbar { gap: 8px; padding-left: 12px; padding-right: 12px; }
+  .brandmark { width: 22px; height: 22px; border-radius: 7px; }
+  /* The version steps aside while the menu is unfolded.  On a narrow screen
+     the three keys and the status take most of the bar, and what is left is
+     the width of the name and no more: of the two things in the plate, the
+     one to give up is the one that is a footnote about the page rather than
+     what the page is called.  It is back the moment the menu is folded.
+
+     The class is put on the bar by bindActionMenu in js/core.js, alongside
+     the one it puts on the menu itself. */
+  .topbar.menu-open .brand .ver { display: none; }
+}
+/* And on the narrowest of them, the name goes the same way and the plate is
+   its mark alone.  Three keys unfolded, the status light and the page's own
+   margins are the whole of a 320 px bar; what was left was some six letters
+   of a seven-letter name, and before any of this it was the name drawn on top
+   of the keys (the top half of issue #71).
+
+   Only while they are unfolded, and they fold themselves back after a few
+   idle seconds (see bindActionMenu in js/core.js): the plate is whole again
+   for as long as anyone is actually reading the bar rather than using it. */
+@media (max-width: 360px) {
+  .topbar.menu-open .brand b { display: none; }
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: var(--tap);
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--dim);
+  flex: none;
+}
+/* A connected page says so in the colour of the light rather than in a word:
+   the pill takes a wash of it, so the state is readable from the far side of a
+   room where the label is not. */
+.status[data-state="live"] {
+  border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+  background: color-mix(in srgb, var(--ok) 10%, var(--panel));
+  color: var(--ok);
+}
+.status[data-state="live"] .dot {
+  background: var(--ok);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 70%, transparent);
+  animation: pulse 2.4s ease-out infinite;
+}
+.status[data-state="wait"] {
+  border-color: color-mix(in srgb, var(--warn) 40%, transparent);
+  color: var(--warn);
+}
+.status[data-state="wait"] .dot { background: var(--warn); }
+.status[data-state="down"] {
+  border-color: color-mix(in srgb, var(--bad) 45%, transparent);
+  background: color-mix(in srgb, var(--bad) 10%, var(--panel));
+  color: var(--bad);
+}
+.status[data-state="down"] .dot { background: var(--bad); }
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.iconbtn {
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--tap);
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+/* Only where there is a pointer to hover with.  A touch browser reports a tap
+   as a hover and then leaves it on the key until something else is tapped, so
+   on a phone a rule like this is a key that stays lit long after it was let
+   go -- the tinted box that read as a highlight nothing would clear.  Every
+   rule that lights something under a cursor is inside one of these, here and
+   in the other three sheets. */
+@media (hover: hover) {
+  .iconbtn:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+  }
+}
+.iconbtn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+
+/* The three top-bar actions live behind one key.  Their strip is immediately
+   left of that key, so revealing its width makes it unfold towards the brand
+   without moving the status at the far edge. */
+.action-menu {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+.action-menu-items {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transform: translateX(12px);
+  transition: max-width .22s ease, opacity .15s ease, transform .22s ease,
+              visibility 0s linear .22s;
+}
+.action-menu.open .action-menu-items {
+  max-width: 152px;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition-delay: 0s;
+}
+/* These keys keep their theme's accent but never gain a filled surface, tap
+   highlight or focus ring when pressed. */
+.action-menu .iconbtn,
+.action-menu .iconbtn:hover,
+.action-menu .iconbtn:active,
+.action-menu .iconbtn[aria-pressed="true"],
+.action-menu .iconbtn[aria-expanded="true"] {
+  background: transparent;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.action-menu .iconbtn:focus,
+.action-menu .iconbtn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+@media (hover: hover) {
+  .action-menu .iconbtn:hover {
+    color: color-mix(in srgb, var(--accent) 78%, white);
+    border-color: color-mix(in srgb, var(--accent) 72%, white);
+  }
+}
+/* A press rather than a hover, so this one is kept on a touch screen: it
+   lasts exactly as long as the finger is down. */
+.action-menu .iconbtn:active {
+  color: color-mix(in srgb, var(--accent) 62%, white);
+  border-color: color-mix(in srgb, var(--accent) 58%, white);
+}
+.hamburger {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 14px;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+}
+.hamburger::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4px;
+  border-top: 2px solid currentColor;
+}
+@media (max-width: 620px) {
+  /* Kept after the base .iconbtn rule so the compact mobile size wins the
+     cascade instead of being overwritten by the desktop declaration. */
+  .iconbtn { padding: 0 10px; min-width: 40px; }
+  .action-menu, .action-menu-items { gap: 8px; }
+  .action-menu.open .action-menu-items {
+    max-width: 136px;
+  }
+}
+
+.ui-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  pointer-events: none;
+}
+/* An icon that has to follow a colour is painted rather than drawn: the file
+   is a white stroke, and an <img> cannot be given a colour, so the drawing
+   becomes a mask over whatever the button's own colour is.  Everything
+   carrying this is a <span> with the file in --icon, not an <img> -- the
+   image would otherwise still be painted over the mask.  Taking currentColor
+   means the hover and pressed states above keep working unchanged. */
+.ui-icon.painted {
+  background: currentColor;
+  -webkit-mask: var(--icon) no-repeat center / contain;
+  mask: var(--icon) no-repeat center / contain;
+}
+.iconbtn .ui-icon { width: 18px; height: 18px; margin: auto; opacity: .82; }
+@media (hover: hover) {
+  .iconbtn:hover .ui-icon { opacity: 1; }
+}
+.presence-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  vertical-align: -2px;
+}
+.iconbtn:focus-visible,
+.mode:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* --- Shell -------------------------------------------------------------- */
+
+main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  gap: var(--gap);
+  /* Whatever the bar leaves, so a short page can be centred in it. */
+  flex: 1 1 auto;
+  width: 100%;
+  /* Cards keep their own height in that room rather than being handed a share
+     of it: a grid with space to spare stretches its rows, and a page of three
+     cards on a tall screen would draw all three of them tall. */
+  align-content: start;
+}
+/* On a phone the page keeps the same narrow margin all the way round, and the
+   top bar keeps it too -- so there is one edge rather than two, and the first
+   card sits as close under the bar as it does to the sides.
+
+   The air between the cards is not part of that and stays what it was: it is
+   what tells one card from the next, and the screen being narrow is no reason
+   for less of it. */
+@media (max-width: 620px) {
+  main { padding: 12px; }
+}
+
+/* --- The shape of the page -----------------------------------------------
+
+   The dashboard reads as one full-width column on every screen: playback and
+   its controls first, then the session figures and events.  Detail groups
+   remain their own responsive grid further down, where several like cards
+   can still share a row.
+
+   The markup is in that order already; the desktop below names its areas
+   anyway, so the idle column can be given a row of its own without the rest
+   of the page moving up around it.
+------------------------------------------------------------------------- */
+
+.rail {
+  display: grid;
+  gap: var(--gap);
+  align-content: start;
+  min-width: 0;
+}
+
+/* A rail with nothing visible in it is no rail.  Said outright, because the
+   rail itself never carries .hidden -- the cards inside it do, and an empty
+   grid item still takes main's gap and leaves a hole where a column was.
+   Every card on the page is a .card; the metadata link is the one thing that
+   is not, so it is named too. */
+.rail:not(:has(.card:not(.hidden), .metalink:not(.hidden))) { display: none; }
+
+/* The dashboard alone.  The metadata window is a list of a hundred readings
+   and splits itself into columns of its own further down the page (see
+   .metarows in css/metadata.css); a second one here would be columns inside
+   columns. */
+@media (min-width: 1080px) {
+  .dashboard-page main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "playing"
+      "session"
+      "groups"
+      "meta";
+  }
+  .dashboard-page .rail-main { grid-area: playing; }
+  .dashboard-page .rail-side { grid-area: session; }
+  .dashboard-page .groups    { grid-area: groups; }
+  .dashboard-page .metalink  { grid-area: meta; }
+  /* The idle column takes the first row, which is free whenever it is on the
+     page at all: nothing is playing and both rails have hidden themselves. */
+  .dashboard-page .idlestack { grid-area: 1 / 1 / 2 / -1; }
+}
+
+.card {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+/* The lit top edge, fading out before either corner so it never crosses the
+   border it stops short of.  Above the card's own contents so a panel that
+   paints its own background -- the tile grid, the tinted hero -- does not
+   cover it. */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  z-index: 2;
+  background: linear-gradient(90deg,
+    transparent, var(--edge) 16%, var(--edge) 84%, transparent);
+  pointer-events: none;
+}
+
+/* The mount point a page gives panels.js.  main is a grid and this is one of
+   its items, so the air between the three sections is set here. */
+#live { display: grid; gap: var(--gap); align-content: start; min-width: 0; }
+
+/* --- Footer, toast, dialog ---------------------------------------------- */
+
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--dim);
+  font-size: 12px;
+  padding: 4px 2px;
+}
+@media (max-width: 480px) {
+  .status #statusText { display: none; }
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 16px);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 11px 18px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-lift);
+  font-size: 13.5px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 40;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+#toast.bad { border-color: var(--bad); color: var(--bad); }
+
+dialog {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--text);
+  padding: 0;
+  width: min(400px, calc(100vw - 32px));
+  box-shadow: var(--shadow-lift);
+}
+dialog::backdrop { background: rgba(0,0,0,.62); backdrop-filter: blur(3px); }
+dialog form { padding: 20px; display: grid; gap: 12px; }
+dialog h3 { margin: 0; font-size: 16px; }
+dialog p { margin: 0; color: var(--muted); font-size: 13px; }
+dialog input {
+  font: inherit;
+  font-size: 18px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  width: 100%;
+}
+dialog input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.dlgrow { display: flex; gap: 10px; justify-content: flex-end; }
+.dlgrow button {
+  appearance: none;
+  min-height: var(--tap);
+  padding: 0 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dlgrow button[value="ok"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #05131c;
+}
+
+/* --- Shared empty state ------------------------------------------------- */
+
+.empty {
+  padding: 54px 26px;
+  text-align: center;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+/* A ring with nothing in it, above the line saying nothing is playing.  The
+   page has no picture to show at this point and no reading to print, so what
+   stands there is the shape of the thing that is missing.
+
+   Only the card that fills a page with it.  The empty event list borrows the
+   same class for its own one line of text (see renderEvents in
+   js/live-panels.js), and that line is a note inside a card that is otherwise
+   full -- it is not the page having nothing to say. */
+.card > .empty::before {
+  content: "";
+  width: 46px;
+  height: 46px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(closest-side,
+      color-mix(in srgb, var(--accent) 22%, transparent), transparent);
+}
+.empty .big { font-size: 18px; font-weight: 650; letter-spacing: -.01em; }
+.empty p { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+/* The idle page is the only content worth looking at, so it is centred in
+   what the page has rather than left sitting under an empty top bar.  All of
+   it goes, not the first card alone: what is not playing, what was, and the
+   events of what was stand as one column (js/dashboard.js moves the events
+   card in for as long as nothing plays).
+
+   Centred by main rather than pinned to the viewport, because a column pinned
+   to the viewport is centred over the bar as well as under it -- and on a
+   phone, where three cards are most of a screen, that is the difference
+   between a column that fits and one whose first card slides under the bar
+   while its last runs off the bottom. */
+.idlestack {
+  display: grid;
+  gap: var(--gap);
+  /* Each card its own height and no more.  A grid whose container has room to
+     spare hands that room to its rows, and a card given room it did not ask
+     for is a heading with a hole under it. */
+  align-content: start;
+}
+/* An empty stack is no stack: hidden outright, or main's own gap would leave
+   a hole where it stands while something plays. */
+.idlestack:not(:has(> :not(.hidden))) { display: none; }
+
+/* Written as one relative selector rather than a :has() inside a :has(),
+   which is not allowed anywhere in CSS: a browser drops the whole rule, and
+   the centring here went with it. */
+main:has(> .idlestack > :not(.hidden)) { align-content: center; }
+
+/* A folded card is its heading and nothing else.  Saying so outright, because
+   a browser does not: the panel is laid out behind the fold whatever the fold
+   says -- a list with a height of its own then stands a strip of itself under
+   the heading of a card that is supposed to be shut. */
+details.card:not([open]) > :not(summary) { display: none; }
+
+.hidden { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

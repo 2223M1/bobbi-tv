@@ -28,7 +28,7 @@ def defer_watched_file(data):
 
 def _save(snapshot):
     global _database
-    from lib.bobbi.utils import kodilog
+    from lib.jacktook.utils import kodilog
     try:
         # A separate instance prevents the new player's history readers from
         # racing a mutation of the legacy module's in-memory operation list.

@@ -5,6 +5,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from urllib.parse import urlencode
+from bobbi_core.image_cache import image_url as tmdb_image_url
 
 import xbmc
 import xbmcgui
@@ -542,9 +543,9 @@ def _set_catalog_art(list_item, result):
     # The 1080p home cards render at 172 px wide.  A 342 px poster is a
     # full 2x source and avoids decoding the materially larger w500 asset for
     # every off-focus card; the focused hero keeps a 1280 px backdrop.
-    poster = "https://image.tmdb.org/t/p/w342{}".format(poster_path) if poster_path else ""
-    thumb = "https://image.tmdb.org/t/p/w185{}".format(poster_path) if poster_path else ""
-    fanart = "https://image.tmdb.org/t/p/w1280{}".format(backdrop_path) if backdrop_path else ""
+    poster = tmdb_image_url(poster_path, 'w342')
+    thumb = tmdb_image_url(poster_path, 'w185')
+    fanart = tmdb_image_url(backdrop_path, 'w1280')
     list_item.setArt(
         {
             "poster": poster,

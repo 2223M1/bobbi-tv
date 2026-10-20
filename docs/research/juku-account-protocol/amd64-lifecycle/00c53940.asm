@@ -1,0 +1,24 @@
+; main.handle115OfflineAdd.Printf.func2
+00c53940  CMP RSP,qword ptr [R14 + 0x10]
+00c53944  JBE 0x00c53972
+00c53946  PUSH RBP
+00c53947  MOV RBP,RSP
+00c5394a  SUB RSP,0x40
+00c5394e  MOV qword ptr [RSP + 0x50],RAX
+00c53953  MOV RDI,qword ptr [RDX + 0x8]
+00c53957  MOV RSI,qword ptr [RDX + 0x10]
+00c5395b  MOV R8,qword ptr [RDX + 0x18]
+00c5395f  MOV R9,qword ptr [RDX + 0x20]
+00c53963  MOV R10,qword ptr [RDX + 0x28]
+00c53967  CALL 0x00505680
+00c5396c  ADD RSP,0x40
+00c53970  POP RBP
+00c53971  RET
+00c53972  MOV qword ptr [RSP + 0x8],RAX
+00c53977  MOV qword ptr [RSP + 0x10],RBX
+00c5397c  MOV qword ptr [RSP + 0x18],RCX
+00c53981  CALL 0x0048a1e0
+00c53986  MOV RAX,qword ptr [RSP + 0x8]
+00c5398b  MOV RBX,qword ptr [RSP + 0x10]
+00c53990  MOV RCX,qword ptr [RSP + 0x18]
+00c53995  JMP 0x00c53940

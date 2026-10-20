@@ -6,32 +6,11 @@ owner guard; local candidate coverage alone does not enable this IPC operation.
 import json
 import re
 from copy import deepcopy
-from functools import wraps
-import time
 
 from bobbi_core.subtitle_binding import prepared_video, style_reviewable
 from bobbi_core.subtitle_export import export
 from bobbi_core.subtitle_store import binding
-from bobbi_core.font_cache import verify_font_plan
-
-
-def measured(phase):
-    """Sparse actual stage timings, without logging bodies, paths or secrets."""
-    def decorate(method):
-        @wraps(method)
-        def run(self, value, *args, **kwargs):
-            started = time.monotonic()
-            try:
-                return method(self, value, *args, **kwargs)
-            finally:
-                if self.observer is not None:
-                    body = value.get('body', value) if isinstance(value, dict) else {}
-                    request = body.get('request_id') if isinstance(body, dict) else None
-                    if isinstance(request, str) and re.fullmatch('[0-9a-f]{32}', request):
-                        self.observer(dict(request_id=request, phase=phase,
-                            seconds=round(time.monotonic()-started, 6)))
-        return run
-    return decorate
+from bobbi_core.runtime_measurement import measured
 
 
 class FontPlaybackPreflight:
@@ -75,7 +54,8 @@ class FontPlaybackPreflight:
             return dict(state='not_applicable')
         if self.fonts is None:
             return dict(state='unavailable', reason='FONT_CACHE_DISABLED')
-        if self.fonts.binding(video['release_key'], record['subtitle_sha256']) != record['font_result']:
+        if (not isinstance(record.get('font_result'), dict)
+                or self.fonts.binding(video['release_key'], record['subtitle_sha256']) != record['font_result']):
             return dict(state='unavailable', reason='SUBTITLE_FONT_INPUTS_NOT_READY')
         return deepcopy(dict(state='planned', body=body, video=video, record=record,
             revision=current['seq'], attempts=job['attempts'], detail=detail,
@@ -96,11 +76,19 @@ class FontPlaybackPreflight:
         self.store._release_proof(video, record['timing'])
         actual = binding(video, raw, record['extension'], record['language'], record['full_dialogue'],
             record['forced'], record['origin'], record['timing'], record['font_result'], record['manual_intent'])
-        if actual != {k:v for k,v in record.items() if k != 'font_result'}:
+        old = {key: value for key, value in record.items() if key != 'font_result'}
+        if record.get('schema') == 1:
+            # Existing exact cached fonts must not become unavailable merely
+            # because idle content-policy migration has not reached this row.
+            derived = {'schema', 'content', 'chinese_ready', 'state'}
+            matches = all(actual.get(key) == value for key, value in old.items() if key not in derived)
+        else:
+            matches = actual == old
+        if not matches:
             raise ValueError('Subtitle record differs from its immutable inputs')
     @measured('font_bytes_io')
     def _verify_fonts(self, plan):
-        return verify_font_plan(plan['fonts'])
+        return self.fonts.verify_plan(plan['fonts'])
 
     @measured('subtitle_export_io')
     def _export_subtitle(self, plan):
@@ -123,7 +111,9 @@ class FontPlaybackPreflight:
             detail = deepcopy(plan['detail'])
             detail.update(native_file=result['native'], subtitle_sha256=record['subtitle_sha256'],
                           font_activation=dict(request_id=body['request_id'], release_key=video['release_key'],
-                                               font_hashes=hashes))
+                                               font_hashes=hashes,
+                                               inputs_complete=not record['font_result']['missing'],
+                                               missing_count=len(record['font_result']['missing'])))
             self.subtitles._record_in_transaction(body['resource_id'], video['key'], state, plan['attempts'], detail)
         # Guard is refreshed inside the cache's existing rollback transaction,
         # before and after link changes. It must prove both idle and ownership.
@@ -132,7 +122,8 @@ class FontPlaybackPreflight:
         if self.allowed(body) is not True:
             return dict(state='stale')
         return dict(state='ready', font_acceptance=state, request_id=body['request_id'], font_hashes=activation['hashes'],
-                    subtitle_sha256=record['subtitle_sha256'], scope='PRE_AV_INPUTS_NOT_RENDER_PROOF')
+                    subtitle_sha256=record['subtitle_sha256'], scope='PRE_AV_INPUTS_NOT_RENDER_PROOF',
+                    font_inputs_complete=activation['inputs_complete'], missing_font_count=activation['missing_count'])
 
     def prepare(self, body):
         """Synchronous adapter for isolated tests; production uses plan/perform/complete."""

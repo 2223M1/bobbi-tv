@@ -97,7 +97,7 @@ def show_season_info(ids, mode, media_type):
         [(url, list_item, True) for _, url, list_item in results if list_item is not None]
     )
     from lib.clients.tmdb.related_movies import append_directory_entry
-    append_directory_entry(ids)
+    append_directory_entry(ids, include_cached=True)
 
 
 def _process_season(season, details, name, ids, mode, media_type, fanart_details):

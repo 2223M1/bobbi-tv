@@ -14,6 +14,7 @@ from bobbi_core.subtitle_binding import checked_video
 ARCHIVE_LIMIT = 128 * 1024 * 1024
 FONT_LIMIT = 32 * 1024 * 1024
 EXPANSION_LIMIT = 256 * 1024 * 1024
+ARCHIVE_EXTENSIONS = {'.7z', '.zip', '.rar'}
 
 def canonical(name):
     if (not isinstance(name, str) or not name or len(name) > 2048
@@ -45,7 +46,7 @@ def release_assets(video, metadata):
             if not 0 < entry['length'] <= FONT_LIMIT:
                 raise ValueError('Individual release font budget')
             direct.append((parents.index(scope), dict(entry)))
-        elif (suffix in ('.7z', '.zip')
+        elif (suffix in ARCHIVE_EXTENSIONS
               and re.search(r'(?i)(?:^|[\s\[(_.-])fonts?(?:[\s\])_.-]|$)|字体|字體', path.stem)):
             if not 0 < entry['length'] <= ARCHIVE_LIMIT:
                 raise ValueError('Release font archive budget')
@@ -64,7 +65,9 @@ def parse_listing(raw):
     text = raw.decode('utf-8').replace('\r\n', '\n')
     marker = '\n----------\n'
     if marker not in text: raise ValueError('Unknown archive listing')
-    blocks = text.split(marker, 1)[1].strip().split('\n\n')
+    # Empty final properties (e.g. RAR's "NT Security = ") are legitimate.
+    # Stripping spaces would turn them into malformed "NT Security =".
+    blocks = text.split(marker, 1)[1].strip('\n').split('\n\n')
     if len(blocks) > 512: raise ValueError('Archive entry budget')
     fonts, names, total = [], set(), 0
     for block in blocks:
@@ -89,6 +92,8 @@ def parse_listing(raw):
                 raise ValueError('Conflicting archive entry type')
             folder = inferred
         if (row.get('Encrypted') not in (None, '-') or row.get('Symbolic Link') or row.get('Hard Link')
+                or row.get('Copy Link') or row.get('Alternate Stream') not in (None, '-')
+                or row.get('Split Before') not in (None, '-') or row.get('Split After') not in (None, '-')
                 or row.get('Anti') not in (None, '-') or folder not in ('+', '-')):
             raise ValueError('Unsupported archive entry type')
         size = row.get('Size', '')

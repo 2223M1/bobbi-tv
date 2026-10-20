@@ -1,0 +1,13 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\abdbfe10fc77ff94ca56e48def863828.temp",
+  "name": "abdbfe10fc77ff94ca56e48def863828.temp",
+  "bytes": 99614720,
+  "sha256": "753898a2ac852c8f029c4f55541c03efc41d8c63c6528d7fa9af3152e82e0d1d",
+  "format": "7z",
+  "next_header_offset": 758459019,
+  "next_header_bytes": 130,
+  "required_minimum_bytes": 758459181,
+  "state": "invalid-or-incomplete-archive",
+  "error": "next header size 130 exceeds the archive size",
+  "limitation": "Header points beyond actual file; no member payload recovered"
+}

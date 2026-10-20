@@ -138,13 +138,25 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
             self.handle_action(action_id, self.getFocusId())
 
     def _ensure_playback_info(self, source: TorrentStream):
-        from lib.clients.qqdocs_provider import is_source as is_qqdocs_source, resolve_source as resolve_qqdocs
-        if is_qqdocs_source(source):
+        from lib.clients.catalog_providers import provider_for, resolve_source
+        catalog_provider = provider_for(source)
+        if catalog_provider:
+            from bobbi_platform.runtime import call
+            account = call('account_status', {})
+            self.item_information['_account'] = account
             # Resolve only the exact selected file. Do not mutate the stable
             # source card, and never put signed CDN addresses in quick-play.
-            url = resolve_qqdocs(source, self.item_information)
+            url = resolve_source(source, self.item_information)
             data = self.prepare_source_data(source=source, url=url, magnet='', is_torrent=False)
-            data.update(transient_url=True, qqdocs_locator=source.url, filename=source.title, size=source.size)
+            data.update(transient_url=True, filename=source.title, size=source.size,
+                        _account=deepcopy(account))
+            data[catalog_provider + '_locator'] = source.url
+            from bobbi_catalog.identity import media_key
+            tv = self.item_information.get('tv_data') or {}
+            data['_share'] = dict(locator=source.url, guid=source.guid, title=source.title,
+                size=source.size, account=account,
+                media=media_key((self.item_information.get('ids') or {}).get('tmdb_id'),
+                    self.item_information.get('mode'), tv.get('season'), tv.get('episode')))
             return resolve_stremio_playback_url(data) or {}
         url, magnet, is_torrent = self._extract_source_details(source)
 
@@ -368,7 +380,7 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
                 raise RuntimeError('云端文件身份已变化或暂不可用，请刷新片源')
             playback_data['url'] = local_path(prepared['mount_root'], entries[0]['path'])
             playback_data['source_title'] = entries[0]['title']
-            playback_data['subtitle_video'] = entries[0].get('subtitle_video')
+            playback_data['video_context'] = entries[0].get('video_context')
         if playback_data.get('selection_policy') == 'exact' and playback_data.get('is_torrent'):
             try:
                 from lib.clients.bobi_library import load_prepared_index, local_path
@@ -384,7 +396,7 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
                         source_title=entry['title'], prepared_resource_id=entry['key'],
                         prepared_version_key=entry['prepared_version_key'],
                         prepared_source_info_hash=entry['prepared_source_info_hash'],
-                        subtitle_video=entry.get('subtitle_video'),
+                        video_context=entry.get('video_context'),
                         subtitles_path=[local_path(prepared['mount_root'], p) for p in entry.get('subtitles', [])[:4]])
                     playback_data.pop('episode_binding', None)
                     playback_data.pop('info_hash', None)

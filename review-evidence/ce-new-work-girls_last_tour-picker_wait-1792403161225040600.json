@@ -1,0 +1,65 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "girls_last_tour",
+    "operation": "picker_wait",
+    "record": {
+      "test": {
+        "title": "Girls' Last Tour",
+        "tmdb_id": 74185,
+        "kind": "tv",
+        "year": 2017,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "d8b187a550f24b9eb29f7cd6e0b7df8e",
+      "started": 2132946.56031028,
+      "home": {
+        "generation": 21,
+        "intent": 0,
+        "retired_generation": 21,
+        "observed_at": 2132946.936960979
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2132946.937300829,
+      "picker": {
+        "window": 13001,
+        "generation": 22,
+        "intent": 0,
+        "tmdb_id": 74185,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2132953.557658597,
+      "picker_idle": {
+        "passed": true,
+        "seconds": 35.06304215313867,
+        "observations": 64,
+        "picker": {
+          "window": 13001,
+          "generation": 22,
+          "intent": 0,
+          "tmdb_id": 74185,
+          "kind": "tv"
+        },
+        "query_finished": true
+      }
+    },
+    "passed": true,
+    "seconds": 35.06304215313867,
+    "observations": 64,
+    "picker": {
+      "window": 13001,
+      "generation": 22,
+      "intent": 0,
+      "tmdb_id": 74185,
+      "kind": "tv"
+    },
+    "query_finished": true
+  },
+  "diagnostic_present": false,
+  "work": "girls_last_tour",
+  "operation": "picker_wait"
+}

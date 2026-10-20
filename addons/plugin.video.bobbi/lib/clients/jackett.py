@@ -10,7 +10,7 @@ import xbmc
 
 from lib.clients.base import BaseClient
 from lib.domain.torrent import TorrentStream
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 from lib.utils.general.utils import USER_AGENT_HEADER
 from lib.utils.kodi.logging import summarize_locator_for_log
 from lib.utils.kodi.settings import get_jackett_timeout
@@ -39,12 +39,13 @@ class Jackett(BaseClient):
         self._indexer_anime_caps = {}
 
     def _search_cinema(self, query, mode, season, episode, categories,
-                       additional_params, year, anime_absolute_query, anime_release_query='', title_queries=(), movie_years=None, movie_tmdb_id=None, movie_imdb_id=None, anime_title_queries=(), cancelled=None, deadline=None):
+                       additional_params, year, anime_absolute_query, anime_release_query='', title_queries=(), movie_years=None, movie_tmdb_id=None, movie_imdb_id=None, anime_title_queries=(), cancelled=None, deadline=None, publish=None):
         """Keep successful per-indexer results, not Jackett's slow all wrapper.
 
-        Discover only already-configured providers. Four transient workers,
-        shared eight-second request budget; never keep Kodi threads alive after
-        returning. Ranking and exact episode/title filtering remain downstream.
+        Discover only already-configured providers. Four globally admitted
+        workers share an eight-second budget; a late DNS worker retains its
+        admission but cannot publish after return. Identity filtering remains
+        downstream and is applied equally to streamed and final candidates.
         """
         from lib.clients.jackett_fanout import fetch_independent, fetch_inventory
         from bobbi_core.search_completion import SearchCompletion, SearchResults
@@ -111,40 +112,34 @@ class Jackett(BaseClient):
         request_timeout = 2.0
         if mode == 'tv' and (anime_title_queries or anime_absolute_query or anime_release_query):
             request_timeout = self._anime_request_timeout(urls, deadline)
+        results, parse_failures, processed = [], 0, 0
+        def parse_ready(response):
+            nonlocal parse_failures, processed
+            processed += 1
+            if cancelled() or time.monotonic() >= deadline:
+                parse_failures += 1
+                return None
+            parsed = self.parse_response(response)
+            if parsed is None:
+                parse_failures += 1
+            else:
+                results.extend(parsed)
+                if parsed and publish is not None and not cancelled() and time.monotonic() < deadline:
+                    # The caller applies the same media/episode identity filter
+                    # to streamed and final rows before the stable list session.
+                    publish(SearchResults(parsed, SearchCompletion(1, succeeded=1)))
+            return parsed
+        # Leave a bounded settle margin inside the provider's original budget.
+        # Successful responses are parsed on arrival, never discarded merely
+        # because a different request runs to this network deadline.
         responses = fetch_independent(self.session, plan, budget=min(8, get_jackett_timeout()),
-                                      deadline=deadline, cancelled=cancelled,
-                                      request_timeout=request_timeout)
-        results, parse_failures = [], 0
+                                      deadline=deadline - .25, cancelled=cancelled,
+                                      request_timeout=request_timeout, on_response=parse_ready)
+        parse_failures += len(responses) - processed
         receipt = getattr(responses, 'fanout_receipt', None)
         receipt = receipt if isinstance(receipt, FanoutReceipt) else None
-        parse_stage = 'parse_complete'
-        try:
-            for index, response in enumerate(responses):
-                if cancelled() or time.monotonic() >= deadline:
-                    parse_failures += len(responses) - index
-                    for skipped_index in range(index, len(responses)):
-                        observe(receipt, 'parse_end', skipped_index, None)
-                    break
-                if receipt is not None:
-                    observe(receipt, 'parse_start', index)
-                try:
-                    parsed = self.parse_response(response)
-                except BaseException:
-                    if receipt is not None:
-                        observe(receipt, 'parse_end', index, exception=True)
-                    raise
-                if receipt is not None:
-                    observe(receipt, 'parse_end', index, parsed)
-                if parsed is None:
-                    parse_failures += 1
-                else:
-                    results.extend(parsed)
-        except BaseException:
-            parse_stage = 'parse_exception'
-            raise
-        finally:
-            if receipt is not None:
-                observe(receipt, 'emit', parse_stage)
+        if receipt is not None:
+            observe(receipt, 'emit', 'parse_complete')
         kodilog('Cinema Jackett independent responses: {}/{}; candidates: {}'.format(len(responses), len(urls), len(results)))
         if isinstance(responses, SearchResults):
             completion = responses.completion.with_parse_failures(parse_failures)
@@ -492,12 +487,13 @@ class Jackett(BaseClient):
         anime_title_queries=(),
         cancelled=None,
         deadline=None,
+        publish=None,
     ) -> Optional[List[TorrentStream]]:
         try:
             if xbmc.getSkinDir() == 'skin.bobbi.cinema':
                 try:
                     return self._search_cinema(query, mode, season, episode, categories,
-                                               additional_params, year, anime_absolute_query, anime_release_query, title_queries, movie_years, movie_tmdb_id, movie_imdb_id, anime_title_queries, cancelled, deadline)
+                                               additional_params, year, anime_absolute_query, anime_release_query, title_queries, movie_years, movie_tmdb_id, movie_imdb_id, anime_title_queries, cancelled, deadline, publish)
                 except requests.Timeout:
                     # A timed-out inventory request precedes the bounded fanout.
                     from bobbi_core.search_completion import SearchCompletion, SearchResults
@@ -521,8 +517,8 @@ class Jackett(BaseClient):
         try:
             if getattr(res, '_am6b_parse_failed', False) is True:
                 return None
-            # Actual network RSS has already been parsed in the supervised
-            # child. Legacy/injected response fixtures still use this parser.
+            # Actual network RSS has already been parsed in the bounded HTTP
+            # worker. Legacy/injected response fixtures still use this parser.
             supervised_items = getattr(res, '_am6b_items', None)
             if isinstance(supervised_items, list):
                 results = []

@@ -1,0 +1,60 @@
+{
+  "result": {
+    "bytes": 417001,
+    "sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+    "selected_subtitle_id": 1,
+    "parse_error": "Subtitle cue outside exact video timeline",
+    "zero_duration_events": 1,
+    "reversed_events": 0,
+    "sample_invalid_events": [
+      {
+        "start": "0:09:12.88",
+        "end": "0:09:12.88",
+        "text_length": 2,
+        "drawing": false
+      }
+    ],
+    "font_helper_rar_formats": [
+      "...F..................  Rar      rar r00       R a r ! 1A 07 00",
+      "...F..................  Rar5     rar r00       R a r ! 1A 07 01 00",
+      "D     40301 Rar1",
+      "D     40302 Rar2",
+      "D     40303 Rar3",
+      "D     40305 Rar5"
+    ],
+    "rar_trial": {
+      "bytes": 47296835,
+      "sha256": "0cdf357b08a3e48d0664a6afe6e382ccf3bc9b54dd24209c83d7a6d872efa1be",
+      "workspace": "/storage/.local/share/bobbi-private-trials/20261020/font-rar-ggbas0w7",
+      "decoder_rejected": true,
+      "report": {
+        "state": "CANDIDATE_INCOMPLETE",
+        "archive_sha256": "0cdf357b08a3e48d0664a6afe6e382ccf3bc9b54dd24209c83d7a6d872efa1be",
+        "tool_sha256": "7f198102ba757b47da28d62fcb16a89afaad865f47a9feee4d489718cd3a219a",
+        "commands": [
+          {
+            "argv": [
+              "/storage/.local/share/bobitv/preparation-runtime/r3-20260922/font-tools/7zzs",
+              "l",
+              "-slt",
+              "-mmt=1",
+              "-sccUTF-8",
+              "-spd",
+              "-y",
+              "--",
+              "/storage/.local/share/bobbi-private-trials/20261020/font-rar-ggbas0w7/fonts.rar"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "fonts": [],
+        "seconds": 0.007370519917458296,
+        "maxrss_kib": 35508,
+        "child_maxrss_kib": 15960
+      },
+      "listing_sample": "\n7-Zip (z) 26.03 (armt) : Copyright (c) 1999-2026 Igor Pavlov : 2026-09-03\n 32-bit arm_v:7-A thumb:2 locale=C UTF8=- Threads:6 OPEN_MAX:4096\n\nScanning the drive for archives:\n1 file, 47296835 bytes (46 MiB)\n\nListing archive: /storage/.local/share/bobbi-private-trials/20261020/font-rar-ggbas0w7/fonts.rar\n\n--\nPath = /storage/.local/share/bobbi-private-trials/20261020/font-rar-ggbas0w7/fonts.rar\nType = Rar5\nPhysical Size = 47296835\nCharacteristics = Locator QuickOpen:47295928\nEncrypted = -\nSolid = -\nBlocks = 8\nMethod = v6:32M:m5\nMultivolume = -\nVolumes = 1\n\n----------\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)/FangZhengCuYuan_GBK.ttf\nFolder = -\nSize = 9720284\nPacked Size = 4513661\nModified = 2016-12-23 18:54:43.7848721\nCreated = \nAccessed = \nAttributes = A\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = C41871A5\nHost OS = Windows\nMethod = v6:m5:32M\nCharacteristics = CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)/FangZhengLiBian_GBK.TTF\nFolder = -\nSize = 14155800\nPacked Size = 6360142\nModified = 2016-12-16 17:42:13.0951130\nCreated = \nAccessed = \nAttributes = A\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = F2C6BB4C\nHost OS = Windows\nMethod = v6:m5:32M\nCharacteristics = CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)/FangZhengZhunYuan_GBK.TTF\nFolder = -\nSize = 9910468\nPacked Size = 4382143\nModified = 2000-05-18 14:36:52.0000000\nCreated = \nAccessed = \nAttributes = A\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = 6D4F2F30\nHost OS = Windows\nMethod = v6:m5:32M\nCharacteristics = CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)/MSYH.TTC\nFolder = -\nSize = 23607740\nPacked Size = 12304631\nModified = 2016-07-16 04:42:08.0000000\nCreated = \nAccessed = \nAttributes = A\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = 9DF54293\nHost OS = Windows\nMethod = v6:m5:32M\nCharacteristics = CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)/MSYHBD.TTC\nFolder = -\nSize = 16247072\nPacked Size = 8634650\nModified = 2016-07-16 04:42:30.0000000\nCreated = \nAccessed = \nAttributes = A\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = 4B4E83BF\nHost OS = Windows\nMethod = v6:m5:32M\nCharacteristics = CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)/MSYHL.TTC\nFolder = -\nSize = 12003540\nPacked Size = 6404657\nModified = 2016-07-16 04:42:30.0000000\nCreated = \nAccessed = \nAttributes = A\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = AF86B54B\nHost OS = Windows\nMethod = v6:m5:32M\nCharacteristics = CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)/simhei.ttf\nFolder = -\nSize = 9751720\nPacked Size = 4695145\nModified = 2015-10-31 00:10:33.7758801\nCreated = \nAccessed = \nAttributes = A\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = 8A540A42\nHost OS = Windows\nMethod = v6:m5:32M\nCharacteristics = CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\nPath = [SweetSub&LoliHouse] Flip Flappers - fonts(\u5fc5\u88c5\u5b57\u4f53)\nFolder = +\nSize = 0\nPacked Size = 0\nModified = 2016-12-30 17:20:52.5652212\nCreated = \nAccessed = \nAttributes = D\nAlternate Stream = -\nEncrypted = -\nSolid = -\nSplit Before = -\nSplit After = -\nCRC = 00000000\nHost OS = Windows\nMethod = v6:m0\nCharacteristics = Dir CRC Time:M\nSymbolic Link = \nHard Link = \nCopy Link = \nVolume Index = \nChecksum = \nNT Security = \n\n"
+    }
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "scope": "Read-only CE inspection; no add, preload, playback, remote file edits or service changes during this diagnostic",
+  "old_adapter": "plugin.video.jacktorr 1.2.2+am6b.317",
+  "new_adapter": "plugin.video.bobbi.torrent 0.1.0",
+  "new_core": "script.module.bobbi.core 0.1.3",
+  "comparisons": [
+    {
+      "old_device_path": "/storage/.kodi/addons/plugin.video.jacktorr/lib/episode_matching.py",
+      "old_sha256": "40d817423d7d598c747f4ebfbcb806debe2f5c5b8a094c362219c522b61d013a",
+      "new_device_path": "/storage/.kodi/addons/script.module.bobbi.core/lib/bobbi_core/torrent_episode_matching.py",
+      "new_sha256": "fdbd1d9826d4e8984eb4e1f974d38a02895c6301b3bc152ec29dd19bf2ea21bf",
+      "new_local_path": "addons/script.module.bobbi.core/lib/bobbi_core/torrent_episode_matching.py",
+      "comparison": "Both whole texts are identical after strip(); no semantic differences",
+      "line_references_both_versions": {"strong_patterns": 4, "x_token_regex": 13, "has_strong_match": 52, "strong_token_branch": 141}
+    },
+    {
+      "old_device_path": "/storage/.kodi/addons/plugin.video.jacktorr/lib/exact_selection.py",
+      "old_sha256": "c3f00c1454422cf02c0e5ef6f752b436f81d338ac43e8b6a0efd2fd22b0889b1",
+      "new_device_path": "/storage/.kodi/addons/script.module.bobbi.core/lib/bobbi_core/torrent_selection.py",
+      "new_sha256": "3dba81f1dd859810963a887563edec6c92743f2fc8c2455555f23f0dd03caed4",
+      "new_local_path": "addons/script.module.bobbi.core/lib/bobbi_core/torrent_selection.py",
+      "comparison": "Both whole texts are identical after replacing old 'from .episode_matching import' with 'from .torrent_episode_matching import' and strip(); no semantic differences",
+      "line_references_both_versions": {"bound_episode_match": 143, "strong_token_branch": 154, "select_exact_file": 175}
+    }
+  ],
+  "selected_source_evidence": {
+    "request_id": "6814846ffbca407585377a930810acd7",
+    "source_key": "2969590fb4e043b453194562e6ae9efc0bb37acf45543d59236028a0e524f26d",
+    "selection_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450",
+    "current_gui_source_key_exact_match": true,
+    "current_gui_guid_sha256_matches_selection_identity": true,
+    "guid_scheme": "magnet",
+    "gui_info_hash_base32": "CJZTXVX23LMEA3KMVVKWA3UHGSXPUDXX",
+    "decoded_info_hash_hex": "12733bd6fadad8406d4cad55606e8734aefa0ef7",
+    "work": {"tmdb_id": 68272, "title": "Flip Flappers", "season": 1, "episode": 1},
+    "release_card": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+    "request_season_episode_source": "Parent trial evidence; current child URL was not retained in kodi.log",
+    "current_torrserver_list_contains_selected_torrent": false,
+    "current_torrserver_get_selected_hash": "HTTPError; metadata unavailable at read time",
+    "one_local_hash_addressed_metadata_cache_attempt": "ConnectTimeout",
+    "actual_file_stats_obtained": false
+  },
+  "observed_failure": {
+    "evidence": "review-evidence/ce-runtime-flip-1906-failed.json",
+    "reason": "TORRENT_EXACT_FILE_UNRESOLVED",
+    "category": "target_unresolved",
+    "native_av_started": false,
+    "returned_to_picker": true
+  },
+  "conclusions": [
+    "The unrestricted number-x-number regex and early strong-token branch are inherited unchanged from the retained old CE JackTorr code, not newly added by the bobbi torrent adapter.",
+    "A 1920x1080 token would be classified as season 1920 / episode 1080 by both old and new matchers. A bound [01] fallback is then skipped. This is a proven shared code defect, not yet the proven cause of this specific release's failure.",
+    "Actual selected torrent file_stats were no longer available during this inspection, so do not claim the specific failure is established as the dimension-token defect or an old-version reproduction.",
+    "The base32 magnet was intentionally handled through transport identity and can be normalized by the child. A null producer info_hash alone does not establish a download failure.",
+    "No code was changed in this diagnostic. Network/device work stopped when the parent requested a read-only new/old comparison response."
+  ]
+}

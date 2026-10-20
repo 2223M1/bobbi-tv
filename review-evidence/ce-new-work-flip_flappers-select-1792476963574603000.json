@@ -1,0 +1,21 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "operation": "select",
+    "cards": [],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 23,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "select",
+  "attempt": 2,
+  "regression_attempt": true
+}

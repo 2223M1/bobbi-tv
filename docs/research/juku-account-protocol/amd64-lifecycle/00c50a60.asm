@@ -1,0 +1,68 @@
+; main.handleUserPlay.func1
+00c50a60  CMP RSP,qword ptr [R14 + 0x10]
+00c50a64  JBE 0x00c50b44
+00c50a6a  PUSH RBP
+00c50a6b  MOV RBP,RSP
+00c50a6e  SUB RSP,0x68
+00c50a72  MOV R10,qword ptr [RDX + 0x10]
+00c50a76  MOV R11,qword ptr [RDX + 0x18]
+00c50a7a  MOV R12,qword ptr [RDX + 0x8]
+00c50a7e  MOV RAX,qword ptr [RDX + 0x20]
+00c50a82  MOV RBX,qword ptr [RDX + 0x28]
+00c50a86  MOV RCX,qword ptr [RDX + 0x30]
+00c50a8a  MOV R8,qword ptr [RDX + 0x38]
+00c50a8e  MOV R9,qword ptr [RDX + 0x40]
+00c50a92  TEST R10,R10
+00c50a95  JNZ 0x00c50b09
+00c50a97  CMP qword ptr [0x019900b0],0x0
+00c50a9f  NOP
+00c50aa0  JZ 0x00c50b09
+00c50aa2  MOV qword ptr [RSP + 0x40],R11
+00c50aa7  MOV qword ptr [RSP + 0x58],RAX
+00c50aac  MOV qword ptr [RSP + 0x60],RBX
+00c50ab1  MOV qword ptr [RSP + 0x48],RCX
+00c50ab6  MOV qword ptr [RSP + 0x50],R8
+00c50abb  MOV qword ptr [RSP + 0x38],R9
+00c50ac0  MOV RCX,qword ptr [R11 + 0x28]
+00c50ac4  CALL RCX
+00c50ac6  MOV RCX,qword ptr [0x019900b0]
+00c50acd  MOV RDX,RAX
+00c50ad0  MOV RAX,RCX
+00c50ad3  MOV RSI,RBX
+00c50ad6  MOV RBX,RDX
+00c50ad9  MOV RCX,RSI
+00c50adc  NOP dword ptr [RAX]
+00c50ae0  CALL 0x00a63de0
+00c50ae5  MOV RCX,qword ptr [RSP + 0x48]
+00c50aea  MOV R8,qword ptr [RSP + 0x50]
+00c50aef  MOV R9,qword ptr [RSP + 0x38]
+00c50af4  MOV R11,qword ptr [RSP + 0x40]
+00c50af9  MOV R10,RBX
+00c50afc  MOV R12,RAX
+00c50aff  MOV RAX,qword ptr [RSP + 0x58]
+00c50b04  MOV RBX,qword ptr [RSP + 0x60]
+00c50b09  MOV RDX,qword ptr [R11 + 0x40]
+00c50b0d  MOV RDI,R12
+00c50b10  MOV RSI,R10
+00c50b13  CALL RDX
+00c50b15  TEST RBX,RBX
+00c50b18  JZ 0x00c50b2c
+00c50b1a  XOR EAX,EAX
+00c50b1c  MOV RDI,RBX
+00c50b1f  MOV RSI,RCX
+00c50b22  XOR EBX,EBX
+00c50b24  XOR ECX,ECX
+00c50b26  ADD RSP,0x68
+00c50b2a  POP RBP
+00c50b2b  RET
+00c50b2c  MOV RDX,qword ptr [RAX]
+00c50b2f  MOV RBX,qword ptr [RAX + 0x8]
+00c50b33  MOV RCX,qword ptr [RAX + 0x10]
+00c50b37  MOV RAX,RDX
+00c50b3a  XOR EDI,EDI
+00c50b3c  XOR ESI,ESI
+00c50b3e  ADD RSP,0x68
+00c50b42  POP RBP
+00c50b43  RET
+00c50b44  CALL 0x0048a1e0
+00c50b49  JMP 0x00c50a60

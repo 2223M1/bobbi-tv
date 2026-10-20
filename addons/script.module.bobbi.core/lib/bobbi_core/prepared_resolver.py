@@ -1,7 +1,7 @@
 """Fresh account/file validation before converting an exact selection to 115."""
 import re
 from bobbi_core.prepared_qualification import qualification_token
-from bobbi_core.font_playback_preflight import measured
+from bobbi_core.runtime_measurement import measured
 
 
 class PreparedResolver:
@@ -58,7 +58,7 @@ class PreparedResolver:
             return self._finish(plan, verified)
         finally:
             # Covers successful transfer, qualification failure and rejected
-            # subtitle context equally. Never release the separate play lease.
+            # video context equally. Never release the separate play lease.
             self.queue.ledger.release(plan['file']['resource_id'], plan['body']['verification_id'])
 
     def _finish(self, plan, verified):
@@ -78,8 +78,8 @@ class PreparedResolver:
                     path=current['cloud_path'], bytes=current['bytes'], version_key=current['version_key'])
         if 'qualification' in body:
             result['qualification'] = plan['qualification']
-        from bobbi_core.subtitle_binding import prepared_video
-        result['subtitle_video'] = prepared_video(self.queue, current['resource_id'], body['source_info_hash'])
+        from bobbi_core.video_context import prepared_video
+        result['video_context'] = prepared_video(self.queue, current['resource_id'], body['source_info_hash'])
         if self.protection is not None:
             # Establish durable protection before finish releases the probe.
             self.protection.arm(plan)

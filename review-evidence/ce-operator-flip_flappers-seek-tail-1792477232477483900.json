@@ -1,0 +1,329 @@
+{
+  "result": {
+    "operation": "seek-tail",
+    "before": {
+      "at": 2207103.094457829,
+      "native": {
+        "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+        "monotonic_us": 2206888324384,
+        "native_instance": "07a56094-06dd-40ee-8b31-428a8c6a862e",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "2fa28a4fa3d84243970aefe91a8fc6f9",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+        "user_intent": 0
+      },
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "properties": {
+        "currentsubtitle": {},
+        "speed": 1,
+        "subtitleenabled": true,
+        "time": {
+          "hours": 0,
+          "milliseconds": 656,
+          "minutes": 3,
+          "seconds": 34
+        },
+        "totaltime": {
+          "hours": 0,
+          "milliseconds": 502,
+          "minutes": 23,
+          "seconds": 41
+        }
+      }
+    },
+    "atomic_instance_control": false,
+    "operator_test": true,
+    "command_result": {
+      "percentage": 15.107259750366211,
+      "time": {
+        "hours": 0,
+        "milliseconds": 750,
+        "minutes": 3,
+        "seconds": 34
+      },
+      "totaltime": {
+        "hours": 0,
+        "milliseconds": 502,
+        "minutes": 23,
+        "seconds": 41
+      }
+    },
+    "target_seconds": 1396,
+    "observations": [
+      {
+        "at": 2207105.50932169,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2206888324384,
+          "native_instance": "07a56094-06dd-40ee-8b31-428a8c6a862e",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "2fa28a4fa3d84243970aefe91a8fc6f9",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {},
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 480,
+            "minutes": 23,
+            "seconds": 15
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2207107.518438114,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2206888324384,
+          "native_instance": "07a56094-06dd-40ee-8b31-428a8c6a862e",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "2fa28a4fa3d84243970aefe91a8fc6f9",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {},
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 566,
+            "minutes": 23,
+            "seconds": 17
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2207109.526102241,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2206888324384,
+          "native_instance": "07a56094-06dd-40ee-8b31-428a8c6a862e",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "2fa28a4fa3d84243970aefe91a8fc6f9",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {},
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 610,
+            "minutes": 23,
+            "seconds": 19
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2207111.534753698,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2206888324384,
+          "native_instance": "07a56094-06dd-40ee-8b31-428a8c6a862e",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "2fa28a4fa3d84243970aefe91a8fc6f9",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {},
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 653,
+            "minutes": 23,
+            "seconds": 21
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2207113.547616322,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2206888324384,
+          "native_instance": "07a56094-06dd-40ee-8b31-428a8c6a862e",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "2fa28a4fa3d84243970aefe91a8fc6f9",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {},
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 530,
+            "minutes": 23,
+            "seconds": 23
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2207115.5607914,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2206888324384,
+          "native_instance": "07a56094-06dd-40ee-8b31-428a8c6a862e",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "2fa28a4fa3d84243970aefe91a8fc6f9",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {},
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 532,
+            "minutes": 23,
+            "seconds": 25
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      }
+    ],
+    "same_instance_after": true
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

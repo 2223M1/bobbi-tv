@@ -1,0 +1,12 @@
+{
+  "architecture": "amd64",
+  "archive": "juku-0.80-amd64-full-static.zip",
+  "bytes": 49114616,
+  "sha256": "507afb7d91792188e285f89c2ef84b29aadea766833c0b52b405c43521bef7a9",
+  "archive_entries": 57341,
+  "verified_all_entry_sha256": true,
+  "manifest": "amd64\\artifact-manifest.tsv",
+  "manifest_sha256": "02db967ab024972b4bea1343ec5a4bebb030f191a080fe607f580833094bf955",
+  "uncompressed_bytes_without_manifest": 164610281,
+  "scope": "All architecture export files; original input package and binary are not included"
+}

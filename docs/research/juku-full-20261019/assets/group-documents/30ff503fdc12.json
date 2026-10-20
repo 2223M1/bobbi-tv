@@ -1,0 +1,40 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\插件EMBY部署流程.doc",
+  "name": "插件EMBY部署流程.doc",
+  "bytes": 9392128,
+  "sha256": "30ff503fdc12d8a220b5abcff13a9549f259817bafd3f67f7840237f5889f56a",
+  "state": "legacy-OLE-stream-index-only",
+  "streams": [
+    {
+      "path": "\u0001CompObj",
+      "bytes": 109,
+      "sha256": "38782e9d11ee9f0aaaaf70cd808590af9b7d85034e5d16d969817f59581fdb91"
+    },
+    {
+      "path": "\u0005DocumentSummaryInformation",
+      "bytes": 4096,
+      "sha256": "33230158644aa8f865eb6749ea0400b261320043e292a0b888bd236a8e65241f"
+    },
+    {
+      "path": "\u0005SummaryInformation",
+      "bytes": 4096,
+      "sha256": "e8f4bcdec53f9377f4393bb21477dff04e34bce4d90ad1efb5ba6c3c520e48a8"
+    },
+    {
+      "path": "1Table",
+      "bytes": 5617,
+      "sha256": "de26c18e67638667c621ac733268bd4e2556a8f33c0d9a20a4b0656837ff0d5e"
+    },
+    {
+      "path": "Data",
+      "bytes": 9294185,
+      "sha256": "a1b29f515afe8043b3396f1c5cd8ccc28632298d1e9479df13eba8ff1e8f53e4"
+    },
+    {
+      "path": "WordDocument",
+      "bytes": 6706,
+      "sha256": "da5fbcc8614e63e8a1dcf6babaaa7efdf5cf5a9ab3946c91ae7f84a375451889"
+    }
+  ],
+  "limitation": "Word binary text/layout not decoded; macros/embedded objects not executed"
+}

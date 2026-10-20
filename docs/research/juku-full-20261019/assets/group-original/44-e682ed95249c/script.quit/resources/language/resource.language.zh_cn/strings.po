@@ -1,0 +1,8 @@
+# Kodi Media Center language file
+msgctxt "#30000"
+msgid "显示诊断信息（调试用）"
+msgstr "显示诊断信息（调试用）"
+
+msgctxt "#30001"
+msgid "预加载缓存（播放开始后预构建弹窗数据，按退出键秒开）"
+msgstr "预加载缓存（播放开始后预构建弹窗数据，按退出键秒开）"

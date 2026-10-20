@@ -1,0 +1,240 @@
+{
+  "base": "a9189b5d157d886c814cf28c6748c97fc6825a35",
+  "source_commit": "ff530e09c34c6285ccb05c1d4179140b097174fb",
+  "records": [
+    {
+      "path": "addons/plugin.video.bobbi/lib/cinema/prepared_retry.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/cinema/prepared_retry.py",
+      "source_sha256": "e87d64e6d1006134826c174bc194c8f2809660f3720eb0affeb9e4566b474b21",
+      "integrated_sha256": "e87d64e6d1006134826c174bc194c8f2809660f3720eb0affeb9e4566b474b21"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/cinema/source_presentation.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/cinema/source_presentation.py",
+      "source_sha256": "8325d4062d5085313218caa417cd9c119373405aff5dd7185a7533b92f81fa0c",
+      "integrated_sha256": "8325d4062d5085313218caa417cd9c119373405aff5dd7185a7533b92f81fa0c"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/clients/bobi_library.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/clients/bobi_library.py",
+      "source_sha256": "175a3316ffc1a93dc2a04f4f0379a00b6506940112bc99863173437c537909cc",
+      "integrated_sha256": "175a3316ffc1a93dc2a04f4f0379a00b6506940112bc99863173437c537909cc"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/clients/tmdb/episode_order.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/clients/tmdb/episode_order.py",
+      "source_sha256": "a7d9525c96f854f5581efd11784cff083ce0430937b1054873f4583f45a76ef5",
+      "integrated_sha256": "a7d9525c96f854f5581efd11784cff083ce0430937b1054873f4583f45a76ef5"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/clients/tmdb/related_movies.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/clients/tmdb/related_movies.py",
+      "source_sha256": "761ff1ce5e2dc591257c2798a390a957f49df940372aa2b7cfc6de72bf7040b2",
+      "integrated_sha256": "761ff1ce5e2dc591257c2798a390a957f49df940372aa2b7cfc6de72bf7040b2"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/clients/tmdb/tmdb.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/clients/tmdb/tmdb.py",
+      "source_sha256": "e1f24e3c980b9c44c8e1cf28b30bc1c2b0fa1e247f7384f8b28c86e9c7ac32a5",
+      "integrated_sha256": "e1f24e3c980b9c44c8e1cf28b30bc1c2b0fa1e247f7384f8b28c86e9c7ac32a5"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/gui/base_window.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/gui/base_window.py",
+      "source_sha256": "31991497483f815aa79c5da4bc1115be8d8a50cbc83619b60a25cbc66310c573",
+      "integrated_sha256": "31991497483f815aa79c5da4bc1115be8d8a50cbc83619b60a25cbc66310c573"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/gui/source_select.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/gui/source_select.py",
+      "source_sha256": "f8c15bd6c7e7bbb6263a42e9612bad2e2c1ea2aa54b695174f2b0c6ea39a5c9e",
+      "integrated_sha256": "9bb928cd1a193f992c6c47f9112811ba7eedece597fd155d336cd0f3023c2e0e"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/search.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/search.py",
+      "source_sha256": "a90a71d3fb708220e33742640d3b973757debc32deaaeca8706b0c92fdb0dad1",
+      "integrated_sha256": "a90a71d3fb708220e33742640d3b973757debc32deaaeca8706b0c92fdb0dad1"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/background_service.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/services/background_service.py",
+      "source_sha256": "1975ec926497b65c45e5b4c32e0e87ff12ab89a178e62f80b17920eefd0f8095",
+      "integrated_sha256": "1975ec926497b65c45e5b4c32e0e87ff12ab89a178e62f80b17920eefd0f8095"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/playback_control.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/services/playback_control.py",
+      "source_sha256": "7db36e34a2b482f29afa61c0456c8adaec8f543d9da43ce74a7aad0351a41efc",
+      "integrated_sha256": "7db36e34a2b482f29afa61c0456c8adaec8f543d9da43ce74a7aad0351a41efc"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/utils/general/cinema_source_dedupe.py",
+      "status": "manually-resolved",
+      "resolution": "Kept full CE exact-release dedupe and merged portable source presentation; final bytes are locked by source-inventory.json."
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/utils/general/source_platform.py",
+      "status": "manually-resolved",
+      "resolution": "Kept full CE provider routing with portable capability guards; final bytes are locked by source-inventory.json."
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/utils/general/source_resolution.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/utils/general/source_resolution.py",
+      "source_sha256": "3eb739d44d30634bd576bd3929c315f8dfafea617a4f80d2c7cb5842ab13254d",
+      "integrated_sha256": "3eb739d44d30634bd576bd3929c315f8dfafea617a4f80d2c7cb5842ab13254d"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/utils/player/direct_continuity.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/utils/player/direct_continuity.py",
+      "source_sha256": "1b723b022dc3f8a068765ff147df07e422bbcaaeca6f76605585bfd4381ecd1f",
+      "integrated_sha256": "1b723b022dc3f8a068765ff147df07e422bbcaaeca6f76605585bfd4381ecd1f"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/utils/views/shows.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/lib/utils/views/shows.py",
+      "source_sha256": "c12abf8f12ad3fe0e18bef0d3a62ec7fc964fa93ca0a1b92541a2464c7342468",
+      "integrated_sha256": "c12abf8f12ad3fe0e18bef0d3a62ec7fc964fa93ca0a1b92541a2464c7342468"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/resources/settings.xml",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/plugin.video.jacktook/resources/settings.xml",
+      "source_sha256": "0f16939e8ac63b64c8d4c2e08979e827b79f0fe675720885f2388b54b1f086a5",
+      "integrated_sha256": "5bb96d91dc202ffdae672ef7ae5bd60c35c828334d4370763f713c5fb053ff11"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/capabilities.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/capabilities.py",
+      "source_sha256": "8cdad7f4547ea680f045382a27e46938a938f58d53c88324d17d52e61c51983a",
+      "integrated_sha256": "8cdad7f4547ea680f045382a27e46938a938f58d53c88324d17d52e61c51983a"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/episode_revision.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/episode_revision.py",
+      "source_sha256": "a85439fc33d17d63963f32aa88f2f587c95e690b8420da2ff2aef029f3b9e01d",
+      "integrated_sha256": "a85439fc33d17d63963f32aa88f2f587c95e690b8420da2ff2aef029f3b9e01d"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/font_cache.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/font_cache.py",
+      "source_sha256": "95e28b455e8ddfb2e215d7d30c7bf4ce991029fdb9ab020d5c93244516a0b769",
+      "integrated_sha256": "95e28b455e8ddfb2e215d7d30c7bf4ce991029fdb9ab020d5c93244516a0b769"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/font_playback_preflight.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/font_playback_preflight.py",
+      "source_sha256": "0f9a06c644482c1063ee1e27d8c5690f8c38250d0a6ce9134a87b8412bc9dcc1",
+      "integrated_sha256": "0f9a06c644482c1063ee1e27d8c5690f8c38250d0a6ce9134a87b8412bc9dcc1"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/pack_media_equivalence.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/pack_media_equivalence.py",
+      "source_sha256": "2ea528c4182caae4a4127d603cc5a50b7406dfb84f307848c358bda1a2730bf5",
+      "integrated_sha256": "2ea528c4182caae4a4127d603cc5a50b7406dfb84f307848c358bda1a2730bf5"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_authority.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/playback_authority.py",
+      "source_sha256": "4507d0144668d3cbeb3783063fd076acdc9334f37026f6df83944c7a158e7506",
+      "integrated_sha256": "4507d0144668d3cbeb3783063fd076acdc9334f37026f6df83944c7a158e7506"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/preparation_client.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/preparation_client.py",
+      "source_sha256": "1c214765fffa61fe9789d92a1cc9ab6ff25e8d3460a45d7693018f4174a914e2",
+      "integrated_sha256": "1c214765fffa61fe9789d92a1cc9ab6ff25e8d3460a45d7693018f4174a914e2"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/prepared_index.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/prepared_index.py",
+      "source_sha256": "723797d7c008948032255ec2d31edbb41335c22f0dbb9a95ce86c79716f010c6",
+      "integrated_sha256": "723797d7c008948032255ec2d31edbb41335c22f0dbb9a95ce86c79716f010c6"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/prepared_resolver.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/prepared_resolver.py",
+      "source_sha256": "7ddbe4256d1197ca86cd4bbe15d57df99dcfbc0c79ac3a23b0e2c71b1e915e0d",
+      "integrated_sha256": "7ddbe4256d1197ca86cd4bbe15d57df99dcfbc0c79ac3a23b0e2c71b1e915e0d"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_binding.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_binding.py",
+      "source_sha256": "a703da3527dbe224b75f90cb908360e2bdbddca2df869b827e3743458e4514bb",
+      "integrated_sha256": "a703da3527dbe224b75f90cb908360e2bdbddca2df869b827e3743458e4514bb"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_candidates.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_candidates.py",
+      "source_sha256": "2d384a86fa9516fd5cc964f402f1b5590da40b547d7e1f793e8cbf4a902cc893",
+      "integrated_sha256": "2d384a86fa9516fd5cc964f402f1b5590da40b547d7e1f793e8cbf4a902cc893"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_cues.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_cues.py",
+      "source_sha256": "f72f6cbc6395f8a2b95d566aa9b6c57bf876ad05bd668e3d411d968a19261cb1",
+      "integrated_sha256": "f72f6cbc6395f8a2b95d566aa9b6c57bf876ad05bd668e3d411d968a19261cb1"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_font_preparation.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_font_preparation.py",
+      "source_sha256": "8c1af0f5afab8aeff1f85154b45f58c2afa0e3e90ba162a1c9fa0f2624bbf490",
+      "integrated_sha256": "8c1af0f5afab8aeff1f85154b45f58c2afa0e3e90ba162a1c9fa0f2624bbf490"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_pack.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_pack.py",
+      "source_sha256": "887883bd87c2b5ee6f5f228b2a6ef107a26031c6b0e71ab35011f483a8d8090e",
+      "integrated_sha256": "887883bd87c2b5ee6f5f228b2a6ef107a26031c6b0e71ab35011f483a8d8090e"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_preparation.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_preparation.py",
+      "source_sha256": "10390a3f183ad78c904d1458389f7799189a44cd33f3c31dc7cc008213903f02",
+      "integrated_sha256": "10390a3f183ad78c904d1458389f7799189a44cd33f3c31dc7cc008213903f02"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_projection.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_projection.py",
+      "source_sha256": "d0c82e7016b54c81c427bc3e7a9f57d213f84c475283f743ecdd179a50c4b3fe",
+      "integrated_sha256": "d0c82e7016b54c81c427bc3e7a9f57d213f84c475283f743ecdd179a50c4b3fe"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_store.py",
+      "status": "merged",
+      "source": "ui-redesign/backend/source/addons/script.module.am6b.core/lib/am6b_core/subtitle_store.py",
+      "source_sha256": "508628d936fae43518c17afe05b8402360da43d7a5616b41dde797ebb50c5d55",
+      "integrated_sha256": "508628d936fae43518c17afe05b8402360da43d7a5616b41dde797ebb50c5d55"
+    }
+  ]
+}

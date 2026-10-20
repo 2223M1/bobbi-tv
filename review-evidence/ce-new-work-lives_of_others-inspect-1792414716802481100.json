@@ -1,0 +1,130 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "lives_of_others",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "The Lives of Others",
+        "tmdb_id": 582,
+        "kind": "movie",
+        "year": 2006
+      },
+      "prior_request": null,
+      "started": 2144502.706738826,
+      "home": {
+        "generation": 30,
+        "intent": 1,
+        "retired_generation": 29,
+        "observed_at": 2144503.409224562
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2144503.409969207,
+      "picker": {
+        "window": 13001,
+        "generation": 31,
+        "intent": 1,
+        "tmdb_id": 582,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2144505.703991553,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "The.Lives.of.Others.2006.BluRay.1080p.DTS-HD.MA.5.1.x265.10bit-BeiTai.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "15.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "d48060c95beb0908adfeca65065c5a5087d120ad37f55c1fef716cc016ed5e2c",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2144546.898093191,
+      "request_id": "bbd150a85304451e80e261f2d61db1e2",
+      "selection_identity": "transport:7340bb6627415b967232e3b3c61ddd8d82c230fa50dea789169a493276cf9ef1",
+      "native_instance": "5f0a48c5-280a-46e3-817c-3747e08de039",
+      "first_av_observed_at": 2144555.911900932,
+      "select_to_av_observed_seconds": 9.013807740993798
+    },
+    "sample": {
+      "wall": 2144599.896669382,
+      "phase": "AV_STARTED",
+      "cancelled": false,
+      "failure": null,
+      "native": {
+        "file_identity": "transport:7340bb6627415b967232e3b3c61ddd8d82c230fa50dea789169a493276cf9ef1|transport:9a9ad531aece31258b3ca49a7f4e37925a4a1a6349c40abe42d57a49adad5e18",
+        "monotonic_us": 2144555729144,
+        "native_instance": "5f0a48c5-280a-46e3-817c-3747e08de039",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "bbd150a85304451e80e261f2d61db1e2",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "9a9ad531aece31258b3ca49a7f4e37925a4a1a6349c40abe42d57a49adad5e18",
+        "user_intent": 0
+      },
+      "seconds": 44.056,
+      "duration": 8260.0,
+      "currentaudiostream": {
+        "bitrate": 0,
+        "channels": 6,
+        "codec": "dtshd_ma",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "ger",
+        "name": "German DTS-HD Master Audio 5.1 @ 2542 kbps",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 2,
+        "isdefault": true,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": "Chs/SUP  简体"
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 808,
+        "index": 0,
+        "language": "eng",
+        "name": "HEVC, x265Main10@L5.1@High, 24 fps @ 13054 kbps",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 1082,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      }
+    }
+  },
+  "diagnostic_present": false,
+  "work": "lives_of_others",
+  "operation": "inspect",
+  "attempt": 2,
+  "regression_attempt": true
+}
