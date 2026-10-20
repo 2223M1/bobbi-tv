@@ -1,4 +1,8 @@
 """Portable base host plus the real native owner when that contract exists."""
+from lib.boot_gate import ready
+if not ready():
+    raise SystemExit(0)
+
 import xbmc
 from bobbi_platform.capabilities import probe
 from bobbi_platform.kodi import rpc

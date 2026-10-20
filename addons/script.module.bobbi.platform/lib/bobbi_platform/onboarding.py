@@ -47,8 +47,8 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
 
 def summary(capabilities):
     if capabilities.get('standard_playback') is not True:
-        return ('尚未通过播放器检查。此版需要 Kodi 21；先确认安装版本，再点“重新检查”。\n'
-                '没有修改现有 Kodi、账号或音画设置。')
-    return ('Kodi 21 标准播放接口检查通过。\n'
+        return ('播放器接口暂不可用：' + '、'.join(capabilities.get('errors', [])) + '\n'
+                '请检查 Kodi 是否正常运行后重试。没有修改账号或音画设置。')
+    return ('Kodi 标准播放接口检查通过。\n'
             '这不代表影片、HDR、音频直通或自动续播已经验收。\n'
             '下一步可连接本机助手，或直接选择自己的视频测试。')

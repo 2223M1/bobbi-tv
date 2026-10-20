@@ -11,6 +11,9 @@ def main():
     from resources.lib.provider import Provider
     from resources.lib.ui import run
     from bobbi_platform.runtime import call
+    from bobbi_platform.standard_subtitle_ui import offer
+    if offer(xbmc.Player(), xbmcgui.Dialog(), call):
+        return
 
     def rpc(method, params):
         response = json.loads(xbmc.executeJSONRPC(json.dumps(
