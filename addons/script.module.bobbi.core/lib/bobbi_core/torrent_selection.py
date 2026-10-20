@@ -3,6 +3,7 @@
 import json
 import os
 import re
+from bobbi_core.filename_semantics import parse_filename
 
 from .torrent_episode_matching import (
     _ANIME_EPISODE_PATTERN,
@@ -151,16 +152,17 @@ def _bound_episode_match(files, season, episode, absolute_episode, torrent_title
         needs_scope = continuous and not (season == 1 and absolute_episode == episode)
         if contexts - {season} or (needs_scope and contexts != {season}):
             continue
-        if any(pattern.search(path) for pattern in _STRONG_PATTERNS):
+        if parse_filename(path).strong:
             if _has_strong_match(path, season, episode):
                 matches.append((2, candidate))
             continue
         basename = re.split(r"[/\\]", path)[-1]
-        tokens = list(_EPISODE_PATTERN.finditer(basename)) + list(_ANIME_EPISODE_PATTERN.finditer(basename))
+        parsed = parse_filename(basename)
+        tokens = parsed.explicit + parsed.anime
         numbers = {int(token.group('episode')) for token in tokens}
         allowed = {episode, absolute_episode} if continuous else {absolute_episode}
         if tokens and len(numbers) == 1 and numbers.issubset(allowed) and all(
-                not _MULTI_EPISODE_SUFFIX.match(basename[token.end():]) for token in tokens):
+                not parsed.range_after(token) for token in tokens):
             matches.append((1, candidate))
     if not matches:
         return None
@@ -197,5 +199,4 @@ def select_exact_file(candidate_files, season="", episode="", torrent_title="", 
     if chosen is None:
         raise ExactSelectionError("target_unresolved")
     return chosen
-
 

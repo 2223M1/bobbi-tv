@@ -94,11 +94,8 @@ def identity(context):
 
 
 def episode_tags(text):
-    tags = {(int(s), int(e)) for s, e in re.findall(
-        r'(?i)(?<![a-z0-9])s(\d{1,3})[ ._-]*e(\d{1,4})(?![a-z0-9])', text)}
-    tags.update((int(s), int(e)) for s, e in re.findall(
-        r'(?<![a-z0-9])(\d{1,3})x(\d{1,4})(?![a-z0-9])', text, re.I))
-    return tags
+    from bobbi_core.filename_semantics import parse_filename
+    return parse_filename(text).episode_pairs()
 
 
 def rank(row, context, allow_season_pack=False, allow_incomplete=False):

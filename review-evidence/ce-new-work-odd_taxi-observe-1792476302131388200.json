@@ -1,0 +1,687 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "odd_taxi",
+    "operation": "observe",
+    "target": null,
+    "settle": [],
+    "samples": [
+      {
+        "wall": 2206154.86243551,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "monotonic_us": 2206095193678,
+          "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 57.49,
+        "duration": 1431.015,
+        "currentaudiostream": {
+          "bitrate": 1358825,
+          "channels": 2,
+          "codec": "flac",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "JPBD-2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "dkl070418@VCB-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "JPBD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1394,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206154.849292912,
+          "player_time_started": 2206154.864993888,
+          "player_time_completed": 2206154.867729475,
+          "caching_started": 2206154.867755225,
+          "caching_completed": 2206154.894070672,
+          "decoder_started": 2206154.937126013,
+          "decoder_completed": 2206154.937704972,
+          "sample_completed": 2206154.937709805
+        }
+      },
+      {
+        "wall": 2206164.947022925,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "monotonic_us": 2206095193678,
+          "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 67.542,
+        "duration": 1431.015,
+        "currentaudiostream": {
+          "bitrate": 1358825,
+          "channels": 2,
+          "codec": "flac",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "JPBD-2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "dkl070418@VCB-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "JPBD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1636,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206164.937849707,
+          "player_time_started": 2206164.949442553,
+          "player_time_completed": 2206164.952136806,
+          "caching_started": 2206164.952160931,
+          "caching_completed": 2206164.981190464,
+          "decoder_started": 2206165.032930105,
+          "decoder_completed": 2206165.033504272,
+          "sample_completed": 2206165.033509147
+        }
+      },
+      {
+        "wall": 2206175.041933823,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "monotonic_us": 2206095193678,
+          "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 77.593,
+        "duration": 1431.015,
+        "currentaudiostream": {
+          "bitrate": 1358825,
+          "channels": 2,
+          "codec": "flac",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "JPBD-2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "dkl070418@VCB-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "JPBD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1877,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206175.033662481,
+          "player_time_started": 2206175.044292826,
+          "player_time_completed": 2206175.04688312,
+          "caching_started": 2206175.046903204,
+          "caching_completed": 2206175.077643071,
+          "decoder_started": 2206175.120092784,
+          "decoder_completed": 2206175.120497867,
+          "sample_completed": 2206175.120500242
+        }
+      },
+      {
+        "wall": 2206185.136266286,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "monotonic_us": 2206095193678,
+          "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 87.687,
+        "duration": 1431.015,
+        "currentaudiostream": {
+          "bitrate": 1358825,
+          "channels": 2,
+          "codec": "flac",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "JPBD-2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "dkl070418@VCB-SC"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "JPBD",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 2119,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206185.120610811,
+          "player_time_started": 2206185.138640872,
+          "player_time_completed": 2206185.14146175,
+          "caching_started": 2206185.141483333,
+          "caching_completed": 2206185.170212031,
+          "decoder_started": 2206185.212067533,
+          "decoder_completed": 2206185.212451742,
+          "sample_completed": 2206185.212453367
+        }
+      }
+    ],
+    "passed": true,
+    "startup_clock": {
+      "stable": true,
+      "budget_seconds": 5,
+      "elapsed_seconds": 0.7759429323486984,
+      "samples": [
+        {
+          "wall": 2206154.083501867,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+            "monotonic_us": 2206095193678,
+            "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 56.656,
+          "duration": 1431.015,
+          "currentaudiostream": {
+            "bitrate": 1358825,
+            "channels": 2,
+            "codec": "flac",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "JPBD-2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "JPBD",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1375,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2206154.073231813,
+            "player_time_started": 2206154.085989703,
+            "player_time_completed": 2206154.091883335,
+            "caching_started": 2206154.091903376,
+            "caching_completed": 2206154.135922719,
+            "decoder_started": 2206154.182780273,
+            "decoder_completed": 2206154.183694107,
+            "sample_completed": 2206154.18369744
+          }
+        },
+        {
+          "wall": 2206154.454661376,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+            "monotonic_us": 2206095193678,
+            "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 57.073,
+          "duration": 1431.015,
+          "currentaudiostream": {
+            "bitrate": 1358825,
+            "channels": 2,
+            "codec": "flac",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "JPBD-2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "JPBD",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1384,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2206154.433855686,
+            "player_time_started": 2206154.457847713,
+            "player_time_completed": 2206154.463834012,
+            "caching_started": 2206154.463874345,
+            "caching_completed": 2206154.469473143,
+            "decoder_started": 2206154.52343633,
+            "decoder_completed": 2206154.524186665,
+            "sample_completed": 2206154.524192373
+          }
+        },
+        {
+          "wall": 2206154.785554714,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+            "monotonic_us": 2206095193678,
+            "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "5f152f4a8ee5eaa604269c000d64eaa515673be00b8b18a6c32fc860255ccf05",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 57.281,
+          "duration": 1431.015,
+          "currentaudiostream": {
+            "bitrate": 1358825,
+            "channels": 2,
+            "codec": "flac",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "JPBD-2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "dkl070418@VCB-SC"
+          },
+          "currentvideostream": {
+            "codec": "h264",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "JPBD",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1391,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2206154.774404118,
+            "player_time_started": 2206154.787855633,
+            "player_time_completed": 2206154.79048922,
+            "caching_started": 2206154.790509553,
+            "caching_completed": 2206154.803077026,
+            "decoder_started": 2206154.848735495,
+            "decoder_completed": 2206154.84914587,
+            "sample_completed": 2206154.849148204
+          }
+        }
+      ],
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "record": {
+      "test": {
+        "title": "ODDTAXI",
+        "tmdb_id": 116727,
+        "kind": "tv",
+        "year": 2021,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": null,
+      "started": 2206040.303477324,
+      "home": {
+        "generation": 10,
+        "intent": 0,
+        "retired_generation": 10,
+        "observed_at": 2206040.759826159
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 2206040.760568827,
+      "picker": {
+        "window": 13001,
+        "generation": 11,
+        "intent": 0,
+        "tmdb_id": 116727,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2206045.225796145,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "ODD TAXI S01E01-[1080p][JP.BD.Remux][lolice-mix].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.23 GB",
+        "Container(1000).ListItem.Property(source_key)": "76be425a09db24b5318cd95641fc227c008606bd9c892655891095adbfbe03ed",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2206087.081420838,
+      "request_id": "6686a6be42a44240bf39ba7110d2c3cb",
+      "selection_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273",
+      "native_instance": "ecca30e4-272e-4059-8b83-09b4e376b79b",
+      "first_av_observed_at": 2206095.21865384,
+      "select_to_av_observed_seconds": 8.137233002111316
+    },
+    "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+    "wall_seconds": 30.274,
+    "play_seconds": 30.197,
+    "decoder": "vdec channel 0 statistics:\n  device name : ammvdec_h264-00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 22\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 2119\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+    "crashes": [
+      "kodi_crashlog_20261011230638.log",
+      "kodi_crashlog_20261012021405.log",
+      "kodi_crashlog_20261012135249.log",
+      "kodi_crashlog_20261019200619.log"
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "odd_taxi",
+  "operation": "observe",
+  "attempt": 2,
+  "regression_attempt": true
+}

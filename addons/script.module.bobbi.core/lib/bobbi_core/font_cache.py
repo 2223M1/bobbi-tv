@@ -412,8 +412,8 @@ class FontCache:
     def reserve(self, version, subtitle, owner, purpose="next", seconds=600):
         checked_key(owner)
         result = self.binding(version, subtitle)
-        if result is None or result["missing"]:
-            raise ValueError("Exact subtitle font inputs are not ready")
+        if result is None or not result['selected']:
+            raise ValueError("No matched subtitle font inputs are ready")
         if purpose not in {"current", "next"} or type(seconds) is not int or not 1 <= seconds <= 21600:
             raise ValueError("Bounded current/next font reservation required")
         with self.ledger.transaction():
@@ -424,9 +424,9 @@ class FontCache:
         return result
 
     def owns_activation(self, version, subtitle, owner, hashes):
-        """Small ledger check only; never hash font files in playback IPC."""
+        """Ownership of matched inputs, not complete style coverage; no IO."""
         result = self.binding(version, subtitle)
-        if result is None or result['missing'] or not isinstance(hashes, list):
+        if result is None or not result['selected'] or not isinstance(hashes, list):
             return False
         expected = sorted({item['sha256'] for item in result['selected']})
         if hashes != expected:
@@ -454,8 +454,8 @@ class FontCache:
 
     def activation_plan(self, version, subtitle):
         result = self.binding(version, subtitle)
-        if result is None or result['missing']:
-            raise ValueError('Exact fonts are not ready')
+        if result is None or not result['selected']:
+            raise ValueError('No matched fonts are ready')
         selected = {item['sha256'] for item in result['selected']}
         previous = {row[0] for row in self.ledger.db.execute('SELECT sha256 FROM font_native_links')}
         plan = {}
@@ -475,8 +475,11 @@ class FontCache:
         or touch user fonts. Only the next renderer sees this exact working set.
         """
         result = self.binding(version, subtitle)
-        if result is None or result["missing"]:
-            raise ValueError("Missing exact fonts; do not silently claim readiness")
+        # A missing family must not discard other exact matched faces. Libass
+        # retains normal fallback for missing families; never claim full style
+        # coverage or synthesize a replacement font file here.
+        if result is None or not result['selected']:
+            raise ValueError("No matched font inputs to activate")
         checked_key(owner)
         def verify(record, native=False):
             if verified is None:
@@ -541,7 +544,8 @@ class FontCache:
                         os.link(self._path(record), native)
                 raise
         return {"status": "FONTS_ACTIVATED_NOT_RENDER_PROOF", "font_count": len(records),
-                "bytes": sum(record["bytes"] for record in records.values()), "hashes": sorted(records)}
+                "bytes": sum(record["bytes"] for record in records.values()), "hashes": sorted(records),
+                "inputs_complete": not result['missing'], "missing_count": len(result['missing'])}
 
     def release(self, owner):
         checked_key(owner)

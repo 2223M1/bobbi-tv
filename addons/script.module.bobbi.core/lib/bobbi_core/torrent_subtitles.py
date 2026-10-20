@@ -12,6 +12,7 @@ from urllib.parse import quote
 
 MAX_SUBTITLE_BYTES = 2 * 1024 * 1024
 MAX_CACHE_FILES = 32
+MATCHER_POLICY = 'declared-group-language-v1'
 SUBTITLE_TIMEOUT = (1.0, 3.0)
 SUBTITLE_BUDGET = 4.0
 _EXTENSIONS = {".ass", ".ssa", ".srt"}
@@ -124,6 +125,35 @@ def _language(label):
     return None
 
 
+def _sidecar_language(label, media_stem):
+    """Language or a release's declared group plus language; no edition erasure.
+
+    E.g. [GroupA&GroupB] ... .GroupA-SC.ass has the exact video stem plus
+    a group already declared by that release. An arbitrary Extended/Commentary
+    suffix is not language metadata and remains ineligible.
+    """
+    rank = _language(label)
+    if rank is not None:
+        return rank
+    label = label.casefold().strip(' ._[]()')
+    groups = re.match(r'^(?:\[[^\[\]]{1,128}\]\s*)+', media_stem)
+    if not groups:
+        return None
+    for language in sorted(_SIMPLIFIED | _TRADITIONAL | _CHINESE, key=len, reverse=True):
+        if not label.endswith(language):
+            continue
+        prefix = label[:-len(language)]
+        if not prefix or prefix[-1] not in '._-':
+            continue
+        group = prefix.rstrip('._-')
+        if (not re.fullmatch(r'[\w&+ -]{1,64}', group)
+                or re.search(r'(?i)\b(?:extended|uncut|dubbed|commentary|forced|signs|songs|sdh)\b', group)):
+            continue
+        if re.search(r'(?<!\w)' + re.escape(group) + r'(?!\w)', groups[0]):
+            return _language(language)
+    return None
+
+
 def matching_chinese_sidecars(media_path, file_stats):
     """Choose one exact release basename; ambiguity is not resolved by guessing."""
     media_path = _safe_path(media_path)
@@ -150,7 +180,7 @@ def matching_chinese_sidecars(media_path, file_stats):
             ranks = [rank for rank in ranks if rank is not None]
             rank = min(ranks) if ranks else None
         elif stem.startswith(media_stem) and stem[len(media_stem):len(media_stem) + 1] in ". _[ (":
-            rank = _language(stem[len(media_stem):])
+            rank = _sidecar_language(stem[len(media_stem):], media_stem)
         else:
             rank = None
         if rank is not None:
@@ -195,7 +225,7 @@ def cache_chinese_sidecar(api, info_hash, media_path, candidates, cache_dir):
     media_stem = os.path.splitext(media_path.rsplit("/", 1)[-1])[0].casefold()
     sidecar_stem = os.path.splitext(path.rsplit("/", 1)[-1])[0].casefold()
     labels = path.split("/")[:-1] + [sidecar_stem[len(media_stem):]]
-    ranks = [rank for rank in (_language(label) for label in labels) if rank is not None]
+    ranks = [rank for rank in (_sidecar_language(label, media_stem) for label in labels) if rank is not None]
     language = {0: "zh-Hans", 1: "zh-Hant", 2: "zh"}.get(min(ranks), "zh")
     identity = "{}|{}|{}|{}|{}".format(api._base_url, info_hash.lower(), media_path, candidate["id"], path)
     filename = hashlib.sha256(identity.encode("utf-8")).hexdigest() + "." + language + extension

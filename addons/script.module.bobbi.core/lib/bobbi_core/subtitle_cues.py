@@ -8,6 +8,7 @@ import re
 
 from bobbi_core.fonts import subtitle_text
 MAX_CUES = 100000
+CONTENT_POLICY = 'ass-invisible-events-v1'
 
 
 def _seconds(value, ass=False):
@@ -58,7 +59,12 @@ def parse(raw, extension, duration=None):
                 # or drop them from the actual ASS supplied to libass.
                 if re.search(r'\\p[1-9]', row['text']):
                     continue
-                append(_seconds(row['start'], True), _seconds(row['end'], True), row['text'])
+                start, stop = _seconds(row['start'], True), _seconds(row['end'], True)
+                # Invisible ASS events are not dialogue evidence. Keep the
+                # original bytes for libass; malformed/reversed times still fail.
+                if start == stop:
+                    continue
+                append(start, stop, row['text'])
     elif extension in ('.srt', '.vtt'):
         if extension == '.vtt' and not text.lstrip().startswith('WEBVTT'):
             raise ValueError('WebVTT signature required')

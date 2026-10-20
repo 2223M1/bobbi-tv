@@ -36,9 +36,8 @@ def _endpoint(value):
 def configuration(path):
     value = json.loads(_private(path))
     required = {'schema', 'enabled', 'cd2_endpoint', 'cd2_token_file', 'account',
-                'destination', 'ffprobe', 'download_capability', 'torrserver_endpoint',
-                'tmdb_api_key_file'}
-    optional = {'cd2_login_file', 'tmdb_proxy', 'torrserver_pairing_file',
+                'destination', 'ffprobe', 'download_capability', 'torrserver_endpoint'}
+    optional = {'cd2_login_file', 'tmdb_proxy', 'torrserver_pairing_file', 'tmdb_api_key_file',
                 'jackett_endpoint', 'jackett_api_key_file', 'font_tool', 'font_native_directory'}
     if (not isinstance(value, dict) or set(value) - required - optional or required - set(value)
             or type(value['schema']) is not int or value['schema'] != 1
@@ -335,7 +334,10 @@ class Session:
             self.torrent_session.auth = (pair.username, pair.password)
         if c.get('tmdb_proxy'):
             catalog_session.proxies = {'https': c['tmdb_proxy']}
-        self.catalog = Catalog(catalog_session, _private(c['tmdb_api_key_file']))
+        from .project_metadata import tmdb_key
+        project_key = tmdb_key()
+        self.catalog = Catalog(catalog_session, project_key or
+                               (_private(c['tmdb_api_key_file']) if c.get('tmdb_api_key_file') else ''))
         self.metadata_cache = MetadataCache(state / 'torrent-file-metadata')
         self.ledger = self.resources.enter_context(Ledger(state / 'resources.sqlite'))
         self.queue, self.intake = PreparationQueue(self.ledger), Intake(self.ledger)

@@ -181,8 +181,8 @@ def bootstrap(run):
         return bundle.manifest
 
 
-def stopped():
-    for unit in UNITS:
+def stopped(units=UNITS):
+    for unit in units:
         mask = Path('/run/systemd/system') / unit
         if not mask.is_symlink() or os.readlink(mask) != '/dev/null':
             raise RuntimeError('CE_OWNER_NOT_MASKED')
@@ -382,6 +382,20 @@ class GenerationConflict(RuntimeError):
     """An old deployment receipt must never mutate a newer installation."""
 
 
+def clean_install_preflight():
+    """A new program/profile only; never reinterpret existing personal data."""
+    from bobbi_platform.upstream_addons import OWNED_COMPONENTS
+    from ce_state_migration import plain
+    for name in sorted(OWNED_COMPONENTS | set(OLD_IDS)):
+        for root in (KODI / 'addons', PROFILES):
+            path = plain(root / name)
+            if path.exists():
+                raise ValueError('CE_CLEAN_INSTALL_REQUIRES_EMPTY_BOBBI_AND_LEGACY:' + name)
+    for name in ('state.json', 'journal.json'):
+        if plain(WORK / name).exists():
+            raise ValueError('CE_CLEAN_INSTALL_HAS_GENERATION_USE_UPGRADE')
+
+
 def _generation(value):
     if (not isinstance(value, dict) or set(value) != {'sequence', 'versions'}
             or type(value['sequence']) is not int or value['sequence'] < 0
@@ -508,7 +522,7 @@ def restore(run, receipt, lease):
 
 
 def main(run, mode):
-    if mode not in ('stage', 'status', 'deploy', 'upgrade', 'rollback'):
+    if mode not in ('stage', 'status', 'deploy', 'upgrade', 'clean-install', 'rollback'):
         raise ValueError('CE_DEPLOY_MODE')
     if 'CoreELEC' not in Path('/etc/os-release').read_text():
         raise ValueError('CORELEC_ONLY')
@@ -520,7 +534,7 @@ def main(run, mode):
         return dict(state='status', players=rpc('Player.GetActivePlayers'), application=rpc('Application.GetProperties', {'properties':['version']}),
                     host_file=(PROFILES / 'script.module.bobbi.platform/runtime.json').is_file())
     receipt_path = run / 'deployment.json'
-    if mode in ('deploy', 'upgrade') and receipt_path.exists():
+    if mode in ('deploy', 'upgrade', 'clean-install') and receipt_path.exists():
         raise ValueError('DEPLOY_RUN_ALREADY_USED')
     config = None
     if mode == 'deploy':
@@ -531,7 +545,11 @@ def main(run, mode):
     from ce_state_migration import sqlite_backup
     WORK.mkdir(mode=0o700, parents=True, exist_ok=True)
     lease = CoreELECLease(WORK)
-    receipt = json.loads(receipt_path.read_text()) if mode == 'rollback' else dict(schema=1, installed=False, services={})
+    receipt = json.loads(receipt_path.read_text()) if mode == 'rollback' else dict(schema=1, installed=False, services={}, operation=mode)
+    clean = mode == 'clean-install' or (mode == 'rollback' and receipt.get('operation') == 'clean-install')
+    units = ('kodi.service',) if clean else UNITS
+    # Existing migration helpers retain their historical two-owner check.
+    quiescent = (lambda: stopped(units)) if clean else stopped
     try:
         if mode != 'rollback':
             require_clean_transaction()
@@ -553,10 +571,12 @@ def main(run, mode):
                 raise ValueError('CE_NATIVE_BUILD_CHANGED')
             if mode == 'deploy':
                 identity(config)
-            else:
+            elif mode == 'upgrade':
                 # An update owns programs, not the retired migration account.
                 # Local logout/account changes need neither CD2 nor old files.
                 upgrade_profile_snapshot(check_stopped=False)
+            else:
+                clean_install_preflight()
             with SignedBundle(run / 'candidate.zip', load_trust(), 'coreelec') as source:
                 check = source.engine(KODI / 'addons', WORK, lease.idle, lease.commit)
                 receipt['program_before'] = owned_generation(check, check.available())
@@ -571,7 +591,9 @@ def main(run, mode):
             if mode == 'upgrade' and (receipt['program_before']['sequence'] <= 0
                                       or not receipt['program_before']['versions']):
                 raise ValueError('CE_UPGRADE_REQUIRES_INSTALLED_GENERATION')
-            for unit in UNITS:
+            if mode == 'clean-install' and receipt['program_before'] != dict(sequence=0, versions={}):
+                raise ValueError('CE_CLEAN_INSTALL_HAS_GENERATION_USE_UPGRADE')
+            for unit in units:
                 mask = Path('/run/systemd/system') / unit
                 if mask.exists() or mask.is_symlink():
                     raise ValueError('CE_ALREADY_RUNTIME_OVERRIDDEN')
@@ -586,21 +608,22 @@ def main(run, mode):
         raise
     success, stopped_units = False, []
     try:
-        for unit in UNITS:
+        for unit in units:
             receipt['services_attempted'].append(unit)
             write_json(receipt_path, receipt)
             stopped_units.append(unit)
             command('systemctl', 'mask', '--runtime', unit)
             command('systemctl', 'stop', unit)
-        stopped()
+        quiescent()
         if mode == 'rollback':
             restore(run, receipt, lease)
         else:
             database = KODI / 'userdata/Database/Addons33.db'
-            sqlite_backup(database, run / 'Addons33.before.db', stopped)
+            sqlite_backup(database, run / 'Addons33.before.db', quiescent)
             copy_file(KODI / 'userdata/guisettings.xml', run / 'guisettings.before.xml')
             ids = [row['id'] for row in manifest['components']]
-            receipt['flags'] = flags(database, ids + list(OLD_IDS))
+            affected = ids + ([] if clean else list(OLD_IDS))
+            receipt['flags'] = flags(database, affected)
             receipt['gui'] = gui()
             receipt['new_profiles_preserved_on_failure'] = [str(PROFILES / name) for name in
                 ('plugin.video.bobbi', 'script.module.bobbi.platform', 'skin.bobbi.cinema')]
@@ -612,14 +635,19 @@ def main(run, mode):
                     raise GenerationConflict('CE_DEPLOY_GENERATION_CHANGED')
                 receipt['upstream_preserved'] = upstream_preflight(run, engine)
                 write_json(receipt_path, receipt)
-                receipt['torrent_connection'] = migrate_torrent_backend(manifest)
+                receipt['torrent_connection'] = (dict(state='unconfigured', optional=True) if clean
+                                                  else migrate_torrent_backend(manifest))
                 write_json(receipt_path, receipt)
                 if mode == 'upgrade':
                     preserved = upgrade_profile_snapshot()
                     receipt['migration'] = dict(performed=False, policy='existing-current-profile-preserved')
-                else:
+                elif mode == 'deploy':
                     preserved = None
                     receipt['migration'] = migrate_profiles(run, config)
+                else:
+                    clean_install_preflight()  # Recheck after owners have stopped.
+                    preserved = None
+                    receipt['migration'] = dict(performed=False, policy='clean-own-account-first-run')
                 receipt['program_attempted'] = True
                 write_json(receipt_path, receipt)  # Durable BEFORE engine's commit.
                 engine.apply(source.raw, source.signature)
@@ -633,9 +661,11 @@ def main(run, mode):
                     receipt['profile_sentinels_unchanged'] = sorted(preserved)
             receipt['installed'] = True
             write_json(receipt_path, receipt)
-            flags(database, ids + list(OLD_IDS), dict({name:(1,0) for name in ids}, **{name:(0,1) for name in OLD_IDS}))
+            flags(database, affected, dict({name:(1,0) for name in ids},
+                  **({} if clean else {name:(0,1) for name in OLD_IDS})))
             gui({'lookandfeel.skin':'skin.bobbi.cinema', 'lookandfeel.soundskin':'resource.uisounds.bobbi-modern'})
-            command('systemctl', 'disable', 'bobitv-preparation.service')
+            if not clean:
+                command('systemctl', 'disable', 'bobitv-preparation.service')
             write_json(receipt_path, receipt)
         success = True
     except Exception as error:
@@ -646,7 +676,7 @@ def main(run, mode):
             # without pretending every owner successfully stopped. Unknown or
             # changed generations still fail restore and keep the masks.
             if receipt.get('program_attempted') is True:
-                stopped()
+                quiescent()
             restore(run, receipt, lease)
         except Exception as rollback_error:
             receipt['rollback_failure'] = type(rollback_error).__name__
@@ -686,6 +716,6 @@ def main(run, mode):
                 write_json(receipt_path, receipt)
         finally:
             lease.close()
-    return dict(state='upgraded' if mode=='upgrade' else 'deployed' if mode=='deploy' else 'rolled_back', program_sequence=manifest['sequence'],
+    return dict(state='upgraded' if mode=='upgrade' else 'installed' if mode=='clean-install' else 'deployed' if mode=='deploy' else 'rolled_back', program_sequence=manifest['sequence'],
                 migration=receipt.get('migration'), cd2_and_mount_untouched=True,
                 playback_verified=False)

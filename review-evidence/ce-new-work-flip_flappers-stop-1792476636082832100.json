@@ -1,0 +1,92 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "stopped": true,
+    "before": {
+      "wall": 2206518.395071064,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+        "monotonic_us": 2206356367140,
+        "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+        "open_epoch": 2,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "3447e970474144cc8ee221bcf454aa09",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 161.821,
+      "duration": 1421.502,
+      "currentaudiostream": {
+        "bitrate": 0,
+        "channels": 2,
+        "codec": "aac_lc",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "",
+        "name": "",
+        "samplerate": 0
+      },
+      "currentsubtitle": {},
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1080,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 3903,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "observation_times": {
+        "sample_started": 2206518.383630808,
+        "player_time_started": 2206518.397500107,
+        "player_time_completed": 2206518.400761234,
+        "caching_started": 2206518.400782693,
+        "caching_completed": 2206518.440820633,
+        "decoder_started": 2206518.48912387,
+        "decoder_completed": 2206518.49108833,
+        "sample_completed": 2206518.491096538
+      }
+    },
+    "seconds": 0.64
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "stop",
+  "attempt": 1,
+  "regression_attempt": false
+}

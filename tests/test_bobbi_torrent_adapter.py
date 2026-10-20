@@ -178,13 +178,14 @@ def test_ready_uses_existing_service_read_only():
 
 
 def test_add_unknown_outcome_never_retries():
-    session = Session([requests.exceptions.ReadTimeout()])
+    session = Session([requests.exceptions.ReadTimeout(), requests.exceptions.ReadTimeout()])
     backend = Backend(config(), session, Clock())
     with pytest.raises(BackendError, match='TORRENT_ADD_UNCONFIRMED'):
         backend.add(HASH, MAGNET, None, 10, lambda: None)
     with pytest.raises(BackendError, match='ALREADY_ATTEMPTED'):
         backend.add(HASH, MAGNET, None, 10, lambda: None)
-    assert len(session.calls) == 1
+    assert len(session.calls) == 2
+    assert session.calls[1][2]['json'] == {'action': 'get', 'hash': HASH}
     assert session.calls[0][2]['json']['save_to_db'] is False
 
 
@@ -193,6 +194,29 @@ def test_add_different_hash_is_rejected():
     with pytest.raises(BackendError) as error:
         backend.add(HASH, MAGNET, None, 10, lambda: None)
     assert error.value.category == 'source_identity_mismatch'
+
+
+def test_lost_add_reply_reconciles_same_hash_without_second_mutation():
+    session = Session([requests.exceptions.ReadTimeout(), Response({'hash': HASH})])
+    backend = Backend(config(), session, Clock())
+    backend.add(HASH, MAGNET, None, 10, lambda: None)
+    assert backend.add_reconciled
+    assert [row[2]['json']['action'] for row in session.calls] == ['add', 'get']
+
+
+def test_buffer_user_extension_does_not_resubmit_or_switch_file():
+    clock = Clock()
+    owner = FakeOwner(clock)
+    prompts = []
+    owner.wait_for_buffer = lambda detail: prompts.append(detail) or True
+    session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}), Response(status()),
+        Response(b'')] + [Response(status(ready=False)) for _ in range(4)] + [Response(status())])
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(request())
+    assert result['file'] == FILE and len(prompts) == 1
+    assert prompts[0]['selected_file_bytes'] == FILE['length']
+    assert 'ready' not in prompts[0]
+    assert [row[2].get('json', {}).get('action') for row in session.calls].count('add') == 1
+    assert len([row for row in session.calls if '/stream?' in row[1]]) == 1
 
 
 def test_no_config_or_service_is_not_a_source_retry():
@@ -430,7 +454,7 @@ def test_owner_registers_same_torrent_subtitles_only_after_claim():
     context = dict(boot_id='boot', epoch=1, request_id=RID, file_identity='bt:' + HASH + '|file')
     protocol = SimpleNamespace(owned_state=lambda rid: {},
         resolved_torrent_file_identity=lambda *args: context['file_identity'],
-        bind_and_claim=lambda *args: events.append('claim') or context,
+        bind_and_claim=lambda *args, **kwargs: events.append('claim') or context,
         call=lambda msg: events.append(msg) or {'registered': True})
     owner = Owner(RID, protocol, window, SimpleNamespace(abortRequested=lambda: False))
     owner.bind(Item(), HASH, FILE, 'http://127.0.0.1:18090/stream', {})
@@ -536,7 +560,7 @@ def test_parent_budget_is_read_from_same_new_backend(monkeypatch):
     monkeypatch.setattr('bobbi_torrent.backend.load_config', lambda: config(metadata_seconds=15, buffering_seconds=45))
     player = SimpleNamespace(data=dict(selection_policy='exact', is_torrent=True),
         url='plugin://plugin.video.bobbi.torrent/play_magnet')
-    assert namespace['_startup_timeout_seconds'](player) == 30 + 30 + 30 + 45 + 45
+    assert namespace['_startup_timeout_seconds'](player) == 30 + 30 + 30 + 45 + 30 + 60 + 45 + 45
 
 
 def test_shared_subtitle_connection_uses_only_new_config(monkeypatch):
@@ -706,7 +730,8 @@ def test_metadata_timeout_has_bounded_poll_diagnostic_without_selecting():
     owner = FakeOwner(clock)
     with pytest.raises(BackendError) as result:
         Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(request())
-    assert result.value.diagnostic == dict(stage='metadata', metadata_polls=4)
+    assert result.value.diagnostic == dict(stage='metadata', metadata_polls=4, elapsed_ms=2000,
+        stage_ms=dict(backend=0, download=0, add=0, metadata=2000))
     assert not owner.targets and not owner.bindings
 
 

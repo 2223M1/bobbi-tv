@@ -1,0 +1,142 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "coherence",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Coherence",
+        "tmdb_id": 220289,
+        "kind": "movie",
+        "year": 2014
+      },
+      "prior_request": null,
+      "started": 2205276.670814512,
+      "home": {
+        "generation": 10,
+        "intent": 0,
+        "retired_generation": 10,
+        "observed_at": 2205277.137924408
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 2205277.138737324,
+      "picker": {
+        "window": 13001,
+        "generation": 11,
+        "intent": 0,
+        "tmdb_id": 220289,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2205279.449717051,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "彗星来的那一夜.2014.1080p.Bluray.DTS-HD MA 5.1.4KTOP.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "15.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "493eee49ceabe35afc66775995f80706bd0ff496f8e6eb86be341da1accde668",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2205323.476459176,
+      "request_id": "f38132a6c74547558d5fd4898ec43d4a",
+      "selection_identity": "transport:a058e1c0a177b9514cd844c5a116359710f3dff1de2eb99d4377060b68dbdefe",
+      "native_instance": "9085eb1a-9838-4e5a-bfa0-c8b2dcbb9cd9",
+      "first_av_observed_at": 2205328.02141946,
+      "select_to_av_observed_seconds": 4.544960284139961
+    },
+    "sample": {
+      "wall": 2205436.129881372,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:a058e1c0a177b9514cd844c5a116359710f3dff1de2eb99d4377060b68dbdefe|transport:d9f3a28affdb7f5666292ff3e11e6eefe77d592b7dbedc13e14e6122603131f5",
+        "monotonic_us": 2205327913662,
+        "native_instance": "9085eb1a-9838-4e5a-bfa0-c8b2dcbb9cd9",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "f38132a6c74547558d5fd4898ec43d4a",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "d9f3a28affdb7f5666292ff3e11e6eefe77d592b7dbedc13e14e6122603131f5",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 107.881,
+      "duration": 5273.013,
+      "currentaudiostream": {
+        "bitrate": 0,
+        "channels": 6,
+        "codec": "dtshd_ma",
+        "index": 0,
+        "isdefault": false,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "",
+        "name": "",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 5,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": ""
+      },
+      "currentvideostream": {
+        "codec": "mpeg2video",
+        "height": 1080,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 2608,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "observation_times": {
+        "sample_started": 2205436.111324181,
+        "player_time_started": 2205436.133094869,
+        "player_time_completed": 2205436.136148866,
+        "caching_started": 2205436.136171825,
+        "caching_completed": 2205436.152647476,
+        "decoder_started": 2205436.199931015,
+        "decoder_completed": 2205436.200882181,
+        "sample_completed": 2205436.200885098
+      }
+    }
+  },
+  "diagnostic_present": false,
+  "work": "coherence",
+  "operation": "inspect",
+  "attempt": 2,
+  "regression_attempt": true
+}

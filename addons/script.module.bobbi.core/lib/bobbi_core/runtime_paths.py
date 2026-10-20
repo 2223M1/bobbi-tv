@@ -103,6 +103,12 @@ def configure(profile, subtitle_root=None, native_sha256=None):
             raise ValueError('SUBTITLE_ROOT_NOT_ALLOWED')
     _no_links(base / 'subtitle-browser')
     base.mkdir(mode=0o700, parents=True, exist_ok=True)
+    # F9's native ABI expects this directory even on a new account/profile.
+    # Creating only this empty export directory does not require old Jacktook
+    # credentials, settings or a pre-migration userdata backup.
+    export = Path(CE_F9_ROOT) if selected == 'ce-f9' else base / 'subtitle-browser'
+    _no_links(export)
+    export.mkdir(mode=0o700, parents=True, exist_ok=True)
     target = base / CONFIG
     _no_links(target)
     data = dict(schema=1, subtitle_abi=selected)

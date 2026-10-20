@@ -30,6 +30,16 @@ def failure_log(error, request_id=''):
                 detail[key] = value
         if type(diagnostic.get('binding_present')) is bool:
             detail['binding_present'] = diagnostic['binding_present']
+        for key in ('elapsed_ms', 'torrent_preloaded', 'torrent_preload_target',
+                    'selected_file_bytes', 'peers', 'download_bps'):
+            value = diagnostic.get(key)
+            if type(value) is int and 0 <= value <= 512*1024**3:
+                detail[key] = value
+        timings = diagnostic.get('stage_ms')
+        if isinstance(timings, dict):
+            detail['stage_ms'] = {k: v for k, v in timings.items()
+                if k in ('backend', 'download', 'add', 'metadata', 'selector', 'buffering', 'final_selection')
+                and type(v) is int and 0 <= v <= 1200000}
     return '[BOBBI-TORRENT] reason=' + reason + ' detail=' + json.dumps(
         detail, sort_keys=True, separators=(',', ':'))
 
@@ -85,7 +95,8 @@ def execute(request, owner, backend, download_session, list_item, resolve_url,
             item.setArt({'poster': request['poster']})
         owner.progress('starting', 100)
         owner.bind(item, result['info_hash'], result['file'], result['url'],
-            result['resolution'], request.get('original_audio_hint', ''))
+            result['resolution'], request.get('original_audio_hint', ''),
+            result.get('file_evidence', 'AUTO_VERIFIED_FILE'))
         owner.selected(result['info_hash'], result['file'], final_url=result['url'])
         owner.active()
         answered = True  # Kodi may accept a throwing call; never answer it twice.

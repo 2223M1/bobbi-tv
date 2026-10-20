@@ -2,6 +2,7 @@
 DOWNLOAD_SECONDS = 30
 CONTROL_SECONDS = 30
 HANDOFF_SECONDS = 45
+FILE_CHOICE_SECONDS = 60
 
 
 def bounded_seconds(value, default, maximum):
@@ -18,4 +19,7 @@ def budgets(metadata=30, buffering=90):
     # Metadata may need refreshing once at the file-buffer boundary. Control
     # covers upload/poll overshoot; handoff covers sidecars and native AV startup.
     return dict(metadata=metadata, buffering=buffering,
-                total=DOWNLOAD_SECONDS + CONTROL_SECONDS + 2 * metadata + buffering + HANDOFF_SECONDS)
+                # The first buffer deadline is unchanged. One additional round
+                # is available ONLY after an explicit, 30-second user prompt.
+                total=DOWNLOAD_SECONDS + CONTROL_SECONDS + 2 * metadata + 2 * buffering
+                      + 30 + FILE_CHOICE_SECONDS + HANDOFF_SECONDS)

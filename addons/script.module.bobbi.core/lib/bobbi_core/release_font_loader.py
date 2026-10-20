@@ -15,7 +15,7 @@ import time
 from uuid import uuid4
 
 from bobbi_core.cloud_mapping import map_torrent_file
-from bobbi_core.font_archive import release_assets, EXPANSION_LIMIT, FONT_LIMIT
+from bobbi_core.font_archive import release_assets, EXPANSION_LIMIT, FONT_LIMIT, ARCHIVE_EXTENSIONS
 from bobbi_core.font_cache import safe_directory
 from bobbi_core.font_extract_worker import TOOL_HASH
 from bobbi_core.fonts import inspect_font_file, select_fonts
@@ -150,7 +150,7 @@ class ReleaseFontLoader:
                 evidence.append(dict(asset=asset, cloud={k:item[k] for k in ('file_id','path','bytes')},
                                      sha256=sha256, local=str(target)))
                 self._guard()
-                if extension in {'.7z', '.zip'}:
+                if extension in ARCHIVE_EXTENSIONS:
                     fonts.extend(self._decode(target, sha256, work/('decoded-'+str(number))))
                 else:
                     parsed = inspect_font_file(target)

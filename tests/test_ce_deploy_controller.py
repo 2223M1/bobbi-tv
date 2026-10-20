@@ -439,6 +439,20 @@ def test_upgrade_rejects_missing_profile_before_reading_account(tmp_path, monkey
         controller.upgrade_profile_snapshot()
 
 
+def test_clean_preflight_never_treats_an_existing_profile_as_empty(tmp_path, monkeypatch):
+    monkeypatch.setattr(controller, 'KODI', tmp_path / 'kodi')
+    monkeypatch.setattr(controller, 'PROFILES', tmp_path / 'profiles')
+    monkeypatch.setattr(controller, 'WORK', tmp_path / 'work')
+    controller.clean_install_preflight()
+    profile = controller.PROFILES / 'plugin.video.bobbi'
+    profile.mkdir(parents=True)
+    marker = profile / 'watch.json'
+    marker.write_text('keep')
+    with pytest.raises(ValueError, match='REQUIRES_EMPTY'):
+        controller.clean_install_preflight()
+    assert marker.read_text() == 'keep'
+
+
 @pytest.mark.parametrize('apply_result', ['success', 'commit_then_raise', 'raise_before_commit', 'foreign_generation'])
 @pytest.mark.parametrize('operation', ['deploy', 'upgrade'])
 def test_deploy_main_records_intent_before_apply_and_recovers_durable_generation(tmp_path, monkeypatch, apply_result, operation):
@@ -618,6 +632,34 @@ def upgrade_harness(tmp_path, monkeypatch, sequence=2, version='2.0', fault=None
     monkeypatch.setattr(controller, 'gui', gui)
     return types.SimpleNamespace(run=run, calls=calls, leases=leases, receipt=receipt_path,
         account=account, engine=engine, events=events, service_states=service_states)
+
+
+def test_clean_install_needs_no_old_account_cd2_or_preparation_unit(tmp_path, monkeypatch):
+    h = upgrade_harness(tmp_path, monkeypatch)
+    controller.PROFILES.rename(tmp_path / 'unrelated-test-fixture')
+    h.engine.state = dict(sequence=0, versions={})
+    monkeypatch.setattr(controller, 'migrate_torrent_backend',
+                        lambda *a: pytest.fail('Clean installation must not copy old BT settings'))
+    monkeypatch.setattr(controller, 'upgrade_profile_snapshot',
+                        lambda *a, **kw: pytest.fail('No prior account/profile required'))
+    monkeypatch.setattr(controller, 'stopped', lambda units: h.calls.append(('quiescent', units)))
+    def command(*args):
+        h.calls.append(args)
+        assert 'bobitv-preparation.service' not in args
+        if '--property=ActiveState' in args:
+            return 'active'
+        if '--property=UnitFileState' in args:
+            return 'enabled'
+        return ''
+    monkeypatch.setattr(controller, 'command', command)
+    assert controller.main(h.run, 'clean-install')['state'] == 'installed'
+    value = json.loads(h.receipt.read_text())
+    assert value['operation'] == 'clean-install'
+    assert value['program_before'] == dict(sequence=0, versions={})
+    assert value['migration'] == dict(performed=False, policy='clean-own-account-first-run')
+    assert value['torrent_connection'] == dict(state='unconfigured', optional=True)
+    assert set(value['services']) == {'kodi.service'}
+    assert ('systemctl', 'start', 'kodi.service') in h.calls
 
 
 @pytest.mark.parametrize('sequence,version', [(0, '2.0'), (1, '2.0'), (2, '1.0')])

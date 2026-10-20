@@ -381,7 +381,8 @@ class PlaybackAuthority:
                 raise ValueError('Actual resolved transport digest required, not media hash')
             if self.bound_url is not None and self.bound_url != url_hash:
                 return {'bound': False}
-            accepted = owner.bind_file(*args, message.get('selection_identity'), message.get('file_identity'))
+            accepted = owner.bind_file(*args, message.get('selection_identity'), message.get('file_identity'),
+                                      message.get('file_evidence', 'AUTO_VERIFIED_FILE'))
             if accepted:
                 self.bound_url = url_hash
             return {'bound': accepted}
@@ -508,7 +509,8 @@ class PlaybackAuthority:
             identity = message.get('selection_identity')
             if not isinstance(identity, str) or not identity or len(identity) > 1024:
                 raise ValueError('Exact next-release identity required')
-            if self.continuation or not owner._current(*args):
+            if (self.continuation or not owner._current(*args)
+                    or owner.desired['file_evidence'] == 'USER_CONFIRMED_FILE'):
                 return {'authorized': False}
             if operation == 'authorize_next':
                 row = self._continuation_receipt(row)

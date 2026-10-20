@@ -12,7 +12,7 @@ from bobbi_core.subtitle_binding import prepared_video, style_reviewable
 from bobbi_core.subtitle_export import export
 
 KEY = 'extension:subtitle-font-preparation:schema'
-ASSET_POLICY = 'nearest-release-directory-128m-v1'
+ASSET_POLICY = 'nearest-release-directory-128m-rar-v2'
 DDL = {'subtitle_font_preparation': '''CREATE TABLE subtitle_font_preparation(
     binding TEXT PRIMARY KEY, resource TEXT NOT NULL, state TEXT NOT NULL,
     attempts INTEGER NOT NULL, next_attempt REAL NOT NULL, detail TEXT NOT NULL)'''}
