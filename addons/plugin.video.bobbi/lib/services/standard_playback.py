@@ -103,6 +103,7 @@ class StandardPlayback:
         self.host = host
         self.events = Queue(maxsize=64)
         self.bound = ''
+        self.last_handoff = None
         self.subtitle_worker = self.subtitle_job = self.subtitle_pending = None
         self.history = HistoryWriter(host.report)
         self.session = StandardSession(host.accounts, history=self.history.save,
@@ -215,18 +216,31 @@ class StandardPlayback:
             self.session.retire('EVENT_OVERFLOW')
 
     def open_next(self, data):
-        from bobbi_platform.kodi import standard_handoff
-        from bobbi_platform.playback import selected_identity
-        request = data['request_id']
-        if self.player.isPlaying():
-            return
-        self.clear_subtitle_state()
-        self.session.select(request, data['_account'])
-        if not self.session.register(request, data)['accepted']:
-            return
-        identity = selected_identity(data['url'])
-        standard_handoff(identity, -1, ready=lambda: self.session.current_request(request)
-                         and not self.player.isPlaying()).submit(identity, data)
+        handoff, request = None, None
+        try:
+            from bobbi_platform.kodi import standard_handoff
+            from bobbi_platform.playback import selected_identity
+            request = data['request_id']
+            if self.player.isPlaying():
+                return
+            self.clear_subtitle_state()
+            self.session.select(request, data['_account'])
+            if not self.session.register(request, data)['accepted']:
+                return
+            identity = selected_identity(data['url'])
+            handoff = standard_handoff(identity, -1, ready=lambda: self.session.current_request(request)
+                                      and not self.player.isPlaying())
+            result = handoff.submit(identity, data)
+            self.last_handoff = dict(request_id=request, status=result['status'])
+        except Exception:
+            # The single successor boundary owns this failure, not the host
+            # loop. A send with lost/failed acknowledgement is NEVER replayed.
+            status = ('submission_unknown' if handoff and handoff.state == 'submission_unknown'
+                      else 'before_submission_failed')
+            self.last_handoff = dict(request_id=request, status=status)
+            if request and self.session.current_request(request):
+                self.session.retire(status.upper())
+            self.host.report('STANDARD_NEXT_' + status.upper())
 
     def tick(self):
         self._subtitles()
@@ -241,11 +255,12 @@ class StandardPlayback:
             try:
                 from bobbi_platform.standard_subtitle_ui import request_id
                 request = request_id(self.player)
-                if self.session.observe(request, self.player.getPlayingFile(),
-                                        self.player.getTime(), self.player.getTotalTime()):
-                    self.bound = request
-                else:
+                url = self.player.getPlayingFile()
+                position, duration = self.player.getTime(), self.player.getTotalTime()
+                if self.session.observe_other(request, url):
                     self.bound = ''
+                elif self.session.observe(request, url, position, duration):
+                    self.bound = request
             except RuntimeError:
                 pass  # Opening/seeking is not evidence of end or error.
         self.session.tick(playing=self.player.isPlaying())

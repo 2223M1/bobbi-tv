@@ -1,0 +1,30 @@
+{
+  "repository": "2223M1/bobbi-tv",
+  "merged": true,
+  "main": "1d421b101bdc3b940bdd5870caaac49a5fc49394",
+  "tree": "f013b350c62352ad2ac03c7fde94932d0c408344",
+  "pr_head": "85ea57ea1b112c28e3c6c1f4472ead0215e31f46",
+  "main_run": {
+    "id": 39410984018,
+    "status": "completed",
+    "conclusion": "success",
+    "artifact_id": 12258794271
+  },
+  "release": {
+    "id": 418290397,
+    "draft": true,
+    "prerelease": true,
+    "entry": {
+      "name": "script.bobbi.start-0.2.1-ce2009.zip",
+      "bytes": 96154426,
+      "sha256": "e06f72240124a5a5d260a61dbc948efe9173dd3f0d981754bb6a2fe55e8775b2"
+    },
+    "payload": {
+      "name": "bobbi-private-2026102009-coreelec.bobbi-update.zip",
+      "bytes": 96003832,
+      "sha256": "755a8b3455a5be4e9d6312c2ada5485e576b99c64e25671cc7e6825c1f7aa3e2"
+    },
+    "byte_access_this_review": false
+  },
+  "note": "GitHub metadata/CI receipt reads, no remote writes/device operations"
+}
