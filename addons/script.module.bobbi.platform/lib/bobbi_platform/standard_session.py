@@ -31,6 +31,7 @@ class StandardSession:
         row = self.current
         if row:
             row['cancel'].set()
+            row['next_data'] = None
             if row['state'] == 'playing':
                 self._save(row, reason)
             row['state'] = 'retired'
@@ -94,6 +95,22 @@ class StandardSession:
             self._save(row, 'STARTED')
         return True
 
+    def observe_other(self, request, url):
+        """Only a successfully read, nonempty foreign item proves takeover.
+
+        Missing observations during open/seek are not user intent. Pending new
+        selections can also still see the old video while resolution finishes.
+        """
+        row = self.current
+        if (not row or row['state'] not in ('playing', 'ended')
+                or not self.current_request(row['request_id']) or not url):
+            return False
+        expected = str((row['data'] or {}).get('url', '')).partition('|')[0]
+        if url != expected or (request and request != row['request_id']):
+            self.retire('EXTERNAL_PLAYBACK')
+            return True
+        return False
+
     def terminal(self, request, kind, playing=False):
         if not self.current_request(request) or playing:
             return False
@@ -135,19 +152,33 @@ class StandardSession:
         if self.worker and not self.worker.is_alive():
             self.worker.join()
             job, self.worker, self.job = self.job, None, None
-            if row and job['request_id'] == row['request_id'] and self.current_request(row['request_id']):
+            if row is job['owner'] and self.current_request(row['request_id']):
                 row['next_data'] = job.get('result')
+                row['retry_at'] = self.clock() + (5, 15, 30, 30, 30)[min(row['attempts'] - 1, 4)]
         if not row or not self.current_request(row['request_id']):
             return
-        if (self.next_loader and self.worker is None and row['state'] == 'playing'
-                and not row.get('next_started') and row['duration'] > 0
-                and row['duration'] - row['position'] <= 120):
-            row['next_started'] = True
-            job = dict(request_id=row['request_id'], data=deepcopy(row['data']), cancel=row['cancel'])
+        # Expire independently of a ready candidate or unrelated active player.
+        if row['state'] == 'ended' and self.clock() - row['terminal'] >= 20:
+            self.retire('NEXT_DEADLINE')
+            return
+        near_end = (row['state'] == 'playing' and row['duration'] > 0
+                    and row['duration'] - row['position'] <= 120
+                    and row.get('attempts', 0) < 5 and self.clock() >= row.get('retry_at', 0))
+        final_scan = row['state'] == 'ended' and not row.get('final_scan')
+        if (self.next_loader and self.worker is None and not row['next_data']
+                and (near_end or final_scan)):
+            row['attempts'] = row.get('attempts', 0) + 1
+            if final_scan:
+                row['final_scan'] = True
+            job = dict(request_id=row['request_id'], owner=row,
+                       data=deepcopy(row['data']), cancel=row['cancel'])
             self.job = job
+            def cancelled():
+                return (job['cancel'].is_set() or not self.accounts.is_current(row['account'])
+                        or (row['terminal'] is not None and self.clock() - row['terminal'] >= 20))
             def work():
                 try:
-                    job['result'] = self.next_loader(job['data'], job['cancel'].is_set)
+                    job['result'] = self.next_loader(job['data'], cancelled)
                 except Exception:
                     job['result'] = None  # Availability never changes release policy.
             self.worker = Thread(target=work, name='bobbi-standard-next', daemon=True)
@@ -158,9 +189,6 @@ class StandardSession:
                 row['next_data'] = None
                 row['state'] = 'continued'  # Claim once before sending anything.
                 self.open_next(data)
-            elif self.worker is None or self.clock() - row['terminal'] > 20:
-                row['cancel'].set()
-                row['state'] = 'retired'
 
     def close(self):
         self.retire('SERVICE_STOPPED')

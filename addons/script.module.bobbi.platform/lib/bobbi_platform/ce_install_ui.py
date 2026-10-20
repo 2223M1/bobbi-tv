@@ -114,9 +114,13 @@ class KodiHost:
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': True})
 
     def restore(self, skin, enabled):
-        for name in enabled:
-            if name in MANAGED and self.details(name):
-                rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': True})
+        # Restore the entire managed enable vector, not just its True entries.
+        # Never touch unrelated addons or their origin / user settings.
+        for name in sorted(MANAGED, key=lambda n: n == 'plugin.video.bobbi'):
+            actual = self.details(name)
+            desired = name in enabled
+            if actual and actual.get('enabled') != desired:
+                rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': desired})
         if skin and skin != self.skin():
             rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': skin})
 
@@ -143,8 +147,8 @@ def main(payload=None):
     installer = Installer(xbmcvfs.translatePath('special://home/addons'),
                           profile('script.bobbi.start'), host)
     try:
-        if blocked(installer.work):
-            installer.recover()
+        # Pending activation is runnable but still needs recovery/readback.
+        installer.recover()
         state = installer._read()
         actions = ['进入影院设置 / 登录自己的115', '安装完整签名包',
                    '回退上一次程序安装', '返回原 Kodi 界面']
@@ -174,4 +178,4 @@ def main(payload=None):
             xbmc.executebuiltin('RunScript(script.bobbi.setup)')
     except (OSError, ValueError, RuntimeError) as error:
         xbmc.log('[bobbi-install] ' + type(error).__name__, xbmc.LOGERROR)
-        dialog.ok('安装未完成', '未切换到新影院。可重新打开“波比开始使用”恢复或重试。\n' + str(error))
+        dialog.ok('安装未完成', '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。\n' + str(error))
