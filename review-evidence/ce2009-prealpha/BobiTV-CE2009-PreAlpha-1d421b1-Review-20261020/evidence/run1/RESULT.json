@@ -1,0 +1,239 @@
+{
+  "scope": "Offline production control-flow probes with explicit IO/Kodi boundary doubles",
+  "count": 14,
+  "passed": 9,
+  "failed": 5,
+  "errors": 0,
+  "device_operations": false,
+  "results": [
+    {
+      "name": "rollback_normal",
+      "group": "installer",
+      "passed": true,
+      "expected": "Old files AND enable/skin state restored; a transient restore failure remains recoverable",
+      "actual": {
+        "before_reopen": {
+          "phase": "restored",
+          "blocked": false,
+          "host": {
+            "activations": 1,
+            "enabled": [
+              "plugin.video.bobbi",
+              "plugin.video.bobbi.library",
+              "plugin.video.bobbi.torrent",
+              "repository.bobbi",
+              "resource.uisounds.bobbi-modern",
+              "script.bobbi.opensubtitles",
+              "script.bobbi.setup",
+              "script.module.bobbi.catalog",
+              "script.module.bobbi.core",
+              "script.module.bobbi.mdsub",
+              "script.module.bobbi.platform",
+              "skin.bobbi.cinema"
+            ],
+            "restores": 1,
+            "skin": "skin.before",
+            "ticks": 0
+          },
+          "error": null
+        },
+        "recover_return": false,
+        "host_after_reopen": {
+          "activations": 1,
+          "enabled": [
+            "plugin.video.bobbi",
+            "plugin.video.bobbi.library",
+            "plugin.video.bobbi.torrent",
+            "repository.bobbi",
+            "resource.uisounds.bobbi-modern",
+            "script.bobbi.opensubtitles",
+            "script.bobbi.setup",
+            "script.module.bobbi.catalog",
+            "script.module.bobbi.core",
+            "script.module.bobbi.mdsub",
+            "script.module.bobbi.platform",
+            "skin.bobbi.cinema"
+          ],
+          "restores": 1,
+          "skin": "skin.before",
+          "ticks": 0
+        },
+        "files_restored": true
+      }
+    },
+    {
+      "name": "rollback_restore_rpc_retry",
+      "group": "installer",
+      "passed": false,
+      "expected": "Old files AND enable/skin state restored; a transient restore failure remains recoverable",
+      "actual": {
+        "before_reopen": {
+          "phase": "restored",
+          "blocked": false,
+          "host": {
+            "activations": 1,
+            "enabled": [],
+            "restores": 1,
+            "skin": "skin.estuary",
+            "ticks": 0
+          },
+          "error": "injected transient Kodi restore failure"
+        },
+        "recover_return": false,
+        "host_after_reopen": {
+          "activations": 1,
+          "enabled": [],
+          "restores": 1,
+          "skin": "skin.estuary",
+          "ticks": 0
+        },
+        "files_restored": true
+      }
+    },
+    {
+      "name": "crash_before_activation",
+      "group": "installer",
+      "passed": false,
+      "expected": "Reopen resumes activation or restores old generation; no prematurely complete partial state",
+      "actual": {
+        "child_exit": 73,
+        "phase": "complete",
+        "blocked": false,
+        "enabled_count": 0,
+        "wanted_count": 12,
+        "recovery_return": false
+      }
+    },
+    {
+      "name": "crash_during_activation",
+      "group": "installer",
+      "passed": false,
+      "expected": "Reopen resumes activation or restores old generation; no prematurely complete partial state",
+      "actual": {
+        "child_exit": 74,
+        "phase": "complete",
+        "blocked": false,
+        "enabled_count": 1,
+        "wanted_count": 12,
+        "recovery_return": false
+      }
+    },
+    {
+      "name": "install_no_failure",
+      "group": "installer",
+      "passed": true,
+      "expected": "All managed components activated after complete install",
+      "actual": {
+        "phase": "complete",
+        "enabled": 12
+      }
+    },
+    {
+      "name": "terminal_ENDED_99",
+      "group": "standard_lifecycle",
+      "passed": true,
+      "expected": {
+        "opens_next": true
+      },
+      "actual": {
+        "open_count": 1,
+        "history_reason": "NATURAL_EOF"
+      }
+    },
+    {
+      "name": "terminal_STOPPED_99",
+      "group": "standard_lifecycle",
+      "passed": true,
+      "expected": {
+        "opens_next": false
+      },
+      "actual": {
+        "open_count": 0,
+        "history_reason": "STOP"
+      }
+    },
+    {
+      "name": "terminal_ERROR_99",
+      "group": "standard_lifecycle",
+      "passed": true,
+      "expected": {
+        "opens_next": false
+      },
+      "actual": {
+        "open_count": 0,
+        "history_reason": "ERROR"
+      }
+    },
+    {
+      "name": "terminal_ENDED_20",
+      "group": "standard_lifecycle",
+      "passed": true,
+      "expected": {
+        "opens_next": false
+      },
+      "actual": {
+        "open_count": 0,
+        "history_reason": "ERROR"
+      }
+    },
+    {
+      "name": "next_becomes_ready_later",
+      "group": "standard_lifecycle",
+      "passed": false,
+      "expected": "Eligible same-release successor can be discovered before EOF after initial miss",
+      "actual": {
+        "lookup_count": 1,
+        "lookup_ready_values": [
+          false
+        ],
+        "open_count": 0,
+        "state": "retired"
+      }
+    },
+    {
+      "name": "next_ready_initially",
+      "group": "standard_lifecycle",
+      "passed": true,
+      "expected": "Eligible same-release successor can be discovered before EOF after initial miss",
+      "actual": {
+        "lookup_count": 1,
+        "lookup_ready_values": [
+          true
+        ],
+        "open_count": 1,
+        "state": "continued"
+      }
+    },
+    {
+      "name": "account_invalidates_old_next",
+      "group": "standard_lifecycle",
+      "passed": true,
+      "expected": "No old-request continuation",
+      "actual": {
+        "open_count": 0
+      }
+    },
+    {
+      "name": "selection_invalidates_old_next",
+      "group": "standard_lifecycle",
+      "passed": true,
+      "expected": "No old-request continuation",
+      "actual": {
+        "open_count": 0
+      }
+    },
+    {
+      "name": "successor_open_failure_keeps_resident_host",
+      "group": "standard_lifecycle",
+      "passed": false,
+      "expected": "Single failed successor must be recorded locally; host keeps processing until normal shutdown",
+      "actual": {
+        "escaped_error": "injected transient Player.play error",
+        "resident_ticks": 1,
+        "normal_monitor_abort": false,
+        "host_closed": true,
+        "open_attempts": 1
+      }
+    }
+  ]
+}

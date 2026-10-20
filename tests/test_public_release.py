@@ -58,6 +58,6 @@ def test_ce_engine_is_pinned_and_not_a_media_transform():
 
 def test_current_sources_use_portable_transport_and_explicit_setup():
     root = ROOT / 'addons/plugin.video.bobbi/lib'
-    assert 'from lib.clients.portable_http import iter_events' in (root / 'clients/jackett_http.py').read_text()
-    assert '"bobbi_setup"' in (root / 'router.py').read_text()
-    assert 'RunScript(script.bobbi.setup,updates)' in (root / 'navigation.py').read_text()
+    assert 'from lib.clients.portable_http import iter_events' in (root / 'clients/jackett_http.py').read_text(encoding='utf-8')
+    assert '"bobbi_setup"' in (root / 'router.py').read_text(encoding='utf-8')
+    assert 'RunScript(script.bobbi.setup,updates)' in (root / 'navigation.py').read_text(encoding='utf-8')

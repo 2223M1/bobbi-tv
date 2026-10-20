@@ -117,3 +117,101 @@ def test_same_account_refresh_is_not_retirement(actor):
     actor.owner.observe(data['request_id'], data['url'], 2, 100)
     actor.owner.tick()
     assert actor.owner.current_request(data['request_id'])
+
+
+def test_missing_then_available_same_request_rechecks_with_backoff(actor):
+    data = begin(actor)
+    calls = []
+    expected = {'request_id': 'b'*32, 'url': 'https://media.example/exact-next'}
+    def load(current, cancelled):
+        calls.append(current)
+        return expected if len(calls) > 1 else None
+    actor.owner.next_loader = load
+    actor.owner.observe(data['request_id'], data['url'], 90, 200)
+    actor.owner.tick(True)
+    actor.owner.worker.join(1)
+    actor.owner.tick(True)
+    for _ in range(10): actor.owner.tick(True)
+    assert len(calls) == 1 and actor.owner.worker is None
+    actor.clock[0] += 5
+    actor.owner.tick(True)
+    actor.owner.worker.join(1)
+    actor.owner.tick(True)
+    actor.owner.observe(data['request_id'], data['url'], 199, 200)
+    actor.owner.terminal(data['request_id'], 'ENDED')
+    actor.clock[0] += .3
+    actor.owner.tick()
+    actor.owner.tick()
+    assert len(calls) == 2 and actor.opened == [expected]
+
+
+def test_final_eof_discovery_is_bounded_and_single_worker(actor):
+    data = begin(actor)
+    calls = []
+    def absent(current, cancelled): calls.append(1)
+    actor.owner.next_loader = absent
+    actor.owner.observe(data['request_id'], data['url'], 90, 200)
+    for _ in range(10):
+        actor.owner.tick(True)
+        if actor.owner.worker: actor.owner.worker.join(1)
+        actor.owner.tick(True)
+        actor.clock[0] += 35
+    assert len(calls) == 5
+    actor.owner.observe(data['request_id'], data['url'], 199, 200)
+    actor.owner.terminal(data['request_id'], 'ENDED')
+    actor.owner.tick()
+    actor.owner.worker.join(1)
+    actor.owner.tick()
+    assert len(calls) == 6
+    for _ in range(10): actor.owner.tick()
+    assert len(calls) == 6
+    actor.clock[0] += 20
+    actor.owner.tick()
+    assert actor.owner.current['cancel'].is_set()
+    assert actor.owner.current['state'] == 'retired'
+
+
+@pytest.mark.parametrize('playing', [False, True])
+def test_deadline_does_not_depend_on_ready_candidate_or_player(actor, playing):
+    data = begin(actor)
+    actor.owner.observe(data['request_id'], data['url'], 99, 100)
+    actor.owner.current['next_data'] = {'url': 'https://media.example/expired'}
+    actor.owner.terminal(data['request_id'], 'ENDED')
+    actor.clock[0] += 21
+    actor.owner.tick(playing)
+    actor.owner.tick()
+    assert actor.owner.current['state'] == 'retired'
+    assert actor.owner.current['next_data'] is None
+    assert actor.opened == []
+
+
+def test_miss_does_not_spawn_parallel_lookup_and_late_result_is_cancelled(actor):
+    release, started = Event(), Event()
+    data = begin(actor)
+    calls, cancelled = [], []
+    def slow(current, guard):
+        calls.append(1)
+        started.set()
+        release.wait(2)
+        cancelled.append(guard())
+        return {'url': 'https://media.example/late'}
+    actor.owner.next_loader = slow
+    actor.owner.observe(data['request_id'], data['url'], 99, 100)
+    actor.owner.tick(True)
+    assert started.wait(1)
+    actor.owner.terminal(data['request_id'], 'ENDED')
+    for _ in range(10): actor.owner.tick()
+    actor.clock[0] += 21
+    actor.owner.tick(True)
+    release.set()
+    actor.owner.worker.join(1)
+    actor.owner.tick()
+    assert calls == [1] and cancelled == [True] and actor.opened == []
+
+
+def test_new_selection_may_observe_previous_video_during_resolution(actor):
+    old = begin(actor)
+    actor.owner.observe(old['request_id'], old['url'], 99, 100)
+    new = begin(actor, 'b'*32, 'https://media.example/new')
+    assert not actor.owner.observe_other(old['request_id'], old['url'])
+    assert actor.owner.current_request(new['request_id'])

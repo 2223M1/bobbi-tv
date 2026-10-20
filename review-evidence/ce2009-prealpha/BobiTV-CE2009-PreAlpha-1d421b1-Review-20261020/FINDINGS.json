@@ -1,0 +1,102 @@
+{
+  "commit": "1d421b101bdc3b940bdd5870caaac49a5fc49394",
+  "findings": [
+    {
+      "id": "A01",
+      "priority": "P1",
+      "status": "OPEN_REPRODUCED",
+      "title": "安装/恢复完成状态早于启用与界面恢复，重开入口不继续恢复",
+      "locations": [
+        {
+          "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py",
+          "lines": "83-95, 152-158"
+        }
+      ],
+      "cases": [
+        "rollback_restore_rpc_retry",
+        "crash_before_activation",
+        "crash_during_activation"
+      ],
+      "mechanism": "complete/restored journal published before host.activate/host.restore; recover ignores both phases",
+      "consequence": "程序字节虽保留，但启用向量/皮肤尚未恢复，后续入口误判结束。不是已证明用户数据丢失或设备不可恢复。",
+      "fix": "分开已核验文件代次/运行准入与待完成激活或恢复操作；持久化未完成宿主操作，重启可幂等继续并核对读回。不要简单后移 complete 导致 boot gate 拦住新服务。",
+      "validation": "真实临时文件/rename/journal + subprocess os._exit；签名、解包、互斥、Kodi RPC是明确替身，不宣称真实签名包或设备崩溃实验。"
+    },
+    {
+      "id": "A02",
+      "priority": "P1",
+      "status": "OPEN_REPRODUCED",
+      "title": "外部用户播放未撤销旧待续集，停掉外部视频后旧续集复活",
+      "locations": [
+        {
+          "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+          "lines": "240-251"
+        },
+        {
+          "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+          "lines": "155-163"
+        }
+      ],
+      "cases": [
+        "unrelated_user_video_cancels_pending_old_successor"
+      ],
+      "mechanism": "Mismatch only clears StandardPlayback.bound; ended request retains next_data. 20s expiry is bypassed while playing or when next_data exists.",
+      "consequence": "用户已转到其他内容并停播，旧剧集下一集仍会自动打开；本轮为受控 Kodi 状态机反例，未在用户设备触发。",
+      "fix": "已明确关联过的旧会话在观察到无关播放时撤销后继/工作令牌；开播前再核对父会话与当前观察代际。期限与有无候选分离，不能停掉外部视频。",
+      "validation": "实际 StandardPlayback/StandardSession/Handoff 控制流；Kodi/账号/历史IO替身。"
+    },
+    {
+      "id": "A03",
+      "priority": "P1",
+      "status": "OPEN_REPRODUCED",
+      "title": "后继开播API异常逸出主循环并关闭整个普通播放宿主",
+      "locations": [
+        {
+          "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+          "lines": "155-160"
+        },
+        {
+          "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+          "lines": "217-229"
+        },
+        {
+          "path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+          "lines": "36-48"
+        }
+      ],
+      "cases": [
+        "successor_open_failure_keeps_resident_host"
+      ],
+      "mechanism": "open_next -> Handoff.submit -> Player.play exception escapes StandardPlayback.tick; portable_runtime finally closes host",
+      "consequence": "单片开播失败扩大为波比驻留宿主停止；不是 Kodi/native 进程崩溃证明。",
+      "fix": "在单个后继交付边界记录可解释终态，保持事件/IPC/账号/分享宿主继续工作；submission_unknown 不自动重发，不全局 Stop，不使用无限重启掩盖。",
+      "validation": "执行真实 portable_runtime finally；Player.play 人为注入 RuntimeError；单次开播，宿主在正常 monitor abort 前退出。"
+    },
+    {
+      "id": "A04",
+      "priority": "P2",
+      "status": "OPEN_REPRODUCED",
+      "title": "普通续集发现只尝试一次，后续变为可用也不重查",
+      "locations": [
+        {
+          "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+          "lines": "142-154"
+        }
+      ],
+      "cases": [
+        "next_becomes_ready_later"
+      ],
+      "mechanism": "next_started set before one lookup; no reset on absent/error result; completed worker result None remains final",
+      "consequence": "第一次没有候选，之后同版候选已可用，但本次播放会话不再发现；不是错误版本自动播放。",
+      "fix": "用索引/准备代际变化触发有界重查，或合理退避与最终一次机会；最多一项并行，尊重取消/账号/用户选择，不重复提交云任务。",
+      "validation": "实际 StandardSession，候选可用性与时钟替身；第一次缺失→之后可用，共1次 lookup、0次后继开播。"
+    }
+  ],
+  "release_recommendation": "HOLD_EXISTING_CE2009_ZIP_FOR_FOCUSED_FIX; preserve generic CE product and merged history",
+  "not_blockers": [
+    "unknown device/model",
+    "no second physical device",
+    "unmeasured HDR/audio combinations"
+  ],
+  "patches_provided": false
+}
