@@ -13,6 +13,8 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'twelve_angry_men': {'title': '12 Angry Men', 'tmdb_id': 389, 'kind': 'movie', 'year': 1957},
+    'tatami_galaxy': {'title': 'The Tatami Galaxy', 'tmdb_id': 36243, 'kind': 'tv', 'year': 2010, 'season': 1, 'episode': 1},
     'man_from_earth': {'title': 'The Man from Earth', 'tmdb_id': 13363, 'kind': 'movie', 'year': 2007},
     'lain': {'title': 'Serial Experiments Lain', 'tmdb_id': 1087, 'kind': 'tv', 'year': 1998, 'season': 1, 'episode': 1},
     'coherence': {'title': 'Coherence', 'tmdb_id': 220289, 'kind': 'movie', 'year': 2014},

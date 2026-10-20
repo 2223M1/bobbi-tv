@@ -46,11 +46,18 @@ def package(path, signing, sequence=1, version='1.0.0', profile='coreelec'):
 def environment(tmp_path, signing):
     addons, work = tmp_path / 'addons', tmp_path / 'userdata/addon_data/script.bobbi.start'
     calls = []
+    vector = set()
+    def activate(versions):
+        calls.append('activate')
+        vector.update(versions)
+    def restore(skin, enabled):
+        calls.append(('restore', skin))
+        vector.clear()
+        vector.update(enabled)
     host = SimpleNamespace(dependencies=lambda stage: calls.append('dependencies'),
-        skin=lambda: 'skin.user.original', enabled=lambda: [],
+        skin=lambda: 'skin.user.original', enabled=lambda: sorted(vector),
         quiesce=lambda: calls.append('quiesce'), refresh=lambda: calls.append('refresh'),
-        verify=lambda versions: calls.append('verify'), activate=lambda versions: calls.append('activate'),
-        restore=lambda skin, enabled: calls.append(('restore', skin)))
+        verify=lambda versions: calls.append('verify'), activate=activate, restore=restore)
     installer = Installer(addons, work, host, signing[1])
     other = addons / 'plugin.user.other'
     other.mkdir()
@@ -209,3 +216,40 @@ def test_real_update_menu_can_choose_new_package_instead_of_replaying_embedded(t
     embedded.write_bytes(b'package chosen here; signature validation belongs to apply')
     dialog = SimpleNamespace(select=lambda *args: choice, browse=lambda *args, **kw: 'new')
     assert choose_package(dialog, embedded, first) == (str(embedded) if expected == 'embedded' else expected)
+
+
+def test_actual_kodi_restore_restores_exact_vector_without_touching_other_addons(monkeypatch):
+    from bobbi_platform.ce_install_ui import KodiHost
+    import bobbi_platform.ce_install_ui as ui
+    enabled = set(MANAGED) | {'plugin.user.other'}
+    desired = sorted(MANAGED)[::2]
+    skin = ['skin.estuary']
+    def rpc(method, params):
+        if method == 'Addons.SetAddonEnabled':
+            assert params['addonid'] in MANAGED
+            if params['enabled']: enabled.add(params['addonid'])
+            else: enabled.discard(params['addonid'])
+        elif method == 'Settings.SetSettingValue': skin[0] = params['value']
+        else: raise AssertionError(method)
+    monkeypatch.setattr(ui, 'rpc', rpc)
+    host = KodiHost.__new__(KodiHost)
+    host.details = lambda name: dict(enabled=name in enabled)
+    host.skin = lambda: skin[0]
+    host.restore('skin.user.original', desired)
+    assert enabled == set(desired) | {'plugin.user.other'}
+    assert skin == ['skin.user.original']
+
+
+def test_entry_recovers_pending_activation_even_when_boot_is_allowed(tmp_path, monkeypatch):
+    import sys
+    import bobbi_platform.ce_install_ui as ui
+    calls = []
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace())
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(tmp_path)))
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Dialog=lambda: SimpleNamespace(select=lambda *a: -1)))
+    monkeypatch.setattr(ui, 'profile', lambda *args: tmp_path)
+    monkeypatch.setattr(ui, 'KodiHost', lambda: SimpleNamespace())
+    monkeypatch.setattr(ui, 'Installer', lambda *args: SimpleNamespace(work=tmp_path,
+        recover=lambda: calls.append('recover'), _read=lambda: dict(phase='activation_pending')))
+    ui.main()
+    assert calls == ['recover']
