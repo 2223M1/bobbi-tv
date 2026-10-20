@@ -19,6 +19,9 @@ from bobbi_platform.updates import MAX_ARCHIVE, MAX_MANIFEST, _safe_path
 
 def checked_components(directory, built, trust):
     """Validate every member before reading, then retain exactly checked bytes."""
+    if isinstance(built, dict) and (built.get('channel') == 'source-check'
+                                   or built.get('installable') is False):
+        raise ValueError('Source-check artifacts cannot be signed or installed')
     directory = _safe_path(directory)
     rows = built.get('components') if isinstance(built, dict) else None
     expected = set(trust['components'])

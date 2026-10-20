@@ -3,7 +3,7 @@ import hashlib
 import json
 import re
 
-from .backend import BackendError
+from .backend import BackendError, MAX_DIAGNOSTIC_NUMBER
 
 
 class Owner:
@@ -71,7 +71,11 @@ class Owner:
         import xbmcgui
         self.active()
         self.diagnostic(dict(detail, stage='buffering'))
+        speed = detail.get('download_bps')
+        rate = ('{:,} B/s'.format(speed) if type(speed) is int
+                and 0 <= speed <= MAX_DIAGNOSTIC_NUMBER else '未知')
         answer = xbmcgui.Dialog().yesno('片源已定位，BT 供数仍不足',
+            'BT 总下载速度：' + rate + '（非所选文件实测）\n'
             '当前等待的是你选定的文件，不会换版或降低画质。\n'
             '种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。',
             nolabel='返回选源', yeslabel='继续等待一轮', autoclose=30000)

@@ -1,7 +1,7 @@
 name: Verify private sources
 on:
   push:
-    branches: [main]
+    branches: [main, 'codex/**']
   pull_request:
 permissions:
   contents: read
@@ -13,13 +13,35 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Record actual checked-out commit (PR merge versus branch head)
+        env:
+          VERIFY_EVENT: ${{ github.event_name }}
+          VERIFY_REF: ${{ github.ref }}
+        run: |
+          printf 'event=%s ref=%s\n' "$VERIFY_EVENT" "$VERIFY_REF"
+          git show -s --format='commit=%H%ntree=%T%nparents=%P'
       - run: python -m pip install -r requirements-test.txt
       # The inherited Kodi mock harness is intentionally a separate process.
-      - run: python -m pytest -q tests --ignore=tests/private_baseline --ignore=tests/preparation_regression
-      - run: python -m pytest -q tests/private_baseline
-      - run: python -m pytest -q tests/preparation_regression
-      - run: python tools/build_release.py --output dist/repository-check
+      - name: Primary tests
+        run: python -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=review-evidence/ci-primary.xml
+      - name: Isolated inherited Kodi harness
+        if: ${{ !cancelled() }}
+        run: python -m pytest -q -rs tests/private_baseline --junitxml=review-evidence/ci-baseline.xml
+      - name: Isolated preparation regression
+        if: ${{ !cancelled() }}
+        run: python -m pytest -q -rs tests/preparation_regression --junitxml=review-evidence/ci-preparation.xml
+      - name: Source-only component build (no application key or signing secrets)
+        if: ${{ !cancelled() }}
+        run: python tools/build_release.py --source-check --output dist/repository-check
       - name: Verify a second private build is byte-identical
+        if: ${{ !cancelled() }}
         run: |
-          python tools/build_release.py --output dist/repository-second
+          python tools/build_release.py --source-check --output dist/repository-second
           python tools/check_repository.py dist/repository-check dist/repository-second
+      - name: Preserve test receipts (not installable packages)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-${{ github.event_name }}-${{ github.run_id }}
+          path: review-evidence/ci-*.xml
+          if-no-files-found: warn

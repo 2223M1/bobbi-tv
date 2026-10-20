@@ -568,12 +568,12 @@
       "LICENSE": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad"
     },
     "plugin.video.bobbi.torrent": {
-      "addon.xml": "a4ffd10090caacfca05cf458fb52d4479747d0628d306640d1a890476d108426",
+      "addon.xml": "e413a35f6f8df8a8b8a8c627a1a38da78f178499b52812d3d82b2a02ee9792cf",
       "default.py": "cd8d39d183d6ea6024d50e1c48a2ed019f5e5fb3020904bcda10ad87b4b76391",
       "lib/bobbi_torrent/__init__.py": "10979390e1dd6391dc9eafad434efe8a0abf15554b8bf8510c5f1f366d8c9739",
-      "lib/bobbi_torrent/backend.py": "09d57692178d1abd00c93f43114e54db37269953de2343c9f1b4851af9fbe8b2",
+      "lib/bobbi_torrent/backend.py": "f97d8408c17af8138f44911828d1c57462bb6d06217f56d5b5931e40e6b0af28",
       "lib/bobbi_torrent/entry.py": "087d1ea9ad2d21f67677edd682deb57da259343d104b62b2352dd4f7b38f6514",
-      "lib/bobbi_torrent/owner.py": "dd6bbe03262d04728bbe2e9d3d71afd289ac6b46daefe2c0ba5d2898c10baad0",
+      "lib/bobbi_torrent/owner.py": "51f76aed9c48e0fadc755c6e6309615885c197ee42ef415a5cf622d20330fd27",
       "lib/bobbi_torrent/resolver.py": "ff7ef15c16bd4b4cab615e7818e4bf0bc56c4c6586375794bc2ead974f839669",
       "lib/bobbi_torrent/torrent_identity.py": "e111b781086b9f6bd5bddc3b580d97e6accf66b81837e3d5bd4cbf53496b3497",
       "LICENSE": "a05bbc56b47b33eac1d575afa1435afdbf108a782e67b9404c0a722d0a0ff994",
@@ -639,7 +639,7 @@
       "resources/settings.xml": "3ad0dd1185d7871b2a549838ebf41410853281797c75f4e2277d9e5fabe2c298"
     },
     "script.module.bobbi.core": {
-      "addon.xml": "0c9585b158d25d602738705f12e36d8ede981e4e0346ef80d0c1849e9d7294d9",
+      "addon.xml": "2c0180fd587579f7a01cfd06e29a25d655d84773b523e8bbab85cadf1fc34257",
       "lib/bobbi_core/__init__.py": "f9e32762d2f4ce4acde5ff9c621551ce06932ebaecc5dc0bf8deeff25bf86a9e",
       "lib/bobbi_core/account_readiness.py": "d4a6ff03eb16191e3ed324c9a76adb91280818a234c9f6367e78bcc152cdbbe2",
       "lib/bobbi_core/anime_range_candidates.py": "35de360fdcb6952453c598eae920820ac865469d1a5acde71ae6304fe81f7be2",
@@ -663,7 +663,7 @@
       "lib/bobbi_core/episode_identity.py": "c491db89d8f43b4237c2403c316486b35403b168a1bf88e503bde47897d07f74",
       "lib/bobbi_core/episode_order.py": "dec400bc4a35633c357250317a40648afcfac2feb393fb54886373712b49a948",
       "lib/bobbi_core/episode_revision.py": "1043ec02d970e05d8a935ead43237d5d3cfcbe58d1dba8cc4ae0669a09ef92d3",
-      "lib/bobbi_core/filename_semantics.py": "238ea2fe5f2d0e9bcdb0ce8c280e7b70e7b4c9ce8625e1b690b3a50316fc26e8",
+      "lib/bobbi_core/filename_semantics.py": "84d54cff797c423aafd698f586b7c45c117bcfb9f9b2331f9ee890d7fa4c3a60",
       "lib/bobbi_core/font_archive.py": "23ee7c64085687ff42f597d608d30cdf5207f2e3a2ac7ec0bd3557a10dd3d9e1",
       "lib/bobbi_core/font_cache.py": "ebfd43b414a1de84ff56dab33ae851f610d86ec87ff7a8128186c824fb58661f",
       "lib/bobbi_core/font_extract_worker.py": "0ce9df9d30c2f4ec87242b2c2ea0182be97d1b96c971242cc50c779362d2d0b4",

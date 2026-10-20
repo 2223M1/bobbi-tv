@@ -3,11 +3,11 @@ from copy import deepcopy
 
 import pytest
 
+from test_anime_range_file_identity import observed_files, HASH
 from bobbi_core.font_archive import release_assets, parse_listing
 from bobbi_core.subtitle_cues import parse
 from bobbi_core.subtitle_candidates import inspect_text
-from test_anime_range_file_identity import observed_files, HASH
-from test_subtitle_binding import video
+from bobbi_core.video_context import video_identity
 
 
 def ass(end='0:09:12.88'):
@@ -36,8 +36,9 @@ def test_only_invisible_ass_events_are_not_dialogue_proof():
 def test_actual_pack_rar_selected_without_other_release_subtree():
     files = observed_files()
     selected = files[2]
-    current = video(source_info_hash=HASH, torrent_file_id=selected['id'],
-                    torrent_path=selected['path'], torrent_file_bytes=selected['length'])
+    current = video_identity('tmdb:tv:1:s1:e1', 'b'*64,
+        dict(source_info_hash=HASH, torrent_file_id=selected['id'],
+             torrent_path=selected['path'], torrent_file_bytes=selected['length']))
     metadata = dict(hash=HASH, title='Flip Flappers', file_stats=files)
     assert release_assets(current, metadata) == [files[-1]]
     wrong = deepcopy(metadata)
