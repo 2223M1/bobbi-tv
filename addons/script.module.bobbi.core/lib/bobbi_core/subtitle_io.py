@@ -1,7 +1,8 @@
 """Exec-isolated subtitle HTTP, bounded by the caller's absolute deadline.
 
-Blocking DNS, TLS, response headers and a continuously dripping body all live
-in one disposable interpreter, never in Kodi's interpreter or another thread.
+Where a CLI interpreter exists, DNS, TLS and body reads live in one disposable
+interpreter. Embedded-only hosts use a single cooperative, deadline-observed
+worker; an OS DNS stall may outlive the caller but cannot spawn more workers.
 No credentials occur in argv/environment. Anonymous private temporary files
 avoid PIPE reader threads (notably subprocess.communicate on Windows).
 """
@@ -11,7 +12,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
-from threading import Lock
+from threading import Lock, Event, Thread
 import time
 
 from bobbi_core.child_lifetime import LifetimeError, ParentLifetime
@@ -19,6 +20,7 @@ from bobbi_core.child_lifetime import LifetimeError, ParentLifetime
 
 _LOCK = Lock()
 _UNREAPED = None
+_EMBEDDED = None
 POLL_SECONDS = .01
 CLEANUP_SECONDS = .15
 
@@ -37,6 +39,47 @@ def _interpreter():
         if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
             return candidate
     raise SubtitleIOStopped('SUBTITLE_IO_PYTHON_UNAVAILABLE')
+
+
+def _embedded_read(command, deadline, cancelled, clock):
+    """One cooperative fallback for embedded Kodi without an executable Python.
+
+    Never spawn an unbounded population when OS DNS is stuck. The caller stops
+    observing at its deadline; the single outstanding worker prevents further
+    work until it has exited. No late bytes can be applied to another playback.
+    """
+    global _EMBEDDED
+    if _EMBEDDED is not None and _EMBEDDED.is_alive():
+        raise SubtitleIOStopped('SUBTITLE_IO_BUSY')
+    completed, stopped, result = Event(), Event(), {}
+    command = dict(command, _cancelled=lambda: stopped.is_set() or cancelled(),
+                   _deadline=time.monotonic() + max(0, deadline-clock()))
+    def worker():
+        try:
+            from bobbi_core.subtitle_io_worker import fetch
+            result['raw'] = fetch(command)
+        except Exception as error:
+            result['error'] = (str(error) if isinstance(error, ValueError)
+                               else 'SUBTITLE_IO_' + type(error).__name__)
+        finally:
+            completed.set()
+    _EMBEDDED = Thread(target=worker, name='bobbi-subtitle-io', daemon=True)
+    _EMBEDDED.start()
+    try:
+        while not completed.wait(.02):
+            if cancelled() or clock() >= deadline:
+                raise SubtitleIOStopped('SUBTITLE_IO_DEADLINE')
+        if cancelled() or clock() >= deadline:
+            raise SubtitleIOStopped('CANCELLED_OR_DEADLINE')
+        if 'error' in result:
+            reason = result['error']
+            if (not reason.startswith(('SUBTITLE_IO_', 'ASSRT_HTTP_', 'TORRENT_SUBTITLE_', 'OPENSUBTITLES_'))
+                    or not reason.replace('_', '').isalnum() or len(reason) > 80):
+                reason = 'SUBTITLE_IO_FAILED'
+            raise SubtitleIOStopped(reason)
+        return result['raw']
+    finally:
+        stopped.set()
 
 
 def _reap(process):
@@ -93,7 +136,14 @@ def read_http(url, deadline, cancelled, limit, headers=None, mode='assrt',
             except (OSError, subprocess.TimeoutExpired) as error:
                 raise SubtitleIOStopped('SUBTITLE_IO_REAP_FAILED') from error
             _UNREAPED = None
-        executable = _interpreter()
+        try:
+            executable = _interpreter()
+        except SubtitleIOStopped as error:
+            if str(error) != 'SUBTITLE_IO_PYTHON_UNAVAILABLE':
+                raise
+            return _embedded_read(dict(url=url, limit=limit, headers=headers or {},
+                mode=mode, method=method, json_body=json_body, auth=auth,
+                trusted_proxy=trusted_proxy), deadline, cancelled, clock)
         guard()
         remaining = deadline - clock()
         transfer_end = deadline - min(CLEANUP_SECONDS, remaining / 4)

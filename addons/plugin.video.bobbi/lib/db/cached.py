@@ -12,7 +12,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 
 PY3 = sys.version_info.major >= 3
 if PY3:
@@ -26,8 +26,8 @@ ADDON_ID = xbmcaddon.Addon().getAddonInfo("id")
 if not PY3:
     ADDON_DATA = ADDON_DATA.decode("utf-8")
 
-if not os.path.exists(ADDON_DATA):
-    os.makedirs(ADDON_DATA)
+# Independent home widgets import this module concurrently on first launch.
+os.makedirs(ADDON_DATA, exist_ok=True)
 
 SQLITE_SETTINGS = {
     "journal_mode": "wal",

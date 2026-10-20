@@ -1,0 +1,63 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "wild_tales",
+    "operation": "picker_wait",
+    "record": {
+      "test": {
+        "title": "Wild Tales",
+        "tmdb_id": 265195,
+        "kind": "movie",
+        "year": 2014
+      },
+      "prior_request": null,
+      "started": 2132547.5728507,
+      "home": {
+        "generation": 6,
+        "intent": 0,
+        "retired_generation": 6,
+        "observed_at": 2132547.917334936
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2132547.91796966,
+      "picker": {
+        "window": 13001,
+        "generation": 12,
+        "intent": 0,
+        "tmdb_id": 265195,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2132552.481518442,
+      "picker_idle": {
+        "passed": true,
+        "seconds": 35.06062773009762,
+        "observations": 63,
+        "picker": {
+          "window": 13001,
+          "generation": 12,
+          "intent": 0,
+          "tmdb_id": 265195,
+          "kind": "movie"
+        },
+        "query_finished": true
+      }
+    },
+    "passed": true,
+    "seconds": 35.06062773009762,
+    "observations": 63,
+    "picker": {
+      "window": 13001,
+      "generation": 12,
+      "intent": 0,
+      "tmdb_id": 265195,
+      "kind": "movie"
+    },
+    "query_finished": true
+  },
+  "diagnostic_present": false,
+  "work": "wild_tales",
+  "operation": "picker_wait"
+}

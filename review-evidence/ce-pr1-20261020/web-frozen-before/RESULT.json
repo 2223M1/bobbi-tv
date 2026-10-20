@@ -1,0 +1,65 @@
+{
+  "head": "c62e816607f3ef13d6763950bcdd4175bde6044c",
+  "current_scenarios": 40,
+  "current_satisfied": 33,
+  "current_unsatisfied": 7,
+  "suites": {
+    "previous18": {
+      "total": 18,
+      "passed": 18,
+      "failed": 0
+    },
+    "ranges14": {
+      "total": 14,
+      "passed": 9,
+      "failed": 5
+    },
+    "diagnostics8": {
+      "total": 8,
+      "passed": 6,
+      "failed": 2
+    }
+  },
+  "byte_verified_sources": [
+    {
+      "file": "source/current/bobbi_core/filename_semantics.py",
+      "git_blob": "4b99172a435c89aa60e94c7b51553827c62da1b6",
+      "verified": true
+    },
+    {
+      "file": "source/current/bobbi_core/release_identity.py",
+      "git_blob": "331ec6ca508b5e876f4d1eebf3c0d456efddc1b7",
+      "verified": true
+    },
+    {
+      "file": "source/current/bobbi_core/release_names.py",
+      "git_blob": "8776e7a8d37bde988f0f90ecc3979d0d10055224",
+      "verified": true
+    },
+    {
+      "file": "source/current/bobbi_core/resolution.py",
+      "git_blob": "10a82f61ee90ac3528e2361a57baed77eb83ab38",
+      "verified": true
+    },
+    {
+      "file": "source/current/bobbi_core/torrent_episode_matching.py",
+      "git_blob": "768cf33c0a440ce6f79f9431b6217d23dc998258",
+      "verified": true
+    },
+    {
+      "file": "source/current/bobbi_core/torrent_selection.py",
+      "git_blob": "f505b2401c79e761837e74b4c9b6e887e9eceb7e",
+      "verified": true
+    }
+  ],
+  "reference_patch": "passes only the 18 previous and 14 range scenarios; speed defect remains unpatched",
+  "not_run": [
+    "full 2512 test suite",
+    "release build/signature check",
+    "CE/Kodi playback",
+    "Windows/Android",
+    "device changes",
+    "GitHub Actions execution"
+  ],
+  "accounting": "Controls overlap semantically across suites; paths and reruns are not multiplied into unique coverage."
+}

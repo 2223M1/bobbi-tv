@@ -1,0 +1,18 @@
+{
+  "error": "AssertionError",
+  "reason": "FIRST_CARD_NOT_OBSERVED",
+  "frames": [
+    {
+      "function": "<module>",
+      "line": 265
+    },
+    {
+      "function": "main",
+      "line": 201
+    },
+    {
+      "function": "rewind",
+      "line": 113
+    }
+  ]
+}

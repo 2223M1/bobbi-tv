@@ -1,0 +1,339 @@
+msgid ""
+msgstr ""
+
+################################
+
+msgctxt "#30001"
+msgid "General Settings"
+msgstr "常规设置"
+
+msgctxt "#30002"
+msgid "Login"
+msgstr "登录"
+
+msgctxt "#30003"
+msgid "Cookie"
+msgstr "Cookie"
+
+msgctxt "#30004"
+msgid "Danmaku Settings"
+msgstr "弹幕设置"
+
+msgctxt "#30006"
+msgid "QR Code Login"
+msgstr "二维码登录"
+
+msgctxt "#30007"
+msgid "Cookie Login"
+msgstr "Cookie 登录"
+
+msgctxt "#30008"
+msgid "Check Login Status"
+msgstr "检查登录状态"
+
+msgctxt "#30009"
+msgid "Logout"
+msgstr "退出登录"
+
+msgctxt "#30005"
+msgid "Enable Danmaku"
+msgstr "开启弹幕"
+
+msgctxt "#30010"
+msgid "Dash Settings"
+msgstr "Dash 设置"
+
+msgctxt "#30011"
+msgid "Enable Dash"
+msgstr "使用 Dash"
+
+msgctxt "#30012"
+msgid "Server Port"
+msgstr "服务器端口"
+
+msgctxt "#30016"
+msgid "Font Size"
+msgstr "字体大小"
+
+msgctxt "#30017"
+msgid "The danmaku style will only take effect after clearing the cache files or restarting Kodi for videos that have already been played."
+msgstr "已经播放过的视频需要清除缓存文件或重启 Kodi 后弹幕样式才能生效"
+
+msgctxt "#30018"
+msgid "Opacity"
+msgstr "不透明度"
+
+msgctxt "#30019"
+msgid "Danmaku Stay Time"
+msgstr "弹幕停留时间"
+
+msgctxt "#30020"
+msgid "Video Resolution"
+msgstr "视频分辨率"
+
+msgctxt "#30021"
+msgid "Video Resolution"
+msgstr "视频分辨率"
+
+msgctxt "#30022"
+msgid "8K Ultra HD"
+msgstr "8K 超高清"
+
+msgctxt "#30023"
+msgid "Dolby Vision"
+msgstr "杜比视界"
+
+msgctxt "#30024"
+msgid "HDR True Color"
+msgstr "HDR 真彩色"
+
+msgctxt "#30025"
+msgid "4K Ultra HD"
+msgstr "4K 超清"
+
+msgctxt "#30026"
+msgid "1080P60 High Frame Rate"
+msgstr "1080P60 高帧率"
+
+msgctxt "#30027"
+msgid "1080P+ High Bitrate"
+msgstr "1080P+ 高码率"
+
+msgctxt "#30028"
+msgid "1080P HD"
+msgstr "1080P 高清"
+
+msgctxt "#30029"
+msgid "720P60 High Frame Rate"
+msgstr "720P60 高帧率"
+
+msgctxt "#30030"
+msgid "720P HD"
+msgstr "720P 高清"
+
+msgctxt "#30031"
+msgid "480P"
+msgstr "480P 清晰"
+
+msgctxt "#30032"
+msgid "360P"
+msgstr "360P 流畅"
+
+msgctxt "#30033"
+msgid "240P"
+msgstr "240P 极速"
+
+msgctxt "#30035"
+msgid "Video Encoding"
+msgstr "视频编码"
+
+msgctxt "#30036"
+msgid "AV1"
+msgstr "AV1"
+
+msgctxt "#30037"
+msgid "HEVC"
+msgstr "HEVC"
+
+msgctxt "#30038"
+msgid "AVC"
+msgstr "AVC"
+
+msgctxt "#30040"
+msgid "Live Resolution"
+msgstr "直播清晰度"
+
+msgctxt "#30041"
+msgid "Live Resolution"
+msgstr "直播清晰度"
+
+msgctxt "#30042"
+msgid "Original "
+msgstr "原画"
+
+msgctxt "#30043"
+msgid "Bluray"
+msgstr "蓝光"
+
+msgctxt "#30044"
+msgid "Ultra HD"
+msgstr "超清"
+
+msgctxt "#30045"
+msgid "HD"
+msgstr "高清"
+
+msgctxt "#30046"
+msgid "Smooth"
+msgstr "流畅"
+
+msgctxt "#30047"
+msgid "Live Video Encoding"
+msgstr "直播视频编码"
+
+msgctxt "#30048"
+msgid "HEVC"
+msgstr "HEVC"
+
+msgctxt "#30049"
+msgid "AVC"
+msgstr "AVC"
+
+msgctxt "#30050"
+msgid "Other"
+msgstr "其他"
+
+msgctxt "#30051"
+msgid "Upload playback history"
+msgstr "上报播放记录"
+
+msgctxt "#30052"
+msgid "When enabled, you can see Kodi's playback history in the browsing history on Bilibili."
+msgstr "开启后，将能够在哔哩哔哩的历史记录中看到 Kodi 的播放记录"
+
+msgctxt "#30053"
+msgid "Remove Cache Files"
+msgstr "清除缓存文件"
+
+msgctxt "#30054"
+msgid "Remove danmaku files, QR code images and MPD format DASH files."
+msgstr "清除弹幕文件、二维码图片、MPD 格式的 DASH 文件"
+
+msgctxt "#30055"
+msgid "Network Request Cache"
+msgstr "网络请求缓存"
+
+msgctxt "#30056"
+msgid " When enabled, the software will cache network requests for a duration of 1 minute."
+msgstr "开启后，软件将对网络请求进行缓存，缓存时间为1分钟"
+
+msgctxt "#30100"
+msgid "Function Settings"
+msgstr "功能设置"
+
+msgctxt "#30101"
+msgid "Homepage"
+msgstr "首页推荐"
+
+msgctxt "#30102"
+msgid "Video Categories"
+msgstr "视频分区"
+
+msgctxt "#30103"
+msgid "Rankings"
+msgstr "排行榜"
+
+msgctxt "#30104"
+msgid "Live Streaming Categories"
+msgstr "直播分区"
+
+msgctxt "#30105"
+msgid "Live Streams I Follow"
+msgstr "我关注的直播"
+
+msgctxt "#30106"
+msgid "My Collections"
+msgstr "我的收藏"
+
+msgctxt "#30107"
+msgid "Updates"
+msgstr "动态"
+
+msgctxt "#30108"
+msgid "Following List"
+msgstr "关注列表"
+
+msgctxt "#30109"
+msgid "Followers List"
+msgstr "粉丝列表"
+
+msgctxt "#30110"
+msgid "Watch Later"
+msgstr "稍后再看"
+
+msgctxt "#30111"
+msgid "History"
+msgstr "历史记录"
+
+msgctxt "#30112"
+msgid "Uploaded Videos"
+msgstr "投稿的视频"
+
+msgctxt "#30113"
+msgid "Search"
+msgstr "搜索"
+
+msgctxt "#30114"
+msgid "Must-Watch Weekly"
+msgstr "每周必看"
+
+msgctxt "#30115"
+msgid "Must-Watch"
+msgstr "入站必刷"
+
+msgctxt "#30116"
+msgid "Open Settings"
+msgstr "打开设置"
+
+msgctxt "#30117"
+msgid "My"
+msgstr "我的"
+
+msgctxt "#30130"
+msgid "Danmaku Display Area"
+msgstr "弹幕显示区域"
+
+msgctxt "#30131"
+msgid "Install the inputstream.adaptive plugin"
+msgstr "安装 inputstream.adaptive 插件"
+
+msgctxt "#30133"
+msgid "Live Danmaku"
+msgstr "直播弹幕"
+
+msgctxt "#30134"
+msgid "Enable real-time danmaku overlay when watching live streams. Requires network connection."
+msgstr "观看直播时启用实时弹幕叠加。需要网络连接。"
+
+msgctxt "#30060"
+msgid "Audio Quality"
+msgstr "音频质量"
+
+msgctxt "#30061"
+msgid "Audio Quality (DASH only)"
+msgstr "音频偏好（仅 DASH 模式）"
+
+msgctxt "#30062"
+msgid "Dolby Atmos (E-AC-3 JOC)"
+msgstr "杜比全景声（E-AC-3 JOC）"
+
+msgctxt "#30063"
+msgid "Hi-Res Lossless (FLAC)"
+msgstr "Hi-Res 无损（FLAC）"
+
+msgctxt "#30064"
+msgid "High (192K AAC)"
+msgstr "高清（192K AAC）"
+
+msgctxt "#30065"
+msgid "Medium (132K AAC)"
+msgstr "标准（132K AAC）"
+
+msgctxt "#30066"
+msgid "Low (64K AAC)"
+msgstr "低码（64K AAC）"
+
+msgctxt "#30067"
+msgid "Atmos / Hi-Res requires a Bilibili premium account. Falls back to a lower track if the selected one is unavailable. Kodi audio output must be set to Passthrough to deliver Atmos to a receiver."
+msgstr "杜比全景声 / Hi-Res 需要 B 站大会员。首选音轨不可用时自动降级。需要 Kodi 音频输出设为 Passthrough 才能将 Atmos 透传给功放。"
+
+msgctxt "#30069"
+msgid "Load Cookie From File"
+msgstr "从文件加载 Cookie"
+
+msgctxt "#30070"
+msgid "Write the full cookie string (copied from PC browser devtools) to cookie.txt, then click this button. The first 2 paths are tried in order: 1) special://profile/addon_data/plugin.video.bili/cookie.txt  2) special://home/addons/plugin.video.bili/cookie.txt"
+msgstr "把 PC 浏览器开发者工具里复制的整段 cookie 写到 cookie.txt，然后点此按钮。按顺序查找两个路径：1) special://profile/addon_data/plugin.video.bili/cookie.txt  2) special://home/addons/plugin.video.bili/cookie.txt"
+
+msgid "30142"
+msgstr "无法获取直播流"

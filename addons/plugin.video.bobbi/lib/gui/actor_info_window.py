@@ -1,6 +1,7 @@
 import threading
 
 import xbmcgui
+from bobbi_core.image_cache import image_url as tmdb_image_url
 
 from lib.clients.tmdb.utils.utils import tmdb_get
 from lib.gui.base_window import BaseWindow
@@ -57,7 +58,7 @@ class ActorInfoWindow(BaseWindow):
 
             # Profile photo
             if profile_path:
-                photo_url = f"https://image.tmdb.org/t/p/w500{profile_path}"
+                photo_url = tmdb_image_url(profile_path, 'w500')
                 self.setProperty("photo", photo_url)
 
         except Exception as e:
@@ -102,7 +103,7 @@ class ActorInfoWindow(BaseWindow):
                 li.setProperty("media_type", media_type)
 
                 if poster_path:
-                    thumb = f"https://image.tmdb.org/t/p/w300{poster_path}"
+                    thumb = tmdb_image_url(poster_path, 'w300')
                     li.setArt({"thumb": thumb, "icon": thumb})
 
                 filmography.addItem(li)

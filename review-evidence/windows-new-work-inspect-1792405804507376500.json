@@ -1,0 +1,96 @@
+{
+  "record": {
+    "test": {
+      "title": "A Separation",
+      "tmdb_id": 60243,
+      "kind": "movie",
+      "year": 2011
+    },
+    "prior_request": null,
+    "started": 113652.234,
+    "ordinary_ui": true,
+    "force_select": false,
+    "helper_sha256": "fbe7c3d737261d083995f9cf180f72a3335aa9fc531eebef239036cf7a5ea713",
+    "home": {
+      "generation": 6,
+      "intent": 0,
+      "retired_generation": 6,
+      "observed_at": 113652.937
+    },
+    "launched_at": 113652.937,
+    "picker": {
+      "window": 13000,
+      "generation": 7,
+      "intent": 0,
+      "tmdb_id": 60243,
+      "kind": "movie"
+    },
+    "picker_observed_at": 113654.234,
+    "picker_idle": {
+      "passed": true,
+      "seconds": 35.125,
+      "observations": 60,
+      "picker": {
+        "window": 13000,
+        "generation": 7,
+        "intent": 0,
+        "tmdb_id": 60243,
+        "kind": "movie"
+      },
+      "query_finished": true
+    },
+    "selected_card": {
+      "Container(1000).ListItem.Label": "A.Separation.2011.BluRay.1080p.x265.10bit.2Audio.MNHD-FRDS.mkv",
+      "Container(1000).ListItem.Property(resolution)": "",
+      "Container(1000).ListItem.Property(size)": "5.1 GB",
+      "Container(1000).ListItem.Property(source_key)": "3aa51fbc82c49da139c25741d4064028220884892aaeb538f330b1ae02888041",
+      "Container(1000).ListItem.Property(source_site)": "115 网盘",
+      "Container(1000).ListItem.Property(subtitle_badge)": ""
+    },
+    "selected_at": 113728.89,
+    "request_id": "9f20ced0aad541eaa0c46c3f0c31c0d0",
+    "selection_identity": "transport:bfd362c76d925a571237aabcedb3dc22bf9c6791822b3555d386ea120f5e49d5",
+    "native_instance": "b57d0fa7-d9aa-4994-89a5-74a8301ca121"
+  },
+  "sample": {
+    "wall": 113764.656,
+    "phase": null,
+    "native": {},
+    "cancelled": true,
+    "failure": null,
+    "native_gui": {
+      "selection_epoch": 2,
+      "gui_generation": 13,
+      "gui_user_intent": 0,
+      "fullscreen_instance": "",
+      "windows": []
+    },
+    "dialogs": {
+      "System.HasModalDialog": false,
+      "Window.IsVisible(10138)": false,
+      "Window.IsVisible(13000)": true,
+      "Window.IsVisible(13001)": false
+    },
+    "window": {
+      "currentwindow": {
+        "id": 13000,
+        "label": "System"
+      }
+    },
+    "labels": {
+      "Player.Process(audiodecoder)": "",
+      "Player.Process(pixformat)": "unknown",
+      "Player.Process(videodecoder)": "unknown",
+      "Player.Process(videoheight)": "0",
+      "Player.Process(videowidth)": "0",
+      "Window(10000).Property(AM6B.SubtitleState)": "",
+      "Window.Property(playback_error)": "",
+      "Window.Property(source_count)": "13"
+    }
+  },
+  "installed_generation": {
+    "sequence": 2026101905,
+    "path": "D:\\AM6B-Project\\bobbi-tv-private-20261019\\native\\build\\windows-installer-1905",
+    "frozen_build_receipt_sha256": "ac8236c91a27e18cc48eb2db2df4ae64170eaa69fee03bebffc4bb75397f530c"
+  }
+}

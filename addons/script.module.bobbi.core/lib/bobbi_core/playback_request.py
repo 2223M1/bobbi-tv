@@ -58,7 +58,8 @@ def reserve_ui_entry(data):
     return result
 
 
-def bind_and_claim(request_id, identity, url, cancelled, route, budget=3.0):
+def bind_and_claim(request_id, identity, url, cancelled, route, budget=3.0,
+                   file_evidence='AUTO_VERIFIED_FILE'):
     """Worker-side old-player barrier. Never called from a dialog onClick."""
     if type(budget) not in (float, int) or not 0 < budget <= 3:
         raise ValueError('Bounded native stop barrier required')
@@ -91,7 +92,7 @@ def bind_and_claim(request_id, identity, url, cancelled, route, budget=3.0):
     if not identity.startswith(selected + '|'):
         raise ValueError('实际文件不属于所选片源')
     if not retry_read_or_bind(dict(args, operation='bind_file', selection_identity=selected,
-                     file_identity=identity, url_sha256=digest(url)))['bound']:
+                     file_identity=identity, url_sha256=digest(url), file_evidence=file_evidence))['bound']:
         raise RuntimeError('本次文件绑定已失效')
     operation = 'claim_start'
     expected = dict(args, claim_id=claim_id, route=route,

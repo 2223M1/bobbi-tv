@@ -1,0 +1,132 @@
+{
+  "mode": "health",
+  "timestamp": 1792404833.2016938,
+  "players": [],
+  "gui": {
+    "currentcontrol": {
+      "label": "Mushoku Tensei: Jobless Reincarnation"
+    },
+    "currentwindow": {
+      "id": 10000,
+      "label": "主界面"
+    },
+    "skin": {
+      "id": "skin.bobbi.cinema",
+      "name": "bobbi TV"
+    }
+  },
+  "application": {
+    "name": "Kodi",
+    "version": {
+      "major": 21,
+      "minor": 3,
+      "revision": "e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+      "tag": "stable"
+    }
+  },
+  "native": {
+    "fullscreen_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+    "gui_generation": 32,
+    "gui_user_intent": 0,
+    "playback": null,
+    "protocol": 1,
+    "selection_epoch": 2,
+    "windows": []
+  },
+  "services": {
+    "kodi.service": "active",
+    "bobitv-preparation.service": "inactive"
+  },
+  "runtime-paths.json": {
+    "schema": 1,
+    "subtitle_abi": "ce-f9",
+    "native_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b"
+  },
+  "bobi-prepared.json": {
+    "schema": 1,
+    "entry_count": 14,
+    "source_count": 58,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "bobi-direct.json": {
+    "schema": 1,
+    "entry_count": 3,
+    "source_count": 0,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "host_account_status": {
+    "authenticated": true,
+    "epoch": 1
+  },
+  "host_status": {
+    "ready": true,
+    "version": "0.1.0",
+    "native_owner": true,
+    "preparation": true,
+    "shares": true
+  },
+  "preparation_ping": {
+    "ok": true,
+    "state": "RUNNING",
+    "component": {
+      "core_api": 1,
+      "core_version": "1.1.15",
+      "ipc_protocol": 3,
+      "capabilities": [
+        "bounded-resolve-v1",
+        "exact-resource-identity-v1",
+        "reconcile-uncertain-submit-v1",
+        "same-release-next-v1",
+        "single-cloud-ledger-v1",
+        "subtitle-binding-v2",
+        "video-context-v1"
+      ]
+    },
+    "current_account": true
+  },
+  "bobbi_stages": [
+    " READ_WINDOW bytes=134217728 wall_ms=25723 fetch_ms=3366 wait_ms=0 write_ms=22311 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25971 fetch_ms=3538 wait_ms=0 write_ms=22400 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27689 fetch_ms=3090 wait_ms=0 write_ms=24568 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27653 fetch_ms=3394 wait_ms=0 write_ms=24233 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25678 fetch_ms=4119 wait_ms=2 write_ms=21523 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25733 fetch_ms=3685 wait_ms=0 write_ms=22015 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25629 fetch_ms=3603 wait_ms=0 write_ms=21987 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25761 fetch_ms=3991 wait_ms=0 write_ms=21721 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25583 fetch_ms=3170 wait_ms=0 write_ms=22365 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26172 fetch_ms=3189 wait_ms=0 write_ms=22964 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26108 fetch_ms=3727 wait_ms=0 write_ms=22333 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27289 fetch_ms=4748 wait_ms=0 write_ms=22495 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27196 fetch_ms=3337 wait_ms=1 write_ms=23821 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=28326 fetch_ms=3824 wait_ms=0 write_ms=24450 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=28939 fetch_ms=3270 wait_ms=0 write_ms=25636 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=28746 fetch_ms=3325 wait_ms=0 write_ms=25369 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=28030 fetch_ms=3792 wait_ms=0 write_ms=24208 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27109 fetch_ms=3884 wait_ms=0 write_ms=23175 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25985 fetch_ms=3463 wait_ms=0 write_ms=22468 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26026 fetch_ms=3534 wait_ms=0 write_ms=22438 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26018 fetch_ms=3970 wait_ms=0 write_ms=22018 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25812 fetch_ms=3241 wait_ms=0 write_ms=22528 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25954 fetch_ms=3677 wait_ms=0 write_ms=22234 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26188 fetch_ms=3389 wait_ms=0 write_ms=22769 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26832 fetch_ms=3248 wait_ms=0 write_ms=23554 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26472 fetch_ms=3403 wait_ms=0 write_ms=23034 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27703 fetch_ms=3234 wait_ms=0 write_ms=24424 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27206 fetch_ms=4156 wait_ms=0 write_ms=22999 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26297 fetch_ms=3646 wait_ms=0 write_ms=22618 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26784 fetch_ms=4483 wait_ms=0 write_ms=22257 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27197 fetch_ms=6293 wait_ms=0 write_ms=20871 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25884 fetch_ms=3977 wait_ms=0 write_ms=21873 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26591 fetch_ms=3683 wait_ms=0 write_ms=22862 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=25978 fetch_ms=6612 wait_ms=0 write_ms=19334 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26518 fetch_ms=5700 wait_ms=0 write_ms=20778 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26690 fetch_ms=3204 wait_ms=0 write_ms=23466 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26176 fetch_ms=3419 wait_ms=0 write_ms=22725 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=27208 fetch_ms=4315 wait_ms=0 write_ms=22871 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26368 fetch_ms=4406 wait_ms=0 write_ms=21919 recovered=0",
+    " READ_WINDOW bytes=134217728 wall_ms=26190 fetch_ms=3846 wait_ms=0 write_ms=22326 recovered=0"
+  ],
+  "python_failures": []
+}

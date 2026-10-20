@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings version="1">
+    <section id="plugin.video.juku">
+        <category id="general" label="30000">
+            <group id="1" label="30001">
+                <setting id="phone_connect_mode" type="string" label="30007" help="30008">
+                    <level>0</level>
+                    <default>local</default>
+                    <constraints>
+                        <options>
+                            <option label="30009">local</option>
+                            <option label="30010">pwa</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="enable_websocket" type="boolean" label="30011" help="30012">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="primary_emby_user" type="string" label="30002">
+                    <level>0</level>
+                    <default>admin</default>
+                    <control type="edit" format="string">
+                        <heading>30003</heading>
+                    </control>
+                </setting>
+            </group>
+            <group id="2" label="30004">
+                <setting id="use_library_view" type="boolean" label="30005" help="30006">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+        </category>
+        <category id="menu_manager" label="30100">
+            <group id="1" label="30101">
+                <setting id="open_menu_order_dialog" type="action" label="30102" help="30103">
+                    <level>0</level>
+                    <data>RunPlugin(plugin://plugin.video.juku/?action=manage_root_menus)</data>
+                    <control type="button" format="action"/>
+                </setting>
+                <setting id="reset_root_menus" type="action" label="30104" help="30105">
+                    <level>0</level>
+                    <data>RunPlugin(plugin://plugin.video.juku/?action=reset_root_menus)</data>
+                    <control type="button" format="action"/>
+                </setting>
+                <setting id="menu_show_root_manage_entry" type="boolean" label="30106" help="30107">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+            <group id="2" label="30110">
+                <setting id="menu_show_connect_phone" type="boolean" label="30111">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_recommend" type="boolean" label="30112">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_private_libraries" type="boolean" label="30113">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_shared_libraries" type="boolean" label="30114">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_my_pans" type="boolean" label="30115">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_search" type="boolean" label="30116">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_history" type="boolean" label="30117">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_share_square" type="boolean" label="30118">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_push" type="boolean" label="30119">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_pansou" type="boolean" label="30120">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_playlists" type="boolean" label="30121">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_category_movie" type="boolean" label="30122">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_category_tv" type="boolean" label="30123">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_category_anime" type="boolean" label="30124">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_category_variety" type="boolean" label="30125">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_category_doc" type="boolean" label="30126">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="menu_show_category_short" type="boolean" label="30127">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+            <group id="3" label="30130">
+                <setting id="menu_order_connect_phone" type="integer" label="30131">
+                    <level>0</level>
+                    <default>1</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_recommend" type="integer" label="30132">
+                    <level>0</level>
+                    <default>2</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_private_libraries" type="integer" label="30133">
+                    <level>0</level>
+                    <default>3</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_shared_libraries" type="integer" label="30134">
+                    <level>0</level>
+                    <default>4</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_my_pans" type="integer" label="30135">
+                    <level>0</level>
+                    <default>5</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_search" type="integer" label="30136">
+                    <level>0</level>
+                    <default>6</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_history" type="integer" label="30137">
+                    <level>0</level>
+                    <default>7</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_share_square" type="integer" label="30138">
+                    <level>0</level>
+                    <default>8</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_push" type="integer" label="30139">
+                    <level>0</level>
+                    <default>9</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_pansou" type="integer" label="30140">
+                    <level>0</level>
+                    <default>10</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_playlists" type="integer" label="30141">
+                    <level>0</level>
+                    <default>11</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_category_movie" type="integer" label="30142">
+                    <level>0</level>
+                    <default>12</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_category_tv" type="integer" label="30143">
+                    <level>0</level>
+                    <default>13</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_category_anime" type="integer" label="30144">
+                    <level>0</level>
+                    <default>14</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_category_variety" type="integer" label="30145">
+                    <level>0</level>
+                    <default>15</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_category_doc" type="integer" label="30146">
+                    <level>0</level>
+                    <default>16</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="menu_order_category_short" type="integer" label="30147">
+                    <level>0</level>
+                    <default>17</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <step>1</step>
+                        <maximum>50</maximum>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+            </group>
+        </category>
+    </section>
+</settings>

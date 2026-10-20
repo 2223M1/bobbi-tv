@@ -1,0 +1,4 @@
+00aa4980	mv-daemon/pkg/proxy.(*ProxyManager).RegisterFull	00c4fa20	main.handleUserPlay
+00aa4980	mv-daemon/pkg/proxy.(*ProxyManager).RegisterFull	00c2ff00	main.handleEmbyStream
+00aa4980	mv-daemon/pkg/proxy.(*ProxyManager).RegisterFull	00c487e0	main.proxySubtitles
+00aa4980	mv-daemon/pkg/proxy.(*ProxyManager).RegisterFull	00c4bea0	main.handlePlay

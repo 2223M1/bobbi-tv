@@ -1,0 +1,65 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "operation": "picker_wait",
+    "record": {
+      "test": {
+        "title": "Flip Flappers",
+        "tmdb_id": 68272,
+        "kind": "tv",
+        "year": 2016,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "e08d28d37770461eb949689daab9cea5",
+      "started": 2135662.815005464,
+      "home": {
+        "generation": 22,
+        "intent": 0,
+        "retired_generation": 22,
+        "observed_at": 2135663.138168077
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2135663.138828939,
+      "picker": {
+        "window": 13001,
+        "generation": 23,
+        "intent": 0,
+        "tmdb_id": 68272,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2135667.67655856,
+      "picker_idle": {
+        "passed": true,
+        "seconds": 35.04769878927618,
+        "observations": 64,
+        "picker": {
+          "window": 13001,
+          "generation": 23,
+          "intent": 0,
+          "tmdb_id": 68272,
+          "kind": "tv"
+        },
+        "query_finished": true
+      }
+    },
+    "passed": true,
+    "seconds": 35.04769878927618,
+    "observations": 64,
+    "picker": {
+      "window": 13001,
+      "generation": 23,
+      "intent": 0,
+      "tmdb_id": 68272,
+      "kind": "tv"
+    },
+    "query_finished": true
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "picker_wait"
+}

@@ -1,0 +1,34 @@
+{
+  "action": "key",
+  "gui": {
+    "currentcontrol": {
+      "label": ""
+    },
+    "currentwindow": {
+      "id": 13001,
+      "label": "立即关闭硬盘"
+    }
+  },
+  "labels": {
+    "System.CurrentWindow": "立即关闭硬盘"
+  },
+  "safe_settings": {
+    "service_enabled": "true",
+    "apply_settings_to_torrserver": "false",
+    "migrated": "true"
+  },
+  "settings_sha256": "36100aa91d14348e8df4695aff23b04f74cc950998f2ebdf5ac2f20c85356d28",
+  "engine_pid": "4025",
+  "installed": {
+    "plugin.video.jacktorr": {
+      "enabled": true,
+      "origin": "repository.jacktook",
+      "version": "1.2.2"
+    },
+    "repository.jacktook": {
+      "enabled": true,
+      "origin": "repository.jacktook",
+      "version": "0.0.5"
+    }
+  }
+}

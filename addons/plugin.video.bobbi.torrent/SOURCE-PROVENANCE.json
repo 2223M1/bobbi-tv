@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "upstream": "https://github.com/Sam-Max/plugin.video.jacktorr",
+  "installed_version": "1.2.2+am6b.317",
+  "source_files": {
+    "addon.xml": "c0f32eb3923e078ffa0899c1b25fd24a52b50120d75e02c699c2f435057f4c91",
+    "LICENSE": "331e753df6493fd7001974eef5538423952719ce90aeac19470cf3d9aa8a1ddb",
+    "lib/torrserver/api.py": "c284a16d9984fb54aef9549a581bfaf96fc914a117c1569c8d3ce29fc24e9736",
+    "lib/torrent_identity.py": "7e239bdde2e27ef3752f414ec6bf2b1e7624c145f26a3152d7ca6937549adf6c",
+    "lib/buffering.py": "e4d801dc5a6bef07c44903ea6680530d8d45829b93a4ec423e88cee1ae879aff",
+    "lib/navigation.py": "0a420607282acc21b903e6c435815003b790890ecdeab225a5761b34c838b1f5",
+    "lib/bobi_owner.py": "af7d7aab26917fb85c8c77128869f14715ed1d88a2c37901151f5cbeb5c5ca42",
+    "lib/subtitles.py": "53c6777121feb0adb5ce5efa4b60532146ef7fe1c8e9bc8b16a2a05abadbd8ea"
+  },
+  "derivation": {
+    "copied": [
+      "LICENSE",
+      "lib/torrent_identity.py"
+    ],
+    "reference_only": [
+      "addon.xml",
+      "lib/torrserver/api.py",
+      "lib/buffering.py",
+      "lib/navigation.py",
+      "lib/bobi_owner.py",
+      "lib/subtitles.py"
+    ]
+  }
+}
+

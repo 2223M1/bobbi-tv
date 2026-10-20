@@ -478,8 +478,7 @@ def download_torrent_subtitles(params):
     data = {"title": title, "mode": mode, "ids": ids, "tv_data": tv_data}
 
     folder_path = join_kodi_path(ADDON_PROFILE_PATH, "subtitles", info_hash)
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
+    os.makedirs(folder_path, exist_ok=True)
 
     manager = SubtitleManager(data=data, notification=notification)
     result = manager.fetch_subtitles(auto_select=False, folder_path=folder_path)

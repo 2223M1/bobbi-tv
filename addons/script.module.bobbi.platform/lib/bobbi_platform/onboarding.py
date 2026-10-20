@@ -32,22 +32,23 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
                      '原目录已保留' if library_root else '可跳过')
     return [
         ('check', '1. 检查播放器 · ' + ('通过' if kodi_ok else '需要处理')),
-        ('helper', '2. 连接本机助手 · ' + helper_labels.get(helper_state, '需要检查')),
+        ('helper', '2. 可选 BT 后台（115 / NAS 无需）· ' + helper_labels.get(helper_state, '需要检查')),
         ('library', '3. 我的网盘 / NAS / 片库 · ' + library_label),
         ('language', '4. 原声与中文字幕 · 打开播放器设置'),
         ('test', '5. 试播自己的视频 · 手动选择，不自动播放'),
         ('cloud', '115 账号 · 用自己的手机扫码登录'),
-        ('catalog', '影视海报与搜索 · 配置 TMDb / 自选检索服务'),
+        ('catalog', '影视海报与搜索 · TMDb 来源 / 高级设置'),
         ('cinema', '进入波比影院 · 切换新皮肤'),
-        ('updates', '更新与恢复 · 检查 Kodi 仓库'),
-        ('status', '发行状态 · 公开测试版与能力说明'),
+        ('transport', '115 播放传输 · 渐进交付 / 整块回退'),
+        ('updates', '更新与恢复 · 原版插件管理 / 波比签名包'),
+        ('status', '发行状态 · 私人候选与实机验收状态'),
     ]
 
 
 def summary(capabilities):
     if capabilities.get('standard_playback') is not True:
-        return ('尚未通过播放器检查。此版需要 Kodi 21；先确认安装版本，再点“重新检查”。\n'
-                '没有修改现有 Kodi、账号或音画设置。')
-    return ('Kodi 21 标准播放接口检查通过。\n'
+        return ('播放器接口暂不可用：' + '、'.join(capabilities.get('errors', [])) + '\n'
+                '请检查 Kodi 是否正常运行后重试。没有修改账号或音画设置。')
+    return ('Kodi 标准播放接口检查通过。\n'
             '这不代表影片、HDR、音频直通或自动续播已经验收。\n'
             '下一步可连接本机助手，或直接选择自己的视频测试。')

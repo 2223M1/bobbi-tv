@@ -1,0 +1,162 @@
+; main.handlePanLogout
+007694b0  ldr x16,[x28, #0x10]
+007694b4  sub x17,sp,#0x50
+007694b8  cmp x17,x16
+007694bc  b.ls 0x00769718
+007694c0  str x30,[sp, #-0xd0]!
+007694c4  stur x29,[sp, #-0x8]
+007694c8  sub x29,sp,#0x8
+007694cc  str x2,[sp, #0xe8]
+007694d0  str x1,[sp, #0xe0]
+007694d4  str x0,[sp, #0xd8]
+007694d8  ldr x2,[x0, #0x18]
+007694dc  mov x0,x1
+007694e0  blr x2
+007694e4  str x0,[sp, #0x48]
+007694e8  nop
+007694ec  adrp x0,0x9e8000
+007694f0  add x0,x0,#0xea
+007694f4  orr x1,xzr,#0xc
+007694f8  bl 0x00209720
+007694fc  str x0,[sp, #0x60]
+00769500  str x1,[sp, #0x38]
+00769504  adrp x0,0x8b0000
+00769508  add x0,x0,#0x5c0
+0076950c  bl 0x0002dd40
+00769510  str x0,[sp, #0x58]
+00769514  adrp x1,0x9f0000
+00769518  add x1,x1,#0xb73
+0076951c  orr x2,xzr,#0x10
+00769520  stp x1,x2,[x0]
+00769524  adrp x0,0x969000
+00769528  add x0,x0,#0x220
+0076952c  ldr x1,[sp, #0x48]
+00769530  ldr x2,[sp, #0x60]
+00769534  ldr x3,[sp, #0x38]
+00769538  bl 0x00021200
+0076953c  orr x1,xzr,#0x1
+00769540  stp x1,x1,[x0, #0x8]
+00769544  adrp x27,0x147a000
+00769548  ldr w1,[x27, #0x910]
+0076954c  cbnz w1,0x00769558
+00769550  ldr x2,[sp, #0x58]
+00769554  b 0x00769568
+00769558  ldr x1,[x0]
+0076955c  bl 0x000959d0
+00769560  ldr x2,[sp, #0x58]
+00769564  stp x2,x1,[x25]
+00769568  str x2,[x0]
+0076956c  ldr x1,[sp, #0xe8]
+00769570  ldr x0,[x1, #0x10]
+00769574  bl 0x001a0640
+00769578  mov x1,x0
+0076957c  adrp x2,0x9d9000
+00769580  add x2,x2,#0xf87
+00769584  orr x3,xzr,#0x8
+00769588  adrp x0,0x973000
+0076958c  add x0,x0,#0x360
+00769590  bl 0x00020d00
+00769594  ldp x1,x2,[x0]
+00769598  cbnz x2,0x007695a8
+0076959c  mov x5,xzr
+007695a0  mov x4,xzr
+007695a4  b 0x007695ac
+007695a8  ldp x4,x5,[x1]
+007695ac  str x4,[sp, #0x40]
+007695b0  str x5,[sp, #0x30]
+007695b4  adrp x27,0x144e000
+007695b8  ldr x1,[x27, #0x530]
+007695bc  adrp x0,0x8ed000
+007695c0  add x0,x0,#0xb60
+007695c4  mov x2,x4
+007695c8  mov x3,x5
+007695cc  bl 0x00020f70
+007695d0  tbz w1,#0x0,0x00769618
+007695d4  adrp x27,0x144e000
+007695d8  ldr x0,[x27, #0x510]
+007695dc  cbz x0,0x007695f4
+007695e0  ldr x1,[sp, #0x40]
+007695e4  ldr x2,[sp, #0x30]
+007695e8  mov x3,xzr
+007695ec  mov x4,xzr
+007695f0  bl 0x005baf30
+007695f4  ldr x0,[sp, #0xd8]
+007695f8  cbz x0,0x00769640
+007695fc  ldr x1,[x0, #0x8]
+00769600  adrp x2,0x1432000
+00769604  add x2,x2,#0x620
+00769608  ldar x3,[x2]
+0076960c  ldr w4,[x0, #0x10]
+00769610  ldr x5,[x3]
+00769614  b 0x007696e0
+00769618  ldr x0,[sp, #0xd8]
+0076961c  ldr x1,[sp, #0xe0]
+00769620  adrp x2,0x9f0000
+00769624  add x2,x2,#0xba3
+00769628  orr x3,xzr,#0x10
+0076962c  mov x4,#0x190
+00769630  bl 0x0075b720
+00769634  ldur x29,[sp, #-0x8]
+00769638  ldr x30,[sp], #0xd0
+0076963c  ret
+00769640  add x1,sp,#0x68
+00769644  stp xzr,xzr,[x1]
+00769648  stp xzr,xzr,[x1, #0x10]
+0076964c  stp xzr,xzr,[x1, #0x20]
+00769650  stp xzr,xzr,[x1, #0x30]
+00769654  stp xzr,xzr,[x1, #0x40]
+00769658  stp xzr,xzr,[x1, #0x50]
+0076965c  ldr x1,[sp, #0xe0]
+00769660  stp x0,x1,[sp, #0x68]
+00769664  orr x0,xzr,#0x1
+00769668  strb w0,[sp, #0x88]
+0076966c  bl 0x0008c430
+00769670  str x0,[sp, #0x50]
+00769674  mov x1,x0
+00769678  adrp x2,0x9d7000
+0076967c  add x2,x2,#0x39b
+00769680  orr x3,xzr,#0x7
+00769684  adrp x0,0x8ec000
+00769688  add x0,x0,#0xbe0
+0076968c  bl 0x00021200
+00769690  adrp x1,0x8a6000
+00769694  add x1,x1,#0xc80
+00769698  str x1,[x0]
+0076969c  adrp x27,0x147a000
+007696a0  ldr w1,[x27, #0x910]
+007696a4  cbz w1,0x007696b4
+007696a8  ldr x3,[x0, #0x8]
+007696ac  bl 0x000959c0
+007696b0  str x3,[x25]
+007696b4  adrp x3,0xc32000
+007696b8  add x3,x3,#0x7c8
+007696bc  str x3,[x0, #0x8]
+007696c0  add x0,sp,#0x68
+007696c4  adrp x1,0x8ec000
+007696c8  add x1,x1,#0xbe0
+007696cc  ldr x2,[sp, #0x50]
+007696d0  bl 0x00134da0
+007696d4  ldur x29,[sp, #-0x8]
+007696d8  ldr x30,[sp], #0xd0
+007696dc  ret
+007696e0  and x6,x4,x5
+007696e4  lsl x6,x6,#0x4
+007696e8  add x6,x6,#0x8
+007696ec  ldr x7,[x3, x6#0x0]
+007696f0  add x6,x3,x6
+007696f4  cmp x7,x1
+007696f8  b.eq 0x00769710
+007696fc  add x4,x4,#0x1
+00769700  cbnz x7,0x007696e0
+00769704  mov x0,x2
+00769708  bl 0x0002a110
+0076970c  b 0x00769640
+00769710  ldr x0,[x6, #0x8]
+00769714  b 0x00769640
+00769718  stp x0,x1,[sp, #0x8]
+0076971c  str x2,[sp, #0x18]
+00769720  mov x3,x30
+00769724  bl 0x00093ad0
+00769728  ldp x0,x1,[sp, #0x8]
+0076972c  ldr x2,[sp, #0x18]
+00769730  b 0x007694b0

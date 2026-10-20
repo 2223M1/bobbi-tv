@@ -1,0 +1,792 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<settings version="1">
+  <section id="script.voice.assistant">
+    <category id="configuration" label="31000">
+      <group id="1">
+        <setting id="configure" type="action" label="31102">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--configure)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="dependencies" type="action" label="31103">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--dependencies)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="input" label="31001">
+      <group id="2">
+        <setting id="bind_voice_key" type="action" label="31104">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--bind-voice-key)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="v2_voice_input" type="string" label="31005">
+          <level>0</level>
+          <default>usb</default>
+          <constraints>
+            <options>
+              <option label="31006">ur02</option>
+              <option label="31007">nanosic</option>
+              <option label="31008">cmcc</option>
+              <option label="31009">usb</option>
+              <option label="31010">r22</option>
+              <option label="31011">b25</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="v2_alsa_device" type="string" label="31012">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_voice_input" operator="is">usb</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_max_seconds" type="integer" label="31013">
+          <level>0</level>
+          <default>30</default>
+          <constraints>
+            <minimum>3</minimum>
+            <maximum>30</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="v2_start_timeout" type="integer" label="31014">
+          <level>0</level>
+          <default>6</default>
+          <constraints>
+            <minimum>2</minimum>
+            <maximum>15</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="v2_silence_ms" type="integer" label="31015">
+          <level>0</level>
+          <default>1000</default>
+          <constraints>
+            <minimum>500</minimum>
+            <maximum>3000</maximum>
+            <step>100</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="v2_ur02_threshold" type="integer" label="31016">
+          <level>0</level>
+          <default>1000</default>
+          <constraints>
+            <minimum>30</minimum>
+            <maximum>3000</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_voice_input" operator="is">ur02</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_threshold" type="integer" label="31017">
+          <level>0</level>
+          <default>200</default>
+          <constraints>
+            <minimum>30</minimum>
+            <maximum>3000</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_voice_input" operator="is" negated="true">ur02</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+      </group>
+    </category>
+    <category id="asr" label="31002">
+      <group id="3">
+        <setting id="v2_recognition_engine" type="string" label="31018">
+          <level>0</level>
+          <default>off</default>
+          <constraints>
+            <options>
+              <option label="31019">off</option>
+              <option label="31020">onnx</option>
+              <option label="31021">doubao</option>
+              <option label="31022">codex</option>
+            </options>
+          </constraints>
+          <visible>false</visible>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="v2_onnx_model" type="string" label="31023">
+          <level>0</level>
+          <default>zipformer-2025</default>
+          <constraints>
+            <options>
+              <option label="31105">zipformer-2025</option>
+              <option label="31132">zipformer-2025-fp16</option>
+              <option label="31133">zipformer-2025-fp32</option>
+              <option label="31106">sensevoice</option>
+              <option label="31107">nano-ctc</option>
+              <option label="31108">firered-ctc</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_recognition_engine" operator="is">onnx</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_zipformer_max_active_paths" type="integer" label="31109">
+          <level>0</level>
+          <default>4</default>
+          <constraints>
+            <minimum>1</minimum>
+            <maximum>16</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_recognition_engine" operator="is">onnx</condition>
+                <or>
+                  <condition setting="v2_onnx_model" operator="is">zipformer-2025</condition>
+                  <condition setting="v2_onnx_model" operator="is">zipformer-2025-fp16</condition>
+                  <condition setting="v2_onnx_model" operator="is">zipformer-2025-fp32</condition>
+                </or>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_zipformer_hotwords_score" type="string" label="31110">
+          <level>0</level>
+          <default>2</default>
+          <constraints>
+            <options>
+              <option label="31085">0</option>
+              <option label="31078">0.5</option>
+              <option label="31111">1</option>
+              <option label="31082">1.5</option>
+              <option label="31112">2</option>
+              <option label="31113">2.5</option>
+              <option label="31114">3</option>
+              <option label="31115">3.5</option>
+              <option label="31116">4</option>
+              <option label="31117">4.5</option>
+              <option label="31118">5</option>
+              <option label="31119">5.5</option>
+              <option label="31120">6</option>
+              <option label="31121">6.5</option>
+              <option label="31122">7</option>
+              <option label="31123">7.5</option>
+              <option label="31124">8</option>
+              <option label="31125">8.5</option>
+              <option label="31126">9</option>
+              <option label="31127">9.5</option>
+              <option label="31128">10</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_recognition_engine" operator="is">onnx</condition>
+                <or>
+                  <condition setting="v2_onnx_model" operator="is">zipformer-2025</condition>
+                  <condition setting="v2_onnx_model" operator="is">zipformer-2025-fp16</condition>
+                  <condition setting="v2_onnx_model" operator="is">zipformer-2025-fp32</condition>
+                </or>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_doubao_key_file" type="path" label="31033">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="button" format="file">
+            <heading>31033</heading>
+          </control>
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_recognition_engine" operator="is">doubao</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_doubao_resource_id" type="string" label="31034">
+          <level>0</level>
+          <default>volc.seedasr.sauc.duration</default>
+          <constraints>
+            <options>
+              <option label="31035">volc.seedasr.sauc.duration</option>
+              <option label="31036">volc.seedasr.sauc.concurrent</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_recognition_engine" operator="is">doubao</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_doubao_timeout" type="integer" label="31037">
+          <level>0</level>
+          <default>20</default>
+          <constraints>
+            <minimum>5</minimum>
+            <maximum>60</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_recognition_engine" operator="is">doubao</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codex_dictation_timeout" type="integer" label="31038">
+          <level>0</level>
+          <default>30</default>
+          <constraints>
+            <minimum>5</minimum>
+            <maximum>60</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_recognition_engine" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="select_asr" type="action" label="31095">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--select-asr)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="agent" label="31003">
+      <group id="4">
+        <setting id="v2_agent_backend" type="string" label="31039">
+          <level>0</level>
+          <default>off</default>
+          <constraints>
+            <options>
+              <option label="31040">off</option>
+              <option label="31041">codex</option>
+              <option label="31144">codebuddy</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="v2_codex_provider" type="string" label="31042">
+          <level>0</level>
+          <default>chatgpt</default>
+          <constraints>
+            <options>
+              <option label="31043">chatgpt</option>
+              <option label="31044">api</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codebuddy_region" type="string" label="31145">
+          <level>0</level>
+          <default>external</default>
+          <constraints>
+            <options>
+              <option label="31146">external</option>
+              <option label="31147">internal</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codebuddy_model" type="string" label="31135">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+                <condition setting="v2_codebuddy_region" operator="is">external</condition>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codebuddy_internal_model" type="string" label="31148">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+                <condition setting="v2_codebuddy_region" operator="is">internal</condition>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codebuddy_approval_strategy" type="string" label="31136">
+          <level>0</level>
+          <default>request</default>
+          <constraints>
+            <options>
+              <option label="31059">request</option>
+              <option label="31061">full_access</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codebuddy_proxy" type="string" label="31137">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codebuddy_proxy_username" type="string" label="31138">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codebuddy_proxy_password" type="string" label="31139">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string">
+            <hidden>true</hidden>
+          </control>
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codex_chatgpt_model" type="string" label="31045">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <visible>false</visible>
+          <control type="edit" format="string" />
+        </setting>
+        <setting id="v2_codex_chatgpt_effort" type="string" label="31046">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <visible>false</visible>
+          <control type="edit" format="string" />
+        </setting>
+        <setting id="v2_agent_base_url" type="string" label="31047">
+          <level>0</level>
+          <default>https://api.deepseek.com</default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_agent_backend" operator="is">codex</condition>
+                <condition setting="v2_codex_provider" operator="is">api</condition>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_agent_key_file" type="path" label="31048">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="button" format="file">
+            <heading>31048</heading>
+          </control>
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_agent_backend" operator="is">codex</condition>
+                <condition setting="v2_codex_provider" operator="is">api</condition>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_agent_model" type="string" label="31049">
+          <level>0</level>
+          <default>deepseek-flash</default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_agent_backend" operator="is">codex</condition>
+                <condition setting="v2_codex_provider" operator="is">api</condition>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_agent_effort" type="string" label="31050">
+          <level>0</level>
+          <default>none</default>
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_agent_backend" operator="is">codex</condition>
+                <condition setting="v2_codex_provider" operator="is">api</condition>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_agent_code_mode" type="string" label="31051">
+          <level>0</level>
+          <default>off</default>
+          <constraints>
+            <options>
+              <option label="31052">off</option>
+              <option label="31053">on</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <and>
+                <condition setting="v2_agent_backend" operator="is">codex</condition>
+                <condition setting="v2_codex_provider" operator="is">api</condition>
+              </and>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_permission_level" type="string" label="31054">
+          <level>0</level>
+          <default>settings</default>
+          <constraints>
+            <options>
+              <option label="31055">media</option>
+              <option label="31056">settings</option>
+              <option label="31057">full</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="v2_approval_strategy" type="string" label="31058">
+          <level>0</level>
+          <default>request</default>
+          <constraints>
+            <options>
+              <option label="31140">request</option>
+              <option label="31060">auto_review</option>
+              <option label="31141">full_access</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_session_policy" type="string" label="31062">
+          <level>0</level>
+          <default>conversation</default>
+          <constraints>
+            <options>
+              <option label="31063">conversation</option>
+              <option label="31064">daily</option>
+              <option label="31065">forever</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="v2_agent_timeout" type="integer" label="31142">
+          <level>0</level>
+          <default>60</default>
+          <constraints>
+            <minimum>5</minimum>
+            <maximum>180</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+        <setting id="v2_codex_proxy" type="string" label="31067">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codex_proxy_username" type="string" label="31068">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_codex_proxy_password" type="string" label="31069">
+          <level>0</level>
+          <default />
+          <constraints>
+            <allowempty>true</allowempty>
+          </constraints>
+          <control type="edit" format="string">
+            <hidden>true</hidden>
+          </control>
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="select_codex_model" type="action" label="31096">
+          <level>0</level>
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+          <data>RunScript(script.voice.assistant,--select-codex-model)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="select_codex_effort" type="action" label="31097">
+          <level>0</level>
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codex</condition>
+            </dependency>
+          </dependencies>
+          <data>RunScript(script.voice.assistant,--select-codex-effort)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="codex_login" type="action" label="31098">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--codex-login)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="codex_account" type="action" label="31099">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--codex-account)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="codex_logout" type="action" label="31100">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--codex-logout)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="codebuddy_configure" type="action" label="31149">
+          <level>0</level>
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_agent_backend" operator="is">codebuddy</condition>
+            </dependency>
+          </dependencies>
+          <data>RunScript(script.voice.assistant,--configure)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+        <setting id="clear_agent_context" type="action" label="31101">
+          <level>0</level>
+          <data>RunScript(script.voice.assistant,--clear-agent-context)</data>
+          <control type="button" format="action">
+            <close>true</close>
+          </control>
+        </setting>
+      </group>
+    </category>
+    <category id="speech" label="31004">
+      <group id="5">
+        <setting id="v2_tts_enabled" type="string" label="31070">
+          <level>0</level>
+          <default>off</default>
+          <constraints>
+            <options>
+              <option label="31071">off</option>
+              <option label="31072">on</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="v2_tts_scope" type="string" label="31073">
+          <level>0</level>
+          <default>final</default>
+          <constraints>
+            <options>
+              <option label="31074">final</option>
+              <option label="31075">all</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_tts_enabled" operator="is">on</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_tts_volume" type="integer" label="31150">
+          <level>0</level>
+          <default>50</default>
+          <constraints>
+            <minimum>0</minimum>
+            <maximum>100</maximum>
+            <step>1</step>
+          </constraints>
+          <control type="spinner" format="integer" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_tts_enabled" operator="is">on</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_tts_pause" type="string" label="31076">
+          <level>0</level>
+          <default>1.0</default>
+          <constraints>
+            <options>
+              <option label="31077">0.2</option>
+              <option label="31086">0.5</option>
+              <option label="31079">0.75</option>
+              <option label="31080">1.0</option>
+              <option label="31081">1.25</option>
+              <option label="31088">1.5</option>
+              <option label="31083">2.0</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_tts_enabled" operator="is">on</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_tts_lead_in" type="string" label="31084">
+          <level>0</level>
+          <default>1.0</default>
+          <constraints>
+            <options>
+              <option label="31129">0</option>
+              <option label="31130">0.5</option>
+              <option label="31087">1.0</option>
+              <option label="31131">1.5</option>
+              <option label="31089">2.0</option>
+              <option label="31090">3.0</option>
+              <option label="31091">5.0</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_tts_enabled" operator="is">on</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+        <setting id="v2_tts_ai_pronunciation" type="string" label="31092">
+          <level>0</level>
+          <default>off</default>
+          <constraints>
+            <options>
+              <option label="31093">off</option>
+              <option label="31094">on</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+          <dependencies>
+            <dependency type="visible">
+              <condition setting="v2_tts_enabled" operator="is">on</condition>
+            </dependency>
+          </dependencies>
+        </setting>
+      </group>
+    </category>
+  </section>
+</settings>

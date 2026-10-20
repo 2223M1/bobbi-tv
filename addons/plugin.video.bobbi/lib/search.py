@@ -129,6 +129,11 @@ def _build_search_cache_scope(scoped_addon_url: str = "") -> str:
     )
     if xbmc.getSkinDir() == 'skin.bobbi.cinema':
         raw_scope += '|cinema-independent-indexers-v4-catalog-candidates'
+    # Two users/instances can share a media title but not their configured
+    # private indexers. Only the fingerprint reaches the persisted cache key.
+    instance = '\0'.join(str(get_setting(key, '') or '') for key in
+        ('jackett_host', 'jackett_port', 'jackett_apikey'))
+    raw_scope += '|jackett-instance:' + hashlib.sha256(instance.encode()).hexdigest()
     return hashlib.sha256(raw_scope.encode("utf-8")).hexdigest()
 
 
@@ -628,6 +633,16 @@ def _perform_search_with_title_fallback(
     range_context = (_cinema_anime_range_context(ids, mode, _cinema_release_season(args[0]),
                         _cinema_release_season(search_args[0]), int(search_args[1]))
                      if screen_catalog and anime_titles and len(args) >= 2 else None)
+    publish = kwargs.pop('publish', None)
+    if publish is not None and indexer_key == Indexer.JACKETT:
+        def publish_checked(rows):
+            if screen_catalog:
+                rows = _cinema_filter_catalog_candidates(rows, catalog_aliases, mode,
+                    release_season=_cinema_release_season(search_args[0]) if mode == 'tv' and len(search_args) >= 2 else None,
+                    release_episode=int(search_args[1]) if mode == 'tv' and len(search_args) >= 2 else None,
+                    fallback_query=query, anime=bool(anime_titles), anime_range_context=range_context)
+            return publish(rows)
+        kwargs['publish'] = publish_checked
     if screen_catalog and len(queries) > 1:
         # One bounded shared fanout, retaining all identity/season gates. Do not
         # let a first alias's partial hits hide releases found by another alias.
@@ -1652,6 +1667,7 @@ def _submit_search_tasks_managed(
                 year=year,
                 cancelled=getattr(getattr(manager, 'cancelled', None), 'is_set', None),
                 deadline=getattr(manager, 'deadline', None),
+                **({'_progressive': True} if hasattr(manager, 'session') else {}),
             )
         if _is_source_enabled(Indexer.JACKGRAM):
             add_task_if_enabled_managed(
@@ -2084,8 +2100,9 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
     from lib.cinema.progressive_search import ProgressiveSearch
     from lib.utils.general.cinema_source_rank import rank_sources
     from lib.clients.bobi_library import load_index, find_sources
-    from copy import deepcopy
-    from threading import Lock
+    from bobbi_core.provider_cache import ProviderResultCache
+    from lib.clients.catalog_providers import provider_for, submit_catalogs
+    from lib.utils.kodi.settings import get_cache_expiration, is_cache_enabled
     season, episode = tv_data.get('season', 1), tv_data.get('episode', 1)
     context = dict(mode=mode, query=query, media_type=media_type, ids=ids, tv_data=tv_data)
     # Cache-only identity is ready before any preferred/local BT card can show.
@@ -2097,7 +2114,6 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         if order:
             context['release_order'] = order
     tv_completed = [_tv_completed_context(ids, mode, tv_data, context.get('release_order'))]
-    raw_results, cache_lock, cache_context = [], Lock(), {}
     limit = max(1, min(100, int(get_setting('indexers_total_results', 10))))
     session = SourceListSession(dict(ids=ids, mode=mode, season=season, episode=episode,
         query=query, policy='b-full-unified-v6-movie-years', order_digest=(context.get('release_order') or {}).get('order_digest', ''), scope=scoped_addon_url, variant=variant,
@@ -2120,19 +2136,15 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         except (ValueError, OSError, KeyError, TypeError) as error:
             session.publish(session.epoch, '115-local-index', state='FAILED', error=type(error).__name__)
 
-    def transform(rows, capture=True):
+    def transform(rows):
         # Exact-file catalogue rows have already passed their independent
         # identity gate. Keep stable locators out of the legacy search cache.
-        from lib.clients.qqdocs_provider import is_source as is_qqdocs_source
-        qqdocs_rows = [row for row in rows if is_qqdocs_source(row)]
-        rows = [row for row in rows if not is_qqdocs_source(row)]
+        catalog_rows, ordinary = [], []
+        for row in rows:
+            (catalog_rows if provider_for(row) else ordinary).append(row)
+        rows = ordinary
         if not rows:
-            return qqdocs_rows
-        if capture:
-            with cache_lock:
-                if len(raw_results) + len(rows) > 2048:
-                    raise ValueError('Provider candidate budget exceeded')
-                raw_results.extend(deepcopy(rows))
+            return catalog_rows
         if mode in ('tv', 'movies'):
             target = context.get('release_order') or tv_data
             rows = _cinema_filter_catalog_candidates(rows, context.get('catalog_aliases', []), mode,
@@ -2140,15 +2152,20 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
                 release_episode=int(target.get('episode', 0)) or None if mode == 'tv' else None,
                 fallback_query=query, anime=16 in (context.get('genre_ids') or []),
                 anime_range_context=context.get('anime_range_context'))
-        return qqdocs_rows + _prepare_stremio_results(_process_search_results(rows, mode, tv_data.get('name', ''),
+        return catalog_rows + _prepare_stremio_results(_process_search_results(rows, mode, tv_data.get('name', ''),
             episode, season, scoped_addon_url, query, media_type, rescrape,
             suppress_debrid_dialog=True, suppress_busy_dialog=True, recommendation_context=context))
 
     def setup(manager):
         reconcile_source_selection(cache_backend=cache, settings_getter=get_setting,
                                    stremio_addons_getter=get_selected_stream_addons)
-        scope = _build_search_cache_scope(scoped_addon_url) + ':bfull-v1:' + hashlib.sha256(session.media.encode()).hexdigest()
-        cache_context['scope'] = scope
+        scope = _build_search_cache_scope(scoped_addon_url) + ':provider-v1:' + hashlib.sha256(session.media.encode()).hexdigest()
+        # The progressive path no longer reads/writes an aggregate full-search
+        # cache. Healthy providers survive sibling failure and only missing or
+        # expired scopes repeat IO. Exact-file catalogs own their locator cache.
+        manager.result_cache = ProviderResultCache(cache, scope,
+            hours=get_cache_expiration() if is_cache_enabled() else 0,
+            refresh=rescrape, cacheable=lambda key: key in (Indexer.JACKETT, 'animegarden'))
         if ids:
             context.update(build_media_metadata(ids, mode))
         if mode in ('tv', 'movies') and ids.get('tmdb_id'):
@@ -2161,11 +2178,6 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         tv_completed[0] = _tv_completed_context(ids, mode, tv_data, context.get('release_order'))
         session.set_metadata({key: value for key, value in context.items()
                               if key not in ('mode', 'query', 'media_type')})
-        if not rescrape:
-            cached = _check_search_caches(query, ids, mode, media_type, episode, season,
-                scope, allow_autoscrape_fallback=False)
-            if cached:
-                session.publish(session.epoch, 'complete-search-cache', transform(cached, capture=False))
         inferred_year = year if year is not None else _infer_tmdb_year(ids, mode)
         movie_years = None
         if mode == 'movies':
@@ -2178,10 +2190,9 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         if manager.cancelled.is_set():
             return
         if not scoped_addon_url and not jackgram_only and ids.get('tmdb_id'):
-            from lib.clients.qqdocs_provider import find_sources as qqdocs_sources
-            manager.submit_task('115 目录', 'qqdocs', qqdocs_sources,
+            submit_catalogs(manager,
                 ids, mode, season, episode, inferred_year, context.get('catalog_aliases', []),
-                context.get('release_order'), manager.deadline, manager.cancelled,
+                context.get('release_order'),
                 movie_years=movie_years)
         _submit_search_tasks_managed(manager, None, query, mode, media_type, season, episode,
             ids, scoped_addon_url, ids.get('tmdb_id'), ids.get('imdb_id'), variant=variant,
@@ -2196,16 +2207,7 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
             manager.submit_task('AnimeGarden RSS', 'animegarden', animegarden_sources,
                 ids, mode, _cinema_anime_queries(ids, mode), manager.deadline, manager.cancelled)
 
-    def save_complete_cache():
-        # Never let the single recently played source or a timed-out partial
-        # overwrite the scoped full-provider result cache.
-        if not cache_context.get('scope') or not raw_results:
-            return
-        cache_results(raw_results, query, mode, media_type, episode, season,
-                      cache_scope=cache_context['scope'])
-
-    pump = ProgressiveSearch(session, setup, transform, workers=min(4, _search_worker_count()),
-                             on_complete=save_complete_cache)
+    pump = ProgressiveSearch(session, setup, transform, workers=min(4, _search_worker_count()))
     pump.start()
     try:
         initial = [source for _, source in session.snapshot()['entries']]

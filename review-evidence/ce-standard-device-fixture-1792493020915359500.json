@@ -1,0 +1,316 @@
+{
+  "exit_code": 0,
+  "result": {
+    "scope": "actual standard adapter on existing F9; generated media only",
+    "other_ce_hardware_tested": false,
+    "history": [
+      {
+        "request_id": "0fb2b004fe624184bcb304e19de1e828",
+        "terminal_reason": "STARTED",
+        "completed": false,
+        "current_time": 0.0,
+        "total_time": 0.0,
+        "lifecycle_evidence": "standard-kodi-observation"
+      },
+      {
+        "request_id": "0fb2b004fe624184bcb304e19de1e828",
+        "terminal_reason": "NATURAL_EOF",
+        "completed": true,
+        "current_time": 7.55,
+        "total_time": 8.0,
+        "lifecycle_evidence": "standard-kodi-observation"
+      },
+      {
+        "request_id": "dcf73db40dd44ff3adc8338d2c61e35d",
+        "terminal_reason": "STARTED",
+        "completed": false,
+        "current_time": 0.0,
+        "total_time": 0.0,
+        "lifecycle_evidence": "standard-kodi-observation"
+      },
+      {
+        "request_id": "dcf73db40dd44ff3adc8338d2c61e35d",
+        "terminal_reason": "NATURAL_EOF",
+        "completed": true,
+        "current_time": 7.649,
+        "total_time": 8.0,
+        "lifecycle_evidence": "standard-kodi-observation"
+      }
+    ],
+    "reports": [],
+    "used_native_api": false,
+    "samples": [
+      {
+        "playing": true,
+        "video": false,
+        "session_state": "submitted"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": -0.015,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.03,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.23,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.23,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.43,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.43,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.63,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.8300000000000001,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 0.8300000000000001,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.03,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.03,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.23,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.43,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.43,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.6300000000000001,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.83,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 1.83,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.0300000000000002,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.0300000000000002,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.25,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.25,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.43,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.65,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.65,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 2.85,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 3.0500000000000003,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 3.25,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 3.25,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      },
+      {
+        "playing": true,
+        "video": true,
+        "session_state": "playing",
+        "file": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700/a.mp4",
+        "seconds": 3.45,
+        "property": "0fb2b004fe624184bcb304e19de1e828",
+        "unique": "0fb2b004fe624184bcb304e19de1e828"
+      }
+    ],
+    "real_av_requests": 2,
+    "real_eof_count": 2,
+    "passed": true
+  },
+  "diagnostic_present": false,
+  "temporary_device_directory": "/storage/.kodi/temp/bobbi-standard-fixture-1792493000649885700"
+}

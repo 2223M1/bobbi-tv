@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
+    raise RuntimeError('Public packaging retired: use the signed private offline bundle.')
     output = ROOT / 'dist/public-alpha'
     output.mkdir(parents=True, exist_ok=True)
     manifest = json.loads((ROOT / 'repository/manifest.json').read_text())

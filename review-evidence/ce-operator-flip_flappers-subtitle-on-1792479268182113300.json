@@ -1,0 +1,378 @@
+{
+  "result": {
+    "operation": "subtitle-on",
+    "before": {
+      "at": 2209139.123887427,
+      "native": {
+        "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+        "monotonic_us": 2209054002851,
+        "native_instance": "703c66a0-82c6-4670-abfa-7a004e6f8163",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "5330a3524bdf41feada42ea224808b1c",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+        "subtitle_intent": 1,
+        "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+        "user_intent": 0
+      },
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "properties": {
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "fa055b54bd5cc16fdfef97939b8bcfb7 （外挂）"
+        },
+        "speed": 1,
+        "subtitleenabled": false,
+        "time": {
+          "hours": 0,
+          "milliseconds": 18,
+          "minutes": 1,
+          "seconds": 25
+        },
+        "totaltime": {
+          "hours": 0,
+          "milliseconds": 502,
+          "minutes": 23,
+          "seconds": 41
+        }
+      }
+    },
+    "atomic_instance_control": false,
+    "operator_test": true,
+    "command_result": "OK",
+    "observations": [
+      {
+        "at": 2209141.147821646,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2209054002851,
+          "native_instance": "703c66a0-82c6-4670-abfa-7a004e6f8163",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "5330a3524bdf41feada42ea224808b1c",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+          "subtitle_intent": 2,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "fa055b54bd5cc16fdfef97939b8bcfb7 （外挂）"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 61,
+            "minutes": 1,
+            "seconds": 27
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2209143.157794104,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2209054002851,
+          "native_instance": "703c66a0-82c6-4670-abfa-7a004e6f8163",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "5330a3524bdf41feada42ea224808b1c",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+          "subtitle_intent": 2,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "fa055b54bd5cc16fdfef97939b8bcfb7 （外挂）"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 897,
+            "minutes": 1,
+            "seconds": 28
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2209145.16593408,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2209054002851,
+          "native_instance": "703c66a0-82c6-4670-abfa-7a004e6f8163",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "5330a3524bdf41feada42ea224808b1c",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+          "subtitle_intent": 2,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "fa055b54bd5cc16fdfef97939b8bcfb7 （外挂）"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 982,
+            "minutes": 1,
+            "seconds": 30
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2209147.18191448,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2209054002851,
+          "native_instance": "703c66a0-82c6-4670-abfa-7a004e6f8163",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "5330a3524bdf41feada42ea224808b1c",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+          "subtitle_intent": 2,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "fa055b54bd5cc16fdfef97939b8bcfb7 （外挂）"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 26,
+            "minutes": 1,
+            "seconds": 33
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2209149.191785905,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2209054002851,
+          "native_instance": "703c66a0-82c6-4670-abfa-7a004e6f8163",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "5330a3524bdf41feada42ea224808b1c",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+          "subtitle_intent": 2,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "fa055b54bd5cc16fdfef97939b8bcfb7 （外挂）"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 111,
+            "minutes": 1,
+            "seconds": 35
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      },
+      {
+        "at": 2209151.205832925,
+        "native": {
+          "file_identity": "prepared:7c5e1320b2f25bb946456f3d6f3ec0cb8e993c858c18db9845e7be5d262c02cd|transport:689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "monotonic_us": 2209054002851,
+          "native_instance": "703c66a0-82c6-4670-abfa-7a004e6f8163",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "5330a3524bdf41feada42ea224808b1c",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+          "subtitle_intent": 2,
+          "url_sha256": "689c6e2b63cdd7082ec607258a1b496ac39df8528c4ade3719882325780582b0",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "fa055b54bd5cc16fdfef97939b8bcfb7 （外挂）"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 946,
+            "minutes": 1,
+            "seconds": 36
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 502,
+            "minutes": 23,
+            "seconds": 41
+          }
+        }
+      }
+    ],
+    "same_instance_after": true,
+    "observed_intent_preserved": true
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

@@ -1,0 +1,2110 @@
+{
+  "source": "D:\\AM6B-Project\\AM6B\\资源\\plugin.service.emby-next-gen-12.4.24.zip",
+  "bytes": 8407018,
+  "sha256": "f8aeabb0069e48d9f3b7a65230433b536556577905997051f0ceaf78a0faee4d",
+  "members": [
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/.gitignore",
+      "type": "file",
+      "bytes": 65,
+      "compressed_bytes": 63,
+      "sha256": "8727eed511b44f11aef896ba8fa270b89719cadcf6e8135a21512889f5fc76ee",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/CONTRIBUTING.md",
+      "type": "file",
+      "bytes": 329,
+      "compressed_bytes": 235,
+      "sha256": "e628646dde1e6c0b3d93ad9c687fdfd6cdaa61e2c563f9033853cc6c0e6c0aa7",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/CONTRIBUTING.md",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/LICENSE.txt",
+      "type": "file",
+      "bytes": 35148,
+      "compressed_bytes": 12113,
+      "sha256": "8b1ba204bb69a0ade2bfcf65ef294a920f6bb361b317dba43c7ef29d96332b9b",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/LICENSE.txt",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/README.md",
+      "type": "file",
+      "bytes": 2600,
+      "compressed_bytes": 1217,
+      "sha256": "8551ac844a0b2ae0e3677a3fe6eb874480eb0e41005301cb5afd2935157ec90d",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/README.md",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/addon.xml",
+      "type": "file",
+      "bytes": 19312,
+      "compressed_bytes": 5697,
+      "sha256": "f0c30b03d526aaec2535426672f150ca1181b3ca57482fc40a5a9fc399e21341",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/addon.xml",
+      "copy_status": "original-byte-copy",
+      "addon": {
+        "id": "plugin.service.emby-next-gen",
+        "name": "Emby for Kodi Next Gen",
+        "version": "12.4.24",
+        "provider-name": "quickmic",
+        "extensions": [
+          {
+            "point": "xbmc.service",
+            "library": "service.py"
+          },
+          {
+            "point": "kodi.context.item"
+          },
+          {
+            "point": "xbmc.addon.metadata"
+          }
+        ],
+        "dependencies": [
+          {
+            "addon": "xbmc.python",
+            "version": "3.0.1"
+          }
+        ]
+      }
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/changelog.txt",
+      "type": "file",
+      "bytes": 82504,
+      "compressed_bytes": 20247,
+      "sha256": "35f79e9680a070691f956570a2b77e4b3e372b4dfdedf264e76f6cf3d04a8f72",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/changelog.txt",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/__init__.py",
+      "type": "file",
+      "bytes": 0,
+      "compressed_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/core/__init__.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/audio.py",
+      "type": "file",
+      "bytes": 14610,
+      "compressed_bytes": 2977,
+      "sha256": "85bfde54de19e10dae490cee3dc11535098ec2c26eb351b872a47d0ddce9d80d",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/audio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/boxsets.py",
+      "type": "file",
+      "bytes": 10415,
+      "compressed_bytes": 2232,
+      "sha256": "09ffe7f2e7e6b599cfc10556e8b60e1c8b74597d746919e245624eed15b2f083",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/boxsets.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/common.py",
+      "type": "file",
+      "bytes": 96961,
+      "compressed_bytes": 16429,
+      "sha256": "4c0e917b941079130c539523522a0db3da465e126da51576a20cf143ec2e5730",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/common.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/episode.py",
+      "type": "file",
+      "bytes": 10831,
+      "compressed_bytes": 2272,
+      "sha256": "eb54bb1da18b8cc14a5e953ae8b41bf28e691253d1b2e33e89ef129c71878ec0",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/episode.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/folder.py",
+      "type": "file",
+      "bytes": 1644,
+      "compressed_bytes": 534,
+      "sha256": "f20f906f15e1a06db9e3ca37c8385a4f46221593561495ee254ec730cc3acb7c",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/folder.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/genre.py",
+      "type": "file",
+      "bytes": 5323,
+      "compressed_bytes": 1244,
+      "sha256": "d43fca77b77596f5b65868e2c947be44e160e9a3b1a549643fc8ea28d156469f",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/genre.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/movies.py",
+      "type": "file",
+      "bytes": 12866,
+      "compressed_bytes": 2653,
+      "sha256": "33e58a38e9ceaf9d30a086431c86d5f8de4926bab6d5bd327f23091746ffc63f",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/movies.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicalbum.py",
+      "type": "file",
+      "bytes": 10889,
+      "compressed_bytes": 2274,
+      "sha256": "ac722a560758d849d7f62bb1f018c1205dd1d268cf84250753bb48f59fae629d",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicalbum.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicartist.py",
+      "type": "file",
+      "bytes": 11464,
+      "compressed_bytes": 2312,
+      "sha256": "a396b8d762da6623d46d73efecfb6c67a4849c2f5d0b90d87166d5fa5f0ff2b0",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicartist.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicgenre.py",
+      "type": "file",
+      "bytes": 10326,
+      "compressed_bytes": 2145,
+      "sha256": "1c9212b957895f12ef9f4108faec736c59ee55200aabe83eebda5e381809dbd4",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicgenre.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicvideo.py",
+      "type": "file",
+      "bytes": 16795,
+      "compressed_bytes": 3092,
+      "sha256": "3eee5c227e856165c74465f6952577550ac279090356a1a44a854ce43f3f51d7",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/musicvideo.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/person.py",
+      "type": "file",
+      "bytes": 5415,
+      "compressed_bytes": 1158,
+      "sha256": "b5fac0849e107e03b868167bdca9998f2bac4713f61636e684f0d8892256a81a",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/person.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/photo.py",
+      "type": "file",
+      "bytes": 1470,
+      "compressed_bytes": 547,
+      "sha256": "2405e4374e96a0e9c35bd96539788cacc35808a8ed6b6a6dc46e25fe132c4ac1",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/photo.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/photoalbum.py",
+      "type": "file",
+      "bytes": 1506,
+      "compressed_bytes": 537,
+      "sha256": "cd767939f90c4bd559e153115af9e07f6076be9168b823fc8bd73152b6d17387",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/photoalbum.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/playlist.py",
+      "type": "file",
+      "bytes": 10914,
+      "compressed_bytes": 2438,
+      "sha256": "86417b28a536ad1858aede456e8849b36908ffee918b5cbf526c3fd81fae5cde",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/playlist.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/season.py",
+      "type": "file",
+      "bytes": 7084,
+      "compressed_bytes": 1604,
+      "sha256": "95fc00375f79f0e4124706f6c8ecd4bb0d5312a2c577f37878327d2dd5251809",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/season.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/series.py",
+      "type": "file",
+      "bytes": 10911,
+      "compressed_bytes": 2275,
+      "sha256": "b1d80cf09150d36683fd31d589e62b72c2534350a5f7dd11d6aa0c6968fba7f3",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/series.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/studio.py",
+      "type": "file",
+      "bytes": 5684,
+      "compressed_bytes": 1248,
+      "sha256": "7db0155bdc1af95e1f8f27dbb3ea727037e6718f16d501b9816238f041d3d223",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/studio.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/tag.py",
+      "type": "file",
+      "bytes": 5664,
+      "compressed_bytes": 1262,
+      "sha256": "d188197dccec422fe4f2d60595b26a0ec7d7df4e1f28be906bd63108e63beabc",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/tag.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/trailer.py",
+      "type": "file",
+      "bytes": 2477,
+      "compressed_bytes": 795,
+      "sha256": "64661c3a70ecbc663b863f03dc968b029577d88a25527da6e0c8c79af984a495",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/trailer.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/videos.py",
+      "type": "file",
+      "bytes": 13996,
+      "compressed_bytes": 2701,
+      "sha256": "7574214d7408e3382d8ae04b6d2cac8ae3ce11ea249308565c3b250406900848",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/core/videos.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/__init__.py",
+      "type": "file",
+      "bytes": 0,
+      "compressed_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/core/__init__.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/addon_db.py",
+      "type": "file",
+      "bytes": 511,
+      "compressed_bytes": 252,
+      "sha256": "684f7dfe6681be06c24d05197568d1b0ee18dad49c3e1a70717f5671a39fc640",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/database/addon_db.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/common_db.py",
+      "type": "file",
+      "bytes": 4643,
+      "compressed_bytes": 1148,
+      "sha256": "211746a395bb1754b5c158eed7140b24b64ab3a26a31e999bc43bca51b63384d",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/common_db.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/dbio.py",
+      "type": "file",
+      "bytes": 8053,
+      "compressed_bytes": 1596,
+      "sha256": "effda009a924d4e8e8c3d4806bda5d3bc306191233703dc08a0861d1b6aa336d",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/database/dbio.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/emby_db.py",
+      "type": "file",
+      "bytes": 113735,
+      "compressed_bytes": 12012,
+      "sha256": "a609b64e3f50c469ab8e8728b05a7a6ad172eb4ebe57c6426b30c7083ff4d520",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/emby_db.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/library.py",
+      "type": "file",
+      "bytes": 93563,
+      "compressed_bytes": 14990,
+      "sha256": "aa6c5c6bae2f33e4b6fdaa6f43598d09f865698670416cb8c58b1100796a90f9",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/library.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/music_db.py",
+      "type": "file",
+      "bytes": 29898,
+      "compressed_bytes": 5483,
+      "sha256": "f1105e58d3b3903e751275af907ffc50983c20789d78db8e3a880e0689e6145a",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/music_db.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/texture_db.py",
+      "type": "file",
+      "bytes": 2647,
+      "compressed_bytes": 778,
+      "sha256": "8d26bb9faea0f7a5ea8b8d17fcfe4f2eb6dc743352ce4889ac78b3372552a672",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/texture_db.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/video_db.py",
+      "type": "file",
+      "bytes": 104920,
+      "compressed_bytes": 15374,
+      "sha256": "91e22df45455a1c93d13114d714aca38451efebfbda51cce63b029c691c57068",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/database/video_db.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/__init__.py",
+      "type": "file",
+      "bytes": 0,
+      "compressed_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/core/__init__.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/loginconnect.py",
+      "type": "file",
+      "bytes": 3087,
+      "compressed_bytes": 1010,
+      "sha256": "651f77b65d0215e736abdcc00fb9c896b0efc188546765005ec48c5cbced74b5",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/dialogs/loginconnect.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/loginmanual.py",
+      "type": "file",
+      "bytes": 3210,
+      "compressed_bytes": 1035,
+      "sha256": "4ea8d71902bc83cf1f9e25229964b176f9c51937dfb9b3f9ac8c813d46b5c528",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/dialogs/loginmanual.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/serverconnect.py",
+      "type": "file",
+      "bytes": 3471,
+      "compressed_bytes": 1071,
+      "sha256": "988684f2adf59686736ff5848bfda5b14e415305d9ec6c0ec9cee1fa2864a59c",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/dialogs/serverconnect.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/servermanual.py",
+      "type": "file",
+      "bytes": 3233,
+      "compressed_bytes": 1037,
+      "sha256": "0ba179ef2e3ddc394f1dc23e40805451e59d662e7f5da303093c2c021b067846",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/dialogs/servermanual.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/skipintrocredits.py",
+      "type": "file",
+      "bytes": 809,
+      "compressed_bytes": 282,
+      "sha256": "94a848a1998cbbbccbcde29fc754d09d29946ec53e88d93531217ead1872f3f5",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/dialogs/skipintrocredits.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/dialogs/usersconnect.py",
+      "type": "file",
+      "bytes": 1583,
+      "compressed_bytes": 597,
+      "sha256": "476453cd0f557bd008ff3db38873719129e8d960e0892c24466b344155d90245",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/dialogs/usersconnect.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/__init__.py",
+      "type": "file",
+      "bytes": 0,
+      "compressed_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/core/__init__.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/api.py",
+      "type": "file",
+      "bytes": 54074,
+      "compressed_bytes": 9640,
+      "sha256": "e8bd2afeb12dfdb22104d5c42de1fa8239a7cfd2e41239756839b0e271e35c7f",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/api.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/emby.py",
+      "type": "file",
+      "bytes": 27168,
+      "compressed_bytes": 5417,
+      "sha256": "a05654a72f3fd10e5ed51595da6c5c7b9479d39baacb3cc5226f938a43d594bc",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/emby.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/http.py",
+      "type": "file",
+      "bytes": 67345,
+      "compressed_bytes": 11410,
+      "sha256": "fc0649b53d7e3ff086bb3dba890124650cdbbdc5934d12d8d265d671d6ad7c21",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/http.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/httpcache.py",
+      "type": "file",
+      "bytes": 1289,
+      "compressed_bytes": 381,
+      "sha256": "a7f91c49600336d9abb22e8acb92dc78f4c6c0bd84cb85c61679f349f4728848",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/emby/httpcache.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/listitem.py",
+      "type": "file",
+      "bytes": 43566,
+      "compressed_bytes": 6732,
+      "sha256": "da4084113bf07b4c06b55b06ffc1ab9dfe48ae9ef4c5ced9aad86028ae4a562c",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/listitem.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/metadata.py",
+      "type": "file",
+      "bytes": 8885,
+      "compressed_bytes": 1797,
+      "sha256": "e684de117fe4015afbee1e8766ed6ab0d2a45cf01ee5d86218e21323748d247c",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/metadata.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/views.py",
+      "type": "file",
+      "bytes": 70287,
+      "compressed_bytes": 8550,
+      "sha256": "ac60181b3157f820459a9eaac3978ea735b3695d19bd2e97fcb3ed7b50eedede",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/emby/views.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/fanart.jpg",
+      "type": "file",
+      "bytes": 76337,
+      "compressed_bytes": 72342,
+      "sha256": "5e9a6071a7828ff729cc9a7f0cf4c54a01532e8f2fabb53e3d1daa3ce90bf321",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/__init__.py",
+      "type": "file",
+      "bytes": 0,
+      "compressed_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/core/__init__.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/artworkcache.py",
+      "type": "file",
+      "bytes": 7214,
+      "compressed_bytes": 2144,
+      "sha256": "7187a9365763a83ce4b1fe2f1e33548a0fb0946f9cc36c823a11a9a53b260592",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/artworkcache.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/backup.py",
+      "type": "file",
+      "bytes": 18297,
+      "compressed_bytes": 3244,
+      "sha256": "5ae30de0a4d4202792a25072f5a208ac4291190549d43fbeab18ee261204dc55",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/helper/backup.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/cache.py",
+      "type": "file",
+      "bytes": 3126,
+      "compressed_bytes": 823,
+      "sha256": "9cb31b92bb2b39b085268135782cd67b7493058e5aae9e802b86f776f2efef9b",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/cache.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/context.py",
+      "type": "file",
+      "bytes": 23646,
+      "compressed_bytes": 5006,
+      "sha256": "26af16dd4bdbe766699d1b020ab1c5dec42aae2baad29effdd8235457ecbfb83",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/context.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/deduplicate.py",
+      "type": "file",
+      "bytes": 9048,
+      "compressed_bytes": 1567,
+      "sha256": "cc20ff3211e82bed1d78a54791ea6c54ec9749da8f9117daf791a84fe48f5877",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/helper/deduplicate.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/player.py",
+      "type": "file",
+      "bytes": 50854,
+      "compressed_bytes": 9196,
+      "sha256": "36662aea43a67453317e8c9175a0329fa93b265b2d750614f5aea3094828570d",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/player.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/playerops.py",
+      "type": "file",
+      "bytes": 41585,
+      "compressed_bytes": 7488,
+      "sha256": "6a95289baa9a751cd5e8b61809d6c284962651d5b26de7a9ea3128ac53dc4089",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/playerops.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/pluginmenu.py",
+      "type": "file",
+      "bytes": 79841,
+      "compressed_bytes": 12804,
+      "sha256": "7417b7726de4ed5636fbc108d7a87e23605cdf1ee01fe50aa208f4063386932d",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/pluginmenu.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/queue.py",
+      "type": "file",
+      "bytes": 1268,
+      "compressed_bytes": 316,
+      "sha256": "276fab3af2aa0707ee43c89c1ff650f869e3cc26c736fe8c2da6b0c9100a1481",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/helper/queue.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/utils.py",
+      "type": "file",
+      "bytes": 59980,
+      "compressed_bytes": 13976,
+      "sha256": "a8bda065f014f9943900300e71d88b2bf1bd1a3ace04d90943fa85530f623387",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/utils.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/helper/xmls.py",
+      "type": "file",
+      "bytes": 16336,
+      "compressed_bytes": 1847,
+      "sha256": "8b9573b70db6c7b6d6062f800b9d65c94ce825a7ff3bd0b8dcd9fb96e6649734",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/helper/xmls.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/__init__.py",
+      "type": "file",
+      "bytes": 0,
+      "compressed_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/core/__init__.py",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/favorites.py",
+      "type": "file",
+      "bytes": 65865,
+      "compressed_bytes": 7432,
+      "sha256": "ec3cc0e29046ce2b41512fc3f664221213c0cd3b8d913be81d3dca01476cf19e",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/favorites.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/monitor.py",
+      "type": "file",
+      "bytes": 29292,
+      "compressed_bytes": 6123,
+      "sha256": "079ce5c6be7db43b69c6d69e84b2e3fe4037a0da6889ee45f8640457dbc8d029",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/monitor.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/themes.py",
+      "type": "file",
+      "bytes": 27909,
+      "compressed_bytes": 5535,
+      "sha256": "37cfe5fe97e1865ad765715e1e2d860538fcd4b3bc87019a06c2f8d0dd8fa30f",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/themes.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/webservice.py",
+      "type": "file",
+      "bytes": 61542,
+      "compressed_bytes": 10240,
+      "sha256": "b031249f05b7853ec62cd96934dd903e030c3e4058716319c2d3c65cd363941b",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/webservice.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/websocket.py",
+      "type": "file",
+      "bytes": 31011,
+      "compressed_bytes": 4922,
+      "sha256": "0f0f1b37026135a047e31ffbf82f48aa331aa6002cce2119b875c9e03f4f891d",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/hooks/websocket.py",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/icon.png",
+      "type": "file",
+      "bytes": 1850,
+      "compressed_bytes": 1580,
+      "sha256": "4146b9bd36ce639cc1269f4ea10545650b42aa42cd6f6b056e105524b18bde31",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/kodi_icon.png",
+      "type": "file",
+      "bytes": 16737,
+      "compressed_bytes": 15853,
+      "sha256": "964281487eb3322b7a2b31921eca0f04768472241e357691acb4f82b1746ebc2",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/banner.jpg",
+      "type": "file",
+      "bytes": 15879,
+      "compressed_bytes": 13282,
+      "sha256": "a492bc2fc985ef35527c940e4fc333a6ccffbbe9bb88dd8ba0d535f03f3c3379",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/banner.png",
+      "type": "file",
+      "bytes": 10380,
+      "compressed_bytes": 9746,
+      "sha256": "286fe4b9906e6d53e8be4f27c1d874999a9dd55123ef22652cc435c6404adca1",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.3gp",
+      "type": "file",
+      "bytes": 21992,
+      "compressed_bytes": 1293,
+      "sha256": "aa2a7091b4b05a1af61f7307a1f9acfbba1db2391d692688101e91b2cb6651ec",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.asf",
+      "type": "file",
+      "bytes": 13745,
+      "compressed_bytes": 2270,
+      "sha256": "3ebdf3266ab973063d323caac5fbb2d7beb76c803d2eafa8bd40200fef5ddca0",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.avi",
+      "type": "file",
+      "bytes": 16804,
+      "compressed_bytes": 1581,
+      "sha256": "75d281869af4747f65a093a456b486825126d6afc12d5a5e826cff800eee8627",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.flv",
+      "type": "file",
+      "bytes": 5861,
+      "compressed_bytes": 1549,
+      "sha256": "71ec1d70e3bd59c55e5cc1fd828b152a07f64cbcfd0a7532fafc4596a042d138",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.m4v",
+      "type": "file",
+      "bytes": 4554,
+      "compressed_bytes": 1459,
+      "sha256": "dc3399a0371ef5e62c4e83676e0d534d694006a91f8366fab10e64745dae49e0",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.mkv",
+      "type": "file",
+      "bytes": 3969,
+      "compressed_bytes": 1588,
+      "sha256": "4e49251915662762177494eac8b770918e6169b298dd0433d2b96645577dbe4b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.mov",
+      "type": "file",
+      "bytes": 4621,
+      "compressed_bytes": 1476,
+      "sha256": "b65e0ea48f844dbe8c23e0baf5a3ad7aa0a4d98fa80c1af6ffdfb2cce178a2d8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.mp4",
+      "type": "file",
+      "bytes": 4530,
+      "compressed_bytes": 1435,
+      "sha256": "b28e5dc74242f58e1abcba37282e30aa9f7711748e033b74e1acca926f19952f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.mpeg",
+      "type": "file",
+      "bytes": 83968,
+      "compressed_bytes": 1298,
+      "sha256": "be97b5b4cff22f33bf934b90d3699d84b9fd78f1b65cad8377f7b10fd1c27ce1",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.mxf",
+      "type": "file",
+      "bytes": 1656889,
+      "compressed_bytes": 15593,
+      "sha256": "7252468d21b9d2322b129f38afe5ded65de8b0d98f137d1c08833914fb39904d",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.ogv",
+      "type": "file",
+      "bytes": 8591,
+      "compressed_bytes": 5905,
+      "sha256": "fb09938e32ed7944351fa068ba96dbaeda5027b10c97a3fb72cf4aa2d551e8ca",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.ts",
+      "type": "file",
+      "bytes": 13724,
+      "compressed_bytes": 1556,
+      "sha256": "d36f231aa15588e38ab00a6d003f893de284040f88662cfd58e5d524ce738869",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.vob",
+      "type": "file",
+      "bytes": 299008,
+      "compressed_bytes": 5842,
+      "sha256": "12a5ab1c7c38fdcc48f51229942d26531f3bf46496c8f38a9fd7b3aa919ea006",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.webm",
+      "type": "file",
+      "bytes": 6471,
+      "compressed_bytes": 2070,
+      "sha256": "f89c664e0821f20bb30cf0ffc523e6406b4eb56164a8944fe1cbf4df548acd83",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/black.wmv",
+      "type": "file",
+      "bytes": 13745,
+      "compressed_bytes": 2270,
+      "sha256": "3ebdf3266ab973063d323caac5fbb2d7beb76c803d2eafa8bd40200fef5ddca0",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/clearlogo.jpg",
+      "type": "file",
+      "bytes": 21956,
+      "compressed_bytes": 18646,
+      "sha256": "58d82232f9bd0954a8e0df13621362f0425add0a3603b0877f5510e86bb890ea",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/clearlogo.png",
+      "type": "file",
+      "bytes": 10693,
+      "compressed_bytes": 9642,
+      "sha256": "7bef81635c43c2a3f1984dba6e0fcb35f0ea54c3b9643a2d64a52d5d7740e4c9",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/fanart.jpg",
+      "type": "file",
+      "bytes": 76337,
+      "compressed_bytes": 72342,
+      "sha256": "5e9a6071a7828ff729cc9a7f0cf4c54a01532e8f2fabb53e3d1daa3ce90bf321",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/font/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/font/LiberationSans-Bold.ttf",
+      "type": "file",
+      "bytes": 353936,
+      "compressed_bytes": 193095,
+      "sha256": "d723d5a272970aedf296ef6fc628180df6074bce7769701ea9e0d222c052668c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/icon-animated.gif",
+      "type": "file",
+      "bytes": 5168741,
+      "compressed_bytes": 5168741,
+      "sha256": "29c449c36659fb11dd946dff90f3c489e60a43448327513ab343181dc3e792e8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/icon.png",
+      "type": "file",
+      "bytes": 15753,
+      "compressed_bytes": 15281,
+      "sha256": "8d5de85d485f4552a436263f38580d0db51cfe24ef0340a4187dc33dfd5c7053",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/icon2.png",
+      "type": "file",
+      "bytes": 65418,
+      "compressed_bytes": 64051,
+      "sha256": "615683fb60896cdf467419eb5debcd5d9ddbd86309b26b1c6005dfa127ec3550",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/icon3.png",
+      "type": "file",
+      "bytes": 9938,
+      "compressed_bytes": 6747,
+      "sha256": "c0c4a98eccf636f65816f0ce40665ae7819c5bfa99fe7c669c40ac01a7280c1c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/iptvsimple.xml",
+      "type": "file",
+      "bytes": 5183,
+      "compressed_bytes": 954,
+      "sha256": "08ed1d870f3bd74b0b0f242a74fc5a0df97c72a069e2780c8bd92063f6a37625",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/iptvsimple.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/kodi_icon.png",
+      "type": "file",
+      "bytes": 19181,
+      "compressed_bytes": 18994,
+      "sha256": "f00b341b33a65cb64586d92756ee073b2178a97164f1c7c0f26e3de75ec3104c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.af_za/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.af_za/strings.po",
+      "type": "file",
+      "bytes": 80668,
+      "compressed_bytes": 21912,
+      "sha256": "da1f28fb23ccabad2fde62cafad6bedea789351731c778f5f45dd69957c84ce5",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.af_za/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ar_sa/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ar_sa/strings.po",
+      "type": "file",
+      "bytes": 97031,
+      "compressed_bytes": 24010,
+      "sha256": "7692ab136695c5767216760729fda2574075ca61aa575bf84fb86660e4984678",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ar_sa/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.az_az/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.az_az/strings.po",
+      "type": "file",
+      "bytes": 85286,
+      "compressed_bytes": 22617,
+      "sha256": "dc20c2fc818dc9ade575f896819c0a56e612f7a2dc5e053d5563e0722e521ab9",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.az_az/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.be_by/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.be_by/strings.po",
+      "type": "file",
+      "bytes": 101611,
+      "compressed_bytes": 25393,
+      "sha256": "e42d145a51c9bbd4ac64c593c701861dab198a9c4b9772963b4320200432f702",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.be_by/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.bg_bg/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.bg_bg/strings.po",
+      "type": "file",
+      "bytes": 106385,
+      "compressed_bytes": 25267,
+      "sha256": "8ab6c45db24c91e4cf77263b613f185bf23d7b3c5f261cc746b4f1657c2c6626",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.bg_bg/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.bn_bd/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.bn_bd/strings.po",
+      "type": "file",
+      "bytes": 116608,
+      "compressed_bytes": 24710,
+      "sha256": "fec45a9e7e9eaf406087b30dd08e82962cdf94164c2439bc1d821d97021ab38e",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.bn_bd/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.bs_ba/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.bs_ba/strings.po",
+      "type": "file",
+      "bytes": 81717,
+      "compressed_bytes": 22608,
+      "sha256": "8216bcb270079f93bd67c707f3bb5d47e9497b471677ce3be38db24d6e7ef21d",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.bs_ba/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ca_es/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ca_es/strings.po",
+      "type": "file",
+      "bytes": 85773,
+      "compressed_bytes": 22615,
+      "sha256": "78b15e41c5b9ae0d94687ba044864ec65704f7f9f4d64697b806353930e32973",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ca_es/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.cs_cz/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.cs_cz/strings.po",
+      "type": "file",
+      "bytes": 85680,
+      "compressed_bytes": 23842,
+      "sha256": "ee49e651a3208635aae1b4d865567ceeb4328d4d15095956bd1af907d6f0cdea",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.cs_cz/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.da_dk/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.da_dk/strings.po",
+      "type": "file",
+      "bytes": 80038,
+      "compressed_bytes": 21337,
+      "sha256": "b66106f6029ce9d5a2582f90e996643b8a2eae0cd90573e92442d3ac4e2c76bc",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.da_dk/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.de_de/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.de_de/strings.po",
+      "type": "file",
+      "bytes": 87447,
+      "compressed_bytes": 23901,
+      "sha256": "04ebd713210daf1c36a7b0c8d205f9a04a7a003e5aa2aa3c9536b6460a7a92f3",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.de_de/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.el_gr/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.el_gr/strings.po",
+      "type": "file",
+      "bytes": 108062,
+      "compressed_bytes": 26109,
+      "sha256": "057924e602e17cc0cc688ae05fbd0196ff1483dd536f20b9680b31d719b7b982",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.el_gr/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.en_gb/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.en_gb/strings.po",
+      "type": "file",
+      "bytes": 58415,
+      "compressed_bytes": 13095,
+      "sha256": "b9198b74e449fddcfd0893c9ef838e69cb824f179aa01b1d62af5f7f842aba69",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.en_gb/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.es_es/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.es_es/strings.po",
+      "type": "file",
+      "bytes": 88491,
+      "compressed_bytes": 23252,
+      "sha256": "98343d8a8344f2b077d2cb77287cfd02c276da7eb0efa8244ce57d4d929b8090",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.es_es/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.et_ee/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.et_ee/strings.po",
+      "type": "file",
+      "bytes": 81166,
+      "compressed_bytes": 22390,
+      "sha256": "f92f17e838fc04f55215fc7edcc42ca968717b7774767a74d4b3829215fe5a46",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.et_ee/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.eu_es/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.eu_es/strings.po",
+      "type": "file",
+      "bytes": 81819,
+      "compressed_bytes": 21880,
+      "sha256": "f3e1ed717e5686518f325e1280845a06324e69c5b37d519b2c4a2148b5b83434",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.eu_es/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.fa_ir/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.fa_ir/strings.po",
+      "type": "file",
+      "bytes": 98189,
+      "compressed_bytes": 23733,
+      "sha256": "96c7fa1937ebb3b8638ff13ee87ab3c3dd356fb6330ba2ae9470147b1f18bcbf",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.fa_ir/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.fi_fi/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.fi_fi/strings.po",
+      "type": "file",
+      "bytes": 82445,
+      "compressed_bytes": 22487,
+      "sha256": "3b631b1b5684e9a8f5bdb0d6c9d45b57c801c6b710672513d476ca8787b3851d",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.fi_fi/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.fr_fr/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.fr_fr/strings.po",
+      "type": "file",
+      "bytes": 89733,
+      "compressed_bytes": 23483,
+      "sha256": "72351b868c5edb59f37256adc4c76518759634ab0b3d2b59d1e6137ecd2a5f73",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.fr_fr/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.he_il/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.he_il/strings.po",
+      "type": "file",
+      "bytes": 73307,
+      "compressed_bytes": 18348,
+      "sha256": "a5b36b3b91ffd4be49540b2f78f2680bb81c8e00240f667afafd2083dd3bf7e0",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.he_il/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hi_in/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hi_in/strings.po",
+      "type": "file",
+      "bytes": 118533,
+      "compressed_bytes": 25635,
+      "sha256": "21cd0f6d56c5277c012fe18a3f80006cbf3470738c84253f33ad2606dd8e2673",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.hi_in/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hr_hr/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hr_hr/strings.po",
+      "type": "file",
+      "bytes": 82345,
+      "compressed_bytes": 22604,
+      "sha256": "b746f6960b95de386f4a311db8cfff21adcbe34332bc682288397eaa213a1389",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.hr_hr/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hu_hu/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hu_hu/strings.po",
+      "type": "file",
+      "bytes": 86162,
+      "compressed_bytes": 23367,
+      "sha256": "3f11b8bdd28ba9978375e43ad64653fd8e697b92b9f09abfbefd8f5dd27a73a8",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.hu_hu/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hy_am/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.hy_am/strings.po",
+      "type": "file",
+      "bytes": 105388,
+      "compressed_bytes": 25202,
+      "sha256": "e24fcbcca846da6a29579f975d8b6c9313fcb5363d16192b87a6c76a1d9fc3de",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.hy_am/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.id_id/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.id_id/strings.po",
+      "type": "file",
+      "bytes": 80847,
+      "compressed_bytes": 21256,
+      "sha256": "1b5c1c53661908445cc3590fa39eac867790e5216c54a67a5a851a134a434bfd",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.id_id/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.is_is/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.is_is/strings.po",
+      "type": "file",
+      "bytes": 82198,
+      "compressed_bytes": 22768,
+      "sha256": "e837c22426649fbcaf2f5059a00ce88c50f00d73108d888821db257513aff255",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.is_is/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.it_it/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.it_it/strings.po",
+      "type": "file",
+      "bytes": 85664,
+      "compressed_bytes": 22970,
+      "sha256": "4c6de26253f5ac985074c949025df2ceeabc563885d199c09206dbd22249ce9a",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.it_it/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ja_jp/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ja_jp/strings.po",
+      "type": "file",
+      "bytes": 91048,
+      "compressed_bytes": 23758,
+      "sha256": "c1c5834483538e44823394c4d9caa30b4ccdf4f11559385ac14ec89baaf361ad",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ja_jp/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ka_ge/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ka_ge/strings.po",
+      "type": "file",
+      "bytes": 123987,
+      "compressed_bytes": 25537,
+      "sha256": "ebc44326302a7a5300dee9a51cb87d813672123ff19850f3dda25408e9ebf304",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ka_ge/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.kk_kz/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.kk_kz/strings.po",
+      "type": "file",
+      "bytes": 103480,
+      "compressed_bytes": 24720,
+      "sha256": "e6bebc76b95ce214d4a33f59b0ddbc1dc9073a8d48722bd6c06c097a571ed1fe",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.kk_kz/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ko_kr/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ko_kr/strings.po",
+      "type": "file",
+      "bytes": 84716,
+      "compressed_bytes": 22928,
+      "sha256": "37caea81b2bcc4d5279feb0a3717d26967ffb32437c919860b8c2ae48dcb065e",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ko_kr/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.lt_lt/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.lt_lt/strings.po",
+      "type": "file",
+      "bytes": 85378,
+      "compressed_bytes": 23196,
+      "sha256": "3dec4270d88a3220ba107f0d529dd4629f11b379f5de9864628916841643d009",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.lt_lt/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ms_my/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ms_my/strings.po",
+      "type": "file",
+      "bytes": 81201,
+      "compressed_bytes": 21311,
+      "sha256": "768d49be4efaca470d12b281b8f88282c712a1ec339f02cd737c5f10faaa28dd",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ms_my/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.nb_no/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.nb_no/strings.po",
+      "type": "file",
+      "bytes": 80527,
+      "compressed_bytes": 21644,
+      "sha256": "f10e62f5a8496742e8304479019f022bd67240c886ba8e30457128132a66467c",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.nb_no/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ne_np/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ne_np/strings.po",
+      "type": "file",
+      "bytes": 119593,
+      "compressed_bytes": 24641,
+      "sha256": "583538190a82f69c1570c5b65243af228f3fe91c7c8ab099904cdc83cc266601",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ne_np/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.nl_nl/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.nl_nl/strings.po",
+      "type": "file",
+      "bytes": 83869,
+      "compressed_bytes": 22295,
+      "sha256": "3a7e5e67f950612fe15b65cbdf651f036a6780e65bdbd25a712c01f472bee818",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.nl_nl/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.pl_pl/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.pl_pl/strings.po",
+      "type": "file",
+      "bytes": 84318,
+      "compressed_bytes": 23425,
+      "sha256": "958949c86fa28dd6fe8b7bf4be5e1ef77123121f26c7b7a927f1427e26068c5d",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.pl_pl/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.pt_br/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.pt_br/strings.po",
+      "type": "file",
+      "bytes": 83972,
+      "compressed_bytes": 22131,
+      "sha256": "6266ab7dc767d1c287139c09a07b4e565a27b4e617cfcbfb0f4f88ff7865a0a3",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.pt_br/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.pt_pt/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.pt_pt/strings.po",
+      "type": "file",
+      "bytes": 83972,
+      "compressed_bytes": 22131,
+      "sha256": "6266ab7dc767d1c287139c09a07b4e565a27b4e617cfcbfb0f4f88ff7865a0a3",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.pt_br/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ro_ro/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ro_ro/strings.po",
+      "type": "file",
+      "bytes": 84253,
+      "compressed_bytes": 22431,
+      "sha256": "a582a8f511ac28b9c16f33e7470f55c9c29a14333c2d13f0e87629242341ffb8",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ro_ro/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ru_ru/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ru_ru/strings.po",
+      "type": "file",
+      "bytes": 104011,
+      "compressed_bytes": 25724,
+      "sha256": "f03160b44cde2a5b469b9fb07be01d770f68aac23f46079a2ecb8007557200dd",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ru_ru/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sk_sk/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sk_sk/strings.po",
+      "type": "file",
+      "bytes": 83593,
+      "compressed_bytes": 23177,
+      "sha256": "63a5fa2f2dbb721de86b9d652abb2d5c37f81ff1c9b9c4cf6663ec9f68466892",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.sk_sk/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sl_si/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sl_si/strings.po",
+      "type": "file",
+      "bytes": 82137,
+      "compressed_bytes": 22595,
+      "sha256": "c4e96d429d7723418eafe3a4879a06903ee58c9ab8098e0ed416b7cf11a0e9fb",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.sl_si/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sq_al/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sq_al/strings.po",
+      "type": "file",
+      "bytes": 84869,
+      "compressed_bytes": 22865,
+      "sha256": "b26c792d68d6551a00572650035501291af1a946bd3a0f95d0590f538d12e466",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.sq_al/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sr_rs/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sr_rs/strings.po",
+      "type": "file",
+      "bytes": 101624,
+      "compressed_bytes": 25580,
+      "sha256": "c98d07cb5c868618de8c065a93c3dac42e6746566ce500e8f0e2cc3122e3a9d4",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.sr_rs/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sv_se/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.sv_se/strings.po",
+      "type": "file",
+      "bytes": 79778,
+      "compressed_bytes": 21451,
+      "sha256": "4e99c87371485a14e7c713fd7b42aa316cabc5d10028c537fff6d501832412cb",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.sv_se/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ta_in/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.ta_in/strings.po",
+      "type": "file",
+      "bytes": 131555,
+      "compressed_bytes": 25957,
+      "sha256": "a3b2a955a9efbbe3168acaae299b283fc9763a989a9c9f45fa0d8a112fe0d4f3",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.ta_in/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.th_th/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.th_th/strings.po",
+      "type": "file",
+      "bytes": 114152,
+      "compressed_bytes": 24695,
+      "sha256": "20f3bbf90ecf6037ea9e8a95b6304476e8e3ab0424cee5cce18c762702d31dc2",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.th_th/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.tk_tm/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.tk_tm/strings.po",
+      "type": "file",
+      "bytes": 84229,
+      "compressed_bytes": 22781,
+      "sha256": "d4be7cf4357fb9992d6817237ba0e88d28e42f64244e31b94ecc002e9a5ff86d",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.tk_tm/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.tr_tr/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.tr_tr/strings.po",
+      "type": "file",
+      "bytes": 84094,
+      "compressed_bytes": 22728,
+      "sha256": "17dbc9654802f8e0cde732ef30d34030c707d96c4732da39bec1db34ac1c1915",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.tr_tr/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.uk_ua/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.uk_ua/strings.po",
+      "type": "file",
+      "bytes": 101813,
+      "compressed_bytes": 25086,
+      "sha256": "572da5643691ac629911a3ac4791796ea98aa71359a1e08e7f87e47726cfa374",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.uk_ua/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.uz_uz/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.uz_uz/strings.po",
+      "type": "file",
+      "bytes": 84441,
+      "compressed_bytes": 22452,
+      "sha256": "e84832e3560038596c38dbc795f1a186197fad5ad44bc69c4f2dbc8871480d85",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.uz_uz/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.vi_vn/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.vi_vn/strings.po",
+      "type": "file",
+      "bytes": 89170,
+      "compressed_bytes": 22621,
+      "sha256": "3e62a6883c0135548b1e65f4f6cf510ff13bc9d7fb2cfe32eb2fdf51248491f1",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.vi_vn/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.zh_cn/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.zh_cn/strings.po",
+      "type": "file",
+      "bytes": 83755,
+      "compressed_bytes": 24770,
+      "sha256": "cc94f4e04d538ac7d299cce6c95b71419b4ddf601209eaf539a3c04f22b9acee",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.zh_cn/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.zu_za/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/language/resource.language.zu_za/strings.po",
+      "type": "file",
+      "bytes": 84065,
+      "compressed_bytes": 22590,
+      "sha256": "b56b6218596df5741ef4ae1d228f91b4b5adc8517ddb21720726007df4d69998",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/language/resource.language.zu_za/strings.po",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/letter.png",
+      "type": "file",
+      "bytes": 1298,
+      "compressed_bytes": 1298,
+      "sha256": "f2a6b5e2f3b1e8a89fe9d66322f2ac77eb402218bac95f4d08dd6d5fe95a8121",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/noimage.jpg",
+      "type": "file",
+      "bytes": 2527,
+      "compressed_bytes": 435,
+      "sha256": "845e6b8faf798daa53ffdd766d8e615b8068dc3fe464ccdd5735415f00844633",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/random.png",
+      "type": "file",
+      "bytes": 1724,
+      "compressed_bytes": 1724,
+      "sha256": "bd0a2a717a2980d15b92768ef14e172d1721459bf74c7cb2b5e9b4231aa8fbb7",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/screenshot1.jpg",
+      "type": "file",
+      "bytes": 307543,
+      "compressed_bytes": 292907,
+      "sha256": "9e3b6f8a9e9d334fc156b4fdbd85e7265e5d4af3f20ae01a97d75573cef441f8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/screenshot2.jpg",
+      "type": "file",
+      "bytes": 188447,
+      "compressed_bytes": 176559,
+      "sha256": "c3c05bb04e3b61331651d512bb06523d296da3e75e6a6c7f3e0f8d101b11bfb7",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/screenshot3.jpg",
+      "type": "file",
+      "bytes": 186875,
+      "compressed_bytes": 178822,
+      "sha256": "0e7186ccee6d074dec7449a503ef1202f441e4f352a02b4f64c4a7b865aac139",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/screenshot4.jpg",
+      "type": "file",
+      "bytes": 253795,
+      "compressed_bytes": 213554,
+      "sha256": "dc823b1785ddc32752a67a2c049660ea6a9a7d5aa6fe5ad2d35fa5c97c92e40a",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/settings.xml",
+      "type": "file",
+      "bytes": 122061,
+      "compressed_bytes": 6725,
+      "sha256": "9e93e4d2a8759fea9674894f1c518378842b3e7c5729d12f67b294027a79509d",
+      "copy": "group-original/19-f8aeabb0069e/plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/settings.xml",
+      "copy_status": "original-byte-copy"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-connect-login-manual.xml",
+      "type": "file",
+      "bytes": 8779,
+      "compressed_bytes": 1284,
+      "sha256": "871c1278adae0f18993175b50ee85b40d1f68a9ffd7a202825cee8c5db3c9cae",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-connect-login-manual.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-connect-login.xml",
+      "type": "file",
+      "bytes": 10879,
+      "compressed_bytes": 1472,
+      "sha256": "82900e95936445c5e4c22c5f92ec19e10b12c52e715ccf6e592c61d9e83a5013",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-connect-login.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-connect-server-manual.xml",
+      "type": "file",
+      "bytes": 8734,
+      "compressed_bytes": 1267,
+      "sha256": "396f4b736f8a71eb97a459b6af0cdd914fdcab3143b51e8d0a0c7d3a17e72bfc",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-connect-server-manual.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-connect-server.xml",
+      "type": "file",
+      "bytes": 13996,
+      "compressed_bytes": 1703,
+      "sha256": "a1f7fad553f78aa60fe6fd8cc03237078c7936ea8c1e909ba6704e5f3a3977f4",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-connect-server.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-connect-users.xml",
+      "type": "file",
+      "bytes": 13307,
+      "compressed_bytes": 1666,
+      "sha256": "6a3e1a75599740adac30cd1d309965dcffa179d3f667a786c659e6fd1eb87393",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-connect-users.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-context.xml",
+      "type": "file",
+      "bytes": 4899,
+      "compressed_bytes": 938,
+      "sha256": "ea77d6e6cd945baaf2c9320fa22bbc0ea9abae05fad8551c25ad2ee6eaf6ad3f",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-context.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-resume.xml",
+      "type": "file",
+      "bytes": 4536,
+      "compressed_bytes": 980,
+      "sha256": "2f94cef17b818c538ce45fa53deb1f178d6a869057a4ad152d100edf520b389f",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-resume.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-skipcreditsdialog.xml",
+      "type": "file",
+      "bytes": 1031,
+      "compressed_bytes": 429,
+      "sha256": "580838d4d6410331848e61f3e8658a99c4ec417b6b0a57b13af96bb6513d2dc5",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-skipcreditsdialog.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-skipintrodialog.xml",
+      "type": "file",
+      "bytes": 1031,
+      "compressed_bytes": 429,
+      "sha256": "9d3d09b9d2aa3a08f22a54617bb46ad559343e3c79c3aaabcc6f4f280bf8ff09",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-skipintrodialog.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/1080i/script-emby-skipintrodialogembuary.xml",
+      "type": "file",
+      "bytes": 836,
+      "compressed_bytes": 372,
+      "sha256": "94eb14c369fb5e3e0d47fcc8a6b45593618f9e63886b3d4a5e96a94e16cc5525",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/resources/skins/default/1080i/script-emby-skipintrodialogembuary.xml",
+      "copy_status": "byte-identical-reference"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/box.png",
+      "type": "file",
+      "bytes": 244,
+      "compressed_bytes": 222,
+      "sha256": "719f1c73b8553eb7bc7b1995f3252eb5464c36f97bfc7ab68d5df66523299433",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/button-focus.png",
+      "type": "file",
+      "bytes": 1023,
+      "compressed_bytes": 620,
+      "sha256": "7c443acf02c09d77aaedf672bf26a71645dc5a424ab4e9a793fe1eda9e15b196",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/buttons/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/buttons/shadow_smallbutton.png",
+      "type": "file",
+      "bytes": 407,
+      "compressed_bytes": 354,
+      "sha256": "16ad7283502c26fa750a54a218f0e38b1ae594a0cc22b029851659012b6501ee",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/dialogs/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/dialogs/dialog_back.png",
+      "type": "file",
+      "bytes": 15141,
+      "compressed_bytes": 1640,
+      "sha256": "92ad6a52a95f3edf2ae67f556abbaf59e1e493d2b8e4a710ee4bfa23256580b6",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/dialogs/menu_back.png",
+      "type": "file",
+      "bytes": 15358,
+      "compressed_bytes": 1274,
+      "sha256": "e4652e15555cd06865d8394fe264cef415e47a1f025a8c7e655e16202f9b3906",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/dialogs/menu_bottom.png",
+      "type": "file",
+      "bytes": 14781,
+      "compressed_bytes": 1376,
+      "sha256": "178baaee78e513de96c22c80d66a866173ccd6b2669d7f323b097b87d218163f",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/dialogs/menu_top.png",
+      "type": "file",
+      "bytes": 14768,
+      "compressed_bytes": 1355,
+      "sha256": "50fed4a79b6b4f4b1b0141b1e199ae5fb69abdba5e67c0de2fb4cee03102bb6c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/dialogs/white.jpg",
+      "type": "file",
+      "bytes": 8060,
+      "compressed_bytes": 2699,
+      "sha256": "e7de8362398954a5c64834ed18dc2fbef57348fad7a2ba02f821c00e3e5ec943",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/emby-bg-fade.png",
+      "type": "file",
+      "bytes": 194,
+      "compressed_bytes": 157,
+      "sha256": "0ce966c71b8f06b2fcc07ef0fb39f18b12a353c571b375710ef89bd74c69efdd",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/emby-icon.png",
+      "type": "file",
+      "bytes": 1850,
+      "compressed_bytes": 1580,
+      "sha256": "4146b9bd36ce639cc1269f4ea10545650b42aa42cd6f6b056e105524b18bde31",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/emby-separator.png",
+      "type": "file",
+      "bytes": 1436,
+      "compressed_bytes": 1308,
+      "sha256": "4725f107b5e6be05220fd7c01ed1ef4a5255b631c8b983d25daf87feb31736c9",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/fading_circle.png",
+      "type": "file",
+      "bytes": 1906,
+      "compressed_bytes": 1805,
+      "sha256": "f82880ca52f9a3c7c0b7b90534f42567493f6679d6395126cedea8f71862b9ac",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/items/",
+      "type": "directory"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/items/focus_square.png",
+      "type": "file",
+      "bytes": 1970,
+      "compressed_bytes": 1164,
+      "sha256": "f6a0106492df3fed246d980a8ed0558f23a81254e290b1682d4bc61b80bc1234",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/items/logindefault.png",
+      "type": "file",
+      "bytes": 17637,
+      "compressed_bytes": 3981,
+      "sha256": "20b8e69b61b7469104e10a0ccaacff41fc71ccb97aa8ace9aeff22240d7e9776",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/items/mask_square.png",
+      "type": "file",
+      "bytes": 1075,
+      "compressed_bytes": 286,
+      "sha256": "c7e23f3a43155ff3f56ffc4c7eee369705cba8608f275dc983786d2026e36efb",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/items/shadow_square.png",
+      "type": "file",
+      "bytes": 1374,
+      "compressed_bytes": 600,
+      "sha256": "606fcc1d7aac2475bb0252ac132fb22cb9f6852073e681da3ddac478345f15ff",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/kodi-icon.png",
+      "type": "file",
+      "bytes": 4286,
+      "compressed_bytes": 3878,
+      "sha256": "85cb8204d5aa23a95d6c9d64f204eeb92257f1df23d862588d2a79a37a6b5f91",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/logo-white.png",
+      "type": "file",
+      "bytes": 2078,
+      "compressed_bytes": 1903,
+      "sha256": "9f496bc50f7ada9b239cfcd319ddcd11410af26b64965617d21df05c8c4fbc1c",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/network.png",
+      "type": "file",
+      "bytes": 3818,
+      "compressed_bytes": 3273,
+      "sha256": "0b76037307de9dc2dbfaf71a158882aa60f86fd8ec98f00cfe13a0d923feebeb",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/qrcode_disclaimer.png",
+      "type": "file",
+      "bytes": 7694,
+      "compressed_bytes": 6497,
+      "sha256": "72c3a5550340a509ac5635157782243d01be6a8491a6d542561d79da7ea62aa8",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/radio-off.png",
+      "type": "file",
+      "bytes": 197,
+      "compressed_bytes": 197,
+      "sha256": "72f58d86069a421d28a438ff4b8bf193e2b04fc43936d55c94c98ea2d3ff5176",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/radio-on.png",
+      "type": "file",
+      "bytes": 329,
+      "compressed_bytes": 329,
+      "sha256": "7e086fd5210a1b3ad48348fec24a025b7faa5e862c2ccc6c3489cf403a3eceef",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/spinner.gif",
+      "type": "file",
+      "bytes": 123744,
+      "compressed_bytes": 119399,
+      "sha256": "4fb489c601bcbb4b8cac35ccfa46e2f5bc83e57421527f0e22b632a716dc2fd6",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/user_image.png",
+      "type": "file",
+      "bytes": 662,
+      "compressed_bytes": 595,
+      "sha256": "6d8f4fb18fae4d6e9f68b068a620940c46f104d431d932219b6583ffb34e3353",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/userflyoutdefault.png",
+      "type": "file",
+      "bytes": 1338,
+      "compressed_bytes": 1336,
+      "sha256": "82bd7d42a38845aec5f900c5278c71dfcc761bda767bfd8250770f4e7d7df84b",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/userflyoutdefault2.png",
+      "type": "file",
+      "bytes": 1700,
+      "compressed_bytes": 1504,
+      "sha256": "b7435a0b9064f1c3e4e4994514728c0b66615fffde301b865a43d1f54b200316",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/white.png",
+      "type": "file",
+      "bytes": 263,
+      "compressed_bytes": 189,
+      "sha256": "f5388f1de2a7ce639e76b2b31b2f1b6a8e6c9eebfd119512b6874ecd77515bec",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/resources/skins/default/media/wifi.png",
+      "type": "file",
+      "bytes": 3959,
+      "compressed_bytes": 3406,
+      "sha256": "82d414cfea75dd7c654679471475a6cf4f440d94dfc31ceb2bf9100029e7ec97",
+      "copy_status": "indexed-only"
+    },
+    {
+      "path": "plugin.video.emby-plugin.service.emby-next-gen_12.4.24/service.py",
+      "type": "file",
+      "bytes": 1724,
+      "compressed_bytes": 631,
+      "sha256": "05f86538bc374174bbbb2efe85d3a27d1f4ab4cd80c3e04c6fbbda9d9852dac3",
+      "copy": "group-original/18-56ec002c1c7b/plugin.video.emby-plugin.service.emby-next-gen_12.4.23/service.py",
+      "copy_status": "byte-identical-reference"
+    }
+  ],
+  "python": [],
+  "summary": {
+    "files": 202,
+    "directories": 72,
+    "uncompressed_bytes": 15982707,
+    "extensions": {
+      "<none>": 1,
+      ".md": 2,
+      ".txt": 2,
+      ".xml": 13,
+      ".py": 65,
+      ".jpg": 10,
+      ".png": 36,
+      ".3gp": 1,
+      ".asf": 1,
+      ".avi": 1,
+      ".flv": 1,
+      ".m4v": 1,
+      ".mkv": 1,
+      ".mov": 1,
+      ".mp4": 1,
+      ".mpeg": 1,
+      ".mxf": 1,
+      ".ogv": 1,
+      ".ts": 1,
+      ".vob": 1,
+      ".webm": 1,
+      ".wmv": 1,
+      ".ttf": 1,
+      ".gif": 2,
+      ".po": 55
+    },
+    "copy_status": {
+      "indexed-only": 65,
+      "byte-identical-reference": 89,
+      "original-byte-copy": 48
+    }
+  }
+}

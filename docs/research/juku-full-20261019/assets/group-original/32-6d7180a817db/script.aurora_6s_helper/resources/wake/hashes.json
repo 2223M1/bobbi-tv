@@ -1,0 +1,11 @@
+{
+  "common.py": "778e44503297cc1b7d87ec10885660c01d29e1ce43aa77807ce269e2623caa66",
+  "runtime.py": "faa2c35050a414dc33182b79d1c8621b6b235d7fd407e5835121c6d708a7632b",
+  "rtl8852bs_config.wake": "9b9280df7260f749e5ddbe506fccc27d4ba88d3281ccf766cf112998e006561c",
+  "aurora6s-wake.service": "a947e17ff7050ce31af483231c0e5f5aa36d04c5d38cfb3ce3d0bb200aafeded",
+  "suspend.conf": "210f8e7662bd3045e3c38e9d44f0b8f2dcfa60cee27ca748e6ba8cd288944932",
+  "dtb.img": "560475b3be36ac2c28346b6da393e1dc841c26ab1a0742a4c585ce3c66030635",
+  "load-drivers.sh": "bce3d470f7b7d64dce3daee2b576fb90e80e519a1d30630bbed9f0177bca38a8",
+  "ng-4pro/dtb.img": "2756adc60789aff03016b185affa56ae7b7454d07545902f79a932664ffbed11",
+  "ng-4pro/load-drivers.sh": "74f2ab703ff8648e9d6a7dea4b963a33f8dde29105fab568f3648d8720c7af87"
+}

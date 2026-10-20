@@ -1,0 +1,217 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "tokyo_godfathers",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Tokyo Godfathers",
+        "tmdb_id": 13398,
+        "kind": "movie",
+        "year": 2003
+      },
+      "prior_request": "79b5699511924914846fe3007bf91378",
+      "started": 2147880.158535491,
+      "home": {
+        "generation": 24,
+        "intent": 2,
+        "retired_generation": 23,
+        "observed_at": 2147880.915007544
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2147880.915319747,
+      "picker": {
+        "window": 13001,
+        "generation": 25,
+        "intent": 2,
+        "tmdb_id": 13398,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2147883.243447846
+    },
+    "samples": [
+      {
+        "wall": 2147881.15439953,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "buffer_timeout",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147881.136408978,
+          "decoder_started": 2147881.185430972,
+          "decoder_completed": 2147881.187358562,
+          "sample_completed": 2147881.187364729
+        }
+      },
+      {
+        "wall": 2147883.265221955,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "buffer_timeout",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147883.244057501,
+          "decoder_started": 2147883.289052902,
+          "decoder_completed": 2147883.289322606,
+          "sample_completed": 2147883.289324772
+        }
+      },
+      {
+        "wall": 2147885.478300568,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "buffer_timeout",
+        "labels": {
+          "Container(1000).ListItem.Label": "Tokyo.Godfathers.2003.BluRay.1080p.TrueHD5.1.x265.10bit-BeiTai.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "2",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "2"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147885.390007064,
+          "decoder_started": 2147885.492234944,
+          "decoder_completed": 2147885.492503189,
+          "sample_completed": 2147885.492505189
+        }
+      },
+      {
+        "wall": 2147887.734377112,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "buffer_timeout",
+        "labels": {
+          "Container(1000).ListItem.Label": "东京教父 [英版.DIY简繁字幕.全花絮中字] Tokyo Godfathers 2003 JAPANESE 1080p BluRay AVC DTS-HD MA 5.1-FGT.iso",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "42",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "42"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147887.696985862,
+          "decoder_started": 2147887.836329961,
+          "decoder_completed": 2147887.837032698,
+          "sample_completed": 2147887.837039573
+        }
+      },
+      {
+        "wall": 2147890.036694612,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "buffer_timeout",
+        "labels": {
+          "Container(1000).ListItem.Label": "东京教父 [英版.DIY简繁字幕.全花絮中字] Tokyo Godfathers 2003 JAPANESE 1080p BluRay AVC DTS-HD MA 5.1-FGT.iso",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "52",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "52"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147890.005554833,
+          "decoder_started": 2147890.056964002,
+          "decoder_completed": 2147890.057817653,
+          "sample_completed": 2147890.057821903
+        }
+      },
+      {
+        "wall": 2147892.241943866,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "buffer_timeout",
+        "labels": {
+          "Container(1000).ListItem.Label": "东京教父 [英版.DIY简繁字幕.全花絮中字] Tokyo Godfathers 2003 JAPANESE 1080p BluRay AVC DTS-HD MA 5.1-FGT.iso",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "53",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "53"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147892.225121373,
+          "decoder_started": 2147892.255501418,
+          "decoder_completed": 2147892.256140615,
+          "sample_completed": 2147892.256145573
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "tokyo_godfathers",
+  "operation": "start",
+  "attempt": 4,
+  "regression_attempt": true
+}

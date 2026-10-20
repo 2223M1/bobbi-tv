@@ -1,0 +1,9 @@
+{
+  "base_commit": "a3a448d26b8d560a65655dab2cd122994dc4e146",
+  "patches": [
+    {"file": "0001-bobbi-playback-contracts.patch", "sha256": "a1ed9a6fad9a05b788d8a5d3975641cb2e8b15f0d7567f5dbec07b782ac47493"},
+    {"file": "0002-bobbi-host-packaging.patch", "sha256": "5343a948cb5fa3b15b8b4980263b84a074480efa63ab8102013b6025e2f9c45b"}
+  ],
+  "clean_apply_verified": true,
+  "port_scope": "Generic playback instance, manual subtitle intent, actor-time and fullscreen contracts; no CE/AMLogic/DV kernel or renderer patch"
+}

@@ -20,15 +20,51 @@ def playback_context(data, duration):
         year = next(iter(years)) if len(years) == 1 else None
     def number(value):
         return int(value) if isinstance(value, (int, str)) and str(value).isdigit() else None
-    return dict(title=title, mode=mode, year=year, release=release, duration=duration,
+    result = dict(title=title, mode=mode, year=year, release=release, duration=duration,
                 imdb=ids.get('imdb_id'), tmdb=number(ids.get('tmdb_id')),
                 season=number(tv.get('season')) if mode == 'series' else None,
                 episode=number(tv.get('episode')) if mode == 'series' else None)
+    if isinstance(data.get('_share'), dict):
+        result['_share'] = deepcopy(data['_share'])
+    return result
 
 
 def receipt_key(row):
     return tuple(row.get(k) for k in ('native_instance', 'request_id', 'file_identity',
                                     'url_sha256', 'subtitle_intent', 'subtitle_auto_intent'))
+
+
+def discover_candidate(context, deadline, cancelled, provider, share_provider=None,
+                       torrent_receipt=None, clock=time.monotonic):
+    """Shared discovery only. No native receipt creation or Kodi mutations."""
+    context = dict(context)
+    context.pop('_movie_years', None)
+    if context.get('mode') == 'movie':
+        from lib.clients.tmdb.movie_years import cached_movie_years
+        evidence = cached_movie_years(context.get('tmdb'))
+        if evidence is not None:
+            context.update(year=evidence.primary_year, _movie_years=evidence)
+    candidate = None
+    if context.get('_share') and share_provider is not None:
+        try:
+            candidate = share_provider(context['_share'], context, deadline, cancelled)
+        except (ValueError, OSError, RuntimeError):
+            if cancelled() or clock() >= deadline:
+                raise
+    if candidate is None and context.get('_torrent') and torrent_receipt is not None:
+        try:
+            from bobbi_core.torrent_subtitles import fetch_candidate
+            from bobbi_torrent.backend import subtitle_connection
+            base, auth = subtitle_connection()
+            candidate = fetch_candidate(None, base, auth, context['_torrent'], torrent_receipt,
+                context, deadline, cancelled)
+        except (ImportError, OSError, ValueError, RuntimeError) as error:
+            if hasattr(provider, 'note'):
+                from bobbi_core.subtitle_candidates import public_failure_reason
+                provider.note('inspect', public_failure_reason(error))
+    if candidate is None:
+        candidate = provider.candidates(context, deadline, cancelled)
+    return candidate
 
 
 class SubtitleFallback:
@@ -42,6 +78,17 @@ class SubtitleFallback:
         self.lock = Lock()
         self.deadline = 0
         self.torrent = None
+        self.share_provider = None
+        self.accounts = None
+
+    def candidate_account_current(self, value):
+        scope = value.get('account_scope') if isinstance(value, dict) else None
+        if scope is None:
+            return True
+        try:
+            return self.accounts is not None and self.accounts.is_current(scope) is True
+        except (ValueError, RuntimeError, OSError):
+            return False
 
     def torrent_context(self, request_id, file_identity, metadata):
         from bobbi_core.torrent_subtitles import checked_context
@@ -84,6 +131,8 @@ class SubtitleFallback:
                 if self.clock() >= self.deadline and self.result is None:
                     self.cancel.set()
                     return dict(state='unavailable', reason='SUBTITLE_DEADLINE')
+                if self.result is not None and not self.candidate_account_current(self.result):
+                    return dict(state='unavailable', reason='SUBTITLE_ACCOUNT_CHANGED')
                 return deepcopy(self.result) if self.result is not None else dict(state='pending')
             self.cancel.set()
             if self.worker is not None and self.worker.is_alive():
@@ -105,47 +154,23 @@ class SubtitleFallback:
         session = None
         provider = None
         try:
-            # JSON/IPC may supply the selected label/year, never a year whitelist.
-            # Rebuild evidence from the existing ID-bound TMDb detail cache;
-            # this optional enhancement performs no network request.
-            context = dict(context)
-            context.pop('_movie_years', None)
-            if context.get('mode') == 'movie':
-                from lib.clients.tmdb.movie_years import cached_movie_years
-                evidence = cached_movie_years(context.get('tmdb'))
-                if evidence is not None:
-                    context.update(year=evidence.primary_year, _movie_years=evidence)
             if self.factory:
                 provider = self.factory()
             else:
                 from bobbi_core.subtitle_candidates import AssrtCandidates
                 # HTTP executes in a fresh stdlib Python process, not this
                 # interpreter's Requests socket/read or a daemon helper.
-                provider = AssrtCandidates(None, '/storage/.kodi/userdata/addon_data/plugin.video.bobbi/subtitle-cache283')
-            candidate = None
-            if context.get('_torrent') and self.factory is None:
-                try:
-                    import xbmcaddon
-                    from bobbi_core.torrent_subtitles import fetch_candidate
-                    addon = xbmcaddon.Addon('plugin.video.jacktorr')
-                    host = addon.getSetting('service_host')
-                    port = int(addon.getSetting('service_port'))
-                    if not host or re.search(r'[/\\@?#\s]', host) or not 1 <= port <= 65535:
-                        raise ValueError('Invalid configured TorrServer endpoint')
-                    base = '{}://{}:{}'.format('https' if addon.getSetting('ssl_connection') == 'true' else 'http', host, port)
-                    auth = (addon.getSetting('service_login'), addon.getSetting('service_password'))
-                    candidate = fetch_candidate(session, base, auth, context['_torrent'], row,
-                        context, deadline, cancelled.is_set)
-                except (OSError, ValueError, RuntimeError) as error:
-                    # Optional discovery keeps the original shared deadline.
-                    if hasattr(provider, 'note'):
-                        from bobbi_core.subtitle_candidates import public_failure_reason
-                        provider.note('inspect', public_failure_reason(error))
-            if candidate is None:
-                candidate = provider.candidates(context, deadline, cancelled.is_set)
+                from bobbi_core.runtime_paths import ProfilePath
+                provider = AssrtCandidates(None, ProfilePath('subtitle-cache283'), accounts=self.accounts)
+            candidate = discover_candidate(context, deadline, cancelled.is_set, provider,
+                self.share_provider, row if self.factory is None else None, self.clock)
             answer = dict(state='candidate', file=candidate['file'], origin=candidate.get('origin'),
                           bilingual=candidate.get('bilingual', False), native_instance=row['native_instance'],
                           request_id=row['request_id'], subtitle_intent=row['subtitle_intent'])
+            if candidate.get('account_scope') is not None:
+                answer['account_scope'] = deepcopy(candidate['account_scope'])
+                if not self.candidate_account_current(answer):
+                    answer = dict(state='unavailable', reason='SUBTITLE_ACCOUNT_CHANGED')
         except Exception as error:
             # Public reason vocabulary only; provider URLs/tokens never enter logs.
             reason = str(error) if type(error).__name__ == 'LookupStopped' else type(error).__name__

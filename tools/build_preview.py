@@ -4,9 +4,12 @@ import json
 from pathlib import Path
 import zipfile
 import xml.etree.ElementTree as ET
+from build_release import files, sources, OFFICIAL
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ('script.module.bobbi.platform', 'script.bobbi.setup', 'plugin.video.bobbi.library')
+COMPONENTS = ('script.module.bobbi.platform', 'script.bobbi.setup', 'plugin.video.bobbi.library',
+              'script.module.bobbi.core', 'script.module.requests', 'script.module.certifi',
+              'script.module.chardet', 'script.module.idna', 'script.module.urllib3')
 
 
 def build(output):
@@ -17,15 +20,17 @@ def build(output):
         raise ValueError('Unknown diagnostic preview inventory')
     manifest = {'schema': 1, 'status': 'diagnostic-preview-not-cinema', 'components': []}
     for addon in COMPONENTS:
-        root = ROOT / 'addons' / addon
+        root = sources()[addon]
         names = inventory['components'][addon]
-        actual = {p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()
-                  and '__pycache__' not in p.parts and p.suffix != '.pyc'}
+        actual = set(files(root))
         if names != sorted(set(names)) or set(names) != actual:
             raise ValueError('Review and update explicit source inventory: ' + addon)
         xml = ET.parse(root / 'addon.xml').getroot()
         if xml.attrib['id'] != addon:
             raise ValueError('Addon ID mismatch')
+        if any(dep.get('addon') not in set(COMPONENTS) | OFFICIAL
+               for dep in xml.findall('./requires/import') if dep.get('optional') != 'true'):
+            raise ValueError('Diagnostic dependency closure changed')
         dest = output / (addon + '-' + xml.attrib['version'] + '.zip')
         with zipfile.ZipFile(dest, 'w') as archive:
             for name in names:

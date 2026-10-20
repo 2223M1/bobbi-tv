@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.bili" name="bilibili" version="0.7.0" provider-name="Mephis">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.requests" version="2.12.4"/>
+    <import addon="script.module.qrcode" version="5.3"/>
+    <import addon="inputstream.adaptive" optional="true"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.service" library="service.py" start="startup"/>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <website>https://github.com/Mephis/plugin.video.bili</website>
+    <source>https://github.com/Mephis/plugin.video.bili</source>
+    <news>
+v0.7.0
+- 直播 60 分钟断流修复: service.py 新增 `/live-m3u8/&lt;room_id&gt;` 实时转发
+  端点, ffmpeg 每次 refresh 都拿到当下最新的 CDN sliding window;
+  storage 里的 m3u8_url 由 daemon 线程每 50 分钟续命, 避开 CDN TRID 过期.
+  m3u8 manifest 的相对路径 segment URL 在转发时改写为绝对路径,
+  ffmpeg 直接拉 B 站 CDN segment.
+- ⚠️ 直播硬依赖 service.py: addon.py 进程在 plugin.run() 返回后立即
+  退出, 其 daemon HTTP 线程随进程死亡; ffmpeg 在 set_resolved_url 之
+  后才连 `/live-m3u8/&lt;id&gt;`, 此时必须 service.py 长跑进程在 listen 54321.
+- 删冗余: addon.py MPD fallback (v0.4.0 引入, 用户从未触发);
+  `_Storage` TTL 系统 (`_ttl`/`_ts`/`get_storage(TTL=)`);
+  WBI `_FALLBACK_KEYS` (用错的 key 签名保证后续失败一次);
+  旧 flat `dash.dolby_audio`/`dash.flac_audio` 兼容;
+  弹幕 `xml version="2.0"` 分支 (XML 不可能) + tucao.cc/Komica fallback;
+  `_dict_to_li(set_played)` / `Plugin.__init__(name, addon_id)` /
+  `get_storage(file_format, TTL)` / `finish(sort_methods)` 死参数;
+  `_Storage.__del__` 与 atexit 重复 sync. plugin.py net -40 行.
+- plugin.Plugin 新增 read_storage / write_storage（每次直读直写
+  disk JSON, 绕过 _unsynced_storages 进程内 cache）— 跨进程 sync
+  (addon.py 短进程写入 → service.py 长跑进程读取).
+- read_storage 用模块级 mtime cache; hot path（mpd_server 每 ~4s
+  一次）省掉 99% disk I/O.
+- utils.rewrite_m3u8_relative_urls 新 helper: 把 m3u8 里相对路径
+  segment URL 改写为基于 m3u8 URL 的绝对路径（防 ffmpeg 用本地
+  base URL 拼接导致 404）.
+v0.6.0
+- 删除 enable_dash 设置项。点播自动按 inputstream.adaptive 是否安装
+  切换 DASH (fnval=4048, 4K/HDR/Hi-Res/Atmos) / 非 DASH (fnval=1, durl
+  MP4, 最高 720P)。菜单页缺失时仍弹窗引导安装, 但不再有"去设置关掉"流程。
+v0.5.0
+- 死代码删除: video_utils.py, monitor.py (已确认无 import 引用)
+- 布局整理: danmaku2ass.py → subtitle/; http_server.py → playback/mpd_server.py
+  (函数 get_http_server → get_mpd_server)
+- 重命名: plugin_compat.py → plugin.py (core.py 重导出保持兼容)
+- 性能: api/http.py 全局复用 requests.Session, timeout=(3, 10) 双超时
+- 文档: utils.py 顶部加 7 类职责速查表
+v0.4.0
+- Restore v0.1.0 VOD path: inputstream.adaptive + per-representation
+  SegmentBase + Referer-only manifest_headers / stream_headers.
+  BaseURL points at B 站 CDN directly (no segment proxy).
+- Live routed through inputstream.adaptive (manifest_type='hls',
+  manifest_update_params='full'); ffmpegdirect removed.
+- Delete playback/proxy.py and monitor.py. http_server.py and
+  service.py stay but are simplified — the local server only serves
+  the static MPD file; segments are fetched directly by adaptive.
+  inputstream.adaptive is now optional; menu guides the install.
+v0.3.0
+- 完全移除 inputstream.ffmpegdirect / inputstream.adaptive 依赖。
+  改用 Kodi 内置 ffmpeg dash demuxer 直接播放 DASH MPD，
+  分片请求走本地 Python 代理注入 Cookie/Referer/UA 认证头。
+- MPD 用 BaseURL 单文件模式（ffmpeg dashdec 原生支持），
+  保留多音轨 AdaptationSet + Dolby Vision/HDR10/HLG 标记。
+- 直播 fmp4/ts 统一用 ffmpeg 管道直连 + reconnect 参数。
+v0.2.0
+- Runtime detection: checks if inputstream.ffmpegdirect has the bili-patches marker.
+v0.1.0
+- Initial release (DASH + live).
+    </news>
+    <summary lang="en">Bilibili plugin for Kodi 21</summary>
+    <summary lang="zh_CN">哔哩哔哩 Kodi 21 插件（点播 + 直播）</summary>
+    <description lang="en">Browse, search, and play Bilibili videos. Uses inputstream.adaptive for DASH MPD playback (Kodi ships this addon; install via the menu prompt if missing). Supports Dolby Vision, Dolby Atmos, Hi-Res FLAC, HDR10, HLG.</description>
+    <description lang="zh_CN">浏览、搜索、播放哔哩哔哩视频。使用 inputstream.adaptive 播放 DASH MPD（Kodi 自带；首次使用按菜单提示安装）。支持杜比视界、杜比全景声、Hi-Res FLAC、HDR10、HLG。</description>
+    <assets>
+      <icon>icon.jpg</icon>
+    </assets>
+  </extension>
+</addon>

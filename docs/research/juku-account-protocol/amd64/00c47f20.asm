@@ -1,0 +1,62 @@
+; main.getRealProvider
+00c47f20  CMP RSP,qword ptr [R14 + 0x10]
+00c47f24  JBE 0x00c47fe3
+00c47f2a  PUSH RBP
+00c47f2b  MOV RBP,RSP
+00c47f2e  SUB RSP,0x30
+00c47f32  MOV qword ptr [RSP + 0x40],RAX
+00c47f37  CALL 0x004b0460
+00c47f3c  NOP dword ptr [RAX]
+00c47f40  TEST RBX,RBX
+00c47f43  JZ 0x00c47fd9
+00c47f49  MOV qword ptr [RSP + 0x28],RAX
+00c47f4e  MOV qword ptr [RSP + 0x20],RBX
+00c47f53  MOV RDX,qword ptr [0x019900d0]
+00c47f5a  MOV RCX,RAX
+00c47f5d  MOV RDI,RBX
+00c47f60  LEA RAX,[0xe17280]
+00c47f67  MOV RBX,RDX
+00c47f6a  CALL 0x004131a0
+00c47f6f  TEST BL,BL
+00c47f71  JNZ 0x00c47fc9
+00c47f73  MOV RAX,qword ptr [RSP + 0x28]
+00c47f78  MOV RBX,qword ptr [RSP + 0x20]
+00c47f7d  NOP dword ptr [RAX]
+00c47f80  CALL 0x004af740
+00c47f85  MOV RCX,qword ptr [0x019900c8]
+00c47f8c  MOV RDI,RBX
+00c47f8f  MOV RBX,RCX
+00c47f92  MOV RCX,RAX
+00c47f95  LEA RAX,[0xe16200]
+00c47f9c  NOP dword ptr [RAX]
+00c47fa0  CALL 0x004131a0
+00c47fa5  TEST BL,BL
+00c47fa7  JZ 0x00c47fb9
+00c47fa9  MOV RCX,qword ptr [RAX]
+00c47fac  MOV RBX,qword ptr [RAX + 0x8]
+00c47fb0  MOV RAX,RCX
+00c47fb3  ADD RSP,0x30
+00c47fb7  POP RBP
+00c47fb8  RET
+00c47fb9  MOV RAX,qword ptr [RSP + 0x28]
+00c47fbe  MOV RBX,qword ptr [RSP + 0x20]
+00c47fc3  ADD RSP,0x30
+00c47fc7  POP RBP
+00c47fc8  RET
+00c47fc9  MOV RAX,qword ptr [RSP + 0x28]
+00c47fce  MOV RBX,qword ptr [RSP + 0x20]
+00c47fd3  ADD RSP,0x30
+00c47fd7  POP RBP
+00c47fd8  RET
+00c47fd9  XOR EAX,EAX
+00c47fdb  XOR EBX,EBX
+00c47fdd  ADD RSP,0x30
+00c47fe1  POP RBP
+00c47fe2  RET
+00c47fe3  MOV qword ptr [RSP + 0x8],RAX
+00c47fe8  MOV qword ptr [RSP + 0x10],RBX
+00c47fed  CALL 0x0048a280
+00c47ff2  MOV RAX,qword ptr [RSP + 0x8]
+00c47ff7  MOV RBX,qword ptr [RSP + 0x10]
+00c47ffc  NOP dword ptr [RAX]
+00c48000  JMP 0x00c47f20

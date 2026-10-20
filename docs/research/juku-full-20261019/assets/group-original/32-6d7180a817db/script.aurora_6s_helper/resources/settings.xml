@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='utf-8'?>
+<settings version="1">
+  <section id="script.aurora_6s_helper">
+    <category id="lighting" label="32000" help="32013">
+      <group id="1">
+        <setting id="led.enabled" type="boolean" label="32001" help="32013">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle" />
+        </setting>
+        <setting id="led.smooth" type="boolean" label="32019" help="32020">
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle" />
+        </setting>
+      </group>
+      <group id="2" label="32002">
+        <setting id="normal.color" type="string" label="32004" help="32014">
+          <level>0</level>
+          <default>FF0000FF</default>
+          <constraints>
+            <allowempty>false</allowempty>
+          </constraints>
+          <control type="colorbutton" />
+        </setting>
+        <setting id="normal.brightness" type="integer" label="32005" help="32015">
+          <level>0</level>
+          <default>50</default>
+          <constraints>
+            <minimum>0</minimum>
+            <step>1</step>
+            <maximum>100</maximum>
+          </constraints>
+          <control type="slider" format="integer" />
+        </setting>
+        <setting id="normal.mode" type="string" label="32006" help="32016">
+          <level>0</level>
+          <default>steady</default>
+          <constraints>
+            <options>
+              <option label="32007">steady</option>
+              <option label="32008">breathing</option>
+              <option label="32018">off</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="normal.speed" type="integer" label="32009" help="32016">
+          <level>0</level>
+          <default>1536</default>
+          <constraints>
+            <options>
+              <option label="32010">768</option>
+              <option label="32011">1536</option>
+              <option label="32012">3072</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+      </group>
+      <group id="3" label="32003">
+        <setting id="playback.color" type="string" label="32004" help="32014">
+          <level>0</level>
+          <default>FF0000FF</default>
+          <constraints>
+            <allowempty>false</allowempty>
+          </constraints>
+          <control type="colorbutton" />
+        </setting>
+        <setting id="playback.brightness" type="integer" label="32005" help="32015">
+          <level>0</level>
+          <default>15</default>
+          <constraints>
+            <minimum>0</minimum>
+            <step>1</step>
+            <maximum>100</maximum>
+          </constraints>
+          <control type="slider" format="integer" />
+        </setting>
+        <setting id="playback.mode" type="string" label="32006" help="32016">
+          <level>0</level>
+          <default>steady</default>
+          <constraints>
+            <options>
+              <option label="32007">steady</option>
+              <option label="32008">breathing</option>
+              <option label="32018">off</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="string" />
+        </setting>
+        <setting id="playback.speed" type="integer" label="32009" help="32016">
+          <level>0</level>
+          <default>1536</default>
+          <constraints>
+            <options>
+              <option label="32010">768</option>
+              <option label="32011">1536</option>
+              <option label="32012">3072</option>
+            </options>
+          </constraints>
+          <control type="spinner" format="integer" />
+        </setting>
+      </group>
+      <group id="4">
+        <setting id="status" type="action" label="32017">
+          <level>0</level>
+          <data>RunScript(script.aurora_6s_helper,status)</data>
+          <control type="button" format="action" />
+        </setting>
+      </group>
+    </category>
+  </section>
+</settings>

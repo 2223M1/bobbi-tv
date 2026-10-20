@@ -1,0 +1,187 @@
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">同步指令发送中...</div>
+
+    <!-- Bottom Nav Bar -->
+    <div class="nav-bar">
+        <a href="/" class="nav-item active" id="nav-home">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>推荐</span>
+        </a>
+        <a href="/l" class="nav-item" id="nav-lists">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>片单</span>
+        </a>
+        <a href="/c" class="nav-item" id="nav-category">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>分类</span>
+        </a>
+        <a href="/sq" class="nav-item" id="nav-share">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>广场</span>
+        </a>
+        <a href="/private" class="nav-item" id="nav-private">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+            <span>私有库</span>
+        </a>
+        <a href="/s" class="nav-item" id="nav-search">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>搜索</span>
+        </a>
+        <a href="/p" class="nav-item" id="nav-push">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>推送</span>
+        </a>
+        <a href="/qr" class="nav-item" id="nav-pan">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span>网盘</span>
+        </a>
+    </div>
+
+    <script>
+        let isLoading = false;
+
+        // Show Toast Function
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.toggle('toast-error', isError);
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        let allRecommendVideos = [];
+        let currentRecommendType = 'movie';
+
+        function renderRecommendVideos() {
+            const content = document.getElementById('videosContent');
+            if (allRecommendVideos.length === 0) {
+                content.innerHTML = '<div class="msg-box">暂无热门影片推荐，请稍后再试<\/div>';
+                return;
+            }
+
+            let filtered = allRecommendVideos;
+            if (currentRecommendType === 'movie') {
+                filtered = allRecommendVideos.filter(v => {
+                    const typeId = v.typeId || v.type_id || 1;
+                    return typeId === 1;
+                });
+            } else if (currentRecommendType === 'tv') {
+                filtered = allRecommendVideos.filter(v => {
+                    const typeId = v.typeId || v.type_id || 1;
+                    return typeId === 2;
+                });
+            }
+
+            if (filtered.length === 0) {
+                content.innerHTML = '<div class="msg-box">该分类下暂无推荐影片<\/div>';
+                return;
+            }
+
+            let gridHTML = '<div class="video-grid" id="videoGrid">';
+            filtered.forEach(v => {
+                const cover = v.pic || v.coverUrl || v.sourceCoverUrl || '';
+                const year = v.year || '未知';
+                const label = v.typeName || '';
+                
+                const ratingVal = v.rating ? parseFloat(v.rating) : (v.score ? parseFloat(v.score) : 0);
+                const ratingHTML = ratingVal > 0 ? ('<div class="video-score">' + ratingVal.toFixed(1) + '<\/div>') : '';
+
+                gridHTML += 
+                    '<div class="video-card" onclick="openDetail(' + v.id + ')">' +
+                        '<div class="video-cover-wrap">' +
+                            '<img class="video-cover" referrerpolicy="no-referrer" src="' + getAbsoluteCoverUrl(cover) + '" alt="' + v.title + '" onerror="this.classList.add(\'no-cover\')">' +
+                            '<div class="video-cover-placeholder">无封面<\/div>' +
+                            ratingHTML +
+                        '<\/div>' +
+                        '<div class="video-info">' +
+                            '<div class="video-title">' + v.title + '<\/div>' +
+                            '<div class="video-meta">' +
+                                '<span>' + year + '<\/span>' +
+                                (label ? '<span class="video-tag">' + label + '<\/span>' : '') +
+                            '<\/div>' +
+                        '<\/div>' +
+                    '<\/div>';
+            });
+            gridHTML += '<\/div>';
+            content.innerHTML = gridHTML;
+        }
+
+        function switchRecommendType(type) {
+            currentRecommendType = type;
+            const tabs = document.querySelectorAll('.recommend-tab');
+            tabs.forEach(t => {
+                t.classList.toggle('active', t.getAttribute('data-type') === type);
+            });
+            renderRecommendVideos();
+        }
+
+        // Fetch recommend videos list
+        async function loadRecommendVideos() {
+            if (isLoading) return;
+            isLoading = true;
+
+            const content = document.getElementById('videosContent');
+            content.innerHTML = '<div class="spinner-large"><\/div>';
+
+            try {
+                const response = await fetch('/api/mv/videos/recommend');
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const raw = await response.json();
+                
+                allRecommendVideos = raw.data || raw.items || (Array.isArray(raw) ? raw : []);
+                renderRecommendVideos();
+
+            } catch (err) {
+                console.error(err);
+                content.innerHTML = '<div class="msg-box" style="color:var(--color-expired);">加载推荐影片失败: ' + err.message + '<\/div>';
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // Run on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRecommendVideos();
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.error('Service Worker registration failed', err));
+            });
+        }

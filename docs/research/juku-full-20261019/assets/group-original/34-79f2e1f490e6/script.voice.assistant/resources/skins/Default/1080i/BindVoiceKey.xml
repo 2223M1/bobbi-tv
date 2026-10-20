@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window><controls>
+    <control type="group" id="9900">
+      <visible>String.IsEmpty(Window(10000).Property(VoiceAssistant.CaptureHidden))</visible>
+<control type="image"><left>170</left><top>810</top><width>1580</width><height>180</height><texture colordiffuse="F218222E">codex-login-white.png</texture></control>
+<control type="image"><left>170</left><top>810</top><width>6</width><height>180</height><texture colordiffuse="FF7BD9C2">codex-login-white.png</texture></control>
+<control type="label" id="301"><left>210</left><top>835</top><width>1470</width><height>45</height><font>font30</font><textcolor>FF7BD9C2</textcolor><label>绑定语音按键</label></control>
+<control type="label" id="302"><left>210</left><top>905</top><width>1470</width><height>50</height><font>font25</font><textcolor>FFEAF1F8</textcolor></control>
+    </control>
+  </controls></window>
