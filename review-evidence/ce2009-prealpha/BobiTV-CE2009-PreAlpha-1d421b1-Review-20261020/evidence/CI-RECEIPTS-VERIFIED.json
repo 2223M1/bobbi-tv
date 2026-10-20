@@ -1,0 +1,37 @@
+{
+  "run_id": 39410984018,
+  "artifact_id": 12258794271,
+  "archive_sha256": "8550a7747959051c307404f61080fa510ecf85873437108f4df58adea60fc1d1",
+  "expected_sha256": "8550a7747959051c307404f61080fa510ecf85873437108f4df58adea60fc1d1",
+  "crc_ok": true,
+  "suites": [
+    {
+      "file": "ci-baseline.xml",
+      "tests": 757,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "ead731f90c4930d8797cff5eb9aecabd448f7353f731fc6fdb746eb18b7aa06f",
+      "passed": 757
+    },
+    {
+      "file": "ci-preparation.xml",
+      "tests": 177,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "e041b230ea2dfca8281e1e94058b0cc61b4041b7cc90585e3871794fc1d9e3f1",
+      "passed": 177
+    },
+    {
+      "file": "ci-primary.xml",
+      "tests": 1646,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 5,
+      "sha256": "96b3b15fe8b1d1445880a068d2ee755ed295fcfd41f520b2d8e6b33f1b76ef29",
+      "passed": 1641
+    }
+  ],
+  "note": "Downloaded remote receipts, not local rerun"
+}

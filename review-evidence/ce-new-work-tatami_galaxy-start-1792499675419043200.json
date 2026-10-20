@@ -1,0 +1,248 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "tatami_galaxy",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "The Tatami Galaxy",
+        "tmdb_id": 35153,
+        "kind": "tv",
+        "year": 2010,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": null,
+      "started": 2229544.939122748,
+      "home": {
+        "generation": 11,
+        "intent": 0,
+        "retired_generation": 11,
+        "observed_at": 2229545.393913671
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2229545.394617638,
+      "picker": {
+        "window": 13001,
+        "generation": 12,
+        "intent": 0,
+        "tmdb_id": 35153,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2229547.706019666
+    },
+    "samples": [
+      {
+        "wall": 2229545.626535144,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229545.606530948,
+          "decoder_started": 2229545.64936283,
+          "decoder_completed": 2229545.650178345,
+          "sample_completed": 2229545.650181637
+        }
+      },
+      {
+        "wall": 2229547.72346038,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229547.706512117,
+          "decoder_started": 2229547.738551723,
+          "decoder_completed": 2229547.738809033,
+          "sample_completed": 2229547.738811533
+        }
+      },
+      {
+        "wall": 2229549.8120431,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229549.787683,
+          "decoder_started": 2229549.82442729,
+          "decoder_completed": 2229549.824708601,
+          "sample_completed": 2229549.824710643
+        }
+      },
+      {
+        "wall": 2229551.880351717,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229551.872061982,
+          "decoder_started": 2229551.913228889,
+          "decoder_completed": 2229551.913481489,
+          "sample_completed": 2229551.913483364
+        }
+      },
+      {
+        "wall": 2229553.992484676,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229553.976638181,
+          "decoder_started": 2229554.009549795,
+          "decoder_completed": 2229554.009805229,
+          "sample_completed": 2229554.009807146
+        }
+      },
+      {
+        "wall": 2229556.096781802,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229556.078370184,
+          "decoder_started": 2229556.131296382,
+          "decoder_completed": 2229556.131796957,
+          "sample_completed": 2229556.131801458
+        }
+      },
+      {
+        "wall": 2229558.250978195,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229558.237586548,
+          "decoder_started": 2229558.290958331,
+          "decoder_completed": 2229558.291217265,
+          "sample_completed": 2229558.291219141
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "tatami_galaxy",
+  "operation": "start",
+  "attempt": 2,
+  "regression_attempt": true
+}
