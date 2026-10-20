@@ -13,6 +13,8 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'rashomon': {'title': 'Rashomon', 'tmdb_id': 548, 'kind': 'movie', 'year': 1950},
+    'cowboy_bebop': {'title': 'Cowboy Bebop', 'tmdb_id': 30991, 'kind': 'tv', 'year': 1998, 'season': 1, 'episode': 1},
     'twelve_angry_men': {'title': '12 Angry Men', 'tmdb_id': 389, 'kind': 'movie', 'year': 1957},
     'tatami_galaxy': {'title': 'The Tatami Galaxy', 'tmdb_id': 36243, 'kind': 'tv', 'year': 2010, 'season': 1, 'episode': 1},
     'man_from_earth': {'title': 'The Man from Earth', 'tmdb_id': 13363, 'kind': 'movie', 'year': 2007},
@@ -528,6 +530,11 @@ if OP in ('start','requery'):
     if globals().get('START_OVER') is True:
         params['_bobi_start_over']='true'
         record['explicit_start_over']=True
+    if globals().get('RESUME_PERCENT') is not None:
+        percent = RESUME_PERCENT
+        assert type(percent) in (int,float) and 0 < percent < 100, 'RESUME_SCOPE'
+        params['_bobi_resume_percent'] = str(percent)
+        record['explicit_resume_percent'] = percent
     url = 'plugin://plugin.video.bobbi/?' + urlencode(params)
     if record['force_select']:
         url += '&force_select=true'
@@ -563,7 +570,7 @@ else:
             rpc('Input.Back')
         result=call(dict(operation='cancel',boot_id=authority['boot_id'],epoch=authority['epoch'],request_id=record['request_id']))
         assert result.get('cancelled') is True
-        print(json.dumps(dict(name=NAME,cancelled=True,request_id=record['request_id'])))
+        print(json.dumps(dict(name=NAME,operation=OP,cancelled=True,request_id=record['request_id'])))
     elif OP in ('cards','select'):
         traversal_start = rewind_picker(record)
         labels=['Container(1000).ListItem.Label','Container(1000).ListItem.Property(source_site)',
@@ -638,7 +645,7 @@ else:
         assert result.get('queued') is True
         began=time.monotonic()
         while time.monotonic()-began<12 and rpc('Player.GetActivePlayers'): time.sleep(.25)
-        print(json.dumps(dict(name=NAME, stopped=rpc('Player.GetActivePlayers')==[],
+        print(json.dumps(dict(name=NAME, operation=OP, stopped=rpc('Player.GetActivePlayers')==[],
                               before=before, seconds=round(time.monotonic()-began,2))))
     elif OP in ('seek','manual_off','font_switch'):
         print(json.dumps(dict(name=NAME, **unsupported_control_evidence(record, OP)), ensure_ascii=True))

@@ -322,7 +322,7 @@ def test_picker_logs_one_terminal_provider_snapshot_not_each_refresh(chain):
     window = SimpleNamespace(source_session=session,_source_revision=-1,list_sources=[],
         filter_applied=False,_auto_select_pending=False,_source_interacted=False,last_error='',
         _refresh_frontend_metadata=lambda **k:None,populate_qualities_header=lambda:None,
-        populate_sources_list=lambda:None,setProperty=properties.__setitem__)
+        populate_sources_list=lambda **kw:None,setProperty=properties.__setitem__)
     refresh = namespace['_refresh_progressive_sources']
     refresh(window)
     assert not chain.logs

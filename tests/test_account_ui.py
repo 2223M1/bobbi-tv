@@ -76,7 +76,7 @@ def context(monkeypatch, tmp_path):
             raise state.refresh_error
 
     class Window:
-        def __init__(self):
+        def __init__(self, *args):
             self.closed = 0
             self.controls = []
             state.windows.append(self)
@@ -88,18 +88,24 @@ def context(monkeypatch, tmp_path):
             self.controls.extend(controls)
 
         def show(self):
+            self.onInit()
             if state.cancel_on_show is not None:
                 self.onAction(SimpleNamespace(getId=lambda: state.cancel_on_show))
 
         def close(self):
             self.closed += 1
 
+        def getControl(self, control_id): return Control()
+        def setFocusId(self, control_id): assert control_id == 9001
+
     class Control:
         def __init__(self, *args, **kwargs):
             pass
 
-        def setLabel(self, label):
+        def setLabel(self, label, **kwargs):
             state.labels.append(label)
+
+        def setImage(self, image): pass
 
     class Monitor:
         def abortRequested(self):
@@ -150,7 +156,9 @@ def context(monkeypatch, tmp_path):
         Monitor=Monitor, executebuiltin=builtin, getSkinDir=lambda: 'skin.bobbi.cinema'))
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(
         Dialog=lambda: SimpleNamespace(select=select, yesno=yesno, ok=ok),
-        WindowDialog=Window, ControlImage=Control, ControlLabel=Control))
+        WindowXMLDialog=Window, ControlImage=Control, ControlLabel=Control))
+    monkeypatch.setitem(sys.modules, 'xbmcaddon', SimpleNamespace(
+        Addon=lambda name: SimpleNamespace(getAddonInfo=lambda _: str(tmp_path))))
     monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(tmp_path)))
     monkeypatch.setattr(ui, 'call', call)
     monkeypatch.setattr(ui, 'Login', Login)
@@ -226,7 +234,8 @@ def test_confirmed_qr_commits_once_then_refreshes_without_reconfirmation(context
     assert bool(context.menus) == authenticated
     assert context.builtins == ['Container.Refresh']
     assert context.dialogs[-1][0] == '115 登录已保存'
-    assert context.labels == ['已扫描，请在手机上确认登录']
+    assert context.labels == ['登录自己的 115 网盘', '用「115 生活」App 扫码',
+        '扫描后，请在手机上确认登录', '取消并返回', '已扫描，请在手机上确认登录']
     assert_committed_before_refresh(context, 'account_install')
 
 

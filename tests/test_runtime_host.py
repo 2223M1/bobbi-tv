@@ -55,7 +55,7 @@ def test_expired_owner_request_never_dispatches_late(tmp_path):
     h.start()
     h.bind_owner(lambda body: called.append(body))
     try:
-        with pytest.raises(ValueError, match='TIMEOUT'):
+        with pytest.raises(TimeoutError, match='TIMEOUT'):
             h.dispatch('playback', {})
         h.tick()
         assert not called
@@ -192,11 +192,16 @@ def test_optional_engine_start_does_not_block_actor_and_close_race_stops_child(t
         began = time.monotonic()
         h.tick()
         assert time.monotonic() - began < .1 and started.wait(1)
-        h.close()
-        assert not closed
+        # Shutdown now retains the runtime lease until admitted startup work
+        # has drained. Startup itself remains nonblocking for the actor.
+        drained = Event()
+        closer = Thread(target=lambda: (h.close(), drained.set()))
+        closer.start()
+        assert not drained.wait(.35) and not closed
         release.set()
+        closer.join(1)
         h.engine_worker.join(1)
-        assert closed == [True] and h.engine is None
+        assert drained.is_set() and closed == [True] and h.engine is None
     finally:
         release.set()
         h.close()

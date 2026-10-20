@@ -135,11 +135,13 @@ class Host:
         try:
             self.calls.put_nowait(job)
         except Full:
-            raise ValueError('NATIVE_OWNER_BUSY') from None
+            raise OSError('NATIVE_OWNER_BUSY') from None
         if not job.done.wait(.25):
             job.cancelled = True
-            raise ValueError('NATIVE_OWNER_TIMEOUT')
+            raise TimeoutError('NATIVE_OWNER_TIMEOUT')
         if job.error:
+            if job.error == 'unavailable':
+                raise OSError('NATIVE_OWNER_UNAVAILABLE')
             raise ValueError('NATIVE_OWNER_REJECTED')
         return job.result
 
@@ -247,10 +249,12 @@ class Host:
                 break
             with job.lock:
                 if job.cancelled or time.monotonic() >= job.deadline:
-                    job.error = True
+                    job.error = 'unavailable'
                 else:
                     try:
                         job.result = self.owner(job.value)
+                    except OSError:
+                        job.error = 'unavailable'
                     except Exception:
                         job.error = True
                 job.done.set()
@@ -344,27 +348,32 @@ class Host:
             return
         self.stopping.set()
         self.idle = False
-        self.runtime.close()
-        if self.images is not None:
-            self.images.close()
-        self.unsubscribe()
-        if self.preparation is not None:
-            self.preparation.close()
-        if self.streams is not None:
-            self.streams.close()
-        with self.engine_lock:
-            engine, self.engine = self.engine, None
-        if engine is not None:
-            engine.close()
-        if self.engine_worker is not None:
-            self.engine_worker.join(timeout=.3)
-        if self.refresh_worker is not None:
-            self.refresh_worker.join(timeout=.3)
-        self.owner = self.preparation = None
-        while True:
-            try:
-                job = self.calls.get_nowait()
-            except Empty:
-                break
-            job.error = True
-            job.done.set()
+        # Stop admission first, but keep ownership while dependent services
+        # close. A missing runtime.json alone is not permission to replace code.
+        self.runtime.close(release_lease=False)
+        try:
+            if self.images is not None:
+                self.images.close()
+            self.unsubscribe()
+            if self.preparation is not None:
+                self.preparation.close()
+            if self.streams is not None:
+                self.streams.close()
+            with self.engine_lock:
+                engine, self.engine = self.engine, None
+            if engine is not None:
+                engine.close()
+            if self.engine_worker is not None:
+                self.engine_worker.join()
+            if self.refresh_worker is not None:
+                self.refresh_worker.join()
+            self.owner = self.preparation = None
+            while True:
+                try:
+                    job = self.calls.get_nowait()
+                except Empty:
+                    break
+                job.error = True
+                job.done.set()
+        finally:
+            self.runtime.lease.close()

@@ -1,0 +1,30 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-standard-real-1792508235274407300",
+  "result": {
+    "state": "lookup_complete",
+    "scope": "real standard policy + real Juku/115 on existing F9",
+    "stock_hardware_certified": false,
+    "candidates": [
+      {
+        "guid": "juku:aa3a47708fa8f4ddb05caaf7791561a1889e0b972c1d4173e4d513643ab826f7",
+        "title": "[philosophy-raws][Cowboy Bebop][01][BDRIP][Hi10P FLAC][1440X1080].mp4",
+        "bytes": 414940866
+      },
+      {
+        "guid": "juku:d1851a30ec8419eac11d325fd0584f1b7bfd96614cc83d698b291a2f58573d83",
+        "title": "[philosophy-raws][Cowboy Bebop][01][BDRIP][Hi10P FLAC][1440X1080].mkv",
+        "bytes": 2495996594
+      },
+      {
+        "guid": "juku:78d34c6bbf369d5f6be04748cb2a6990c455d9a4aa20476b0fd990c7af368478",
+        "title": "第01集 Asteroid Blues.mkv",
+        "bytes": 279659186
+      }
+    ],
+    "history": [],
+    "samples": [],
+    "passed": true
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

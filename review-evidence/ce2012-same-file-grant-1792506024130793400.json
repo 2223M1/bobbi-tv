@@ -1,0 +1,43 @@
+{
+  "exit_code": 0,
+  "result": {
+    "media": "movies:389:0:0",
+    "selection_key": "4333e02be90bb8a5137b40c3dd440fc26ebf75110b15b5c3e6ab953cf2ac7d64",
+    "bytes": 58762851801,
+    "same_cached_file": true,
+    "resolved": false,
+    "error_class": "ShareError",
+    "category": "share_unavailable",
+    "frames": [
+      {
+        "module": "ce-grant-probe",
+        "function": "<module>",
+        "line": 65
+      },
+      {
+        "module": "api.py",
+        "function": "resolve",
+        "line": 153
+      },
+      {
+        "module": "ce-grant-probe",
+        "function": "get",
+        "line": 55
+      },
+      {
+        "module": "api.py",
+        "function": "get",
+        "line": 125
+      }
+    ],
+    "milliseconds": 266,
+    "response_shape": {
+      "api_state": false,
+      "api_errno": 4100010,
+      "message_categories": [
+        "share_cancelled"
+      ]
+    }
+  },
+  "diagnostic_present": false
+}

@@ -1,12 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window type="dialog">
-  <defaultcontrol>9003</defaultcontrol>
+  <defaultcontrol always="true">9003</defaultcontrol>
+  <animation effect="fade" start="0" end="100" time="160" condition="!Skin.HasSetting(BobiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120" condition="!Skin.HasSetting(BobiReduceMotion)">WindowClose</animation>
   <controls>
-    <control type="image"><left>300</left><top>300</top><width>1320</width><height>460</height><texture colordiffuse="F0151820">special://home/addons/plugin.video.bobbi/resources/white.png</texture></control>
-    <control type="label" id="100"><left>360</left><top>340</top><width>1200</width><height>70</height><font>font30</font><textcolor>FFFFFFFF</textcolor></control>
-    <control type="label"><left>360</left><top>430</top><width>1200</width><height>70</height><font>font13</font><label>不会自动换版或降低画质；20 秒无操作自动返回。</label><textcolor>FFCCCCCC</textcolor></control>
-    <control type="button" id="9001"><left>360</left><top>570</top><width>360</width><height>80</height><font>font13</font><label>重新选择当前片源</label><onright>9002</onright><onleft>9003</onleft></control>
-    <control type="button" id="9002"><left>760</left><top>570</top><width>360</width><height>80</height><font>font13</font><label>返回本剧分集列表</label><onright>9003</onright><onleft>9001</onleft></control>
-    <control type="button" id="9003"><left>1160</left><top>570</top><width>360</width><height>80</height><font>font13</font><label>暂时返回</label><onright>9001</onright><onleft>9002</onleft></control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="B3000000">bobi/white.png</texture>
+    </control>
+    <control type="group">
+      <left>420</left><top>320</top>
+      <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobiReduceMotion)">
+        <effect type="slide" start="0,16" end="0,0" time="200" tween="cubic" easing="out" />
+      </animation>
+      <control type="image">
+        <width>1080</width><height>440</height>
+        <texture colordiffuse="FF15171C" border="20">bobi/r20.png</texture>
+      </control>
+      <control type="label" id="100">
+        <left>48</left><top>38</top><width>984</width><height>64</height>
+        <font>Head40</font><textcolor>FFF5F3EF</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label" id="101">
+        <left>48</left><top>116</top><width>984</width><height>44</height>
+        <font>Body26</font><label>保留原画质与手选版本，不自动切换其他片源。</label><textcolor>FFA9ADB7</textcolor>
+      </control>
+      <control type="label">
+        <left>48</left><top>170</top><width>984</width><height>44</height>
+        <font>Body26</font><label>20 秒无操作自动返回；已保留续看进度。</label><textcolor>FFA9ADB7</textcolor>
+      </control>
+      <control type="button" id="9001">
+        <left>48</left><top>292</top><width>312</width><height>76</height>
+        <font>Button28</font><label>重选当前片源</label>
+        <textcolor>FFF5F3EF</textcolor><focusedcolor>FF0A0B0E</focusedcolor><align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="38">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="FF2A2E37" border="38">bobi/pill.png</texturenofocus>
+        <onright>9002</onright><onleft>9003</onleft>
+      </control>
+      <control type="button" id="9002">
+        <left>384</left><top>292</top><width>312</width><height>76</height>
+        <font>Button28</font><label>查看分集</label>
+        <textcolor>FFF5F3EF</textcolor><focusedcolor>FF0A0B0E</focusedcolor><align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="38">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="FF2A2E37" border="38">bobi/pill.png</texturenofocus>
+        <onright>9003</onright><onleft>9001</onleft>
+      </control>
+      <control type="button" id="9003">
+        <left>720</left><top>292</top><width>312</width><height>76</height>
+        <font>Button28</font><label>返回</label>
+        <textcolor>FFF5F3EF</textcolor><focusedcolor>FF0A0B0E</focusedcolor><align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="38">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="FF2A2E37" border="38">bobi/pill.png</texturenofocus>
+        <onright>9001</onright><onleft>9002</onleft>
+      </control>
+    </control>
   </controls>
 </window>

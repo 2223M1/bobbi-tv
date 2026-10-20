@@ -1,0 +1,1033 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-standard-real-1792509626964476800",
+  "result": {
+    "state": "complete",
+    "scope": "real standard policy + real Juku/115 on existing F9",
+    "stock_hardware_certified": false,
+    "candidates": [
+      {
+        "guid": "juku:aa3a47708fa8f4ddb05caaf7791561a1889e0b972c1d4173e4d513643ab826f7",
+        "title": "[philosophy-raws][Cowboy Bebop][01][BDRIP][Hi10P FLAC][1440X1080].mp4",
+        "bytes": 414940866
+      },
+      {
+        "guid": "juku:d1851a30ec8419eac11d325fd0584f1b7bfd96614cc83d698b291a2f58573d83",
+        "title": "[philosophy-raws][Cowboy Bebop][01][BDRIP][Hi10P FLAC][1440X1080].mkv",
+        "bytes": 2495996594
+      },
+      {
+        "guid": "juku:78d34c6bbf369d5f6be04748cb2a6990c455d9a4aa20476b0fd990c7af368478",
+        "title": "第01集 Asteroid Blues.mkv",
+        "bytes": 279659186
+      }
+    ],
+    "history": [
+      {
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "terminal_reason": "STARTED",
+        "completed": false,
+        "current_time": 0.0,
+        "total_time": 0.0,
+        "lifecycle_evidence": "standard-kodi-observation"
+      },
+      {
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "terminal_reason": "NATURAL_EOF",
+        "completed": true,
+        "current_time": 1482.693,
+        "total_time": 1483.5230000000001,
+        "lifecycle_evidence": "standard-kodi-observation"
+      },
+      {
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "terminal_reason": "STARTED",
+        "completed": false,
+        "current_time": 0.0,
+        "total_time": 0.0,
+        "lifecycle_evidence": "standard-kodi-observation"
+      },
+      {
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "terminal_reason": "SERVICE_STOPPED",
+        "completed": false,
+        "current_time": 11.198,
+        "total_time": 1337.568,
+        "lifecycle_evidence": "standard-kodi-observation"
+      }
+    ],
+    "samples": [
+      {
+        "at": 2239511.877493644,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239512.979427979,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239514.069951541,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239515.144386365,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239516.227540251,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239517.427951093,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239518.475005324,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239519.651630506,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239520.727559285,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239521.767007951,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239522.815678827,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239524.014704928,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239525.144959689,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239526.262235681,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239527.311196927,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239528.568576077,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239529.632963878,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239530.8563081,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1439.009,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239531.88491304,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1439.009,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239532.978668952,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1435.396,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239534.075703943,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1436.48,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239535.157011684,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1436.48,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239536.322824186,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1439.025,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239537.426625852,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1440.067,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239538.436117556,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1441.1100000000001,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239539.461531905,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1442.111,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239540.544880514,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1443.32,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239541.567571408,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1444.363,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239542.661147676,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1445.406,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239543.717873442,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1446.449,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239544.732071377,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1447.45,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239545.781815296,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1448.492,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239546.936728554,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1449.7440000000001,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239547.948934221,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1450.7450000000001,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239549.092365696,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1451.787,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239550.134283591,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1452.788,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239551.134561341,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1453.8310000000001,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239552.137039077,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1454.874,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239553.14323467,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1455.875,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239554.152496541,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1456.9170000000001,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239555.315964734,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1458.127,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239556.366954138,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1459.17,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239557.518203386,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1460.212,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239558.537378936,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1461.213,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239559.551093069,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1462.256,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239560.584836959,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1463.257,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239561.730483425,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1464.508,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239562.890118479,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1465.718,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239563.900929503,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1466.719,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239564.943144644,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1467.762,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239566.106135433,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1468.929,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239567.109016772,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1469.93,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239568.112071232,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1470.973,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239569.270197705,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1472.058,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239570.27703601,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1472.9750000000001,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239571.293799818,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1473.976,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239572.452774027,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1475.269,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239573.611456016,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1476.354,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239574.61480134,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1477.355,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239575.780762105,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1478.397,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239576.874150567,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1479.565,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239577.885900731,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1480.691,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239579.034607407,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1481.901,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239580.154460748,
+        "request_id": "24bd706a530d4add8b29602231b117d9",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 1
+        },
+        "position": 1482.693,
+        "duration": 1483.5230000000001
+      },
+      {
+        "at": 2239581.274497448,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239582.609079157,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239583.688846593,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239584.718011999,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239585.883984782,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239586.987538709,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239587.999058191,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239589.185518435,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239590.23403099,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239591.357150594,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "submitted",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239592.399549512,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239593.508683895,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239595.186621543,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239596.437926634,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239597.743823409,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 0.0,
+        "duration": 0.0
+      },
+      {
+        "at": 2239598.881068027,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 5.9430000000000005,
+        "duration": 1337.568
+      },
+      {
+        "at": 2239600.319553899,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 5.9430000000000005,
+        "duration": 1337.568
+      },
+      {
+        "at": 2239601.433705237,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 5.9430000000000005,
+        "duration": 1337.568
+      },
+      {
+        "at": 2239602.807740592,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 5.9430000000000005,
+        "duration": 1337.568
+      },
+      {
+        "at": 2239603.832762439,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 10.155,
+        "duration": 1337.568
+      },
+      {
+        "at": 2239604.864491118,
+        "request_id": "ff590ff6a4a549de85ddaa214f852078",
+        "state": "playing",
+        "tv_data": {
+          "season": 1,
+          "episode": 2
+        },
+        "position": 11.198,
+        "duration": 1337.568
+      }
+    ],
+    "initial_request": "24bd706a530d4add8b29602231b117d9",
+    "initial_source": "[philosophy-raws][Cowboy Bebop][01][BDRIP][Hi10P FLAC][1440X1080].mkv",
+    "explicit_start_percent": 97.0,
+    "subtitle_backend": "existing cache/Assrt; sidecar IO not injected",
+    "reports": [],
+    "last_handoff": {
+      "request_id": "ff590ff6a4a549de85ddaa214f852078",
+      "status": "submitted"
+    },
+    "successor_title": "[philosophy-raws][Cowboy Bebop][02][BDRIP][Hi10P FLAC][1440X1080].mkv",
+    "successor_episode": {
+      "season": 1,
+      "episode": 2
+    },
+    "passed": true,
+    "teardown": {
+      "command_id": "a530615e3fd34758abe2aa24f3a2b2bd",
+      "queued": true
+    }
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

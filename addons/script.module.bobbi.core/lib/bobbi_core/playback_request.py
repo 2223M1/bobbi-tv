@@ -201,3 +201,29 @@ def owned_state(request_id):
             continue
         context(snapshot, request_id)  # Explicit cancel/replacement is immediate.
         return snapshot
+
+
+def terminal_state(original, native_instance):
+    """Read this immutable terminal even after STOP/ERROR revoked control.
+
+    This grants no command authority. Continuation still requires the existing
+    service authorization. A new selection/account/service cannot be revived.
+    """
+    snapshot = call({'operation': 'snapshot'})
+    if not isinstance(original, dict) or not native_instance:
+        return None
+    desired = snapshot.get('desired') or {}
+    if (snapshot.get('boot_id') != original.get('boot_id')
+            or snapshot.get('epoch') != original.get('epoch')
+            or desired.get('request_id') != original.get('request_id')):
+        return {'reason': 'SUPERSEDED'}
+    terminal = snapshot.get('terminal') or {}
+    if (terminal.get('request_id') != original.get('request_id')
+            or terminal.get('native_instance') != native_instance):
+        return None
+    reason = terminal.get('reason')
+    if reason not in {'NATURAL_EOF', 'STOP', 'ERROR', 'CANCEL', 'SUPERSEDED'}:
+        return None
+    if reason == 'NATURAL_EOF' and desired.get('cancelled'):
+        reason = 'CANCEL'
+    return {'reason': reason}

@@ -1,0 +1,35 @@
+{
+  "target": "D:\\AM6B-Project\\bobbi-tv-ce-pr1-20261020\\tools\\ce_playback_trial.py",
+  "reference_head": "28819d202b6d4b4ff00367e46c37d8542a1b35af",
+  "scope": "candidate result_exit_code only; complete original successful receipts plus explicit constructed failure variants",
+  "tests": 4,
+  "failures": 2,
+  "errors": 0,
+  "passed": 2,
+  "results": [
+    {
+      "name": "observe_failed_caching_sample",
+      "actual_exit_code": 0,
+      "expected": "nonzero",
+      "passed": false
+    },
+    {
+      "name": "original_successful_observation",
+      "actual_exit_code": 0,
+      "expected": "zero",
+      "passed": true
+    },
+    {
+      "name": "original_successful_stop",
+      "actual_exit_code": 0,
+      "expected": "zero",
+      "passed": true
+    },
+    {
+      "name": "stop_wait_timed_out",
+      "actual_exit_code": 0,
+      "expected": "nonzero",
+      "passed": false
+    }
+  ]
+}
