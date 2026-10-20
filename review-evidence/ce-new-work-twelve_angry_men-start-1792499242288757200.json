@@ -1,0 +1,304 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "twelve_angry_men",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "12 Angry Men",
+        "tmdb_id": 389,
+        "kind": "movie",
+        "year": 1957
+      },
+      "prior_request": null,
+      "started": 2229106.864892246,
+      "home": {
+        "generation": 23,
+        "intent": 0,
+        "retired_generation": 23,
+        "observed_at": 2229107.347132499
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2229107.347442208,
+      "picker": {
+        "window": 13001,
+        "generation": 24,
+        "intent": 0,
+        "tmdb_id": 389,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2229109.663388723
+    },
+    "samples": [
+      {
+        "wall": 2229107.581053382,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229107.565901227,
+          "decoder_started": 2229107.607940602,
+          "decoder_completed": 2229107.608896937,
+          "sample_completed": 2229107.608900854
+        }
+      },
+      {
+        "wall": 2229109.693295241,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229109.663876433,
+          "decoder_started": 2229109.712555654,
+          "decoder_completed": 2229109.712809154,
+          "sample_completed": 2229109.712811738
+        }
+      },
+      {
+        "wall": 2229111.788642336,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229111.778008273,
+          "decoder_started": 2229111.817730893,
+          "decoder_completed": 2229111.818355103,
+          "sample_completed": 2229111.81836077
+        }
+      },
+      {
+        "wall": 2229113.885476579,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229113.863365911,
+          "decoder_started": 2229113.895228723,
+          "decoder_completed": 2229113.895542015,
+          "sample_completed": 2229113.89554464
+        }
+      },
+      {
+        "wall": 2229115.985721057,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229115.962305303,
+          "decoder_started": 2229115.994825658,
+          "decoder_completed": 2229115.995460492,
+          "sample_completed": 2229115.995464367
+        }
+      },
+      {
+        "wall": 2229118.073370405,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "12.Angry.Men.1957.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.2.0-FGT.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "7"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229118.049262358,
+          "decoder_started": 2229118.101258501,
+          "decoder_completed": 2229118.101513085,
+          "sample_completed": 2229118.101515376
+        }
+      },
+      {
+        "wall": 2229120.355277774,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "12.Angry.Men.1957.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.2.0-FGT.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "7"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229120.215881213,
+          "decoder_started": 2229120.389119756,
+          "decoder_completed": 2229120.389399131,
+          "sample_completed": 2229120.389401214
+        }
+      },
+      {
+        "wall": 2229122.955238225,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "60"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229122.529894703,
+          "decoder_started": 2229122.978159936,
+          "decoder_completed": 2229122.978833146,
+          "sample_completed": 2229122.978837021
+        }
+      },
+      {
+        "wall": 2229125.110456257,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "十二怒汉 (1957) - 12.Angry.Men.1957.2160p.UHD.BluRay.REMUX.HEVC.DV.HDR.DTS-HD.MA.2.0-HDHIVE.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "60",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "60"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2229125.095902646,
+          "decoder_started": 2229125.139612355,
+          "decoder_completed": 2229125.140101897,
+          "sample_completed": 2229125.140106231
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "twelve_angry_men",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

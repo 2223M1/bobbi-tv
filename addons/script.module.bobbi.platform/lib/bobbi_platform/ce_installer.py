@@ -17,6 +17,9 @@ from .upstream_addons import OWNED_COMPONENTS, UPSTREAM_COMPONENTS, compare_vers
 
 ENTRY = 'script.bobbi.start'
 MANAGED = OWNED_COMPONENTS - {ENTRY}
+# A verified file vector may boot while its idempotent Kodi operations are
+# pending. This is deliberately different from a completed transaction.
+RUNNABLE = ('activation_pending', 'restore_pending', 'complete', 'restored')
 
 
 def blocked(work):
@@ -25,7 +28,7 @@ def blocked(work):
         return False  # Existing legacy install, never adopted/migrated implicitly.
     try:
         value = _json(path.read_bytes())
-        return value.get('phase') not in ('complete', 'restored')
+        return value.get('phase') not in RUNNABLE
     except (OSError, ValueError, UpdateError):
         return True
 
@@ -57,7 +60,9 @@ class Installer:
                        or type(row.get('had_old')) is not bool for row in value['items'])
                 or len({row['id'] for row in value['items']}) != len(value['items'])
                 or value.get('schema') != 1
-                or value.get('phase') not in ('staged', 'switching', 'complete', 'restoring', 'restored')
+                or value.get('phase') not in ('staged', 'switching', 'restoring') + RUNNABLE
+                or (value.get('host_pending') is not None
+                    and (value['host_pending'] != 'restore' or value['phase'] != 'restored'))
                 or type(value.get('sequence')) is not int or value['sequence'] < 1
                 or type(value.get('high_watermark', 0)) is not int
                 or value.get('high_watermark', 0) < 0):
@@ -80,24 +85,58 @@ class Installer:
                 os.replace(old, live)
             elif not row['had_old'] and not staged.exists() and live.exists():
                 os.replace(live, abandoned / (name + '-' + uuid.uuid4().hex))
-        self.host.refresh()
-        state['phase'] = 'restored'
+        # All original paths are back before opening the boot gate. A crash
+        # or RPC failure from here on resumes host state, never repeats moves.
+        # CE2009's restored service only understands complete/restored. Expose
+        # its verified FILE state using that compatible phase, but retain the
+        # unfinished host operation independently. The new entry bootstrap
+        # remains installed and must honor host_pending on every reopening.
+        state.update(phase='restored', host_pending='restore')
         self._write(state)
+        self._finish_restore(state)
+
+    def _finish_restore(self, state):
+        if state['phase'] == 'restore_pending':  # Intermediate CE2010 journal.
+            state.update(phase='restored', host_pending='restore')
+            self._write(state)
+        self.host.refresh()
         self.host.restore(state.get('previous_skin'), state.get('enabled', []))
+        if (set(self.host.enabled()) != set(state.get('enabled', []))
+                or (state.get('previous_skin') and self.host.skin() != state['previous_skin'])):
+            raise UpdateError('HOST_RESTORE_NOT_CONFIRMED')
+        state['phase'] = 'restored'
+        state.pop('host_pending', None)
+        self._write(state)
+
+    def _activate(self, state):
+        self.host.activate(state['versions'])
+        if not set(state['versions']).issubset(self.host.enabled()):
+            raise UpdateError('HOST_ACTIVATION_NOT_CONFIRMED')
+        state['phase'] = 'complete'
+        self._write(state)
 
     def recover(self):
         with _Lock(self.work / 'installation.lock'):
             state = self._read()
-            if state and state['phase'] not in ('complete', 'restored'):
-                self.host.quiesce()
-                self._restore(state)
+            if state and (state.get('host_pending') or state['phase'] not in ('complete', 'restored')):
+                if state['phase'] == 'activation_pending':
+                    self.host.refresh()
+                    self.host.verify(state['versions'])
+                    self._activate(state)
+                elif state['phase'] == 'restore_pending' or state.get('host_pending') == 'restore':
+                    self._finish_restore(state)
+                else:
+                    self.host.quiesce()
+                    state['phase'] = 'restoring'
+                    self._write(state)
+                    self._restore(state)
                 return True
         return False
 
     def rollback(self):
         with _Lock(self.work / 'installation.lock'):
             state = self._read()
-            if not state or state['phase'] != 'complete':
+            if not state or state['phase'] not in ('complete', 'activation_pending'):
                 raise UpdateError('NO_PREVIOUS_PROGRAM_GENERATION')
             state['phase'] = 'restoring'
             self._write(state)
@@ -107,7 +146,7 @@ class Installer:
     def apply(self, bundle):
         with _Lock(self.work / 'installation.lock'):
             previous = self._read()
-            if previous and previous['phase'] not in ('complete', 'restored'):
+            if previous and (previous.get('host_pending') or previous['phase'] not in ('complete', 'restored')):
                 raise UpdateError('INSTALLATION_RECOVERY_REQUIRED')
             with SignedBundle(bundle, self.trust, 'coreelec') as signed:
                 manifest = signed.check_all()
@@ -151,9 +190,9 @@ class Installer:
                         os.replace(stage / name, live)
                     self.host.refresh()
                     self.host.verify(state['versions'])
-                    state['phase'] = 'complete'
-                    self._write(state)
-                    self.host.activate(state['versions'])
+                    state['phase'] = 'activation_pending'
+                    # The verified generation can now start; retain the high
+                    # watermark even if activation or a later rollback fails.
                     state['high_watermark'] = manifest['sequence']
                     self._write(state)
                 except BaseException:
@@ -162,4 +201,7 @@ class Installer:
                     self.host.quiesce()
                     self._restore(state)
                     raise
+                # Transient RPC failure keeps activation pending, not a falsely
+                # complete install or an unnecessary destructive swap-back.
+                self._activate(state)
                 return manifest

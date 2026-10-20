@@ -28,7 +28,8 @@ def result_exit_code(result, remote_code=0, diagnostic=False):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('work',choices=('coherence','odd_taxi','wild_tales','girls_last_tour','burning','flip_flappers',
-                                      'lives_of_others','tokyo_godfathers','haibane_renmei','man_from_earth','lain'))
+                                      'lives_of_others','tokyo_godfathers','haibane_renmei','man_from_earth','lain',
+                                      'twelve_angry_men','tatami_galaxy'))
     parser.add_argument('operation',choices=('start','cards','select','picker_wait','wait','inspect','observe','stop','cancel',
         'seek','manual_off','font_switch'), help='seek/manual_off/font_switch currently record read-only NOT TESTED evidence (exit 2); they never issue unguarded controls')
     parser.add_argument('--transport-source',type=Path,required=True)

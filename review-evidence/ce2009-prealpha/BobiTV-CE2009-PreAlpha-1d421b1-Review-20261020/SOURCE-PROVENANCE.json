@@ -1,0 +1,62 @@
+{
+  "repository": "2223M1/bobbi-tv",
+  "commit": "1d421b101bdc3b940bdd5870caaac49a5fc49394",
+  "tree": "f013b350c62352ad2ac03c7fde94932d0c408344",
+  "incremental_base": "da279d45ecf84133f9ac15ddb21a2f18a5f37ba8",
+  "files": [
+    {
+      "local": "source/bobbi_platform/ce_installer.py",
+      "repository_path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py",
+      "url": "https://github.com/2223M1/bobbi-tv/blob/1d421b101bdc3b940bdd5870caaac49a5fc49394/addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py",
+      "git_blob_sha1": "51eeef559da70f40895e3d9eff721d816ca9933e",
+      "sha256": "caaee9148e767fcac90ef0ef1bddd00f1280cf2aa1c474658cc4fbeee61639bd",
+      "bytes": 8026,
+      "representation": "complete UTF-8 bytes; Git blob verified"
+    },
+    {
+      "local": "source/bobbi_platform/standard_session.py",
+      "repository_path": "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+      "url": "https://github.com/2223M1/bobbi-tv/blob/1d421b101bdc3b940bdd5870caaac49a5fc49394/addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+      "git_blob_sha1": "9f5a14675a8e2f16d11b33a1ec63cb71376797d8",
+      "sha256": "4e64b541000f1a18622aec3a3fd245fc930fa6dadd2e833722f83666a64b0294",
+      "bytes": 7828,
+      "representation": "complete UTF-8 bytes; Git blob verified"
+    },
+    {
+      "local": "source/bobbi_platform/playback.py",
+      "repository_path": "addons/script.module.bobbi.platform/lib/bobbi_platform/playback.py",
+      "url": "https://github.com/2223M1/bobbi-tv/blob/1d421b101bdc3b940bdd5870caaac49a5fc49394/addons/script.module.bobbi.platform/lib/bobbi_platform/playback.py",
+      "git_blob_sha1": "4e67f65734aaaa7454525ce54602ca707e6810ff",
+      "sha256": "e547c552cf9369310ded619614e5c4fd1ad9a3485145ce06f593661f3bd4357b",
+      "bytes": 3711,
+      "representation": "complete UTF-8 bytes; Git blob verified"
+    },
+    {
+      "local": "source/bobbi_platform/kodi.py",
+      "repository_path": "addons/script.module.bobbi.platform/lib/bobbi_platform/kodi.py",
+      "url": "https://github.com/2223M1/bobbi-tv/blob/1d421b101bdc3b940bdd5870caaac49a5fc49394/addons/script.module.bobbi.platform/lib/bobbi_platform/kodi.py",
+      "git_blob_sha1": "d15acf7e2ebf0d93ee848fd2452e712e7b2c8077",
+      "sha256": "c15b58052d2783f670c17755c37293121dacd89faac5b53b424a2d914c136c83",
+      "bytes": 1807,
+      "representation": "complete UTF-8 bytes; Git blob verified"
+    },
+    {
+      "local": "source/lib/services/standard_playback.py",
+      "repository_path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+      "url": "https://github.com/2223M1/bobbi-tv/blob/1d421b101bdc3b940bdd5870caaac49a5fc49394/addons/plugin.video.bobbi/lib/services/standard_playback.py",
+      "git_blob_sha1": "e220aa70ee2d276f0f9d0b42c1a62182d6daa602",
+      "sha256": "36a0843f5342a74d3b278c8ecd73216d6bd5331d402dca6147d082e1bede05d3",
+      "bytes": 11818,
+      "representation": "complete UTF-8 bytes; Git blob verified"
+    },
+    {
+      "local": "source/lib/portable_runtime.py",
+      "repository_path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+      "url": "https://github.com/2223M1/bobbi-tv/blob/1d421b101bdc3b940bdd5870caaac49a5fc49394/addons/plugin.video.bobbi/lib/portable_runtime.py",
+      "git_blob_sha1": "a410df87ce6f0d48461e8dfc11f66150abf74dc1",
+      "sha256": "5aa89cd58211398d09d4fc2dd4f74d94151cc6095d8c04e01f9dfc1af41d88db",
+      "bytes": 2045,
+      "representation": "complete UTF-8 bytes; Git blob verified"
+    }
+  ]
+}
