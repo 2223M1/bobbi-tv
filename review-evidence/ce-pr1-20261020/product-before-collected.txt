@@ -1,0 +1,208 @@
+FFFFF.........FFFFF...FFFFFF....FFFFF..FF...............FFFF             [100%]
+================================== FAILURES ===================================
+_ test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01-02v2-False] _
+tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01+02v2-False] _
+tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01&02v10-False] _
+tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01v2-02v2-False] _
+tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+__ test_web_fourteen_scenarios_on_family_and_both_selectors[1x01-02v2-False] __
+tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+__ test_range_never_seeds_automatic_current_or_next_preparation[S01E01-02v2] __
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+__ test_range_never_seeds_automatic_current_or_next_preparation[S01E01+02v2] __
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_range_never_seeds_automatic_current_or_next_preparation[S01E01&02v10] __
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_range_never_seeds_automatic_current_or_next_preparation[S01E01v2-02v2] _
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+___ test_range_never_seeds_automatic_current_or_next_preparation[1x01-02v2] ___
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_range_never_seeds_automatic_current_or_next_preparation[S01E01v10+02v2] _
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_range_never_seeds_automatic_current_or_next_preparation[S01E01V2&02V10] _
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_range_never_seeds_automatic_current_or_next_preparation[1x01v2-02v10] __
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_range_never_seeds_automatic_current_or_next_preparation[S01E01\u201302v2] _
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+__ test_range_never_seeds_automatic_current_or_next_preparation[S01E01~02v2] __
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_range_never_seeds_automatic_current_or_next_preparation[S01E01\uff5e02v10] _
+tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01-02v2] _
+tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID
+_ test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01+02v2] _
+tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID
+_ test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01&02v10] _
+tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID
+_ test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01v2-02v2] _
+tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID
+_ test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[1x01-02v2] _
+tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID
+_ test_speed_survives_real_backend_buffer_timeout_log_and_wait[98409.04851425653-98409] _
+tests\test_ce_pr1_diagnostics.py:42: in test_speed_survives_real_backend_buffer_timeout_log_and_wait
+    assert snapshot['download_bps'] == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'download_bps'
+_____ test_speed_survives_real_backend_buffer_timeout_log_and_wait[0.0-0] _____
+tests\test_ce_pr1_diagnostics.py:42: in test_speed_survives_real_backend_buffer_timeout_log_and_wait
+    assert snapshot['download_bps'] == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'download_bps'
+_____ test_speed_survives_real_backend_buffer_timeout_log_and_wait[0.5-0] _____
+tests\test_ce_pr1_diagnostics.py:42: in test_speed_survives_real_backend_buffer_timeout_log_and_wait
+    assert snapshot['download_bps'] == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'download_bps'
+_ test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail0-98,409 B/s] _
+tests\test_ce_pr1_diagnostics.py:59: in test_actual_wait_dialog_keeps_zero_distinct_from_unknown
+    assert text in shown[0][0][1]
+E   AssertionError: assert '98,409 B/s' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'
+___ test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail1-0 B/s] ___
+tests\test_ce_pr1_diagnostics.py:59: in test_actual_wait_dialog_keeps_zero_distinct_from_unknown
+    assert text in shown[0][0][1]
+E   AssertionError: assert '0 B/s' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'
+_ test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail2-\u672a\u77e5] _
+tests\test_ce_pr1_diagnostics.py:59: in test_actual_wait_dialog_keeps_zero_distinct_from_unknown
+    assert text in shown[0][0][1]
+E   AssertionError: assert '未知' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'
+=========================== short test summary info ===========================
+FAILED tests/test_ce_pr1_ranges.py::test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01-02v2-False]
+FAILED tests/test_ce_pr1_ranges.py::test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01+02v2-False]
+FAILED tests/test_ce_pr1_ranges.py::test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01&02v10-False]
+FAILED tests/test_ce_pr1_ranges.py::test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01v2-02v2-False]
+FAILED tests/test_ce_pr1_ranges.py::test_web_fourteen_scenarios_on_family_and_both_selectors[1x01-02v2-False]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01-02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01+02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01&02v10]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01v2-02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[1x01-02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01v10+02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01V2&02V10]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[1x01v2-02v10]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01\u201302v2]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01~02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_range_never_seeds_automatic_current_or_next_preparation[S01E01\uff5e02v10]
+FAILED tests/test_ce_pr1_ranges.py::test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01-02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01+02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01&02v10]
+FAILED tests/test_ce_pr1_ranges.py::test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01v2-02v2]
+FAILED tests/test_ce_pr1_ranges.py::test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[1x01-02v2]
+FAILED tests/test_ce_pr1_diagnostics.py::test_speed_survives_real_backend_buffer_timeout_log_and_wait[98409.04851425653-98409]
+FAILED tests/test_ce_pr1_diagnostics.py::test_speed_survives_real_backend_buffer_timeout_log_and_wait[0.0-0]
+FAILED tests/test_ce_pr1_diagnostics.py::test_speed_survives_real_backend_buffer_timeout_log_and_wait[0.5-0]
+FAILED tests/test_ce_pr1_diagnostics.py::test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail0-98,409 B/s]
+FAILED tests/test_ce_pr1_diagnostics.py::test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail1-0 B/s]
+FAILED tests/test_ce_pr1_diagnostics.py::test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail2-\u672a\u77e5]
+27 failed, 33 passed in 0.47s

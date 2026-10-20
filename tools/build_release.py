@@ -91,15 +91,19 @@ def project_resource(roots):
     return raw
 
 
-def build(destination):
+def build(destination, *, source_check=False):
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=True)
     inventory = json.loads(INVENTORY.read_text(encoding='utf-8'))['components']
     roots = sources()
     if set(roots) != set(inventory):
         raise ValueError('Addon inventory changed; review before refreshing')
-    local_resource = project_resource(roots)
+    # CI verifies the real inventory/archives without reading any local key.
+    # This is explicitly not an installable/signable private release.
+    local_resource = None if source_check else project_resource(roots)
     manifest = {'version': '0.2.0-private.1', 'channel': 'private-candidate', 'device_verified': False, 'components': []}
+    if source_check:
+        manifest.update(channel='source-check', installable=False)
     xml = ET.Element('addons')
     for addon, root in roots.items():
         if files(root) != inventory[addon]:
@@ -112,7 +116,8 @@ def build(destination):
         filename = addon + '-' + version + '.zip'
         output = destination / addon / filename
         archive(root, inventory[addon], output,
-                {LOCAL_RESOURCE[1]: local_resource} if addon == LOCAL_RESOURCE[0] else None)
+                {LOCAL_RESOURCE[1]: local_resource}
+                if addon == LOCAL_RESOURCE[0] and local_resource is not None else None)
         output.with_suffix(output.suffix + '.sha256').write_text(
             hashlib.sha256(output.read_bytes()).hexdigest(), encoding='ascii')
         # Kodi uses raw artwork alongside repository zip paths.
@@ -133,18 +138,24 @@ def build(destination):
     # Explicit LF prevents Windows text translation changing its bytes.
     with (destination / 'manifest.json').open('w', encoding='utf-8', newline='\n') as stream:
         stream.write(json.dumps(manifest, indent=2) + '\n')
-    (destination / 'application-input.json').write_text(json.dumps(dict(
-        component=LOCAL_RESOURCE[0], resource=LOCAL_RESOURCE[1],
-        sha256=hashlib.sha256(local_resource).hexdigest(), account_state=False), indent=2) + '\n', encoding='utf-8')
+    application = dict(component=LOCAL_RESOURCE[0], resource=LOCAL_RESOURCE[1], account_state=False)
+    if source_check:
+        application.update(included=False, mode='source-check')
+    else:
+        application['sha256'] = hashlib.sha256(local_resource).hexdigest()
+    (destination / 'application-input.json').write_text(
+        json.dumps(application, indent=2) + '\n', encoding='utf-8')
     return manifest
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--refresh-inventory', action='store_true')
+    parser.add_argument('--source-check', action='store_true',
+                        help='No local application input; non-installable, non-signable CI check only')
     parser.add_argument('--output', type=Path, default=ROOT / 'repository')
     args = parser.parse_args()
     if args.refresh_inventory:
         refresh()
-    manifest = build(args.output)
-    print('Built', len(manifest['components']), 'components from explicit source inventory')
+    manifest = build(args.output, source_check=args.source_check)
+    print('Built', len(manifest['components']), 'components from explicit source inventory;', manifest['channel'])
