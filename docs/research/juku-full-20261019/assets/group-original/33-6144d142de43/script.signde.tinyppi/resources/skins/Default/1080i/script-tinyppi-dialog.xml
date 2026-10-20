@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog">
+    <defaultcontrol always="true">1001</defaultcontrol>
+    <onload>Dialog.Close(fullscreenvideo,true)</onload>
+    <onload>Dialog.Close(videoosd,true)</onload>
+    <onload>Dialog.Close(seekbar,true)</onload>
+    <onload>Dialog.Close(1159,true)</onload>
+    <animation effect="fade" start="0" end="100" time="200" tween="cubic" easing="inout">WindowOpen</animation>
+    <animation effect="fade" end="0" start="100" time="150">WindowClose</animation>
+    <controls>
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>1080</height>
+            <texture colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogGlobalBackgroundColor)]">common/dot-1x1.png</texture>
+        </control>
+
+        <control type="group">
+            <left>725</left><top>242</top>
+
+            <control type="group">
+                <left>0</left><top>0</top><width>23</width><height>596</height>
+                <control type="image">
+                    <texture colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogBackgroundColor)]">background/dialog-bg-start.png</texture>
+                </control>
+            </control>
+            <control type="image">
+                <left>23</left><top>0</top><width>425</width><height>596</height>
+                <texture colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogBackgroundColor)]">common/dot-1x1.png</texture>
+            </control>
+            <control type="group">
+                <left>448</left><top>0</top><width>23</width><height>596</height>
+                <control type="image">
+                    <texture colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogBackgroundColor)]">background/dialog-bg-end.png</texture>
+                </control>
+            </control>
+
+            <control type="group">
+                <visible>String.IsEqual(Window(10000).Property(SigndeTinyPPI.ShowHeaderTitle),1)</visible>
+                <left>35</left><top>37</top>
+                <control type="label">
+                    <label>[B]VS10[/B]</label><font>font32</font>
+                    <textcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DialogHeaderColor)]</textcolor>
+                    <aligny>top</aligny>
+                </control>
+            </control>
+            <control type="group">
+                <visible>String.IsEqual(Window(10000).Property(SigndeTinyPPI.ShowHeaderIcon),1)</visible>
+                <left>400</left><top>43</top>
+                <control type="image">
+                    <width>36</width><height>36</height>
+                    <texture colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogHeaderIconColor)]">icons/vs10.png</texture>
+                </control>
+            </control>
+
+            <control type="image">
+                <visible>String.IsEqual(Window(10000).Property(SigndeTinyPPI.ShowLine),1)</visible>
+                <left>35</left><top>120</top><width>400</width><height>1</height>
+                <texture colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogLineColor)]">common/dot-1x1.png</texture>
+            </control>
+            <control type="image">
+                <visible>String.IsEqual(Window(10000).Property(SigndeTinyPPI.ShowLine),1)</visible>
+                <left>35</left><top>559</top><width>400</width><height>1</height>
+                <texture colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogLineColor)]">common/dot-1x1.png</texture>
+            </control>
+
+            <!-- CoreELEC 21 source rules: raw 2 omits HDR10; raw 3 omits DV. -->
+            <control type="grouplist">
+                <left>35</left><top>155</top><width>400</width><height>400</height>
+                <orientation>vertical</orientation>
+                <control type="button" id="1001">
+                    <width>400</width><height>80</height>
+                    <label>[B][CAPITALIZE]$LOCALIZE[10116][/CAPITALIZE][/B]</label>
+                    <align>center</align><font>font23_narrow</font>
+                    <textcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</textcolor>
+                    <selectedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</selectedcolor>
+                    <focusedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusTextColor)]</focusedcolor>
+                    <texturenofocus colordiffuse="00FFFFFF" border="40">common/button-white.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusColor)]" border="40">common/button-white.png</texturefocus>
+                    <onup condition="Integer.IsEqual(Player.Process(video.source.hdr.type.raw),3)">1104</onup>
+                    <onup condition="!Integer.IsEqual(Player.Process(video.source.hdr.type.raw),3)">1105</onup>
+                    <ondown>1102</ondown>
+                </control>
+                <control type="button" id="1102">
+                    <width>400</width><height>80</height><label>[B]Original[/B]</label>
+                    <align>center</align><font>font23_narrow</font>
+                    <textcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</textcolor>
+                    <selectedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</selectedcolor>
+                    <focusedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusTextColor)]</focusedcolor>
+                    <texturenofocus colordiffuse="00FFFFFF" border="40">common/button-white.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusColor)]" border="40">common/button-white.png</texturefocus>
+                    <onup>1001</onup><ondown>1103</ondown>
+                </control>
+                <control type="button" id="1103">
+                    <width>400</width><height>80</height><label>[B]VS10 SDR[/B]</label>
+                    <align>center</align><font>font23_narrow</font>
+                    <textcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</textcolor>
+                    <selectedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</selectedcolor>
+                    <focusedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusTextColor)]</focusedcolor>
+                    <texturenofocus colordiffuse="00FFFFFF" border="40">common/button-white.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusColor)]" border="40">common/button-white.png</texturefocus>
+                    <onup>1102</onup>
+                    <ondown condition="Integer.IsEqual(Player.Process(video.source.hdr.type.raw),2)">1105</ondown>
+                    <ondown condition="!Integer.IsEqual(Player.Process(video.source.hdr.type.raw),2)">1104</ondown>
+                </control>
+                <control type="button" id="1104">
+                    <visible>!Integer.IsEqual(Player.Process(video.source.hdr.type.raw),2)</visible>
+                    <width>400</width><height>80</height><label>[B]VS10 HDR10[/B]</label>
+                    <align>center</align><font>font23_narrow</font>
+                    <textcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</textcolor>
+                    <selectedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</selectedcolor>
+                    <focusedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusTextColor)]</focusedcolor>
+                    <texturenofocus colordiffuse="00FFFFFF" border="40">common/button-white.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusColor)]" border="40">common/button-white.png</texturefocus>
+                    <onup>1103</onup>
+                    <ondown condition="Integer.IsEqual(Player.Process(video.source.hdr.type.raw),3)">1001</ondown>
+                    <ondown condition="!Integer.IsEqual(Player.Process(video.source.hdr.type.raw),3)">1105</ondown>
+                </control>
+                <control type="button" id="1105">
+                    <visible>!Integer.IsEqual(Player.Process(video.source.hdr.type.raw),3)</visible>
+                    <width>400</width><height>80</height><label>[B]VS10 Dolby Vision[/B]</label>
+                    <align>center</align><font>font23_narrow</font>
+                    <textcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</textcolor>
+                    <selectedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DescriptionColor)]</selectedcolor>
+                    <focusedcolor>$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusTextColor)]</focusedcolor>
+                    <texturenofocus colordiffuse="00FFFFFF" border="40">common/button-white.png</texturenofocus>
+                    <texturefocus colordiffuse="$INFO[Window(10000).Property(SigndeTinyPPI.DialogFocusColor)]" border="40">common/button-white.png</texturefocus>
+                    <onup condition="Integer.IsEqual(Player.Process(video.source.hdr.type.raw),2)">1103</onup>
+                    <onup condition="!Integer.IsEqual(Player.Process(video.source.hdr.type.raw),2)">1104</onup>
+                    <ondown>1001</ondown>
+                </control>
+            </control>
+        </control>
+    </controls>
+</window>

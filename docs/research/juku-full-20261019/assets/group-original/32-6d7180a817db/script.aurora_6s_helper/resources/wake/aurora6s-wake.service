@@ -1,0 +1,19 @@
+[Unit]
+Description=Aurora RTL8852 NG/NO Bluetooth heartbeat and resume recovery
+# Runtime waits for BlueZ itself. Do not order after units it must restart.
+After=local-fs.target
+ConditionKernelVersion=|4.9.269
+ConditionKernelVersion=|5.15.196
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+UMask=0077
+ExecStart=/usr/bin/python3 -u /storage/.config/aurora6s-wake/runtime.py daemon
+TimeoutStopSec=95
+Restart=on-success
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,154 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "girls_last_tour",
+    "state": "not_tested",
+    "passed": null,
+    "operation": "manual_off",
+    "mutation_performed": false,
+    "reason": "NO_REVIEWED_EXPECTED_INSTANCE_MANUAL_OFF",
+    "native_instance": "be4e6f6c-f236-4e5b-b57a-2fbb4340c4b5",
+    "request_id": "3d71949ca4b84851915bda192c004314",
+    "observed_protocol": {
+      "Player.BobiControl": {
+        "native_instance": {
+          "type": "string"
+        },
+        "user_intent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expected_sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selection_epoch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "window_token": {
+          "type": "string"
+        },
+        "command_id": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        }
+      },
+      "Player.BobiSubtitle": {
+        "native_instance": {
+          "type": "string"
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "selection_epoch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "subtitle_intent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "command_id": {
+          "type": "string"
+        },
+        "stream_key": {
+          "type": "string"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      },
+      "Player.Seek": {
+        "playerid": {},
+        "value": {
+          "type": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "percentage": {
+                  "$ref": "Player.Position.Percentage",
+                  "required": true
+                }
+              },
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "time": {
+                  "$ref": "Player.Position.Time",
+                  "required": true
+                }
+              },
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "step": {
+                  "enums": [
+                    "smallforward",
+                    "smallbackward",
+                    "bigforward",
+                    "bigbackward"
+                  ],
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "seconds": {
+                  "required": true,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "Player.SetSubtitle": {
+        "playerid": {},
+        "subtitle": {
+          "type": [
+            {
+              "enums": [
+                "previous",
+                "next",
+                "off",
+                "on"
+              ],
+              "type": "string"
+            },
+            {
+              "minimum": 0,
+              "type": "integer"
+            }
+          ]
+        },
+        "enable": {
+          "type": "boolean"
+        }
+      },
+      "Settings.SetSettingValue": {
+        "setting": {
+          "type": "string"
+        },
+        "value": {}
+      }
+    },
+    "note": "Unconditional player-id/settings RPC and UI actions are intentionally not substituted; no playback or font setting was changed."
+  },
+  "diagnostic_present": false,
+  "work": "girls_last_tour",
+  "operation": "manual_off"
+}

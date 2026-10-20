@@ -98,9 +98,38 @@ class ResolverWindow(BaseWindow):
 
     def onInit(self) -> None:
         super().onInit()
-        self._dialog_id = xbmcgui.getCurrentWindowDialogId()
+        self._capture_loading_dialog()
         if not self._modeless:
             self.resolve_source()
+
+    def _capture_loading_dialog(self):
+        # Kodi 21.3 WindowIDs.h reserves exactly 13000..13099 for Python
+        # windows. Topmost may instead be its busy dialog or a user's modal;
+        # neither identifies this WindowXMLDialog. Require one visible token
+        # match in the official bounded namespace, including beneath overlays.
+        self._capture_reason = 'LOADING_WINDOW_NOT_IDENTIFIED'
+        matches = []
+        for dialog_id in range(13000, 13100):
+            # Window(existing_id) can throw an untranslatable native exception
+            # for an empty Python slot. Read-only GUI labels safely return empty
+            # for missing/retired windows; do not construct wrappers while scanning.
+            if not xbmc.getCondVisibility('Window.IsVisible({})'.format(dialog_id)):
+                continue
+            if xbmc.getInfoLabel('Window({}).Property(AM6B.ResolverToken)'.format(dialog_id)) == self._window_token:
+                matches.append(dialog_id)
+                if len(matches) > 1:
+                    self._capture_reason = 'LOADING_WINDOW_AMBIGUOUS'
+                    return False
+        if len(matches) != 1:
+            return False
+        self._dialog_id = matches[0]
+        return True
+
+    def _handoff_rejected(self, reason):
+        # Fixed internal reason codes only, never exception text or credentials.
+        kodilog('[CINEMA-HANDOFF] request={} rejected={}'.format(
+            str(self.item_information.get('request_id', ''))[:8], reason), level=xbmc.LOGWARNING)
+        return False
 
     def onAction(self, action):
         if action.getId() in self.action_exitkeys_id and getattr(self, "_modeless", False):
@@ -125,8 +154,8 @@ class ResolverWindow(BaseWindow):
         try:
             owned_state(self.item_information.get('request_id'))
             return True
-        except (OSError, RuntimeError, ValueError):
-            return False
+        except (OSError, RuntimeError, ValueError) as error:
+            return self._handoff_rejected('SELECTION_CHECK_' + type(error).__name__.upper())
 
     def close_windows(self):
         if self.previous_window:
@@ -135,40 +164,48 @@ class ResolverWindow(BaseWindow):
         self.close()
 
     def handle_playback_started(self):
-        if self.cancel_event.is_set() or self.resolved or not self._owns_selection():
-            return False
+        if self.cancel_event.is_set():
+            return self._handoff_rejected('REQUEST_CANCELLED')
+        if self.resolved:
+            return self._handoff_rejected('HANDOFF_ALREADY_RESOLVED')
+        if not self._owns_selection():
+            return self._handoff_rejected('SELECTION_NOT_OWNED')
         if not self._modeless:
             self.resolved = True
-        elif self._dialog_id and self._window_context:
+        elif self._window_context:
+            if not self._capture_loading_dialog():
+                return self._handoff_rejected(self._capture_reason)
             # The resident adapter observes the actual token-bearing window
             # before close() queues its asynchronous GUI teardown. A caller's
             # visibility bool is never a fullscreen retry receipt.
             from lib.cinema.playback_request import call
             try:
-                call(dict(self._window_context, operation='begin_window_close',
-                          token=self._window_token, dialog_id=self._dialog_id))
-            except (OSError, RuntimeError, ValueError):
-                # Optional tracking may be unavailable on an older resident or
-                # lose its reply. Still close normally; the required ownership
-                # and lease-release checks below must retain their failures.
-                pass
+                tracked = call(dict(self._window_context, operation='begin_window_close',
+                                   token=self._window_token, dialog_id=self._dialog_id))
+                if tracked.get('tracked') is not True:
+                    return self._handoff_rejected('OWNED_LOADING_TRACK_REJECTED')
+            except (OSError, RuntimeError, ValueError) as error:
+                return self._handoff_rejected('LOADING_TRACK_' + type(error).__name__.upper())
+        else:
+            # Do not release the loading lease or request fullscreen when the
+            # visible window cannot be tied to this request's registered token.
+            return self._handoff_rejected('LOADING_WINDOW_CONTEXT_MISSING')
         self.close_windows()
         if self._modeless:
             # close() queues GUI work. Give only our closing dialog a bounded
             # handoff window; never close a different modal dialog globally.
             for _ in range(20):
                 if not self._owns_selection() or self.cancel_event.is_set():
-                    return False
+                    return self._handoff_rejected('RETIREMENT_SELECTION_LOST')
                 if not self._dialog_id or not xbmc.getCondVisibility("Window.IsVisible({})".format(self._dialog_id)):
                     break
                 xbmc.sleep(25)
             else:
-                kodilog("[CINEMA-HANDOFF] owned loading window did not close in time")
-                return False
+                return self._handoff_rejected('OWNED_LOADING_RETIREMENT_TIMEOUT')
             from lib.cinema.playback_request import call
             if not self._window_context or not call(dict(self._window_context,
                     operation='close_window', token=self._window_token))['closed']:
-                return False
+                return self._handoff_rejected('LOADING_LEASE_RELEASE_REJECTED')
             # The player requests the conditional native handoff after this
             # callback; no unscoped ActivateWindow is issued from a resolver.
         return True

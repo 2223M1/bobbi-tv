@@ -1,11 +1,11 @@
 """Explicit wire compatibility; capability checks are not health claims."""
 from bobbi_core import CORE_API, CORE_VERSION
 
-IPC_PROTOCOL = 2
+IPC_PROTOCOL = 3
 CAPABILITIES = frozenset({
     'exact-resource-identity-v1', 'single-cloud-ledger-v1',
     'reconcile-uncertain-submit-v1', 'same-release-next-v1',
-    'subtitle-binding-v1', 'font-preflight-v1', 'bounded-resolve-v1',
+    'subtitle-binding-v2', 'video-context-v1', 'bounded-resolve-v1',
 })
 
 

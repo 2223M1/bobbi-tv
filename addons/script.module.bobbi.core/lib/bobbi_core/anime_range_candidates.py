@@ -18,10 +18,15 @@ _GROUP = re.compile(r'(?i)字幕[组組社]|工作室|fansubs?|subbers?|raws?|st
 _RANGE = re.compile(
     r'^(?:全\s*)?([0-9]{1,3})\s*[-–~至]\s*([0-9]{1,3})\s*'
     r'(?:集|话|話)?\s*(?:合集|全集|全)?\s*(?:\+\s*(?:特典|映像特典))?$')
+# Planar YUV sampling/bit-depth labels are technical metadata, either alone or
+# attached to a codec. Keep the grammar closed; an arbitrary codec suffix must
+# not consume an episode marker, another work title, year or bonus label.
+_PIXEL_FORMAT = r'yuv(?:420|422|444)p(?:(?:9|10|12|14|16)(?:le|be)?)?'
 _TECH = re.compile(
     r'(?i)(?:(?:2160|1080|720|576|480)[pi]|[48]k|\d{3,4}x\d{3,4}|'
     r'web(?:-?dl|rip)?|blu-?ray|bd(?:rip)?|h\.?26[45]|x26[45]|'
-    r'(?:hevc|avc)(?:-(?:8|10|12)bits?)?|av1|aac|flac|opus|ac3|eac3|'
+    r'(?:hevc|avc)(?:-(?:(?:8|10|12)bits?|' + _PIXEL_FORMAT + r'))?|'
+    + _PIXEL_FORMAT + r'|av1|aac|flac|opus|ac3|eac3|'
     r'dts|truehd|mp3|pcm|[1-8]\.[01]|(?:8|10|12)-?bits?|ma10p|hi10p|'
     r'hdr(?:10\+?)?|dv|dovi|chs|cht|sc|tc|gb|gbk|big5|zh(?:-cn|-tw|-hk)?|'
     r'jpn|jp|eng|en|chinese|japanese|english|dual-audio|multi-audio|'

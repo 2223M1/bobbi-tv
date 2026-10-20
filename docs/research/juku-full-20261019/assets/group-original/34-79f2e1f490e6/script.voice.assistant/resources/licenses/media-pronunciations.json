@@ -1,0 +1,8 @@
+{
+  "source": "https://raw.githubusercontent.com/mozillazg/python-pinyin/8595294b1a97845e30f11ecfdb3caa4e61ac3988/pypinyin/pinyin_dict.json",
+  "commit": "8595294b1a97845e30f11ecfdb3caa4e61ac3988",
+  "source_sha256": "5f294c01e6c6c0a1c8e329c79335a3f8e0b27d06bf1de7a99244b765892d1e5b",
+  "generated_sha256": "6236f6f4738bffc12e5b4a02a533c3b66eab1825c43c6a225775ebbbe6a78864",
+  "description": "CJK character pronunciations, tone marks removed, for local media title similarity only; no pypinyin runtime dependency.",
+  "license": "MIT"
+}

@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_cn\n"
+
+msgctxt "#32000"
+msgid "Lighting"
+msgstr "灯条"
+
+msgctxt "#32001"
+msgid "Enable lighting control"
+msgstr "启用灯条控制"
+
+msgctxt "#32002"
+msgid "Normal"
+msgstr "常规状态"
+
+msgctxt "#32003"
+msgid "Playback (including pause)"
+msgstr "播放状态（包含暂停）"
+
+msgctxt "#32004"
+msgid "Color (palette)"
+msgstr "颜色（色盘选择）"
+
+msgctxt "#32005"
+msgid "Brightness (%)"
+msgstr "亮度（%）"
+
+msgctxt "#32006"
+msgid "Effect"
+msgstr "效果"
+
+msgctxt "#32007"
+msgid "Steady"
+msgstr "常亮"
+
+msgctxt "#32008"
+msgid "Breathing"
+msgstr "呼吸"
+
+msgctxt "#32009"
+msgid "Breathing speed"
+msgstr "呼吸速度"
+
+msgctxt "#32010"
+msgid "Fast"
+msgstr "快"
+
+msgctxt "#32011"
+msgid "Medium"
+msgstr "中"
+
+msgctxt "#32012"
+msgid "Slow"
+msgstr "慢"
+
+msgctxt "#32013"
+msgid "Disabling restores the previous lighting. Saved settings apply to the current playback state."
+msgstr "关闭控制后恢复接管前的灯光。确认设置后按当前播放状态立即应用。"
+
+msgctxt "#32014"
+msgid "Press OK to choose a color. Exact hex input is available from the lighting menu; actual LED color may differ."
+msgstr "按确定打开色盘，用方向键选择颜色。精确输入可从插件灯条菜单进入；实际颜色以灯光为准。"
+
+msgctxt "#32015"
+msgid "Set brightness to zero to turn the strip off."
+msgstr "亮度设为0可关闭灯条。"
+
+msgctxt "#32016"
+msgid "Used during audio/video playback, including pause. Stop restores the normal profile."
+msgstr "正在播放音频或视频时使用；暂停仍按播放处理，停止后恢复常规。"
+
+msgctxt "#32017"
+msgid "View current lighting status"
+msgstr "查看当前灯光状态"
+
+
+msgctxt "#32018"
+msgid "Off"
+msgstr "关闭"
+
+msgctxt "#32019"
+msgid "Prefer smooth breathing"
+msgstr "呼吸优先平滑"
+
+msgctxt "#32020"
+msgid "Use hardware fading; some colors are approximated. Disable to preserve RGB levels with stepped software fading. Steady colors are unchanged."
+msgstr "使用芯片呼吸，部分颜色会近似调整。关闭后保留 RGB 亮度档位，使用有阶梯感的软件呼吸。常亮颜色不受影响。"

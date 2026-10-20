@@ -2,7 +2,7 @@ import concurrent.futures
 from typing import Any, Callable, Dict, List, Optional
 
 from lib.clients.base import BaseClient, TorrentStream
-from lib.bobbi.utils import kodilog
+from lib.jacktook.utils import kodilog
 from lib.utils.kodi.logging import summarize_locator_for_log
 from lib.utils.kodi.settings import get_prowlarr_timeout
 from lib.utils.kodi.utils import get_setting, notification, translation

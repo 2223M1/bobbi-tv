@@ -1,7 +1,7 @@
 """Bound subtitle metadata for local cards, never permission to apply a track.
 
 No subtitle/font reads, cloud queries or Kodi calls in the UI. Actual playback
-still checks the resource, native request, immutable bytes and font activation.
+still checks the resource, native request, immutable bytes and manual intent.
 """
 import json
 import re
@@ -54,11 +54,11 @@ def source_label(source):
             or value.get('kind') != 'external_chinese_binding'
             or type(value.get('fonts_ready')) is not bool):
         return ''
-    return '外挂中文已绑定·播放时复核' if value['fonts_ready'] else '外挂中文已校时·字体样式待复核'
+    return '外挂中文可用' if value['fonts_ready'] else '外挂中文可用·字体样式待确认'
 
 
 def source_card_label(source):
     """Short badge only; the full qualification remains in source_label/reason."""
     if not source_label(source):
         return ''
-    return '已绑定·待复核' if source.preparedSubtitle['fonts_ready'] else '已校时·字体待验'
+    return '外挂中文'

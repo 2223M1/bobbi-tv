@@ -240,7 +240,7 @@ def observe_owner(result, query, ids, mode, year, requested_pair, release_pair):
                 value = pair[index] if isinstance(pair, (list, tuple)) and len(pair) > index and mode == 'tv' else None
                 field = prefix + '_' + name
                 owner[field], owner[field + '_state'] = _number(value, 0, high)
-        from lib.bobbi.utils import kodilog
+        from lib.jacktook.utils import kodilog
         kodilog('FANOUT-OWNER ' + _canonical(dict(schema=2, owner=owner, **reference)))
     except Exception:
         pass
@@ -366,7 +366,7 @@ class FanoutReceipt:
             return
         self._emitted = True
         try:
-            from lib.bobbi.utils import kodilog
+            from lib.jacktook.utils import kodilog
             kodilog('FANOUT-TERMINAL ' + json.dumps(self.snapshot(stage),
                 ensure_ascii=True, separators=(',', ':')))
         except Exception:

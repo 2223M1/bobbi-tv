@@ -12,7 +12,7 @@
     <value>$INFO[Container.FolderName]</value>
   </variable>
   <variable name="DirKicker">
-    <value condition="Container.Content(seasons)">选择季</value>
+    <value condition="Container.Content(seasons)">选择季 / 相关电影</value>
     <value condition="Container.Content(episodes)">$VAR[SeasonLabel]   ·   选择集</value>
   </variable>
   <variable name="WallSubline">
@@ -23,7 +23,7 @@
     <value>$INFO[ListItem.Year]</value>
   </variable>
   <variable name="WallTitle">
-    <value condition="Container.Content(seasons)">$VAR[SeasonLabel]</value>
+    <value condition="Container.Content(seasons) + String.IsEqual(ListItem.DBType,season)">$VAR[SeasonLabel]</value>
     <value>$VAR[TitlePrimary]</value>
   </variable>
   <variable name="EpisodeMeta">
@@ -99,7 +99,7 @@
         </control>
         <control type="label">
           <width>auto</width><height>44</height>
-          <label>$VAR[SeasonLabel]</label>
+          <label>$VAR[WallTitle]</label>
           <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
           <visible>Container.Content(seasons)</visible>
         </control>

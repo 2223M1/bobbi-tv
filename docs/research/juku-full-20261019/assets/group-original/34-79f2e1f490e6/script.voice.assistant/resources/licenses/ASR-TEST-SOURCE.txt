@@ -1,0 +1,6 @@
+Public AISHELL Chinese ASR test sample BAC009S0764W0121.
+Used only for explicit configuration connection tests.
+Expected: 甚至出现交易几乎停滞的情况。
+16kHz mono S16_LE, 4.2039375 seconds.
+PCM SHA256: c2a9473f527a99737e16e5de5f7fd7bbdec48a7ada9be12512a01cbd6a6ce724
+Source: https://github.com/k2-fsa/sherpa-onnx/tree/master/test_wavs

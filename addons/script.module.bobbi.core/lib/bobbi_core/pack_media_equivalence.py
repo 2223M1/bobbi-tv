@@ -9,12 +9,12 @@ import re
 
 from bobbi_core.release_identity import audio_capsule_candidate, bound_family
 from bobbi_core.release_media_profile import same_main_media
-from bobbi_core.subtitle_binding import checked_video
+from bobbi_core.video_context import checked_video
 
 
 def compatible_next(first, following):
     try:
-        a, b = checked_video(first['subtitle_video']), checked_video(following['subtitle_video'])
+        a, b = checked_video(first['video_context']), checked_video(following['video_context'])
         current = re.fullmatch(r'tmdb:tv:([1-9]\d*):s([1-9]\d*):e([1-9]\d*)', a['media_id'])
         if current is None:
             return False

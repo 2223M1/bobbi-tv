@@ -1,0 +1,48 @@
+{
+  "target": "resources/native/linux_aarch64/nanosic",
+  "output": "libnanosic-wnvc-avutil61.so",
+  "sha256": "7e5905b4783f241cc00ff5e96cb21f8713e5e815175238dd96fe7d54ed07deb8",
+  "size_bytes": 37792,
+  "source": "resources/licenses/nanosic_wnvc_decoder.c",
+  "source_sha256": "d2643ad7b108b8978181997f385afeec7846602f7989d3a5f773bc069eae2d53",
+  "license": "LGPL-2.1-or-later",
+  "upstream": "FFmpeg 8.1.3 libavcodec/siren.c",
+  "codec": "Nanosic WNVC-320, 16 regions, 24000 bit/s",
+  "why": [
+    "The add-on shipped only an armv7l build, so CoreELEC 22 (aarch64 user space) reported a missing runtime when the Tencent Aurora remote was selected.",
+    "The 32-bit object cannot be used there: no ELF32 loading into an ELF64 process, no 32-bit loader and no 32-bit libc in the aarch64 user space.",
+    "The vendored decoder is self-contained and only needs libavutil's public transform API, so the same source is rebuilt for aarch64."
+  ],
+  "compiler": "zig 0.14.1 `zig cc`, host x86_64-windows",
+  "compiler_sha256": "1ddf230367e07738c4a769eae66c1db7469e37bd520e81e86356453d0db2b9fd",
+  "target_triple": "aarch64-linux-gnu.2.28",
+  "flags": [
+    "-target aarch64-linux-gnu.2.28",
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Wl,--allow-shlib-undefined",
+    "-Wl,-soname,libnanosic-wnvc-avutil61.so"
+  ],
+  "include_paths": [
+    "dl/toolchain/ffmpeg-headers (hand-written libavutil/avconfig.h + ffversion.h)",
+    "dl/toolchain/ffmpeg-src/ffmpeg-9.0"
+  ],
+  "link_inputs": [
+    "dl/box-ffmpeg/libavutil.so.61 (copied off the target box; supplies DT_NEEDED only)"
+  ],
+  "system_dependencies": [
+    "libavutil.so.61",
+    "libm.so.6",
+    "libc.so.6"
+  ],
+  "public_system_api": "FFmpeg libavutil 61: av_tx_init, av_tx_uninit, av_mallocz, av_free, avutil_version",
+  "ffmpeg_version": "9.0",
+  "glibc_floor": "2.28",
+  "rebuild": "python tools/build_decoders.py",
+  "verified_on": "CoreELEC 22 (Amlogic-no, aarch64), FFmpeg 9.0 / glibc 2.44",
+  "verification": "Loaded through ctypes on the box: create() succeeded, a real 60-byte frame returned 640 bytes of S16_LE with 320/320 non-zero samples. Symbol set matches the armv7l build.",
+  "bundles_android_binary": false
+}

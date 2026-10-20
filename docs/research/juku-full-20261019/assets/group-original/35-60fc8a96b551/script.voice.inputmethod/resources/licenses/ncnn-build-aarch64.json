@@ -1,0 +1,28 @@
+{
+  "target": "resources/native/linux_aarch64/ncnn",
+  "source": {
+    "package": "sherpa-ncnn 2.1.11 aarch64 manylinux wheel (upstream k2-fsa build)",
+    "url": "https://files.pythonhosted.org/packages/cc/17/25ab0941b1d5456cadf0a50a4b1926c7fcfacfdbc99bf112ac3ccae48896/sherpa_ncnn-2.1.11-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
+    "sha256": "73c96695c4824596c7cd4cdabd71ffa94e6cfbcdb390a362e60bb17a5bc5da4d"
+  },
+  "why_2_1_11": [
+    "k2-fsa publishes no linux-aarch64 binary outside its PyPI wheels: the v2.1.15 GitHub release carries only Android, Windows and wasm assets.",
+    "From 2.1.13 onwards the wheel folds the C API into the pybind11 module and stops shipping standalone shared libraries, so it cannot be loaded through ctypes.",
+    "2.1.11 is the newest wheel that still ships libsherpa-ncnn-c-api.so, libsherpa-ncnn-core.so, libkaldi-native-fbank-core.so and libncnn.so as separate objects.",
+    "SherpaNcnnRecognizerConfig is byte-identical between v2.1.11 and v2.1.15, and both builds export the same unprefixed C entry points, so the ctypes layout used for armv7 works unchanged."
+  ],
+  "libraries": {
+    "libsherpa-ncnn-c-api.so": "155a5e202e4345b3bee1d8020f5ba066544d39b7a718c2f1a05d0edd837c200f",
+    "libsherpa-ncnn-core.so": "38d801432971b0908d00558eb0b72f6f8fe667a349372edacd29a5b8f203b601",
+    "libkaldi-native-fbank-core.so": "3e5ae96e71adf2b27bd6e76da25c85968069d7fb74519d97adba329c96b4c6d5",
+    "libncnn.so": "034926fbeb45012cf2ee37c207aeb06cb4cd3176cff33202ad709ed5b0847ffd",
+    "libgomp-d22c30c5.so.1.0.0": "053187ea2b36543b67d37805ff3e8188f5d57674b31f698fe87cfe2221a43ed9"
+  },
+  "notes": [
+    "libgomp keeps its auditwheel-mangled filename because libncnn records that exact string in DT_NEEDED. native_libs preloads it with RTLD_GLOBAL so the dynamic linker satisfies the reference without editing system library search paths.",
+    "The wheel's own _sherpa_ncnn*.so extension is not shipped: it needs numpy and exposes no C API symbols.",
+    "Models are architecture independent; the same resources/models trees serve both user spaces.",
+    "This build uses the pre-C++11 std::string ABI. Loading it into Kodi (which links a new-ABI libstdc++ first) interposes the shared weak template symbols and corrupts the heap, killing Kodi. resources/lib/ncnn_worker.py therefore runs the engine in a separate python3 process; see README."
+  ],
+  "license": "Apache-2.0"
+}

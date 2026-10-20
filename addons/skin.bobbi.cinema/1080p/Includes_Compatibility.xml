@@ -237,10 +237,8 @@
       </control>
       <control type="list" id="501">
         <itemlayout height="60" width="870">
-					
 				</itemlayout>
         <focusedlayout height="60" width="870">
-					
 				</focusedlayout>
       </control>
     </control>
@@ -29615,7 +29613,7 @@
       <param name="id">301</param>
       <include>BobiAF_Texture_KeyboardButton</include>
       <font>BobiAFIcon</font>
-      <label></label>
+      <label></label>
       <onup>161</onup>
     </include>
     <include content="BobiAF_Object_Keyboard_Button" description="Shift">

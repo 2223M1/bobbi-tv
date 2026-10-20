@@ -1,0 +1,306 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Flip Flappers",
+        "tmdb_id": 68272,
+        "kind": "tv",
+        "year": 2016,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": null,
+      "started": 2147480.195420858,
+      "home": {
+        "generation": 12,
+        "intent": 0,
+        "retired_generation": 12,
+        "observed_at": 2147480.884095274
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2147480.884476467,
+      "picker": {
+        "window": 13001,
+        "generation": 13,
+        "intent": 0,
+        "tmdb_id": 68272,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2147489.933173775
+    },
+    "samples": [
+      {
+        "wall": 2147481.124372992,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147481.108228224,
+          "decoder_started": 2147481.150383905,
+          "decoder_completed": 2147481.151199747,
+          "sample_completed": 2147481.151202955
+        }
+      },
+      {
+        "wall": 2147483.291399894,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147483.279798857,
+          "decoder_started": 2147483.319828799,
+          "decoder_completed": 2147483.320149369,
+          "sample_completed": 2147483.320151994
+        }
+      },
+      {
+        "wall": 2147485.498097439,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147485.481871124,
+          "decoder_started": 2147485.543404226,
+          "decoder_completed": 2147485.543697173,
+          "sample_completed": 2147485.543699215
+        }
+      },
+      {
+        "wall": 2147487.845278735,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147487.7662946,
+          "decoder_started": 2147487.881110072,
+          "decoder_completed": 2147487.881392228,
+          "sample_completed": 2147487.881394436
+        }
+      },
+      {
+        "wall": 2147489.942759566,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147489.933704879,
+          "decoder_started": 2147489.983795457,
+          "decoder_completed": 2147489.984117569,
+          "sample_completed": 2147489.984119527
+        }
+      },
+      {
+        "wall": 2147492.05406099,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147492.034692412,
+          "decoder_started": 2147492.069047364,
+          "decoder_completed": 2147492.069335352,
+          "sample_completed": 2147492.069338061
+        }
+      },
+      {
+        "wall": 2147494.150916944,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "4",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "4"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147494.131915764,
+          "decoder_started": 2147494.18227481,
+          "decoder_completed": 2147494.182851163,
+          "sample_completed": 2147494.182860162
+        }
+      },
+      {
+        "wall": 2147496.358909731,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Judas] Flip Flappers (Season 1) [BD 1080p][HEVC x265 10bit][Dual-Audio][Eng-Subs]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "8",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "8"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147496.283761798,
+          "decoder_started": 2147496.383779021,
+          "decoder_completed": 2147496.384166506,
+          "sample_completed": 2147496.384169006
+        }
+      },
+      {
+        "wall": 2147498.497649056,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Judas] Flip Flappers (Season 1) [BD 1080p][HEVC x265 10bit][Dual-Audio][Eng-Subs]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "9",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "9"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2147498.479418713,
+          "decoder_started": 2147498.521435187,
+          "decoder_completed": 2147498.521872921,
+          "sample_completed": 2147498.521876587
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "start",
+  "attempt": 6,
+  "regression_attempt": true
+}

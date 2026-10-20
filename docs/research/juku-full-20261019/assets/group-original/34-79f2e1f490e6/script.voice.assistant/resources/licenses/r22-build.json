@@ -1,0 +1,27 @@
+{
+  "source": "dev/remote/r22_msbc_decoder.c",
+  "wrapper_license": "MIT",
+  "source_sha256": "d9591905eab92d99d76ba85cc8fb9a8690b1d6dae0df437b1394b6bc1858f27d",
+  "output": "resources/native/linux_armv7l/r22/libr22-msbc-ffmpeg62.so",
+  "compiler": "/home/bxy/avdvplus/R10/CoreELEC/build.CoreELEC-Amlogic-ng.arm-21/toolchain/bin/armv8a-libreelec-linux-gnueabihf-gcc",
+  "flags": [
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-mcpu=cortex-a53",
+    "-mfpu=neon-fp-armv8",
+    "-mfloat-abi=hard",
+    "-Wl,-soname,libr22-msbc-ffmpeg62.so"
+  ],
+  "system_dependencies": [
+    "libavcodec.so.62",
+    "libavutil.so.60"
+  ],
+  "sha256": "654fb6e37af308cff0a91f4a827ffb766337b57e366a8eae683caa1f767a38b4",
+  "bundles_android_binary": false,
+  "codec_implementation": "CoreELEC system FFmpeg mSBC; no FFmpeg libraries bundled",
+  "codec_source": "https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/sbcdec.c"
+}

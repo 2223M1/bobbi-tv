@@ -1,0 +1,73 @@
+{
+  "version": "0.163.0-ce.1",
+  "source": "https://github.com/forbxy/codex-ce/releases/tag/ce-v0.163.0-1",
+  "upstream_source": "https://github.com/openai/codex/releases/tag/rust-v0.163.0",
+  "delivery": "optional userdata component; binaries are not bundled",
+  "build": {
+    "upstream_version": "0.163.0",
+    "upstream_commit": "83086188ae0614bd882818ff1aa23f3194962012",
+    "repository": "forbxy/codex-ce",
+    "source_commit": "3a78561869b73fd1cf4d41f7c9b3e85d11ab70ae",
+    "source_dirty": false,
+    "release_tag": "ce-v0.163.0-1",
+    "target": "aarch64-unknown-linux-musl",
+    "rust": "1.95.0",
+    "zig": "0.15.2",
+    "lock_sha256": "cae541406f7ec43a418e126be2bcd5de00b243e7bbf6382570028727d99c1069",
+    "sandbox_patch_sha256": "cddc3e03315bcb21bcefb5151943477ea7704b0cff096720d3ea75b914ac5ded",
+    "binaries": {
+      "codex-app-server": {
+        "sha256": "8651e4427c94495d156dd64687a6f5dbe01aa83728489940ba5c74afeed721cd",
+        "bytes": 221775736
+      },
+      "codex-code-mode-host": {
+        "sha256": "255eccc8a5c1d267dc0acbc815cc83aaa1f50955bd99943b29f00cafcdcab771",
+        "bytes": 67118080
+      },
+      "codex-resources/bwrap": {
+        "sha256": "c547cbdc762a70ed216789ffaa4c6c0e7d2beabe32245a498f8e365a9fc8dab4",
+        "bytes": 529168
+      }
+    }
+  },
+  "assets": [
+    {
+      "url": "https://github.com/forbxy/codex-ce/releases/download/ce-v0.163.0-1/codex-ce-0.163.0-1-aarch64-unknown-linux-musl.tar.gz",
+      "filename": "codex-ce-0.163.0-1-aarch64-unknown-linux-musl.tar.gz",
+      "format": "tar",
+      "sha256": "e49a28f3d62f2becc02083bfc7585b9fc426cd92ad304f9f67a5b3edecf08f18",
+      "md5": "77823746d5f56a05979908a2e39e80ff",
+      "bytes": 116178052,
+      "expanded_bytes": 289464685,
+      "files": {
+        "CE-README.md": "CE-README.md",
+        "LICENSE": "LICENSE",
+        "NOTICE": "NOTICE",
+        "build-info.json": "build-info.json",
+        "codex-app-server": "codex-app-server",
+        "codex-code-mode-host": "codex-code-mode-host",
+        "codex-resources/bwrap": "codex-resources/bwrap",
+        "licenses/bwrap-COPYING": "licenses/bwrap-COPYING"
+      },
+      "executables": [
+        "codex-app-server",
+        "codex-code-mode-host",
+        "codex-resources/bwrap"
+      ]
+    }
+  ],
+  "installed_files": {
+    "codex-app-server": {
+      "sha256": "8651e4427c94495d156dd64687a6f5dbe01aa83728489940ba5c74afeed721cd",
+      "bytes": 221775736
+    },
+    "codex-code-mode-host": {
+      "sha256": "255eccc8a5c1d267dc0acbc815cc83aaa1f50955bd99943b29f00cafcdcab771",
+      "bytes": 67118080
+    },
+    "codex-resources/bwrap": {
+      "sha256": "c547cbdc762a70ed216789ffaa4c6c0e7d2beabe32245a498f8e365a9fc8dab4",
+      "bytes": 529168
+    }
+  }
+}

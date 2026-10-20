@@ -43,9 +43,14 @@ class SourceListSession:
         return sha256(json.dumps(identity, sort_keys=True, separators=(',', ':'),
                                  ensure_ascii=False).encode('utf-8')).hexdigest()
 
-    def publish(self, epoch, provider, sources=(), state='COMPLETE', error=''):
+    def publish(self, epoch, provider, sources=(), state='COMPLETE', error='', completion=None):
         if state not in self.TERMINAL | {'PENDING', 'RUNNING'}:
             raise ValueError('Explicit provider lifecycle required')
+        if completion is not None:
+            from dataclasses import asdict
+            from bobbi_core.search_completion import SearchCompletion
+            if not isinstance(completion, SearchCompletion):
+                raise ValueError('Explicit provider completion receipt required')
         copies = [(self.key(source), deepcopy(source)) for source in sources]
         with self.lock:
             if epoch != self.epoch or self.cancelled or self.confirmed:
@@ -58,7 +63,14 @@ class SourceListSession:
                 retained = self.entries.setdefault(key, source)
                 if getattr(source, 'requiresCatalogEpisodeProof', False):
                     retained.requiresCatalogEpisodeProof = True
+            previous_completion = self.providers.get(provider, {}).get('completion')
             self.providers[provider] = dict(state=state, error=str(error)[:120], count=len(copies))
+            if completion is not None:
+                self.providers[provider]['completion'] = asdict(completion)
+            elif previous_completion is not None:
+                # Forced timeout/cancellation must not erase the already
+                # published snapshot age/incompleteness evidence.
+                self.providers[provider]['completion'] = previous_completion
             self.revision += 1
             return True
 

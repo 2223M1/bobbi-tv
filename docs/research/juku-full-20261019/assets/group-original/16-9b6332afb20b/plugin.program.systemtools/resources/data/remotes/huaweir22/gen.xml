@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<keymap>
+  <global>
+    <keyboard>
+      <up>Up</up>
+      <down>Down</down>
+      <left>Left</left>
+      <right>Right</right>
+      <return>Select</return>
+      <enter>Select</enter>
+      <backspace>Back</backspace>
+      <browser_back>Back</browser_back>
+      <escape>Back</escape>
+      <browser_home>ActivateWindow(Home)</browser_home>
+      <homepage>ActivateWindow(Home)</homepage>
+      <volume_up>VolumeUp</volume_up>
+      <volume_down>VolumeDown</volume_down>
+      <volume_mute>Mute</volume_mute>
+      <mute>Mute</mute>
+      <play_pause>PlayPause</play_pause>
+      <power>ActivateWindow(ShutdownMenu)</power>
+      <s>ActivateWindow(ShutdownMenu)</s>
+      <backspace mod="longpress">ActivateWindow(ShutdownMenu)</backspace>
+      <browser_back mod="longpress">ActivateWindow(ShutdownMenu)</browser_back>
+      <key id="61467">Back</key>
+      <key id="61576">ActivateWindow(Home)</key>
+    </keyboard>
+  </global>
+  <FullscreenVideo>
+    <keyboard>
+      <backspace>Back</backspace>
+      <browser_back>Back</browser_back>
+      <escape>Back</escape>
+      <return>OSD</return>
+      <enter>OSD</enter>
+      <play_pause>PlayPause</play_pause>
+    </keyboard>
+  </FullscreenVideo>
+</keymap>

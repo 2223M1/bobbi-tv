@@ -1,0 +1,761 @@
+{
+  "binaries": [
+    {
+      "architecture": "arm64",
+      "binary": "C:\\Users\\theon\\AppData\\Local\\Temp\\am6b-juku080-audit-c1d94364ca0449caac433205113d487c\\extracted\\plugin.video.juku-0.80-linux-arm64\\plugin.video.juku\\bin\\daemon-linux-arm64",
+      "binary_sha256": "e21cec4ba1f0411022a2d22061b1d27ac80d439606529ddc9cabec3060ca118b",
+      "assets": [
+        {
+          "symbol": "main.categoryHTMLPart1",
+          "header_address": "0x142be90",
+          "data_address": "0xa5753f",
+          "bytes": 12400,
+          "state": "static-symbol",
+          "file": "arm64/categoryHTMLPart1.html",
+          "sha256": "7fa2d98729bd1be6ddce837044c6894deb70e08f4a7063a37ec2a4b942e41448"
+        },
+        {
+          "symbol": "main.categoryHTMLPart2",
+          "header_address": "0x142bea0",
+          "data_address": "0xa4dc55",
+          "bytes": 6656,
+          "state": "static-symbol",
+          "file": "arm64/categoryHTMLPart2.html",
+          "sha256": "36f1f34265f543adba8183e1d51c987932d2c441d5597d3137879fe392a1a8ff"
+        },
+        {
+          "symbol": "main.categoryHTMLPart3",
+          "header_address": "0x142beb0",
+          "data_address": "0xa61351",
+          "bytes": 16222,
+          "state": "static-symbol",
+          "file": "arm64/categoryHTMLPart3.html",
+          "sha256": "6c0a37a97891bdd59e1729267b7ab5f608c7f96522fda5d7e2d5e190c05f992b"
+        },
+        {
+          "symbol": "main.categoryHTMLPart4",
+          "header_address": "0x142bec0",
+          "data_address": "0xa30d5b",
+          "bytes": 81,
+          "state": "static-symbol",
+          "file": "arm64/categoryHTMLPart4.html",
+          "sha256": "4dbd460362bdeea07d6e600df69964962b25168c26500c07c96b56de34141b39"
+        },
+        {
+          "symbol": "main.homeHTMLPart1",
+          "header_address": "0x142bed0",
+          "data_address": "0xa550fd",
+          "bytes": 9282,
+          "state": "static-symbol",
+          "file": "arm64/homeHTMLPart1.html",
+          "sha256": "59589733d2dc8c3192a4c0d2d37d4ecb244cda907251e96c51cbb5b7526465df"
+        },
+        {
+          "symbol": "main.homeHTMLPart2",
+          "header_address": "0x142bee0",
+          "data_address": "0xa49460",
+          "bytes": 3324,
+          "state": "static-symbol",
+          "file": "arm64/homeHTMLPart2.html",
+          "sha256": "1fb570d8edea9c41c15ad941f7085a557695ad5b070d3152a0dabb0bb138a52d"
+        },
+        {
+          "symbol": "main.homeHTMLPart3",
+          "header_address": "0x142bef0",
+          "data_address": "0xa52ded",
+          "bytes": 8976,
+          "state": "static-symbol",
+          "file": "arm64/homeHTMLPart3.html",
+          "sha256": "88c9415f2fbabcc53bc665364374ec8cf18fbce23afd2e1ea00ffa3cfb401096"
+        },
+        {
+          "symbol": "main.homeHTMLPart4",
+          "header_address": "0x142bf00",
+          "data_address": "0xa30d5b",
+          "bytes": 81,
+          "state": "static-symbol",
+          "file": "arm64/homeHTMLPart4.html",
+          "sha256": "4dbd460362bdeea07d6e600df69964962b25168c26500c07c96b56de34141b39"
+        },
+        {
+          "symbol": "main.listsHTMLPart1",
+          "header_address": "0x142bf10",
+          "data_address": "0xa696d3",
+          "bytes": 19523,
+          "state": "static-symbol",
+          "file": "arm64/listsHTMLPart1.html",
+          "sha256": "12263f0b0fc79f3a1aa1910dfbc6c97493c345f8c65c0494ab48404c0d0986ba"
+        },
+        {
+          "symbol": "main.listsHTMLPart2",
+          "header_address": "0x142bf20",
+          "data_address": "0xa479da",
+          "bytes": 1545,
+          "state": "static-symbol",
+          "file": "arm64/listsHTMLPart2.html",
+          "sha256": "342dcfbaef8b8f7ae628f8c559753a199c9af4046a44b87421d3eac532062159"
+        },
+        {
+          "symbol": "main.listsHTMLPart3",
+          "header_address": "0x142bf30",
+          "data_address": "0xa652af",
+          "bytes": 17444,
+          "state": "static-symbol",
+          "file": "arm64/listsHTMLPart3.html",
+          "sha256": "b0ab6f96ac080eb1612052f7456d086bdff808f6a86c302fa9e9e7f9872c64ff"
+        },
+        {
+          "symbol": "main.listsHTMLPart4",
+          "header_address": "0x142bf40",
+          "data_address": "0xa30d5b",
+          "bytes": 81,
+          "state": "static-symbol",
+          "file": "arm64/listsHTMLPart4.html",
+          "sha256": "4dbd460362bdeea07d6e600df69964962b25168c26500c07c96b56de34141b39"
+        },
+        {
+          "symbol": "main.privateLibHTML",
+          "header_address": "0x142bf60",
+          "data_address": "0xb83220",
+          "bytes": 225089,
+          "state": "static-symbol",
+          "file": "arm64/privateLibHTML.html",
+          "sha256": "871f7aeee341d78fa4ec8a37b7bda0fdb6172a095a13fcb75d477e5b30558112"
+        },
+        {
+          "symbol": "main.privateLibCSS",
+          "header_address": "0x142bf70",
+          "data_address": "0xaf0080",
+          "bytes": 83693,
+          "state": "static-symbol",
+          "file": "arm64/privateLibCSS.css",
+          "sha256": "c0ee3dac878eac39952e7a51153fecd1ee7265931cd99240455b0f083e20df45"
+        },
+        {
+          "symbol": "main.pushHTML",
+          "header_address": "0x142c010",
+          "data_address": "0xa6e316",
+          "bytes": 20754,
+          "state": "static-symbol",
+          "file": "arm64/pushHTML.html",
+          "sha256": "f89c9f8c6bf88bef4a27367bdd54bb5879bd8df5bd085d064bb38965829c2f0c"
+        },
+        {
+          "symbol": "main.qrHTML",
+          "header_address": "0x142c020",
+          "data_address": "0xb19a75",
+          "bytes": 108852,
+          "state": "static-symbol",
+          "file": "arm64/qrHTML.html",
+          "sha256": "7a4b439930907195885dc833a466e19b74c586c4105064650151d83fd8864819"
+        },
+        {
+          "symbol": "main.searchHTML",
+          "header_address": "0x142c030",
+          "data_address": "0xb343a9",
+          "bytes": 128985,
+          "state": "static-symbol",
+          "file": "arm64/searchHTML.html",
+          "sha256": "493d330c4ec3152bb86658558128506969bd4542215e0d87a9dcf7315804be21"
+        },
+        {
+          "symbol": "main.shareHTML",
+          "header_address": "0x142c040",
+          "data_address": "0xa8ad5d",
+          "bytes": 42712,
+          "state": "static-symbol",
+          "file": "arm64/shareHTML.html",
+          "sha256": "528f73f46feb9e1a599f9c8f03c64af5ae2b4a9fc19e6e64ca28c8c90a596247"
+        },
+        {
+          "symbol": "main.js01Core",
+          "header_address": "0x142bf80",
+          "data_address": "0xa78d80",
+          "bytes": 31069,
+          "state": "static-symbol",
+          "file": "arm64/js01Core.js",
+          "sha256": "9833a8d2d3641c8890ad3f990bcbb897474e4f39a184cf590877688f7b7ea58f"
+        },
+        {
+          "symbol": "main.js02AuthEmby",
+          "header_address": "0x142bf90",
+          "data_address": "0xac7fe0",
+          "bytes": 81503,
+          "state": "static-symbol",
+          "file": "arm64/js02AuthEmby.js",
+          "sha256": "5d1688166f85b6494b93eca4ad5d7016afc4125d47ddd7fff42ae88009c0aea2"
+        },
+        {
+          "symbol": "main.js03Library",
+          "header_address": "0x142bfa0",
+          "data_address": "0xadbe40",
+          "bytes": 82493,
+          "state": "static-symbol",
+          "file": "arm64/js03Library.js",
+          "sha256": "8ca2f1bc9e39695f42206d4f7a8de21260041060650f796520f3d11b1c25e497"
+        },
+        {
+          "symbol": "main.js04MoviesDetail",
+          "header_address": "0x142bfb0",
+          "data_address": "0xb53ba0",
+          "bytes": 194172,
+          "state": "static-symbol",
+          "file": "arm64/js04MoviesDetail.js",
+          "sha256": "7bf2a06b594099a828d227d1376c139c2360562abb87fb8db6de1feb30bd13d3"
+        },
+        {
+          "symbol": "main.js05ExcelScan",
+          "header_address": "0x142bfc0",
+          "data_address": "0xbba180",
+          "bytes": 312876,
+          "state": "static-symbol",
+          "file": "arm64/js05ExcelScan.js",
+          "sha256": "719a59d71285e12c17f9ec47d1c8cd3f5482012d6f6fdab17919328fc05128e5"
+        },
+        {
+          "symbol": "main.js06ShareSync",
+          "header_address": "0x142bfd0",
+          "data_address": "0xab6280",
+          "bytes": 73026,
+          "state": "static-symbol",
+          "file": "arm64/js06ShareSync.js",
+          "sha256": "d4f0eef47716864083a058084b827cbad39bd4e036ed73c40cdba587c2961a9f"
+        },
+        {
+          "symbol": "main.js07UnmatchedQueue",
+          "header_address": "0x142bfe0",
+          "data_address": "0xaa5200",
+          "bytes": 69760,
+          "state": "static-symbol",
+          "file": "arm64/js07UnmatchedQueue.js",
+          "sha256": "ec7ee47f1aa76a87e8bca1b1a9002c7816eda14b8358a8da0873ea89abfb1d2e"
+        },
+        {
+          "symbol": "main.js08ApiDoc",
+          "header_address": "0x142bff0",
+          "data_address": "0xa5a5c0",
+          "bytes": 12576,
+          "state": "static-symbol",
+          "file": "arm64/js08ApiDoc.js",
+          "sha256": "cb5eb999a1ef99ad105af315567cfb1b97d2756140f63cd4998cfa2626b2a2f1"
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xa5d6e0",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/007e/007ea950.c",
+              "sha256": "99a17cc3034e561dab5a734fe08285df031b4f3f05fc3519a5c6fc4f29ccac01"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/007e/007ea950.asm",
+              "sha256": "4c0bda9ddbd1c5f15950de8e0676ce9c04d10153fb60ff7cfed59cbe2c34ca54"
+            }
+          ],
+          "file": "arm64/common-style.css",
+          "sha256": "2b15fd11de2817dac881f3632edb4b47a897c16aea7cb07c64962dcdce048b6f",
+          "bytes": 15473
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xa4a15c",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/007e/007ea950.c",
+              "sha256": "99a17cc3034e561dab5a734fe08285df031b4f3f05fc3519a5c6fc4f29ccac01"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/007e/007ea950.asm",
+              "sha256": "4c0bda9ddbd1c5f15950de8e0676ce9c04d10153fb60ff7cfed59cbe2c34ca54"
+            }
+          ],
+          "file": "arm64/common-nav.html",
+          "sha256": "99655008f386e3a25a1cc13b2531c1b0ecca64a3e1c1bb2eb8211012acf1a450",
+          "bytes": 3985
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xa95435",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/007e/007ea950.c",
+              "sha256": "99a17cc3034e561dab5a734fe08285df031b4f3f05fc3519a5c6fc4f29ccac01"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/007e/007ea950.asm",
+              "sha256": "4c0bda9ddbd1c5f15950de8e0676ce9c04d10153fb60ff7cfed59cbe2c34ca54"
+            }
+          ],
+          "file": "arm64/common-ui.js",
+          "sha256": "7ba5047988dded61d3657ad529e67c8a1a2f3dbb43a60232bd7c0ea9f6783d16",
+          "bytes": 64965
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xa73428",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/0075/0075ae00.c",
+              "sha256": "2abd6bd9b16b04eb13c47bd4e4abd4f9bcb50e6d81295c7e97f52d7d409c1a22"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/0075/0075ae00.asm",
+              "sha256": "9ada43b38ab0197f6549a8ab875d10e25b131348d5dc04b2d4c3c05bf0fc585e"
+            }
+          ],
+          "file": "arm64/kodi-remote.css",
+          "sha256": "5516a35efd4544b7528989c7711a8522fb4775e59297f717382e477885234fee",
+          "bytes": 22869
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xb0476d",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/0075/0075afe0.c",
+              "sha256": "59d0ed5c4c6fd21925526746bd4f1d4f95445bfaada519adaab174e1be243fa1"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/arm64/functions/0075/0075afe0.asm",
+              "sha256": "a1622b2ff0e87d06ca504deb08a4dd12f13b4139fa0dd642146a8a86469c6a7c"
+            }
+          ],
+          "file": "arm64/kodi-remote.js",
+          "sha256": "ea18d3e67dabace460e4b2670992374e7a819e6302f26962096186307626a96e",
+          "bytes": 86792
+        },
+        {
+          "symbol": "main.faviconBytes",
+          "header_address": "0x1431e40",
+          "data_address": "0x13d0dc0",
+          "bytes": 6126,
+          "state": "static-symbol",
+          "file": "arm64/favicon.ico",
+          "sha256": "b0c318fdaead757a0027a093caf7be5c8804fdc41fc48f2603747667be26bc8d"
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "part1 + common-style (lists wraps style tags) + part2 + common-nav + part3 + common-ui + part4",
+          "file": "arm64/category-assembled.html",
+          "sha256": "abc7e73ff8c4ada33af042e2aec40fcbbbcb67c571f1a96cdf826e99f13fca70",
+          "bytes": 119782
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "part1 + common-style (lists wraps style tags) + part2 + common-nav + part3 + common-ui + part4",
+          "file": "arm64/home-assembled.html",
+          "sha256": "6466d07331e2310214529b7b57685e1e6a6ee38d19c47f31dfcbe3c13da26e5b",
+          "bytes": 106086
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "part1 + common-style (lists wraps style tags) + part2 + common-nav + part3 + common-ui + part4",
+          "file": "arm64/lists-assembled.html",
+          "sha256": "2a97cea781cfa804166990930eade13c526058f61e2e43f46cf065bce940b5dc",
+          "bytes": 123031
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "main.init.0: js01..js08 joined by two newline bytes",
+          "parts": [
+            "js01Core.js",
+            "js02AuthEmby.js",
+            "js03Library.js",
+            "js04MoviesDetail.js",
+            "js05ExcelScan.js",
+            "js06ShareSync.js",
+            "js07UnmatchedQueue.js",
+            "js08ApiDoc.js"
+          ],
+          "file": "arm64/privateLib-assembled.js",
+          "sha256": "8ada4bbef14d0194fc4ce313d658c32ae1b6e21083b3f105a2df88446b6dda70",
+          "bytes": 857489
+        }
+      ]
+    },
+    {
+      "architecture": "x64",
+      "binary": "C:\\Users\\theon\\AppData\\Local\\Temp\\am6b-juku080-audit-c1d94364ca0449caac433205113d487c\\extracted\\plugin.video.juku-0.80-linux-x64\\plugin.video.juku\\bin\\daemon-linux-amd64",
+      "binary_sha256": "fc7ba96b40f4da9d33c02b7c67f8617d26b0982166df515e429d94c97cba1433",
+      "assets": [
+        {
+          "symbol": "main.categoryHTMLPart1",
+          "header_address": "0x196da30",
+          "data_address": "0xf80115",
+          "bytes": 12400,
+          "state": "static-symbol",
+          "file": "x64/categoryHTMLPart1.html",
+          "sha256": "7fa2d98729bd1be6ddce837044c6894deb70e08f4a7063a37ec2a4b942e41448"
+        },
+        {
+          "symbol": "main.categoryHTMLPart2",
+          "header_address": "0x196da40",
+          "data_address": "0xf7682b",
+          "bytes": 6656,
+          "state": "static-symbol",
+          "file": "x64/categoryHTMLPart2.html",
+          "sha256": "36f1f34265f543adba8183e1d51c987932d2c441d5597d3137879fe392a1a8ff"
+        },
+        {
+          "symbol": "main.categoryHTMLPart3",
+          "header_address": "0x196da50",
+          "data_address": "0xf89f31",
+          "bytes": 16222,
+          "state": "static-symbol",
+          "file": "x64/categoryHTMLPart3.html",
+          "sha256": "6c0a37a97891bdd59e1729267b7ab5f608c7f96522fda5d7e2d5e190c05f992b"
+        },
+        {
+          "symbol": "main.categoryHTMLPart4",
+          "header_address": "0x196da60",
+          "data_address": "0xf59814",
+          "bytes": 81,
+          "state": "static-symbol",
+          "file": "x64/categoryHTMLPart4.html",
+          "sha256": "4dbd460362bdeea07d6e600df69964962b25168c26500c07c96b56de34141b39"
+        },
+        {
+          "symbol": "main.homeHTMLPart1",
+          "header_address": "0x196da70",
+          "data_address": "0xf7dcd3",
+          "bytes": 9282,
+          "state": "static-symbol",
+          "file": "x64/homeHTMLPart1.html",
+          "sha256": "59589733d2dc8c3192a4c0d2d37d4ecb244cda907251e96c51cbb5b7526465df"
+        },
+        {
+          "symbol": "main.homeHTMLPart2",
+          "header_address": "0x196da80",
+          "data_address": "0xf72036",
+          "bytes": 3324,
+          "state": "static-symbol",
+          "file": "x64/homeHTMLPart2.html",
+          "sha256": "1fb570d8edea9c41c15ad941f7085a557695ad5b070d3152a0dabb0bb138a52d"
+        },
+        {
+          "symbol": "main.homeHTMLPart3",
+          "header_address": "0x196da90",
+          "data_address": "0xf7b9c3",
+          "bytes": 8976,
+          "state": "static-symbol",
+          "file": "x64/homeHTMLPart3.html",
+          "sha256": "88c9415f2fbabcc53bc665364374ec8cf18fbce23afd2e1ea00ffa3cfb401096"
+        },
+        {
+          "symbol": "main.homeHTMLPart4",
+          "header_address": "0x196daa0",
+          "data_address": "0xf59814",
+          "bytes": 81,
+          "state": "static-symbol",
+          "file": "x64/homeHTMLPart4.html",
+          "sha256": "4dbd460362bdeea07d6e600df69964962b25168c26500c07c96b56de34141b39"
+        },
+        {
+          "symbol": "main.listsHTMLPart1",
+          "header_address": "0x196dab0",
+          "data_address": "0xf922b3",
+          "bytes": 19523,
+          "state": "static-symbol",
+          "file": "x64/listsHTMLPart1.html",
+          "sha256": "12263f0b0fc79f3a1aa1910dfbc6c97493c345f8c65c0494ab48404c0d0986ba"
+        },
+        {
+          "symbol": "main.listsHTMLPart2",
+          "header_address": "0x196dac0",
+          "data_address": "0xf70593",
+          "bytes": 1545,
+          "state": "static-symbol",
+          "file": "x64/listsHTMLPart2.html",
+          "sha256": "342dcfbaef8b8f7ae628f8c559753a199c9af4046a44b87421d3eac532062159"
+        },
+        {
+          "symbol": "main.listsHTMLPart3",
+          "header_address": "0x196dad0",
+          "data_address": "0xf8de8f",
+          "bytes": 17444,
+          "state": "static-symbol",
+          "file": "x64/listsHTMLPart3.html",
+          "sha256": "b0ab6f96ac080eb1612052f7456d086bdff808f6a86c302fa9e9e7f9872c64ff"
+        },
+        {
+          "symbol": "main.listsHTMLPart4",
+          "header_address": "0x196dae0",
+          "data_address": "0xf59814",
+          "bytes": 81,
+          "state": "static-symbol",
+          "file": "x64/listsHTMLPart4.html",
+          "sha256": "4dbd460362bdeea07d6e600df69964962b25168c26500c07c96b56de34141b39"
+        },
+        {
+          "symbol": "main.privateLibHTML",
+          "header_address": "0x196db00",
+          "data_address": "0x10abe00",
+          "bytes": 225089,
+          "state": "static-symbol",
+          "file": "x64/privateLibHTML.html",
+          "sha256": "ad678c25f872ae8740a0fec8cfef2f79819835eb992c9d432410b574fa52c798"
+        },
+        {
+          "symbol": "main.privateLibCSS",
+          "header_address": "0x196db10",
+          "data_address": "0x1018c60",
+          "bytes": 83693,
+          "state": "static-symbol",
+          "file": "x64/privateLibCSS.css",
+          "sha256": "c0ee3dac878eac39952e7a51153fecd1ee7265931cd99240455b0f083e20df45"
+        },
+        {
+          "symbol": "main.pushHTML",
+          "header_address": "0x196dbb0",
+          "data_address": "0xf96ef6",
+          "bytes": 20754,
+          "state": "static-symbol",
+          "file": "x64/pushHTML.html",
+          "sha256": "f89c9f8c6bf88bef4a27367bdd54bb5879bd8df5bd085d064bb38965829c2f0c"
+        },
+        {
+          "symbol": "main.qrHTML",
+          "header_address": "0x196dbc0",
+          "data_address": "0x1042655",
+          "bytes": 108852,
+          "state": "static-symbol",
+          "file": "x64/qrHTML.html",
+          "sha256": "7a4b439930907195885dc833a466e19b74c586c4105064650151d83fd8864819"
+        },
+        {
+          "symbol": "main.searchHTML",
+          "header_address": "0x196dbd0",
+          "data_address": "0x105cf89",
+          "bytes": 128985,
+          "state": "static-symbol",
+          "file": "x64/searchHTML.html",
+          "sha256": "493d330c4ec3152bb86658558128506969bd4542215e0d87a9dcf7315804be21"
+        },
+        {
+          "symbol": "main.shareHTML",
+          "header_address": "0x196dbe0",
+          "data_address": "0xfb393d",
+          "bytes": 42712,
+          "state": "static-symbol",
+          "file": "x64/shareHTML.html",
+          "sha256": "528f73f46feb9e1a599f9c8f03c64af5ae2b4a9fc19e6e64ca28c8c90a596247"
+        },
+        {
+          "symbol": "main.js01Core",
+          "header_address": "0x196db20",
+          "data_address": "0xfa1960",
+          "bytes": 31069,
+          "state": "static-symbol",
+          "file": "x64/js01Core.js",
+          "sha256": "9833a8d2d3641c8890ad3f990bcbb897474e4f39a184cf590877688f7b7ea58f"
+        },
+        {
+          "symbol": "main.js02AuthEmby",
+          "header_address": "0x196db30",
+          "data_address": "0xff0bc0",
+          "bytes": 81503,
+          "state": "static-symbol",
+          "file": "x64/js02AuthEmby.js",
+          "sha256": "5d1688166f85b6494b93eca4ad5d7016afc4125d47ddd7fff42ae88009c0aea2"
+        },
+        {
+          "symbol": "main.js03Library",
+          "header_address": "0x196db40",
+          "data_address": "0x1004a20",
+          "bytes": 82493,
+          "state": "static-symbol",
+          "file": "x64/js03Library.js",
+          "sha256": "8ca2f1bc9e39695f42206d4f7a8de21260041060650f796520f3d11b1c25e497"
+        },
+        {
+          "symbol": "main.js04MoviesDetail",
+          "header_address": "0x196db50",
+          "data_address": "0x107c780",
+          "bytes": 194172,
+          "state": "static-symbol",
+          "file": "x64/js04MoviesDetail.js",
+          "sha256": "7bf2a06b594099a828d227d1376c139c2360562abb87fb8db6de1feb30bd13d3"
+        },
+        {
+          "symbol": "main.js05ExcelScan",
+          "header_address": "0x196db60",
+          "data_address": "0x10e2d60",
+          "bytes": 312876,
+          "state": "static-symbol",
+          "file": "x64/js05ExcelScan.js",
+          "sha256": "719a59d71285e12c17f9ec47d1c8cd3f5482012d6f6fdab17919328fc05128e5"
+        },
+        {
+          "symbol": "main.js06ShareSync",
+          "header_address": "0x196db70",
+          "data_address": "0xfdee60",
+          "bytes": 73026,
+          "state": "static-symbol",
+          "file": "x64/js06ShareSync.js",
+          "sha256": "d4f0eef47716864083a058084b827cbad39bd4e036ed73c40cdba587c2961a9f"
+        },
+        {
+          "symbol": "main.js07UnmatchedQueue",
+          "header_address": "0x196db80",
+          "data_address": "0xfcdde0",
+          "bytes": 69760,
+          "state": "static-symbol",
+          "file": "x64/js07UnmatchedQueue.js",
+          "sha256": "ec7ee47f1aa76a87e8bca1b1a9002c7816eda14b8358a8da0873ea89abfb1d2e"
+        },
+        {
+          "symbol": "main.js08ApiDoc",
+          "header_address": "0x196db90",
+          "data_address": "0xf831a0",
+          "bytes": 12576,
+          "state": "static-symbol",
+          "file": "x64/js08ApiDoc.js",
+          "sha256": "cb5eb999a1ef99ad105af315567cfb1b97d2756140f63cd4998cfa2626b2a2f1"
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xf862c0",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00cf/00cfc060.c",
+              "sha256": "c067978af70f1820f9e424b5c96d473a2b345255c4599227a8b74b7427a2dfd6"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00cf/00cfc060.asm",
+              "sha256": "29c64cda0935073b745b65d1c559f64bc7ea5c797c9d3dcab4c140cfb37d1dbd"
+            }
+          ],
+          "file": "x64/common-style.css",
+          "sha256": "2b15fd11de2817dac881f3632edb4b47a897c16aea7cb07c64962dcdce048b6f",
+          "bytes": 15473
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xf72d32",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00cf/00cfc060.c",
+              "sha256": "c067978af70f1820f9e424b5c96d473a2b345255c4599227a8b74b7427a2dfd6"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00cf/00cfc060.asm",
+              "sha256": "29c64cda0935073b745b65d1c559f64bc7ea5c797c9d3dcab4c140cfb37d1dbd"
+            }
+          ],
+          "file": "x64/common-nav.html",
+          "sha256": "99655008f386e3a25a1cc13b2531c1b0ecca64a3e1c1bb2eb8211012acf1a450",
+          "bytes": 3985
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0xfbe015",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00cf/00cfc060.c",
+              "sha256": "c067978af70f1820f9e424b5c96d473a2b345255c4599227a8b74b7427a2dfd6"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00cf/00cfc060.asm",
+              "sha256": "29c64cda0935073b745b65d1c559f64bc7ea5c797c9d3dcab4c140cfb37d1dbd"
+            }
+          ],
+          "file": "x64/common-ui.js",
+          "sha256": "7ba5047988dded61d3657ad529e67c8a1a2f3dbb43a60232bd7c0ea9f6783d16",
+          "bytes": 64965
+        },
+        {
+          "state": "reconstructed-handler-output",
+          "data_address": "0xf9c008",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00c4/00c47b60.c",
+              "sha256": "f31b58b9cfc70349395a5c2fdb4d8bd13e2ac3ff2c2b6ed58dad27ac7cd37c06"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00c4/00c47b60.asm",
+              "sha256": "fdbca397b395e5252187c711f38154d91e42035692158fca014d2a96417209db"
+            }
+          ],
+          "recipe": "little-endian immediate 0x3d3d3d3d202a2f0a first 5 bytes + [0xf9c00d, 0x5950 bytes]",
+          "contiguous_constant_crosscheck": true,
+          "file": "x64/kodi-remote.css",
+          "sha256": "5516a35efd4544b7528989c7711a8522fb4775e59297f717382e477885234fee",
+          "bytes": 22869
+        },
+        {
+          "state": "explicit-handler-or-init-range",
+          "data_address": "0x102d34d",
+          "evidence": [
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00c4/00c47d40.c",
+              "sha256": "ff14b5c7bb1bd63432a9a5f04d77372470b52eca598f3e9c1b2a1a0500c86c6a"
+            },
+            {
+              "file": "docs/research/juku-full-20261019/amd64/functions/00c4/00c47d40.asm",
+              "sha256": "b17d2d12e270f7595fb722e8fab842381e28a7d1b8b37c62fc23401943c41f95"
+            }
+          ],
+          "file": "x64/kodi-remote.js",
+          "sha256": "ea18d3e67dabace460e4b2670992374e7a819e6302f26962096186307626a96e",
+          "bytes": 86792
+        },
+        {
+          "symbol": "main.faviconBytes",
+          "header_address": "0x19739e0",
+          "data_address": "0x1912a20",
+          "bytes": 6126,
+          "state": "static-symbol",
+          "file": "x64/favicon.ico",
+          "sha256": "b0c318fdaead757a0027a093caf7be5c8804fdc41fc48f2603747667be26bc8d"
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "part1 + common-style (lists wraps style tags) + part2 + common-nav + part3 + common-ui + part4",
+          "file": "x64/category-assembled.html",
+          "sha256": "abc7e73ff8c4ada33af042e2aec40fcbbbcb67c571f1a96cdf826e99f13fca70",
+          "bytes": 119782
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "part1 + common-style (lists wraps style tags) + part2 + common-nav + part3 + common-ui + part4",
+          "file": "x64/home-assembled.html",
+          "sha256": "6466d07331e2310214529b7b57685e1e6a6ee38d19c47f31dfcbe3c13da26e5b",
+          "bytes": 106086
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "part1 + common-style (lists wraps style tags) + part2 + common-nav + part3 + common-ui + part4",
+          "file": "x64/lists-assembled.html",
+          "sha256": "2a97cea781cfa804166990930eade13c526058f61e2e43f46cf065bce940b5dc",
+          "bytes": 123031
+        },
+        {
+          "state": "reconstructed-concatenation",
+          "recipe": "main.init.0: js01..js08 joined by two newline bytes",
+          "parts": [
+            "js01Core.js",
+            "js02AuthEmby.js",
+            "js03Library.js",
+            "js04MoviesDetail.js",
+            "js05ExcelScan.js",
+            "js06ShareSync.js",
+            "js07UnmatchedQueue.js",
+            "js08ApiDoc.js"
+          ],
+          "file": "x64/privateLib-assembled.js",
+          "sha256": "8ada4bbef14d0194fc4ce313d658c32ae1b6e21083b3f105a2df88446b6dda70",
+          "bytes": 857489
+        }
+      ]
+    }
+  ],
+  "all_cross_arch_assets_identical": false,
+  "cross_arch_differences": [
+    {
+      "file": "privateLibHTML.html",
+      "arm64_sha256": "871f7aeee341d78fa4ec8a37b7bda0fdb6172a095a13fcb75d477e5b30558112",
+      "x64_sha256": "ad678c25f872ae8740a0fec8cfef2f79819835eb992c9d432410b574fa52c798"
+    }
+  ],
+  "limitation": "Only explicit UI symbols/handler ranges; no arbitrary rodata, execution or remote-service source recovery"
+}

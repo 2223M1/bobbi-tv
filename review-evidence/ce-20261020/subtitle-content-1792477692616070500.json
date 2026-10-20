@@ -1,0 +1,38 @@
+{
+  "result": {
+    "error": "HTTPError",
+    "reason": "PROBE_ERROR",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 3
+      },
+      {
+        "function": "<module>",
+        "line": 10
+      },
+      {
+        "function": "open",
+        "line": 525
+      },
+      {
+        "function": "http_response",
+        "line": 634
+      },
+      {
+        "function": "error",
+        "line": 563
+      },
+      {
+        "function": "_call_chain",
+        "line": 496
+      },
+      {
+        "function": "http_error_default",
+        "line": 643
+      }
+    ]
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

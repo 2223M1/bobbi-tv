@@ -1,0 +1,17 @@
+{
+  "runtime": "sherpa-onnx 1.13.8 (downloaded separately)",
+  "compiler": "aarch64-linux-gnu-gcc-13",
+  "files": {
+    "resources/native/linux_aarch64/bridge/matcha-worker": "7e2b67f180b4faec98518564129012c6ecbbaa63c4ddf18bd024dc68ef51c4c3",
+    "resources/native/linux_aarch64/bridge/asr-worker": "215f999bc0a8b4131640ceef49b8ed84190e7d42bdec94afd27225e12bfcbd83",
+    "resources/native/linux_aarch64/bridge/lib/libgomp.so.1": "ed82bf6d47cc8434a935a51c0d726a93bef6f755eee22d884a3624d23465ba6a",
+    "resources/native/linux_aarch64/bridge/lib/ld-linux-aarch64.so.1": "142f02374792bf5f62293efc3500d472dbbe280dc658cc60480eff73ad46f33c",
+    "resources/native/linux_aarch64/bridge/lib/libpthread.so.0": "ec0475b3a19e17169037aad86c24572d0eff162788b9e2f5eafcb1a295a07e35",
+    "resources/native/linux_aarch64/bridge/lib/libdl.so.2": "d5a6fcacab359c1d5ca94baf9dc7c770007a835d4dc887dc8459329a613f81fc",
+    "resources/native/linux_aarch64/bridge/lib/libgcc_s.so.1": "031767c85871740fd715f983419092515f7107ab26db0c3048522fab78b60730",
+    "resources/native/linux_aarch64/bridge/lib/librt.so.1": "c5b0bf9379f0de79bdbbdfaea52389a15dd2b74d9827b88663904f7f42197079",
+    "resources/native/linux_aarch64/bridge/lib/libstdc++.so.6": "00866ee20d5bfa56406e9e155acc2109aa8a7250006d5c7c5d86716794ef6d61",
+    "resources/native/linux_aarch64/bridge/lib/libm.so.6": "20a09d884f6247a2f352960d13212f90035e177e3324ccf332d6af384bf93c48",
+    "resources/native/linux_aarch64/bridge/lib/libc.so.6": "101106b8ae66601234e0b61f6ba21bcf0fed952ed8ceaa22fb2ada993c25ec3c"
+  }
+}

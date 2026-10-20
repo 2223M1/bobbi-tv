@@ -1,0 +1,143 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "odd_taxi",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "ODDTAXI",
+        "tmdb_id": 116727,
+        "kind": "tv",
+        "year": 2021,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "f38132a6c74547558d5fd4898ec43d4a",
+      "started": 2205595.021006019,
+      "home": {
+        "generation": 23,
+        "intent": 0,
+        "retired_generation": 23,
+        "observed_at": 2205595.524690339
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2205595.525342802,
+      "picker": {
+        "window": 13001,
+        "generation": 24,
+        "intent": 0,
+        "tmdb_id": 116727,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2205597.85403099,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "ODD TAXI S01E01-[1080p][JP.BD.Remux][lolice-mix].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.23 GB",
+        "Container(1000).ListItem.Property(source_key)": "76be425a09db24b5318cd95641fc227c008606bd9c892655891095adbfbe03ed",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2205665.801316428,
+      "request_id": "027c2c61368e4b0c80362e116a83c185",
+      "selection_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273",
+      "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+      "first_av_observed_at": 2205672.976273361,
+      "select_to_av_observed_seconds": 7.174956933129579
+    },
+    "sample": {
+      "wall": 2205718.661133935,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:4ce2bcb3bc8e5469aca19e39fcf05e969479449c7a9408a4e5854dc6f4191273|transport:864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+        "monotonic_us": 2205672898001,
+        "native_instance": "5256a880-83f6-4779-89d4-bef6bb614ab3",
+        "open_epoch": 2,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "027c2c61368e4b0c80362e116a83c185",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "864620c3b311674df53fad472697d923c0fbc7f9247388f6fe8649d18aa78f00",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 35.04,
+      "duration": 1431.015,
+      "currentaudiostream": {
+        "bitrate": 1358825,
+        "channels": 2,
+        "codec": "flac",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "jpn",
+        "name": "JPBD-2.0",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 0,
+        "isdefault": true,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": "dkl070418@VCB-SC"
+      },
+      "currentvideostream": {
+        "codec": "h264",
+        "height": 1080,
+        "index": 0,
+        "language": "jpn",
+        "name": "JPBD",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 860,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "observation_times": {
+        "sample_started": 2205718.629783671,
+        "player_time_started": 2205718.665019077,
+        "player_time_completed": 2205718.668966469,
+        "caching_started": 2205718.668991261,
+        "caching_completed": 2205718.71439542,
+        "decoder_started": 2205718.757411902,
+        "decoder_completed": 2205718.758597866,
+        "sample_completed": 2205718.758602491
+      }
+    }
+  },
+  "diagnostic_present": false,
+  "work": "odd_taxi",
+  "operation": "inspect",
+  "attempt": 1,
+  "regression_attempt": false
+}

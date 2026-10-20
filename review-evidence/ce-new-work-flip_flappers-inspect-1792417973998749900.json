@@ -1,0 +1,83 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Flip Flappers",
+        "tmdb_id": 68272,
+        "kind": "tv",
+        "year": 2016,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": null,
+      "started": 2147724.210958686,
+      "home": {
+        "generation": 16,
+        "intent": 1,
+        "retired_generation": 15,
+        "observed_at": 2147724.98152322
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2147724.981828755,
+      "picker": {
+        "window": 13001,
+        "generation": 17,
+        "intent": 1,
+        "tmdb_id": 68272,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2147727.293138926,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][Flip Flappers][01-13][HEVC 10bit][1080P][MKV][CHS&CHT]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "ea3113a5e49873df58f9de8e3eabd8a4afa5d0b391dcf468a85b0832604a02e5",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2147754.27286575,
+      "request_id": "79b5699511924914846fe3007bf91378",
+      "selection_identity": "bt:12733bd6fadad8406d4cad55606e8734aefa0ef7"
+    },
+    "sample": {
+      "wall": 2147857.063947951,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": "buffer_timeout",
+      "prior_failure": null,
+      "labels": {
+        "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][Flip Flappers][01-13][HEVC 10bit][1080P][MKV][CHS&CHT]",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "23",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "已取得目标文件资料，但首段缓冲超时；请重试或选择其他片源。",
+        "Window.Property(source_count)": "23"
+      },
+      "window": {
+        "currentwindow": {
+          "id": 13001,
+          "label": "立即关闭硬盘"
+        }
+      },
+      "decoder_counters": {},
+      "observation_times": {
+        "sample_started": 2147857.042675971,
+        "decoder_started": 2147857.09255267,
+        "decoder_completed": 2147857.096465972,
+        "sample_completed": 2147857.09647143
+      }
+    }
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "inspect",
+  "attempt": 7,
+  "regression_attempt": true
+}

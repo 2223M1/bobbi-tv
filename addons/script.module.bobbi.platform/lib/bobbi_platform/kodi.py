@@ -18,6 +18,23 @@ def make_item(url, data):
     item.setProperty('IsPlayable', 'true')
     if data.get('title'):
         item.getVideoInfoTag().setTitle(data['title'])
+    tag = item.getVideoInfoTag()
+    tv = data.get('tv_data') or {}
+    for key, setter in (('season', 'setSeason'), ('episode', 'setEpisode')):
+        value = tv.get(key)
+        if type(value) is int and value >= 0:
+            getattr(tag, setter)(value)
+    art = {key: data[key] for key in ('poster', 'fanart', 'thumb')
+           if isinstance(data.get(key), str) and data[key]}
+    if art:
+        item.setArt(art)
+    subtitles = data.get('subtitles_path') or []
+    if isinstance(subtitles, list) and subtitles:
+        item.setSubtitles(subtitles)
+    request = data.get('request_id')
+    if request:
+        item.setProperty('bobbi.standard.request', request)
+        tag.setUniqueID(request, 'bobbi_request')
     # Do not override global audio/HDR/codec/refresh-rate/OSD settings. Original
     # language and Chinese preference are a first-run user-confirmed setting.
     return item

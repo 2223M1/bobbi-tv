@@ -3,164 +3,164 @@
   <fontset id="Default" idloc="31390" unicode="true">
     <font>
       <name>Display72</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>BobiDisplay.ttf</filename>
       <size>72</size>
     </font>
     <font>
       <name>Display56</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>BobiDisplay.ttf</filename>
       <size>56</size>
     </font>
     <font>
       <name>Display44</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>BobiDisplay.ttf</filename>
       <size>44</size>
     </font>
     <font>
       <name>Logo34</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>BobiDisplay.ttf</filename>
       <size>34</size>
     </font>
     <font>
       <name>LogoLatin</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>Roboto-Bold.ttf</filename>
       <size>30</size>
     </font>
     <font>
       <name>Head40</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>40</size>
     </font>
     <font>
       <name>Head34</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>34</size>
     </font>
     <font>
       <name>Head30</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>30</size>
     </font>
     <font>
       <name>Button28</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>28</size>
     </font>
     <font>
       <name>Button24</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>24</size>
     </font>
     <font>
       <name>Label30</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>30</size>
     </font>
     <font>
       <name>Label28</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>28</size>
     </font>
     <font>
       <name>Label24</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>24</size>
     </font>
     <font>
       <name>Clock30</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>30</size>
     </font>
     <font>
       <name>Mono30</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>30</size>
     </font>
     <font>
       <name>Body28</name>
-      <filename>HarmonyOS_SansSC_Regular.ttf</filename>
+      <filename>MiSans-Regular.ttf</filename>
       <size>28</size>
       <linespacing>1.3</linespacing>
     </font>
     <font>
       <name>Body26</name>
-      <filename>HarmonyOS_SansSC_Regular.ttf</filename>
+      <filename>MiSans-Regular.ttf</filename>
       <size>26</size>
       <linespacing>1.35</linespacing>
     </font>
     <font>
       <name>Meta24</name>
-      <filename>HarmonyOS_SansSC_Regular.ttf</filename>
+      <filename>MiSans-Regular.ttf</filename>
       <size>24</size>
     </font>
     <font>
       <name>Meta22</name>
-      <filename>HarmonyOS_SansSC_Regular.ttf</filename>
+      <filename>MiSans-Regular.ttf</filename>
       <size>22</size>
     </font>
     <font>
       <name>font10</name>
-      <filename>HarmonyOS_SansSC_Regular.ttf</filename>
+      <filename>MiSans-Regular.ttf</filename>
       <size>22</size>
     </font>
     <font>
       <name>font12</name>
-      <filename>HarmonyOS_SansSC_Regular.ttf</filename>
+      <filename>MiSans-Regular.ttf</filename>
       <size>24</size>
     </font>
     <font>
       <name>font13</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>28</size>
     </font>
     <font>
       <name>font14</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>30</size>
     </font>
     <font>
       <name>font16</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>34</size>
     </font>
     <font>
       <name>font30</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>40</size>
     </font>
     <font>
       <name>font45</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>48</size>
     </font>
     <font>
       <name>font10_title</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>22</size>
     </font>
     <font>
       <name>font12_title</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>24</size>
     </font>
     <font>
       <name>font13_title</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>28</size>
     </font>
     <font>
       <name>font30_title</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>MiSans-Semibold.ttf</filename>
       <size>40</size>
     </font>
     <font>
       <name>fontContextMenu</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>28</size>
     </font>
     <font>
       <name>WeatherTemp</name>
-      <filename>HarmonyOS_SansSC_Medium.ttf</filename>
+      <filename>MiSans-Medium.ttf</filename>
       <size>96</size>
     </font>
     <font>
@@ -246,7 +246,7 @@
     </font>
     <font>
       <name>BobiLogoLatin</name>
-      <filename>HarmonyOS_SansSC_Bold.ttf</filename>
+      <filename>Roboto-Bold.ttf</filename>
       <size>30</size>
     </font>
     <font>
@@ -256,7 +256,7 @@
     </font>
     <font>
       <name>BobiAFIcon</name>
-      <filename>fa-solid-900.ttf</filename>
+      <filename>BobiAF-Solid.ttf</filename>
       <size>33</size>
     </font>
   </fontset>

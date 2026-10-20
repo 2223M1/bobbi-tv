@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window><defaultcontrol always="true">400</defaultcontrol><controls>
+<control type="image"><left>170</left><top>785</top><width>1580</width><height>255</height><texture colordiffuse="F218222E">voice-input-bg.png</texture></control>
+<control type="image"><left>170</left><top>785</top><width>6</width><height>255</height><texture colordiffuse="FF7BD9C2">voice-input-bg.png</texture></control>
+<control type="label" id="301"><left>210</left><top>805</top><width>1150</width><height>45</height><font>font30</font><textcolor>FF7BD9C2</textcolor></control>
+<control type="textbox" id="302"><left>210</left><top>860</top><width>1470</width><height>90</height><font>font25</font><textcolor>FFEAF1F8</textcolor></control>
+<control type="button" id="400"><left>210</left><top>960</top><width>1020</width><height>54</height><font>font25</font><label>$ADDON[script.voice.inputmethod 31041]</label><texturefocus colordiffuse="FF367A76">voice-input-bg.png</texturefocus><texturenofocus colordiffuse="FF283647">voice-input-bg.png</texturenofocus><onleft>401</onleft><onright>401</onright><onup>400</onup><ondown>400</ondown></control>
+<control type="button" id="401"><left>1260</left><top>960</top><width>450</width><height>54</height><font>font25</font><label>$ADDON[script.voice.inputmethod 31042]</label><texturefocus colordiffuse="FF367A76">voice-input-bg.png</texturefocus><texturenofocus colordiffuse="FF283647">voice-input-bg.png</texturenofocus><onleft>400</onleft><onright>400</onright><onup>401</onup><ondown>401</ondown></control>
+</controls></window>
