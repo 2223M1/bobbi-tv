@@ -1,0 +1,275 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "man_from_earth",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "The Man from Earth",
+        "tmdb_id": 13363,
+        "kind": "movie",
+        "year": 2007
+      },
+      "prior_request": null,
+      "started": 2222111.974129076,
+      "home": {
+        "generation": 10,
+        "intent": 0,
+        "retired_generation": 10,
+        "observed_at": 2222112.304239333
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2222112.304587573,
+      "picker": {
+        "window": 13001,
+        "generation": 11,
+        "intent": 0,
+        "tmdb_id": 13363,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2222114.576283574
+    },
+    "samples": [
+      {
+        "wall": 2222112.482848469,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222112.470675778,
+          "decoder_started": 2222112.505412153,
+          "decoder_completed": 2222112.506265004,
+          "sample_completed": 2222112.50626817
+        }
+      },
+      {
+        "wall": 2222114.593137426,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222114.577137258,
+          "decoder_started": 2222114.605121792,
+          "decoder_completed": 2222114.605412075,
+          "sample_completed": 2222114.6054142
+        }
+      },
+      {
+        "wall": 2222116.681393858,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222116.664491712,
+          "decoder_started": 2222116.703703392,
+          "decoder_completed": 2222116.70408434,
+          "sample_completed": 2222116.70408684
+        }
+      },
+      {
+        "wall": 2222118.863321533,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222118.854737691,
+          "decoder_started": 2222118.888911396,
+          "decoder_completed": 2222118.889203388,
+          "sample_completed": 2222118.889205513
+        }
+      },
+      {
+        "wall": 2222121.001190475,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "The.Man.From.Earth.2007.BluRay.1080p.DTS-HD.MA5.1.x265.10bit-BeiTai.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "3",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "3"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222120.986864083,
+          "decoder_started": 2222121.019412925,
+          "decoder_completed": 2222121.019862579,
+          "sample_completed": 2222121.019865704
+        }
+      },
+      {
+        "wall": 2222123.079227217,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "The.Man.From.Earth.2007.BluRay.1080p.DTS-HD.MA5.1.x265.10bit-BeiTai.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "3",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "3"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222123.072226119,
+          "decoder_started": 2222123.104030113,
+          "decoder_completed": 2222123.10430523,
+          "sample_completed": 2222123.104307022
+        }
+      },
+      {
+        "wall": 2222125.194523548,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "这个男人来自地球.2007.1080p.原盘.中文字幕.iso.4KTOP.iso",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "12",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "12"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222125.170281131,
+          "decoder_started": 2222125.22303468,
+          "decoder_completed": 2222125.223326922,
+          "sample_completed": 2222125.223329047
+        }
+      },
+      {
+        "wall": 2222127.290444823,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "这个男人来自地球.2007.1080p.原盘.中文字幕.iso.4KTOP.iso",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "12",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "12"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2222127.272665392,
+          "decoder_started": 2222127.305185046,
+          "decoder_completed": 2222127.305480996,
+          "sample_completed": 2222127.305483079
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "man_from_earth",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

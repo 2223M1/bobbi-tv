@@ -24,7 +24,7 @@ def test_steps_never_ask_for_box_model_or_claim_ready_cinema():
 
 def test_status_explains_limit_in_plain_language():
     assert '不代表' in summary({'standard_playback': True})
-    assert 'Kodi 21' in summary({})
+    assert '播放器接口' in summary({})
     assert '重新导出' in engine_message('ENGINE_AUTH_REJECTED')
     assert 'unknown-secret-detail' not in engine_message('unknown-secret-detail')
 
@@ -126,12 +126,10 @@ def test_original_addon_menu_only_opens_native_browser(setup_ui, choice, target)
     assert '不能整体用原版覆盖' in explanation
 
 
-def test_bobbi_bundle_menu_is_information_only(setup_ui):
+def test_bobbi_bundle_menu_opens_real_installer_without_applying(setup_ui):
     setup_ui.choice = 2
-    assert setup_ui.module.show_updates(setup_ui.dialog) is False
-    assert setup_ui.builtins == [] and setup_ui.called == []
-    assert '不下载、不安装，也不刷新仓库' in str(setup_ui.dialogs)
-    assert '不覆盖账号、片库和观看数据' in str(setup_ui.dialogs)
+    assert setup_ui.module.show_updates(setup_ui.dialog) is True
+    assert setup_ui.builtins == ['RunScript(script.bobbi.start)'] and setup_ui.called == []
 
 
 def test_cancel_update_menu_does_nothing(setup_ui):

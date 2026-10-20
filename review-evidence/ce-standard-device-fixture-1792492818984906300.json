@@ -1,0 +1,15 @@
+{
+  "exit_code": 0,
+  "result": {
+    "scope": "actual standard adapter on existing F9; generated media only",
+    "other_ce_hardware_tested": false,
+    "history": [],
+    "reports": [],
+    "used_native_api": false,
+    "real_av_requests": 0,
+    "real_eof_count": 0,
+    "passed": false
+  },
+  "diagnostic_present": false,
+  "temporary_device_directory": "/storage/.kodi/temp/bobbi-standard-fixture-1792492777742835300"
+}

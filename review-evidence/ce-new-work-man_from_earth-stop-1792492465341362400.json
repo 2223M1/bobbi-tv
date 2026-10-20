@@ -1,0 +1,99 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "man_from_earth",
+    "stopped": true,
+    "before": {
+      "wall": 2222347.366979209,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:f6db95ebb1703ecccc6c630092852f90f03b5c13c1be8b8cf62fa140e321197a|transport:2dc0f4cdf345e7df7b228e93c55fe7007e6628d1372e6004699dbf77ddf34d2e",
+        "monotonic_us": 2222176344909,
+        "native_instance": "97f508f7-9bf0-4a76-9040-eaf7345378e9",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "e4dc35e4f82c4a1a883d63fc1c9ca2a2",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "2dc0f4cdf345e7df7b228e93c55fe7007e6628d1372e6004699dbf77ddf34d2e",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 167.565,
+      "duration": 5231.768,
+      "currentaudiostream": {
+        "bitrate": 0,
+        "channels": 6,
+        "codec": "dtshd_ma",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "eng",
+        "name": "English DTS-HD Master Audio 5.1 @ 2224 kbps",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 1,
+        "isdefault": true,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": "Chs/SUP  简体"
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1080,
+        "index": 0,
+        "language": "eng",
+        "name": "HEVC, x265Main10@L5.1@High, 24/1.001 fps @ 7889 kbps",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 4042,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "observation_times": {
+        "sample_started": 2222347.357499366,
+        "player_time_started": 2222347.369405554,
+        "player_time_completed": 2222347.37190744,
+        "caching_started": 2222347.371930523,
+        "caching_completed": 2222347.390331464,
+        "decoder_started": 2222347.432591071,
+        "decoder_completed": 2222347.43345856,
+        "sample_completed": 2222347.433461685
+      }
+    },
+    "seconds": 0.63
+  },
+  "diagnostic_present": false,
+  "work": "man_from_earth",
+  "operation": "stop",
+  "attempt": 1,
+  "regression_attempt": false
+}
