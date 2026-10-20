@@ -7,7 +7,9 @@ first. Multiple encodes of an episode remain separate candidates.
 import re
 
 from bobbi_core.episode_revision import continuation_family
+from bobbi_core.release_identity import bound_family
 from bobbi_core.release_names import specifications
+from bobbi_core.resolution import resolution_class
 
 
 EPISODE = re.compile(r'(?i)(?<![a-z0-9])s(\d{1,2})[ ._-]*e(\d{1,3})(?=v[1-9]\d*(?:[ ._\]\)]|$)|[^a-z0-9]|$)')
@@ -27,10 +29,14 @@ def release_envelope(name, season, episode):
             or type(season) is not int or type(episode) is not int or min(season, episode) < 1):
         return None
     extension = EXTENSION.search(name)
-    if not extension or not QUALITY.search(name):
+    if not extension or not resolution_class(name):
         return None
+    try:
+        bound_family(name, season, episode)
+    except ValueError:
+        return None  # Shared range/conflict checks before legacy prose handling.
     markers = list(EPISODE.finditer(name))
-    if markers:
+    if markers and QUALITY.search(name):
         if len(markers) != 1:
             return None
         marker = markers[0]
@@ -44,11 +50,14 @@ def release_envelope(name, season, episode):
         if not quality:
             return None
         prose = tail[:quality.start()]
-        if re.search(r'(?i)\[|\]|\(|\)|\b(?:v\d+|repack|proper|extended|uncut|dubbed)\b', prose):
-            return None
-        prefix = re.sub(r'[\W_]+', ' ', name[:marker.start()].casefold()).strip()
-        suffix = tail[quality.start():].casefold()
-        return (prefix, season, suffix) if prefix else None
+        if not re.search(r'(?i)\[|\]|\(|\)|\b(?:v\d+|repack|proper|extended|uncut|dubbed)\b', prose):
+            prefix = re.sub(r'[\W_]+', ' ', name[:marker.start()].casefold()).strip()
+            suffix = tail[quality.start():].casefold()
+            return (prefix, season, suffix) if prefix else None
+        # Bracketed technical tags such as S01E01-[1080p] are not episode
+        # prose. Compare the complete strict family instead of refusing them,
+        # or stripping decorations that might hide a group/edition/revision.
+        # This deliberately does not erase differently named episode titles.
     try:
         return ('episode-bound', season, continuation_family(name, season, episode),
                 specifications(name), extension[1].casefold())

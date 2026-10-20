@@ -61,12 +61,43 @@ class Owner:
             name = 'bobbi_cinema_target'
         self.window.setProperty(name, json.dumps(payload))
 
-    def bind(self, item, info_hash, file, url, resolution, original_audio_hint=''):
+    def diagnostic(self, detail):
+        import xbmc
+        from .entry import failure_log
+        xbmc.log(failure_log(BackendError('TORRENT_STAGE_OBSERVED', diagnostic=detail),
+                            self.request_id), xbmc.LOGINFO)
+
+    def wait_for_buffer(self, detail):
+        import xbmcgui
+        self.active()
+        self.diagnostic(dict(detail, stage='buffering'))
+        answer = xbmcgui.Dialog().yesno('片源已定位，BT 供数仍不足',
+            '当前等待的是你选定的文件，不会换版或降低画质。\n'
+            '种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。',
+            nolabel='返回选源', yeslabel='继续等待一轮', autoclose=30000)
+        self.active()  # A newer selection/stop while the dialog was up wins.
+        return answer
+
+    def choose_file(self, files):
+        import xbmcgui
+        from bobbi_core.torrent_startup import FILE_CHOICE_SECONDS
+        self.active()
+        # No preselection or timeout default. A choice means this file only,
+        # never an assertion that its release/episode has been auto-verified.
+        choice = xbmcgui.Dialog().select('无法自动确定正片 · 请核对真实文件（不自动续播）',
+            ['%s  ·  %.2f GiB' % (f['path'].replace('[', '［').replace(']', '］'),
+                                  f['length'] / 1024**3) for f in files], autoclose=FILE_CHOICE_SECONDS * 1000)
+        self.active()
+        return dict(files[choice]) if type(choice) is int and 0 <= choice < len(files) else None
+
+    def bind(self, item, info_hash, file, url, resolution, original_audio_hint='',
+             file_evidence='AUTO_VERIFIED_FILE'):
         self.active()
         p, request_id = self.protocol, self.request_id
         identity = p.resolved_torrent_file_identity(request_id, resolution, info_hash,
             file['id'], file['path'], file['length'])
-        context = p.bind_and_claim(request_id, identity, url, self.cancelled, 'resolved_url')
+        context = p.bind_and_claim(request_id, identity, url, self.cancelled, 'resolved_url',
+                                   file_evidence=file_evidence)
         self.active()
         item.setProperty('bobitv.request_id', request_id)
         item.setProperty('bobitv.file_identity', identity)

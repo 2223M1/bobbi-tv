@@ -16,17 +16,24 @@ def rpc(method,params=None):
     return result.get('result',{'rpc_error':result.get('error',{}).get('code')})
 out={'mode':MODE,'timestamp':time.time()}
 if MODE=='metadata':
-    path=pathlib.Path('/storage/.local/share/bobitv/preparation-private/tmdb-key')
-    key=path.read_text().strip()
-    query=urllib.parse.urlencode(dict(api_key=key,query='Girls Last Tour',first_air_date_year=2017,language='en-US'))
+    import sys
+    sys.path.insert(0,str(root/'addons/script.module.bobbi.core/lib'))
+    from bobbi_core.project_metadata import tmdb_key
+    key=tmdb_key()
+    out['project_config_present']=bool(key)
+    out['configuration_source']='bobbi-project-only'
+    query=urllib.parse.urlencode(dict(api_key=key,query='A Separation',primary_release_year=2011,language='en-US'))
     began=time.monotonic()
     try:
-        with urllib.request.build_opener(urllib.request.ProxyHandler({})).open('https://api.themoviedb.org/3/search/tv?'+query,timeout=8) as response:
+        if not key: raise ValueError('PROJECT_CONFIG_MISSING')
+        with urllib.request.build_opener(urllib.request.ProxyHandler({})).open('https://api.themoviedb.org/3/search/movie?'+query,timeout=8) as response:
             data=json.load(response)
-        out['results']=[{k:r.get(k) for k in ('id','name','original_name','first_air_date')} for r in data.get('results',[])[:10]]
+            out['http']=response.status
+        out['results']=[{k:r.get(k) for k in ('id','title','original_title','release_date')} for r in data.get('results',[])[:10]]
         out['configured_proxy']=False
     except Exception as error: out['error']=type(error).__name__
     out['seconds']=time.monotonic()-began
+    out['routing_limit']='No explicit proxy; router/ISP transparent routing is not established by this probe.'
 else:
     out['players']=rpc('Player.GetActivePlayers')
     out['gui']=rpc('GUI.GetProperties',{'properties':['currentwindow','currentcontrol','skin']})
@@ -95,6 +102,30 @@ else:
                 if action=='account_status':
                     host_scope=result
                     out['host_account_status']={k:result.get(k) for k in ('authenticated','epoch')}
+                    identity=(out.get('native',{}).get('playback') or {}).get('file_identity','')
+                    import re,sqlite3
+                    match=re.match(r'prepared:([0-9a-f]{64})(?:\||$)',identity)
+                    if (match or SOURCE_HASH) and result.get('authenticated') and str(result.get('account_id','')).startswith('115:'):
+                        state=root/'userdata/addon_data/plugin.video.bobbi/preparation'/(result['account_id'][4:]+'-'+str(result['epoch']))/'resources.sqlite'
+                        out['current_prepared_database_present']=state.is_file()
+                        if state.is_file():
+                            with sqlite3.connect(state.resolve().as_uri()+'?mode=ro',uri=True,timeout=.2) as db:
+                                if SOURCE_HASH:
+                                    rows=db.execute('SELECT b.media_id,s.state,s.attempts,s.detail FROM prepared_bindings b JOIN tasks t ON t.id=b.task LEFT JOIN subtitle_preparation s ON s.resource=b.resource WHERE t.source_hash=? ORDER BY b.media_id LIMIT 32',(SOURCE_HASH,)).fetchall()
+                                    out['trial_subtitle_tasks']=[dict(media_id=r[0],state=r[1],attempts=r[2],reason=json.loads(r[3] or '{}').get('reason'),stage=json.loads(r[3] or '{}').get('stage'),matcher_policy=json.loads(r[3] or '{}').get('matcher_policy')) for r in rows]
+                                    fonts=db.execute('SELECT b.media_id,f.state,f.attempts,f.detail FROM prepared_bindings b JOIN tasks t ON t.id=b.task JOIN subtitle_font_preparation f ON f.resource=b.resource WHERE t.source_hash=? ORDER BY b.media_id LIMIT 32',(SOURCE_HASH,)).fetchall()
+                                    out['trial_subtitle_fonts']=[dict(media_id=r[0],state=r[1],attempts=r[2],reason=json.loads(r[3] or '{}').get('reason'),font_count=len(json.loads(r[3] or '{}').get('font_hashes',[]))) for r in fonts]
+                                row=db.execute('SELECT s.state,s.attempts,s.detail FROM subtitle_preparation s JOIN prepared_playback_protection p ON p.resource=s.resource WHERE p.request=?',
+                                    (out['native']['playback']['request_id'],)).fetchone() if match else None
+                                if row:
+                                    detail=json.loads(row[2])
+                                    out['current_prepared_subtitle']={'state':row[0],'attempts':row[1],
+                                        'reason':detail.get('reason'),'matcher_policy':detail.get('matcher_policy'),
+                                        'font_activation_current_request':detail.get('font_activation',{}).get('request_id')==out['native']['playback']['request_id'],
+                                        'font_activation_count':len(detail.get('font_activation',{}).get('font_hashes',[])),
+                                        'font_inputs_complete':detail.get('font_activation',{}).get('inputs_complete'),
+                                        'missing_font_count':detail.get('font_activation',{}).get('missing_count'),
+                                        'subtitle_sha256':detail.get('subtitle_sha256')}
                 elif action=='preparation':
                     out['preparation_ping']={k:result.get(k) for k in ('ok','state','component')}
                     out['preparation_ping']['current_account']=result.get('account')==host_scope
@@ -120,15 +151,19 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--transport-source',type=Path,required=True)
     parser.add_argument('--mode',choices=('health','metadata'),default='health')
+    parser.add_argument('--source-hash', help='Optional exact trial torrent for read-only subtitle preparation status')
     parser.add_argument('--report',type=Path,help='Keep a distinct immutable acceptance checkpoint')
     args=parser.parse_args()
+    import re
+    if args.source_hash and not re.fullmatch('[0-9a-f]{40}',args.source_hash):
+        parser.error('Normalized torrent info hash required')
     sys.path.insert(0,str(args.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('ce_probe_transport',args.transport_source/'ui-redesign/tools/device_transport.py')
     transport=importlib.util.module_from_spec(spec)
     spec.loader.exec_module(transport)
     client,wire=transport.connect()
     try:
-        rc,result,diagnostic=wire.readonly(client,('MODE='+repr(args.mode)+'\n'+REMOTE).encode(),deadline_seconds=30)
+        rc,result,diagnostic=wire.readonly(client,('MODE='+repr(args.mode)+'\nSOURCE_HASH='+repr(args.source_hash)+'\n'+REMOTE).encode(),deadline_seconds=30)
     finally:client.close()
     output=args.report or ROOT/'review-evidence'/('ce-runtime-'+args.mode+'.json')
     output.parent.mkdir(parents=True,exist_ok=True)

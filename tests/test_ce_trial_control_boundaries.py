@@ -112,6 +112,8 @@ def test_driver_distinguishes_unsupported_from_failure_and_completed_operation()
     assert driver.result_exit_code({'state': 'not_tested'}, remote_code=1) == 1
     assert driver.result_exit_code({'error': 'AssertionError'}) == 1
     assert driver.result_exit_code({'selected': True}) == 0
+    assert driver.result_exit_code({'operation': 'select', 'selected': False}) == 2
+    assert driver.result_exit_code({'operation': 'cards', 'selected': False}) == 0
     assert driver.result_exit_code({'selected': True, 'samples': [{'failure': 'target_unresolved'}]}) == 1
     assert driver.result_exit_code({'selected': True, 'trace_passed': False,
                                    'trace_coverage': {'passed': None}}) == 2

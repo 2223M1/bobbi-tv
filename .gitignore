@@ -18,3 +18,6 @@ staging/
 /profile/
 /profiles/
 /userdata/
+# Project application key is deliberately injected into signed PRIVATE client
+# bundles. Keep plaintext out of source/logs, never substitute Juku credentials.
+/addons/script.module.bobbi.core/resources/tmdb-project.json

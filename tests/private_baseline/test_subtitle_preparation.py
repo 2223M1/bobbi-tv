@@ -93,6 +93,88 @@ def test_pipeline_reuses_real_matcher_mapping_store_and_only_reads_subtitle(subj
     assert subject.queue.generation() == 1  # No republishing/video qualification or cloud submission.
 
 
+def test_legacy_negative_rechecked_once_after_matcher_policy_change(subject):
+    worker, db = subject.worker, subject.queue.db
+    actual_matcher = worker.matcher
+    worker.matcher = lambda *args: []
+    assert worker.next_action() is None
+    first = db.execute('SELECT attempts,detail FROM subtitle_preparation').fetchone()
+    assert json.loads(first['detail'])['matcher_policy']
+    assert worker.next_action() is None  # Same-policy negative must not spin.
+    assert db.execute('SELECT attempts FROM subtitle_preparation').fetchone()[0] == first['attempts']
+    db.execute('UPDATE subtitle_preparation SET detail=?', (json.dumps(dict(reason='NO_UNIQUE_RELEASE_CHINESE_FILE')),))
+    worker.matcher = actual_matcher
+    plan, result = finish(subject)
+    assert plan['attempts'] == 1
+    assert worker.next_action() is None
+    assert len(subject.reads) == 1 and subject.queue.generation() == 1
+
+
+def test_legacy_negative_does_not_replace_manual_subtitle_revision(subject):
+    finish(subject)
+    db = subject.queue.db
+    row = db.execute('SELECT seq,payload FROM subtitle_revisions').fetchone()
+    payload = json.loads(row['payload'])
+    payload['manual_intent'] = 1
+    db.execute('UPDATE subtitle_revisions SET payload=? WHERE seq=?', (json.dumps(payload), row['seq']))
+    db.execute("UPDATE subtitle_preparation SET state='NO_EXACT_SIDECAR',detail='{}'")
+    assert subject.worker.next_action() is None
+    assert len(subject.reads) == 1
+
+
+def test_legacy_content_failure_rechecks_once_and_records_failure_stage(subject):
+    worker, db = subject.worker, subject.queue.db
+    worker._record(subject.rid, '', 'READ_UNAVAILABLE', 3, dict(reason='ValueError'))
+    subject.listing['/115open/inbox/Series'][1]['bytes'] += 1
+    for attempt in range(1, 4):
+        plan = worker.next_action()
+        assert plan['attempts'] == attempt
+        result = worker.perform(plan)
+        assert result['stage'] == 'subtitle_mapping'
+        assert worker.complete(plan, result)
+        db.execute('UPDATE subtitle_preparation SET next_attempt=0')
+    assert worker.next_action() is None
+    assert len(subject.reads) == 0
+    detail = json.loads(db.execute('SELECT detail FROM subtitle_preparation').fetchone()[0])
+    assert detail['content_policy'] and detail['stage'] == 'subtitle_mapping'
+
+
+@pytest.mark.parametrize('reason', ['TimeoutError', 'ACCOUNT_OR_CANCELLED'])
+def test_content_policy_does_not_reset_exhausted_transport_or_account_work(subject, reason):
+    subject.worker._record(subject.rid, '', 'READ_UNAVAILABLE', 3, dict(reason=reason))
+    assert subject.worker.next_action() is None
+
+
+def test_content_policy_does_not_replace_manual_subtitle(subject):
+    finish(subject)
+    db = subject.queue.db
+    row = db.execute('SELECT seq,payload FROM subtitle_revisions').fetchone()
+    payload = json.loads(row['payload']); payload['manual_intent'] = 1
+    db.execute('UPDATE subtitle_revisions SET payload=? WHERE seq=?', (json.dumps(payload), row['seq']))
+    db.execute("UPDATE subtitle_preparation SET state='READ_UNAVAILABLE',detail=?", (json.dumps(dict(reason='ValueError')),))
+    assert subject.worker.next_action() is None
+
+
+def test_rar_asset_policy_revisits_only_prior_no_assets_once(subject):
+    from bobbi_core.subtitle_font_preparation import SubtitleFontPreparation, KEY, ASSET_POLICY
+    worker = SubtitleFontPreparation(subject.worker, None, None, lambda: False)
+    db = subject.queue.db
+    entries = [('a', 'FONT_INPUTS_UNAVAILABLE', 'NO_RELEASE_FONT_ASSETS'),
+               ('b', 'FONT_INPUTS_UNAVAILABLE', 'ValueError'),
+               ('c', 'FONT_INPUTS_BOUND', 'READY')]
+    for binding, state, reason in entries:
+        db.execute('INSERT INTO subtitle_font_preparation VALUES(?,?,?,?,?,?)',
+                   (binding, subject.rid, state, 3, 0, json.dumps(dict(reason=reason))))
+    db.execute('UPDATE settings SET value=? WHERE key=?', ('legacy', KEY + ':asset-policy'))
+    worker._recheck_asset_policy()
+    assert [tuple(r) for r in db.execute('SELECT binding,state,attempts FROM subtitle_font_preparation ORDER BY binding')] == [
+        ('a', 'RETRY', 0), ('b', 'FONT_INPUTS_UNAVAILABLE', 3), ('c', 'FONT_INPUTS_BOUND', 3)]
+    db.execute("UPDATE subtitle_font_preparation SET state='FONT_INPUTS_UNAVAILABLE',attempts=3 WHERE binding='a'")
+    worker._recheck_asset_policy()
+    assert db.execute("SELECT attempts FROM subtitle_font_preparation WHERE binding='a'").fetchone()[0] == 3
+    assert db.execute('SELECT value FROM settings WHERE key=?', (KEY + ':asset-policy',)).fetchone()[0] == ASSET_POLICY
+
+
 @pytest.mark.parametrize('change', ['video_id', 'video_size', 'subtitle_size', 'account', 'task_root'])
 def test_cloud_drift_never_applies_wrong_caption(subject, change):
     plan = subject.worker.next_action()

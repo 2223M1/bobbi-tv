@@ -9,22 +9,14 @@ import hashlib
 from pathlib import PurePosixPath
 import re
 
-from bobbi_core.release_identity import STRONG, WEAK, bound_family
+from bobbi_core.release_identity import bound_family
+from bobbi_core.filename_semantics import parse_filename
 from bobbi_core.release_names import specifications
 
 
 def continuation_family(name, season, episode):
     bound_family(name, season, episode)  # Reject ambiguous/wrong episode first.
-    strong = [m for pattern in STRONG for m in pattern.finditer(name)]
-    matches = strong or [m for pattern in WEAK for m in pattern.finditer(name) if m.start() != 0]
-    removals = set()
-    for match in matches:
-        if match.groupdict().get('revision'):
-            removals.add(match.span('revision'))
-        elif strong:
-            revision = re.match(r'(?i)v[1-9]\d*(?=$|[ ._\]\)])', name[match.end():])
-            if revision:
-                removals.add((match.end(), match.end() + revision.end()))
+    removals = parse_filename(name).revision_spans
     for start, end in sorted(removals, reverse=True):
         name = name[:start] + name[end:]
     return bound_family(name, season, episode)

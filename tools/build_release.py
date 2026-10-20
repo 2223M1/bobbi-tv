@@ -14,6 +14,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / 'release/source-inventory.json'
 OFFICIAL = {'xbmc.python', 'xbmc.gui', 'script.module.pycryptodome'}  # Official Kodi ABI-native host modules.
+LOCAL_RESOURCE = ('script.module.bobbi.core', 'resources/tmdb-project.json')
 
 
 def sources():
@@ -35,20 +36,26 @@ def files(root):
         if path.is_symlink():
             raise ValueError('Symlink source')
         if path.is_file():
-            result[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+            name = path.relative_to(root).as_posix()
+            if (root.name, name) == LOCAL_RESOURCE:
+                continue  # Separate maintainer input; a clean Git clone stays testable.
+            result[name] = hashlib.sha256(path.read_bytes()).hexdigest()
     return result
 
 
 def refresh():
     content = {key: files(root) for key, root in sources().items()}
-    INVENTORY.write_text(json.dumps({'schema': 1, 'components': content}, indent=2) + '\n', encoding='utf-8')
+    with INVENTORY.open('w', encoding='utf-8', newline='\n') as output:
+        output.write(json.dumps({'schema': 1, 'components': content}, indent=2) + '\n')
     preview = ROOT / 'release/preview-inputs.json'
     value = json.loads(preview.read_text())
-    value['components'] = {key: sorted(content[key]) for key in value['components']}
-    preview.write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
+    from build_preview import COMPONENTS
+    value['components'] = {key: sorted(content[key]) for key in COMPONENTS}
+    with preview.open('w', encoding='utf-8', newline='\n') as output:
+        output.write(json.dumps(value, indent=2) + '\n')
 
 
-def archive(root, names, output):
+def archive(root, names, output, extra=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as target:
         for name in sorted(names):
@@ -56,6 +63,32 @@ def archive(root, names, output):
             info.create_system = 3
             info.external_attr = 0o100644 << 16
             target.writestr(info, (root / name).read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+        for name, raw in sorted((extra or {}).items()):
+            if name in names or (root.name, name) != LOCAL_RESOURCE:
+                raise ValueError('Unreviewed local build resource')
+            info = zipfile.ZipInfo(root.name + '/' + name, (1980, 1, 1, 0, 0, 0))
+            info.create_system = 3
+            info.external_attr = 0o100644 << 16
+            target.writestr(info, raw, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+
+
+def project_resource(roots):
+    """One explicit application input, frozen before packaging; never account state."""
+    import importlib.util
+    root = roots[LOCAL_RESOURCE[0]]
+    spec = importlib.util.spec_from_file_location('build_project_metadata', root / 'lib/bobbi_core/project_metadata.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    path = root / LOCAL_RESOURCE[1]
+    key = module.tmdb_key(path)
+    if not key:
+        raise ValueError('Maintainer TMDb project configuration required; no user account needed')
+    # Canonicalize only already-validated application fields. The original file
+    # is not re-read after validation, avoiding a check/package substitution.
+    raw = json.dumps(dict(schema=1, application='Bobbi TV', api_key=key,
+        use='personal-noncommercial', attribution=module.ATTRIBUTION),
+        sort_keys=True, separators=(',', ':')).encode('utf-8')
+    return raw
 
 
 def build(destination):
@@ -65,6 +98,7 @@ def build(destination):
     roots = sources()
     if set(roots) != set(inventory):
         raise ValueError('Addon inventory changed; review before refreshing')
+    local_resource = project_resource(roots)
     manifest = {'version': '0.2.0-private.1', 'channel': 'private-candidate', 'device_verified': False, 'components': []}
     xml = ET.Element('addons')
     for addon, root in roots.items():
@@ -77,7 +111,8 @@ def build(destination):
         version = meta.attrib['version']
         filename = addon + '-' + version + '.zip'
         output = destination / addon / filename
-        archive(root, inventory[addon], output)
+        archive(root, inventory[addon], output,
+                {LOCAL_RESOURCE[1]: local_resource} if addon == LOCAL_RESOURCE[0] else None)
         output.with_suffix(output.suffix + '.sha256').write_text(
             hashlib.sha256(output.read_bytes()).hexdigest(), encoding='ascii')
         # Kodi uses raw artwork alongside repository zip paths.
@@ -98,6 +133,9 @@ def build(destination):
     # Explicit LF prevents Windows text translation changing its bytes.
     with (destination / 'manifest.json').open('w', encoding='utf-8', newline='\n') as stream:
         stream.write(json.dumps(manifest, indent=2) + '\n')
+    (destination / 'application-input.json').write_text(json.dumps(dict(
+        component=LOCAL_RESOURCE[0], resource=LOCAL_RESOURCE[1],
+        sha256=hashlib.sha256(local_resource).hexdigest(), account_state=False), indent=2) + '\n', encoding='utf-8')
     return manifest
 
 

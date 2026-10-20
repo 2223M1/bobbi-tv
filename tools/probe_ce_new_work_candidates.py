@@ -13,7 +13,7 @@ if path.is_file():
     db.set_progress_handler(lambda:int(time.monotonic()>end),1000)
     try:
         result['tables']=[r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")]
-        for title,words in [('荒蛮故事',['荒蛮故事','Wild Tales','Relatos salvajes']),('少女终末旅行',['少女终末旅行','Girls Last Tour','Shoujo Shuumatsu']),('一次别离',['一次别离','A Separation']),('灰羽联盟',['灰羽联盟','Haibane']),('虫师',['虫师','Mushishi']),('醉乡民谣',['醉乡民谣','Llewyn'])]:
+        for title,words in QUERIES:
             rows=[]
             for word in words:
                 for raw, in db.execute('SELECT payload FROM shared_rows WHERE payload LIKE ? LIMIT 12',('%'+word+'%',)):
@@ -32,5 +32,13 @@ print(json.dumps(result,ensure_ascii=False))
 if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--transport-source',type=Path,required=True)
+    parser.add_argument('--query', action='append', required=True,
+                        help='Title aliases separated by |; bounded read-only cache search')
+    parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
-    transport.run(args.transport_source,Path(__file__).resolve().parents[1]/'review-evidence/ce-new-work-candidates.json')
+    queries = [row.split('|') for row in args.query]
+    if len(queries)>6 or any(not row or len(row)>5 or any(not q or len(q)>120 for q in row) for row in queries):
+        parser.error('At most six works with five bounded aliases each')
+    transport.REMOTE = 'QUERIES='+repr([(row[0],row) for row in queries])+'\n'+transport.REMOTE
+    if args.output.exists(): raise FileExistsError('Keep previous trial evidence')
+    transport.run(args.transport_source,args.output)

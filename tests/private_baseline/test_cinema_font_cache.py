@@ -38,6 +38,43 @@ def test_exact_binding_and_activation_share_ledger_and_hardlink(cache):
     assert store.ledger.db.execute("SELECT action FROM audit ORDER BY seq DESC LIMIT 1").fetchone()[0] == "font_activate"
 
 
+def partial_binding(store):
+    row = store.import_font(font(), 'same_release_pack', 'partial')
+    raw = subtitle().replace(b'[Events]', b'Style: Missing,Absent Family,0,0\n[Events]')
+    result = store.bind('partial', raw, [row['sha256']])
+    assert result['missing'] and result['selected']
+    return row, result['subtitle_sha256']
+
+
+def test_partial_fonts_activate_without_claiming_complete_coverage(cache):
+    store, _ = cache
+    row, sub = partial_binding(store)
+    user = store.native/'user.ttf'; user.write_bytes(font(('User Font',)))
+    plan = store.activation_plan('partial', sub)
+    proof = store.verify_plan(plan)
+    result = store.activate('partial', sub, 'request', lambda: True, verified=proof)
+    assert result['font_count'] == 1 and result['inputs_complete'] is False
+    assert result['missing_count'] == 1
+    assert store._path(row, True).samefile(store._path(row)) and user.exists()
+    assert store.owns_activation('partial', sub, 'request', result['hashes'])
+    assert not store.owns_activation('partial', sub, 'other', result['hashes'])
+    assert store.binding('partial', sub)['status'] == 'MISSING_FONTS'
+    store.reserve('partial', sub, 'next')
+    assert store.prune(lambda: True, limit=1)['removed'] == []
+
+
+def test_partial_font_switch_keeps_owner_guard_and_rollback(cache):
+    store, _ = cache
+    old, oldsub = bound(store)
+    store.activate('release1', oldsub, 'old', lambda: True)
+    new, sub = partial_binding(store)
+    guards = iter([True, False])
+    with pytest.raises(RuntimeError):
+        store.activate('partial', sub, 'new', lambda: next(guards))
+    assert store._path(old, True).exists()
+    assert not store._path(new, True).exists()
+
+
 def test_extracted_font_file_uses_same_content_cache_and_binding(cache, tmp_path):
     store, _ = cache
     raw = font()

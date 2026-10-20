@@ -30,6 +30,9 @@ def metadata_files(info):
         index, path, length = file.get('id'), file.get('path'), file.get('length')
         if (type(index) is not int or index < 1 or index in ids
                 or not isinstance(path, str) or not 0 < len(path) <= 4096 or '\x00' in path
+                or path.startswith(('/', '\\')) or ':' in path
+                or any(ord(char) < 32 for char in path)
+                or any(part in ('', '.', '..') for part in re.split(r'[/\\]', path))
                 or type(length) is not int or length < 0):
             raise BackendError('TORRENT_METADATA_INVALID', 'selected_file_missing')
         ids.add(index)
@@ -96,6 +99,68 @@ def select_file(info, request, info_hash, resolution, protocol):
     return file
 
 
+def manual_candidates(info, request, info_hash, resolution, protocol):
+    """Real metadata only. Unknown is selectable; a known contradiction is not.
+
+    This path never manufactures title/episode verification. Its result can only
+    be opened with USER_CONFIRMED_FILE and cannot seed automatic preparation.
+    """
+    from bobbi_core.episode_identity import resolve_episode_binding
+    from bobbi_core.torrent_selection import load_episode_binding, movie_candidates
+    from bobbi_core.torrent_episode_matching import _season_contexts
+    from bobbi_core.filename_semantics import parse_filename
+    from bobbi_core.movie_identity import load_binding, binding_status
+    selection = protocol.validate_torrent_resolution(request['request_id'], resolution, info_hash)
+    files = [f for f in (metadata_files(info) or []) if f['length'] > 0
+             and f['path'].lower().endswith(VIDEO)]
+    season, episode = request.get('season', ''), request.get('episode', '')
+    try:
+        if not (season or episode):
+            binding = load_binding(request.get('movie_binding', ''), request['request_id'], selection)
+            names = [request.get('release_title', ''), str(info.get('name') or '')[:4096]]
+            if binding_status(binding, names)['status'] == 'conflict':
+                return []
+            return [f for f in movie_candidates(files)
+                    if binding_status(binding, [f['path']])['status'] != 'conflict']
+        checked = resolve_episode_binding(request.get('episode_binding', ''), request['request_id'],
+                                          selection, info_hash, season, episode)
+        binding = load_episode_binding(checked, info_hash, season, episode)
+        import json
+        from bobbi_core.catalog_identity import normalized, release_title
+        transport = json.loads(request['episode_binding']) if request.get('episode_binding') else {}
+        season, episode = int(season), int(episode)
+        if not 0 < season <= 100000 or not 0 < episode <= 100000:
+            return []
+        allowed = {episode}
+        if binding:
+            allowed.add(binding['absolute_episode'])
+        candidates = []
+        for file in files:
+            parsed = parse_filename(file['path'])
+            if isinstance(transport, dict) and transport.get('version') == 1:
+                try:
+                    name, year = release_title(re.split(r'[/\\]', file['path'])[-1], 'tv')
+                except ValueError:
+                    name, year = '', None  # Unnamed file requires the human choice.
+                if (name and name not in {'video', 'episode', 'main', '正片'}
+                        and name not in {normalized(alias) for alias in transport['catalog_aliases']}):
+                    continue
+                if year is not None and year != transport['catalog_year']:
+                    continue
+            if _season_contexts(file['path']) - {season}:
+                continue
+            if parsed.strong:
+                pairs = parsed.episode_pairs()
+                if any(s != season for s, _ in pairs) or (season, episode) not in pairs:
+                    continue
+            elif parsed.markers and not {int(m['episode']) for m in parsed.markers}.issubset(allowed):
+                continue
+            candidates.append(file)
+        return candidates
+    except (ValueError, UnicodeError):
+        raise BackendError('TORRENT_BINDING_INVALID', 'invalid_binding') from None
+
+
 class Resolver:
     def __init__(self, backend, owner, session, clock=time.monotonic):
         self.backend, self.owner, self.session, self.clock = backend, owner, session, clock
@@ -104,6 +169,8 @@ class Resolver:
     def resolve(self, request):
         self.stage = 'backend'
         self.metadata_polls = 0
+        self.started = self.stage_started = self.clock()
+        self.stages, self.buffer_snapshot = {}, {}
         try:
             return self._resolve(request)
         except BackendError as error:
@@ -111,14 +178,27 @@ class Resolver:
             # transport URLs, backend credentials or exception messages.
             error.diagnostic.setdefault('stage', self.stage)
             error.diagnostic['metadata_polls'] = self.metadata_polls
+            error.diagnostic.update(self.buffer_snapshot)
+            error.diagnostic['elapsed_ms'] = int((self.clock()-self.started)*1000)
+            error.diagnostic['stage_ms'] = dict(self.stages,
+                **{self.stage: int((self.clock()-self.stage_started)*1000)})
             raise
+
+    def phase(self, stage):
+        now = self.clock()
+        self.stages[self.stage] = int((now-self.stage_started)*1000)
+        self.stage, self.stage_started = stage, now
+
+    def wait_more(self):
+        callback = getattr(self.owner, 'wait_for_buffer', None)
+        return bool(callback and callback(dict(self.buffer_snapshot)))
 
     def _resolve(self, request):
         from bobbi_core.torrent_startup import DOWNLOAD_SECONDS, CONTROL_SECONDS
         owner, backend = self.owner, self.backend
         owner.active()
         backend.ready(owner.active)  # Fail before fetching a torrent or submitting an add.
-        self.stage = 'download'
+        self.phase('download')
         owner.progress('download')
         locator = request['magnet'] if request['action'] == 'play_magnet' else request['url']
         raw, magnet = None, ''
@@ -139,12 +219,12 @@ class Resolver:
             resolution = owner.protocol.resolve_torrent(owner.request_id, locator, info_hash, info_hash)
         except (ValueError, RuntimeError):
             raise BackendError('TORRENT_SOURCE_IDENTITY_MISMATCH', 'source_identity_mismatch') from None
-        self.stage = 'add'
+        self.phase('add')
         backend.add(info_hash, magnet, raw, self.clock() + CONTROL_SECONDS, owner.active)
         owner.active()
         # Poll status, not /stream?stat, which can reset MatriX.144.1 preload state.
         owner.progress('metadata')
-        self.stage = 'metadata'
+        self.phase('metadata')
         deadline = self.clock() + backend.config['metadata_seconds']
         for _ in range(241):
             owner.active()
@@ -158,17 +238,45 @@ class Resolver:
         else:
             raise BackendError('TORRENT_METADATA_TIMEOUT', 'metadata_timeout')
         owner.active()
-        self.stage = 'selector'
-        file = select_file(info, request, info_hash, resolution, owner.protocol)
-        owner.selected(info_hash, file)
+        self.phase('selector')
+        evidence = 'AUTO_VERIFIED_FILE'
+        try:
+            file = select_file(info, request, info_hash, resolution, owner.protocol)
+        except BackendError as error:
+            choose = getattr(owner, 'choose_file', None)
+            if error.category != 'target_unresolved' or choose is None:
+                raise
+            candidates = manual_candidates(info, request, info_hash, resolution, owner.protocol)
+            if not candidates:
+                raise
+            file = choose(candidates)
+            owner.active()
+            if file is None:
+                raise BackendError('TORRENT_CANCELLED', 'cancelled') from None
+            if file not in candidates:
+                raise BackendError('TORRENT_SELECTED_FILE_CHANGED', 'selected_file_missing') from None
+            # Re-read after the human dialog, not just the old in-memory rows.
+            info = backend.status(info_hash, self.clock() + CONTROL_SECONDS, owner.active)
+            selected_file_unchanged(info, file)
+            if file not in manual_candidates(info, request, info_hash, resolution, owner.protocol):
+                raise BackendError('TORRENT_SELECTED_FILE_CHANGED', 'selected_file_missing') from None
+            evidence = 'USER_CONFIRMED_FILE'
+        if evidence == 'AUTO_VERIFIED_FILE':
+            owner.selected(info_hash, file)  # Only automatic identity can seed cloud preparation.
         owner.progress('buffering')
-        self.stage = 'buffering'
+        self.phase('buffering')
         deadline = self.clock() + backend.config['buffering_seconds']
         backend.preload(info_hash, file['id'], deadline, owner.active)
-        for _ in range(601):
+        extended = False
+        for _ in range(1202):
             owner.active()
             if self.clock() >= deadline:
-                raise BackendError('TORRENT_BUFFER_TIMEOUT', 'buffer_timeout')
+                if not extended and self.wait_more():
+                    extended = True
+                    owner.active()
+                    deadline = self.clock() + backend.config['buffering_seconds']
+                else:
+                    raise BackendError('TORRENT_BUFFER_TIMEOUT', 'buffer_timeout')
             info = backend.status(info_hash, deadline, owner.active)
             selected_file_unchanged(info, file)
             done, total = info.get('preloaded_bytes', 0), info.get('preload_size', 0)
@@ -177,6 +285,11 @@ class Resolver:
             # Filled counter is torrent-wide: this is an advisory startup gate,
             # never proof that this file (or a subsequent native AV) is ready.
             threshold = min(total, file['length']) if type(total) is int and total > 0 else 0
+            self.buffer_snapshot = {k: v for k, v in dict(
+                torrent_preloaded=done, torrent_preload_target=threshold,
+                selected_file_bytes=file['length'],
+                peers=info.get('active_peers'), download_bps=info.get('download_speed')).items()
+                if type(v) is int and 0 <= v <= 512*1024**3}
             if (type(done) is int and threshold > 0 and done >= threshold):
                 break
             owner.progress('buffering', 100 * done / threshold if
@@ -185,10 +298,18 @@ class Resolver:
         else:
             raise BackendError('TORRENT_BUFFER_TIMEOUT', 'buffer_timeout')
         owner.active()
-        self.stage = 'final_selection'
+        self.phase('final_selection')
         owner.protocol.validate_torrent_resolution(owner.request_id, resolution, info_hash)
         # Re-evaluate year/episode and exact file after all slow operations.
-        if select_file(info, request, info_hash, resolution, owner.protocol) != file:
+        if (evidence == 'AUTO_VERIFIED_FILE' and
+                select_file(info, request, info_hash, resolution, owner.protocol) != file):
             raise BackendError('TORRENT_SELECTED_FILE_CHANGED', 'selected_file_missing')
-        return dict(info_hash=info_hash, file=file, resolution=resolution,
+        if (evidence == 'USER_CONFIRMED_FILE' and
+                file not in manual_candidates(info, request, info_hash, resolution, owner.protocol)):
+            raise BackendError('TORRENT_SELECTED_FILE_CHANGED', 'selected_file_missing')
+        report = getattr(owner, 'diagnostic', None)
+        if report:
+            report(dict(stage='final_selection', stage_ms=self.stages,
+                elapsed_ms=int((self.clock()-self.started)*1000), **self.buffer_snapshot))
+        return dict(info_hash=info_hash, file=file, resolution=resolution, file_evidence=evidence,
                     url=backend.stream_url(info_hash, file))

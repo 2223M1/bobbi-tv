@@ -10,9 +10,11 @@ import time
 from urllib.parse import urlencode, parse_qsl, urlsplit
 import urllib.request
 
-BASE=Path('/storage/.local/share/bobbi-private-trials/20261019')
+BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'coherence': {'title': 'Coherence', 'tmdb_id': 220289, 'kind': 'movie', 'year': 2014},
+    'odd_taxi': {'title': 'ODDTAXI', 'tmdb_id': 116727, 'kind': 'tv', 'year': 2021, 'season': 1, 'episode': 1},
     'wild_tales': {'title': 'Wild Tales', 'tmdb_id': 265195, 'kind': 'movie', 'year': 2014},
     'girls_last_tour': {'title': "Girls' Last Tour", 'tmdb_id': 74185, 'kind': 'tv', 'year': 2017, 'season': 1, 'episode': 1},
     'burning': {'title': 'Burning', 'tmdb_id': 491584, 'kind': 'movie', 'year': 2018},
@@ -519,6 +521,9 @@ if OP in ('start','requery'):
         mode='movies' if test['kind']=='movie' else 'tv', media_type=test['kind'],
         ids=json.dumps(dict(tmdb_id=test['tmdb_id'])),
         tv_data=json.dumps({k:test[k] for k in ('season','episode') if k in test}), skip_cancel_on_back='true')
+    if globals().get('START_OVER') is True:
+        params['_bobi_start_over']='true'
+        record['explicit_start_over']=True
     url = 'plugin://plugin.video.bobbi/?' + urlencode(params)
     if record['force_select']:
         url += '&force_select=true'
@@ -596,7 +601,7 @@ else:
                     'subtitle_intent','user_intent','sequence')}
                 trace.append(compact)
                 time.sleep(max(0,min(.5-(time.monotonic()-began),deadline-time.monotonic())))
-        result=dict(name=NAME,cards=cards if OP=='cards' else [],selected=chosen, picker_start=traversal_start,
+        result=dict(name=NAME,operation=OP,cards=cards if OP=='cards' else [],selected=chosen, picker_start=traversal_start,
                     samples=trace,record=record if trace else None)
         if trace:
             result['trace_health']=startup_health(trace)

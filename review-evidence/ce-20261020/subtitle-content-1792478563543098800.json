@@ -1,0 +1,46 @@
+{
+  "result": {
+    "bytes": 417001,
+    "sha256": "fa055b54bd5cc16fdfef97939b8bcfb70705aba9a261426c9d6df0cf00a7fec4",
+    "selected_subtitle_id": 1,
+    "font_bindings": [
+      {
+        "status": "MISSING_FONTS",
+        "missing": [
+          {
+            "family": "Arial",
+            "italic": false,
+            "weight": 400
+          },
+          {
+            "family": "0",
+            "italic": false,
+            "weight": 700
+          }
+        ],
+        "selected_count": 6
+      }
+    ],
+    "cue_count": 292,
+    "zero_duration_events": 1,
+    "reversed_events": 0,
+    "sample_invalid_events": [
+      {
+        "start": "0:09:12.88",
+        "end": "0:09:12.88",
+        "text_length": 2,
+        "drawing": false
+      }
+    ],
+    "font_helper_rar_formats": [
+      "...F..................  Rar      rar r00       R a r ! 1A 07 00",
+      "...F..................  Rar5     rar r00       R a r ! 1A 07 01 00",
+      "D     40301 Rar1",
+      "D     40302 Rar2",
+      "D     40303 Rar3",
+      "D     40305 Rar5"
+    ]
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

@@ -72,7 +72,12 @@ def history_rows(items, time_key):
         if identity not in groups:
             groups[identity] = [key, data, []]
         groups[identity][2].append(key)
-    return [row for row in groups.values() if 5 < progress(row[1]) < 90]
+    # New exact-player rows carry an explicit terminal-derived completion bit.
+    # A network error at 97% must retain its true resume point. Old records keep
+    # their historical threshold; no database-wide rewrite or fake percentage.
+    return [row for row in groups.values()
+            if ((progress(row[1]) > 0 and not row[1]['completed'])
+                if type(row[1].get('completed')) is bool else 5 < progress(row[1]) < 90)]
 
 
 def history_digest(data):

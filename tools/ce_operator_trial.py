@@ -36,13 +36,13 @@ def own(value):
 def seconds(v):return v['hours']*3600+v['minutes']*60+v['seconds']+v['milliseconds']/1000
 before=snapshot();own(before)
 out=dict(operation=OP,before=before,atomic_instance_control=False,operator_test=True)
-if OP=='seek-tail':
- assert record['test']['kind']=='tv','EPISODE_TEST_ONLY'
+if OP in ('seek-tail','seek-middle'):
+ if OP=='seek-tail':assert record['test']['kind']=='tv','EPISODE_TEST_ONLY'
  length=seconds(before['properties']['totaltime'])
  assert 120<length<10800,'DURATION_SCOPE'
- target=int(length)-25
+ target=int(length)-25 if OP=='seek-tail' else int(length/2)
  own(snapshot())
- out['command_result']=rpc('Player.Seek',{'playerid':1,'value':{'hours':target//3600,'minutes':(target%3600)//60,'seconds':target%60,'milliseconds':0}})
+ out['command_result']=rpc('Player.Seek',{'playerid':1,'value':{'time':{'hours':target//3600,'minutes':(target%3600)//60,'seconds':target%60,'milliseconds':0}}})
  out['target_seconds']=target
 elif OP in ('subtitle-off','subtitle-on'):
  own(snapshot())
@@ -63,24 +63,33 @@ print(json.dumps(out,ensure_ascii=False))
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('work',choices=('tokyo_godfathers','flip_flappers','haibane_renmei'))
-    parser.add_argument('operation',choices=('seek-tail','subtitle-off','subtitle-on'))
+    parser.add_argument('work',choices=('coherence','odd_taxi','tokyo_godfathers','flip_flappers','haibane_renmei'))
+    parser.add_argument('operation',choices=('seek-tail','seek-middle','subtitle-off','subtitle-on'))
     parser.add_argument('--attempt',type=int,choices=range(1,11),required=True)
     parser.add_argument('--transport-source',type=Path,required=True)
+    parser.add_argument('--brief',action='store_true')
     args=parser.parse_args()
     name='trial-'+args.work+('' if args.attempt==1 else '-'+str(args.attempt))+'.json'
-    record='/storage/.local/share/bobbi-private-trials/20261019/'+name
+    record='/storage/.local/share/bobbi-private-trials/20261020/'+name
     sys.path.insert(0,str(args.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('operator_transport',args.transport_source/'ui-redesign/tools/device_transport.py')
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     client,wire=module.connect()
     try:
-        code,result,diagnostic=wire.readonly(client,('RECORD='+repr(record)+'\nOP='+repr(args.operation)+'\n'+REMOTE).encode(),deadline_seconds=25)
+        script = 'RECORD='+repr(record)+'\nOP='+repr(args.operation)+'\n'+REMOTE
+        wrapped = ('import json,traceback\ntry:\n exec(compile('+repr(script)+',"ce-operator-trial","exec"))\n'
+                   'except Exception as error:\n print(json.dumps(dict(error=type(error).__name__,reason=str(error) if isinstance(error,AssertionError) else "OPERATOR_ERROR",frames=[dict(function=f.name,line=f.lineno) for f in traceback.extract_tb(error.__traceback__)])))\n')
+        code,result,diagnostic=wire.readonly(client,wrapped.encode(),deadline_seconds=25)
     finally:client.close()
     path=ROOT/'review-evidence'/('ce-operator-'+args.work+'-'+args.operation+'-'+str(time.time_ns())+'.json')
     path.write_text(json.dumps(dict(result=result,exit_code=code,diagnostic_present=bool(diagnostic)),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    print(json.dumps(dict(evidence=str(path),result=result),ensure_ascii=False))
-    if code or diagnostic:raise RuntimeError('OPERATOR_TEST_UNCONFIRMED')
+    shown = result
+    if args.brief:
+        shown = {key: result[key] for key in ('operation','error','reason','frames','target_seconds','command_result',
+            'same_instance_after','observed_intent_preserved','atomic_instance_control') if key in result}
+        shown['last'] = (result.get('observations') or [None])[-1]
+    print(json.dumps(dict(evidence=str(path),result=shown),ensure_ascii=False))
+    if code or diagnostic or result.get('error'):raise RuntimeError('OPERATOR_TEST_UNCONFIRMED')
 
 
 if __name__=='__main__':main()
