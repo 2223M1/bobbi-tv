@@ -1,0 +1,16 @@
+{"scope": "Offline production control-flow probes with explicit IO/Kodi boundary doubles", "count": 15, "passed": 9, "failed": 6, "errors": 0, "device_operations": false}
+PASS rollback_normal
+FAIL rollback_restore_rpc_retry
+FAIL crash_before_activation
+FAIL crash_during_activation
+PASS install_no_failure
+PASS terminal_ENDED_99
+PASS terminal_STOPPED_99
+PASS terminal_ERROR_99
+PASS terminal_ENDED_20
+FAIL next_becomes_ready_later
+PASS next_ready_initially
+PASS account_invalidates_old_next
+PASS selection_invalidates_old_next
+FAIL successor_open_failure_keeps_resident_host
+FAIL unrelated_user_video_cancels_pending_old_successor

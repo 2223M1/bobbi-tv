@@ -1,0 +1,37 @@
+{
+  "configured_proxy": false,
+  "queries": [
+    {
+      "query": "12 Angry Men",
+      "kind": "movie",
+      "year": 1957,
+      "results": [
+        {
+          "id": 389,
+          "title": "12 Angry Men",
+          "name": null,
+          "original_name": null,
+          "original_title": "12 Angry Men",
+          "release_date": "1957-04-10",
+          "first_air_date": null
+        }
+      ]
+    },
+    {
+      "query": "The Tatami Galaxy",
+      "kind": "tv",
+      "year": 2010,
+      "results": [
+        {
+          "id": 36243,
+          "title": null,
+          "name": "The Tatami Galaxy",
+          "original_name": "四畳半神話大系",
+          "original_title": null,
+          "release_date": null,
+          "first_air_date": "2010-04-23"
+        }
+      ]
+    }
+  ]
+}
