@@ -112,6 +112,7 @@ class Backend:
         self.auth = self.config['auth']
         self.auth = (self.auth['username'], self.auth['password']) if self.auth else None
         self.add_attempted = False
+        self.add_reconciled = False
         self.preload_attempted = False
 
     def close(self):
@@ -194,7 +195,16 @@ class Backend:
         except BackendError as error:
             if error.category in ('cancelled', 'aborted', 'superseded'):
                 raise
-            raise BackendError('TORRENT_ADD_UNCONFIRMED') from error
+            # A lost reply is not a failed submission. Query this hash once;
+            # never add again or touch other torrents to manufacture recovery.
+            active()
+            try:
+                result = self.status(info_hash, deadline, active)
+            except BackendError as probe:
+                if probe.category in ('cancelled', 'aborted', 'superseded'):
+                    raise
+                raise BackendError('TORRENT_ADD_UNCONFIRMED') from error
+            self.add_reconciled = True
         if str(result.get('hash', '')).lower() != info_hash:
             raise BackendError('TORRENT_HASH_MISMATCH', 'source_identity_mismatch')
 

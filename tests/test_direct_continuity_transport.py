@@ -19,7 +19,9 @@ from test_accounts import credential
 
 
 @pytest.mark.parametrize('late', ['none', 'cancel', 'wrong_account'])
-def test_exact_same_share_next_episode_survives_full_host_budget(tmp_path, monkeypatch, late):
+@pytest.mark.parametrize('template', ['Fixture.S01E{episode:02}.1080p.Group.mkv',
+                                    'Fixture S01E{episode:02}-[1080p][JP.BD.Remux][Group].mkv'])
+def test_exact_same_share_next_episode_survives_full_host_budget(tmp_path, monkeypatch, late, template):
     from bobbi_catalog import api
     monkeypatch.setattr(paths, 'profile', lambda addon, name='': tmp_path/addon/name)
     # Isolated catalogue instance avoids changing another test's Kodi profile.
@@ -40,8 +42,8 @@ def test_exact_same_share_next_episode_survives_full_host_budget(tmp_path, monke
     provider.enabled = lambda: True
     monkeypatch.setitem(sys.modules, provider.__name__, provider)
     cache_class, cache_path = catalog.Cache, tmp_path/'cache.sqlite'
-    anchor = dict(fid='1', cell='A1', origin='fixture', name='Fixture.S01E02.1080p.Group.mkv', size=1000)
-    following = dict(fid='2', name='Fixture.S01E03.1080p.Group.mkv', size=2000)
+    anchor = dict(fid='1', cell='A1', origin='fixture', name=template.format(episode=2), size=1000)
+    following = dict(fid='2', name=template.format(episode=3), size=2000)
     fields = catalog.fields(anchor)
     cache = cache_class(cache_path)
     cache.remember(fields['guid'], media_key(1, 'tv', 1, 2), anchor)

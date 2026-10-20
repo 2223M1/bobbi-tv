@@ -15,6 +15,8 @@ from bobbi_core.media_probe import http_range_reader
 from bobbi_core.native_receipt import receipt
 from bobbi_core.subtitle_binding import prepared_video
 from bobbi_core.subtitle_pack import select, timing
+from bobbi_core.torrent_subtitles import MATCHER_POLICY
+from bobbi_core.subtitle_cues import CONTENT_POLICY
 
 SCHEMA_KEY = 'extension:subtitle-preparation:schema'
 DDL = {'subtitle_preparation': '''CREATE TABLE subtitle_preparation(
@@ -54,7 +56,14 @@ class SubtitlePreparation:
         rows = self.queue.db.execute('''SELECT b.resource,b.task FROM prepared_bindings b
             LEFT JOIN subtitle_preparation s ON b.resource=s.resource
             WHERE s.resource IS NULL OR (s.state='RETRY' AND s.next_attempt<=?)
-            ORDER BY b.rowid LIMIT 1''', (self.queue.now(),)).fetchall()
+                OR (((s.state='NO_EXACT_SIDECAR'
+                    AND COALESCE(json_extract(s.detail,'$.matcher_policy'),'legacy')!=?)
+                    OR (s.state='READ_UNAVAILABLE' AND json_extract(s.detail,'$.reason')='ValueError'
+                        AND COALESCE(json_extract(s.detail,'$.content_policy'),'legacy')!=?))
+                    AND NOT EXISTS (SELECT 1 FROM subtitle_current c
+                        JOIN subtitle_revisions r ON r.seq=c.revision
+                        WHERE c.video_key=s.video_key AND json_extract(r.payload,'$.manual_intent')!=0))
+            ORDER BY b.rowid LIMIT 1''', (self.queue.now(), MATCHER_POLICY, CONTENT_POLICY)).fetchall()
         if not rows:
             return None
 
@@ -62,15 +71,18 @@ class SubtitlePreparation:
         if self.queue.db.execute('SELECT COUNT(*) FROM subtitle_preparation').fetchone()[0] >= 8192:
             return None
         row = self.queue.status(task)
-        old = self.queue.db.execute('SELECT attempts FROM subtitle_preparation WHERE resource=?', (rid,)).fetchone()
-        attempts = (old[0] if old else 0) + 1
+        old = self.queue.db.execute('SELECT attempts,state FROM subtitle_preparation WHERE resource=?', (rid,)).fetchone()
+        # A prior local negative is not a failed network read. Revisit it once
+        # per matcher policy on the existing idle lane, without clearing caches
+        # or rewriting successful/manual subtitle records.
+        attempts = (old[0] if old and old[1] not in {'NO_EXACT_SIDECAR', 'READ_UNAVAILABLE'} else 0) + 1
         try:
             video = prepared_video(self.queue, rid, row['source_hash'])
             meta = self.cache.load(row['source_hash'])
             selection = select(video, meta, self.matcher) if meta is not None else None
             if selection is None:
                 self._record(rid, video['key'], 'NO_EXACT_SIDECAR', attempts,
-                             dict(reason='NO_UNIQUE_RELEASE_CHINESE_FILE'))
+                             dict(reason='NO_UNIQUE_RELEASE_CHINESE_FILE', matcher_policy=MATCHER_POLICY))
                 return None
             item = self.queue.ledger.get(rid)
             self.pending = deepcopy(dict(resource=rid, task=task, video=video, selection=selection,
@@ -106,6 +118,7 @@ class SubtitlePreparation:
 
     def perform(self, plan):
         """Shared IO lane; original video bytes are never fetched here."""
+        stage = 'context'
         try:
             if plan.get('kind') == 'content_policy_migration':
                 if self.cancelled():
@@ -115,16 +128,20 @@ class SubtitlePreparation:
                 return dict(state='CANDIDATE', raw=self.store._read(record), timing=record['timing'])
             if self.cancelled() or self.provider.account_scope() != plan['account']:
                 return dict(state='RETRY', reason='ACCOUNT_OR_CANCELLED')
+            stage = 'cloud_task'
             rows = [r for r in self.provider.offline_tasks(plan['destination'])
                     if r['info_hash'] == plan['video']['selected']['source_info_hash']]
             old = plan['observation']
             if (len(rows) != 1 or rows[0]['status'] != 2 or old['state'] != 'finished'
                     or any(rows[0][key] != old[key] for key in ('file_id', 'parent_id'))):
                 return dict(state='RETRY', reason='CLOUD_TASK_CHANGED')
+            stage = 'video_mapping'
             video = map_torrent_file(self.provider, plan['destination'], rows[0], plan['selection']['video_file'])
+            stage = 'subtitle_mapping'
             item = map_torrent_file(self.provider, plan['destination'], rows[0], plan['selection']['subtitle_file'])
             if self.cancelled():
                 return dict(state='RETRY', reason='CANCELLED')
+            stage = 'subtitle_read'
             url = self.qualifier.download_url(self.provider, item)
             reader = http_range_reader(self.provider.session, url, item['bytes'])(0, item['bytes'] - 1)
             raw, started = bytearray(), time.monotonic()
@@ -138,12 +155,13 @@ class SubtitlePreparation:
             if len(raw) != item['bytes'] or self.provider.account_scope() != plan['account']:
                 return dict(state='RETRY', reason='INCOMPLETE_OR_ACCOUNT_CHANGED')
             raw = bytes(raw)
+            stage = 'subtitle_content'
             proof = timing(plan['video'], raw, plan['selection'], plan['duration'])
             return dict(state='CANDIDATE', raw=raw, timing=proof,
                         cloud=dict(file_id=item['file_id'], path=item['path'], bytes=item['bytes'],
                                    video_file_id=video['file_id'], video_path=video['path'], video_bytes=video['bytes']))
         except Exception as error:
-            return dict(state='RETRY', reason=type(error).__name__)
+            return dict(state='RETRY', reason=type(error).__name__, stage=stage)
 
     def complete(self, plan, result):
         if self.pending != plan:
@@ -157,7 +175,8 @@ class SubtitlePreparation:
                 return True  # Even a failed old read cannot supersede manual work.
         if result.get('state') != 'CANDIDATE':
             self._record(rid, key, 'RETRY' if attempts < 3 else 'READ_UNAVAILABLE', attempts,
-                         dict(reason=result.get('reason', 'WORKER_REJECTED')), delay=60)
+                         dict(reason=result.get('reason', 'WORKER_REJECTED'),
+                              stage=result.get('stage', 'context'), content_policy=CONTENT_POLICY), delay=60)
             return True
         try:
             current = prepared_video(self.queue, rid, plan['video']['selected']['source_info_hash'])

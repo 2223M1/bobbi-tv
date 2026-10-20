@@ -1,0 +1,638 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "flip_flappers",
+    "operation": "observe",
+    "target": null,
+    "settle": [],
+    "samples": [
+      {
+        "wall": 2206403.734979249,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+          "monotonic_us": 2206356367140,
+          "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3447e970474144cc8ee221bcf454aa09",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 47.289,
+        "duration": 1421.502,
+        "currentaudiostream": {
+          "bitrate": 0,
+          "channels": 2,
+          "codec": "aac_lc",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {},
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1154,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206403.706065021,
+          "player_time_started": 2206403.737518251,
+          "player_time_completed": 2206403.740583253,
+          "caching_started": 2206403.74060992,
+          "caching_completed": 2206403.783369408,
+          "decoder_started": 2206403.832580234,
+          "decoder_completed": 2206403.833281817,
+          "sample_completed": 2206403.833285859
+        }
+      },
+      {
+        "wall": 2206413.847736,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+          "monotonic_us": 2206356367140,
+          "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3447e970474144cc8ee221bcf454aa09",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 57.341,
+        "duration": 1421.502,
+        "currentaudiostream": {
+          "bitrate": 0,
+          "channels": 2,
+          "codec": "aac_lc",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {},
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1396,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206413.833413906,
+          "player_time_started": 2206413.85047671,
+          "player_time_completed": 2206413.854232671,
+          "caching_started": 2206413.854275337,
+          "caching_completed": 2206413.879167354,
+          "decoder_started": 2206413.92477601,
+          "decoder_completed": 2206413.925075219,
+          "sample_completed": 2206413.925077302
+        }
+      },
+      {
+        "wall": 2206423.947991094,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+          "monotonic_us": 2206356367140,
+          "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3447e970474144cc8ee221bcf454aa09",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 67.393,
+        "duration": 1421.502,
+        "currentaudiostream": {
+          "bitrate": 0,
+          "channels": 2,
+          "codec": "aac_lc",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {},
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1638,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206423.925188371,
+          "player_time_started": 2206423.953155889,
+          "player_time_completed": 2206423.955793266,
+          "caching_started": 2206423.955814183,
+          "caching_completed": 2206423.973895153,
+          "decoder_started": 2206424.026486605,
+          "decoder_completed": 2206424.027080939,
+          "sample_completed": 2206424.027085064
+        }
+      },
+      {
+        "wall": 2206434.042681167,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+          "monotonic_us": 2206356367140,
+          "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+          "open_epoch": 2,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3447e970474144cc8ee221bcf454aa09",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 77.445,
+        "duration": 1421.502,
+        "currentaudiostream": {
+          "bitrate": 0,
+          "channels": 2,
+          "codec": "aac_lc",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {},
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1880,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2206434.027270032,
+          "player_time_started": 2206434.045997586,
+          "player_time_completed": 2206434.051289923,
+          "caching_started": 2206434.051313381,
+          "caching_completed": 2206434.067024558,
+          "decoder_started": 2206434.115878007,
+          "decoder_completed": 2206434.116622133,
+          "sample_completed": 2206434.116626883
+        }
+      }
+    ],
+    "passed": true,
+    "startup_clock": {
+      "stable": true,
+      "budget_seconds": 5,
+      "elapsed_seconds": 0.8505731737241149,
+      "samples": [
+        {
+          "wall": 2206402.874772527,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+            "monotonic_us": 2206356367140,
+            "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+            "open_epoch": 2,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "3447e970474144cc8ee221bcf454aa09",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 46.288,
+          "duration": 1421.502,
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {},
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1133,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2206402.85528868,
+            "player_time_started": 2206402.877671279,
+            "player_time_completed": 2206402.884491326,
+            "caching_started": 2206402.884515617,
+            "caching_completed": 2206402.910291094,
+            "decoder_started": 2206402.955540292,
+            "decoder_completed": 2206402.957586168,
+            "sample_completed": 2206402.957593585
+          }
+        },
+        {
+          "wall": 2206403.237350529,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+            "monotonic_us": 2206356367140,
+            "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+            "open_epoch": 2,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "3447e970474144cc8ee221bcf454aa09",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 46.664,
+          "duration": 1421.502,
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {},
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1142,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2206403.207811925,
+            "player_time_started": 2206403.244962951,
+            "player_time_completed": 2206403.252121289,
+            "caching_started": 2206403.252168164,
+            "caching_completed": 2206403.283844478,
+            "decoder_started": 2206403.333231387,
+            "decoder_completed": 2206403.333533554,
+            "sample_completed": 2206403.333535554
+          }
+        },
+        {
+          "wall": 2206403.60578641,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450|bt:12733bd6fadad8406d4cad55606e8734aefa0ef7|872496e24a3eecbeeb1b4ae3e89ce747d9e6be8070b5b52c9dd07b9e8704ea5d",
+            "monotonic_us": 2206356367140,
+            "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+            "open_epoch": 2,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "3447e970474144cc8ee221bcf454aa09",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "a5a0c5c5e95cbb071365bb9f1900a26f40e02151f32bbfb32d7d5245b7760b40",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 47.081,
+          "duration": 1421.502,
+          "currentaudiostream": {
+            "bitrate": 0,
+            "channels": 2,
+            "codec": "aac_lc",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {},
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1151,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2206403.583791811,
+            "player_time_started": 2206403.608488412,
+            "player_time_completed": 2206403.612576831,
+            "caching_started": 2206403.612618706,
+            "caching_completed": 2206403.659989906,
+            "decoder_started": 2206403.705159395,
+            "decoder_completed": 2206403.705820729,
+            "sample_completed": 2206403.705825729
+          }
+        }
+      ],
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "record": {
+      "test": {
+        "title": "Flip Flappers",
+        "tmdb_id": 68272,
+        "kind": "tv",
+        "year": 2016,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "6686a6be42a44240bf39ba7110d2c3cb",
+      "started": 2206249.486360988,
+      "home": {
+        "generation": 20,
+        "intent": 0,
+        "retired_generation": 20,
+        "observed_at": 2206250.005289257
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 2206250.005629215,
+      "picker": {
+        "window": 13001,
+        "generation": 21,
+        "intent": 0,
+        "tmdb_id": 68272,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2206252.380385728,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[SweetSub&LoliHouse][轻拍翻转小魔女][Flip Flappers][01-13][WebRip 1920x1080 HEVC AAC][简繁外挂字幕][Fin]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "2969590fb4e043b453194562e6ae9efc0bb37acf45543d59236028a0e524f26d",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2206330.820920787,
+      "request_id": "3447e970474144cc8ee221bcf454aa09",
+      "selection_identity": "transport:a72c655f79b881e7ebc59865e74afc636c037b0dfee6e3247adbc7d1221c6450",
+      "native_instance": "a51b5e03-dddf-44ed-975d-dca77bd9ebaa",
+      "first_av_observed_at": 2206356.498383758,
+      "select_to_av_observed_seconds": 25.677462971303612
+    },
+    "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+    "wall_seconds": 30.308,
+    "play_seconds": 30.156,
+    "decoder": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 1880\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+    "crashes": [
+      "kodi_crashlog_20261011230638.log",
+      "kodi_crashlog_20261012021405.log",
+      "kodi_crashlog_20261012135249.log",
+      "kodi_crashlog_20261019200619.log"
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "flip_flappers",
+  "operation": "observe",
+  "attempt": 1,
+  "regression_attempt": false
+}

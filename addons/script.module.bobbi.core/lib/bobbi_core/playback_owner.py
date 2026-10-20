@@ -50,6 +50,7 @@ class PlaybackOwner:
         self.user_intent += 1
         self.desired = {'request_id': request_id, 'epoch': self.epoch, 'file_identity': file_identity,
                         'selection_identity': file_identity, 'file_bound': False,
+                        'file_evidence': 'UNBOUND',
                         'cancelled': False, 'start_claimed': False, 'route': None,
                         'resolver_failure': None,
                         'observed_once': False, 'fullscreen_allowed': True,
@@ -60,7 +61,8 @@ class PlaybackOwner:
         self.windows.clear()
         return self.snapshot()
 
-    def bind_file(self, boot_id, epoch, request_id, selection_identity, file_identity):
+    def bind_file(self, boot_id, epoch, request_id, selection_identity, file_identity,
+                  file_evidence='AUTO_VERIFIED_FILE'):
         """Bind the resolver's exact file once, without changing selected release."""
         if (not self._current(boot_id, epoch, request_id)
                 or self.desired['selection_identity'] != selection_identity
@@ -69,9 +71,13 @@ class PlaybackOwner:
             return False
         if not isinstance(file_identity, str) or not file_identity or len(file_identity) > 1024:
             raise ValueError('Exact bounded file identity required')
+        if file_evidence not in ('AUTO_VERIFIED_FILE', 'USER_CONFIRMED_FILE'):
+            raise ValueError('Explicit file evidence required')
         if self.desired['file_bound']:
-            return self.desired['file_identity'] == file_identity
+            return (self.desired['file_identity'] == file_identity
+                    and self.desired['file_evidence'] == file_evidence)
         self.desired['file_identity'] = file_identity
+        self.desired['file_evidence'] = file_evidence
         self.desired['file_bound'] = True
         return True
 
@@ -274,6 +280,7 @@ class PlaybackOwner:
 
     def consume_next(self, boot_id, epoch, request_id, native_instance):
         if (not self._current(boot_id, epoch, request_id) or not self.terminal
+                or self.desired['file_evidence'] == 'USER_CONFIRMED_FILE'
                 or self.terminal['native_instance'] != native_instance
                 or self.terminal['request_id'] != request_id or self.terminal['reason'] != 'NATURAL_EOF'
                 or not self.terminal['av_started']

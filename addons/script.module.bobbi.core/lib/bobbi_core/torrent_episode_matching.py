@@ -1,34 +1,10 @@
 import re
+from bobbi_core.filename_semantics import STRONG, WEAK, MULTI, parse_filename
 
 
-_STRONG_PATTERNS = (
-    re.compile(
-        r"(?<![A-Za-z0-9])s0*(?P<season>[0-9]+)[ ._-]*e0*(?P<episode>[0-9]+)(?![0-9])",
-        re.IGNORECASE,
-    ),
-    re.compile(
-        # The conventional 1x02 token is contiguous and has a short season
-        # field. Video geometry (720x480, 1920x1080, etc.) is not episode
-        # evidence. Longer explicit SnnnEnnn tokens remain supported above.
-        # Do not allow separators: DD2.0.x264 is an audio/codec tag.
-        r"(?<![A-Za-z0-9])(?P<season>[0-9]{1,2})x(?P<episode>[0-9]+)(?![0-9])",
-        re.IGNORECASE,
-    ),
-)
-_EPISODE_PATTERN = re.compile(
-    r"(?<![A-Za-z0-9])(?:episode|ep|e)[ ._-]*(?P<episode>[0-9]+)(?![A-Za-z0-9])",
-    re.IGNORECASE,
-)
-_ANIME_EPISODE_PATTERN = re.compile(
-    r"(?:\s-\s*|\[)(?P<episode>[0-9]{1,3})(?:v[0-9]+)?(?=$|[ ._\]])",
-    re.IGNORECASE,
-)
-_MULTI_EPISODE_SUFFIX = re.compile(
-    r"(?:[ ._]*e0*[0-9]+|[ ._]*[-–~～+&][ ._]*(?:"
-    r"(?:s0*[0-9]+[ ._-]*)?e(?:p(?:isode)?)?[ ._-]*[0-9]+|"
-    r"[0-9]+(?![A-Za-z0-9])))",
-    re.IGNORECASE,
-)
+_STRONG_PATTERNS = STRONG
+_EPISODE_PATTERN, _ANIME_EPISODE_PATTERN = WEAK
+_MULTI_EPISODE_SUFFIX = MULTI
 _SEASON_PATTERNS = (
     re.compile(
         r"(?<![A-Za-z0-9])season[ ._-]*(?P<season>[0-9]+)(?![0-9])\b(?![ ._-]*bits?\b)",
@@ -51,12 +27,12 @@ def _normalize_number(value):
 
 
 def _has_strong_match(path, season, episode):
-    matches = [match for pattern in _STRONG_PATTERNS for match in pattern.finditer(path)]
-    weak_tokens = list(_EPISODE_PATTERN.finditer(path))
+    parsed = parse_filename(path)
+    matches, weak_tokens = parsed.strong, parsed.explicit
     return bool(matches) and all(
         int(match.group("season")) == season
         and int(match.group("episode")) == episode
-        and not _MULTI_EPISODE_SUFFIX.match(path[match.end() :])
+        and not parsed.range_after(match)
         for match in matches
     ) and all(int(match.group("episode")) == episode for match in weak_tokens)
 
@@ -113,12 +89,11 @@ def _has_episode_only_match(path, torrent_title, season, episode):
         return False
     # Pack folders can contain episode ranges; only the media basename selects a file.
     basename = re.split(r"[/\\]", path)[-1]
-    matches = list(_EPISODE_PATTERN.finditer(basename))
-    if not matches:
-        matches = list(_ANIME_EPISODE_PATTERN.finditer(basename))
+    parsed = parse_filename(basename)
+    matches = parsed.explicit + parsed.anime
     return bool(matches) and all(
         int(match.group("episode")) == episode
-        and not _MULTI_EPISODE_SUFFIX.match(basename[match.end() :])
+        and not parsed.range_after(match)
         for match in matches
     )
 
@@ -139,7 +114,7 @@ def match_episode_file(candidate_files, season, episode, torrent_title=""):
         contexts = _season_contexts(path) | _release_season_contexts(torrent_title, season)
         if contexts - {season}:
             continue
-        strong_tokens = any(pattern.search(path) for pattern in _STRONG_PATTERNS)
+        strong_tokens = bool(parse_filename(path).strong)
         if strong_tokens and _has_strong_match(path, season, episode):
             matches.append((2, candidate))
         elif not strong_tokens and _has_episode_only_match(path, torrent_title, season, episode):
@@ -153,4 +128,3 @@ def match_episode_file(candidate_files, season, episode, torrent_title=""):
     if len(best_matches) != 1:
         return None
     return best_matches[0]
-

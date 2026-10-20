@@ -6,16 +6,7 @@ specifications remain part of the release. The result is NOT identity proof.
 import re
 
 from bobbi_core.release_names import family, specifications
-
-STRONG = (
-    re.compile(r'(?<![a-z0-9])s(?P<season>\d+)[ ._-]*e(?P<episode>\d+)(?!\d)', re.I),
-    re.compile(r'(?<![a-z0-9])(?P<season>\d+)[ ._-]*x[ ._-]*(?P<episode>\d+)(?!\d)', re.I),
-)
-WEAK = (
-    re.compile(r'(?<![a-z0-9])(?:episode|ep|e)[ ._-]*(?P<episode>\d+)(?![a-z0-9])', re.I),
-    re.compile(r'(?:\s-\s*|\[)(?P<episode>\d{1,3})(?P<revision>v\d+)?(?=$|[ ._\]])', re.I),
-)
-MULTI = re.compile(r'(?:[ ._]*e\d+|[ ._]*[-–~～+&][ ._]*(?:s\d+[ ._-]*)?(?:e(?:p(?:isode)?)?)?\d+)', re.I)
+from bobbi_core.filename_semantics import STRONG, WEAK, MULTI, parse_filename
 
 
 def bound_family(name, season, episode, absolute_episode=None):
@@ -24,16 +15,16 @@ def bound_family(name, season, episode, absolute_episode=None):
         raise ValueError('A basename and previously verified episode identity are required')
     if absolute_episode is not None and (type(absolute_episode) is not int or not 1 <= absolute_episode <= 100000):
         raise ValueError('Malformed previously verified absolute episode')
-    strong = [m for pattern in STRONG for m in pattern.finditer(name)]
-    matches = strong or [m for pattern in WEAK for m in pattern.finditer(name) if m.start() != 0]
+    parsed = parse_filename(name)
+    strong, matches = parsed.strong, parsed.markers
     wanted = episode if strong or absolute_episode is None else absolute_episode
-    if (not matches or any(int(m['episode']) != wanted or MULTI.match(name[m.end():]) for m in matches)
+    if (not matches or any(int(m['episode']) != wanted or parsed.range_after(m) for m in matches)
             or any(int(m['season']) != season for m in strong)):
         raise ValueError('Release episode markers are missing or conflict with selected file')
     # The leading [group] cannot be interpreted as an episode. Explicit weak
     # markers conflicting with a strong marker also invalidate the family.
     if strong:
-        weak = list(WEAK[0].finditer(name))
+        weak = parsed.explicit
         if any(int(m['episode']) != episode for m in weak):
             raise ValueError('Conflicting secondary episode marker')
     spans = sorted({(m.start(), m.end(), m.groupdict().get('revision') or '') for m in matches}, reverse=True)

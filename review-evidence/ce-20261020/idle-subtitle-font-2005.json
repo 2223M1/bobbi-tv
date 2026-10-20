@@ -1,0 +1,182 @@
+{
+  "mode": "health",
+  "timestamp": 1792478473.3278637,
+  "players": [],
+  "gui": {
+    "currentcontrol": {
+      "label": "轻拍翻转小魔女"
+    },
+    "currentwindow": {
+      "id": 10000,
+      "label": "主界面"
+    },
+    "skin": {
+      "id": "skin.bobbi.cinema",
+      "name": "bobbi TV"
+    }
+  },
+  "application": {
+    "name": "Kodi",
+    "version": {
+      "major": 21,
+      "minor": 3,
+      "revision": "e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+      "tag": "stable"
+    }
+  },
+  "native": {
+    "fullscreen_instance": "",
+    "gui_generation": 6,
+    "gui_user_intent": 0,
+    "playback": null,
+    "protocol": 1,
+    "selection_epoch": 0,
+    "windows": []
+  },
+  "services": {
+    "kodi.service": "active",
+    "bobitv-preparation.service": "inactive"
+  },
+  "programs": {
+    "plugin.video.bobbi": "0.1.5",
+    "plugin.video.bobbi.torrent": "0.1.2",
+    "plugin.video.jacktorr": "1.2.2+am6b.317",
+    "script.module.bobbi.core": "0.1.10",
+    "script.module.bobbi.platform": "0.1.5"
+  },
+  "program_generation": {
+    "sequence": 2026102005,
+    "versions": {
+      "plugin.video.bobbi": "0.1.5",
+      "plugin.video.bobbi.library": "0.1.0",
+      "plugin.video.bobbi.torrent": "0.1.2",
+      "repository.bobbi": "0.1.0",
+      "resource.uisounds.bobbi-modern": "2026.9.6.0",
+      "script.bobbi.opensubtitles": "0.1.0",
+      "script.bobbi.setup": "0.1.2",
+      "script.bobbi.start": "0.1.0",
+      "script.module.bobbi.catalog": "0.1.0",
+      "script.module.bobbi.core": "0.1.10",
+      "script.module.bobbi.mdsub": "0.1.0",
+      "script.module.bobbi.platform": "0.1.5",
+      "skin.bobbi.cinema": "0.1.0"
+    }
+  },
+  "torrent_connection": {
+    "legacy_exists": true,
+    "legacy_loopback": true,
+    "legacy_fields": [
+      "buffer_timeout",
+      "metadata_timeout",
+      "service_host",
+      "service_login",
+      "service_password",
+      "service_port",
+      "ssl_connection"
+    ],
+    "legacy_auth_present": false,
+    "new_config_exists": true,
+    "schema": 1,
+    "auth_present": false,
+    "metadata_seconds": 30,
+    "buffering_seconds": 90,
+    "existing_engine": "MatriX.144.1"
+  },
+  "runtime-paths.json": {
+    "schema": 1,
+    "subtitle_abi": "ce-f9",
+    "native_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b"
+  },
+  "bobi-prepared.json": {
+    "schema": 1,
+    "entry_count": 16,
+    "source_count": 62,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "bobi-direct.json": {
+    "schema": 1,
+    "entry_count": 3,
+    "source_count": 0,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "host_account_status": {
+    "authenticated": true,
+    "epoch": 1
+  },
+  "current_prepared_database_present": true,
+  "trial_subtitle_tasks": [
+    {
+      "media_id": "tmdb:tv:68272:s1:e1",
+      "state": "READ_UNAVAILABLE",
+      "attempts": 3,
+      "reason": "ValueError",
+      "stage": null,
+      "matcher_policy": null
+    },
+    {
+      "media_id": "tmdb:tv:68272:s1:e2",
+      "state": "READY_NOT_VISUAL_PROOF",
+      "attempts": 1,
+      "reason": null,
+      "stage": null,
+      "matcher_policy": null
+    },
+    {
+      "media_id": "tmdb:tv:68272:s1:e3",
+      "state": "READY_NOT_VISUAL_PROOF",
+      "attempts": 1,
+      "reason": null,
+      "stage": null,
+      "matcher_policy": null
+    }
+  ],
+  "trial_subtitle_fonts": [
+    {
+      "media_id": "tmdb:tv:68272:s1:e2",
+      "state": "RETRY",
+      "attempts": 0,
+      "reason": "NO_RELEASE_FONT_ASSETS",
+      "font_count": 0
+    },
+    {
+      "media_id": "tmdb:tv:68272:s1:e3",
+      "state": "RETRY",
+      "attempts": 0,
+      "reason": "NO_RELEASE_FONT_ASSETS",
+      "font_count": 0
+    }
+  ],
+  "host_status": {
+    "ready": true,
+    "version": "0.1.0",
+    "native_owner": true,
+    "preparation": true,
+    "shares": false
+  },
+  "preparation_ping": {
+    "ok": true,
+    "state": "RUNNING",
+    "component": {
+      "core_api": 1,
+      "core_version": "1.1.15",
+      "ipc_protocol": 3,
+      "capabilities": [
+        "bounded-resolve-v1",
+        "exact-resource-identity-v1",
+        "reconcile-uncertain-submit-v1",
+        "same-release-next-v1",
+        "single-cloud-ledger-v1",
+        "subtitle-binding-v2",
+        "video-context-v1"
+      ]
+    },
+    "current_account": true
+  },
+  "bobbi_stages": [
+    " startup; standard_playback=True"
+  ],
+  "cinema_stages": [],
+  "python_failures": []
+}

@@ -743,6 +743,7 @@ class JacktookPLayer(xbmc.Player):
             self._cinema_phase('STOP_BOOKKEEPING_BEGIN')
             self.handle_playback_stop()
             self._cinema_phase('STOP_BOOKKEEPING_END')
+            self.offer_terminal_actions()
             kodilog("[PLAYER] monitor: main loop exited, handle_playback_stop completed")
 
         except Exception as error:
@@ -1538,19 +1539,27 @@ class JacktookPLayer(xbmc.Player):
 
     def handle_playback_stop(self):
         kodilog("[PLAYER] handle_playback_stop entered")
+        if self.data.get('selection_policy') == 'exact':
+            self.data['terminal_reason'] = getattr(self, '_terminal_reason', 'UNKNOWN')
+            self.data['completed'] = self.data['terminal_reason'] == 'NATURAL_EOF'
+            kodilog('[CINEMA-TERMINAL] ' + self.data['terminal_reason'], level=xbmc.LOGINFO)
         self._cinema_phase('YAMTRACK_STOP_BEGIN')
         self._sync_yamtrack_watched()
         self._cinema_phase('YAMTRACK_STOP_END')
         self._queue_nuvio_progress_sync()
         if self._is_trakt_scrobble_enabled():
             try:
-                TraktAPI().scrobble.trakt_stop_scrobble(self.data)
+                scrobble = TraktAPI().scrobble
+                if self.data.get('completed') is False:
+                    scrobble.trakt_pause_scrobble(self.data)
+                else:
+                    scrobble.trakt_stop_scrobble(self.data)
             except Exception as e:
                 self._log_trakt_playback_failure("stop scrobble", e)
             self._is_trakt_scrobble_active = False
         if getattr(self, "_is_simkl_scrobble_active", False):
             if self._is_simkl_scrobble_enabled():
-                self._queue_simkl_scrobble("stop")
+                self._queue_simkl_scrobble("pause" if self.data.get('completed') is False else "stop")
             self._is_simkl_scrobble_active = False
         self._delete_completed_simkl_playback()
         self._delete_completed_trakt_playback()
@@ -1574,6 +1583,33 @@ class JacktookPLayer(xbmc.Player):
             close_busy_dialog()
             clear_property("bobbi_next_dialog_action")
         kodilog("[PLAYER] handle_playback_stop completed")
+
+    def offer_terminal_actions(self):
+        if (self.data.get('selection_policy') != 'exact'
+                or getattr(self, '_cinema_natural_queued', False)
+                or getattr(self, '_terminal_reason', 'UNKNOWN') not in ('ERROR', 'UNKNOWN', 'NATURAL_EOF')):
+            return
+        episode = self.data.get('mode') in ('tv', 'anime', 'episode')
+        ended = getattr(self, '_terminal_reason', 'UNKNOWN') == 'NATURAL_EOF'
+        if ended and (not episode or not self.data.get('cinema_continuity')):
+            return
+        session = self.playback_session_id
+        def current():
+            return (self.playback_session_id == session and not self.kodi_monitor.abortRequested()
+                    and not xbmc.Player().isPlaying() and self._owns_playback_session())
+        from lib.gui.terminal_actions import choose
+        selected = choose(current, episode, ended)
+        if selected == 'sources' and current():
+            execute_builtin(action_url_run('search', mode=self.data.get('mode', 'movies'),
+                query=self.data.get('query') or self.data.get('title', ''), ids=self.data.get('ids', {}),
+                tv_data=self.data.get('tv_data', {}), media_type=self.data.get('media_type', ''),
+                force_select=True, rescrape=True))
+        elif selected == 'episodes' and current():
+            target = build_url('show_episodes_details', mode='tv', ids=self.data.get('ids', {}),
+                tv_name=self.data.get('query') or self.data.get('title', ''),
+                season=(self.data.get('tv_data') or {}).get('season', 1),
+                media_type=self.data.get('media_type', 'tv'))
+            execute_builtin('ActivateWindow(videos,%s,return)' % target)
 
     def _queue_nuvio_progress_sync(self):
         try:
@@ -1636,6 +1672,8 @@ class JacktookPLayer(xbmc.Player):
             kodilog(f"[SIMKL] resume seek failed; continuing playback ({type(error).__name__})")
 
     def _delete_completed_simkl_playback(self):
+        if self.data.get('completed') is False:
+            return
         if getattr(self, "_simkl_playback_delete_attempted", False):
             return
         if not getattr(self, "_simkl_resume_playback_observed", False):
@@ -1679,6 +1717,8 @@ class JacktookPLayer(xbmc.Player):
             kodilog(f"Trakt resume seek failed; continuing playback ({type(error).__name__})")
 
     def _delete_completed_trakt_playback(self):
+        if self.data.get('completed') is False:
+            return
         if getattr(self, "_trakt_playback_delete_attempted", False):
             return
         if not getattr(self, "_trakt_resume_playback_observed", False):
@@ -1703,6 +1743,8 @@ class JacktookPLayer(xbmc.Player):
             kodilog(f"Trakt playback deletion failed; preserving resume ({type(error).__name__})")
 
     def _sync_yamtrack_watched(self):
+        if self.data.get('completed') is False:
+            return
         if getattr(self, "_yamtrack_stop_attempted", False):
             return
         if self._is_live_tv() or self.data.get("is_informational_placeholder"):
@@ -1808,6 +1850,10 @@ class JacktookPLayer(xbmc.Player):
         if not (data.get("playnext_context") or data.get("autoplay")):
             clear_property("bobbi_consecutive_autoplays")
         self.data = data
+        if self.data.get('selection_policy') == 'exact':
+            self.data['completed'] = False
+            self.data.pop('terminal_reason', None)
+        self._terminal_reason = 'UNKNOWN'
         self.data['cinema_continuity'] = bool(
             self.data.get('mode') in ('tv', 'anime', 'episode') and get_setting('cinema_continuity_enabled', False))
         self._cinema_cancel = getattr(self, "_provided_cancel_event", None) or Event()
@@ -2272,7 +2318,7 @@ class JacktookPLayer(xbmc.Player):
         The monitor uses a bounded 3 s transition, not a playback-start timeout.
         A cancelled/replaced request cannot consume a late successful event.
         """
-        if not self.data.get('cinema_continuity'):
+        if not self.data.get('cinema_continuity') and self.data.get('selection_policy') != 'exact':
             return
         if type(budget_seconds) not in (float, int) or not 0 < budget_seconds <= TERMINAL_RECONCILIATION_SECONDS:
             raise ValueError('Bounded terminal reconciliation required')
@@ -2291,13 +2337,15 @@ class JacktookPLayer(xbmc.Player):
                             or terminal.get('request_id') != session):
                         event = {}
                     else:
-                        event = {'session': session, 'end': terminal.get('reason') == 'NATURAL_EOF'}
+                        event = {'session': session, 'end': terminal.get('reason') == 'NATURAL_EOF',
+                                 'reason': terminal.get('reason')}
                 else:
                     event = loads(get_property('bobbi_cinema_terminal') or '{}')
                 if (self.playback_session_id != session or self._cinema_cancel is not cancel
                         or cancel.is_set() or not self._owns_playback_session()):
                     return
                 if isinstance(event, dict) and event.get('session') == self.playback_session_id:
+                    self._terminal_reason = event.get('reason', 'UNKNOWN')
                     if event.get('end') is True:
                         self._cinema_end = True
                     elif event.get('end') is False:
