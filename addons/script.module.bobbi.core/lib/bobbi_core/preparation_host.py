@@ -260,7 +260,9 @@ class PreparationHost:
                 self.lease.revoked.set()
         self.unsubscribe()
         self.wake.set()
-        self.thread.join(timeout=.3)
+        # Session.close drains admitted provider IO before releasing its DBs.
+        # Do not report a quiescent host while that cleanup still owns them.
+        self.thread.join()
 
 
 class Session:

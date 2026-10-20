@@ -1,0 +1,21 @@
+{
+  "timestamp": 1792508864.3030322,
+  "logs": {
+    "kodi.old.log": {
+      "bytes": 60535,
+      "lines": [
+        "2026-10-20 23:05:06.832 T:6242     info <general>: Default Video Player: VideoPlayer",
+        "2026-10-20 23:05:09.496 T:6289     info <general>: [bobbi] startup; standard_playback=True"
+      ]
+    },
+    "kodi.log": {
+      "bytes": 58649,
+      "lines": [
+        "2026-10-20 23:06:16.560 T:6743     info <general>: Default Video Player: VideoPlayer",
+        "2026-10-20 23:06:19.478 T:6790     info <general>: [bobbi] startup; standard_playback=True",
+        "2026-10-20 23:07:15.646 T:6979     info <general>: [###JACKTOOKLOG###] BOBBI-PROVIDERS [{\"completion\": {}, \"count\": 0, \"error\": \"\", \"ordinal\": 0, \"provider\": \"other\", \"state\": \"COMPLETE\"}]"
+      ]
+    }
+  },
+  "history": []
+}

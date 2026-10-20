@@ -41,6 +41,8 @@ def audit(path):
             script = ('import sys;sys.path.insert(0,sys.argv[1]);'
                 'from bobbi_platform.ce_install_ui import KodiHost;'
                 'from bobbi_platform.ce_installer import Installer;'
+                'from bobbi_platform.runtime import call;'
+                'from bobbi_platform.instance_lock import InstanceLock;'
                 'assert "bobbi_core" not in sys.modules')
             subprocess.run([sys.executable, '-I', '-B', '-c', script, str(temporary/'bootstrap')],
                            check=True, timeout=15, cwd=temporary)

@@ -1,0 +1,83 @@
+{
+  "exit_code": 0,
+  "result": {
+    "active": [
+      {
+        "playerid": 1,
+        "playertype": "internal",
+        "type": "video"
+      }
+    ],
+    "playing": [
+      {
+        "player": {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        },
+        "item": {
+          "item": {
+            "episode": 3,
+            "label": "《太好了呢》《泳池大扫除的泳装回！》",
+            "season": 1,
+            "showtitle": "学生会也有洞！",
+            "title": "《太好了呢》《泳池大扫除的泳装回！》",
+            "type": "episode"
+          }
+        },
+        "progress": {
+          "speed": 1,
+          "time": {
+            "hours": 0,
+            "milliseconds": 44,
+            "minutes": 14,
+            "seconds": 29
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 1,
+            "minutes": 23,
+            "seconds": 40
+          }
+        }
+      }
+    ],
+    "window": {
+      "currentwindow": {
+        "id": 12005,
+        "label": "全屏视频"
+      }
+    },
+    "kodi": {
+      "version": {
+        "major": 21,
+        "minor": 3,
+        "revision": "e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+        "tag": "stable"
+      }
+    },
+    "addons": {
+      "plugin.video.bobbi": {
+        "addonid": "plugin.video.bobbi",
+        "enabled": true,
+        "type": "xbmc.python.pluginsource",
+        "version": "0.1.8"
+      },
+      "script.module.bobbi.core": {
+        "addonid": "script.module.bobbi.core",
+        "enabled": true,
+        "type": "xbmc.python.module",
+        "version": "0.1.13"
+      },
+      "script.module.bobbi.platform": {
+        "addonid": "script.module.bobbi.platform",
+        "enabled": true,
+        "type": "xbmc.python.module",
+        "version": "0.1.10"
+      }
+    },
+    "remote_python_bits": 32,
+    "kernel": "armv7l"
+  },
+  "diagnostic_present": false
+}

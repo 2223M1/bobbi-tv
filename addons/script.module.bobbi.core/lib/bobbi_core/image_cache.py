@@ -187,8 +187,8 @@ class ImageCache:
 
 
 class _Server(ThreadingMixIn, HTTPServer):
-    daemon_threads = True
-    block_on_close = False
+    daemon_threads = False
+    block_on_close = True
     allow_reuse_address = False
     def process_request(self, request, address):
         if not self.slots.acquire(False):

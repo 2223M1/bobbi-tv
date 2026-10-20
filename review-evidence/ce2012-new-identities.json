@@ -1,0 +1,37 @@
+{
+  "configured_proxy": false,
+  "queries": [
+    {
+      "query": "Rashomon",
+      "kind": "movie",
+      "year": 1950,
+      "results": [
+        {
+          "id": 548,
+          "title": "Rashomon",
+          "name": null,
+          "original_name": null,
+          "original_title": "羅生門",
+          "release_date": "1950-08-26",
+          "first_air_date": null
+        }
+      ]
+    },
+    {
+      "query": "Cowboy Bebop",
+      "kind": "tv",
+      "year": 1998,
+      "results": [
+        {
+          "id": 30991,
+          "title": null,
+          "name": "Cowboy Bebop",
+          "original_name": "カウボーイビバップ",
+          "original_title": null,
+          "release_date": null,
+          "first_air_date": "1998-04-03"
+        }
+      ]
+    }
+  ]
+}

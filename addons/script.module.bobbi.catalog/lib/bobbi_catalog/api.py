@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import re
+import socket
 import time
 import urllib.error
 import urllib.parse
@@ -14,10 +15,13 @@ MAX_RESPONSE = 2 * 1024 * 1024
 class ShareError(RuntimeError):
     """Only fixed safe codes, never server messages or request URLs."""
     CODES = {'login_required', 'share_unavailable', 'network', 'invalid_response',
-             'cancelled', 'deadline', 'identity_changed', 'invalid_locator', 'refresh_required'}
+             'cancelled', 'deadline', 'identity_changed', 'invalid_locator', 'refresh_required',
+             'share_revoked', 'http_rejected', 'network_timeout'}
 
-    def __init__(self, code):
+    def __init__(self, code, http_status=None, api_code=None):
         self.code = code if code in self.CODES else 'invalid_response'
+        self.http_status = http_status if type(http_status) is int and 100 <= http_status <= 599 else None
+        self.api_code = api_code if type(api_code) is int and 0 <= api_code <= 9999999999 else None
         super().__init__(self.code)
 
 
@@ -114,6 +118,13 @@ class Client:
             result = json.loads(raw)
         except ShareError:
             raise
+        except urllib.error.HTTPError as error:
+            raise ShareError('http_rejected', http_status=error.code) from None
+        except (TimeoutError, socket.timeout):
+            guard()
+            raise ShareError('network_timeout') from None
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            raise ShareError('invalid_response') from None
         except (OSError, ValueError, urllib.error.URLError):
             guard()
             raise ShareError('network') from None
@@ -122,7 +133,9 @@ class Client:
         guard()
         if not result.get('state'):
             code = str(result.get('errno', result.get('code', '')))
-            raise ShareError('login_required' if code in ('99', '990001', '40101004') else 'share_unavailable')
+            category = ('login_required' if code in ('99', '990001', '40101004')
+                        else 'share_revoked' if code == '4100010' else 'share_unavailable')
+            raise ShareError(category, api_code=int(code) if re.fullmatch('[0-9]{1,10}',code) else None)
         data = result.get('data')
         if not isinstance(data, dict):
             raise ShareError('invalid_response')

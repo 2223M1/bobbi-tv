@@ -46,29 +46,15 @@ def login():
             dialog.ok('已退出本机 115', '本机登录与旧播放连接已撤销，网盘文件未修改。')
             return True
 
-    class QRWindow(xbmcgui.WindowDialog):
-        cancelled = False
-
-        def onAction(self, action):
-            if action.getId() in (9, 10, 13, 92, 216):
-                self.cancelled = True
-                self.close()
-
-    flow, window = Login(), QRWindow()
+    from .account_dialog import create
+    flow, window = Login(), None
     monitor = xbmc.Monitor()
     with tempfile.TemporaryDirectory(prefix='bobbi-qr-', dir=str(path.parent)) as directory:
         image = Path(directory) / 'login.png'
         try:
             qr = flow.begin()
             segno.make(qr, micro=False).save(str(image), scale=10, border=4)
-            # Controls use the established cinema palette and active skin fonts.
-            window.setCoordinateResolution(5)
-            background = xbmcgui.ControlImage(0, 0, 1280, 720, 'white.png', colorDiffuse='FA0A0B0E')
-            cinema = xbmc.getSkinDir() == 'skin.bobbi.cinema'
-            title = xbmcgui.ControlLabel(100, 36, 1080, 60, '用 115 生活 App 扫码登录', font='Display44' if cinema else 'font24', textColor='FFF5F3EF', alignment=2)
-            picture = xbmcgui.ControlImage(430, 120, 420, 420, str(image))
-            status = xbmcgui.ControlLabel(100, 570, 1080, 60, '请扫描二维码并在手机确认；按返回取消', font='Label30' if cinema else 'font20', textColor='FFB4B2AD', alignment=2)
-            window.addControls([background, title, picture, status])
+            window = create(image)
             window.show()
             failures = 0
             while not monitor.abortRequested() and not window.cancelled:
@@ -80,7 +66,7 @@ def login():
                 except CloudError as error:
                     if error.code in ('NETWORK_ERROR', 'QR_POLL_RETRY') and failures < 3:
                         failures += 1
-                        status.setLabel('连接暂时中断，正在重试；按返回取消')
+                        window.set_status('连接暂时中断，正在重试；可取消')
                         continue
                     raise
                 if state == 'confirmed':
@@ -92,13 +78,15 @@ def login():
                         return True
                     break
                 if state == 'scanned':
-                    status.setLabel('已扫描，请在手机上确认登录')
+                    window.set_status('已扫描，请在手机上确认登录')
         except (CloudError, OSError, ValueError, RuntimeError):
-            window.close()
+            if window is not None:
+                window.close()
             # An IPC timeout can follow a successful atomic save. Never claim
             # unchanged state or repeat the account exchange in that case.
             dialog.ok('本次登录未确认', '二维码可能已过期、账号已切换或后台暂时不可用。请重新打开账号管理确认；本次不重复提交。')
         finally:
             flow.cancel()
-            window.close()
+            if window is not None:
+                window.close()
     return False

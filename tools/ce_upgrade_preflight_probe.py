@@ -11,10 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 REMOTE = '''
 from pathlib import Path
 import json,sys,traceback
+sys.dont_write_bytecode=True
 run=Path('/storage/.local/share/bobbi-private-deploy')/RUN
 sys.path.insert(0,str(run))
 import controller as c
 result={}
+receipt=run/'deployment.json'
+result['receipt_exists']=receipt.exists()
+if receipt.exists():
+    result['receipt']=json.loads(receipt.read_text())
 try:
     manifest=c.bootstrap(run)
     c.transition_boundary(run,manifest)

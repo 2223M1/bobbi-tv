@@ -1,0 +1,45 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-standard-real-1792508177096303400",
+  "result": {
+    "state": "failed",
+    "scope": "real standard policy + real Juku/115 on existing F9",
+    "stock_hardware_certified": false,
+    "candidates": [],
+    "history": [],
+    "samples": [],
+    "passed": false,
+    "error": "RuntimeError",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 54
+      },
+      {
+        "function": "find_sources",
+        "line": 57
+      },
+      {
+        "function": "<module>",
+        "line": 5
+      },
+      {
+        "function": "<module>",
+        "line": 13
+      },
+      {
+        "function": "<module>",
+        "line": 31
+      },
+      {
+        "function": "<module>",
+        "line": 15
+      },
+      {
+        "function": "<module>",
+        "line": 11
+      }
+    ]
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

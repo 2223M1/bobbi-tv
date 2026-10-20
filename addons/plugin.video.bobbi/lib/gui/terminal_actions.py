@@ -12,8 +12,10 @@ class TerminalActions(xbmcgui.WindowXMLDialog):
         self.choice, self.done = None, Event()
 
     def onInit(self):
-        self.getControl(100).setLabel('本集已结束 · 下一集需手动选择' if self.ended
-                                     else '播放未正常结束 · 已保留续看进度')
+        self.getControl(100).setLabel('本集已播完' if self.ended
+                                     else '播放已结束 · 可重试或重新选源')
+        self.getControl(101).setLabel('未能确认同版下一集，可查看分集或返回。' if self.ended
+                                     else '保留原画质与手选版本，不自动切换其他片源。')
         self.getControl(9002).setVisible(self.episode)
         self.setFocusId(9003)  # No default action ever starts media or searches.
         Thread(target=self.watch, name='bobbi-terminal-menu', daemon=True).start()

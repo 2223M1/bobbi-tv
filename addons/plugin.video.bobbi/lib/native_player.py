@@ -2323,26 +2323,26 @@ class JacktookPLayer(xbmc.Player):
         if type(budget_seconds) not in (float, int) or not 0 < budget_seconds <= TERMINAL_RECONCILIATION_SECONDS:
             raise ValueError('Bounded terminal reconciliation required')
         session, cancel = self.playback_session_id, self._cinema_cancel
+        exact = self.data.get('selection_policy') == 'exact'
         deadline = monotonic() + budget_seconds
         # Iteration cap is independent of clock/test doubles. No busy polling.
         for _ in range(int(budget_seconds * 1000 / 50)):
             if (self.playback_session_id != session or self._cinema_cancel is not cancel
-                    or cancel.is_set() or not self._owns_playback_session() or self._cinema_end):
+                    or cancel.is_set() or self._cinema_end):
                 return
             try:
-                if self.data.get('selection_policy') == 'exact':
-                    from lib.cinema.playback_request import owned_state
-                    terminal = owned_state(session).get('terminal') or {}
-                    if (terminal.get('native_instance') != getattr(self, '_native_instance', None)
-                            or terminal.get('request_id') != session):
-                        event = {}
-                    else:
-                        event = {'session': session, 'end': terminal.get('reason') == 'NATURAL_EOF',
-                                 'reason': terminal.get('reason')}
+                if exact:
+                    from lib.cinema.playback_request import terminal_state
+                    terminal = terminal_state(getattr(self, '_owner_context', None),
+                                              getattr(self, '_native_instance', None))
+                    event = ({'session': session, 'end': terminal['reason'] == 'NATURAL_EOF',
+                              'reason': terminal['reason']} if terminal else {})
                 else:
+                    if not self._owns_playback_session():
+                        return
                     event = loads(get_property('bobbi_cinema_terminal') or '{}')
                 if (self.playback_session_id != session or self._cinema_cancel is not cancel
-                        or cancel.is_set() or not self._owns_playback_session()):
+                        or cancel.is_set()):
                     return
                 if isinstance(event, dict) and event.get('session') == self.playback_session_id:
                     self._terminal_reason = event.get('reason', 'UNKNOWN')

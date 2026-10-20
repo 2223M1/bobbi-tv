@@ -25,10 +25,25 @@ class KodiHost:
 
     def details(self, name):
         try:
-            return rpc('Addons.GetAddonDetails', {'addonid': name,
+            value = rpc('Addons.GetAddonDetails', {'addonid': name,
                 'properties': ['version', 'enabled']})['addon']
         except RuntimeError:
-            return None
+            # A failed detail RPC is not evidence of absence. Only a complete
+            # installed-addon enumeration can prove the addon does not exist.
+            listing = rpc('Addons.GetAddons', {'enabled': 'all', 'properties': ['enabled', 'version']})
+            rows = listing.get('addons', [])
+            if not isinstance(rows, list) or any(not isinstance(r, dict) or 'addonid' not in r for r in rows):
+                raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
+            matches = [r for r in rows if r['addonid'] == name]
+            if not matches:
+                return None
+            if len(matches) != 1:
+                raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
+            value = matches[0]
+        if (not isinstance(value, dict) or type(value.get('enabled')) is not bool
+                or not isinstance(value.get('version'), str)):
+            raise UpdateError('ADDON_STATE_UNKNOWN:' + name)
+        return value
 
     def enabled(self):
         return [name for name in sorted(MANAGED) if (self.details(name) or {}).get('enabled')]
@@ -79,11 +94,31 @@ class KodiHost:
         for name in ('plugin.video.bobbi', 'plugin.video.bobbi.torrent'):
             if (self.details(name) or {}).get('enabled'):
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': False})
-        # Kodi disables/stops the service. Its registration is removed only in
-        # host.close(). No pid guesses and no unrelated script/player stop.
+        # A registration can survive os._exit. Acquire the stable OS lease,
+        # recheck disabled state, then remove only that dead host's marker.
+        # Retain the lease through file replacement, until activate/restore.
+        from .instance_lock import InstanceLock
         runtime = profile(name='runtime.json')
         until = time.monotonic() + 15
-        while runtime.exists():
+        while getattr(self, '_runtime_lease', None) is None:
+            lease = InstanceLock(str(runtime) + '.lock')
+            try:
+                lease.acquire()
+            except OSError:
+                pass
+            else:
+                try:
+                    if any((self.details(n) or {}).get('enabled') for n in
+                           ('plugin.video.bobbi', 'plugin.video.bobbi.torrent')):
+                        raise UpdateError('CINEMA_DISABLE_NOT_CONFIRMED')
+                    _safe_path(runtime)
+                    if runtime.exists():
+                        runtime.unlink()
+                    self._runtime_lease = lease
+                    break
+                except BaseException:
+                    lease.close()
+                    raise
             if self.monitor.waitForAbort(.1) or time.monotonic() >= until:
                 raise UpdateError('CINEMA_SERVICE_NOT_STOPPED')
         if self.xbmc.Player().isPlaying():
@@ -108,12 +143,16 @@ class KodiHost:
             raise UpdateError('PLAYER_API_UNAVAILABLE:' + ','.join(capabilities.get('errors', [])))
 
     def activate(self, versions):
+        self.close()
         # Enable the provider/service last, after all modules have registered.
         for name in sorted(versions, key=lambda n: n == 'plugin.video.bobbi'):
             if not (self.details(name) or {}).get('enabled'):
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': True})
+        if set(versions).issubset(self.enabled()):
+            self.ensure_running()
 
     def restore(self, skin, enabled):
+        self.close()
         # Restore the entire managed enable vector, not just its True entries.
         # Never touch unrelated addons or their origin / user settings.
         for name in sorted(MANAGED, key=lambda n: n == 'plugin.video.bobbi'):
@@ -123,6 +162,68 @@ class KodiHost:
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': desired})
         if skin and skin != self.skin():
             rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': skin})
+        if 'plugin.video.bobbi' in enabled:
+            self.ensure_running()
+
+    def close(self):
+        lease = getattr(self, '_runtime_lease', None)
+        if lease is not None:
+            self._runtime_lease = None
+            lease.close()
+
+    def ensure_running(self):
+        """Confirm a live owner-thread reply, not merely Kodi's enabled flag."""
+        from .runtime import call
+        from .instance_lock import InstanceLock
+        deadline, launched = time.monotonic() + 15, False
+        while True:
+            try:
+                reply = call('playback', {'operation': 'snapshot'}, timeout=.3)
+                if isinstance(reply, dict) and (reply.get('adapter') == 'standard'
+                        or (isinstance(reply.get('boot_id'), str) and 'desired' in reply)):
+                    return
+            except (OSError, ValueError, RuntimeError):
+                pass
+            if not launched:
+                lease = InstanceLock(str(profile(name='runtime.json')) + '.lock')
+                try:
+                    lease.acquire()
+                except OSError:
+                    pass  # A live owner may still be completing initialization.
+                else:
+                    lease.close()
+                    # Enabled-but-never-running after process loss. The real
+                    # service still checks its boot gate and exclusive lease.
+                    self.xbmc.executebuiltin('RunScript(special://home/addons/plugin.video.bobbi/service.py)')
+                    launched = True
+            if self.monitor.waitForAbort(.1) or time.monotonic() >= deadline:
+                raise UpdateError('CINEMA_SERVICE_NOT_READY')
+
+
+def recover_interactive(installer, dialog):
+    """Persistent host failure must never hide rollback/exit behind recover."""
+    while True:
+        try:
+            installer.recover()
+            return True
+        except (OSError, ValueError, RuntimeError):
+            # Invalid journals still cannot be bypassed by a UI choice.
+            try:
+                state = installer._read()
+            except (OSError, ValueError, RuntimeError):
+                state = None
+            rollback = bool(state and state['phase'] in ('activation_pending', 'complete'))
+            actions = ['重试恢复'] + (['回到上一程序版本（不改账号与观看记录）'] if rollback else []) + ['退出，保留现场']
+            choice = dialog.select('安装恢复尚未完成', actions, preselect=len(actions)-1)
+            if choice == 0:
+                continue
+            if rollback and choice == 1:
+                try:
+                    installer.rollback()
+                    return True
+                except (OSError, ValueError, RuntimeError):
+                    continue  # The next recovery menu remains reachable.
+            return False
 
 
 def choose_package(dialog, payload, first):
@@ -148,7 +249,8 @@ def main(payload=None):
                           profile('script.bobbi.start'), host)
     try:
         # Pending activation is runnable but still needs recovery/readback.
-        installer.recover()
+        if not recover_interactive(installer, dialog):
+            return
         state = installer._read()
         actions = ['进入影院设置 / 登录自己的115', '安装完整签名包',
                    '回退上一次程序安装', '返回原 Kodi 界面']
@@ -179,3 +281,7 @@ def main(payload=None):
     except (OSError, ValueError, RuntimeError) as error:
         xbmc.log('[bobbi-install] ' + type(error).__name__, xbmc.LOGERROR)
         dialog.ok('安装未完成', '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。\n' + str(error))
+    finally:
+        close = getattr(host, 'close', None)
+        if close:
+            close()

@@ -165,8 +165,17 @@ class StandardPlayback:
         guard = lambda: cancelled() or not self.host.accounts.is_current(current['_account'])
         data = next_data(current, guard)
         if data and not guard() and not data.get('subtitles_path'):
+            # Optional IO cannot spend the media handoff's entire remaining
+            # lease. Leave one second for publication/submission and keep the
+            # original absolute EOF deadline. Slow/missing subtitles can still
+            # be discovered by the existing background worker after submission.
+            row = self.session.current
+            budget = 2.0
+            if row and row['terminal'] is not None:
+                budget = min(budget, 19 - (self.session.clock() - row['terminal']))
             try:
-                candidate = discover(data, self.host, time.monotonic() + 30, guard)
+                candidate = (discover(data, self.host, time.monotonic() + budget, guard)
+                             if budget > 0 else None)
                 if candidate and not guard():
                     data['subtitles_path'] = [candidate['file']]
             except (OSError, ValueError, RuntimeError):
@@ -232,6 +241,8 @@ class StandardPlayback:
                                       and not self.player.isPlaying())
             result = handoff.submit(identity, data)
             self.last_handoff = dict(request_id=request, status=result['status'])
+            if not data.get('subtitles_path') and self.session.current_request(request):
+                self.dispatch(dict(operation='subtitle_start', request_id=request, data=data))
         except Exception:
             # The single successor boundary owns this failure, not the host
             # loop. A send with lost/failed acknowledgement is NEVER replayed.
@@ -244,7 +255,7 @@ class StandardPlayback:
 
     def tick(self):
         self._subtitles()
-        playing = self.player.isPlayingVideo()
+        playing = self.player.isPlaying()
         while True:
             try:
                 request, kind = self.events.get_nowait()
@@ -254,13 +265,17 @@ class StandardPlayback:
         if playing:
             try:
                 from bobbi_platform.standard_subtitle_ui import request_id
-                request = request_id(self.player)
                 url = self.player.getPlayingFile()
-                position, duration = self.player.getTime(), self.player.getTotalTime()
+                # Music items need not expose a VideoInfoTag. Read their path
+                # without asking a video-only API before checking takeover.
+                video = self.player.isPlayingVideo()
+                request = request_id(self.player) if video else ''
                 if self.session.observe_other(request, url):
                     self.bound = ''
-                elif self.session.observe(request, url, position, duration):
-                    self.bound = request
+                elif video:
+                    position, duration = self.player.getTime(), self.player.getTotalTime()
+                    if self.session.observe(request, url, position, duration):
+                        self.bound = request
             except RuntimeError:
                 pass  # Opening/seeking is not evidence of end or error.
         self.session.tick(playing=self.player.isPlaying())

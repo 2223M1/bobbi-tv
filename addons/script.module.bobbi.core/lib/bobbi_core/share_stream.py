@@ -31,14 +31,19 @@ OBSERVATION_WAIT_MS = 25
 OBSERVATION_REASONS = frozenset((
     'SHARE_STOPPED', 'SHARE_RANGE_IDENTITY', 'SHARE_RANGE_OVERFLOW',
     'SHARE_READ_UNAVAILABLE', 'SHARE_READ_TRUNCATED', 'SHARE_READ_REJECTED',
-    'SHARE_REFRESH_BUDGET', 'SHARE_TRANSPORT_INVALID'))
+    'SHARE_REFRESH_BUDGET', 'SHARE_TRANSPORT_INVALID',
+    'share_login_required', 'share_unavailable', 'share_network', 'share_invalid_response',
+    'share_cancelled', 'share_deadline', 'share_identity_changed', 'share_invalid_locator',
+    'share_refresh_required', 'share_revoked', 'share_http_rejected', 'share_network_timeout'))
 OBSERVATION_NUMBERS = frozenset((
     'http', 'gate', 'start', 'end', 'monotonic_us', 'offset', 'delivered',
     'status', 'first_block_bytes', 'block_end', 'wait_ms', 'wait_begin_us',
     'wait_end_us', 'upstream_start', 'bytes', 'remaining', 'retry', 'fetch_ms',
-    'write_ms', 'wall_ms', 'suppressed', 'len', 'requested', 'queue_peak', 'queue_limit'))
+    'write_ms', 'wall_ms', 'suppressed', 'len', 'requested', 'queue_peak', 'queue_limit', 'api_code'))
 OBSERVATION_HASHES = {'run': 16, 'request': 16, 'transport': 64, 'file': 64}
 OBSERVATION_ENUMS = {
+    'exception': frozenset(('ShareError','AccountError','ValueError','TypeError','KeyError',
+                            'OSError','TimeoutError','HTTPError','other')),
     'phase': frozenset(('begin', 'response', 'gate_wait', 'upstream_status',
                        'yield', 'retry', 'fetch_end', 'write_end', 'end')),
     'stage': frozenset(('range', 'gate', 'fetch', 'grant', 'connect',
@@ -54,6 +59,30 @@ OBSERVATION_ENUMS = {
         'delivery_incomplete', 'range_complete', 'before_fetch',
         'unexpected_exception', 'contention', 'address_renewed', 'read_resumed')),
 }
+
+
+def observation_error(error):
+    """Closed error taxonomy, retaining file/request correlation but no body."""
+    code = error.args[0] if len(error.args) == 1 and type(error.args[0]) is str else None
+    category = code if code in OBSERVATION_REASONS else 'unexpected_exception'
+    fields = {'exception': type(error).__name__ if type(error).__name__ in
+              OBSERVATION_ENUMS['exception'] else 'other'}
+    # Base transport also runs without the optional catalog module. Diagnostics
+    # must never replace the original range failure with an import exception.
+    try:
+        from bobbi_catalog.api import ShareError
+    except ImportError:
+        ShareError = ()
+    if isinstance(error, ShareError):
+        candidate = 'share_' + error.code
+        category = candidate if candidate in OBSERVATION_REASONS else error.code
+        if category not in OBSERVATION_REASONS:
+            category = 'unexpected_exception'
+        if error.http_status is not None:
+            fields['status'] = error.http_status
+        if error.api_code is not None:
+            fields['api_code'] = error.api_code
+    return category, fields
 
 
 def observation_fields(row):
@@ -342,8 +371,8 @@ class Binding:
 
 
 class LimitedHTTPServer(ThreadingMixIn, HTTPServer):
-    daemon_threads = True
-    block_on_close = False
+    daemon_threads = False
+    block_on_close = True
     allow_reuse_address = False
 
     def process_request(self, request, client_address):
@@ -737,9 +766,8 @@ class Handler(BaseHTTPRequestHandler):
                 outcome = 'complete' if offset > end else 'cancelled'
                 reason = 'range_complete' if offset > end else 'before_fetch'
         except Exception as exc:
-            # Only exact literals from this module may become error details.
-            code = exc.args[0] if len(exc.args) == 1 and type(exc.args[0]) is str else None
-            reason = code if code in OBSERVATION_REASONS else 'unexpected_exception'
+            reason, fault = observation_error(exc)
+            self.observe('response', outcome='failed', reason=reason, **fault)
             outcome = 'cancelled' if reason == 'SHARE_STOPPED' else 'failed'
             owner.report('STREAM_UNAVAILABLE')
             if not started and not getattr(self, 'progressive_started', False):
