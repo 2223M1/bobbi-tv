@@ -21,7 +21,7 @@ WEAK = (
 MULTI = re.compile(
     r'(?:[ ._]*e(?P<joined>\d+)|[ ._]*[-–~～+&][ ._]*(?:'
     r'(?:s(?P<season>\d+)[ ._-]*)?e(?:p(?:isode)?)?[ ._-]*(?P<labelled>\d+)|'
-    r'(?P<plain>\d+)(?![a-z0-9])))', re.I)
+    r'(?P<plain>\d+)(?:v\d+)?(?![a-z0-9])))', re.I)
 TECHNICAL = re.compile(
     r'(?<![a-z0-9])(?:\d{3,5}\s*[x×]\s*\d{3,5}|(?:2160|1080|720|576|480)[pi]|'
     r'(?:hevc|avc|[hx][ ._-]?26[45])(?:-yuv\d+p\d*(?:le|be)?)?|'

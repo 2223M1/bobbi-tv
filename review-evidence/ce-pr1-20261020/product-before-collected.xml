@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="27" skipped="0" tests="60" time="0.437" timestamp="2026-10-20T16:38:28.076628+08:00" hostname="Paimon"><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01-02v2-False]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01+02v2-False]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01&amp;02v10-False]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01v2-02v2-False]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[1x01-02v2-False]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:69: in test_web_fourteen_scenarios_on_family_and_both_selectors
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01-02-False]" time="0.001" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01-E02v2-False]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01v2-E02v2-False]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01v2-True]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01-1080p-True]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01.[1920x1080.HEVC]-True]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01.[7E23ABCD]-True]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E02-False]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_web_fourteen_scenarios_on_family_and_both_selectors[S01E01.S01E02-False]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01-02v2]" time="0.027"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01+02v2]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01&amp;02v10]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01v2-02v2]" time="0.001"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[1x01-02v2]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01-02]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01-E02v2]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01v2-E02v2]" time="0.000" /><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01v10+02v2]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01V2&amp;02V10]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[1x01v2-02v10]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01\u201302v2]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01~02v2]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_range_never_seeds_automatic_current_or_next_preparation[S01E01\uff5e02v10]" time="0.000"><failure message="Failed: DID NOT RAISE ValueError">tests\test_ce_pr1_ranges.py:77: in test_range_never_seeds_automatic_current_or_next_preparation
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_next_range_cannot_cancel_valid_current_or_become_next[-03v2]" time="0.001" /><testcase classname="tests.test_ce_pr1_ranges" name="test_next_range_cannot_cancel_valid_current_or_become_next[+03v2]" time="0.001" /><testcase classname="tests.test_ce_pr1_ranges" name="test_next_range_cannot_cancel_valid_current_or_become_next[&amp;03v10]" time="0.001" /><testcase classname="tests.test_ce_pr1_ranges" name="test_next_range_cannot_cancel_valid_current_or_become_next[v2-03v2]" time="0.001" /><testcase classname="tests.test_ce_pr1_ranges" name="test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01-02v2]" time="0.005"><failure message="bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID">tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01+02v2]" time="0.001"><failure message="bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID">tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01&amp;02v10]" time="0.000"><failure message="bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID">tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[S01E01v2-02v2]" time="0.000"><failure message="bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID">tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it[1x01-02v2]" time="0.000"><failure message="bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID">tests\test_ce_pr1_ranges.py:105: in test_real_resolver_requires_manual_choice_and_owner_cannot_upgrade_it
+    result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:175: in resolve
+    return self._resolve(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\resolver.py:280: in _resolve
+    info = backend.status(info_hash, deadline, owner.active)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:212: in status
+    value = self.document(self.request('POST', '/torrents', deadline, active,
+addons\plugin.video.bobbi.torrent\lib\bobbi_torrent\backend.py:178: in document
+    raise BackendError('TORRENT_RESPONSE_INVALID') from None
+E   bobbi_torrent.backend.BackendError: TORRENT_RESPONSE_INVALID</failure></testcase><testcase classname="tests.test_ce_pr1_ranges" name="test_single_revision_keeps_exact_key_and_permits_same_release_next[v2]" time="0.001" /><testcase classname="tests.test_ce_pr1_ranges" name="test_single_revision_keeps_exact_key_and_permits_same_release_next[v10]" time="0.001" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[98409.04851425653-98409]" time="0.001"><failure message="KeyError: 'download_bps'">tests\test_ce_pr1_diagnostics.py:42: in test_speed_survives_real_backend_buffer_timeout_log_and_wait
+    assert snapshot['download_bps'] == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'download_bps'</failure></testcase><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[0.0-0]" time="0.001"><failure message="KeyError: 'download_bps'">tests\test_ce_pr1_diagnostics.py:42: in test_speed_survives_real_backend_buffer_timeout_log_and_wait
+    assert snapshot['download_bps'] == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'download_bps'</failure></testcase><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[98409-98409]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[-1-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[True-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[nan-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[inf-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[98409-None]" time="0.001" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[False-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[-inf-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[None-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[0-0]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[549755813888-549755813888]" time="0.001" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[549755813889-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[549755813888.5-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[-0.1-None]" time="0.000" /><testcase classname="tests.test_ce_pr1_diagnostics" name="test_speed_survives_real_backend_buffer_timeout_log_and_wait[0.5-0]" time="0.000"><failure message="KeyError: 'download_bps'">tests\test_ce_pr1_diagnostics.py:42: in test_speed_survives_real_backend_buffer_timeout_log_and_wait
+    assert snapshot['download_bps'] == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'download_bps'</failure></testcase><testcase classname="tests.test_ce_pr1_diagnostics" name="test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail0-98,409 B/s]" time="0.000"><failure message="AssertionError: assert '98,409 B/s' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'">tests\test_ce_pr1_diagnostics.py:59: in test_actual_wait_dialog_keeps_zero_distinct_from_unknown
+    assert text in shown[0][0][1]
+E   AssertionError: assert '98,409 B/s' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'</failure></testcase><testcase classname="tests.test_ce_pr1_diagnostics" name="test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail1-0 B/s]" time="0.000"><failure message="AssertionError: assert '0 B/s' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'">tests\test_ce_pr1_diagnostics.py:59: in test_actual_wait_dialog_keeps_zero_distinct_from_unknown
+    assert text in shown[0][0][1]
+E   AssertionError: assert '0 B/s' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'</failure></testcase><testcase classname="tests.test_ce_pr1_diagnostics" name="test_actual_wait_dialog_keeps_zero_distinct_from_unknown[detail2-\u672a\u77e5]" time="0.000"><failure message="AssertionError: assert '未知' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'">tests\test_ce_pr1_diagnostics.py:59: in test_actual_wait_dialog_keeps_zero_distinct_from_unknown
+    assert text in shown[0][0][1]
+E   AssertionError: assert '未知' in '当前等待的是你选定的文件，不会换版或降低画质。\n种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。'</failure></testcase></testsuite></testsuites>
