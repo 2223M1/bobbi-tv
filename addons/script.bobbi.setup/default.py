@@ -161,17 +161,15 @@ def main():
             login()
         elif action == 'catalog':
             import xbmcaddon
+            from bobbi_core.project_metadata import tmdb_key, ATTRIBUTION
             addon = xbmcaddon.Addon('plugin.video.bobbi')
-            choice = dialog.select('影视海报与搜索', ['设置自己的 TMDb API Key', '影院高级设置 / 自选检索服务'])
+            choice = dialog.select('影视海报与搜索', [
+                '波比专用 TMDb 配置 · ' + ('已提供，无需申请' if tmdb_key() else '尚未安装'),
+                '影院高级设置 / 自选检索服务'])
             if choice == 0:
-                import re
-                key = dialog.input('TMDb API Key（在 themoviedb.org 个人设置申请，可跳过）', option=xbmcgui.ALPHANUM_HIDE_INPUT)
-                if key and re.fullmatch('[a-fA-F0-9]{32}', key):
-                    addon.setSetting('tmdb_api_key', key)
-                    xbmcgui.Window(10000).clearProperty('bobbi.settings')
-                    dialog.ok('已保存', '海报目录使用你自己的 TMDb 账号。NAS / 直链片库不需要这个 Key。')
-                elif key:
-                    dialog.ok('格式不匹配', '请填写 API Key，不是读取访问令牌。原值未更改。')
+                from metadata_credits import MetadataCredits
+                credits = MetadataCredits('tmdb-attribution.xml', xbmcaddon.Addon('script.bobbi.setup').getAddonInfo('path'), 'Default', '1080i')
+                credits.doModal()
             elif choice == 1:
                 addon.openSettings()
         elif action == 'cinema':
@@ -185,9 +183,20 @@ def main():
             if show_updates(dialog):
                 return  # Do not reopen setup over Kodi's native add-on browser.
         elif action == 'status':
+            from bobbi_core.project_metadata import ATTRIBUTION
             dialog.ok('波比 TV · 私人候选版', '新影院、个人 115 / NAS、手动选源、同版续播及中文字幕共用业务核心。\n'
                       'BT / CD2 云准备为可选能力，未配置时不会阻止启动。\n'
-                      '原生构建成功不代表每种设备都已实播验收；以随包验收记录为准。不会自动刷机。')
+                      '原生构建成功不代表每种设备都已实播验收；以随包验收记录为准。不会自动刷机。\n'
+                      + ATTRIBUTION)
+        elif action == 'transport':
+            from bobbi_platform.transport_preferences import load, save
+            mode = load(path.parent)
+            selected = dialog.select('115 传输模式 · 下次启动 Kodi 生效',
+                ['整块交付（回退模式）', '渐进交付（有界 8 MiB 队列）'], preselect=1 if mode else 0)
+            if selected in (0, 1):
+                save(path.parent, selected == 1)
+                dialog.ok('已保存，不中断当前播放', '下次启动 Kodi 后使用所选模式。\n'
+                          '两种模式都保持原码流、原音轨，不转码，不整部缓存。')
 
 
 def show_updates(dialog):

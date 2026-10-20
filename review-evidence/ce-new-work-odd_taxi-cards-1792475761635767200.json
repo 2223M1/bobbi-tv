@@ -1,0 +1,93 @@
+{
+  "exit_code": 0,
+  "result": {
+    "name": "odd_taxi",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "[Lilith-Raws] Odd Taxi - 01 [Baha][WEB-DL][1080p][AVC AAC][CHT][MP4].mp4",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "406 MB",
+        "Container(1000).ListItem.Property(source_key)": "645bfcbe2960d50c5e4a803dd0a4fb8b0329067f85dbca92726035c189b38320",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "ODD TAXI S01E01-[1080p][JP.BD.Remux][lolice-mix].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.23 GB",
+        "Container(1000).ListItem.Property(source_key)": "76be425a09db24b5318cd95641fc227c008606bd9c892655891095adbfbe03ed",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "ODD TAXI S01E01-[1080p][JP.BD.Remux][lolice-mix].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.23 GB",
+        "Container(1000).ListItem.Property(source_key)": "3efdc423905b4f7c35c547a20d6a25f454478f1a1216c56d9dbda4bfe3f852de",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Anime Time] Odd Taxi (Season 1+Extras) [Dual Audio][BD][1080p][HEVC 10bit x265][AAC][Eng Sub] ODDTAXI",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "3.5 GB",
+        "Container(1000).ListItem.Property(source_key)": "ab20e1e5643cff01da63bb5a3894fd16d2073cc89eddb051238d126f98017427",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[KDS] ODDTAXI - S01 [1080p BDRip HEVC] [Sub. Español]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "12 GB",
+        "Container(1000).ListItem.Property(source_key)": "bc28c7dff9a093bed59303e91e0c57514df282705cae6d6e4dd7b98b02bda870",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[FakeTaxi] ODDTAXI - S01E01 (BD 1080p HEVC Opus) [Dual Audio] [C3B3E0D2].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.75 GB",
+        "Container(1000).ListItem.Property(source_key)": "da68937f08502a57c783bd35d02040d2253ae1616a6ef4564229745aeec38533",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "ODDTAXI S01E01 The Eccentric Driver REPACK 1080p CR WEB-DL DUAL FLAC2 0 H 2",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.56 GB",
+        "Container(1000).ListItem.Property(source_key)": "c466340bc0183eb62b8a2648389799fc12c6cbc0a2ca1663ec0b801d6708e971",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "ODDTAXI S01E01 The Eccentric Driver REPACK2 1080p CR WEB-DL DUAL FLAC2 0 H",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.57 GB",
+        "Container(1000).ListItem.Property(source_key)": "df05c56a87ec91809cb7edc7c9b39ca55b5fbe29a9c786642b3620c7002b0be6",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[NC-Raws] 奇巧計程車 / Odd Taxi - 01 [Baha][WEB-DL][1080p][AVC AAC][CHT][MP4]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "406 MB",
+        "Container(1000).ListItem.Property(source_key)": "8758882b4da7d992118baa58cc8156e2c1d89893a05229d74fa01ee6c59f4c2c",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 9,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "odd_taxi",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

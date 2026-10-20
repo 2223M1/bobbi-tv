@@ -83,6 +83,12 @@ class Host:
                     from bobbi_core.share_stream import ShareStream, observation_line
                     from bobbi_core.share_catalog import selected, resolve
                     from bobbi_catalog.api import Client, valid_cdn
+                    from .transport_preferences import load as transport_mode
+                    try:
+                        progressive = transport_mode(self.root)
+                    except (OSError, ValueError):
+                        progressive = False
+                        self.report('SHARE_PREFERENCE_INVALID_USING_BLOCK')
                     def resolve_selected(body, expected):
                         session = self.accounts.credentials(expected)
                         client = Client(session=session, account_scope=expected)
@@ -91,7 +97,7 @@ class Host:
                         return address
                     self.streams = ShareStream(selected, resolve_selected, valid_cdn,
                         report=self.report, observer=lambda row: self.report(observation_line(row)),
-                        account=self.accounts)
+                        account=self.accounts, progressive=progressive)
             return self.streams
 
     def bind_owner(self, dispatch):
@@ -192,6 +198,16 @@ class Host:
             # The preparation implementation owns its own deadline/queue. This
             # bridge never fabricates a completed file, subtitle or font proof.
             scope = self.accounts.require_current(body['account'])
+            if body['method'] in ('prepare', 'advance'):
+                # Only a native-owner snapshot can grant automatic preparation.
+                # UI properties and a manual file choice cannot manufacture it.
+                snapshot = self._owner_request({'operation': 'snapshot'})
+                desired = snapshot.get('desired') or {}
+                if (not isinstance(body['body'], dict)
+                        or body['body'].get('request_id') != desired.get('request_id')
+                        or desired.get('cancelled')
+                        or desired.get('file_evidence') == 'USER_CONFIRMED_FILE'):
+                    raise ValueError('PREPARATION_CURRENT_VERIFIED_SELECTION_REQUIRED')
             return self.preparation.request(body['method'], body['body'], scope)
         if action == 'status' and not body:
             return dict(ready=True, version='0.1.0', native_owner=self.owner is not None,

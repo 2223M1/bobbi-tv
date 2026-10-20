@@ -1,0 +1,128 @@
+{
+  "mode": "health",
+  "timestamp": 1792472685.8462472,
+  "players": [
+    {
+      "playerid": 1,
+      "playertype": "internal",
+      "type": "video"
+    }
+  ],
+  "gui": {
+    "currentcontrol": {
+      "label": "播放"
+    },
+    "currentwindow": {
+      "id": 12901,
+      "label": "全屏 OSD"
+    },
+    "skin": {
+      "id": "skin.am6b.cinema",
+      "name": "波比TV"
+    }
+  },
+  "application": {
+    "name": "Kodi",
+    "version": {
+      "major": 21,
+      "minor": 3,
+      "revision": "e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+      "tag": "stable"
+    }
+  },
+  "native": {
+    "fullscreen_instance": "93fd52c0-9787-465b-b02e-1c2fafd0279e",
+    "gui_generation": 65,
+    "gui_user_intent": 2,
+    "playback": {
+      "file_identity": "prepared:b08ccf2af8439c43d59b2a3460b4060d3bc8226fdb741b413d2be64885c8b6df|transport:fcb758022b7fa24c24677784e42422b2d5eb51fa48c30c798e4f477bd2069ec5",
+      "monotonic_us": 2156765839834,
+      "native_instance": "93fd52c0-9787-465b-b02e-1c2fafd0279e",
+      "open_epoch": 4,
+      "paused": true,
+      "phase": "AV_STARTED",
+      "protocol": 1,
+      "reason": "",
+      "request_id": "94f87d54a94d4b5cb45e19511b5b8784",
+      "sequence": 3,
+      "subtitle_auto_intent": 0,
+      "subtitle_intent": 0,
+      "url_sha256": "fcb758022b7fa24c24677784e42422b2d5eb51fa48c30c798e4f477bd2069ec5",
+      "user_intent": 1
+    },
+    "protocol": 1,
+    "selection_epoch": 4,
+    "windows": []
+  },
+  "services": {
+    "kodi.service": "active",
+    "bobitv-preparation.service": "active"
+  },
+  "programs": {
+    "plugin.video.bobbi": "0.1.4",
+    "plugin.video.bobbi.torrent": "0.1.1",
+    "plugin.video.jacktorr": "1.2.2+am6b.317",
+    "script.module.bobbi.core": "0.1.5",
+    "script.module.bobbi.platform": "0.1.4"
+  },
+  "program_generation": {
+    "sequence": 2026101909,
+    "versions": {
+      "plugin.video.bobbi": "0.1.4",
+      "plugin.video.bobbi.library": "0.1.0",
+      "plugin.video.bobbi.torrent": "0.1.1",
+      "repository.bobbi": "0.1.0",
+      "resource.uisounds.bobbi-modern": "2026.9.6.0",
+      "script.bobbi.opensubtitles": "0.1.0",
+      "script.bobbi.setup": "0.1.1",
+      "script.bobbi.start": "0.1.0",
+      "script.module.bobbi.catalog": "0.1.0",
+      "script.module.bobbi.core": "0.1.5",
+      "script.module.bobbi.mdsub": "0.1.0",
+      "script.module.bobbi.platform": "0.1.4",
+      "skin.bobbi.cinema": "0.1.0"
+    }
+  },
+  "torrent_connection": {
+    "legacy_exists": true,
+    "legacy_loopback": true,
+    "legacy_fields": [
+      "buffer_timeout",
+      "metadata_timeout",
+      "service_host",
+      "service_login",
+      "service_password",
+      "service_port",
+      "ssl_connection"
+    ],
+    "legacy_auth_present": false,
+    "new_config_exists": true,
+    "schema": 1,
+    "auth_present": false,
+    "metadata_seconds": 30,
+    "buffering_seconds": 90,
+    "existing_engine": "MatriX.144.1"
+  },
+  "runtime-paths.json": {
+    "schema": 1,
+    "subtitle_abi": "ce-f9",
+    "native_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b"
+  },
+  "bobi-prepared.json": {
+    "schema": 1,
+    "entry_count": 15,
+    "source_count": 59,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "bobi-direct.json": {
+    "schema": 1,
+    "entry_count": 3,
+    "source_count": 0,
+    "account_scoped": true,
+    "account_epoch": 1
+  },
+  "bobbi_stages": [],
+  "cinema_stages": [],
+  "python_failures": []
+}

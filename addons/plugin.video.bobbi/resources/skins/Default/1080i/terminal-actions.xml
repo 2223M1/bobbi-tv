@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog">
+  <defaultcontrol>9003</defaultcontrol>
+  <controls>
+    <control type="image"><left>300</left><top>300</top><width>1320</width><height>460</height><texture colordiffuse="F0151820">special://home/addons/plugin.video.bobbi/resources/white.png</texture></control>
+    <control type="label" id="100"><left>360</left><top>340</top><width>1200</width><height>70</height><font>font30</font><textcolor>FFFFFFFF</textcolor></control>
+    <control type="label"><left>360</left><top>430</top><width>1200</width><height>70</height><font>font13</font><label>不会自动换版或降低画质；20 秒无操作自动返回。</label><textcolor>FFCCCCCC</textcolor></control>
+    <control type="button" id="9001"><left>360</left><top>570</top><width>360</width><height>80</height><font>font13</font><label>重新选择当前片源</label><onright>9002</onright><onleft>9003</onleft></control>
+    <control type="button" id="9002"><left>760</left><top>570</top><width>360</width><height>80</height><font>font13</font><label>返回本剧分集列表</label><onright>9003</onright><onleft>9001</onleft></control>
+    <control type="button" id="9003"><left>1160</left><top>570</top><width>360</width><height>80</height><font>font13</font><label>暂时返回</label><onright>9001</onright><onleft>9002</onleft></control>
+  </controls>
+</window>

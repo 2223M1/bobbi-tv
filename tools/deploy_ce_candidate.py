@@ -122,7 +122,7 @@ def transition_baseline(bundle):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--transport-source', type=Path, required=True)
-    parser.add_argument('--mode', choices=('stage', 'deploy', 'upgrade', 'rollback', 'status'), required=True)
+    parser.add_argument('--mode', choices=('stage', 'deploy', 'upgrade', 'clean-install', 'rollback', 'status'), required=True)
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--bundle', type=Path, default=ROOT / 'dist/private-releases/bobbi-private-2026101903-coreelec.bobbi-update.zip')
     args = parser.parse_args()
@@ -191,7 +191,7 @@ except Exception as error:
         output = ROOT / 'review-evidence' / ('ce-' + args.run_id + '-' + args.mode + '.json')
         output.parent.mkdir(exist_ok=True)
         try:
-            code, result, diagnostic = wire.readonly(client, script, deadline_seconds=550 if args.mode in ('deploy','upgrade','rollback') else 55)
+            code, result, diagnostic = wire.readonly(client, script, deadline_seconds=550 if args.mode in ('deploy','upgrade','clean-install','rollback') else 55)
         except Exception as error:
             output.write_text(json.dumps(dict(state='unconfirmed', error=type(error).__name__,
                 run=run, instruction='Inspect the existing run before any retry; transport loss does not prove remote failure.'), indent=2) + '\n', encoding='utf-8')

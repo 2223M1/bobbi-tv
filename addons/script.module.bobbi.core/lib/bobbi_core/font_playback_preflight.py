@@ -111,7 +111,9 @@ class FontPlaybackPreflight:
             detail = deepcopy(plan['detail'])
             detail.update(native_file=result['native'], subtitle_sha256=record['subtitle_sha256'],
                           font_activation=dict(request_id=body['request_id'], release_key=video['release_key'],
-                                               font_hashes=hashes))
+                                               font_hashes=hashes,
+                                               inputs_complete=not record['font_result']['missing'],
+                                               missing_count=len(record['font_result']['missing'])))
             self.subtitles._record_in_transaction(body['resource_id'], video['key'], state, plan['attempts'], detail)
         # Guard is refreshed inside the cache's existing rollback transaction,
         # before and after link changes. It must prove both idle and ownership.
@@ -120,7 +122,8 @@ class FontPlaybackPreflight:
         if self.allowed(body) is not True:
             return dict(state='stale')
         return dict(state='ready', font_acceptance=state, request_id=body['request_id'], font_hashes=activation['hashes'],
-                    subtitle_sha256=record['subtitle_sha256'], scope='PRE_AV_INPUTS_NOT_RENDER_PROOF')
+                    subtitle_sha256=record['subtitle_sha256'], scope='PRE_AV_INPUTS_NOT_RENDER_PROOF',
+                    font_inputs_complete=activation['inputs_complete'], missing_font_count=activation['missing_count'])
 
     def prepare(self, body):
         """Synchronous adapter for isolated tests; production uses plan/perform/complete."""

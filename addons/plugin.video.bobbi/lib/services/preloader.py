@@ -53,8 +53,8 @@ class StartupPreloader:
         ).start()
 
     def _preload(self):
-        tmdb = TMDb()
-        tmdb.api_key = get_setting("tmdb_api_key", "")
+        from lib.utils.tmdb_init import ensure_tmdb_init
+        ensure_tmdb_init()
         monitor = xbmc.Monitor()
         player = xbmc.Player()
 

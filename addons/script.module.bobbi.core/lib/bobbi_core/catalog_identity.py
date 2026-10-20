@@ -17,9 +17,9 @@ def release_title(path, kind):
     # numbers and Movie/OVA/Part suffixes, is preserved for exact token matching.
     name = re.sub(r'^\[[^\[\]]{1,80}\][ ._-]*', '', name, count=1)
     if kind == 'tv':
-        marker = re.search(r'(?i)(?<![a-z0-9])(?:s\d+[ ._-]*e\d+|\d+[ ._-]*x[ ._-]*\d+)(?!\d)|'
-                           r'(?<![a-z0-9])(?:episode|ep|e)[ ._-]*\d+(?![a-z0-9])|'
-                           r'\s-\s*\d{1,3}(?:v\d+)?(?=$|[ ._\[])|\[\d{1,3}(?:v\d+)?\]', name)
+        from bobbi_core.filename_semantics import parse_filename
+        parsed = parse_filename(name)
+        marker = min(parsed.markers, key=lambda match: match.start(), default=None)
         if not marker:
             raise ValueError('No exact episode marker separates work and release metadata')
         name = name[:marker.start()].strip(' ._-')
