@@ -29,8 +29,10 @@ def declarations(text, title):
     """Subtitle-only, title-aware season/special evidence, never video authority."""
     words = re.findall(r'[^\W_]+', title, re.UNICODE)
     if words:
+        # Exempt the canonical title once, not every occurrence. A title such
+        # as "第二季" can be followed by a distinct, contradictory season tag.
         text = re.sub(r'(?<![^\W_])' + r'[\W_]+'.join(map(re.escape, words))
-                      + r'(?![^\W_])', ' ', text, flags=re.I)
+                      + r'(?![^\W_])', ' ', text, count=1, flags=re.I)
     seasons = {int(s) for s in re.findall(r'(?i)(?<![a-z0-9])s(\d{1,3})(?=e\d|[^a-z0-9]|$)', text)}
     seasons.update(int(s) for s in re.findall(r'(?i)\bseason[ ._-]+(\d{1,3})\b', text))
     seasons.update(int(s) for s in re.findall(r'(?i)\b(\d{1,3})(?:st|nd|rd|th)[ ._-]+season\b', text))

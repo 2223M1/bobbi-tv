@@ -46,8 +46,12 @@ def matches(video, subtitle, explicit=False, context=None):
         wanted_episode = ve if ve is not None else context.get('episode')
         if (se is not None and se != wanted_episode or ss is not None and ss != wanted_season):
             return False
-        seasons = {int(s) for s in re.findall(r'(?i)(?<![a-z0-9])s(\d{1,3})(?![a-z0-9])', subtitle)}
-        seasons.update(int(s) for s in re.findall(r'(?i)\bseason[ ._-]+(\d{1,3})\b', subtitle))
+        # Explicit author links are useful, not permission to contradict the
+        # requested season/special scope. Reuse the subtitle-only title-aware
+        # parser (Chinese/ordinal seasons, OVA/specials) rather than a second
+        # incomplete regex list. Generic Chinese filenames remain eligible.
+        from bobbi_core.subtitle_episode import declarations
+        seasons = declarations(subtitle, str(context.get('title') or ''))
         if seasons and seasons != {wanted_season}:
             return False
     if context.get('mode') == 'movie':

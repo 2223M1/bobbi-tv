@@ -115,6 +115,14 @@ class Installer:
         state['phase'] = 'complete'
         self._write(state)
 
+    def _check_idle(self):
+        # New Kodi hosts reject known active playback before a completed
+        # generation is replaced by a pending journal. Older host adapters
+        # retain quiesce as their authoritative, mandatory replacement barrier.
+        check = getattr(self.host, 'check_idle', None)
+        if check is not None:
+            check()
+
     def recover(self):
         with _Lock(self.work / 'installation.lock'):
             state = self._read()
@@ -138,6 +146,7 @@ class Installer:
             state = self._read()
             if not state or state['phase'] not in ('complete', 'activation_pending'):
                 raise UpdateError('NO_PREVIOUS_PROGRAM_GENERATION')
+            self._check_idle()
             state['phase'] = 'restoring'
             self._write(state)
             self.host.quiesce()
@@ -148,6 +157,7 @@ class Installer:
             previous = self._read()
             if previous and (previous.get('host_pending') or previous['phase'] not in ('complete', 'restored')):
                 raise UpdateError('INSTALLATION_RECOVERY_REQUIRED')
+            self._check_idle()
             with SignedBundle(bundle, self.trust, 'coreelec') as signed:
                 manifest = signed.check_all()
                 watermark = max(previous.get('high_watermark', 0),
@@ -177,6 +187,10 @@ class Installer:
                     sequence=manifest['sequence'], high_watermark=watermark, previous_skin=self.host.skin(),
                     enabled=self.host.enabled(), versions={r['id']: r['version'] for r in manifest['components']
                         if r['id'] in MANAGED})
+                # Archive/dependency preparation can outlast the initial idle
+                # observation. Recheck before replacing the previous journal;
+                # quiesce still owns the final guarded replacement barrier.
+                self._check_idle()
                 self._write(state)  # Gate entrypoints before quiescing any code.
                 try:
                     self.host.quiesce()

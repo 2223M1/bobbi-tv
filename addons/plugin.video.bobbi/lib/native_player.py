@@ -200,6 +200,15 @@ class JacktookPLayer(xbmc.Player):
         self._startup_failed_for_reselect = False
         self.set_constants(data)
         data = self.data
+        if data.get('selection_policy') == 'exact':
+            try:
+                from lib.cinema.preparation_client import capture_account
+                capture_account(data, allow_capture=not (
+                    data.get('_parent_request_id') or data.get('playnext_context') or data.get('autoplay')))
+            except (OSError, ValueError, TypeError, RuntimeError):
+                # Cloud side work may be unavailable; independent BT/public
+                # HTTP playback still owns its ordinary native session.
+                kodilog('[CINEMA-PREPARE] ACCOUNT_CAPTURE_UNAVAILABLE', level=xbmc.LOGWARNING)
         if self._activate_playback_session() is False:
             return
         self._cinema_phase('SESSION_ACTIVATED')
@@ -2070,20 +2079,21 @@ class JacktookPLayer(xbmc.Player):
                     and get_property('bobbi_cinema_cancel') != session)
         def submit():
             try:
-                from lib.cinema.preparation_client import call
+                from lib.cinema.preparation_client import call, capture_account
                 if not current_session():
                     return
+                account = capture_account(self.data, allow_capture=not attempts)
                 result = None
                 allow_submit = not attempts
                 if attempts:
-                    result = call('status', {'request_id': intent['request_id']})
+                    result = call('status', {'request_id': intent['request_id']}, expected_account=account)
                     # Only an explicit negative may replay the same local intent.
                     allow_submit = (isinstance(result, dict) and result.get('request_id') == intent['request_id']
                                     and result.get('state') == 'absent')
                 if not current_session():
                     return
                 if allow_submit:
-                    result = call('advance' if 'resource_id' in intent else 'prepare', intent)
+                    result = call('advance' if 'resource_id' in intent else 'prepare', intent, expected_account=account)
                 if (not isinstance(result, dict) or result.get('request_id') != intent['request_id']
                         or result.get('state') not in ('queued', 'validating', 'accepted', 'failed')):
                     self._preparation_diagnostic('INTENT_RECEIPT_UNAVAILABLE')
@@ -2122,22 +2132,23 @@ class JacktookPLayer(xbmc.Player):
         self._direct_prepare_due = monotonic() + 15
         applicable = False
         try:
-            from bobbi_core.direct_cloud_client import prepare, intent
+            from bobbi_core.direct_cloud_client import intent
             from bobbi_core.direct_cloud import source_key, ACTIVE
-            from bobbi_core.preparation_client import call
+            from bobbi_core.preparation_client import call, capture_account
             body = intent(self.data)
             if body is None:
                 return
             applicable = True
             self._direct_prepare_attempts = attempts + 1
+            account = capture_account(self.data, allow_capture=not attempts)
             expected = source_key(body)
-            result = call('catalog_status', {'key': expected}) if attempts else None
+            result = call('catalog_status', {'key': expected}, expected_account=account) if attempts else None
             allow_submit = not attempts or (isinstance(result, dict) and result.get('key') == expected
                                             and result.get('state') == 'absent')
             if not self._owns_playback_session() or self._cinema_cancel.is_set():
                 return
             if allow_submit:
-                result = prepare(self.data)
+                result = call('catalog_prepare', body, expected_account=account)
             if (not isinstance(result, dict) or result.get('key') != expected
                     or result.get('state') not in set(ACTIVE) | {'ready', 'failed', 'rejected', 'retryable'}):
                 self._preparation_diagnostic('DIRECT_PREPARATION_RECEIPT_UNAVAILABLE')
@@ -2195,8 +2206,9 @@ class JacktookPLayer(xbmc.Player):
                     if current_session():
                         ticket = getattr(self, '_cinema_prepare_ticket', None)
                         if ticket:
-                            from lib.cinema.preparation_client import call
-                            status = call('status', {'request_id': ticket})
+                            from lib.cinema.preparation_client import call, capture_account
+                            status = call('status', {'request_id': ticket},
+                                          expected_account=capture_account(data, allow_capture=False))
                             if status.get('state') == 'accepted':
                                 expected_media = 'tmdb:tv:{}:s{}:e{}'.format((data.get('ids') or {}).get('tmdb_id'),
                                     (data.get('tv_data') or {}).get('season'), (data.get('tv_data') or {}).get('episode'))
@@ -2218,6 +2230,8 @@ class JacktookPLayer(xbmc.Player):
                             if not ready or ready['state'] != 'ready':
                                 pending_direct, prepared = prepared, None
                                 reason = 'DIRECT_CLOUD_PREPARING'
+                                from lib.cinema.preparation_client import capture_account
+                                capture_account(pending_direct, allow_capture=False)
                                 status = prepare_direct(pending_direct)
                                 reason = ('DIRECT_CLOUD_FAILED' if status.get('state') in ('failed', 'rejected')
                                           else 'DIRECT_CLOUD_PREPARING')

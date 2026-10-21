@@ -52,7 +52,7 @@ def parity(tmp_path, monkeypatch):
         notification=lambda value, **kw: notices.append(value),
         xbmc=SimpleNamespace(LOGWARNING=2, LOGINFO=1))
     exec(compile(ast.Module(body=methods, type_ignores=[]), str(ROOT / 'addons/plugin.video.bobbi/lib/native_player.py'), 'exec'), env)
-    player = SimpleNamespace(data={'selection_policy': 'exact'}, _cinema_cancel=Event(),
+    player = SimpleNamespace(data={'selection_policy': 'exact', '_account': dict(scope)}, _cinema_cancel=Event(),
         playback_session_id=intent['request_id'], current=True)
     player._owns_playback_session = lambda: player.current
     for name in names:
@@ -64,7 +64,8 @@ def parity(tmp_path, monkeypatch):
     monkeypatch.setattr(preparation_client, 'source_intent', lambda *args: intent)
     monkeypatch.setattr(preparation_client, 'advance_intent', lambda *args: None)
     calls = []
-    def call(method, body):
+    def call(method, body, *, expected_account):
+        accounts.require_current(expected_account)
         calls.append((method, dict(body)))
         return session.dispatch(method, body)
     monkeypatch.setattr(preparation_client, 'call', call)
@@ -93,8 +94,8 @@ def test_cd2_unverified_still_accepts_exact_local_intent_and_does_not_submit_clo
 
 def test_lost_acceptance_receipt_is_recovered_by_status_without_second_intake(parity, monkeypatch):
     p = parity
-    def transport(method, body):
-        result = p.call(method, body)
+    def transport(method, body, *, expected_account):
+        result = p.call(method, body, expected_account=expected_account)
         if method == 'prepare':
             raise OSError('fixture reply lost after local commit')
         return result
@@ -109,12 +110,13 @@ def test_lost_acceptance_receipt_is_recovered_by_status_without_second_intake(pa
 
 def test_explicit_absent_allows_same_idempotent_intent_after_lost_request(parity, monkeypatch):
     p, first = parity, [True]
-    def transport(method, body):
+    def transport(method, body, *, expected_account):
+        p.accounts.require_current(expected_account)
         if first[0]:
             first[0] = False
             p.calls.append((method, dict(body)))
             raise OSError('fixture request never arrived')
-        return p.call(method, body)
+        return p.call(method, body, expected_account=expected_account)
     monkeypatch.setattr(preparation_client, 'call', transport)
     p.player.start_cinema_preparation()
     retry(p)
@@ -126,7 +128,7 @@ def test_explicit_absent_allows_same_idempotent_intent_after_lost_request(parity
 @pytest.mark.parametrize('invalid', [{}, {'state': 'unavailable'},
     {'request_id': 'b' * 32, 'state': 'queued'}, {'request_id': 'a' * 32, 'state': 'absent'}])
 def test_invalid_acceptance_never_latches_sent_or_ticket(parity, monkeypatch, invalid):
-    monkeypatch.setattr(preparation_client, 'call', lambda *args: invalid)
+    monkeypatch.setattr(preparation_client, 'call', lambda *args, **kwargs: invalid)
     parity.player.start_cinema_preparation()
     assert not getattr(parity.player, '_cinema_prepare_sent', False)
     assert not getattr(parity.player, '_cinema_prepare_ticket', None)
@@ -135,7 +137,8 @@ def test_invalid_acceptance_never_latches_sent_or_ticket(parity, monkeypatch, in
 @pytest.mark.parametrize('status', ['timeout', 'empty', 'none', 'unavailable', 'wrong_id'])
 def test_unknown_status_never_blindly_replays_and_exhaustion_is_visible(parity, monkeypatch, status):
     p, called = parity, []
-    def transport(method, body):
+    def transport(method, body, *, expected_account):
+        p.accounts.require_current(expected_account)
         called.append(method)
         if method == 'prepare' or status == 'timeout':
             raise OSError('fixture uncertain IPC')
@@ -227,7 +230,8 @@ def test_direct_unknown_receipt_only_queries_status_then_reports_retry(parity, m
     p = parity
     queue, key = direct_setup(p, monkeypatch)
     calls = []
-    def unavailable(method, body):
+    def unavailable(method, body, *, expected_account):
+        p.accounts.require_current(expected_account)
         calls.append(method)
         if status == 'timeout':
             raise OSError('fixture uncertain IPC')
@@ -259,15 +263,16 @@ def test_non_catalog_playback_does_not_consume_direct_retry_budget_or_notify(par
 def test_direct_lost_receipt_recovers_or_reaccepts_only_explicit_absence(parity, monkeypatch, accepted):
     p, first = parity, [True]
     queue, key = direct_setup(p, monkeypatch)
-    def transport(method, body):
+    def transport(method, body, *, expected_account):
+        p.accounts.require_current(expected_account)
         if first[0]:
             first[0] = False
             if accepted:
-                p.call(method, body)
+                p.call(method, body, expected_account=expected_account)
             else:
                 p.calls.append((method, dict(body)))
             raise OSError('fixture lost receipt or request')
-        return p.call(method, body)
+        return p.call(method, body, expected_account=expected_account)
     monkeypatch.setattr(preparation_client, 'call', transport)
     try:
         p.player.start_direct_preparation()

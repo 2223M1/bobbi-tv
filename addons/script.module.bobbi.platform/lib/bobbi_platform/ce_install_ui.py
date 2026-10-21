@@ -109,9 +109,14 @@ class KodiHost:
                     or compare_versions(installed['version'], minimum) < 0):
                 raise UpdateError('DEPENDENCY_UNAVAILABLE:' + name)
 
-    def quiesce(self):
+    def check_idle(self):
+        """Reject an already active player before opening an install journal."""
         if self.xbmc.Player().isPlaying():
             raise UpdateError('PLAYBACK_ACTIVE')
+
+    def quiesce(self):
+        # Recheck after staging: a preflight is not an exclusive playback lease.
+        self.check_idle()
         if self.skin() == 'skin.bobbi.cinema':
             rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': 'skin.estuary'})
         from .runtime import call

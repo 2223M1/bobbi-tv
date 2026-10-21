@@ -507,13 +507,17 @@ def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=Non
     # trusted catalog alias or relax the explicit season/episode checks.
     candidate_aliases = aliases or ([fallback_query] if isinstance(fallback_query, str) else [])
     title_basis = 'catalog_aliases' if aliases else ('request_query_unverified' if candidate_aliases else 'unavailable')
+    from lib.utils.general.anime_identity import animation_release_conflict
+    screened = [source for source in results or [] if not (
+        anime and aliases and _cinema_requires_catalog_admission(source)
+        and animation_release_conflict(getattr(source, 'title', ''), aliases))]
     from bobbi_core.anime_range_candidates import eligible as range_eligible
-    range_rows = [source for source in results or [] if anime and mode == 'tv'
+    range_rows = [source for source in screened if anime and mode == 'tv'
                   and _cinema_requires_catalog_admission(source)
                   and range_eligible(getattr(source, 'title', ''), anime_range_context, release_season, release_episode)]
     for source in range_rows:
         source.requiresCatalogEpisodeProof = True
-    kept = [source for source in results or []
+    kept = [source for source in screened
             if not _cinema_requires_catalog_admission(source)
             or source in range_rows
             or matches(getattr(source, 'title', ''), candidate_aliases, mode, release_season=release_season)]
