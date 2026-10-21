@@ -55,20 +55,22 @@ def prepare(data):
     body = intent(data)
     if body is None:
         return dict(state='not_applicable')
-    from bobbi_core.preparation_client import call
-    return call('catalog_prepare', body)
+    from bobbi_core.preparation_client import call, capture_account
+    return call('catalog_prepare', body, expected_account=capture_account(data))
 
 
 def resolve(data, cancelled=lambda: False):
     row = entry(data)
     if not row or row['state'] != 'ready':
         return None
-    from bobbi_core.preparation_client import call
+    from bobbi_core.preparation_client import call, capture_account
+    account = capture_account(data)
     body = dict(key=row['key'], request_id=data['request_id'], verification_id=uuid4().hex)
     deadline = time.monotonic() + 3
     while not cancelled() and time.monotonic() < deadline:
         try:
-            result = call('catalog_resolve', body, timeout=min(.3, max(.001, deadline - time.monotonic())))
+            result = call('catalog_resolve', body, timeout=min(.3, max(.001, deadline - time.monotonic())),
+                          expected_account=account)
         except OSError:
             result = dict(state='pending')
         if result.get('state') == 'ready':

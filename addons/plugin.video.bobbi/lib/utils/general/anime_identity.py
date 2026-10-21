@@ -9,6 +9,37 @@ from bobbi_core.candidate_titles import matches, normalized, chinese_episode_num
 from bobbi_core.pack_parser import detect_pack_scope, release_season_markers
 
 
+def animation_release_conflict(title, aliases):
+    """Reject an explicit adaptation label, not a guessed work or genre.
+
+    Only callers with ID-bound animation metadata may use this restriction.
+    Canonical names and a leading release group are not type declarations.
+    A Drama tag, genre, performer or release group is not enough by itself.
+    No performer-name dictionary or guessed provider classification is used.
+    """
+    if not isinstance(title, str) or len(title) > 2048 or not aliases:
+        return False
+    text = unicodedata.normalize('NFKC', title)
+    # Strip whole catalogue aliases longest-first, preserving surrounding tags.
+    # Punctuation/separators may differ in a filename, but interior words in a
+    # different title never become a trusted alias for this purpose.
+    for alias in sorted((a for a in aliases if isinstance(a, str)), key=len, reverse=True):
+        words = re.findall(r'[^\W_]+', unicodedata.normalize('NFKC', alias))
+        if words:
+            pattern = r'(?<![^\W_])' + r'[\W_]+'.join(map(re.escape, words)) + r'(?![^\W_])'
+            text = re.sub(pattern, ' ', text, flags=re.I)
+    explicit = r'(?:live[ ._-]*action|真人(?:版|改编|改編)?|実写(?:版|化)?|實寫(?:版|化)?)'
+    # Bracketed fragments can be genres or groups at either end of a release.
+    # Only an entire explicit type tag is evidence: [Live Action Fansubs] must
+    # not become a contradiction merely because the group's name has two words.
+    brackets = r'\[([^\[\]]*)\]|【([^【】]*)】|\(([^()]*)\)'
+    for tag in re.finditer(brackets, text):
+        if re.fullmatch(explicit, next(part for part in tag.groups() if part is not None).strip(), re.I):
+            return True
+    text = re.sub(brackets, ' ', text)
+    return bool(re.search(r'(?<![^\W_])' + explicit + r'(?![^\W_])', text, re.I))
+
+
 def first_season_episode(title, aliases, season, episode):
     """A bare local episode is eligible only for an already identified anime.
 

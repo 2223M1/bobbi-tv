@@ -6,9 +6,30 @@ from uuid import uuid4
 from bobbi_core.capabilities import IPC_PROTOCOL, compatible
 
 SOCKET_PATH = None  # Optional preparation is registered with the local host.
+_CURRENT_ACCOUNT = object()
 
 
-def call(method, body, socket_path=SOCKET_PATH, timeout=0.3):
+def capture_account(data, allow_capture=True):
+    """Bind one playback's optional cloud work, including uncertain IPC retries.
+
+    A failed initial capture is deliberately retained as unknown. A later login
+    must not silently adopt work belonging to this already-running playback.
+    Existing selection/continuation scope wins over the current host account.
+    Return a copy so an IPC caller cannot mutate the playback's stored scope.
+    """
+    from bobbi_platform.account_manager import validate_snapshot
+    if '_account' not in data:
+        data['_account'] = None
+        if not allow_capture:
+            raise RuntimeError('PREPARATION_ACCOUNT_SCOPE_UNAVAILABLE')
+        from bobbi_platform.runtime import call as host_call
+        data['_account'] = validate_snapshot(host_call('account_status', {}, timeout=.1))
+    scope = validate_snapshot(data['_account'])
+    data['_account'] = dict(scope)
+    return scope
+
+
+def call(method, body, socket_path=SOCKET_PATH, timeout=0.3, expected_account=_CURRENT_ACCOUNT):
     if method not in {'prepare', 'advance', 'status', 'ping', 'resolve', 'subtitle', 'font_preflight',
                       'catalog_prepare', 'catalog_status', 'catalog_resolve', 'share_open'}:
         raise ValueError('Unsupported preparation command')
@@ -16,8 +37,11 @@ def call(method, body, socket_path=SOCKET_PATH, timeout=0.3):
         raise ValueError('Bounded preparation IPC timeout required')
     if socket_path is None:
         from bobbi_platform.runtime import call as host_call
+        from bobbi_platform.account_manager import validate_snapshot
         deadline = time.monotonic() + timeout
-        scope = host_call('account_status', {}, timeout=min(.1, timeout))
+        scope = (host_call('account_status', {}, timeout=min(.1, timeout))
+                 if expected_account is _CURRENT_ACCOUNT else expected_account)
+        scope = validate_snapshot(scope)
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise TimeoutError('Preparation account budget exceeded')
@@ -26,6 +50,8 @@ def call(method, body, socket_path=SOCKET_PATH, timeout=0.3):
         if not isinstance(value, dict) or not compatible(value.get('component')):
             raise ValueError('Preparation service component is incompatible')
         return value
+    if expected_account is not _CURRENT_ACCOUNT:
+        raise ValueError('Account-scoped preparation requires host transport')
     if not hasattr(socket, 'AF_UNIX'):
         raise OSError('Explicit Unix preparation transport unavailable')
     raw = json.dumps(dict(method=method, body=body, protocol=IPC_PROTOCOL), ensure_ascii=False, separators=(',', ':')).encode('utf-8') + b'\n'
@@ -75,12 +101,16 @@ def prepare_fonts(data, context, cancelled=lambda: False):
     except (KeyError, TypeError, ValueError):
         return dict(state='unavailable', reason='FONT_PREFLIGHT_CONTEXT_UNAVAILABLE')
     deadline = time.monotonic() + 3
+    try:
+        account = capture_account(data)
+    except (OSError, ValueError, TypeError, RuntimeError):
+        return dict(state='unavailable', reason='FONT_PREFLIGHT_ACCOUNT_UNAVAILABLE')
     while not cancelled():
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             return dict(state='unavailable', reason='FONT_PREFLIGHT_EXPIRED')
         try:
-            result = call('font_preflight', body, timeout=min(0.3, remaining))
+            result = call('font_preflight', body, timeout=min(0.3, remaining), expected_account=account)
         except OSError:
             result = dict(state='pending')
         except (ValueError, TypeError, RuntimeError):
@@ -107,6 +137,7 @@ def resolve_entry(data, snapshot, entry, cancelled=lambda: False):
                 if data.get('mode') in {'tv', 'anime', 'episode'} else 'tmdb:movie:{}'.format(identifier))
     if not MEDIA.fullmatch(media_id):
         return None
+    account = capture_account(data)
     verification = uuid4().hex
     body = dict(request_id=data['request_id'], verification_id=verification, resource_id=entry['key'], generation=snapshot['generation'],
                 account=snapshot['account'], source_info_hash=entry['prepared_source_info_hash'], media_id=media_id)
@@ -121,7 +152,7 @@ def resolve_entry(data, snapshot, entry, cancelled=lambda: False):
             # The server keys this read-only verification by the same nonce.
             # A lost reply must not create another job or bypass fresh identity
             # checks. Writes such as prepare/advance are NOT retried here.
-            result = call('resolve', body, timeout=min(0.3, remaining))
+            result = call('resolve', body, timeout=min(0.3, remaining), expected_account=account)
         except OSError:
             result = {'state': 'pending'}
         if result.get('state') == 'ready':

@@ -1,5 +1,6 @@
 """User-initiated official 115 QR login. No bundled accounts or password input."""
 import json
+from http.client import HTTPException
 import os
 from pathlib import Path
 import re
@@ -35,18 +36,43 @@ def request(url, values=None, cookie=None, opener=None):
     data = urlencode(values).encode() if values is not None else None
     req = Request(url, data=data, headers=headers)
     transport = opener or build_opener(ProxyHandler({}), NoRedirect())
+    deadline = time.monotonic() + 8
     try:
         with transport.open(req, timeout=8) as response:
-            raw = response.read(MAX_REPLY + 1)
-        if len(raw) > MAX_REPLY:
-            raise CloudError('INVALID_REPLY')
+            length = getattr(response, 'headers', {}).get('Content-Length')
+            if length is not None:
+                if not re.fullmatch(r'[0-9]{1,10}', str(length)) or int(length) > MAX_REPLY:
+                    raise CloudError('INVALID_REPLY')
+                length = int(length)
+            raw = bytearray()
+            reader = getattr(response, 'read1', response.read)
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise CloudError('NETWORK_ERROR')
+                sock = getattr(getattr(getattr(response, 'fp', None), 'raw', None), '_sock', None)
+                if sock is not None:
+                    sock.settimeout(remaining)
+                chunk = reader(min(65536, MAX_REPLY + 1 - len(raw)))
+                if time.monotonic() >= deadline:
+                    raise CloudError('NETWORK_ERROR')
+                if not chunk:
+                    break
+                raw.extend(chunk)
+                if len(raw) > MAX_REPLY:
+                    raise CloudError('INVALID_REPLY')
+            # A parseable JSON prefix is not proof of a complete HTTP reply.
+            if length is not None and len(raw) != length:
+                raise CloudError('INVALID_REPLY')
         value = json.loads(raw)
         if not isinstance(value, dict):
             raise CloudError('INVALID_REPLY')
         return value
     except CloudError:
         raise
-    except (ValueError, OSError):
+    except (ValueError, HTTPException):
+        raise CloudError('INVALID_REPLY') from None
+    except OSError:
         raise CloudError('NETWORK_ERROR') from None
 
 
