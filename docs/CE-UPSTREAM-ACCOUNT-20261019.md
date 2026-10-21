@@ -51,7 +51,7 @@ BT/启动回归仍有失败，随后按用户要求恢复旧系统。真实换�
 
 Juku 的退出会删除对应 provider 凭据，扫码确认则覆盖同一项；没有要求换插件 ID。
 缓存也会用当前凭据验证文件是否存在。波比采用这些简洁行为，不照搬已观察到的保存错误未检查分支。
-详见 [反编译记录](research/juku-account-protocol/README.md)。
+详见 [反编译记录](https://github.com/2223M1/am6b-community-baseline-v4/blob/juku-research-0.80-20261021/docs/JUKU-RESEARCH.zh-CN.md#juku-account)。
 
 ## 1907 历史：原版与定制不能混称
 

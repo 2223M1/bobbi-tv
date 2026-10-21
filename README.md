@@ -31,7 +31,7 @@
 > 本分支留存 **1909 候选**及全部研究/失败记录供 Web 独立审阅，不能据此自动重新部署。
 > Windows/Android 暂停；公开发布、稳定发行与完整媒体验收门禁均未打开。
 
-[Web 审阅入口](docs/WEB-REVIEW-HANDOFF-20261019.md) · [原深度定制恢复回执](docs/CE-LEGACY-RESTORE-20261019.md) · [完整 Juku 研究](docs/research/juku-full-20261019/SUMMARY.zh-CN.md) · [发行门禁](release/gates.json)
+[Web 审阅入口](docs/WEB-REVIEW-HANDOFF-20261019.md) · [原深度定制恢复回执](docs/CE-LEGACY-RESTORE-20261019.md) · [完整 Juku 研究](https://github.com/2223M1/am6b-community-baseline-v4/blob/juku-research-0.80-20261021/docs/JUKU-RESEARCH.zh-CN.md#juku-summary) · [发行门禁](release/gates.json)
 
 1909 修复了 BT 合集像素格式后缀误拒绝、准备请求受理/回执、续播请求预算和私有字幕
 账号归属边界；完成过签名升级和分层回退，但**仍有真实失败**：冷门 BT 缓冲超时、
@@ -115,6 +115,6 @@ python tools/build_release.py --output dist/private-components-check
 
 新增代码 GPL-3.0-or-later，独立模块及原始代码、素材、字体沿用各自声明；不是全仓统一 MIT。恢复私人素材不代表取得对所有第三方素材的公开再分发或商业许可。私库不取消版权义务，反编译研究材料也不冒称作者原始源码。
 
-只管理和播放你有权访问的内容。目录不含影片媒体文件，也不授予第三方影片、字幕或字体版权。旧公开发行记录仅供追溯，不作为本轮安装路径；详见[第三方审计](docs/THIRD_PARTY_AUDIT.md)。
+只管理和播放你有权访问的内容。目录不含影片媒体文件，也不授予第三方影片、字幕或字体版权。旧公开发行记录仅供追溯，不作为本轮安装路径；详见[第三方审计](addons/skin.bobbi.cinema/COPYRIGHT.zh-CN.md#historical-audit)。
 
-[验证记录](docs/RELEASE_VALIDATION.md) · [第三方许可](docs/THIRD_PARTY_AUDIT.md) · [发行门禁](release/gates.json)
+[验证记录](docs/RELEASE_VALIDATION.md) · [第三方许可](addons/skin.bobbi.cinema/COPYRIGHT.zh-CN.md#historical-audit) · [发行门禁](release/gates.json)
