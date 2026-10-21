@@ -1,5 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <includes>
+  <!-- A "next page" row from any of our plugins: the explicit flag, the Chinese label, or the
+       shared nextpage icon. Such a row gets an arrow tile instead of a blank poster. -->
+  <expression name="BobiIsMore">String.IsEqual(ListItem.Property(Bobi.NextPage),true) | String.IsEqual(ListItem.Label,下一页) | String.StartsWith(ListItem.Label,Next Page) | String.EndsWith(ListItem.Art(icon),nextpage.png)</expression>
+  <!-- user library (网盘 / NAS / 片库) browser -->
+  <expression name="BobiInLibrary">String.StartsWith(Container.FolderPath,plugin://plugin.video.bobbi.library)</expression>
+  <expression name="BobiLibraryRoot">String.IsEqual(Container.FolderPath,plugin://plugin.video.bobbi.library/) | String.Contains(Container.FolderPath,action=root)</expression>
+  <expression name="BobiIsManage">String.Contains(ListItem.FolderPath,action=manage) | String.IsEqual(ListItem.Property(Bobi.Library.Manage),true)</expression>
   <!-- Plugin action progress does not register native playback context actions. -->
   <variable name="BobiPercentPlayed">
     <value condition="!String.IsEmpty(ListItem.Property(PercentPlayed))">$INFO[ListItem.Property(PercentPlayed)]</value>

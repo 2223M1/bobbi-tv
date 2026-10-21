@@ -159,7 +159,8 @@ def show_mdblist_list(params):
             isFolder=is_folder,
         )
 
-    list_item = build_list_item("Next Page", "nextpage.png")
+    list_item = build_list_item("下一页", "nextpage.png")
+    list_item.setProperty("Bobi.NextPage", "true")
     addDirectoryItem(
         ADDON_HANDLE,
         build_url(

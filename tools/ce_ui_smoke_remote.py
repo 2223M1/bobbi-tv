@@ -172,9 +172,12 @@ try:
             quality=qualities.getSelectedItem().getProperty('quality')))
     session.publish(session.epoch, 'fixture', state='COMPLETE')
     window._refresh_progressive_sources()
-    row = inspect('sources-after', window)
+    # Do not run a full /dev/fb0 read concurrently with the pixel sampler.
+    # On CE the two reader paths can block each other inside the driver.
     frame_stop.set()
     frame_worker.join(2)
+    if frame_worker.is_alive(): raise RuntimeError('FRAME_SAMPLER_DID_NOT_STOP')
+    row = inspect('sources-after', window)
     row.update(resets=meter.resets, focus_commands=meter.selects,
         original_items_retained=all(window._rendered_cards[k] is v for k,v in original.items()),
         selected_key_retained=window.display_list.getSelectedItem().getProperty('source_key') == selected,

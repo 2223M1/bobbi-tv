@@ -1498,7 +1498,8 @@ def supported_video_extensions():
 
 def add_next_button(func_name, page=1, **kwargs):
     page += 1
-    list_item = make_list_item(label=f"Next ({page})")
+    list_item = make_list_item(label="下一页")
+    list_item.setProperty("Bobi.NextPage", "true")
     list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "nextpage.png")})
 
     addDirectoryItem(

@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "allocated": [2026102021, 2026102022, 2026102023, 2026102024, 2026102025],
+  "candidate": 2026102026,
+  "baseline": "45b441aae2faf076f6ae8e74c44371e916e63f31",
+  "scope": "CE2025 remediation plus user-requested Claude UI integration; CE2025 artifacts retained unchanged; local only"
+}

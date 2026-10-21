@@ -811,7 +811,8 @@ def _load_streaming_page(kind, section, page, query="", refresh=False):
 
 
 def _add_next_item(directory_items, action, page, label="下一页", **params):
-    next_item = xbmcgui.ListItem(label=label)
+    next_item = xbmcgui.ListItem(label="下一页")
+    next_item.setProperty("Bobi.NextPage", "true")
     # The legacy anime route increments the supplied CURRENT page on entry;
     # direct catalogue/search routes receive the TARGET page. Increment once.
     params["page"] = page if action == "next_page_anime" else page + 1

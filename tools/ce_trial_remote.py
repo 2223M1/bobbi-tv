@@ -736,7 +736,7 @@ else:
             time.sleep(2)
         print(json.dumps(dict(name=NAME, operation=OP, record=record, samples=samples),ensure_ascii=True))
     elif OP=='inspect':
-        print(json.dumps(dict(name=NAME, operation=OP, record=record, sample=sample(record)), ensure_ascii=True))
+        print(json.dumps(dict(name=NAME, operation=OP, record=record, sample=sample(record), gui=gui_observation()), ensure_ascii=True))
     elif OP=='stop':
         from uuid import uuid4
         _, native, row = state(record, require=True)

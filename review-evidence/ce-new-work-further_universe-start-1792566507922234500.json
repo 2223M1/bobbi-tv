@@ -1,0 +1,300 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "further_universe",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "A Place Further Than the Universe",
+        "tmdb_id": 76059,
+        "kind": "tv",
+        "year": 2018,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 76059,
+          "name": "A Place Further than the Universe",
+          "original_name": "宇宙よりも遠い場所",
+          "original_language": "ja",
+          "first_air_date": "2018-01-02"
+        },
+        "route": "system-direct",
+        "checked_at": 1792566495.4666383
+      },
+      "prior_request": "e8dcd175363743c18245db61a162b2ed",
+      "started": 2296378.925655971,
+      "home": {
+        "generation": 95,
+        "intent": 1,
+        "retired_generation": 94,
+        "observed_at": 2296379.724735674
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 2296379.725421318,
+      "picker": {
+        "window": 13001,
+        "generation": 96,
+        "intent": 1,
+        "tmdb_id": 76059,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2296384.180256809
+    },
+    "samples": [
+      {
+        "wall": 2296379.955011748,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2296379.981202102,
+          "read_completed": 2296379.981438177,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2296379.938248114,
+          "decoder_started": 2296379.981202102,
+          "decoder_completed": 2296379.981438177,
+          "sample_completed": 2296379.981849788
+        }
+      },
+      {
+        "wall": 2296382.090127406,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2296382.107697558,
+          "read_completed": 2296382.107971049,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2296382.073772754,
+          "decoder_started": 2296382.107697558,
+          "decoder_completed": 2296382.107971049,
+          "sample_completed": 2296382.108156251
+        }
+      },
+      {
+        "wall": 2296384.198760934,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Stye] A Place Further Than the Universe S01 (Season 1) (BD 1080p HEVC 10-bit Opus) [Dual Audio] | Sora yori mo Tooi Basho",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "6",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "6"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2296384.23448381,
+          "read_completed": 2296384.234875089,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2296384.180784708,
+          "decoder_started": 2296384.23448381,
+          "decoder_completed": 2296384.234875089,
+          "sample_completed": 2296384.235033292
+        }
+      },
+      {
+        "wall": 2296386.333344011,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Stye] A Place Further Than the Universe S01 (Season 1) (BD 1080p HEVC 10-bit Opus) [Dual Audio] | Sora yori mo Tooi Basho",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "11",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "11"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2296386.357210168,
+          "read_completed": 2296386.35771486,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2296386.313619089,
+          "decoder_started": 2296386.357210168,
+          "decoder_completed": 2296386.35771486,
+          "sample_completed": 2296386.357815023
+        }
+      },
+      {
+        "wall": 2296388.427935724,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Stye] A Place Further Than the Universe S01 (Season 1) (BD 1080p HEVC 10-bit Opus) [Dual Audio] | Sora yori mo Tooi Basho",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "11",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "11"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2296388.441579478,
+          "read_completed": 2296388.441836677,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2296388.415780838,
+          "decoder_started": 2296388.441579478,
+          "decoder_completed": 2296388.441836677,
+          "sample_completed": 2296388.441932591
+        }
+      },
+      {
+        "wall": 2296390.499332365,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Stye] A Place Further Than the Universe S01 (Season 1) (BD 1080p HEVC 10-bit Opus) [Dual Audio] | Sora yori mo Tooi Basho",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "11",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "11"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2296390.50761105,
+          "read_completed": 2296390.507829251,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2296390.489412817,
+          "decoder_started": 2296390.50761105,
+          "decoder_completed": 2296390.507829251,
+          "sample_completed": 2296390.507911082
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "further_universe",
+  "operation": "start",
+  "attempt": 3,
+  "regression_attempt": true
+}

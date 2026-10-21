@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sqlite3
+from datetime import datetime
 from urllib.parse import quote, unquote, urlsplit, urlunsplit
 from uuid import uuid4
 
@@ -101,6 +102,20 @@ class Item:
     title: str
     url: str = field(repr=False)
     year: int = 0
+    size: int = None
+    modified: str = ''
+
+
+def validate_file_metadata(size, modified):
+    if size is not None and (type(size) is not int or not 0 <= size <= 2**63 - 1):
+        raise LibraryError('INVALID_DOCUMENT')
+    if not isinstance(modified, str) or len(modified) > 32:
+        raise LibraryError('INVALID_DOCUMENT')
+    if modified:
+        try:
+            datetime.fromisoformat(modified)
+        except ValueError:
+            raise LibraryError('INVALID_DOCUMENT') from None
 
 
 @dataclass(frozen=True)
@@ -134,7 +149,7 @@ def import_catalog(raw, source_id=None):
     items, ids = [], set()
     for row in value['items']:
         if (not isinstance(row, dict) or not {'id', 'title', 'url'} <= set(row)
-                or set(row) - {'id', 'title', 'url', 'year'}):
+                or set(row) - {'id', 'title', 'url', 'year', 'size', 'modified'}):
             raise LibraryError('INVALID_DOCUMENT')
         item_id = _text(row['id'], 128)
         if item_id in ids:
@@ -142,7 +157,9 @@ def import_catalog(raw, source_id=None):
         year = row.get('year', 0)
         if type(year) is not int or year != 0 and not 1880 <= year <= 2200:
             raise LibraryError('INVALID_DOCUMENT')
-        items.append(Item(item_id, _text(row['title'], 240), direct_url(row['url']), year))
+        validate_file_metadata(row.get('size'), row.get('modified', ''))
+        items.append(Item(item_id, _text(row['title'], 240), direct_url(row['url']), year,
+                          row.get('size'), row.get('modified', '')))
         ids.add(item_id)
     return validate_source(Source(source_id or uuid4().hex, _text(value['name'], 80), 'catalog', items=tuple(items)))
 
@@ -172,6 +189,7 @@ def validate_source(source):
                 raise LibraryError('INVALID_SOURCE')
             _text(item.title, 240)
             direct_url(item.url)
+            validate_file_metadata(item.size, item.modified)
             if type(item.year) is not int or item.year != 0 and not 1880 <= item.year <= 2200:
                 raise LibraryError('INVALID_SOURCE')
             seen.add(item.id)

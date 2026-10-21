@@ -1,539 +1,1001 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- On-screen keyboard (Kodi DialogKeyboardGeneric, window 10103).
+     Native ids: 100-179 character keys (row r, column c = 100 + 20r + c; Kodi labels and hides
+     them per layout), 300 done, 301 cancel, 302 shift, 303 caps, 304 symbols, 305/306 cursor or
+     candidate page, 308 clear, 309 layout, 310 reveal, 311 heading, 312 edit, 313 pinyin code,
+     314 Kodi's own candidate line, 8 backspace, 32 space.
+     scripts/cinema_keyboard.py turns the candidate line into focusable buttons 500-509; without
+     it the native line 314 stays visible and the number row picks a word. -->
 <window>
   <defaultcontrol always="true">120</defaultcontrol>
+  <onload>RunScript(special://skin/scripts/cinema_keyboard.py)</onload>
   <controls>
-    <control type="image">
-      <left>0</left>
-      <top>0</top>
-      <width>1920</width>
-      <height>1080</height>
-      <texture colordiffuse="E6000000">am6b/arctic/common/white.png</texture>
-    </control>
+    <include>DialogScrim</include>
     <control type="group">
-      <centerleft>50%</centerleft>
-      <top>100</top>
-      <bottom>100</bottom>
-      <width>1510</width>
+      <centerleft>50%</centerleft><centertop>50%</centertop>
+      <width>1692</width><height>772</height>
+      <include content="PanelOpen"><param name="slide">0,24</param></include>
       <control type="image">
-        <texture border="40" colordiffuse="FF161618">am6b/arctic/common/menu.png</texture>
+        <left>0</left><top>0</top><width>1692</width><height>772</height>
+        <texture colordiffuse="surface" border="20">bobi/r20.png</texture>
       </control>
-      <animation effect="fade" start="0" end="100" time="180" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">WindowOpen</animation>
+      <control type="label" id="311">
+        <left>56</left><top>36</top><width>1240</width><height>52</height>
+        <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+
+      <!-- text field: raised fill, white ring while focused; the pinyin being composed sits on the right -->
       <control type="group">
-        <left>40</left>
-        <right>40</right>
-        <top>40</top>
-        <bottom>40</bottom>
-        <control type="group">
-          <right>320</right>
-          <control type="group">
-            <height>120</height>
-            <control type="label" id="311">
-              <left>40</left>
-              <top>40</top>
-              <height>40</height>
-              <right>120</right>
-              <font>font16</font>
-              <textcolor>FFF4F4F5</textcolor>
-            </control>
-          </control>
-          <control type="group">
-            <top>120</top>
-            <control type="group">
-              <left>20</left>
-              <right>20</right>
-              <top>20</top>
-              <bottom>20</bottom>
-              <control type="group" id="8312">
-                <height>80</height>
-                <width>1070</width>
-                <control type="image">
-                  <visible>!Control.HasFocus(312)</visible>
-                  <texture border="40" colordiffuse="FF303034">am6b/arctic/common/menu.png</texture>
-                </control>
-                <control type="image">
-                  <visible>Control.HasFocus(312)</visible>
-                  <texture border="40" colordiffuse="FF68686D">am6b/arctic/common/menu.png</texture>
-                </control>
-                <control type="edit" id="312">
-                  <font>font14</font>
-                  <textcolor>FFF5F5F5</textcolor>
-                  <aligny>center</aligny>
-                  <ondown condition="Control.IsVisible(500)">500</ondown>
-                  <ondown condition="!Control.IsVisible(500)">120</ondown>
-                  <onup>300</onup>
-                  <left>0</left>
-                  <top>0</top>
-                  <width>1070</width>
-                  <height>80</height>
-                  <textoffsetx>40</textoffsetx>
-                  <align>center</align>
-                  <texturefocus />
-                  <texturenofocus />
-                  <onright>9000</onright>
-                  <onleft>9000</onleft>
-                </control>
-                <control type="label" id="313">
-                  <label />
-                  <font>font12</font>
-                  <textcolor>FFF5F5F5</textcolor>
-                  <left>0</left>
-                  <top>-45</top>
-                  <width>1070</width>
-                  <height>40</height>
-                  <align>center</align>
-                </control>
-                <control type="label" id="314">
-                  <label />
-                  <font>font12</font>
-                  <textcolor>FFF5F5F5</textcolor>
-                  <left>0</left>
-                  <top>-1000</top>
-                  <width>1070</width>
-                  <height>80</height>
-                </control>
-              </control>
-              <control type="button" id="500">
-                <label>$INFO[Window(10103).Property(BobiIME.Word0)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word0))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>510</onleft>
-                <onright>501</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,400)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>0</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="501">
-                <label>$INFO[Window(10103).Property(BobiIME.Word1)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word1))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>500</onleft>
-                <onright>502</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,401)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>107</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="502">
-                <label>$INFO[Window(10103).Property(BobiIME.Word2)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word2))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>501</onleft>
-                <onright>503</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,402)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>214</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="503">
-                <label>$INFO[Window(10103).Property(BobiIME.Word3)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word3))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>502</onleft>
-                <onright>504</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,403)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>321</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="504">
-                <label>$INFO[Window(10103).Property(BobiIME.Word4)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word4))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>503</onleft>
-                <onright>505</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,404)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>428</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="505">
-                <label>$INFO[Window(10103).Property(BobiIME.Word5)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word5))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>504</onleft>
-                <onright>506</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,405)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>535</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="506">
-                <label>$INFO[Window(10103).Property(BobiIME.Word6)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word6))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>505</onleft>
-                <onright>507</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,406)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>642</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="507">
-                <label>$INFO[Window(10103).Property(BobiIME.Word7)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word7))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>506</onleft>
-                <onright>508</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,407)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>749</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="508">
-                <label>$INFO[Window(10103).Property(BobiIME.Word8)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word8))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>507</onleft>
-                <onright>509</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,408)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>856</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="button" id="509">
-                <label>$INFO[Window(10103).Property(BobiIME.Word9)]</label>
-                <font>font14</font>
-                <textcolor>FFF5F5F5</textcolor>
-                <focusedcolor>FF101014</focusedcolor>
-                <align>center</align>
-                <aligny>center</aligny>
-                <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word9))</visible>
-                <onup>312</onup>
-                <ondown>120</ondown>
-                <onleft>508</onleft>
-                <onright>511</onright>
-                <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-                <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-                <onclick>SendClick(10103,409)</onclick>
-                <onclick>SetFocus(120)</onclick>
-                <left>963</left>
-                <top>100</top>
-                <width>100</width>
-                <height>70</height>
-              </control>
-              <control type="grouplist" id="8000">
-                <align>bottom</align>
-                <orientation>vertical</orientation>
-                <itemgap>10</itemgap>
-                <include content="BobiAF_DialogKeyboard_Row">
-                  <param name="id">8001</param>
-                  <param name="keys">123456</param>
-                </include>
-                <include content="BobiAF_DialogKeyboard_Row">
-                  <param name="id">8002</param>
-                  <param name="keys">QWERTY</param>
-                </include>
-                <include content="BobiAF_DialogKeyboard_Row">
-                  <param name="id">8003</param>
-                  <param name="keys">ASDFGH</param>
-                </include>
-                <include content="BobiAF_DialogKeyboard_Row">
-                  <param name="id">8004</param>
-                  <param name="keys">ZXCVBN</param>
-                </include>
-                <include content="BobiAF_DialogKeyboard_Row">
-                  <param name="id">8005</param>
-                  <param name="keys">SYMBOL</param>
-                </include>
-              </control>
-            </control>
-          </control>
+        <left>56</left><top>104</top>
+        <control type="image">
+          <left>0</left><top>0</top><width>1240</width><height>88</height>
+          <texture colordiffuse="surface_hi" border="14">bobi/r14.png</texture>
         </control>
-        <control type="grouplist" id="9000">
-          <right>20</right>
-          <top>20</top>
-          <width>280</width>
-          <height>760</height>
-          <orientation>vertical</orientation>
-          <itemgap>20</itemgap>
-          <onleft>8000</onleft>
-          <onup>9000</onup>
-          <ondown>9000</ondown>
-          <control type="button" id="309">
-            <label>输入语言</label>
-            <font>font12</font>
-            <textcolor>FFF5F5F5</textcolor>
-            <focusedcolor>FF101014</focusedcolor>
-            <align>center</align>
-            <aligny>center</aligny>
-            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-            <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
-            <left>0</left>
-            <top>0</top>
-            <width>280</width>
-            <height>80</height>
-            <onleft>8000</onleft>
-            <onright>8000</onright>
-            <onup>9000</onup>
-            <ondown>9000</ondown>
-          </control>
-          <control type="button" id="512">
-            <font>font12</font>
-            <textcolor>FFF5F5F5</textcolor>
-            <focusedcolor>FF101014</focusedcolor>
-            <align>center</align>
-            <aligny>center</aligny>
-            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-            <animation effect="zoom" start="100" end="102" time="180" tween="quadratic" easing="out" condition="!Skin.HasSetting(BobiReduceMotion)" reversible="true">Focus</animation>
-            <onclick>SetProperty(BobiIME.Clear,1,10103)</onclick>
-            <left>0</left>
-            <top>0</top>
-            <width>280</width>
-            <height>80</height>
-            <onleft>8000</onleft>
-            <onright>8000</onright>
-            <onup>9000</onup>
-            <ondown>9000</ondown>
-            <label>清空</label>
-          </control>
-          <control type="button" id="510">
-            <font>font12</font>
-            <textcolor>FFF5F5F5</textcolor>
-            <focusedcolor>FF101014</focusedcolor>
-            <align>center</align>
-            <aligny>center</aligny>
-            <visible>Control.IsVisible(500)</visible>
-            <onclick>SendClick(10103,305)</onclick>
-            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-            <left>0</left>
-            <top>0</top>
-            <width>280</width>
-            <height>80</height>
-            <onleft>8000</onleft>
-            <onright>8000</onright>
-            <onup>9000</onup>
-            <ondown>9000</ondown>
-            <label>上一页</label>
-          </control>
-          <control type="button" id="511">
-            <font>font12</font>
-            <textcolor>FFF5F5F5</textcolor>
-            <focusedcolor>FF101014</focusedcolor>
-            <align>center</align>
-            <aligny>center</aligny>
-            <visible>Control.IsVisible(500)</visible>
-            <onclick>SendClick(10103,306)</onclick>
-            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-            <texturenofocus border="14" colordiffuse="FF242424">am6b/cinema/rounded.png</texturenofocus>
-            <left>0</left>
-            <top>0</top>
-            <width>280</width>
-            <height>80</height>
-            <onleft>8000</onleft>
-            <onright>8000</onright>
-            <onup>9000</onup>
-            <ondown>9000</ondown>
-            <label>下一页</label>
-          </control>
-          <control type="radiobutton" id="310">
-            <font>font11</font>
-            <texturefocus border="14" colordiffuse="FFFFFFFF">am6b/cinema/rounded.png</texturefocus>
-            <texturenofocus>am6b/transparent.png</texturenofocus>
-            <left>0</left>
-            <top>0</top>
-            <width>280</width>
-            <height>80</height>
-            <onleft>8000</onleft>
-            <onright>8000</onright>
-            <onup>9000</onup>
-            <ondown>9000</ondown>
-            <label>显示密码</label>
-          </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1240</width><height>88</height>
+          <texture colordiffuse="focus" border="20">bobi/ring-r14.png</texture>
+          <visible>Control.HasFocus(312)</visible>
         </control>
-        <control type="label">
-          <left>1130</left>
-          <top>660</top>
-          <width>280</width>
-          <height>80</height>
-          <font>font11</font>
-          <textcolor>FFAAAAAA</textcolor>
-          <wrapmultiline>true</wrapmultiline>
-          <label>拼音选字：↑ 进入候选
-↓ 回到字母区</label>
+        <control type="edit" id="312">
+          <left>0</left><top>0</top><width>960</width><height>88</height>
+          <font>Label30</font><textcolor>text</textcolor><focusedcolor>text</focusedcolor>
+          <textoffsetx>32</textoffsetx><aligny>center</aligny>
+          <texturefocus /><texturenofocus />
+          <onup>noop</onup><onleft>noop</onleft><onright>9000</onright>
+          <ondown condition="Control.IsVisible(500)">8100</ondown>
+          <ondown condition="!Control.IsVisible(500)">100</ondown>
+        </control>
+        <control type="label" id="313">
+          <left>960</left><top>0</top><width>248</width><height>88</height>
+          <font>Label28</font><textcolor>accent_text</textcolor><align>right</align><aligny>center</aligny>
         </control>
       </control>
+
+      <!-- candidates: Kodi's own line until the helper publishes focusable words. The line stays
+           rendered (only faded) because the helper reads it; Kodi sizes its pages by this width. -->
+      <control type="label" id="314">
+        <left>72</left><top>204</top><width>1224</width><height>64</height>
+        <font>Label30</font><textcolor>text2</textcolor><aligny>center</aligny>
+        <animation effect="fade" start="100" end="0" time="0" condition="!String.IsEmpty(Window(10103).Property(BobiIME.Ready))">Conditional</animation>
+      </control>
+      <control type="grouplist" id="8100">
+        <left>56</left><top>204</top><width>1240</width><height>64</height>
+        <orientation>horizontal</orientation><itemgap>4</itemgap>
+        <onup>312</onup><ondown>8000</ondown><onleft>noop</onleft><onright>9000</onright>
+        <control type="button" id="510">
+          <width>64</width><height>64</height>
+          <label>‹</label><font>Label30</font><textcolor>text2</textcolor><focusedcolor>on_focus</focusedcolor>
+          <align>center</align><aligny>center</aligny><textoffsetx>0</textoffsetx>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus><texturenofocus />
+          <pulseonselect>false</pulseonselect>
+          <visible>Control.IsVisible(500) + String.StartsWith(Control.GetLabel(314),&lt;)</visible>
+          <onclick>SendClick(10103,305)</onclick>
+        </control>
+        <include content="KbWord"><param name="n">0</param></include>
+        <include content="KbWord"><param name="n">1</param></include>
+        <include content="KbWord"><param name="n">2</param></include>
+        <include content="KbWord"><param name="n">3</param></include>
+        <include content="KbWord"><param name="n">4</param></include>
+        <include content="KbWord"><param name="n">5</param></include>
+        <include content="KbWord"><param name="n">6</param></include>
+        <include content="KbWord"><param name="n">7</param></include>
+        <include content="KbWord"><param name="n">8</param></include>
+        <include content="KbWord"><param name="n">9</param></include>
+        <control type="button" id="511">
+          <width>64</width><height>64</height>
+          <label>›</label><font>Label30</font><textcolor>text2</textcolor><focusedcolor>on_focus</focusedcolor>
+          <align>center</align><aligny>center</aligny><textoffsetx>0</textoffsetx>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus><texturenofocus />
+          <pulseonselect>false</pulseonselect>
+          <visible>Control.IsVisible(500) + String.EndsWith(Control.GetLabel(314),&gt;)</visible>
+          <onclick>SendClick(10103,306)</onclick>
+        </control>
+      </control>
+
+      <!-- keys: one group, so moving left from the side column returns to the last key -->
+      <control type="group" id="8000">
+        <left>56</left><top>284</top>
+        <defaultcontrol always="false">120</defaultcontrol>
+        <control type="grouplist" id="8001">
+          <left>0</left><top>0</top><width>1240</width><height>80</height>
+          <orientation>horizontal</orientation><itemgap>8</itemgap>
+          <onleft>noop</onleft><onright>9000</onright>
+          <include content="KbKey">
+            <param name="id">100</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown>120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">101</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">102</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">103</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">104</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">105</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">106</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(126)">126</ondown>
+            <ondown condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">107</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(127)">127</ondown>
+            <ondown condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</ondown>
+            <ondown condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">108</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(128)">128</ondown>
+            <ondown condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</ondown>
+            <ondown condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</ondown>
+            <ondown condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">109</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(129)">129</ondown>
+            <ondown condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</ondown>
+            <ondown condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</ondown>
+            <ondown condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</ondown>
+            <ondown condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">110</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(130)">130</ondown>
+            <ondown condition="!Control.IsVisible(130) + Control.IsVisible(129)">129</ondown>
+            <ondown condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</ondown>
+            <ondown condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</ondown>
+            <ondown condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</ondown>
+            <ondown condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">111</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(131)">131</ondown>
+            <ondown condition="!Control.IsVisible(131) + Control.IsVisible(130)">130</ondown>
+            <ondown condition="!Control.IsVisible(130) + Control.IsVisible(129)">129</ondown>
+            <ondown condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</ondown>
+            <ondown condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</ondown>
+            <ondown condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</ondown>
+            <ondown condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">112</param>
+            <onup condition="Control.IsVisible(500)">8100</onup>
+            <onup condition="!Control.IsVisible(500)">312</onup>
+            <ondown condition="Control.IsVisible(132)">132</ondown>
+            <ondown condition="!Control.IsVisible(132) + Control.IsVisible(131)">131</ondown>
+            <ondown condition="!Control.IsVisible(131) + Control.IsVisible(130)">130</ondown>
+            <ondown condition="!Control.IsVisible(130) + Control.IsVisible(129)">129</ondown>
+            <ondown condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</ondown>
+            <ondown condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</ondown>
+            <ondown condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</ondown>
+            <ondown condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</ondown>
+            <ondown condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</ondown>
+            <ondown condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</ondown>
+            <ondown condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</ondown>
+            <ondown condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</ondown>
+            <ondown condition="!Control.IsVisible(121)">120</ondown>
+          </include>
+        </control>
+        <control type="grouplist" id="8002">
+          <left>0</left><top>90</top><width>1240</width><height>80</height>
+          <orientation>horizontal</orientation><itemgap>8</itemgap>
+          <onleft>noop</onleft><onright>9000</onright>
+          <include content="KbKey">
+            <param name="id">120</param>
+            <onup>100</onup>
+            <ondown>140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">121</param>
+            <onup condition="Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">122</param>
+            <onup condition="Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">123</param>
+            <onup condition="Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">124</param>
+            <onup condition="Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">125</param>
+            <onup condition="Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">126</param>
+            <onup condition="Control.IsVisible(106)">106</onup>
+            <onup condition="!Control.IsVisible(106) + Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(146)">146</ondown>
+            <ondown condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">127</param>
+            <onup condition="Control.IsVisible(107)">107</onup>
+            <onup condition="!Control.IsVisible(107) + Control.IsVisible(106)">106</onup>
+            <onup condition="!Control.IsVisible(106) + Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(147)">147</ondown>
+            <ondown condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</ondown>
+            <ondown condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">128</param>
+            <onup condition="Control.IsVisible(108)">108</onup>
+            <onup condition="!Control.IsVisible(108) + Control.IsVisible(107)">107</onup>
+            <onup condition="!Control.IsVisible(107) + Control.IsVisible(106)">106</onup>
+            <onup condition="!Control.IsVisible(106) + Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(148)">148</ondown>
+            <ondown condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</ondown>
+            <ondown condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</ondown>
+            <ondown condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">129</param>
+            <onup condition="Control.IsVisible(109)">109</onup>
+            <onup condition="!Control.IsVisible(109) + Control.IsVisible(108)">108</onup>
+            <onup condition="!Control.IsVisible(108) + Control.IsVisible(107)">107</onup>
+            <onup condition="!Control.IsVisible(107) + Control.IsVisible(106)">106</onup>
+            <onup condition="!Control.IsVisible(106) + Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(149)">149</ondown>
+            <ondown condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</ondown>
+            <ondown condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</ondown>
+            <ondown condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</ondown>
+            <ondown condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">130</param>
+            <onup condition="Control.IsVisible(110)">110</onup>
+            <onup condition="!Control.IsVisible(110) + Control.IsVisible(109)">109</onup>
+            <onup condition="!Control.IsVisible(109) + Control.IsVisible(108)">108</onup>
+            <onup condition="!Control.IsVisible(108) + Control.IsVisible(107)">107</onup>
+            <onup condition="!Control.IsVisible(107) + Control.IsVisible(106)">106</onup>
+            <onup condition="!Control.IsVisible(106) + Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(150)">150</ondown>
+            <ondown condition="!Control.IsVisible(150) + Control.IsVisible(149)">149</ondown>
+            <ondown condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</ondown>
+            <ondown condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</ondown>
+            <ondown condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</ondown>
+            <ondown condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">131</param>
+            <onup condition="Control.IsVisible(111)">111</onup>
+            <onup condition="!Control.IsVisible(111) + Control.IsVisible(110)">110</onup>
+            <onup condition="!Control.IsVisible(110) + Control.IsVisible(109)">109</onup>
+            <onup condition="!Control.IsVisible(109) + Control.IsVisible(108)">108</onup>
+            <onup condition="!Control.IsVisible(108) + Control.IsVisible(107)">107</onup>
+            <onup condition="!Control.IsVisible(107) + Control.IsVisible(106)">106</onup>
+            <onup condition="!Control.IsVisible(106) + Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(151)">151</ondown>
+            <ondown condition="!Control.IsVisible(151) + Control.IsVisible(150)">150</ondown>
+            <ondown condition="!Control.IsVisible(150) + Control.IsVisible(149)">149</ondown>
+            <ondown condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</ondown>
+            <ondown condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</ondown>
+            <ondown condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</ondown>
+            <ondown condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">132</param>
+            <onup condition="Control.IsVisible(112)">112</onup>
+            <onup condition="!Control.IsVisible(112) + Control.IsVisible(111)">111</onup>
+            <onup condition="!Control.IsVisible(111) + Control.IsVisible(110)">110</onup>
+            <onup condition="!Control.IsVisible(110) + Control.IsVisible(109)">109</onup>
+            <onup condition="!Control.IsVisible(109) + Control.IsVisible(108)">108</onup>
+            <onup condition="!Control.IsVisible(108) + Control.IsVisible(107)">107</onup>
+            <onup condition="!Control.IsVisible(107) + Control.IsVisible(106)">106</onup>
+            <onup condition="!Control.IsVisible(106) + Control.IsVisible(105)">105</onup>
+            <onup condition="!Control.IsVisible(105) + Control.IsVisible(104)">104</onup>
+            <onup condition="!Control.IsVisible(104) + Control.IsVisible(103)">103</onup>
+            <onup condition="!Control.IsVisible(103) + Control.IsVisible(102)">102</onup>
+            <onup condition="!Control.IsVisible(102) + Control.IsVisible(101)">101</onup>
+            <onup condition="!Control.IsVisible(101)">100</onup>
+            <ondown condition="Control.IsVisible(152)">152</ondown>
+            <ondown condition="!Control.IsVisible(152) + Control.IsVisible(151)">151</ondown>
+            <ondown condition="!Control.IsVisible(151) + Control.IsVisible(150)">150</ondown>
+            <ondown condition="!Control.IsVisible(150) + Control.IsVisible(149)">149</ondown>
+            <ondown condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</ondown>
+            <ondown condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</ondown>
+            <ondown condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</ondown>
+            <ondown condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</ondown>
+            <ondown condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</ondown>
+            <ondown condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</ondown>
+            <ondown condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</ondown>
+            <ondown condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</ondown>
+            <ondown condition="!Control.IsVisible(141)">140</ondown>
+          </include>
+        </control>
+        <control type="grouplist" id="8003">
+          <left>0</left><top>180</top><width>1240</width><height>80</height>
+          <orientation>horizontal</orientation><itemgap>8</itemgap>
+          <onleft>noop</onleft><onright>9000</onright>
+          <include content="KbKey">
+            <param name="id">140</param>
+            <onup>120</onup>
+            <ondown>160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">141</param>
+            <onup condition="Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">142</param>
+            <onup condition="Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">143</param>
+            <onup condition="Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">144</param>
+            <onup condition="Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">145</param>
+            <onup condition="Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">146</param>
+            <onup condition="Control.IsVisible(126)">126</onup>
+            <onup condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(166)">166</ondown>
+            <ondown condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">147</param>
+            <onup condition="Control.IsVisible(127)">127</onup>
+            <onup condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</onup>
+            <onup condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(167)">167</ondown>
+            <ondown condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</ondown>
+            <ondown condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">148</param>
+            <onup condition="Control.IsVisible(128)">128</onup>
+            <onup condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</onup>
+            <onup condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</onup>
+            <onup condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(168)">168</ondown>
+            <ondown condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</ondown>
+            <ondown condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</ondown>
+            <ondown condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">149</param>
+            <onup condition="Control.IsVisible(129)">129</onup>
+            <onup condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</onup>
+            <onup condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</onup>
+            <onup condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</onup>
+            <onup condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(169)">169</ondown>
+            <ondown condition="!Control.IsVisible(169) + Control.IsVisible(168)">168</ondown>
+            <ondown condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</ondown>
+            <ondown condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</ondown>
+            <ondown condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">150</param>
+            <onup condition="Control.IsVisible(130)">130</onup>
+            <onup condition="!Control.IsVisible(130) + Control.IsVisible(129)">129</onup>
+            <onup condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</onup>
+            <onup condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</onup>
+            <onup condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</onup>
+            <onup condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(170)">170</ondown>
+            <ondown condition="!Control.IsVisible(170) + Control.IsVisible(169)">169</ondown>
+            <ondown condition="!Control.IsVisible(169) + Control.IsVisible(168)">168</ondown>
+            <ondown condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</ondown>
+            <ondown condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</ondown>
+            <ondown condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">151</param>
+            <onup condition="Control.IsVisible(131)">131</onup>
+            <onup condition="!Control.IsVisible(131) + Control.IsVisible(130)">130</onup>
+            <onup condition="!Control.IsVisible(130) + Control.IsVisible(129)">129</onup>
+            <onup condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</onup>
+            <onup condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</onup>
+            <onup condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</onup>
+            <onup condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(171)">171</ondown>
+            <ondown condition="!Control.IsVisible(171) + Control.IsVisible(170)">170</ondown>
+            <ondown condition="!Control.IsVisible(170) + Control.IsVisible(169)">169</ondown>
+            <ondown condition="!Control.IsVisible(169) + Control.IsVisible(168)">168</ondown>
+            <ondown condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</ondown>
+            <ondown condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</ondown>
+            <ondown condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">152</param>
+            <onup condition="Control.IsVisible(132)">132</onup>
+            <onup condition="!Control.IsVisible(132) + Control.IsVisible(131)">131</onup>
+            <onup condition="!Control.IsVisible(131) + Control.IsVisible(130)">130</onup>
+            <onup condition="!Control.IsVisible(130) + Control.IsVisible(129)">129</onup>
+            <onup condition="!Control.IsVisible(129) + Control.IsVisible(128)">128</onup>
+            <onup condition="!Control.IsVisible(128) + Control.IsVisible(127)">127</onup>
+            <onup condition="!Control.IsVisible(127) + Control.IsVisible(126)">126</onup>
+            <onup condition="!Control.IsVisible(126) + Control.IsVisible(125)">125</onup>
+            <onup condition="!Control.IsVisible(125) + Control.IsVisible(124)">124</onup>
+            <onup condition="!Control.IsVisible(124) + Control.IsVisible(123)">123</onup>
+            <onup condition="!Control.IsVisible(123) + Control.IsVisible(122)">122</onup>
+            <onup condition="!Control.IsVisible(122) + Control.IsVisible(121)">121</onup>
+            <onup condition="!Control.IsVisible(121)">120</onup>
+            <ondown condition="Control.IsVisible(172)">172</ondown>
+            <ondown condition="!Control.IsVisible(172) + Control.IsVisible(171)">171</ondown>
+            <ondown condition="!Control.IsVisible(171) + Control.IsVisible(170)">170</ondown>
+            <ondown condition="!Control.IsVisible(170) + Control.IsVisible(169)">169</ondown>
+            <ondown condition="!Control.IsVisible(169) + Control.IsVisible(168)">168</ondown>
+            <ondown condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</ondown>
+            <ondown condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</ondown>
+            <ondown condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</ondown>
+            <ondown condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</ondown>
+            <ondown condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</ondown>
+            <ondown condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</ondown>
+            <ondown condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</ondown>
+            <ondown condition="!Control.IsVisible(161)">160</ondown>
+          </include>
+        </control>
+        <control type="grouplist" id="8004">
+          <left>0</left><top>270</top><width>1240</width><height>80</height>
+          <orientation>horizontal</orientation><itemgap>8</itemgap>
+          <onleft>noop</onleft><onright>9000</onright>
+          <include content="KbKey">
+            <param name="id">160</param>
+            <onup>140</onup>
+            <ondown>302</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">161</param>
+            <onup condition="Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>302</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">162</param>
+            <onup condition="Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>303</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">163</param>
+            <onup condition="Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>304</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">164</param>
+            <onup condition="Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>32</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">165</param>
+            <onup condition="Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>32</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">166</param>
+            <onup condition="Control.IsVisible(146)">146</onup>
+            <onup condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>32</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">167</param>
+            <onup condition="Control.IsVisible(147)">147</onup>
+            <onup condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</onup>
+            <onup condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>32</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">168</param>
+            <onup condition="Control.IsVisible(148)">148</onup>
+            <onup condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</onup>
+            <onup condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</onup>
+            <onup condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>32</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">169</param>
+            <onup condition="Control.IsVisible(149)">149</onup>
+            <onup condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</onup>
+            <onup condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</onup>
+            <onup condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</onup>
+            <onup condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>8</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">170</param>
+            <onup condition="Control.IsVisible(150)">150</onup>
+            <onup condition="!Control.IsVisible(150) + Control.IsVisible(149)">149</onup>
+            <onup condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</onup>
+            <onup condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</onup>
+            <onup condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</onup>
+            <onup condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>8</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">171</param>
+            <onup condition="Control.IsVisible(151)">151</onup>
+            <onup condition="!Control.IsVisible(151) + Control.IsVisible(150)">150</onup>
+            <onup condition="!Control.IsVisible(150) + Control.IsVisible(149)">149</onup>
+            <onup condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</onup>
+            <onup condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</onup>
+            <onup condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</onup>
+            <onup condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>305</ondown>
+          </include>
+          <include content="KbKey">
+            <param name="id">172</param>
+            <onup condition="Control.IsVisible(152)">152</onup>
+            <onup condition="!Control.IsVisible(152) + Control.IsVisible(151)">151</onup>
+            <onup condition="!Control.IsVisible(151) + Control.IsVisible(150)">150</onup>
+            <onup condition="!Control.IsVisible(150) + Control.IsVisible(149)">149</onup>
+            <onup condition="!Control.IsVisible(149) + Control.IsVisible(148)">148</onup>
+            <onup condition="!Control.IsVisible(148) + Control.IsVisible(147)">147</onup>
+            <onup condition="!Control.IsVisible(147) + Control.IsVisible(146)">146</onup>
+            <onup condition="!Control.IsVisible(146) + Control.IsVisible(145)">145</onup>
+            <onup condition="!Control.IsVisible(145) + Control.IsVisible(144)">144</onup>
+            <onup condition="!Control.IsVisible(144) + Control.IsVisible(143)">143</onup>
+            <onup condition="!Control.IsVisible(143) + Control.IsVisible(142)">142</onup>
+            <onup condition="!Control.IsVisible(142) + Control.IsVisible(141)">141</onup>
+            <onup condition="!Control.IsVisible(141)">140</onup>
+            <ondown>306</ondown>
+          </include>
+        </control>
+        <control type="grouplist" id="8005">
+          <left>0</left><top>360</top><width>1240</width><height>80</height>
+          <orientation>horizontal</orientation><itemgap>8</itemgap>
+          <onleft>noop</onleft><onright>9000</onright><ondown>noop</ondown>
+          <include content="KbKey">
+            <param name="id">302</param><param name="control">radiobutton</param>
+            <width>136</width><label>Shift</label><font>Button24</font>
+            <include>KbModeDot</include>
+            <onup>160</onup>
+          </include>
+          <include content="KbKey">
+            <param name="id">303</param><param name="control">radiobutton</param>
+            <width>136</width><label>大写</label><font>Button24</font>
+            <include>KbModeDot</include>
+            <onup condition="Control.IsVisible(162)">162</onup>
+            <onup condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</onup>
+            <onup condition="!Control.IsVisible(161)">160</onup>
+          </include>
+          <include content="KbKey">
+            <param name="id">304</param><param name="control">radiobutton</param>
+            <width>136</width><label>符号</label><font>Button24</font>
+            <include>KbModeDot</include>
+            <onup condition="Control.IsVisible(163)">163</onup>
+            <onup condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</onup>
+            <onup condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</onup>
+            <onup condition="!Control.IsVisible(161)">160</onup>
+          </include>
+          <include content="KbKey">
+            <param name="id">32</param>
+            <width>472</width><label>空格</label><font>Button24</font>
+            <onup condition="Control.IsVisible(166)">166</onup>
+            <onup condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</onup>
+            <onup condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</onup>
+            <onup condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</onup>
+            <onup condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</onup>
+            <onup condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</onup>
+            <onup condition="!Control.IsVisible(161)">160</onup>
+          </include>
+          <include content="KbKey">
+            <param name="id">8</param>
+            <width>136</width><label>&#xf55a;</label><font>BobiAFIcon</font>
+            <onup condition="Control.IsVisible(170)">170</onup>
+            <onup condition="!Control.IsVisible(170) + Control.IsVisible(169)">169</onup>
+            <onup condition="!Control.IsVisible(169) + Control.IsVisible(168)">168</onup>
+            <onup condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</onup>
+            <onup condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</onup>
+            <onup condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</onup>
+            <onup condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</onup>
+            <onup condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</onup>
+            <onup condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</onup>
+            <onup condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</onup>
+            <onup condition="!Control.IsVisible(161)">160</onup>
+          </include>
+          <include content="KbKey">
+            <param name="id">305</param>
+            <width>88</width><label>←</label><font>Label30</font>
+            <onup condition="Control.IsVisible(171)">171</onup>
+            <onup condition="!Control.IsVisible(171) + Control.IsVisible(170)">170</onup>
+            <onup condition="!Control.IsVisible(170) + Control.IsVisible(169)">169</onup>
+            <onup condition="!Control.IsVisible(169) + Control.IsVisible(168)">168</onup>
+            <onup condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</onup>
+            <onup condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</onup>
+            <onup condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</onup>
+            <onup condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</onup>
+            <onup condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</onup>
+            <onup condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</onup>
+            <onup condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</onup>
+            <onup condition="!Control.IsVisible(161)">160</onup>
+          </include>
+          <include content="KbKey">
+            <param name="id">306</param>
+            <width>88</width><label>→</label><font>Label30</font>
+            <onup condition="Control.IsVisible(172)">172</onup>
+            <onup condition="!Control.IsVisible(172) + Control.IsVisible(171)">171</onup>
+            <onup condition="!Control.IsVisible(171) + Control.IsVisible(170)">170</onup>
+            <onup condition="!Control.IsVisible(170) + Control.IsVisible(169)">169</onup>
+            <onup condition="!Control.IsVisible(169) + Control.IsVisible(168)">168</onup>
+            <onup condition="!Control.IsVisible(168) + Control.IsVisible(167)">167</onup>
+            <onup condition="!Control.IsVisible(167) + Control.IsVisible(166)">166</onup>
+            <onup condition="!Control.IsVisible(166) + Control.IsVisible(165)">165</onup>
+            <onup condition="!Control.IsVisible(165) + Control.IsVisible(164)">164</onup>
+            <onup condition="!Control.IsVisible(164) + Control.IsVisible(163)">163</onup>
+            <onup condition="!Control.IsVisible(163) + Control.IsVisible(162)">162</onup>
+            <onup condition="!Control.IsVisible(162) + Control.IsVisible(161)">161</onup>
+            <onup condition="!Control.IsVisible(161)">160</onup>
+          </include>
+        </control>
+      </control>
+
+      <!-- side column -->
+      <control type="grouplist" id="9000">
+        <left>1336</left><top>104</top><width>300</width><height>620</height>
+        <orientation>vertical</orientation><itemgap>12</itemgap>
+        <onleft>8000</onleft><onright>noop</onright><onup>noop</onup><ondown>noop</ondown>
+        <include content="KbSideButton">
+          <param name="id">300</param><param name="label">完成</param>
+          <textcolor>accent_text</textcolor>
+        </include>
+        <include content="KbSideButton"><param name="id">301</param><param name="label">取消</param></include>
+        <include content="KbSideButton">
+          <param name="id">512</param><param name="label">清空</param>
+          <onclick condition="!String.IsEmpty(Window(10103).Property(BobiIME.Owner))">SetProperty(BobiIME.Clear,1,10103)</onclick>
+          <onclick condition="String.IsEmpty(Window(10103).Property(BobiIME.Owner))">SendClick(10103,308)</onclick>
+        </include>
+        <include content="KbSideButton"><param name="id">309</param><param name="label"></param></include>
+        <control type="radiobutton" id="310">
+          <left>0</left><top>0</top><width>300</width><height>80</height>
+          <label>显示密码</label>
+          <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+          <textoffsetx>24</textoffsetx><aligny>center</aligny>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+          <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
+          <radioposx>212</radioposx><radiowidth>64</radiowidth><radioheight>36</radioheight>
+          <textureradioonfocus colordiffuse="accent">bobi/toggle-on.png</textureradioonfocus>
+          <textureradioonnofocus colordiffuse="accent">bobi/toggle-on.png</textureradioonnofocus>
+          <textureradioofffocus colordiffuse="on_focus">bobi/toggle-off.png</textureradioofffocus>
+          <textureradiooffnofocus colordiffuse="text3">bobi/toggle-off.png</textureradiooffnofocus>
+          <pulseonselect>false</pulseonselect>
+          <onleft>8000</onleft><onright>noop</onright>
+        </control>
+      </control>
+      <control type="label">
+        <left>1340</left><top>676</top><width>296</width><height>40</height>
+        <label>↑ 选字   ‹ › 翻页</label>
+        <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+        <visible>Control.IsVisible(500)</visible>
+      </control>
     </control>
-    <control type="button" id="400">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[0]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="401">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[1]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="402">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[2]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="403">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[3]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="404">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[4]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="405">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[5]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="406">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[6]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="407">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[7]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="408">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[8]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="409">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>$NUMBER[9]</label>
-      <visible>false</visible>
-    </control>
-    <control type="button" id="308">
-      <left>-200</left>
-      <top>-200</top>
-      <width>1</width>
-      <height>1</height>
-      <label>清空</label>
-      <visible>false</visible>
-    </control>
+    <!-- native hooks: 400-409 type the digit that picks candidate n; 308 is Kodi's clear -->
+    <control type="button" id="400"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[0]</label><visible>false</visible></control>
+    <control type="button" id="401"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[1]</label><visible>false</visible></control>
+    <control type="button" id="402"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[2]</label><visible>false</visible></control>
+    <control type="button" id="403"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[3]</label><visible>false</visible></control>
+    <control type="button" id="404"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[4]</label><visible>false</visible></control>
+    <control type="button" id="405"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[5]</label><visible>false</visible></control>
+    <control type="button" id="406"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[6]</label><visible>false</visible></control>
+    <control type="button" id="407"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[7]</label><visible>false</visible></control>
+    <control type="button" id="408"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[8]</label><visible>false</visible></control>
+    <control type="button" id="409"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>$NUMBER[9]</label><visible>false</visible></control>
+    <control type="button" id="308"><left>-200</left><top>-200</top><width>1</width><height>1</height><label>清空</label><visible>false</visible></control>
   </controls>
 </window>

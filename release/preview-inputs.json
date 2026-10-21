@@ -23,6 +23,7 @@
       "lib/bobbi_platform/instance_lock.py",
       "lib/bobbi_platform/kodi.py",
       "lib/bobbi_platform/libraries.py",
+      "lib/bobbi_platform/library_listing.py",
       "lib/bobbi_platform/library_ui.py",
       "lib/bobbi_platform/maintenance_lease.py",
       "lib/bobbi_platform/native_engine.py",

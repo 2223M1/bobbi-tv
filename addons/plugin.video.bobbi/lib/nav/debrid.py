@@ -236,10 +236,12 @@ def get_rd_downloads(params):
         )
 
     if downloads:
+        next_item = build_list_item("下一页", "next.png")
+        next_item.setProperty("Bobi.NextPage", "true")
         addDirectoryItem(
             ADDON_HANDLE,
             build_url("get_rd_downloads", page=page + 1),
-            build_list_item("Next Page", "next.png"),
+            next_item,
             isFolder=True,
         )
 
