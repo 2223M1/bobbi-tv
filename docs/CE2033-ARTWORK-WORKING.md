@@ -1,4 +1,7 @@
-# CE2033 artwork closure — working, not yet device-accepted
+# CE2033 artwork closure — historical working receipt
+
+Final installation, tests and limitations supersede pending statements below:
+see [CE2034 private delivery](CE2034-PRIVATE-REVIEW-DELIVERY.md).
 
 The poster report was made while CE2031 was live. CE2032 navigation was installed
 later; its new warmer cannot explain the earlier report. No private API/image

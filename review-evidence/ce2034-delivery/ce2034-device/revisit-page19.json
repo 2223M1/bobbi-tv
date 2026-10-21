@@ -1,0 +1,19 @@
+{
+  "mode": "open",
+  "timestamp": 1792595635.3668356,
+  "exit": 0,
+  "diagnostic": false,
+  "result": {
+    "elapsed_seconds": 0.403,
+    "gui": {
+      "currentcontrol": {
+        "label": ""
+      },
+      "currentwindow": {
+        "id": 10138,
+        "label": ""
+      }
+    },
+    "labels": {}
+  }
+}

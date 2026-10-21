@@ -1,0 +1,38 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261021-220500",
+  "mode": "choose",
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "result": {
+    "players": [],
+    "gui": {
+      "currentcontrol": {
+        "label": "否"
+      },
+      "currentwindow": {
+        "id": 10100,
+        "label": "是/否对话框"
+      }
+    },
+    "labels": {
+      "Container(6).CurrentItem": "",
+      "Container(6).ListItem.Label": "",
+      "Container(6).NumItems": "",
+      "Control.GetLabel(1)": "安装波比影院",
+      "Control.GetLabel(10)": "否",
+      "Control.GetLabel(11)": "是",
+      "Control.GetLabel(2)": "",
+      "Control.GetLabel(3)": "",
+      "Control.GetLabel(4)": "",
+      "Control.GetLabel(5)": "",
+      "Control.GetLabel(6)": "",
+      "Window.Property(playback_error)": ""
+    },
+    "installation": {
+      "sequence": 2026102031,
+      "high_watermark": 2026102031,
+      "phase": "complete",
+      "tx": "983fc4fac73c4744a44cb6ac2c5ab470"
+    }
+  }
+}

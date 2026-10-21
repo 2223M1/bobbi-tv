@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="18" time="0.919" timestamp="2026-10-21T22:14:29.790785+08:00" hostname="Paimon"><testcase classname="tests.test_image_cache" name="test_helper_only_reads_local_configuration_never_fetches" time="0.006" /><testcase classname="tests.test_image_cache" name="test_only_bounded_keyless_tmdb_image_paths[//foreign/a.jpg]" time="0.000" /><testcase classname="tests.test_image_cache" name="test_only_bounded_keyless_tmdb_image_paths[https://image.tmdb.org.evil/t/p/w342/a.jpg]" time="0.000" /><testcase classname="tests.test_image_cache" name="test_only_bounded_keyless_tmdb_image_paths[https://user@image.tmdb.org/t/p/w342/a.jpg]" time="0.000" /><testcase classname="tests.test_image_cache" name="test_only_bounded_keyless_tmdb_image_paths[https://image.tmdb.org/t/p/w342/a.jpg?api_key=forbidden]" time="0.000" /><testcase classname="tests.test_image_cache" name="test_only_bounded_keyless_tmdb_image_paths[https://image.tmdb.org/t/p/w342/../secret]" time="0.000" /><testcase classname="tests.test_image_cache" name="test_only_bounded_keyless_tmdb_image_paths[https://image.tmdb.org:444/t/p/w342/a.jpg]" time="0.000" /><testcase classname="tests.test_image_cache" name="test_success_cache_is_offline_and_keeps_original_bytes" time="0.006" /><testcase classname="tests.test_image_cache" name="test_failure_never_becomes_cached_art_and_cools_down[result0]" time="0.002" /><testcase classname="tests.test_image_cache" name="test_failure_never_becomes_cached_art_and_cools_down[result1]" time="0.002" /><testcase classname="tests.test_image_cache" name="test_failure_never_becomes_cached_art_and_cools_down[result2]" time="0.002" /><testcase classname="tests.test_image_cache" name="test_same_image_is_single_flight" time="0.006" /><testcase classname="tests.test_image_cache" name="test_quota_evicts_only_owned_cache_images" time="0.009" /><testcase classname="tests.test_image_cache" name="test_shutdown_or_deadline_cannot_publish_late_bytes" time="0.002" /><testcase classname="tests.test_image_cache" name="test_loopback_service_has_readonly_scope_and_requires_exact_host_token_path" time="0.144" /><testcase classname="tests.test_image_cache" name="test_old_service_cannot_remove_new_registration" time="0.107" /><testcase classname="tests.test_image_cache" name="test_restart_keeps_art_url_identity_and_kodi_texture_cache" time="0.215"><failure message="AssertionError: assert 'http://127.0...w342/test.png' == 'http://127.0...w342/test.png'&#10;  &#10;  - http://127.0.0.1:65355/art/832ca60df5c195a25aebc26269afab05f6e75e2132e111307c56824931d48f22/w342/test.png&#10;  + http://127.0.0.1:65356/art/9bc48a9a7710a987a41f954b6981e5b487f6baf428c29294afa2f3ec9d7d3e6a/w342/test.png">tmp_path = WindowsPath('C:/Users/theon/AppData/Local/Temp/pytest-of-2223M1/pytest-1292/test_restart_keeps_art_url_ide0')
+
+    def test_restart_keeps_art_url_identity_and_kodi_texture_cache(tmp_path):
+        first=ImageService(tmp_path,transport=lambda *a:dict(status=200,body=PNG))
+        first.start()
+        original=image_url('/test.png','w342',tmp_path)
+        first.close()
+        second=ImageService(tmp_path,transport=lambda *a:dict(status=200,body=PNG))
+        second.start()
+        try:
+&gt;           assert image_url('/test.png','w342',tmp_path)==original
+E           AssertionError: assert 'http://127.0...w342/test.png' == 'http://127.0...w342/test.png'
+E             
+E             - http://127.0.0.1:65355/art/832ca60df5c195a25aebc26269afab05f6e75e2132e111307c56824931d48f22/w342/test.png
+E             + http://127.0.0.1:65356/art/9bc48a9a7710a987a41f954b6981e5b487f6baf428c29294afa2f3ec9d7d3e6a/w342/test.png
+
+tests\test_image_cache.py:142: AssertionError</failure></testcase><testcase classname="tests.test_image_cache" name="test_cached_poster_is_not_refused_behind_four_slow_misses" time="0.177"><failure message="ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。">tmp_path = WindowsPath('C:/Users/theon/AppData/Local/Temp/pytest-of-2223M1/pytest-1292/test_cached_poster_is_not_refu0')
+
+    def test_cached_poster_is_not_refused_behind_four_slow_misses(tmp_path):
+        from threading import Lock
+        entered,release,lock=Event(),Event(),Lock()
+        count=[0]
+        def fetch(url,*args):
+            if 'hot.png' not in url:
+                with lock:
+                    count[0]+=1
+                    if count[0]&gt;=4:entered.set()
+                assert release.wait(3)
+            return dict(status=200,body=PNG)
+        service=ImageService(tmp_path,transport=fetch)
+        service.start()
+        service.cache.get('/t/p/w342/hot.png',time.monotonic()+1)
+        def get(name):
+            with build_opener(ProxyHandler({})).open(image_url('/'+name+'.png','w342',tmp_path),timeout=4) as response:
+                return response.read()
+        try:
+            with ThreadPoolExecutor(max_workers=5) as pool:
+                futures=[pool.submit(get,'cold'+str(n)) for n in range(4)]
+                assert entered.wait(1)
+                try:
+&gt;                   assert pool.submit(get,'hot').result(timeout=1)==PNG
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_image_cache.py:170: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py:59: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_image_cache.py:163: in get
+    with build_opener(ProxyHandler({})).open(image_url('/'+name+'.png','w342',tmp_path),timeout=4) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py:515: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py:532: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py:492: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py:1373: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py:1348: in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\http\client.py:1430: in getresponse
+    response.begin()
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\http\client.py:331: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\http\client.py:292: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;socket.SocketIO object at 0x000002D2B156B190&gt;
+b = &lt;memory at 0x000002D2B13E34C0&gt;
+
+    def readinto(self, b):
+        """Read up to len(b) bytes into the writable buffer *b* and return
+        the number of bytes read.  If the socket is non-blocking and no bytes
+        are available, None is returned.
+    
+        If *b* is non-empty, a 0 return value indicates that the connection
+        was shutdown at the other end.
+        """
+        self._checkClosed()
+        self._checkReadable()
+        if self._timeout_occurred:
+            raise OSError("cannot read from timed out object")
+        while True:
+            try:
+&gt;               return self._sock.recv_into(b)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+E               ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\socket.py:720: ConnectionResetError</failure></testcase></testsuite></testsuites>

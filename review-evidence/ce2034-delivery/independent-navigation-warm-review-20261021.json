@@ -1,0 +1,99 @@
+{
+  "review": "Independent read-only navigation metadata prewarming review and counterexample regression",
+  "date": "2026-10-21",
+  "workspace": "D:/AM6B-Project/bobbi-tv-ce2029-selfaudit-20261021",
+  "method": {
+    "product_source_edits_by_reviewer": false,
+    "test_file_edits_by_reviewer": false,
+    "device_access": false,
+    "network_access": false,
+    "execution": "python -B with production source loaded by PowerShell into memory; mocked Kodi, cache and transport boundaries. Selected production functions/classes were compiled from AST where their module imports would initialize unrelated services. Network connection creation was forbidden in fixtures. A bounded child independently exercised real navigation.prepare, related_movies discovery, localized-season loading and the warm/tick chain.",
+    "implementation_owner": "Main agent made fixes; reviewer only reported defects and reran independent fixtures."
+  },
+  "verdict": "The reproduced cancellation, retry-cooldown, invalid-success and shared-preloader gating counterexamples are blocked in the reviewed final snapshot. This is local semantic evidence, not device certification or proof of hard-real-time cancellation.",
+  "findings_and_regressions": [
+    {
+      "id": "cancelled-detail-retry-poisoning",
+      "initial_finding": "TV and movie guards used only current request_remaining. A transport exception carrying metadata_stage=CANCELLED after the dynamic cancellation predicate returned to false was persisted as a 20-second failure, suppressing the next ordinary foreground fetch.",
+      "initial_fixture": {"tv_failure_markers": 1, "movie_failure_markers": 1, "foreground_fetches_after_each": 0},
+      "final_fixture": {"tv_failure_markers": 0, "movie_failure_markers": 0, "foreground_fetches_after_each": 1, "foreground_results_valid": true},
+      "control": "When cancellation remains true, both original and fixed guards write no failure marker.",
+      "status": "fixed_and_reproduced"
+    },
+    {
+      "id": "cancelled-episode-order-commit",
+      "initial_finding": "get_order could commit its 24-hour order result, including order=null, after the request callback had observed cancellation. A later foreground get_order(fetch=True) would reuse that result instead of fetching.",
+      "qualification": "This establishes a commit after cancellation; a legitimately empty successful provider response is not by itself incorrect metadata.",
+      "initial_fixture": {"cancelled_writes": 1, "fetches_including_following_foreground": 1},
+      "final_fixture": {"cancelled_writes": 0, "fetches_including_following_foreground": 2},
+      "status": "fixed_and_reproduced"
+    },
+    {
+      "id": "legacy-preloader-bypasses-new-gates",
+      "initial_finding": "NavigationWarmer correctly rejected audio playback/modal state, but the same StartupPreloader iteration could still reach old catalogue, deferred hydration and pending-refresh paths. With isPlaying=true, isPlayingVideo=false and modal=true, the old gate returned true and dispatched RunPlugin plus Container.Refresh.",
+      "final_fixture": {
+        "audio_and_modal": {"catalog_safe": false, "actions": []},
+        "resource_pressure": {"catalog_safe": false, "deferred_dispatched": false, "actions": []}
+      },
+      "scope_note": "The existing idle pending-refresh behavior remains distinct from navigation warming. The new navigation warmer does not issue GUI refreshes.",
+      "status": "fixed_and_reproduced"
+    },
+    {
+      "id": "all-none-season-pages-count-as-success",
+      "initial_finding": "Three failed locale requests produced a truthy dictionary of None values. prepare accepted it as a season page, warm/tick returned true and applied a 3600-second success cooldown despite no valid season metadata.",
+      "initial_fixture": {"all_season_requests_failed": true, "warm": true, "tick": true, "cooldown_seconds": 3600},
+      "final_fixtures": [
+        {"valid_target_seasons": "0/2", "warm": false, "tick": false, "cooldown_seconds": 60},
+        {"valid_target_seasons": "1/2", "warm": false, "tick": false, "cooldown_seconds_approx": 60},
+        {"valid_target_seasons": "2/2", "warm": true, "tick": true, "cooldown_seconds": 3600}
+      ],
+      "status": "fixed_and_reproduced"
+    },
+    {
+      "id": "malformed-focus-url-kills-shared-worker",
+      "initial_finding": "urlsplit('plugin://[bad') raised ValueError before origin filtering. focused_target was called outside tick's work-body exception handler, so malformed focused item data could terminate the one service worker.",
+      "final_fixture": {"input": "plugin://[bad", "result": null, "exception": null},
+      "status": "fixed_and_reproduced"
+    },
+    {
+      "id": "shared-sticky-cancellation-reset-race",
+      "initial_finding": "stopped[0] = stopped[0] or predicate() was not monotonic across threads because predicate calls can release the GIL. A slow eligible callback could overwrite cancellation already observed by another IO worker.",
+      "deterministic_interleaving": "Thread A reads old false and waits inside ready; thread B sees playback and records true; thread A resumes with its old eligible result; inspect a subsequent callback.",
+      "initial_fixture": {"thread_b": true, "thread_a": false, "later": false},
+      "final_fixture": {"thread_b": true, "thread_a": true, "later": true},
+      "status": "fixed_and_reproduced"
+    }
+  ],
+  "other_verified_properties": {
+    "resource_ready_gate": {"eligible": true, "audio_or_video": false, "no_network": false, "modal": false, "other_window": false, "resource_pressure": false},
+    "actual_nested_io_peak": {
+      "value": 8,
+      "derivation": "Two related-movie searches plus two season tasks with three locale requests each.",
+      "proof": "Eight-party Barrier at mocked production tmdb_get boundaries reached peak 8; every call carried a budget and quiet=true.",
+      "disposition": "Main agent explicitly accepts this AM6B+ concurrency with resource headroom and cancellation. Do not describe the outer pool of 3 as a global IO cap."
+    },
+    "request_budget_isolation": [
+      "Concurrent normal search without a request scope succeeded with quiet=false and default remaining=12 while a separate cancelled worker failed only its own request.",
+      "The same worker performed a successful ordinary search after leaving its cancelled scope.",
+      "Nested deadlines use the smaller bound; quiet and cancellation combine; inner exceptions and outer exits restore prior context.",
+      "Shared TMDb session identity, default timeout and language were unchanged.",
+      "Preparation and warm fixtures left _request_scope=None."
+    ],
+    "side_effect_scope": "Reviewed warmer paths request account-neutral TMDb catalogue/detail metadata and write their intended caches. They read only public target IDs from focused/history item data. No playable-URL request, transfer creation, media-byte fetch, playback start, account modification or new-warmer GUI refresh was found in this reviewed call graph."
+  },
+  "limits": [
+    "The 8-second deadline is cooperative. Existing documentation correctly notes OS/platform DNS/connect cannot be forcibly interrupted by this code; executor exit waits for in-flight work.",
+    "Pure-memory fixtures cannot establish AM6B thermal behavior, memory usage, network latency, GUI smoothness or physical playback safety.",
+    "Source may change after the hashes below. These results cover the reviewed snapshot and exact counterexamples, not every conceivable input or later implementation.",
+    "The earlier Mushishi buffer investigation was paused when this review superseded it. No buffer probe, personal probe or device action was run."
+  ],
+  "reviewed_sha256": {
+    "addons/plugin.video.bobbi/lib/services/navigation_warmer.py": "14ea112f390ac5e2cdc637a091b54ee6aa1d1ae6eaaa4c7a8df91b34c7a45298",
+    "addons/plugin.video.bobbi/lib/services/preloader.py": "2d9f611da04aab4f9adf3b83909d13d453c9cb11aadec8f2c485d2225fc0e860",
+    "addons/plugin.video.bobbi/lib/clients/tmdb/navigation.py": "9166db6857d7ea34113b70fe08d29d80fb4f4451addf5b08791a12363b127047",
+    "addons/plugin.video.bobbi/lib/clients/tmdb/detail_cache.py": "31b2f65fb580696a82f282b26e2fde028e70ce10934818cec5521c085cc31fda",
+    "addons/plugin.video.bobbi/lib/clients/tmdb/movie_details_guard.py": "bb7bf27c211a0952fae71c57f5d89e3cc1fb286a7452b40938e352d6498b5718",
+    "addons/plugin.video.bobbi/lib/clients/tmdb/episode_order.py": "b6b365fdcc588ce9805eb6e0b07c268def7b7996609bcd3a82c83aa159110785",
+    "addons/script.module.bobbi.core/lib/bobbi_core/metadata_transport.py": "a3263dddaf3cd0a654fc946f7ad3c7aed1e1ff5d9299cfc0dbf25bb6b7bea60e"
+  }
+}

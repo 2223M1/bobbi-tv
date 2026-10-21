@@ -1,0 +1,21 @@
+{
+  "timestamp": 1792595045.9327497,
+  "focus": {
+    "action": "show_episodes_details",
+    "ids": "{\"tmdb_id\": \"39218\", \"tvdb_id\": 219181, \"imdb_id\": \"tt1773185\"}",
+    "mode": "tv",
+    "season": "1"
+  },
+  "labels": {
+    "ListItem.DBType": "season",
+    "ListItem.Label": "第 1 季"
+  },
+  "gui": {
+    "currentwindow": {
+      "id": 10025,
+      "label": "视频"
+    }
+  },
+  "players": [],
+  "cache_present": true
+}
