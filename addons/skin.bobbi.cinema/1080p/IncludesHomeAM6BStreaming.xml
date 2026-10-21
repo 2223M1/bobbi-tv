@@ -469,7 +469,7 @@
         <label>搜索[CR]SEARCH</label>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
         <onclick>RunScript(script.globalsearch)</onclick>
         <onleft>9804</onleft>
@@ -486,7 +486,7 @@
         <label>浏览[CR]BROWSE</label>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
         <onclick>ActivateWindow(Videos)</onclick>
         <onleft>9802</onleft>
@@ -503,7 +503,7 @@
         <label>设置[CR]SETTINGS</label>
         <align>center</align>
         <aligny>center</aligny>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
         <onclick>ActivateWindow(Settings)</onclick>
         <onleft>9803</onleft>
@@ -549,7 +549,7 @@
           <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
           <textcolor>99FFFFFF</textcolor>
         </control>
-        <control type="button" id="9811">
+<control type="button" id="9811">
           <left>72</left>
           <top>52</top>
           <width>205</width>
@@ -560,7 +560,7 @@
           <label>动漫分类与往季[CR]ANIME &amp; PAST SEASONS</label>
           <textcolor>CCFFFFFF</textcolor>
           <focusedcolor>FFFFFFFF</focusedcolor>
-          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
           <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
           <onclick>SetProperty(AM6BHub,anime,home)</onclick>
           <onclick>ActivateWindow(1195)</onclick>
@@ -721,7 +721,7 @@
           <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
           <textcolor>99FFFFFF</textcolor>
         </control>
-        <control type="button" id="9821">
+<control type="button" id="9821">
           <left>72</left>
           <top>354</top>
           <width>205</width>
@@ -732,7 +732,7 @@
           <label>动漫电影分类[CR]BROWSE ANIME FILMS</label>
           <textcolor>CCFFFFFF</textcolor>
           <focusedcolor>FFFFFFFF</focusedcolor>
-          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
           <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
           <onclick>SetProperty(AM6BHub,anime_movie,home)</onclick>
           <onclick>ActivateWindow(1195)</onclick>
@@ -893,7 +893,7 @@
           <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
           <textcolor>99FFFFFF</textcolor>
         </control>
-        <control type="button" id="9831">
+<control type="button" id="9831">
           <left>72</left>
           <top>656</top>
           <width>205</width>
@@ -904,7 +904,7 @@
           <label>电视剧分类[CR]BROWSE SERIES</label>
           <textcolor>CCFFFFFF</textcolor>
           <focusedcolor>FFFFFFFF</focusedcolor>
-          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
           <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
           <onclick>SetProperty(AM6BHub,tv,home)</onclick>
           <onclick>ActivateWindow(1195)</onclick>
@@ -1065,7 +1065,7 @@
           <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
           <textcolor>99FFFFFF</textcolor>
         </control>
-        <control type="button" id="9841">
+<control type="button" id="9841">
           <left>72</left>
           <top>958</top>
           <width>205</width>
@@ -1076,7 +1076,7 @@
           <label>电影分类[CR]BROWSE FILMS</label>
           <textcolor>CCFFFFFF</textcolor>
           <focusedcolor>FFFFFFFF</focusedcolor>
-          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
           <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
           <onclick>SetProperty(AM6BHub,movie,home)</onclick>
           <onclick>ActivateWindow(1195)</onclick>
@@ -1237,7 +1237,7 @@
           <label>← 分类 · 内容 / BROWSE · CONTENT →</label>
           <textcolor>99FFFFFF</textcolor>
         </control>
-        <control type="button" id="9851">
+<control type="button" id="9851">
           <left>72</left>
           <top>1260</top>
           <width>205</width>
@@ -1248,7 +1248,7 @@
           <label>历史记录分类[CR]BROWSE HISTORY</label>
           <textcolor>CCFFFFFF</textcolor>
           <focusedcolor>FFFFFFFF</focusedcolor>
-          <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+          <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
           <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
           <onclick>SetProperty(AM6BHub,history,home)</onclick>
           <onclick>ActivateWindow(1195)</onclick>

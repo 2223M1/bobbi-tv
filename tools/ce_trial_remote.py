@@ -14,6 +14,8 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'arrival': {'title': 'Arrival', 'tmdb_id': 329865, 'kind': 'movie', 'year': 2016},
+    'mushishi': {'title': 'Mushi-Shi', 'tmdb_id': 26867, 'kind': 'tv', 'year': 2005, 'season': 1, 'episode': 1, 'animation': True},
     'grand_budapest': {'title': 'The Grand Budapest Hotel', 'tmdb_id': 120467, 'kind': 'movie', 'year': 2014},
     'further_universe': {'title': 'A Place Further Than the Universe', 'tmdb_id': 76059, 'kind': 'tv', 'year': 2018, 'season': 1, 'episode': 1, 'animation': True},
     'perfect_days': {'title': 'Perfect Days', 'tmdb_id': 976893, 'kind': 'movie', 'year': 2023},

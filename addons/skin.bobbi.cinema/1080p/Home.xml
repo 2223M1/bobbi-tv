@@ -19,20 +19,13 @@
         <param name="title" value="继续观看" />
         <param name="content" value="plugin://plugin.video.bobbi/?action=continue_watching_menu" />
         <param name="up" value="9701" />
-        <param name="down" value="9820" />
-      </include>
-      <include content="HomeRailLibrary">
-        <param name="id" value="9820" />
-        <param name="title" value="我的网盘与 NAS" />
-        <param name="content" value="plugin://plugin.video.bobbi.library/" />
-        <param name="up" value="9810" />
         <param name="down" value="9830" />
       </include>
       <include content="HomeRail">
         <param name="id" value="9830" />
         <param name="title" value="热门剧集" />
         <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" />
-        <param name="up" value="9820" />
+        <param name="up" value="9810" />
         <param name="down" value="9840" />
       </include>
       <include content="HomeRail">
@@ -83,12 +76,12 @@
     </control>
     <!-- offline / all catalogue rails empty -->
     <control type="group">
-      <visible>!Container(9810).IsUpdating + !Container(9820).IsUpdating + !Container(9830).IsUpdating + !Container(9840).IsUpdating + !Container(9850).IsUpdating + !Container(9860).IsUpdating + Integer.IsEqual(Container(9810).NumItems,0) + Integer.IsEqual(Container(9820).NumItems,0) + Integer.IsEqual(Container(9830).NumItems,0) + Integer.IsEqual(Container(9840).NumItems,0) + Integer.IsEqual(Container(9850).NumItems,0) + Integer.IsEqual(Container(9860).NumItems,0)</visible>
+      <visible>!Container(9810).IsUpdating + !Container(9830).IsUpdating + !Container(9840).IsUpdating + !Container(9850).IsUpdating + !Container(9860).IsUpdating + Integer.IsEqual(Container(9810).NumItems,0) + Integer.IsEqual(Container(9830).NumItems,0) + Integer.IsEqual(Container(9840).NumItems,0) + Integer.IsEqual(Container(9850).NumItems,0) + Integer.IsEqual(Container(9860).NumItems,0)</visible>
       <include content="StateBlock">
         <param name="y">640</param>
         <param name="empty">true</param>
         <param name="emptytitle">片单暂时无法加载</param>
-        <param name="emptyhint">首次使用请到“我的 → 影院设置”配置 TMDb；也可直接打开自己的网盘与 NAS</param>
+        <param name="emptyhint">首次使用请到「我的」配置影院；网盘与 NAS 也在「我的」里添加</param>
       </include>
     </control>
     <include content="TopBar">

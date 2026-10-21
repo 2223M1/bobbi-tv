@@ -37,7 +37,7 @@
         <width>548</width>
         <height>60</height>
         <font>font13</font>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
         <onright>16</onright>
         <onleft>16</onleft>
@@ -51,7 +51,7 @@
         <width>548</width>
         <height>60</height>
         <font>font13</font>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
         <onright>15</onright>
         <onleft>15</onleft>
@@ -68,7 +68,7 @@
       <font>font13</font>
       <aligny>center</aligny>
       <invalidcolor>invalid</invalidcolor>
-      <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
       <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
       <label />
       <hinttext>16028</hinttext>
@@ -85,7 +85,7 @@
       <height>60</height>
       <align>center</align>
       <aligny>center</aligny>
-      <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
       <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
       <label>1024</label>
       <font>font12_title</font>

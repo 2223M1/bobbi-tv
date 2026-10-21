@@ -46,7 +46,7 @@
                   <height>20</height>
                   <bottom>50</bottom>
                   <textoffsetx>20</textoffsetx>
-                  <selectedcolor>blue</selectedcolor>
+                  <selectedcolor>accent</selectedcolor>
                 </control>
                 <control type="label">
                   <font>font10</font>
@@ -55,7 +55,7 @@
                   <height>20</height>
                   <bottom>20</bottom>
                   <textoffsetx>20</textoffsetx>
-                  <selectedcolor>blue</selectedcolor>
+                  <selectedcolor>accent</selectedcolor>
                 </control>
                 <include>View_WatchedOverlay</include>
               </control>
@@ -87,7 +87,7 @@
                   <height>20</height>
                   <bottom>50</bottom>
                   <textoffsetx>20</textoffsetx>
-                  <selectedcolor>blue</selectedcolor>
+                  <selectedcolor>accent</selectedcolor>
                 </control>
                 <control type="label">
                   <font>font10</font>
@@ -96,14 +96,14 @@
                   <height>20</height>
                   <bottom>20</bottom>
                   <textoffsetx>20</textoffsetx>
-                  <selectedcolor>blue</selectedcolor>
+                  <selectedcolor>accent</selectedcolor>
                 </control>
                 <control type="image">
                   <left>338</left>
                   <top>204</top>
                   <width>64</width>
                   <height>64</height>
-                  <texture colordiffuse="ff0091ea">$VAR[Image_Overlay_Backing,,-fo.png]</texture>
+                  <texture colordiffuse="focus">$VAR[Image_Overlay_Backing,,-fo.png]</texture>
                 </control>
                 <include>View_WatchedOverlay</include>
               </control>
@@ -180,7 +180,7 @@
             <width>1360</width>
             <label>[COLOR=ffededed][B]$INFO[Container(6401).ListItem.Season,S,]$INFO[Container(6401).ListItem.Episode,E, ]$INFO[Container(6401).ListItem.Title,, ~ ][/B][/COLOR]$INFO[Container(6401).ListItem.Plot]</label>
             <font>font10</font>
-            <textcolor>FFE50914</textcolor>
+            <textcolor>text2</textcolor>
             <height>72</height>
             <autoscroll time="2000" delay="2000" repeat="4000">true</autoscroll>
           </control>

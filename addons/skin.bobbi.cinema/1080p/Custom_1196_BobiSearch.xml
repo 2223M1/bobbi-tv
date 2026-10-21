@@ -82,7 +82,7 @@
             <centerleft>50%</centerleft>
             <height>3</height>
             <bottom>5</bottom>
-            <texture colordiffuse="FFE50924">am6b/arctic/common/white.png</texture>
+            <texture colordiffuse="accent">am6b/arctic/common/white.png</texture>
           </control>
         </control>
       </focusedlayout>

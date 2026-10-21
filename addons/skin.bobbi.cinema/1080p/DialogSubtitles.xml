@@ -391,7 +391,7 @@
             </control>
           </focusedlayout>
         </control>
-        <control type="button" id="160">
+<control type="button" id="160">
           <description>Manual search button</description>
           <left>1358</left>
           <top>960</top>
@@ -404,7 +404,7 @@
           <label>$LOCALIZE[24120]</label>
           <font>font12_title</font>
           <textcolor>white</textcolor>
-          <focusedcolor>white</focusedcolor>
+          <focusedcolor>on_focus</focusedcolor>
           <align>center</align>
           <hitrect x="1388" y="908" w="300" h="150" />
         </control>

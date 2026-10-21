@@ -16,6 +16,30 @@ import zlib
 BASE = Path('/storage/.bobbi-ui-preview')
 LIVE = {'skin': Path('/storage/.kodi/addons/skin.bobbi.cinema'),
         'dialogs': Path('/storage/.kodi/addons/plugin.video.bobbi/resources/skins')}
+WINDOWS = {
+    'home': dict(id=10000, action='ActivateWindow(Home)'),
+    'videos': dict(id=10025, action='ActivateWindow(Videos)'),
+    'settings': dict(id=10004, action='ActivateWindow(Settings)'),
+    'skinsettings': dict(id=10035, action='ActivateWindow(SkinSettings)'),
+    'addonbrowser': dict(id=10040, action='ActivateWindow(AddonBrowser)'),
+    'library': dict(id=10025, action='ActivateWindow(Videos,"plugin://plugin.video.bobbi.library/",return)',
+                    folder='plugin://plugin.video.bobbi.library/'),
+    'personal': dict(id=11197, action='ActivateWindow(1197)', file='Custom_1197_BobiPersonal.xml', delta=1197),
+    'cinema': dict(id=11195, action='ActivateWindow(1195)', file='Custom_1195_AM6BStreamingHub.xml', delta=1195),
+    'keyboard': dict(id=10103),
+}
+WINDOW_ALIASES = dict(mine='personal', **{str(value['id']): key for key, value in WINDOWS.items()
+                                       if key != 'library'})
+WINDOW_ALIASES.update({'1197': 'personal', '1195': 'cinema'})
+
+
+def window_name(value):
+    if not isinstance(value, str) or value != value.strip():
+        raise ValueError('INVALID_PREVIEW_WINDOW')
+    name = WINDOW_ALIASES.get(value.lower(), value.lower())
+    if name not in WINDOWS:
+        raise ValueError('INVALID_PREVIEW_WINDOW')
+    return name
 
 
 def allowed(name):
@@ -96,6 +120,56 @@ def reload_skin():
     return idle()
 
 
+def window_matches(gui, target):
+    if gui.get('currentwindow', {}).get('id') != target['id']:
+        return False
+    labels = {}
+    if 'heading' in target:
+        labels['Control.GetLabel(311)'] = target['heading']
+    if 'folder' in target:
+        labels['Container.FolderPath'] = target['folder']
+    if labels:
+        actual = rpc('XBMC.GetInfoLabels', {'labels': list(labels)})
+        return all(actual.get(key) == expected for key, expected in labels.items())
+    return True
+
+
+def keyboard_preview_script(heading):
+    # A native keyboard cannot be initialized by ActivateWindow(10103): its
+    # heading is supplied by the caller. Do not read, log, submit or retain text.
+    return ('import xbmc\nimport xbmcgui\n'
+            'if not xbmc.Player().isPlaying() and xbmcgui.getCurrentWindowDialogId() in (0, 9999):\n'
+            '    keyboard = xbmc.Keyboard("", ' + repr(heading) + ', False)\n'
+            '    keyboard.doModal(45000)\n')
+
+
+def navigate(run, window):
+    name = window_name(window)
+    target = dict(WINDOWS[name], name=name)
+    idle()  # Never navigate over active audio or video.
+    if 'file' in target:
+        path = LIVE['skin'] / '1080p' / target['file']
+        if not path.is_file() or path.is_symlink() or ET.parse(path).getroot().get('id') != str(target['delta']):
+            raise RuntimeError('PREVIEW_WINDOW_NOT_INSTALLED')
+    if name == 'keyboard':
+        target['heading'] = '波比键盘预览 · ' + run.name[-8:]
+        script = run / 'keyboard-preview.py'
+        script.write_text(keyboard_preview_script(target['heading']), encoding='utf-8')
+        action = 'RunScript(' + str(script) + ')'
+    else:
+        action = target['action']
+    subprocess.run(['kodi-send', '--action=' + action], check=True,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+    deadline, matched = time.monotonic() + 8, 0
+    while time.monotonic() < deadline:
+        gui = idle()
+        matched = matched + 1 if window_matches(gui, target) else 0
+        if matched >= 2:
+            return target
+        time.sleep(.15)
+    raise RuntimeError('PREVIEW_WINDOW_NOT_REACHED')
+
+
 def framebuffer_png(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb0'), height=1080):
     stride = int((root / 'stride').read_text())
     width, virtual_height = map(int, (root / 'virtual_size').read_text().strip().split(','))
@@ -126,12 +200,19 @@ def framebuffer_png(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb0'
             + chunk(b'IDAT', zlib.compress(scan, 3)) + chunk(b'IEND', b''))
 
 
-def capture(run):
-    idle()
+def capture(run, target=None):
+    gui = idle()
+    if target is not None and not window_matches(gui, target):
+        raise RuntimeError('PREVIEW_WINDOW_CHANGED')
+    raw = framebuffer_png()
+    after = idle()
+    if target is not None and not window_matches(after, target):
+        raise RuntimeError('PREVIEW_WINDOW_CHANGED')
     path = run / ('framebuffer-' + str(time.time_ns()) + '.png')
-    path.write_bytes(framebuffer_png())
+    path.write_bytes(raw)
     return dict(remote_path=str(path), sha256=digest(path), bytes=path.stat().st_size,
-                method='displayed GUI framebuffer; excludes hardware video plane')
+                method='displayed GUI framebuffer; excludes hardware video plane',
+                window=after.get('currentwindow'), target=target)
 
 
 def transaction(name):
@@ -180,7 +261,9 @@ def restore(run, journal):
     return reload_skin()
 
 
-def deploy(run, package_sha):
+def deploy(run, package_sha, window=None):
+    if window is not None:
+        window = window_name(window)
     journal = json.loads((run / 'journal.json').read_text())
     if journal['state'] != 'prepared':
         raise RuntimeError('TRANSACTION_ALREADY_USED')
@@ -226,7 +309,10 @@ def deploy(run, package_sha):
             os.replace(LIVE[component], run / 'backup' / component)
             os.replace(stage / component, LIVE[component])
         gui = reload_skin()
-        screenshot = capture(run)
+        target = navigate(run, window) if window is not None else None
+        if target is not None:
+            gui = idle()
+        screenshot = capture(run, target) if target is not None else capture(run)
         journal['state'] = 'committed'
         save(run / 'journal.json', journal)
         return dict(state='committed', gui=gui, screenshot=screenshot)
@@ -237,6 +323,11 @@ def deploy(run, package_sha):
 
 def main(mode, params):
     import fcntl
+    window = params.get('window')
+    if window is not None:
+        window = window_name(window)
+        if mode not in ('deploy', 'screenshot'):
+            raise RuntimeError('PREVIEW_WINDOW_MODE_INVALID')
     if BASE.is_symlink() or any(p.is_symlink() for p in BASE.parents):
         raise RuntimeError('UNSAFE_PREVIEW_ROOT')
     BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -259,7 +350,7 @@ def main(mode, params):
             save(run / 'journal.json', dict(state='prepared', components=components, before=before, files=files))
             return dict(state='prepared', remote_path=str(run / 'candidate.zip'))
         if mode == 'deploy':
-            return deploy(run, params['sha256'])
+            return deploy(run, params['sha256'], window)
         if mode == 'rollback':
             journal = json.loads((run / 'journal.json').read_text())
             if journal['state'] == 'prepared':
@@ -267,7 +358,10 @@ def main(mode, params):
             gui = restore(run, journal)
             return dict(state='restored', gui=gui, screenshot=capture(run))
         if mode == 'screenshot':
-            return dict(screenshot=capture(run))
+            idle()
+            run.mkdir(mode=0o700, exist_ok=True)
+            target = navigate(run, window) if window is not None else None
+            return dict(screenshot=capture(run, target) if target is not None else capture(run))
         raise RuntimeError('UNKNOWN_OPERATION')
 
 

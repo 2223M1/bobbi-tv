@@ -301,9 +301,9 @@
                 <top>20</top>
                 <left>15</left>
                 <width>auto</width>
-                <label>$VAR[Label_OSD_Title] [COLOR=ff64e535]演员阵容[/COLOR]</label>
+                <label>$VAR[Label_OSD_Title] [COLOR accent_text]演员阵容[/COLOR]</label>
                 <aligny>center</aligny>
-                <textcolor>FFE50914</textcolor>
+                <textcolor>text</textcolor>
                 <font>font11</font>
                 <height>24</height>
                 <visible>Integer.IsGreater(Container(6501).NumItems,0) | Container(6501).IsUpdating</visible>
@@ -370,7 +370,7 @@
                 <control type="label">
                   <left>5</left>
                   <font>font8</font>
-                  <textcolor>FFE50914</textcolor>
+                  <textcolor>text</textcolor>
                   <top>235</top>
                   <align>left</align>
                   <label>$INFO[ListItem.Label]</label>
@@ -412,7 +412,7 @@
                 <control type="label">
                   <left>5</left>
                   <font>font8</font>
-                  <textcolor>FFE50914</textcolor>
+                  <textcolor>text</textcolor>
                   <top>235</top>
                   <align>left</align>
                   <label>$INFO[ListItem.Label]</label>
@@ -611,7 +611,7 @@
               <top>5</top>
               <font>FONT11</font>
               <label>$INFO[Container(6501).ListItem.Label]</label>
-              <textcolor>ffFF8C00</textcolor>
+              <textcolor>info</textcolor>
               <height>30</height>
               <width>280</width>
               <nested />
@@ -635,9 +635,9 @@
             <top>15</top>
             <left>15</left>
             <width>auto</width>
-            <label>[COLOR=ff64e535]参演电影[/COLOR]</label>
+            <label>[COLOR accent_text]参演电影[/COLOR]</label>
             <aligny>center</aligny>
-            <textcolor>FFE50914</textcolor>
+            <textcolor>text</textcolor>
             <font>font11</font>
             <height>24</height>
             <visible>Control.HasFocus(6531) | String.IsEqual(Window.Property(CastMemberParamType),movie)</visible>
@@ -646,9 +646,9 @@
             <top>15</top>
             <left>15</left>
             <width>auto</width>
-            <label>[COLOR=ff64e535]参演剧集[/COLOR]</label>
+            <label>[COLOR accent_text]参演剧集[/COLOR]</label>
             <aligny>center</aligny>
-            <textcolor>FFE50914</textcolor>
+            <textcolor>text</textcolor>
             <font>font11</font>
             <height>24</height>
             <visible>Control.HasFocus(6532) | String.IsEqual(Window.Property(CastMemberParamType),tv)</visible>
@@ -821,7 +821,7 @@
                     <control type="label">
                       <label>$INFO[Container(6539).ListItem.Label]$INFO[Container(6539).ListItem.Year, (,)]</label>
                       <font>font11</font>
-                      <textcolor>FFE50914</textcolor>
+                      <textcolor>text</textcolor>
                       <height>30</height>
                     </control>
                     <control type="label">

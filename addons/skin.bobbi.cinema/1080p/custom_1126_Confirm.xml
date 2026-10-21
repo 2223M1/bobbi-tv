@@ -39,7 +39,7 @@
       <left>20</left>
       <align>center</align>
       <font>font14</font>
-      <textcolor>FFE50914</textcolor>
+      <textcolor>warn</textcolor>
     </control>
     <control type="textbox" id="9">
       <description>text</description>
@@ -73,14 +73,14 @@
       <align>center</align>
       <itemgap>0</itemgap>
       <orientation>horizontal</orientation>
-      <control type="button" id="11">
+<control type="button" id="11">
         <description>OK button</description>
         <width>300</width>
         <height>60</height>
         <label>107</label>
         <font>font12_title</font>
         <textcolor>white</textcolor>
-        <focusedcolor>white</focusedcolor>
+        <focusedcolor>on_focus</focusedcolor>
         <align>center</align>
         <onclick>SetProperty(ResetSkinSettings,True,Home)</onclick>
         <onclick>Skin.ResetSettings</onclick>
@@ -90,39 +90,39 @@
         <onclick>Dialog.Close(1126)</onclick>
         <visible>!Player.Playing + !Player.Seeking + !Player.Paused + !Player.Forwarding + !Player.Rewinding</visible>
       </control>
-      <control type="button" id="10">
+<control type="button" id="10">
         <description>Cancel button</description>
         <width>300</width>
         <height>60</height>
         <label>106</label>
         <font>font12_title</font>
         <textcolor>white</textcolor>
-        <focusedcolor>white</focusedcolor>
+        <focusedcolor>on_focus</focusedcolor>
         <align>center</align>
         <onclick>back</onclick>
         <visible>!Player.Playing + !Player.Seeking + !Player.Paused + !Player.Forwarding + !Player.Rewinding</visible>
       </control>
-      <control type="button" id="11">
+<control type="button" id="11">
         <description>OK button</description>
         <width>300</width>
         <height>60</height>
         <label>107</label>
         <font>font12_title</font>
         <textcolor>white</textcolor>
-        <focusedcolor>white</focusedcolor>
+        <focusedcolor>on_focus</focusedcolor>
         <align>center</align>
         <onclick>Stop</onclick>
         <onclick>dialog.close(all,true)</onclick>
         <visible>Player.Playing | Player.Seeking | Player.Paused | Player.Forwarding | Player.Rewinding</visible>
       </control>
-      <control type="button" id="10">
+<control type="button" id="10">
         <description>Cancel button</description>
         <width>300</width>
         <height>60</height>
         <label>106</label>
         <font>font12_title</font>
         <textcolor>white</textcolor>
-        <focusedcolor>white</focusedcolor>
+        <focusedcolor>on_focus</focusedcolor>
         <align>center</align>
         <onclick>back</onclick>
         <visible>Player.Playing | Player.Seeking | Player.Paused | Player.Forwarding | Player.Rewinding</visible>

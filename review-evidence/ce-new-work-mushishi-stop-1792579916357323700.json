@@ -1,0 +1,131 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "mushishi",
+    "operation": "stop",
+    "stopped": true,
+    "before": {
+      "wall": 2309797.801909396,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+        "monotonic_us": 2309432459646,
+        "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+        "open_epoch": 5,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "3dafd1f2136040dea472b0df943ecc07",
+        "sequence": 4,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 2,
+        "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+        "user_intent": 2
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 687.845,
+      "duration": 1419.04,
+      "currentaudiostream": {
+        "bitrate": 604152,
+        "channels": 2,
+        "codec": "flac",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "jpn",
+        "name": "JPBD-2.0",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 0,
+        "isdefault": true,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": "CASO-SC"
+      },
+      "currentvideostream": {
+        "codec": "h264",
+        "height": 1080,
+        "index": 0,
+        "language": "jpn",
+        "name": "JPBD",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "字幕已由你手动控制",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 2309797.85405808,
+        "read_completed": 2309797.854553234,
+        "raw": "vdec channel 0 statistics:\n  device name : ammvdec_h264-00\n  frame width : 1920\n frame height : 1080\n   frame rate : 30 fps\n     bit rate : 0 kbps\n       status : 6\n    frame dur : 3203\n   frame data : 0 KB\n  frame count : 100\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+        "sha256": "76bd28f09ec90ffef3397fef5bf2f2ee794a7e3fccfec3c27b67d9189224bb88",
+        "channels": [
+          {
+            "channel": 0,
+            "device": "ammvdec_h264-00",
+            "counters": {
+              "frame width": 1920,
+              "frame height": 1080,
+              "frame count": 100,
+              "drop count": 0,
+              "fra err count": 0,
+              "hw err count": 0
+            }
+          }
+        ],
+        "identity_known": true,
+        "primary_channel": 0
+      },
+      "decoder_counters": {
+        "frame width": 1920,
+        "frame height": 1080,
+        "frame count": 100,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "decoder_counter_source": {
+        "channel": 0,
+        "device": "ammvdec_h264-00"
+      },
+      "observation_times": {
+        "sample_started": 2309797.772800601,
+        "player_time_started": 2309797.807539152,
+        "player_time_completed": 2309797.818003241,
+        "caching_started": 2309797.818068953,
+        "caching_completed": 2309797.829045114,
+        "decoder_started": 2309797.85405808,
+        "decoder_completed": 2309797.854553234,
+        "sample_completed": 2309797.856881708
+      }
+    },
+    "seconds": 1.46
+  },
+  "diagnostic_present": false,
+  "work": "mushishi",
+  "operation": "stop",
+  "attempt": 1,
+  "regression_attempt": false
+}

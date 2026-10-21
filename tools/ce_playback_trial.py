@@ -51,7 +51,7 @@ def result_exit_code(result, remote_code=0, diagnostic=False, operation=None):
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('work',choices=('perfect_days','eizouken','grand_budapest','further_universe','ping_pong','amelie','barakamon','coherence','odd_taxi','wild_tales','girls_last_tour','burning','flip_flappers',
+    parser.add_argument('work',choices=('arrival','mushishi','perfect_days','eizouken','grand_budapest','further_universe','ping_pong','amelie','barakamon','coherence','odd_taxi','wild_tales','girls_last_tour','burning','flip_flappers',
                                       'lives_of_others','tokyo_godfathers','haibane_renmei','man_from_earth','lain',
                                       'twelve_angry_men','tatami_galaxy','rashomon','cowboy_bebop'))
     parser.add_argument('operation',choices=('start','cards','select','collect','picker_wait','wait','inspect','observe','stop','cancel',
@@ -67,6 +67,8 @@ def main():
     parser.add_argument('--attempt',type=int,choices=range(1,11),default=1,
                         help='A separate retained defect-regression attempt, not new-work coverage')
     args=parser.parse_args()
+    if args.operation == 'select' and (args.title is None or args.site is None):
+        parser.error('select requires the observed --title and --site (and optionally --key)')
     if args.resume_percent is not None and (args.start_over or not 0 < args.resume_percent < 100):
         parser.error('Resume must be between 0 and 100, without start-over')
     sys.path.insert(0,str(args.transport_source/'ui-redesign/runtime/ssh-python'))

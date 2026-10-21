@@ -13,7 +13,7 @@
       <top>0</top>
       <width>570</width>
       <height>645</height>
-      <texture colordiffuse="FF161616">am6b/white.png</texture>
+      <texture colordiffuse="surface">bobi/white.png</texture>
     </control>
     <control type="image">
       <description>Dialog Header image</description>
@@ -55,7 +55,7 @@
       <width>480</width>
       <height>75</height>
       <aspectratio>stretch</aspectratio>
-      <texture colordiffuse="FF161616">am6b/white.png</texture>
+      <texture colordiffuse="surface">bobi/white.png</texture>
     </control>
     <control type="label" id="4">
       <description>Edit Text</description>
@@ -89,8 +89,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12311</label>
         <focusedcolor>black</focusedcolor>
         <onleft>23</onleft>
@@ -107,8 +107,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12312</label>
         <focusedcolor>black</focusedcolor>
         <onleft>11</onleft>
@@ -125,8 +125,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12313</label>
         <focusedcolor>black</focusedcolor>
         <onleft>12</onleft>
@@ -143,8 +143,8 @@
         <font>font12</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <textwidth>180</textwidth>
         <label />
         <focusedcolor>black</focusedcolor>
@@ -170,8 +170,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12314</label>
         <focusedcolor>black</focusedcolor>
         <onleft>23</onleft>
@@ -188,8 +188,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12315</label>
         <focusedcolor>black</focusedcolor>
         <onleft>14</onleft>
@@ -206,8 +206,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12316</label>
         <focusedcolor>black</focusedcolor>
         <onleft>15</onleft>
@@ -224,8 +224,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12317</label>
         <focusedcolor>black</focusedcolor>
         <onleft>21</onleft>
@@ -242,8 +242,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12318</label>
         <focusedcolor>black</focusedcolor>
         <onleft>17</onleft>
@@ -260,8 +260,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12319</label>
         <focusedcolor>black</focusedcolor>
         <onleft>18</onleft>
@@ -278,8 +278,8 @@
         <font>font12</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <textwidth>180</textwidth>
         <label />
         <focusedcolor>black</focusedcolor>
@@ -307,8 +307,8 @@
         <focusedcolor>black</focusedcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <onleft>21</onleft>
         <onright>10</onright>
         <onup>17</onup>
@@ -323,8 +323,8 @@
         <font>font13</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>12310</label>
         <focusedcolor>black</focusedcolor>
         <onleft>20</onleft>
@@ -343,8 +343,8 @@
         <focusedcolor>black</focusedcolor>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <onleft>10</onleft>
         <onright>21</onright>
         <onup>19</onup>

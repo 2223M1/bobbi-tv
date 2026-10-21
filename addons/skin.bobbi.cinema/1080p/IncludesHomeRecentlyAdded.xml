@@ -148,7 +148,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -157,7 +157,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="image">
@@ -166,7 +166,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   <visible>Skin.HasSetting(discboxoffhome)</visible>
                 </control>
@@ -189,7 +189,7 @@
                     <width>55</width>
                     <height>55</height>
                     <aspectratio>keep</aspectratio>
-                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <texture colordiffuse="accent">am6b/badge.png</texture>
                     <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   </control>
                   <control type="label">
@@ -226,7 +226,7 @@
                     <top>8</top>
                     <width>314</width>
                     <height>459</height>
-                    <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                    <texture border="20" colordiffuse="accent">am6b/badge.png</texture>
                     <aspectratio>stretch</aspectratio>
                     <visible>Control.HasFocus(8000)</visible>
                   </control>
@@ -342,7 +342,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -351,7 +351,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="image">
@@ -360,7 +360,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   <visible>Skin.HasSetting(discboxoffhome)</visible>
                 </control>
@@ -383,7 +383,7 @@
                     <width>55</width>
                     <height>55</height>
                     <aspectratio>keep</aspectratio>
-                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <texture colordiffuse="accent">am6b/badge.png</texture>
                     <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   </control>
                   <control type="label">
@@ -752,7 +752,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -761,7 +761,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="label">
@@ -786,7 +786,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   <visible>Skin.HasSetting(discboxoffhome)</visible>
                 </control>
@@ -809,7 +809,7 @@
                     <width>55</width>
                     <height>55</height>
                     <aspectratio>keep</aspectratio>
-                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <texture colordiffuse="accent">am6b/badge.png</texture>
                     <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   </control>
                   <control type="label">
@@ -846,7 +846,7 @@
                     <top>8</top>
                     <width>254</width>
                     <height>334</height>
-                    <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                    <texture border="20" colordiffuse="accent">am6b/badge.png</texture>
                     <aspectratio>stretch</aspectratio>
                     <visible>Control.HasFocus(8007)</visible>
                   </control>
@@ -962,7 +962,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -971,7 +971,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="label">
@@ -996,7 +996,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   <visible>Skin.HasSetting(discboxoffhome)</visible>
                 </control>
@@ -1019,7 +1019,7 @@
                     <width>55</width>
                     <height>55</height>
                     <aspectratio>keep</aspectratio>
-                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <texture colordiffuse="accent">am6b/badge.png</texture>
                     <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   </control>
                   <control type="label">
@@ -1165,7 +1165,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -1174,7 +1174,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="label">
@@ -1199,7 +1199,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   <visible>Skin.HasSetting(discboxoffhome)</visible>
                 </control>
@@ -1222,7 +1222,7 @@
                     <width>55</width>
                     <height>55</height>
                     <aspectratio>keep</aspectratio>
-                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <texture colordiffuse="accent">am6b/badge.png</texture>
                     <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   </control>
                   <control type="label">
@@ -1259,7 +1259,7 @@
                     <top>8</top>
                     <width>254</width>
                     <height>334</height>
-                    <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                    <texture border="20" colordiffuse="accent">am6b/badge.png</texture>
                     <aspectratio>stretch</aspectratio>
                     <visible>Control.HasFocus(80011)</visible>
                   </control>
@@ -1375,7 +1375,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -1384,7 +1384,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="label">
@@ -1409,7 +1409,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   <visible>Skin.HasSetting(discboxoffhome)</visible>
                 </control>
@@ -1432,7 +1432,7 @@
                     <width>55</width>
                     <height>55</height>
                     <aspectratio>keep</aspectratio>
-                    <texture colordiffuse="blue">am6b/badge.png</texture>
+                    <texture colordiffuse="accent">am6b/badge.png</texture>
                     <visible>!String.IsEmpty(ListItem.Rating)</visible>
                   </control>
                   <control type="label">
@@ -1556,7 +1556,7 @@
               <width>55</width>
               <height>55</height>
               <aspectratio>keep</aspectratio>
-              <texture colordiffuse="blue">am6b/badge.png</texture>
+              <texture colordiffuse="accent">am6b/badge.png</texture>
               <visible>!String.IsEmpty(ListItem.Rating)</visible>
             </control>
             <control type="label">
@@ -1595,7 +1595,7 @@
                 <texture>$VAR[Image_Overlay]</texture>
               </control>
               <control type="image">
-                <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                 <aspectratio align="center" aligny="center">stretch</aspectratio>
                 <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
               </control>
@@ -1604,7 +1604,7 @@
                 <right>20</right>
                 <top>20</top>
                 <bottom>20</bottom>
-                <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
               </control>
             </control>
           </itemlayout>
@@ -1686,7 +1686,7 @@
                 <width>55</width>
                 <height>55</height>
                 <aspectratio>keep</aspectratio>
-                <texture colordiffuse="blue">am6b/badge.png</texture>
+                <texture colordiffuse="accent">am6b/badge.png</texture>
                 <visible>!String.IsEmpty(ListItem.Rating)</visible>
               </control>
               <control type="label">
@@ -1725,7 +1725,7 @@
                   <texture>$VAR[Image_Overlay]</texture>
                 </control>
                 <control type="image">
-                  <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                  <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                   <aspectratio align="center" aligny="center">stretch</aspectratio>
                   <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                 </control>
@@ -1734,7 +1734,7 @@
                   <right>20</right>
                   <top>20</top>
                   <bottom>20</bottom>
-                  <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                 </control>
               </control>
             </control>
@@ -2100,7 +2100,7 @@
                   <texture>$VAR[Image_Overlay]</texture>
                 </control>
                 <control type="image">
-                  <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                  <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                   <aspectratio align="center" aligny="center">stretch</aspectratio>
                   <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                 </control>
@@ -2109,7 +2109,7 @@
                   <right>20</right>
                   <top>20</top>
                   <bottom>20</bottom>
-                  <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                 </control>
               </control>
               <control type="label">
@@ -2134,7 +2134,7 @@
                 <width>55</width>
                 <height>55</height>
                 <aspectratio>keep</aspectratio>
-                <texture colordiffuse="blue">am6b/badge.png</texture>
+                <texture colordiffuse="accent">am6b/badge.png</texture>
                 <visible>!String.IsEmpty(ListItem.Rating)</visible>
               </control>
               <control type="label">
@@ -2157,7 +2157,7 @@
                   <top>8</top>
                   <width>254</width>
                   <height>334</height>
-                  <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                  <texture border="20" colordiffuse="accent">am6b/badge.png</texture>
                   <aspectratio>stretch</aspectratio>
                   <visible>Control.HasFocus(8008)</visible>
                 </control>
@@ -2232,7 +2232,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -2241,7 +2241,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="label">
@@ -2266,7 +2266,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                 </control>
                 <control type="label">
@@ -2379,7 +2379,7 @@
                   <texture>$VAR[Image_Overlay]</texture>
                 </control>
                 <control type="image">
-                  <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                  <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                   <aspectratio align="center" aligny="center">stretch</aspectratio>
                   <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                 </control>
@@ -2388,7 +2388,7 @@
                   <right>20</right>
                   <top>20</top>
                   <bottom>20</bottom>
-                  <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                  <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                 </control>
               </control>
               <control type="label">
@@ -2413,7 +2413,7 @@
                 <width>55</width>
                 <height>55</height>
                 <aspectratio>keep</aspectratio>
-                <texture colordiffuse="blue">am6b/badge.png</texture>
+                <texture colordiffuse="accent">am6b/badge.png</texture>
                 <visible>!String.IsEmpty(ListItem.Rating)</visible>
               </control>
               <control type="label">
@@ -2436,7 +2436,7 @@
                   <top>8</top>
                   <width>254</width>
                   <height>334</height>
-                  <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                  <texture border="20" colordiffuse="accent">am6b/badge.png</texture>
                   <aspectratio>stretch</aspectratio>
                   <visible>Control.HasFocus(8009)</visible>
                 </control>
@@ -2511,7 +2511,7 @@
                     <texture>$VAR[Image_Overlay]</texture>
                   </control>
                   <control type="image">
-                    <texture flipx="true" flipy="true" colordiffuse="ff03b585">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
+                    <texture flipx="true" flipy="true" colordiffuse="accent">$VAR[Defs_PercentPlayed,indicator/circle/p,.png]</texture>
                     <aspectratio align="center" aligny="center">stretch</aspectratio>
                     <visible>String.IsEmpty($PARAM[listitem].Property(role))</visible>
                   </control>
@@ -2520,7 +2520,7 @@
                     <right>20</right>
                     <top>20</top>
                     <bottom>20</bottom>
-                    <texture colordiffuse="ff03b585">$VAR[Defs_checkmark]</texture>
+                    <texture colordiffuse="ok">$VAR[Defs_checkmark]</texture>
                   </control>
                 </control>
                 <control type="label">
@@ -2545,7 +2545,7 @@
                   <width>55</width>
                   <height>55</height>
                   <aspectratio>keep</aspectratio>
-                  <texture colordiffuse="blue">am6b/badge.png</texture>
+                  <texture colordiffuse="accent">am6b/badge.png</texture>
                   <visible>!String.IsEmpty(ListItem.Rating)</visible>
                 </control>
                 <control type="label">
@@ -2868,7 +2868,7 @@
                 <top>10</top>
                 <width>253</width>
                 <height>330</height>
-                <texture border="20" colordiffuse="blue">am6b/badge.png</texture>
+                <texture border="20" colordiffuse="accent">am6b/badge.png</texture>
                 <aspectratio>stretch</aspectratio>
                 <visible>Control.HasFocus(8003)</visible>
               </control>
@@ -2984,7 +2984,7 @@
             <left>0</left>
             <align>center</align>
             <font>font14</font>
-            <textcolor>FFE50914</textcolor>
+            <textcolor>accent_text</textcolor>
           </control>
           <control type="image">
             <top>10</top>
@@ -3056,7 +3056,7 @@
               <font>font11</font>
               <left>20</left>
               <right>20</right>
-              <label>[COLOR ffFF8C00]$LOCALIZE[150]: $INFO[Network.IPAddress] [B]-[/B] 网络$INFO[Network.LinkState][/COLOR]</label>
+              <label>[COLOR info]$LOCALIZE[150]: $INFO[Network.IPAddress] [B]-[/B] 网络$INFO[Network.LinkState][/COLOR]</label>
               <scroll>true</scroll>
             </control>
           </control>
@@ -3134,7 +3134,7 @@
               <font>font11</font>
               <left>20</left>
               <right>20</right>
-              <label>[COLOR ffFF8C00]显示端HDR模式:$INFO[System.SupportedHDRTypes][/COLOR]</label>
+              <label>[COLOR info]显示端HDR模式:$INFO[System.SupportedHDRTypes][/COLOR]</label>
               <scroll>true</scroll>
               <visible>!String.IsEmpty(System.SupportedHDRTypes)</visible>
             </control>
@@ -3145,7 +3145,7 @@
               <font>font11</font>
               <left>20</left>
               <right>20</right>
-              <label>[COLOR ffFF8C00]显示端HDR模式：只支持SDR[/COLOR]</label>
+              <label>[COLOR info]显示端HDR模式：只支持SDR[/COLOR]</label>
               <scroll>true</scroll>
               <visible>String.IsEmpty(System.SupportedHDRTypes)</visible>
             </control>
@@ -3242,7 +3242,7 @@
               </control>
               <control type="label">
                 <top>80</top>
-                <label>[B]$INFO[Window(Home).Property(Movies.Count),, 部$LOCALIZE[36901]][CR][COLOR ff64e535]$INFO[Window(Home).Property(Movies.Watched),$LOCALIZE[16102] : ,部][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Movies.UnWatched),$LOCALIZE[16101] : ,部][/COLOR][/B]</label>
+                <label>[B]$INFO[Window(Home).Property(Movies.Count),, 部$LOCALIZE[36901]][CR][COLOR ok]$INFO[Window(Home).Property(Movies.Watched),$LOCALIZE[16102] : ,部][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Movies.UnWatched),$LOCALIZE[16101] : ,部][/COLOR][/B]</label>
                 <font>font10</font>
                 <align>center</align>
                 <scroll>true</scroll>
@@ -3259,7 +3259,7 @@
               </control>
               <control type="label">
                 <top>80</top>
-                <label>[B]$INFO[Window(Home).Property(Tvshows.Count),, 部剧][CR][COLOR ff64e535]$INFO[Window(Home).Property(Tvshows.Watched),$LOCALIZE[16102] : ,部][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Tvshows.UnWatched),$LOCALIZE[16101] : ,部][/COLOR][/B]</label>
+                <label>[B]$INFO[Window(Home).Property(Tvshows.Count),, 部剧][CR][COLOR ok]$INFO[Window(Home).Property(Tvshows.Watched),$LOCALIZE[16102] : ,部][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Tvshows.UnWatched),$LOCALIZE[16101] : ,部][/COLOR][/B]</label>
                 <font>font10</font>
                 <align>center</align>
                 <scroll>true</scroll>
@@ -3276,7 +3276,7 @@
               </control>
               <control type="label">
                 <top>80</top>
-                <label>[B]$INFO[Window(Home).Property(Episodes.Count),, $LOCALIZE[20453]][CR][COLOR ff64e535]$INFO[Window(Home).Property(Episodes.Watched),$LOCALIZE[16102] : ,集][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Episodes.UnWatched),$LOCALIZE[16101] : ,集][/COLOR][/B]</label>
+                <label>[B]$INFO[Window(Home).Property(Episodes.Count),, $LOCALIZE[20453]][CR][COLOR ok]$INFO[Window(Home).Property(Episodes.Watched),$LOCALIZE[16102] : ,集][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(Episodes.UnWatched),$LOCALIZE[16101] : ,集][/COLOR][/B]</label>
                 <font>font10</font>
                 <align>center</align>
                 <scroll>true</scroll>
@@ -3310,7 +3310,7 @@
               </control>
               <control type="label">
                 <top>80</top>
-                <label>[B]$INFO[Window(Home).Property(MusicVideos.Count),, 个$LOCALIZE[36909]][CR][COLOR ff64e535]$INFO[Window(Home).Property(MusicVideos.Watched),$LOCALIZE[16102] : ,个][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(MusicVideos.UnWatched),$LOCALIZE[16101] : ,个][/COLOR][/B]</label>
+                <label>[B]$INFO[Window(Home).Property(MusicVideos.Count),, 个$LOCALIZE[36909]][CR][COLOR ok]$INFO[Window(Home).Property(MusicVideos.Watched),$LOCALIZE[16102] : ,个][/COLOR][CR][COLOR grey2]$INFO[Window(Home).Property(MusicVideos.UnWatched),$LOCALIZE[16101] : ,个][/COLOR][/B]</label>
                 <font>font10</font>
                 <align>center</align>
                 <scroll>true</scroll>

@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <includes>
+  <include file="Defaults.xml" />
   <include file="Variables.xml" />
   <include file="Includes_Titles.xml" />
   <include file="Includes_Views.xml" />
@@ -109,39 +110,53 @@
     <definition>
       <control type="group" id="9700">
         <left>0</left><top>0</top><width>1920</width><height>120</height>
-        <control type="group">
-          <left>96</left><top>38</top>
-          <control type="label">
-            <left>0</left><top>0</top><width>100</width><height>48</height>
-            <label>波比</label><font>Logo34</font><textcolor>text</textcolor><aligny>center</aligny>
-          </control>
-          <control type="label">
-            <left>76</left><top>1</top><width>60</width><height>48</height>
-            <label>TV</label><font>LogoLatin</font><textcolor>accent</textcolor><aligny>center</aligny>
-          </control>
+        <!-- brand lockup: drawn texture (media/bobi/logo-bobbi.png), 224x56 at 1:1 -->
+        <control type="image">
+          <left>96</left><top>34</top><width>224</width><height>56</height>
+          <texture>bobi/logo-bobbi.png</texture>
         </control>
         <control type="grouplist" id="9701">
-          <left>272</left><top>32</top><width>1240</width><height>60</height>
+          <left>352</left><top>32</top><width>1080</width><height>60</height>
           <orientation>horizontal</orientation>
           <itemgap>8</itemgap>
           <scrolltime>0</scrolltime>
           <onup>noop</onup>
           <ondown>$PARAM[down]</ondown>
-          <onright>9721</onright>
+          <onright>9723</onright>
           <onleft>noop</onleft>
           <include content="TabButton"><param name="id" value="9711" /><param name="label" value="首页" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),home)" /><param name="action" value="ActivateWindow(Home)" /><param name="section" value="home" /></include>
           <include content="TabButton"><param name="id" value="9712" /><param name="label" value="电视剧" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),tv)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" /><param name="section" value="tv" /></include>
           <include content="TabButton"><param name="id" value="9713" /><param name="label" value="电影" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),movie)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" /><param name="section" value="movie" /></include>
           <include content="TabButton"><param name="id" value="9714" /><param name="label" value="动漫" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),anime)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" /><param name="section" value="anime" /></include>
-          <include content="TabButton"><param name="id" value="9715" /><param name="label" value="我的" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),mine)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_home" /><param name="section" value="mine" /></include>
+          <include content="TabButton"><param name="id" value="9715" /><param name="label" value="我的" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),mine)" /><param name="action" value="ActivateWindow(1197)" /><param name="section" value="mine" /></include>
         </control>
-        <!-- search + settings: 72px round buttons with 40px glyphs on a quiet disc, then clock -->
+        <!-- 片库 / 搜索 / 设置: 72px round buttons with 40px glyphs on a quiet disc, then clock -->
+        <control type="button" id="9723">
+          <left>1440</left><top>26</top><width>72</width><height>72</height>
+          <label />
+          <texturefocus colordiffuse="focus">bobi/pill.png</texturefocus>
+          <texturenofocus colordiffuse="1FFFFFFF">bobi/pill.png</texturenofocus>
+          <onleft>9701</onleft><onright>9721</onright><onup>noop</onup><ondown>$PARAM[down]</ondown>
+          <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi.library/",return)</onclick>
+          <include content="Lift"><param name="zoom">108</param></include>
+        </control>
+        <control type="image">
+          <left>1456</left><top>42</top><width>40</width><height>40</height>
+          <texture colordiffuse="text">bobi/icons/server.png</texture>
+          <visible>!Control.HasFocus(9723)</visible>
+        </control>
+        <control type="image">
+          <left>1456</left><top>42</top><width>40</width><height>40</height>
+          <texture colordiffuse="on_focus">bobi/icons/server.png</texture>
+          <visible>Control.HasFocus(9723)</visible>
+          <animation effect="zoom" start="100" end="108" time="140" tween="cubic" easing="out" center="1476,62" reversible="true" condition="Control.HasFocus(9723) + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        </control>
         <control type="button" id="9721">
           <left>1528</left><top>26</top><width>72</width><height>72</height>
           <label />
           <texturefocus colordiffuse="focus">bobi/pill.png</texturefocus>
           <texturenofocus colordiffuse="1FFFFFFF">bobi/pill.png</texturenofocus>
-          <onleft>9701</onleft><onright>9722</onright><onup>noop</onup><ondown>$PARAM[down]</ondown>
+          <onleft>9723</onleft><onright>9722</onright><onup>noop</onup><ondown>$PARAM[down]</ondown>
           <onclick>RunPlugin(plugin://plugin.video.bobbi/?action=bobi_search_prompt&amp;section=multi)</onclick>
           <include content="Lift"><param name="zoom">108</param></include>
         </control>

@@ -23,14 +23,14 @@
         <top>90</top>
         <width>1695</width>
         <height>900</height>
-        <texture colordiffuse="FF161616">am6b/white.png</texture>
+        <texture colordiffuse="surface">bobi/white.png</texture>
       </control>
       <control type="image">
         <left>113</left>
         <top>978</top>
         <width>1695</width>
         <height>96</height>
-        <texture colordiffuse="FF161616">am6b/white.png</texture>
+        <texture colordiffuse="surface">bobi/white.png</texture>
       </control>
       <control type="list" id="570">
         <left>143</left>
@@ -50,7 +50,7 @@
             <top>0</top>
             <width>1620</width>
             <height>120</height>
-            <texture colordiffuse="FF242424">am6b/white.png</texture>
+            <texture colordiffuse="surface_hi">bobi/white.png</texture>
           </control>
           <control type="image">
             <left>3</left>
@@ -104,7 +104,7 @@
             <top>0</top>
             <width>1620</width>
             <height>120</height>
-            <texture colordiffuse="FF242424">am6b/white.png</texture>
+            <texture colordiffuse="surface_hi">bobi/white.png</texture>
             <visible>!Control.HasFocus(570)</visible>
             <include>VisibleFadeEffect</include>
           </control>
@@ -113,7 +113,7 @@
             <top>0</top>
             <width>1620</width>
             <height>120</height>
-            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <texture colordiffuse="focus">bobi/white.png</texture>
             <visible>Control.HasFocus(570)</visible>
             <include>VisibleFadeEffect</include>
           </control>
@@ -210,8 +210,9 @@
         </control>
         <control type="togglebutton" id="4">
           <description>Sort asc</description>
+          <texturefocus border="14">bobi/row-focus.png</texturefocus>
           <include>ButtonCommonValues</include>
-          <alttexturefocus border="5">am6b/button-focus.png</alttexturefocus>
+          <alttexturefocus border="14">bobi/row-focus.png</alttexturefocus>
           <alttexturenofocus />
           <label>31051</label>
           <altlabel>31050</altlabel>

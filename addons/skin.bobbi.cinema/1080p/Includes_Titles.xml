@@ -205,7 +205,6 @@
   </variable>
   <variable name="StageTitlePrimary">
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[TitlePrimary_9810]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[TitlePrimary_9820]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[TitlePrimary_9830]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[TitlePrimary_9840]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[TitlePrimary_9850]</value>
@@ -218,7 +217,6 @@
   </variable>
   <variable name="StageTitleSecondary">
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[TitleSecondary_9810]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[TitleSecondary_9820]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[TitleSecondary_9830]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[TitleSecondary_9840]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[TitleSecondary_9850]</value>
@@ -231,7 +229,6 @@
   </variable>
   <variable name="StageSeasonLabel">
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[SeasonLabel_9810]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[SeasonLabel_9820]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[SeasonLabel_9830]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[SeasonLabel_9840]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[SeasonLabel_9850]</value>
@@ -244,7 +241,6 @@
   </variable>
   <variable name="StageEpisodeLabel">
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[EpisodeLabel_9810]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[EpisodeLabel_9820]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[EpisodeLabel_9830]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[EpisodeLabel_9840]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[EpisodeLabel_9850]</value>
@@ -257,7 +253,6 @@
   </variable>
   <variable name="StageEpisodeTitle">
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$VAR[EpisodeTitle_9810]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$VAR[EpisodeTitle_9820]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$VAR[EpisodeTitle_9830]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9840)">$VAR[EpisodeTitle_9840]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$VAR[EpisodeTitle_9850]</value>

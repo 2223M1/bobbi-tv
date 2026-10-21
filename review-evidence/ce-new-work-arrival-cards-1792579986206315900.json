@@ -1,0 +1,184 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "arrival",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.UHD.BluRay.2160p.DTS-HD.MA.7.1.DV.HEVC.HYBRID.REMUX-FraMeSToR",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "44.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "224c290dce8dd54e436b9739fb64a0183dff1611680736c37d59a9801cd887dc",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival 2016 BDREMUX 2160p 4K UltraHD.HEVC.HDR.ExKinoRay",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "51 GB",
+        "Container(1000).ListItem.Property(source_key)": "2c21c07d4b38585f2585e1b8f4c2b7c7da442180c0b1d49bfb939e3d682532e9",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.PROPER.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.7.1-FGT",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "50.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "ab736d34008ca85e52ce398730a88489319cdccfbdc113b43691e0313d2bce48",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.7.1-FGT",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "49.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "3f51cb4d30889f1224ca6c11a0f030026ca456cd15cb4e8dc6626466b2d78b6b",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.7.1-FGT.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "49.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "f09ad4bce7fed62f4df38e12e672e8d9189157abcfda7d2403cd3bd13f31ca4d",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.PROPER.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.7.1-FGT.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "50.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "3f8d9773fe92b39267e82f0b810f10062ce7ad9f4e6997a49e0b63e44dc5e2c8",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.2160p.4K.UHD.10bit.HDR.BluRay.7.1.x265.HEVC-MZABI",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "10.2 GB",
+        "Container(1000).ListItem.Property(source_key)": "441bd64d74bde43d28a4f6f7c73227eaa4bbb053f8f5b0211935ed2464b7a791",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.2160p.UHD.BluRay.x265.10bit.HDR.DTS-HD.MA.7.1-TERMi ...",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "8.46 GB",
+        "Container(1000).ListItem.Property(source_key)": "a8bd1a3673a56475ae92ad7aede3adadce98fd6001a985b2736a7d10133ea489",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.BluRay.2160p.x265.10bit.HDR.2Audio.mUHD-FRDS.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "8.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "773178599c94d90fc0b28d7346afb7ca6d551793156691e279fb9875978ef727",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.UHD.BluRay.2160p.DTS-HD.MA.7.1.x265.10bit.HDR-BeiTai.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "7.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "245c2504cd9b125583c2497bf6e72cbe36d85faa440ec1a5cc4b08bcbec2ef68",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.UHD.2160p.BluRay.x265.HDR.DTS-HFMA.7.1-DTOne",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "8.39 GB",
+        "Container(1000).ListItem.Property(source_key)": "062c817b7a9b183ac840ae2116f33f3f97a22c3dea8563a7d1e6475cd731dd4e",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.2160p.BluRay.x265.10bit.SDR.DTS-HD.MA.7.1-SWTYBLZ",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "15.9 GB",
+        "Container(1000).ListItem.Property(source_key)": "d675099b819cc2f3f9414681f22cbd2749cfd3185902b2d4e00d77a9d93147f9",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival 2016 2160p 4K UHD Bluray HEVC Multi DTSHD 7.1 -DDR",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "23.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "121d9cf6644f695f32dc832233f2d7c3cdea82aaa0b06054d54ed8e01d43bbc4",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.2160p.BluRay.HEVC.DTS-HD.MA.7.1-TERMiNAL",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "53.2 GB",
+        "Container(1000).ListItem.Property(source_key)": "2d438f8317caec40f755b759a7cfa514b46baaf226d2a686450d4103126e7832",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.2160p.BluRay.x264.8bit.SDR.DTS-HD.MA.7.1-SWTYBLZ",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "16.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "28cad02bb06e5e6bb7b4257bd1628f5f4d785650d6a752f98ef81db8538f6684",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival (2016) 2160p BRRip 5.1 10Bit x265 -YTS",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.81 GB",
+        "Container(1000).ListItem.Property(source_key)": "a3b74cb7374a2d77b04b8fda75584bd113ab70551cc6b10428d22993b1aeee0c",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "降临 (2016) 2160p DTSHD-MA.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "43.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "3e03a6ee9f73497d1906402337e2eef6e3e0bd1d6596c23555ebe780a5841277",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.1080p.BluRay.REMUX.AVC.DTS-HD.MA.7.1-FGT",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "27.2 GB",
+        "Container(1000).ListItem.Property(source_key)": "38d64453964c15950305e8b88f331c48e2e6878f7071c78d6bece6b79f51f7d3",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival 2016 NORDiC 1080p REMUX BluRay DTS-HD MA 7 1-NorTekst",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "25.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "3b2dd4d54fb04dde4f6a64b3943872ed6e6d8f7e385ab7ddceb0829fb53aaabc",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Arrival.2016.1080p.BluRay.REMUX.AVC.DTS-HD.MA.7.1-HUD",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "22.5 GB",
+        "Container(1000).ListItem.Property(source_key)": "e861c774a1e5a10ec5c2c24a5d827900daf641e3a14849d05a70ecc9571682a0",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 79,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "arrival",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

@@ -20,7 +20,7 @@
         <top>10</top>
         <width>3</width>
         <height>27</height>
-        <texture colordiffuse="FFE50924">am6b/white.png</texture>
+        <texture colordiffuse="accent">am6b/white.png</texture>
       </control>
       <control type="label">
         <left>14</left>
@@ -39,7 +39,7 @@
         <height>48</height>
         <label>TV</label>
         <font>BobiLogoLatin</font>
-        <textcolor>FFE50924</textcolor>
+        <textcolor>accent</textcolor>
         <aligny>center</aligny>
       </control>
     </control>
