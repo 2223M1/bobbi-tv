@@ -1,0 +1,132 @@
+{
+  "commit": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "scope": "AST actual methods + real PlaybackOwner/domain modules; optional IO and Kodi GUI/clock doubled",
+  "quality": {
+    "case": "F02_quality",
+    "status": "closed_in_targeted_harness",
+    "structural_messages": [
+      "bind",
+      "select"
+    ],
+    "field_only_messages": [],
+    "selected": "1080p",
+    "filter_condition": "not_measured"
+  },
+  "monitor": [
+    {
+      "case": "F03_none",
+      "status": "passed_in_targeted_harness",
+      "reads": 3,
+      "elapsed": 0.0,
+      "superseded": false,
+      "terminal_reason": "NATURAL_EOF"
+    },
+    {
+      "case": "F03_gap",
+      "status": "passed_in_targeted_harness",
+      "reads": 6,
+      "elapsed": 0.75,
+      "superseded": false,
+      "terminal_reason": "NATURAL_EOF"
+    },
+    {
+      "case": "F03_timeout",
+      "status": "passed_in_targeted_harness",
+      "reads": 13,
+      "elapsed": 3.0,
+      "superseded": false,
+      "terminal_reason": "UNKNOWN"
+    },
+    {
+      "case": "F03_eof",
+      "status": "passed_in_targeted_harness",
+      "reads": 3,
+      "elapsed": 0.0,
+      "superseded": false,
+      "terminal_reason": "NATURAL_EOF"
+    },
+    {
+      "case": "F03_stop",
+      "status": "passed_in_targeted_harness",
+      "reads": 3,
+      "elapsed": 0.0,
+      "superseded": false,
+      "terminal_reason": "STOP"
+    },
+    {
+      "case": "F03_replacement",
+      "status": "passed_in_targeted_harness",
+      "reads": 2,
+      "elapsed": 0.0,
+      "superseded": true,
+      "terminal_reason": "UNKNOWN"
+    },
+    {
+      "case": "F03_cancel",
+      "status": "passed_in_targeted_harness",
+      "reads": 2,
+      "elapsed": 0.0,
+      "superseded": true,
+      "terminal_reason": "UNKNOWN"
+    },
+    {
+      "case": "F03_boot",
+      "status": "passed_in_targeted_harness",
+      "reads": 2,
+      "elapsed": 0.0,
+      "superseded": true,
+      "terminal_reason": "UNKNOWN"
+    },
+    {
+      "case": "F03_epoch",
+      "status": "passed_in_targeted_harness",
+      "reads": 2,
+      "elapsed": 0.0,
+      "superseded": true,
+      "terminal_reason": "UNKNOWN"
+    },
+    {
+      "case": "F03_instance",
+      "status": "passed_in_targeted_harness",
+      "reads": 2,
+      "elapsed": 0.0,
+      "superseded": true,
+      "terminal_reason": "UNKNOWN"
+    },
+    {
+      "case": "F03_malformed",
+      "status": "passed_in_targeted_harness",
+      "reads": 13,
+      "elapsed": 3.0,
+      "superseded": false,
+      "terminal_reason": "UNKNOWN"
+    }
+  ],
+  "subtitles": {
+    "accepted_controls": [
+      "Ping Pong EP01.ass",
+      "Ping Pong 第01話.ass",
+      "[Group] Ping Pong [01].chs.ass",
+      "Ping Pong S01E01.ass"
+    ],
+    "rejected_controls": [
+      "Ping Pong EP02.ass",
+      "Ping Pong 第02話.ass",
+      "Ping Pong S02E01.ass",
+      "Ping Pong EP01-EP02.ass",
+      "Ping Pong [01-02].ass",
+      "Ping Pong 第01話-第02話.ass",
+      "Ping Pong 1080p 2014.ass",
+      "[01] Group Ping Pong.ass",
+      "Ping Pong EP01 EP02.ass"
+    ],
+    "scope_controls": 4,
+    "explicit_season_controls": 2,
+    "ambiguous_accepted": [
+      "Ping Pong EP01,02.ass",
+      "Ping Pong EP01、02.ass",
+      "Ping Pong 第01話、02話.ass",
+      "Ping Pong EP01;02.ass"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "added_testcases": [
+    "tests.test_ce2024_handoff::test_archive_requires_complete_git_tree",
+    "tests.test_ce2024_handoff::test_case_duplicate_rejected",
+    "tests.test_ce2024_handoff::test_evidence_index_does_not_promote_failures",
+    "tests.test_ce2024_handoff::test_inventory_curated_catalog_is_not_an_account_database",
+    "tests.test_ce2024_handoff::test_junit_does_not_count_skips_as_passes",
+    "tests.test_ce2024_handoff::test_source_paths_keep_runtime_and_public_ca",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[../escape]",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[.private/key]",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[C:/private]",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[a\\\\b]",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[addons/script.module.bobbi.core/resources/tmdb-project.json]",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[keys/private.pem]",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[local/account.sqlite]",
+    "tests.test_ce2024_handoff::test_source_paths_reject_local_state[userdata/settings.xml]"
+  ],
+  "removed_testcases": [],
+  "old_skip_now_pass": [
+    "tests.test_ce_state_migration::test_asset_link_never_followed",
+    "tests.test_ce_torrent_migration::test_symlink_migration_is_rejected[parent]",
+    "tests.test_ce_torrent_migration::test_symlink_migration_is_rejected[source]",
+    "tests.test_ce_torrent_migration::test_symlink_migration_is_rejected[target]",
+    "tests.test_updates::test_symlink_target_rejected",
+    "tests.test_upstream_addons::test_linked_upstream_path_is_rejected"
+  ],
+  "old_pass_now_skip": [
+    "tests.test_maintenance_lease::test_windows_lease_uses_toolhelp_and_preserves_lifecycle_guards[kodi-active]",
+    "tests.test_maintenance_lease::test_windows_lease_uses_toolhelp_and_preserves_lifecycle_guards[parent-exited]",
+    "tests.test_maintenance_lease::test_windows_lease_uses_toolhelp_and_preserves_lifecycle_guards[pipe-closed]",
+    "tests.test_maintenance_lease::test_windows_lease_uses_toolhelp_and_preserves_lifecycle_guards[valid]",
+    "tests.test_maintenance_lease::test_windows_lease_uses_toolhelp_and_preserves_lifecycle_guards[wrong-parent]"
+  ]
+}

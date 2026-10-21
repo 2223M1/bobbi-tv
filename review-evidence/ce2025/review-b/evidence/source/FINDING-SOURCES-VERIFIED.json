@@ -1,0 +1,54 @@
+{
+  "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "files": [
+    {
+      "path": "tools/closure_gate.py",
+      "git_blob": "cedb50d6a33a9ae0827e04e62912c673263634f3",
+      "sha256": "1701efc16c6647fc74cb3f5a83aeb2cfca505021471a1e666c4f508c76a7c227",
+      "bytes": 1512,
+      "fixed_tree_matches": true
+    },
+    {
+      "path": "tools/package_ce2024_handoff.py",
+      "git_blob": "da354f3b6d0873bd5291949e84f2581df1795b25",
+      "sha256": "f2e9e0d6a191e86e5c58ba97c833ebe4a7c6cbfabf91ae38c3683ca2ce1f963e",
+      "bytes": 11593,
+      "fixed_tree_matches": true
+    },
+    {
+      "path": "tools/ce_trial_remote.py",
+      "git_blob": "10719b559d2b6db4623320a8bfcea6f2bbd74c16",
+      "sha256": "17509bc38e6ce9254cf9ddbd963d5c360ccb8e45a8e135d57b22db5a87321c09",
+      "bytes": 36955,
+      "fixed_tree_matches": true
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_episode.py",
+      "git_blob": "a94bdc0fda6c7e55b38a05a8e5abee8477eba922",
+      "sha256": "b6acb61af5f23bf8ba3ae0139602778b6a391f9c10c094a0071d628209dbbd63",
+      "bytes": 2084,
+      "fixed_tree_matches": true
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_candidates.py",
+      "git_blob": "075c027bdc7417c4e0bc87c41f9daa20372ccb8d",
+      "sha256": "f638475cf8a206479c8e20c78268b952420fe108ae74173ffb1665ebc418a93b",
+      "bytes": 35223,
+      "fixed_tree_matches": true
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py",
+      "git_blob": "1973717f9e5f35bd235031103502ea46924c2a2f",
+      "sha256": "6fc5bc93afba2a5b01593159f69fb9d6907548b285b86eaaf14bf5966b020df3",
+      "bytes": 48720,
+      "fixed_tree_matches": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
+      "git_blob": "be53fd6d68f2a5d227a17beec72a437ded8c2de8",
+      "sha256": "764818b5806666955145a94ae333f82b8f52ef7d624b42db9f7a0e7133ec83d5",
+      "bytes": 20773,
+      "fixed_tree_matches": true
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "probe": "entry_builder_document_dependency",
+  "scope": "isolated two-component synthetic fixture; no production signing or device validation",
+  "repository_mutated": false,
+  "production_checks_bypassed": false,
+  "temporary_private_key": "memory_only",
+  "fixture_sequence": 1,
+  "fixture_sequence_is_product_identity": false,
+  "source_sha256": {
+    "tools/build_ce_entry.py": "3b1a098bdca07485966b72e6c3dae87b00beb2df2aa44b5af9fe22afdc2ed5ed",
+    "tools/build_release.py": "7e1684c0501887be0997c010a06e6d705cfc6b9d966b8d7806afe1b309572195",
+    "tools/delivery_policy.py": "0801351a01c90efd558c17dbba40369ed31b7469b02b652b6f5fd03cf79a2113",
+    "tools/audit_ce_entry.py": "a93490ca7c9d632ebb23d57cec03c84cea408afe615c302e109a74b355d6b546",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/offline_updates.py": "cd10c6cd4bfe80f9d2d7f9f941fe245e9cc66401b950b25495581e8b5fd4b031",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/updates.py": "9dcdcad8030f40036af7d22ba1f970cd12da9480331267f943daf65c096cb9ff",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/signatures.py": "ca009ae05bc9f43fbdaa62361976b566e2a7b6a1d5b7641f7e14326a8889da79",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py": "a85fc163d02faf6225af9a2a7bfe30218508e3225bc2c4e5d97c1d21adeedc8d",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py": "c9c64596377b3f08aed536e988b799db6c270a6c8642dcb475085b36d3a01ffa",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/upstream_addons.py": "e5047b48e7cc1fb5d1bfdb593776bb2a60e436537ae2c29024c1b3c38881aef9",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/release_trust.json": "a4fe050314256b7455ce55c787aa294c194059507c7c9637c8a65c3fcb55841b",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/paths.py": "6455ab508991a002d46eb332bf3aed12062829a135232e7f4fbaa1cdff337378",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/kodi.py": "c15b58052d2783f670c17755c37293121dacd89faac5b53b424a2d914c136c83",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/playback.py": "e547c552cf9369310ded619614e5c4fd1ad9a3485145ce06f593661f3bd4357b",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/capabilities.py": "226300a6b05da39633bf321649f2bad56782339f6b42ca675c45f2862c9d0e6f",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/runtime.py": "c32649574dea9bc779386e779d336ef5ffea2e2b607ce429bc3ffaa8efa1f5de",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/instance_lock.py": "e3395ade1e550e51721d9cc501df09bb5950cbce516b0903546c394caa7a82a7"
+  },
+  "cases": [
+    {
+      "with_license": false,
+      "signature_and_component_integrity": "passed",
+      "build": "passed",
+      "sequence": 1,
+      "entry_audit": {
+        "schema": 1,
+        "sequence": 1,
+        "user_entry": "entry-without-license.zip",
+        "kodi_addon_xml": "passed",
+        "embedded_complete_signature": "passed",
+        "same_generation_bootstrap": "passed",
+        "isolated_bootstrap_import": "passed",
+        "account_state_copied": false,
+        "scope": "actual ZIP and fresh interpreter; not clean-device installation certification"
+      }
+    },
+    {
+      "with_license": true,
+      "signature_and_component_integrity": "passed",
+      "build": "passed",
+      "sequence": 1,
+      "entry_audit": {
+        "schema": 1,
+        "sequence": 1,
+        "user_entry": "entry-with-license.zip",
+        "kodi_addon_xml": "passed",
+        "embedded_complete_signature": "passed",
+        "same_generation_bootstrap": "passed",
+        "isolated_bootstrap_import": "passed",
+        "account_state_copied": false,
+        "scope": "actual ZIP and fresh interpreter; not clean-device installation certification"
+      }
+    }
+  ],
+  "source_root": "/workspace/scratch/4b810e46745b/ce2024-audit/packaging_review/source",
+  "status": "focused_entry_checks_passed",
+  "exit_code": 0
+}

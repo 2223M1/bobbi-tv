@@ -43,7 +43,23 @@ for name in ('kodi.old.log','kodi.log'):
    out['log_events'].append(dict(log=name,text=line[:700]))
 out['log_events']=out['log_events'][-100:]
 if METADATA_ID:
- import sqlite3,datetime
+ import sqlite3,datetime,pickle,io
+ # Inspect bounded metadata fields without executing pickle globals or writing
+ # to the application cache. Unsupported cache classes remain unknown.
+ class CacheObject:pass
+ class MetadataUnpickler(pickle.Unpickler):
+  def find_class(self,module,name):
+   if module=='lib.api.tmdbv3api.as_obj' and name=='AsObj':return CacheObject
+   raise ValueError('CACHE_CLASS_UNSUPPORTED')
+ def metadata_fields(raw):
+  value=MetadataUnpickler(io.BytesIO(raw)).load()
+  if not isinstance(value,dict):return {'record_type':type(value).__name__}
+  data=value.get('data')
+  if isinstance(data,CacheObject):data=data.__dict__.get('_json',{})
+  fields={key:data.get(key) for key in ('id','name','original_language') if isinstance(data,dict)}
+  fetched=value.get('fetched')
+  return dict(fields,record_keys=sorted(value),age=time.time()-fetched if type(fetched) in (int,float) else None,
+   refresh_after=value.get('refresh_after'))
  out['metadata_presence']=[]
  for database in sorted(pathlib.Path('/storage/.kodi/userdata/addon_data/plugin.video.bobbi').glob('*.cached.sqlite'))[:8]:
   connection=sqlite3.connect(database.as_uri()+'?mode=ro',uri=True,timeout=2)
@@ -54,9 +70,12 @@ if METADATA_ID:
      keys.append('am6b_details283|'+json.dumps(['tv_details',{'id':ident},locale],sort_keys=True))
    for key in keys:
     # Do not deserialize arbitrary cached objects or renew/delete expired rows.
-    row=connection.execute('SELECT length(data), CAST(expires AS TEXT) FROM cached WHERE key=?',(key,)).fetchone()
-    out['metadata_presence'].append(dict(database=database.name,key=key,present=bool(row),
-      bytes=row[0] if row else None,expires=row[1] if row else None))
+    row=connection.execute('SELECT data, CAST(expires AS TEXT) FROM cached WHERE key=? AND length(data)<=2097152',(key,)).fetchone()
+    value=dict(database=database.name,key=key,present=bool(row),bytes=len(row[0]) if row else None,expires=row[1] if row else None)
+    if row:
+     try:value['metadata']=metadata_fields(row[0])
+     except Exception as e:value['metadata_error']=type(e).__name__
+    out['metadata_presence'].append(value)
   finally:connection.close()
 out['subtitle_cache']=[]
 base=pathlib.Path('/storage/.kodi/userdata/addon_data/plugin.video.bobbi/subtitle-cache283')

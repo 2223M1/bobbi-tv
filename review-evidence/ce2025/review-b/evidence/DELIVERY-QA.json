@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "purpose": "Review artifact integrity and consistency, not product acceptance",
+  "core_review_peer_checked": true,
+  "peer_corrections_applied": [
+    "Unmapped OVA/special ambiguity distinguished from proven non-target season",
+    "30-second clock progress not rendered-video certification",
+    "Prepare and verify actual new candidate before repaired-device acceptance",
+    "Update exact inventory and versions before full build gates"
+  ],
+  "fixed_head_refreshed": true,
+  "source_ref_check": "evidence/source/FINAL-REF-CHECK.json",
+  "checked_python_syntax": [
+    "checks/decoder-reproduce.py",
+    "checks/extract_delivery_dependencies.py",
+    "checks/reproduce_native_list_focus.py",
+    "checks/reproduce_native_monitor.py",
+    "checks/reproduce_subtitle_scope.py",
+    "checks/test_closure_gate_identity.py",
+    "checks/test_progressive_shutdown.py",
+    "checks/verify_actual_entry.py",
+    "checks/verify_review_package.py"
+  ],
+  "checked_json_files": 43,
+  "checked_xml_files": 8,
+  "sensitive_download_urls_included": false,
+  "test_fixture_token_marker": "Only fixture.115cdn.com/private?token=secret|User-Agent=fixture appears as test-source text in the initial environment-blocked JUnit; no live token",
+  "product_entry_binary_included": false,
+  "product_source_modified": false
+}

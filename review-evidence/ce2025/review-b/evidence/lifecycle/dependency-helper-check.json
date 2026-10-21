@@ -1,0 +1,31 @@
+{
+  "entry_sha256": "cb355eb2a80b3974e985a9bc404fb74a8be1c98ab1319d30e4399eb503c06e9c",
+  "payload_sha256": "d53bc3b6ad0c4dc905a831d1906575a7c53ad15c0e6a6d6d7b12188e0d33c096",
+  "components": [
+    {
+      "member": "script.module.certifi/script.module.certifi-2023.5.7.zip",
+      "sha256": "5afd7996f0d0ddba7837b139a94cbdd52989f9d02f627ade7c40e9b6a7ffb1ce",
+      "extracted_files": 4
+    },
+    {
+      "member": "script.module.chardet/script.module.chardet-5.1.0.zip",
+      "sha256": "6cdd5b9b1ad464af0639049ff09c540d651cf7e9a4005fecd70931a84827dea5",
+      "extracted_files": 48
+    },
+    {
+      "member": "script.module.idna/script.module.idna-3.10.0.zip",
+      "sha256": "3d3e83d370ef0d07912a8411922236c43e86cc8e1c90b5918bee3bb1193b95f0",
+      "extracted_files": 8
+    },
+    {
+      "member": "script.module.requests/script.module.requests-2.31.0.zip",
+      "sha256": "61c0a5988d745e8cec19795e38373e67c71f3198e9d4b84954b9b5af3192a599",
+      "extracted_files": 18
+    },
+    {
+      "member": "script.module.urllib3/script.module.urllib3-2.2.3.zip",
+      "sha256": "526c6726e8a360035aa7a23a6d1d9b9384de7cd5a2cdca8f6bbf8e545051009b",
+      "extracted_files": 37
+    }
+  ]
+}

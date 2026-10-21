@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "3d4f956e3c02c74b5bf739fa97c1698a17dc7c3b79a9a301289a1505ab772f58",
+      "addon.xml": "e07249e6c9783acf5ccffc7171f4b27c1761aa4b9478c93663827fe0c55bae27",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "0e663d1c71de01063ab720be2467a19212975ad8f7edf0aa4c1ab3749f60cee5",
       "CHANGELOG.md": "bbaf386d6e9fe0a3faadc41bb3ef13fe862611ca35736567e68e2afa9a947c15",
@@ -290,7 +290,7 @@
       "lib/services/playback_control.py": "6799815563db67f4f573cdcc3b82faa546bfb03a14a6ba6736c0c3f4ac4e50ea",
       "lib/services/preloader.py": "c674940fabdbd3adc58dcd9173bc15b8a9ce3640dcb663dcad50bd8a426f9408",
       "lib/services/simkl_sync.py": "af0202f0a73a9c0c1682c27a417cd8f4119cf889425cd49cbbfbc8da10de8704",
-      "lib/services/standard_playback.py": "64f81dbce3e524f380fe08ddc6153889404db90fc0452fa581bcf3ebfdf576b1",
+      "lib/services/standard_playback.py": "5e35f295eadb0950018267582918b42bb1eaa2e36a8779aae0f72d70335975da",
       "lib/services/subtitle_fallback.py": "766e5bbf5acfc3d023474582b65184c5dfe08b10898ecef3e51c979e9d4fdcc8",
       "lib/services/subtitle_server.py": "13ecaf52033cfe180730959edf2a1149915ca3eb1a2d6a98c6943852af7360e4",
       "lib/services/trakt_sync.py": "bdf45547cfdb00f61da5f75010f6a7d04985ebb3744791202df56ae84622b7ef",
@@ -604,7 +604,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "9db356efbf73764e6de78ae93d579949bf077d475e42e67251cc56a5a28b7d45",
+      "addon.xml": "4e5b1b08339aec65931acc00c7d66c7c703dc4e32b0ec6a48fe5bc663d2d3a12",
       "default.py": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
     },
     "script.module.bobbi.catalog": {
@@ -620,7 +620,7 @@
       "resources/settings.xml": "3ad0dd1185d7871b2a549838ebf41410853281797c75f4e2277d9e5fabe2c298"
     },
     "script.module.bobbi.core": {
-      "addon.xml": "c904d22f1a886ff7629f1a9f330ff887cafcc81a91380d6303f850d60b71944c",
+      "addon.xml": "25cdf2682cfc7427bfe0d7641016b8a74be243bc8f1fb23d2b98c3e4cc1a88c0",
       "lib/bobbi_core/__init__.py": "f9e32762d2f4ce4acde5ff9c621551ce06932ebaecc5dc0bf8deeff25bf86a9e",
       "lib/bobbi_core/account_readiness.py": "d4a6ff03eb16191e3ed324c9a76adb91280818a234c9f6367e78bcc152cdbbe2",
       "lib/bobbi_core/anime_range_candidates.py": "35de360fdcb6952453c598eae920820ac865469d1a5acde71ae6304fe81f7be2",
@@ -701,14 +701,14 @@
       "lib/bobbi_core/search_admission.py": "ef7f5b22e03280ed9d492e1c9cb602d7c4cad0223c4dae07beb26d340fc07ac6",
       "lib/bobbi_core/search_completion.py": "a305af6eda2a38f167b931cb2d9f7725ee63cda8279608f1debf4e33859dd4ae",
       "lib/bobbi_core/share_catalog.py": "0e6b11650bd2b906a60fd45e4b57cb16eaff020277b4de4f6efa4acab59ca3ce",
-      "lib/bobbi_core/share_stream.py": "6fc5bc93afba2a5b01593159f69fb9d6907548b285b86eaaf14bf5966b020df3",
+      "lib/bobbi_core/share_stream.py": "1e5866056ed82ce61bc16f91a90bdee0d0f1c8c1b25260c4526a5c7544db23f7",
       "lib/bobbi_core/share_subtitles.py": "cdb0d56e572c152e9a0d1847ce59cdcae0496a7cbf5d2c2a2a859587141c5634",
       "lib/bobbi_core/source_intent.py": "f96ce506cdf0c28f9afeeaaabab8dcb17dc1ebd2ae8e1c67e98936c485894cd3",
       "lib/bobbi_core/source_list_session.py": "e9fd838f8d44ab2708b93e81e747aeee83b3097213dfcd61eb3fda9b4e8ee47b",
       "lib/bobbi_core/subtitle_binding.py": "a703da3527dbe224b75f90cb908360e2bdbddca2df869b827e3743458e4514bb",
-      "lib/bobbi_core/subtitle_candidates.py": "f638475cf8a206479c8e20c78268b952420fe108ae74173ffb1665ebc418a93b",
+      "lib/bobbi_core/subtitle_candidates.py": "350ff6072c52e6ef388c1133a2be22297980ef47e1d47bc86c597293533534e8",
       "lib/bobbi_core/subtitle_cues.py": "f44e95ea3b7045846b8405ea957744c4ea6d8629c1efbaf73e59e4a4b904674e",
-      "lib/bobbi_core/subtitle_episode.py": "b6acb61af5f23bf8ba3ae0139602778b6a391f9c10c094a0071d628209dbbd63",
+      "lib/bobbi_core/subtitle_episode.py": "1d0614374f757292f0402e792adadf4278f4a73f49504788ea00fd0fae6f0d98",
       "lib/bobbi_core/subtitle_export.py": "80a46dc4715e9028936b29628e129cae9c4fe7a09d6a220d737a10b7faff146d",
       "lib/bobbi_core/subtitle_font_preparation.py": "a34341d5e1e9d4d675c5a73fc170c5f15555395fcaed3d1f93b5334607bb734e",
       "lib/bobbi_core/subtitle_io.py": "cc85f0dd45519b9d6b50743ad5e33734ae7be5d938f49fa832d82d1eb8bae451",
@@ -740,7 +740,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "b3d87eec2b3b69ad5a9768248de685f8aa06475a55e613a218d790ac7b86dad6",
+      "addon.xml": "f74d1c0075d7df9f1e6c147160163f2ceecce7bd1fda162984c42877eaab4e8a",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -751,7 +751,7 @@
       "lib/bobbi_platform/account_dialog.py": "e2dccac681f901588855ab537d279f6943c88076460bae24d9be0dc3033733d8",
       "lib/bobbi_platform/account_manager.py": "37699fbf140955bb115496c17db77b92406442da7f7efdcca15909f592589dbb",
       "lib/bobbi_platform/capabilities.py": "226300a6b05da39633bf321649f2bad56782339f6b42ca675c45f2862c9d0e6f",
-      "lib/bobbi_platform/ce_install_ui.py": "c9c64596377b3f08aed536e988b799db6c270a6c8642dcb475085b36d3a01ffa",
+      "lib/bobbi_platform/ce_install_ui.py": "db9d231e918f6b7e5eeca35826ed409ed818cc730eb4fbdc0d8619f4aa1230f7",
       "lib/bobbi_platform/ce_installer.py": "a85fc163d02faf6225af9a2a7bfe30218508e3225bc2c4e5d97c1d21adeedc8d",
       "lib/bobbi_platform/cloud115.py": "efc114cdc34ec614308b33c98e6a24d13a49356375556bdfbb4d3757f8fde73c",
       "lib/bobbi_platform/cloud_ui.py": "983d196335170911142a0173028009a19bc33ce7335fc5424699b6e9772d17b0",

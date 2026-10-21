@@ -1,0 +1,97 @@
+{
+  "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "checked": 13,
+  "files": [
+    {
+      "path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+      "component_zip": "plugin.video.bobbi/plugin.video.bobbi-0.1.16.zip",
+      "git_blob": "fbb184956113a1d4c4b3c7d673c3ea790f04e6ac",
+      "sha256": "3dccff81a34db9f162d070be09c9a8842cb6d691dcf78cf5357205dd605e1614",
+      "matched": true
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/background_service.py",
+      "component_zip": "plugin.video.bobbi/plugin.video.bobbi-0.1.16.zip",
+      "git_blob": "f17cea6a910fadcc86e00bf28fc10384675a7c9a",
+      "sha256": "f57926fdbe6cd92ec5b963ac3d4637e36dba514996af2397f6f4e0075c7a00b7",
+      "matched": true
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+      "component_zip": "plugin.video.bobbi/plugin.video.bobbi-0.1.16.zip",
+      "git_blob": "bba8616b0da94353bd9f1f32234350eb3f52001f",
+      "sha256": "64f81dbce3e524f380fe08ddc6153889404db90fc0452fa581bcf3ebfdf576b1",
+      "matched": true
+    },
+    {
+      "path": "addons/script.bobbi.setup/default.py",
+      "component_zip": "script.bobbi.setup/script.bobbi.setup-0.1.4.zip",
+      "git_blob": "1b5ff49d55fbdd1efa4430c2fe2a1f5ea9071d6b",
+      "sha256": "1eb3a9d67c330412e190893c3798e633f26d4fde7f6b3836056e2d8576c846cf",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py",
+      "component_zip": "script.module.bobbi.core/script.module.bobbi.core-0.1.17.zip",
+      "git_blob": "1973717f9e5f35bd235031103502ea46924c2a2f",
+      "sha256": "6fc5bc93afba2a5b01593159f69fb9d6907548b285b86eaaf14bf5966b020df3",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "41e5b82b4b628f7b7bcfa3ab3097574058f03af7",
+      "sha256": "c9c64596377b3f08aed536e988b799db6c270a6c8642dcb475085b36d3a01ffa",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "53f1c08afeb8d4cc552203a10eb525e03ade6773",
+      "sha256": "a85fc163d02faf6225af9a2a7bfe30218508e3225bc2c4e5d97c1d21adeedc8d",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "be53fd6d68f2a5d227a17beec72a437ded8c2de8",
+      "sha256": "764818b5806666955145a94ae333f82b8f52ef7d624b42db9f7a0e7133ec83d5",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/instance_lock.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "307ee23c528e83bc98d73c26e27a42f3d3061bc2",
+      "sha256": "e3395ade1e550e51721d9cc501df09bb5950cbce516b0903546c394caa7a82a7",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/runtime.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "80a37814b13d95642744a8ed3b913d77168cd91d",
+      "sha256": "c32649574dea9bc779386e779d336ef5ffea2e2b607ce429bc3ffaa8efa1f5de",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "912dc959d754dacb3f855bb27d422c7298533ebb",
+      "sha256": "5f32ab078f78d188166e7ef688a21d47dbfc31c3a46d78ac69ef9c4c5566e689",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/stop_monitor.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "e1f520d584c12fdb012c4d01c7868c42a9ece100",
+      "sha256": "dd59ae43b67721deb12c3ae33fbec08127ca8a562f9e32c8f5933f367b52e7f3",
+      "matched": true
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/transport_preferences.py",
+      "component_zip": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.18.zip",
+      "git_blob": "d41c60db269f8826fbec4b7619c7d68094bcdf4e",
+      "sha256": "259d997be2fd23098b8fea347746c2256c44317b58ab4a055ef474aeca37991b",
+      "matched": true
+    }
+  ]
+}

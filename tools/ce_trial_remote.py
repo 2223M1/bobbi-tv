@@ -14,7 +14,9 @@ BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
     'grand_budapest': {'title': 'The Grand Budapest Hotel', 'tmdb_id': 120467, 'kind': 'movie', 'year': 2014},
-    'further_universe': {'title': 'A Place Further Than the Universe', 'tmdb_id': 76013, 'kind': 'tv', 'year': 2018, 'season': 1, 'episode': 1},
+    'further_universe': {'title': 'A Place Further Than the Universe', 'tmdb_id': 76059, 'kind': 'tv', 'year': 2018, 'season': 1, 'episode': 1, 'animation': True},
+    'perfect_days': {'title': 'Perfect Days', 'tmdb_id': 976893, 'kind': 'movie', 'year': 2023},
+    'eizouken': {'title': 'Keep Your Hands Off Eizouken!', 'tmdb_id': 92579, 'kind': 'tv', 'year': 2020, 'season': 1, 'episode': 1, 'animation': True},
     'ping_pong': {'title': 'Ping Pong the Animation', 'tmdb_id': 60811, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1},
     'amelie': {'title': 'Amelie', 'tmdb_id': 194, 'kind': 'movie', 'year': 2001},
     'barakamon': {'title': 'Barakamon', 'tmdb_id': 67048, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1},
@@ -140,6 +142,65 @@ def seconds(moment):
     return moment['hours'] * 3600 + moment['minutes'] * 60 + moment['seconds'] + moment['milliseconds'] / 1000
 
 
+def decoder_snapshot(raw, began, ended):
+    """Keep every channel; a Dolby Vision enhancement layer is not a new total."""
+    import hashlib
+    import re
+    blocks = list(re.finditer(r'(?m)^vdec channel (\d+) statistics:', raw))
+    channels = []
+    for index, marker in enumerate(blocks):
+        text = raw[marker.end():blocks[index + 1].start() if index + 1 < len(blocks) else len(raw)]
+        device = re.search(r'(?m)^\s*device name\s*:\s*(\S+)', text)
+        fields = {key.strip(): int(value) for key, value in re.findall(
+            r'(?m)^\s*(frame count|drop count|fra err count|hw err count|frame width|frame height)\s*:\s*(\d+)', text)}
+        channels.append(dict(channel=int(marker[1]), device=device[1] if device else None, counters=fields))
+    channels.sort(key=lambda row: (row['channel'], row['device'] or ''))
+    known = bool(channels) and len({row['channel'] for row in channels}) == len(channels)
+    bases = [row for row in channels if row['device'] == 'dvbldec']
+    primary = (bases[0] if len(bases) == 1 else channels[0] if len(channels) == 1 else None) if known else None
+    return dict(schema=2, read_started=began, read_completed=ended, raw=raw,
+                sha256=hashlib.sha256(raw.encode()).hexdigest(), channels=channels,
+                identity_known=known, primary_channel=primary['channel'] if primary else None)
+
+
+def decoder_intervals(first, last):
+    """Deltas only within one playback/channel identity, never across a reset."""
+    a, b = first.get('decoder', {}), last.get('decoder', {})
+    identity = ('native_instance', 'request_id')
+    bindings = [tuple((row.get('native') or {}).get(k) for k in identity) for row in (first, last)]
+    if (not a.get('identity_known') or not b.get('identity_known') or not all(bindings[0])
+            or bindings[0] != bindings[1] or b['read_started'] < a['read_completed']):
+        return []
+    old = {row['channel']: row for row in a['channels']}
+    result = []
+    for row in b['channels']:
+        previous = old.get(row['channel'])
+        if not previous or not row['device'] or previous['device'] != row['device']:
+            continue
+        x, y = previous['counters'], row['counters']
+        if any(x.get(k) != y.get(k) for k in ('frame width', 'frame height')):
+            continue
+        keys = ('frame count', 'drop count', 'fra err count', 'hw err count')
+        reset = any(y[k] < x[k] for k in keys if k in x and k in y)
+        result.append(dict(channel=row['channel'], device=row['device'], reset=reset,
+                           delta=None if reset else {k: y[k]-x[k] for k in keys if k in x and k in y}))
+    return result
+
+
+def decoder_frame_pair(first, last):
+    if 'decoder' not in first and 'decoder' not in last:
+        # Read frozen schema-1 evidence as-is; do not invent its lost channels.
+        return tuple(row.get('decoder_counters', {}).get('frame count') for row in (first, last))
+    a, b = first.get('decoder', {}), last.get('decoder', {})
+    selected = a.get('primary_channel')
+    if selected is not None and selected == b.get('primary_channel'):
+        interval = next((r for r in decoder_intervals(first, last) if r['channel'] == selected), None)
+        if interval and not interval['reset'] and 'frame count' in interval['delta']:
+            return tuple(next(r for r in row['channels'] if r['channel'] == selected)['counters']['frame count']
+                         for row in (a, b))
+    return None, None
+
+
 def clock_interval_stable(first, last):
     """A positive advancing clock, not a stationary startup sentinel or jump."""
     if any(row.get('phase') != 'AV_STARTED' or row.get('speed') != 1
@@ -147,7 +208,7 @@ def clock_interval_stable(first, last):
         return False
     wall = last['wall'] - first['wall']
     advance = last['seconds'] - first['seconds']
-    frames = [row.get('decoder_counters', {}).get('frame count') for row in (first, last)]
+    frames = decoder_frame_pair(first, last)
     return (0.15 <= wall <= 2 and advance > 0.03
             and abs(advance - wall) <= max(.15, wall * .3)
             and all(type(value) is int for value in frames) and frames[1] > frames[0])
@@ -188,8 +249,9 @@ def startup_health(samples):
             frozen = 0.0
             continue  # Preserve, but do not misinterpret the negative initial sentinel.
         advance = last['seconds'] - first['seconds']
-        frames = [row.get('decoder_counters', {}).get('frame count') for row in (first, last)]
-        if advance < -.03 or (all(type(value) is int for value in frames) and frames[1] < frames[0]):
+        frames = decoder_frame_pair(first, last)
+        if (advance < -.03 or (all(type(value) is int for value in frames) and frames[1] < frames[0])
+                or any(r['reset'] for r in decoder_intervals(first, last))):
             discontinuities += 1
         if advance > wall + max(.3, wall * .3):
             discontinuities += 1
@@ -240,14 +302,14 @@ def startup_signal_diagnostics(samples):
         if not all(bindings[0]) or bindings[0] != bindings[1]:
             continue
         advance = last['seconds'] - first['seconds']
-        frames = [row.get('decoder_counters', {}).get('frame count') for row in (first, last)]
+        frames = decoder_frame_pair(first, last)
         counts = all(type(value) is int and value >= 0 for value in frames)
         if advance < -.03 or advance > wall + max(.3, wall * .3):
             steps.append(dict(first_index=index, last_index=index + 1, wall_seconds=wall,
                               media_seconds=advance, direction='backward' if advance < 0 else 'forward',
                               decoder_advanced=counts and frames[1] > frames[0],
                               meaning='CLOCK_STEP_NOT_SEEK_PROOF'))
-        if counts and frames[1] < frames[0]:
+        if (counts and frames[1] < frames[0]) or any(r['reset'] for r in decoder_intervals(first, last)):
             resets.append(dict(first_index=index, last_index=index + 1))
         caching = all(row.get('caching') is True for row in (first, last))
         if caching:
@@ -259,6 +321,8 @@ def startup_signal_diagnostics(samples):
             extend('stationary_clock_with_decoder_progress_runs', index, first, last)
     return dict(runs, observation_gap_events=gaps, clock_step_events=steps,
                 decoder_counter_reset_events=resets, changes_legacy_result=False,
+                decoder_channel_intervals=[dict(first_index=i, last_index=i+1, channels=decoder_intervals(a, b))
+                                           for i, (a, b) in enumerate(zip(samples, samples[1:]))],
                 render_continuity_proven=False, exact_transition_times_proven=False)
 
 
@@ -296,9 +360,14 @@ def sample(record):
     value['window'] = rpc('GUI.GetProperties', {'properties': ['currentwindow']})
     observation_times['decoder_started'] = time.monotonic()
     decoder=Path('/sys/class/vdec/vdec_status').read_text()
-    value['decoder_counters']={key.strip():int(number) for key,number in
-        re.findall(r'^\s*(frame count|drop count|fra err count|hw err count)\s*:\s*(\d+)',decoder,re.M)}
     observation_times['decoder_completed'] = time.monotonic()
+    value['decoder'] = decoder_snapshot(decoder, observation_times['decoder_started'],
+                                        observation_times['decoder_completed'])
+    primary = next((r for r in value['decoder']['channels']
+                    if r['channel'] == value['decoder']['primary_channel']), None)
+    value['decoder_counters'] = primary['counters'] if primary else {}
+    value['decoder_counter_source'] = (dict(channel=primary['channel'], device=primary['device'])
+                                       if primary else None)
     observation_times['sample_completed'] = time.monotonic()
     value['observation_times'] = observation_times
     return value
@@ -512,6 +581,32 @@ def wait_picker_idle(record, duration=35):
         time.sleep(min(.5, duration - elapsed))
 
 
+def checked_trial_metadata(test, data):
+    import unicodedata
+    import re
+    def normalized(text):
+        text=''.join(c for c in unicodedata.normalize('NFKD',text) if not unicodedata.combining(c))
+        return ' '.join(re.findall(r'[^\W_]+',text.casefold()))
+    field, date = ('title','release_date') if test['kind']=='movie' else ('name','first_air_date')
+    assert isinstance(data,dict) and data.get('id')==test['tmdb_id'], 'TRIAL_METADATA_ID_MISMATCH'
+    assert normalized(test['title']) in {normalized(str(data.get(k) or '')) for k in (field,'original_'+field)}, 'TRIAL_METADATA_TITLE_MISMATCH'
+    assert str(data.get(date,'')).startswith(str(test['year'])+'-'), 'TRIAL_METADATA_YEAR_MISMATCH'
+    assert not test.get('animation') or 16 in [v.get('id') for v in data.get('genres',[])], 'TRIAL_NOT_ANIMATION'
+    return {key:data.get(key) for key in ('id',field,'original_'+field,'original_language',date)}
+
+
+def trial_metadata(test):
+    from bobbi_core.project_metadata import tmdb_key
+    from bobbi_core.metadata_transport import fetch
+    key=tmdb_key()
+    assert key, 'TRIAL_APPLICATION_CONFIG_MISSING'
+    result=fetch('https://api.themoviedb.org/3/'+test['kind']+'/'+str(test['tmdb_id'])+'?'+urlencode(
+        dict(api_key=key,language='en-US')),time.monotonic()+12)
+    assert result['status']==200, 'TRIAL_METADATA_UNAVAILABLE'
+    verified=checked_trial_metadata(test,json.loads(result['body']))
+    return dict(verified=verified,route=result['route'],checked_at=time.time())
+
+
 if OP in ('start','requery'):
     assert rpc('Player.GetActivePlayers') == [], 'ACTIVE_PLAYER'
     initial = snapshot()
@@ -520,7 +615,8 @@ if OP in ('start','requery'):
     if OP=='start':assert not record_path.exists(), 'TRIAL_ALREADY_STARTED'
     else:assert record_path.exists() and not json.loads(record_path.read_text()).get('request_id'), 'OPEN_REQUEST_EXISTS'
     test = TESTS[NAME]
-    record = dict(test=test, prior_request=desired.get('request_id'), started=time.monotonic())
+    verified = trial_metadata(test)  # Before any GUI change; no guessed work identities.
+    record = dict(test=test, metadata_verification=verified, prior_request=desired.get('request_id'), started=time.monotonic())
     save(record)
     record['home'] = prepare_home(record)
     record['picker_mode'] = globals().get('PICKER') is True
@@ -611,7 +707,7 @@ else:
                 # Keep every temporal/ownership sample, but omit repeated GUI
                 # labels and static stream metadata from the bounded transport.
                 compact={key:current[key] for key in ('wall','phase','seconds','speed','caching','observation_times',
-                    'cancelled','failure','subtitleenabled','decoder_counters') if key in current}
+                    'cancelled','failure','subtitleenabled','decoder_counters','decoder_counter_source','decoder') if key in current}
                 compact['native']={key:current.get('native',{}).get(key) for key in (
                     'native_instance','request_id','subtitle_file_applied','subtitle_file_sha256',
                     'subtitle_intent','user_intent','sequence')}

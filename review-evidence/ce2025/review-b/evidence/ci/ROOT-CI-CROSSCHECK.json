@@ -1,0 +1,34 @@
+{
+  "artifact_sha256": "05f88c6c78878dee189ce76fbc101ed229746c6791fe1e1983752a2bdb98f4f8",
+  "root_parsed_case_elements": true,
+  "suites": [
+    {
+      "name": "ci-baseline.xml",
+      "testcase_elements": 789,
+      "passed": 789,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "handoff_testcases": 0
+    },
+    {
+      "name": "ci-preparation.xml",
+      "testcase_elements": 177,
+      "passed": 177,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "handoff_testcases": 0
+    },
+    {
+      "name": "ci-primary.xml",
+      "testcase_elements": 1843,
+      "passed": 1838,
+      "skipped": 5,
+      "failures": 0,
+      "errors": 0,
+      "handoff_testcases": 14
+    }
+  ],
+  "interpretation": "Current head primary has 14 CE2024 handoff test cases. Local product receipt counts were from Windows; current CI five skips are Windows-only API checks. Do not merge local receipt with head CI."
+}

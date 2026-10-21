@@ -1,0 +1,18 @@
+{
+  "repository": "2223M1/bobbi-tv",
+  "branch": "codex/ce2024-reviewed-delivery-20261021",
+  "reviewed_head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "final_checked_at_utc": "2026-10-21T06:17:48Z",
+  "final_checked_at_beijing": "2026-10-21T14:17:48+08:00",
+  "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "head_commit_time": "2026-10-21T03:16:53Z",
+  "ci": {
+    "run_id": 39537767479,
+    "head_sha": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+    "status": "completed",
+    "conclusion": "success",
+    "attempt": 1,
+    "updated_at": "2026-10-21T03:20:09Z",
+    "url": "https://github.com/2223M1/bobbi-tv/actions/runs/39537767479"
+  }
+}

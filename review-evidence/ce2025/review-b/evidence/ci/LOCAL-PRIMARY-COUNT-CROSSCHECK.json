@@ -1,0 +1,36 @@
+{
+  "total": 1829,
+  "passed": 1823,
+  "skipped": [
+    {
+      "classname": "tests.test_ce_state_migration",
+      "name": "test_asset_link_never_followed",
+      "reason": "host cannot create a symlink"
+    },
+    {
+      "classname": "tests.test_ce_torrent_migration",
+      "name": "test_symlink_migration_is_rejected[source]",
+      "reason": "Host cannot create symlink fixtures"
+    },
+    {
+      "classname": "tests.test_ce_torrent_migration",
+      "name": "test_symlink_migration_is_rejected[target]",
+      "reason": "Host cannot create symlink fixtures"
+    },
+    {
+      "classname": "tests.test_ce_torrent_migration",
+      "name": "test_symlink_migration_is_rejected[parent]",
+      "reason": "Host cannot create symlink fixtures"
+    },
+    {
+      "classname": "tests.test_updates",
+      "name": "test_symlink_target_rejected",
+      "reason": "Host does not permit symlink fixture"
+    },
+    {
+      "classname": "tests.test_upstream_addons",
+      "name": "test_linked_upstream_path_is_rejected",
+      "reason": "Host does not permit symlink fixture"
+    }
+  ]
+}

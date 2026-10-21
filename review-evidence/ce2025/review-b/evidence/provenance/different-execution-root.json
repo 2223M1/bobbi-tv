@@ -1,0 +1,14 @@
+{
+  "case": "different-execution-root",
+  "executed_head": "afe0560b77cbecf2080fc22d8e9a8c432a18ff3a",
+  "recorded_head": "fae46e036c3c72de5d6e7621b4aff86bb03d3e4b",
+  "recorded_dirty": true,
+  "cwd": "/tmp/pytest-of-root/pytest-7/test_receipt_commit_identifies1/execution",
+  "source_path": "tools/closure_gate.py",
+  "source_lines": [
+    19,
+    24,
+    25
+  ],
+  "matches_executed_checkout": false
+}

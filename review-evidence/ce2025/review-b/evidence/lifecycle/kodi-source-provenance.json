@@ -1,0 +1,36 @@
+{
+  "repository": "xbmc/xbmc",
+  "ref": "21.3-Omega",
+  "sources": [
+    {
+      "path": "xbmc/interfaces/builtins/AddonBuiltins.cpp",
+      "sha": "056128d2b35de18b8e25a6ccc467c13e7f31e7b6",
+      "url": "https://github.com/xbmc/xbmc/blob/21.3-Omega/xbmc/interfaces/builtins/AddonBuiltins.cpp"
+    },
+    {
+      "path": "xbmc/interfaces/legacy/ModuleXbmc.cpp",
+      "sha": "290d5753599f4f9e8447d5c8c564b3b3f4cf108c",
+      "url": "https://github.com/xbmc/xbmc/blob/21.3-Omega/xbmc/interfaces/legacy/ModuleXbmc.cpp"
+    },
+    {
+      "path": "xbmc/messaging/ApplicationMessenger.cpp",
+      "sha": "d9eab6147a14c66ea6f6f5038c97fa4aac7f6c00",
+      "url": "https://github.com/xbmc/xbmc/blob/21.3-Omega/xbmc/messaging/ApplicationMessenger.cpp"
+    },
+    {
+      "path": "xbmc/addons/AddonManager.cpp",
+      "sha": "2922b66974fbb780ad4d3567a4e1ae863215410f",
+      "url": "https://github.com/xbmc/xbmc/blob/21.3-Omega/xbmc/addons/AddonManager.cpp"
+    },
+    {
+      "path": "xbmc/interfaces/legacy/Monitor.cpp",
+      "sha": "34d0553500d4498eeaa5c9e32a4416cc2cae388a",
+      "url": "https://github.com/xbmc/xbmc/blob/21.3-Omega/xbmc/interfaces/legacy/Monitor.cpp"
+    },
+    {
+      "path": "xbmc/interfaces/python/LanguageHook.cpp",
+      "sha": "0d4747f01313347475fa5802d6db10d175a01cce",
+      "url": "https://github.com/xbmc/xbmc/blob/21.3-Omega/xbmc/interfaces/python/LanguageHook.cpp"
+    }
+  ]
+}

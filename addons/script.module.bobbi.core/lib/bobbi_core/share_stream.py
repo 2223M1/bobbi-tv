@@ -415,6 +415,7 @@ class ShareStream:
         self.records, self.lock = {}, Lock()
         self.stopping, self.slots = Event(), BoundedSemaphore(6)
         self.producer_slots = BoundedSemaphore(6)
+        self.producers = set()
         self.server = LimitedHTTPServer(('127.0.0.1', 0), Handler)
         self.server.owner = self
         self.thread = Thread(target=self.server.serve_forever, kwargs={'poll_interval': .1}, daemon=True,
@@ -530,7 +531,8 @@ class ShareStream:
     def close(self):
         if getattr(self, '_closed', False):
             return
-        self.stopping.set()
+        with self.lock:
+            self.stopping.set()  # Same admission lock as producer registration.
         self.unsubscribe()
         with self.lock:
             entries = tuple(self.records.values())
@@ -540,6 +542,16 @@ class ShareStream:
         self.server.shutdown()
         self.server.server_close()
         self.thread.join()
+        # Handler joins are bounded; they are not the service ownership barrier.
+        # A slow response header may outlive its handler. Never release the host
+        # lease until every admitted producer has finished its upstream IO.
+        while True:
+            with self.lock:
+                workers = tuple(self.producers)
+            if not workers:
+                break
+            for worker in workers:
+                worker.join()
         self._closed = True
 
 
@@ -836,11 +848,19 @@ class Handler(BaseHTTPRequestHandler):
                 pipe.finish(error)
             finally:
                 owner.producer_slots.release()
+                with owner.lock:
+                    owner.producers.discard(worker)
 
         worker = Thread(target=produce, name='share-stream-prefix', daemon=True)
         try:
-            worker.start()
+            with owner.lock:
+                if owner.stopping.is_set():
+                    raise OSError('SHARE_STOPPED')
+                owner.producers.add(worker)
+                worker.start()
         except BaseException:
+            with owner.lock:
+                owner.producers.discard(worker)
             owner.producer_slots.release()
             raise
         try:
