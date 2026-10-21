@@ -21,7 +21,7 @@
         <param name="up" value="9701" />
         <param name="down" value="9820" />
       </include>
-      <include content="HomeRail">
+      <include content="HomeRailLibrary">
         <param name="id" value="9820" />
         <param name="title" value="我的网盘与 NAS" />
         <param name="content" value="plugin://plugin.video.bobbi.library/" />
@@ -57,19 +57,28 @@
         <param name="down" value="noop" />
       </include>
     </control>
-    <!-- next-row affordance: rails move one at a time, so name what is below -->
+    <!-- next-row affordance: rails move one at a time, so name what is below.
+         A quiet read-only pill (disabled auto-width button) with a chevron inside it. -->
+    <control type="label" id="9790">
+      <left>-2000</left><top>0</top><width>800</width><height>1</height>
+      <label>$VAR[NextRailTitle]</label>
+    </control>
     <control type="group">
-      <left>96</left><top>1010</top>
+      <left>96</left><top>1012</top>
       <visible>!String.IsEmpty(Control.GetLabel(9790))</visible>
       <include>FadeVisible</include>
-      <control type="image">
-        <left>0</left><top>8</top><width>28</width><height>28</height>
-        <texture colordiffuse="text3">bobi/icons/chevron-down.png</texture>
+      <control type="button">
+        <left>0</left><top>0</top><width>auto</width><height>44</height>
+        <label>[COLOR text3]下一行[/COLOR]   $VAR[NextRailTitle]</label>
+        <font>Label24</font><textcolor>text2</textcolor><disabledcolor>text2</disabledcolor>
+        <textoffsetx>52</textoffsetx><aligny>center</aligny>
+        <texturenofocus colordiffuse="CC15171C" border="22">bobi/pill.png</texturenofocus>
+        <texturefocus colordiffuse="CC15171C" border="22">bobi/pill.png</texturefocus>
+        <enable>false</enable>
       </control>
-      <control type="label" id="9790">
-        <left>40</left><top>0</top><width>800</width><height>44</height>
-        <label>$VAR[NextRailTitle]</label>
-        <font>Label24</font><textcolor>text3</textcolor><aligny>center</aligny>
+      <control type="image">
+        <left>18</left><top>10</top><width>24</width><height>24</height>
+        <texture colordiffuse="text3">bobi/icons/chevron-down.png</texture>
       </control>
     </control>
     <!-- offline / all catalogue rails empty -->

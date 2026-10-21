@@ -32,6 +32,12 @@ def plugin(monkeypatch, tmp_path):
         def setProperty(self, key, value):
             self.properties[key] = value
 
+        def setLabel2(self, value):
+            self.label2 = value
+
+        def setInfo(self, kind, value):
+            self.info = value
+
         def setContentLookup(self, value):
             self.lookup = value
 
@@ -86,6 +92,9 @@ def test_root_lists_sources_without_network_or_credentials(plugin):
     assert not plugin.calls and not plugin.resolved
     assert plugin.rows[0][1].label == '管理网盘 / NAS / 片库'
     assert plugin.rows[1][1].label == 'NAS'
+    assert plugin.rows[0][1].properties['Bobi.Library.Manage'] == 'true'
+    assert plugin.rows[1][1].properties['Bobi.Library.Kind'] == 'smb'
+    assert plugin.rows[1][1].label2 == 'SMB · nas.example'
     assert all('test-secret' not in target and 'nas.example' not in target for target, _, _ in plugin.rows)
     assert plugin.content == 'files' and plugin.closed == 1
 
@@ -115,6 +124,7 @@ def test_pagination_reaches_last_page_without_losing_or_repeating_items(plugin):
         plugin.module.execute(17, params)
         labels.extend(row.label for _, row, folder in plugin.rows if not folder)
         next_rows = [target for target, row, _ in plugin.rows if row.label == '下一页']
+        assert all(row.properties.get('Bobi.NextPage') == 'true' for _, row, _ in plugin.rows if row.label == '下一页')
         if page < 49:
             assert len(next_rows) == 1
             params = dict(parse_qsl(urlsplit(next_rows[0]).query))
@@ -198,3 +208,33 @@ def test_manage_is_explicit_and_does_not_play(plugin):
     plugin.module.execute(17, {'action': 'manage'})
     assert plugin.calls == [('builtin', 'RunScript(script.bobbi.setup,libraries)')]
     assert not plugin.resolved and plugin.ended[0][1]['succeeded'] is False
+
+
+def test_native_metadata_is_one_listing_not_per_file_stat(plugin, monkeypatch):
+    requests = []
+    def rpc(raw):
+        request = json.loads(raw)
+        requests.append(request)
+        base = request['params']['directory']
+        return json.dumps({'result': {'files': [
+            {'file': base + 'Season%201/', 'filetype': 'directory'},
+            {'file': base + 'film.mkv', 'filetype': 'file', 'size': 2000000000,
+             'lastmodified': '2026-10-21 09:10:11'},
+            {'file': base + 'bad.strm', 'filetype': 'file'}], 'limits': {'total': 3}}})
+    monkeypatch.setattr(plugin.module.xbmc, 'executeJSONRPC', rpc, raising=False)
+    plugin.module.execute(17, {'action': 'browse', 'source': plugin.source.id})
+    assert len(requests) == 1 and not plugin.calls
+    assert len(plugin.rows) == 2
+    assert plugin.rows[1][1].info == {'size': 2000000000, 'date': '21.10.2026'}
+
+
+def test_catalog_metadata_no_media_probe(plugin):
+    source = import_catalog(json.dumps({'schema': 'bobbi-library-v1', 'name': 'Catalog', 'items': [
+        {'id': 'a', 'title': 'Film', 'url': 'https://media.example/file.mkv',
+         'size': 12345678, 'modified': '2026-10-21'}]}))
+    store = Registry(plugin.path)
+    store.save(source)
+    store.close()
+    plugin.module.execute(17, {'action': 'browse', 'source': source.id})
+    assert plugin.rows[0][1].info == {'size': 12345678, 'date': '21.10.2026'}
+    assert not plugin.calls

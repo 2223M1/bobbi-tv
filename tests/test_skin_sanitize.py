@@ -110,7 +110,7 @@ def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
     assert skin.font_supports((output / 'fonts/BobiAF-Solid.ttf').read_bytes(), '\uf058\uf01b\uf13e\uf1ab\uf6ff\uf55a\uf0a8\uf0a9\uf05c')
     addon = ET.parse(output / 'addon.xml').getroot()
     assert addon.get('id') == 'skin.bobbi.cinema'
-    assert addon.get('version') == '0.1.0'
+    assert addon.get('version') == ET.parse(source / 'addon.xml').getroot().get('version')
     assert all(d.get('version') == '0.1.0' for d in addon.findall('./requires/import') if 'bobbi' in d.get('addon', ''))
     assert addon.find('.//screenshot') is None
     for file in (output / '1080p').glob('*.xml'):

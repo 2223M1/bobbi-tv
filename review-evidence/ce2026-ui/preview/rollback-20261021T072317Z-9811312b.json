@@ -1,0 +1,51 @@
+{
+  "mode": "rollback",
+  "transaction": "preview-20261021T072045Z-34d34cf6",
+  "operations": [
+    {
+      "mode": "rollback",
+      "exit_code": 0,
+      "result": {
+        "state": "restored",
+        "gui": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          },
+          "skin": {
+            "id": "skin.bobbi.cinema",
+            "name": "bobbi TV"
+          }
+        },
+        "screenshot": {
+          "remote_path": "/storage/.bobbi-ui-preview/preview-20261021T072045Z-34d34cf6/framebuffer-1792567401464839151.png",
+          "sha256": "c85d7e49417b6b85c70e9a9c9c453a1ec95483bab12f6f2c0ff90f214c5a53ec",
+          "bytes": 68709,
+          "method": "displayed GUI framebuffer; excludes hardware video plane",
+          "local_path": "D:\\AM6B-Project\\ce2025-results-20261021\\ui-preview\\rollback-20261021T072317Z-9811312b.png"
+        }
+      },
+      "diagnostic_present": false
+    }
+  ],
+  "result": {
+    "state": "restored",
+    "gui": {
+      "currentwindow": {
+        "id": 10000,
+        "label": "主界面"
+      },
+      "skin": {
+        "id": "skin.bobbi.cinema",
+        "name": "bobbi TV"
+      }
+    },
+    "screenshot": {
+      "remote_path": "/storage/.bobbi-ui-preview/preview-20261021T072045Z-34d34cf6/framebuffer-1792567401464839151.png",
+      "sha256": "c85d7e49417b6b85c70e9a9c9c453a1ec95483bab12f6f2c0ff90f214c5a53ec",
+      "bytes": 68709,
+      "method": "displayed GUI framebuffer; excludes hardware video plane",
+      "local_path": "D:\\AM6B-Project\\ce2025-results-20261021\\ui-preview\\rollback-20261021T072317Z-9811312b.png"
+    }
+  }
+}

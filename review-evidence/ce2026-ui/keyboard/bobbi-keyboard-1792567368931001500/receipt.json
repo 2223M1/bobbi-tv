@@ -1,0 +1,85 @@
+{
+  "exit_code": 0,
+  "diagnostic_present": false,
+  "run": "/storage/.kodi/temp/bobbi-keyboard-1792567368931001500",
+  "result": {
+    "scope": "native Kodi keyboard + installed skin; synthetic shi input only",
+    "rounds": [
+      {
+        "visible_button": 500,
+        "native_button": 400,
+        "expected": "是",
+        "actual": "是",
+        "composition": ""
+      },
+      {
+        "visible_button": 501,
+        "native_button": 401,
+        "expected": "使",
+        "actual": "使",
+        "composition": ""
+      },
+      {
+        "visible_button": 502,
+        "native_button": 402,
+        "expected": "十",
+        "actual": "十",
+        "composition": ""
+      },
+      {
+        "visible_button": 503,
+        "native_button": 403,
+        "expected": "时",
+        "actual": "时",
+        "composition": ""
+      },
+      {
+        "visible_button": 504,
+        "native_button": 404,
+        "expected": "事",
+        "actual": "事",
+        "composition": ""
+      },
+      {
+        "visible_button": 505,
+        "native_button": 405,
+        "expected": "室",
+        "actual": "室",
+        "composition": ""
+      },
+      {
+        "visible_button": 506,
+        "native_button": 406,
+        "expected": "市",
+        "actual": "市",
+        "composition": ""
+      },
+      {
+        "visible_button": 507,
+        "native_button": 407,
+        "expected": "石",
+        "actual": "石",
+        "composition": ""
+      },
+      {
+        "visible_button": 508,
+        "native_button": 408,
+        "expected": "师",
+        "actual": "师",
+        "composition": ""
+      },
+      {
+        "visible_button": 509,
+        "native_button": 409,
+        "expected": "试",
+        "actual": "试",
+        "composition": ""
+      }
+    ],
+    "initial_layout": "Chinese BasePY",
+    "helper_started": true,
+    "passed": true,
+    "confirmed": true,
+    "returned_text": "试"
+  }
+}

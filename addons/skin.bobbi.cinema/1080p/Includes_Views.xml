@@ -12,8 +12,20 @@
     <value>$INFO[Container.FolderName]</value>
   </variable>
   <variable name="DirKicker">
+    <value condition="$EXP[BobiInLibrary] + $EXP[BobiLibraryRoot]">我的网盘与 NAS</value>
+    <value condition="$EXP[BobiInLibrary]">我的网盘与 NAS   ·   $INFO[Container.NumItems,, 项]</value>
     <value condition="Container.Content(seasons)">选择季 / 相关电影</value>
     <value condition="Container.Content(episodes)">$VAR[SeasonLabel]   ·   选择集</value>
+  </variable>
+  <!-- library: plugin category is "源名 / a/b/c"; show the last segment large, the rest small -->
+  <variable name="LibraryHeading">
+    <value condition="$EXP[BobiLibraryRoot]">网盘与 NAS</value>
+    <value condition="!String.IsEmpty(Container.FolderName)">$INFO[Container.FolderName]</value>
+    <value>$INFO[Container.PluginCategory]</value>
+  </variable>
+  <variable name="LibraryPath">
+    <value condition="$EXP[BobiLibraryRoot]">选择一个来源；按 确认 打开</value>
+    <value>$INFO[Container.PluginCategory]</value>
   </variable>
   <variable name="WallSubline">
     <value condition="Container.Content(seasons)">$INFO[ListItem.Year]$INFO[ListItem.Property(Bobi.EpisodeCount),  ·  共 , 集]</value>
@@ -32,9 +44,15 @@
 
   <!-- ===== header band ===== -->
   <include name="DirectoryHeader">
+    <!-- library: a warm corner glow instead of item art (folders have none) -->
+    <control type="image">
+      <left>760</left><top>0</top><width>1160</width><height>652</height>
+      <texture colordiffuse="24FF8A3D">bobi/glow-corner-r.png</texture>
+      <visible>$EXP[BobiInLibrary]</visible>
+    </control>
     <!-- focused item's art, quiet, top-right -->
     <control type="group">
-      <visible>!Container.Content(episodes)</visible>
+      <visible>!Container.Content(episodes) + !$EXP[BobiInLibrary]</visible>
       <control type="image">
         <left>760</left><top>0</top><width>1160</width><height>652</height>
         <aspectratio>scale</aspectratio>
@@ -78,13 +96,28 @@
         <label>$VAR[DirHeading]</label>
         <font>Display56</font><textcolor>text</textcolor><shadowcolor>80000000</shadowcolor>
         <aligny>center</aligny>
+        <visible>!$EXP[BobiInLibrary]</visible>
+      </control>
+      <!-- library heading: current folder large, the source / path below in small type -->
+      <control type="group">
+        <visible>$EXP[BobiInLibrary]</visible>
+        <control type="label">
+          <left>0</left><top>30</top><width>1500</width><height>64</height>
+          <label>$VAR[LibraryHeading]</label>
+          <font>Display56</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>2</left><top>100</top><width>1500</width><height>36</height>
+          <label>$VAR[LibraryPath]</label>
+          <font>Label24</font><textcolor>text3</textcolor><aligny>center</aligny>
+        </control>
       </control>
       <!-- focused item strip (walls) -->
       <control type="grouplist">
         <left>2</left><top>100</top><width>1500</width><height>44</height>
         <orientation>horizontal</orientation><itemgap>18</itemgap>
         <usecontrolcoords>true</usecontrolcoords>
-        <visible>!Container.Content(episodes) + !String.IsEmpty(Container.Content)</visible>
+        <visible>!Container.Content(episodes) + !String.IsEmpty(Container.Content) + !$EXP[BobiInLibrary]</visible>
         <control type="label">
           <width>auto</width><height>44</height>
           <label>$VAR[TitlePrimary]</label>
@@ -251,6 +284,100 @@
     </definition>
   </include>
 
+  <!-- ===== library file row (网盘 / NAS browse) =====
+       Folder = accent folder glyph + chevron; video = play-file glyph; "more" row = arrow.
+       Focus is the same white fill as menu rows; text and glyphs flip to dark. -->
+  <variable name="FileRowIcon">
+    <value condition="$EXP[BobiIsMore]">bobi/icons/arrow-right.png</value>
+    <value condition="$EXP[BobiIsManage]">bobi/icons/plus.png</value>
+    <value condition="ListItem.IsFolder">bobi/icons/folder.png</value>
+    <value>bobi/icons/file-video.png</value>
+  </variable>
+  <variable name="FileRowMeta">
+    <value condition="$EXP[BobiIsMore]">继续加载</value>
+    <value condition="!String.IsEmpty(ListItem.Size) + !String.IsEmpty(ListItem.Date)">$INFO[ListItem.Size]   ·   $INFO[ListItem.Date]</value>
+    <value condition="!String.IsEmpty(ListItem.Size)">$INFO[ListItem.Size]</value>
+    <value condition="!String.IsEmpty(ListItem.Label2)">$INFO[ListItem.Label2]</value>
+  </variable>
+  <include name="FileRow">
+    <param name="focused">false</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>4</top><width>1728</width><height>88</height>
+        <texture colordiffuse="focus" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <!-- glyph tile -->
+      <control type="image">
+        <left>16</left><top>16</top><width>64</width><height>64</height>
+        <texture colordiffuse="surface_hi" border="14">bobi/r14.png</texture>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>16</left><top>16</top><width>64</width><height>64</height>
+        <texture colordiffuse="1A0A0B0E" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>32</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="accent_text">$VAR[FileRowIcon]</texture>
+        <visible>!$PARAM[focused] + ListItem.IsFolder</visible>
+      </control>
+      <control type="image">
+        <left>32</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="text2">$VAR[FileRowIcon]</texture>
+        <visible>!$PARAM[focused] + !ListItem.IsFolder</visible>
+      </control>
+      <control type="image">
+        <left>32</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="on_focus">$VAR[FileRowIcon]</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <!-- name -->
+      <control type="label">
+        <left>104</left><top>4</top><width>1180</width><height>88</height>
+        <label>$INFO[ListItem.Label]</label>
+        <font>Label30</font><textcolor>text</textcolor><aligny>center</aligny>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>104</left><top>4</top><width>1180</width><height>88</height>
+        <label>$INFO[ListItem.Label]</label>
+        <font>Label30</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+        <scroll>true</scroll>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <!-- meta -->
+      <control type="label">
+        <left>1300</left><top>4</top><width>356</width><height>88</height>
+        <label>$VAR[FileRowMeta]</label>
+        <font>Meta22</font><textcolor>text3</textcolor><align>right</align><aligny>center</aligny>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>1300</left><top>4</top><width>356</width><height>88</height>
+        <label>$VAR[FileRowMeta]</label>
+        <font>Meta22</font><textcolor>B30A0B0E</textcolor><align>right</align><aligny>center</aligny>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>1672</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="text3">bobi/icons/chevron-right.png</texture>
+        <visible>ListItem.IsFolder + !$EXP[BobiIsMore] + !$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>1672</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="on_focus">bobi/icons/chevron-right.png</texture>
+        <visible>ListItem.IsFolder + !$EXP[BobiIsMore] + $PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>1672</left><top>32</top><width>32</width><height>32</height>
+        <texture colordiffuse="on_focus">bobi/icons/play.png</texture>
+        <visible>!ListItem.IsFolder + $PARAM[focused]</visible>
+      </control>
+    </definition>
+  </include>
+
   <!-- ===== cast tile (detail page, OSD cast) ===== -->
   <include name="CastTile">
     <param name="focused">false</param>
@@ -302,6 +429,28 @@
       <onleft>noop</onleft>
       <onright>noop</onright>
       <viewtype label="波比">wall</viewtype>
+      <!-- library root: source tiles (16:9), four per row -->
+      <itemlayout width="444" height="268" condition="$EXP[BobiInLibrary] + $EXP[BobiLibraryRoot]">
+        <control type="group"><left>24</left><top>14</top><include content="LibraryTile" /></control>
+      </itemlayout>
+      <focusedlayout width="444" height="268" condition="$EXP[BobiInLibrary] + $EXP[BobiLibraryRoot]">
+        <control type="group">
+          <left>24</left><top>14</top>
+          <include content="Lift"><param name="center">200,112</param><param name="zoom">105</param></include>
+          <control type="group">
+            <visible>Control.HasFocus(50)</visible>
+            <include content="CardShadow"><param name="w">456</param><param name="h">269</param></include>
+          </control>
+          <include content="LibraryTile"><param name="focused">Control.HasFocus(50)</param></include>
+        </control>
+      </focusedlayout>
+      <!-- library folders and files: one row each, folder vs video glyph, size / date on the right -->
+      <itemlayout width="1776" height="96" condition="$EXP[BobiInLibrary]">
+        <control type="group"><left>24</left><include content="FileRow" /></control>
+      </itemlayout>
+      <focusedlayout width="1776" height="96" condition="$EXP[BobiInLibrary]">
+        <control type="group"><left>24</left><include content="FileRow"><param name="focused">Control.HasFocus(50)</param></include></control>
+      </focusedlayout>
       <!-- episodes -->
       <itemlayout width="1776" height="208" condition="Container.Content(episodes)">
         <control type="group"><left>24</left><include content="EpisodeRow" /></control>
@@ -311,15 +460,34 @@
       </focusedlayout>
       <!-- poster wall -->
       <itemlayout width="253" height="395" condition="Container.Content(movies) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(sets) | Container.Content(videos)">
-        <include content="WallTile" />
-        <include content="WallCaption" />
+        <control type="group">
+          <visible>!$EXP[BobiIsMore]</visible>
+          <include content="WallTile" />
+          <include content="WallCaption" />
+        </control>
+        <control type="group">
+          <left>23</left><top>14</top>
+          <include content="MoreTile"><param name="visible">$EXP[BobiIsMore]</param><param name="w">200</param><param name="h">300</param></include>
+        </control>
       </itemlayout>
       <focusedlayout width="253" height="395" condition="Container.Content(movies) | Container.Content(tvshows) | Container.Content(seasons) | Container.Content(sets) | Container.Content(videos)">
         <control type="group">
-          <include content="Lift"><param name="center">123,164</param><param name="zoom">106</param></include>
-          <include content="WallTile"><param name="focused">Control.HasFocus(50)</param></include>
+          <visible>!$EXP[BobiIsMore]</visible>
+          <control type="group">
+            <include content="Lift"><param name="center">123,164</param><param name="zoom">106</param></include>
+            <include content="WallTile"><param name="focused">Control.HasFocus(50)</param></include>
+          </control>
+          <include content="WallCaption"><param name="focused">Control.HasFocus(50)</param><param name="color">text</param></include>
         </control>
-        <include content="WallCaption"><param name="focused">Control.HasFocus(50)</param><param name="color">text</param></include>
+        <control type="group">
+          <left>23</left><top>14</top>
+          <include content="Lift"><param name="center">100,150</param><param name="zoom">106</param></include>
+          <include content="MoreTile">
+            <param name="visible">$EXP[BobiIsMore]</param>
+            <param name="focused">Control.HasFocus(50)</param>
+            <param name="w">200</param><param name="h">300</param>
+          </include>
+        </control>
       </focusedlayout>
       <!-- menus -->
       <itemlayout width="1776" height="96">

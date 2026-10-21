@@ -121,7 +121,7 @@
           </control>
         </control>
         <control type="grouplist" id="9701">
-          <left>272</left><top>32</top><width>1300</width><height>60</height>
+          <left>272</left><top>32</top><width>1240</width><height>60</height>
           <orientation>horizontal</orientation>
           <itemgap>8</itemgap>
           <scrolltime>0</scrolltime>
@@ -135,45 +135,49 @@
           <include content="TabButton"><param name="id" value="9714" /><param name="label" value="动漫" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),anime)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" /><param name="section" value="anime" /></include>
           <include content="TabButton"><param name="id" value="9715" /><param name="label" value="我的" /><param name="active" value="String.IsEqual(Window(Home).Property(BobiSection),mine)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_home" /><param name="section" value="mine" /></include>
         </control>
-        <!-- search + settings as icon buttons, then clock -->
+        <!-- search + settings: 72px round buttons with 40px glyphs on a quiet disc, then clock -->
         <control type="button" id="9721">
-          <left>1584</left><top>32</top><width>60</width><height>60</height>
+          <left>1528</left><top>26</top><width>72</width><height>72</height>
           <label />
           <texturefocus colordiffuse="focus">bobi/pill.png</texturefocus>
-          <texturenofocus />
+          <texturenofocus colordiffuse="1FFFFFFF">bobi/pill.png</texturenofocus>
           <onleft>9701</onleft><onright>9722</onright><onup>noop</onup><ondown>$PARAM[down]</ondown>
           <onclick>RunPlugin(plugin://plugin.video.bobbi/?action=bobi_search_prompt&amp;section=multi)</onclick>
+          <include content="Lift"><param name="zoom">108</param></include>
         </control>
         <control type="image">
-          <left>1598</left><top>46</top><width>32</width><height>32</height>
-          <texture colordiffuse="text2">bobi/icons/search.png</texture>
+          <left>1544</left><top>42</top><width>40</width><height>40</height>
+          <texture colordiffuse="text">bobi/icons/search.png</texture>
           <visible>!Control.HasFocus(9721)</visible>
         </control>
         <control type="image">
-          <left>1598</left><top>46</top><width>32</width><height>32</height>
+          <left>1544</left><top>42</top><width>40</width><height>40</height>
           <texture colordiffuse="on_focus">bobi/icons/search.png</texture>
           <visible>Control.HasFocus(9721)</visible>
+          <animation effect="zoom" start="100" end="108" time="140" tween="cubic" easing="out" center="1564,62" reversible="true" condition="Control.HasFocus(9721) + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
         </control>
         <control type="button" id="9722">
-          <left>1652</left><top>32</top><width>60</width><height>60</height>
+          <left>1616</left><top>26</top><width>72</width><height>72</height>
           <label />
           <texturefocus colordiffuse="focus">bobi/pill.png</texturefocus>
-          <texturenofocus />
+          <texturenofocus colordiffuse="1FFFFFFF">bobi/pill.png</texturenofocus>
           <onleft>9721</onleft><onright>noop</onright><onup>noop</onup><ondown>$PARAM[down]</ondown>
           <onclick>ActivateWindow(Settings)</onclick>
+          <include content="Lift"><param name="zoom">108</param></include>
         </control>
         <control type="image">
-          <left>1666</left><top>46</top><width>32</width><height>32</height>
-          <texture colordiffuse="text2">bobi/icons/settings.png</texture>
+          <left>1632</left><top>42</top><width>40</width><height>40</height>
+          <texture colordiffuse="text">bobi/icons/settings.png</texture>
           <visible>!Control.HasFocus(9722)</visible>
         </control>
         <control type="image">
-          <left>1666</left><top>46</top><width>32</width><height>32</height>
+          <left>1632</left><top>42</top><width>40</width><height>40</height>
           <texture colordiffuse="on_focus">bobi/icons/settings.png</texture>
           <visible>Control.HasFocus(9722)</visible>
+          <animation effect="zoom" start="100" end="108" time="140" tween="cubic" easing="out" center="1652,62" reversible="true" condition="Control.HasFocus(9722) + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
         </control>
         <control type="label">
-          <left>1724</left><top>38</top><width>100</width><height>48</height>
+          <left>1704</left><top>38</top><width>120</width><height>48</height>
           <label>$INFO[System.Time(HH:mm)]</label>
           <font>Clock30</font><textcolor>text2</textcolor><align>right</align><aligny>center</aligny>
         </control>

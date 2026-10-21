@@ -440,6 +440,72 @@
     </definition>
   </include>
 
+  <!-- ===== on-screen keyboard =====
+       Keys sit edge to edge inside clipping grouplists, so focus is a fill change, not a zoom.
+       KbKey: caller tags are nested first, so a caller <width>/<font>/<label>/<onup> wins. -->
+  <include name="KbKey">
+    <param name="id" />
+    <param name="control">button</param>
+    <definition>
+      <control type="$PARAM[control]" id="$PARAM[id]">
+        <nested />
+        <left>0</left><top>0</top><width>88</width><height>80</height>
+        <font>Label30</font>
+        <textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor><disabledcolor>text_disabled</disabledcolor>
+        <textoffsetx>0</textoffsetx><align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
+        <pulseonselect>false</pulseonselect>
+      </control>
+    </definition>
+  </include>
+  <!-- shift / caps / symbols (136 wide): Kodi sets the selected state; a dot under the label only while on -->
+  <include name="KbModeDot">
+    <radioposx>62</radioposx><radioposy>62</radioposy>
+    <radiowidth>12</radiowidth><radioheight>12</radioheight>
+    <textureradioonnofocus colordiffuse="accent">bobi/dot.png</textureradioonnofocus>
+    <textureradioonfocus colordiffuse="on_focus">bobi/dot.png</textureradioonfocus>
+    <textureradiooffnofocus /><textureradioofffocus />
+    <textureradioondisabled /><textureradiooffdisabled />
+  </include>
+  <!-- IME candidate, filled by scripts/cinema_keyboard.py from Kodi's own word page.
+       Clicking types the hidden digit button 40n, which is how Kodi picks word n. -->
+  <include name="KbWord">
+    <param name="n" />
+    <definition>
+      <control type="button" id="50$PARAM[n]">
+        <width min="72">auto</width><height>64</height>
+        <label>$INFO[Window(10103).Property(BobiIME.Word$PARAM[n])]</label>
+        <font>Label30</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>18</textoffsetx><align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus />
+        <pulseonselect>false</pulseonselect>
+        <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word$PARAM[n]))</visible>
+        <onclick>SendClick(10103,40$PARAM[n])</onclick>
+        <onclick>SetFocus(120)</onclick>
+      </control>
+    </definition>
+  </include>
+  <!-- keyboard side column button -->
+  <include name="KbSideButton">
+    <param name="id" />
+    <param name="label" />
+    <definition>
+      <control type="button" id="$PARAM[id]">
+        <nested />
+        <left>0</left><top>0</top><width>300</width><height>80</height>
+        <label>$PARAM[label]</label>
+        <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor><disabledcolor>text_disabled</disabledcolor>
+        <textoffsetx>24</textoffsetx><align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
+        <pulseonselect>false</pulseonselect>
+        <onleft>8000</onleft><onright>8000</onright>
+      </control>
+    </definition>
+  </include>
+
   <!-- ===== skin setting toggle row (direct radiobutton: navigable in a grouplist) ===== -->
   <include name="SkinToggle">
     <param name="id" />

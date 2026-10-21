@@ -96,9 +96,9 @@ def show_last_titles(params):
                 )
             )
 
-    # "Next Page"
     if end < total:
-        list_item = make_list_item(label="Next Page")
+        list_item = make_list_item(label="下一页")
+        list_item.setProperty("Bobi.NextPage", "true")
         list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "nextpage.png")})
         directory_items.append((build_url("titles_history", page=page + 1), list_item, True))
 

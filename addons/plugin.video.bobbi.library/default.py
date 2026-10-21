@@ -1,5 +1,6 @@
 """Unified user-library entrypoint. All writes affect bobbi local settings only."""
 import sys
+import json
 from urllib.parse import parse_qsl, urlencode
 from uuid import uuid4
 import xbmc
@@ -11,6 +12,7 @@ from bobbi_platform.libraries import (LibraryError, MAX_DIRECTORY_ITEMS, directo
                                       joined_path, relative_path)
 from bobbi_platform.kodi import standard_handoff
 from bobbi_platform.playback import selected_identity
+from bobbi_platform.library_listing import source_presentation, native_listing, file_info
 
 PAGE_SIZE = 200
 SELECTION = 'bobbi.portable_selection'
@@ -21,13 +23,33 @@ def route(**values):
     return 'plugin://plugin.video.bobbi.library/?' + urlencode(values)
 
 
-def item(label, target, folder=True):
+def item(label, target, folder=True, label2='', properties=None, info=None):
     row = xbmcgui.ListItem(label=label)
+    if label2:
+        row.setLabel2(label2)
+    for key, value in (properties or {}).items():
+        row.setProperty(key, value)
+    if info:
+        row.setInfo('video', info)
     row.setContentLookup(False)
     row.setArt({'icon': 'DefaultFolder.png' if folder else 'DefaultVideo.png'})
     if not folder:
         row.setProperty('IsPlayable', 'true')
     return target, row, folder
+
+
+def listing_with_metadata(path):
+    # Kodi already obtains size/date while listing SMB/NFS/WebDAV. A single
+    # native listing replaces listdir + up to 200 separate remote Stat calls.
+    try:
+        response = json.loads(xbmc.executeJSONRPC(json.dumps(dict(jsonrpc='2.0', id=1,
+            method='Files.GetDirectory', params=dict(directory=path, media='files',
+                properties=['size', 'lastmodified'], limits=dict(start=0, end=MAX_DIRECTORY_ITEMS + 1))))))
+        return native_listing(response, path)
+    except LibraryError:
+        raise
+    except (AttributeError, TypeError, ValueError, RuntimeError):
+        return directory_items(*xbmcvfs.listdir(path)), {}
 
 
 def execute(handle, params):
@@ -43,9 +65,12 @@ def execute(handle, params):
         rows = []
         category = '我的片库'
         if action == 'root':
-            rows.append(item('管理网盘 / NAS / 片库', route(action='manage')))
+            rows.append(item('管理网盘 / NAS / 片库', route(action='manage'),
+                             properties={'Bobi.Library.Manage': 'true'}))
             for source in store.sources():
-                rows.append(item(source.name, route(action='browse', source=source.id)))
+                kind, label2 = source_presentation(source)
+                rows.append(item(source.name, route(action='browse', source=source.id),
+                                 label2=label2, properties={'Bobi.Library.Kind': kind}))
         elif action in ('browse', 'play'):
             source = store.get(params.get('source', ''))
             relative = relative_path(params.get('relative', ''))
@@ -84,19 +109,20 @@ def execute(handle, params):
                 listing = source.items
                 for entry in listing[offset:offset + PAGE_SIZE]:
                     label = entry.title + (' (%d)' % entry.year if entry.year else '')
-                    rows.append(item(label, route(action='play', source=source.id, entry=entry.id), False))
+                    rows.append(item(label, route(action='play', source=source.id, entry=entry.id), False,
+                                     info=file_info(entry.size, entry.modified)))
             else:
                 path = joined_path(source, relative)
                 if not xbmcvfs.exists(path):
                     raise LibraryError('SOURCE_UNAVAILABLE')
-                listing = directory_items(*xbmcvfs.listdir(path))
+                listing, metadata = listing_with_metadata(path)
                 for folder, name in listing[offset:offset + PAGE_SIZE]:
                     child = relative + '/' + name if relative else name
                     rows.append(item(name, route(action='browse' if folder else 'play',
-                        source=source.id, relative=child), folder))
+                        source=source.id, relative=child), folder, info=metadata.get(name) if not folder else None))
             if len(listing) > offset + PAGE_SIZE:
                 rows.append(item('下一页', route(action='browse', source=source.id, relative=relative,
-                                               offset=offset + PAGE_SIZE)))
+                                               offset=offset + PAGE_SIZE), properties={'Bobi.NextPage': 'true'}))
             if not listing:
                 xbmcgui.Dialog().ok('没有可显示的条目', '目录可能为空、没有视频或权限不足；可回到片库管理检查连接。')
         else:

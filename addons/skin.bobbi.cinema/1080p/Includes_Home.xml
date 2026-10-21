@@ -4,9 +4,6 @@
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810) + !String.IsEmpty(Container(9810).ListItem.Art(fanart))">$INFO[Container(9810).ListItem.Art(fanart)]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810) + !String.IsEmpty(Container(9810).ListItem.Art(tvshow.fanart))">$INFO[Container(9810).ListItem.Art(tvshow.fanart)]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810)">$INFO[Container(9810).ListItem.Art(thumb)]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820) + !String.IsEmpty(Container(9820).ListItem.Art(fanart))">$INFO[Container(9820).ListItem.Art(fanart)]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820) + !String.IsEmpty(Container(9820).ListItem.Art(tvshow.fanart))">$INFO[Container(9820).ListItem.Art(tvshow.fanart)]</value>
-    <value condition="String.IsEqual(Window(Home).Property(BobiRail),9820)">$INFO[Container(9820).ListItem.Art(thumb)]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830) + !String.IsEmpty(Container(9830).ListItem.Art(fanart))">$INFO[Container(9830).ListItem.Art(fanart)]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830) + !String.IsEmpty(Container(9830).ListItem.Art(tvshow.fanart))">$INFO[Container(9830).ListItem.Art(tvshow.fanart)]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9830)">$INFO[Container(9830).ListItem.Art(thumb)]</value>
@@ -22,9 +19,6 @@
     <value condition="Integer.IsGreater(Container(9810).NumItems,0) + !String.IsEmpty(Container(9810).ListItem.Art(fanart))">$INFO[Container(9810).ListItem.Art(fanart)]</value>
     <value condition="Integer.IsGreater(Container(9810).NumItems,0) + !String.IsEmpty(Container(9810).ListItem.Art(tvshow.fanart))">$INFO[Container(9810).ListItem.Art(tvshow.fanart)]</value>
     <value condition="Integer.IsGreater(Container(9810).NumItems,0)">$INFO[Container(9810).ListItem.Art(thumb)]</value>
-    <value condition="Integer.IsGreater(Container(9820).NumItems,0) + !String.IsEmpty(Container(9820).ListItem.Art(fanart))">$INFO[Container(9820).ListItem.Art(fanart)]</value>
-    <value condition="Integer.IsGreater(Container(9820).NumItems,0) + !String.IsEmpty(Container(9820).ListItem.Art(tvshow.fanart))">$INFO[Container(9820).ListItem.Art(tvshow.fanart)]</value>
-    <value condition="Integer.IsGreater(Container(9820).NumItems,0)">$INFO[Container(9820).ListItem.Art(thumb)]</value>
     <value condition="Integer.IsGreater(Container(9830).NumItems,0) + !String.IsEmpty(Container(9830).ListItem.Art(fanart))">$INFO[Container(9830).ListItem.Art(fanart)]</value>
     <value condition="Integer.IsGreater(Container(9830).NumItems,0) + !String.IsEmpty(Container(9830).ListItem.Art(tvshow.fanart))">$INFO[Container(9830).ListItem.Art(tvshow.fanart)]</value>
     <value condition="Integer.IsGreater(Container(9830).NumItems,0)">$INFO[Container(9830).ListItem.Art(thumb)]</value>
@@ -46,7 +40,6 @@
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$INFO[Container(9850).ListItem.Year]$INFO[Container(9850).ListItem.Genre,   ·   ]$INFO[Container(9850).ListItem.Rating,   ·   ★ ]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9860)">$INFO[Container(9860).ListItem.Year]$INFO[Container(9860).ListItem.Genre,   ·   ]$INFO[Container(9860).ListItem.Rating,   ·   ★ ]</value>
     <value condition="Integer.IsGreater(Container(9810).NumItems,0)">$INFO[Container(9810).ListItem.Year]$INFO[Container(9810).ListItem.Genre,   ·   ]$INFO[Container(9810).ListItem.Rating,   ·   ★ ]</value>
-    <value condition="Integer.IsGreater(Container(9820).NumItems,0)">$INFO[Container(9820).ListItem.Year]$INFO[Container(9820).ListItem.Genre,   ·   ]$INFO[Container(9820).ListItem.Rating,   ·   ★ ]</value>
     <value condition="Integer.IsGreater(Container(9830).NumItems,0)">$INFO[Container(9830).ListItem.Year]$INFO[Container(9830).ListItem.Genre,   ·   ]$INFO[Container(9830).ListItem.Rating,   ·   ★ ]</value>
     <value condition="Integer.IsGreater(Container(9840).NumItems,0)">$INFO[Container(9840).ListItem.Year]$INFO[Container(9840).ListItem.Genre,   ·   ]$INFO[Container(9840).ListItem.Rating,   ·   ★ ]</value>
     <value condition="Integer.IsGreater(Container(9850).NumItems,0)">$INFO[Container(9850).ListItem.Year]$INFO[Container(9850).ListItem.Genre,   ·   ]$INFO[Container(9850).ListItem.Rating,   ·   ★ ]</value>
@@ -64,7 +57,6 @@
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9850)">$INFO[Container(9850).ListItem.Plot]</value>
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9860)">$INFO[Container(9860).ListItem.Plot]</value>
     <value condition="Integer.IsGreater(Container(9810).NumItems,0)">$INFO[Container(9810).ListItem.Plot]</value>
-    <value condition="Integer.IsGreater(Container(9820).NumItems,0)">$INFO[Container(9820).ListItem.Plot]</value>
     <value condition="Integer.IsGreater(Container(9830).NumItems,0)">$INFO[Container(9830).ListItem.Plot]</value>
     <value condition="Integer.IsGreater(Container(9840).NumItems,0)">$INFO[Container(9840).ListItem.Plot]</value>
     <value condition="Integer.IsGreater(Container(9850).NumItems,0)">$INFO[Container(9850).ListItem.Plot]</value>
@@ -132,8 +124,12 @@
           <itemlayout width="264" height="380">
             <control type="group">
               <left>24</left><top>20</top>
-              <include content="PosterArt" />
-              <include content="ArtBadges" />
+              <control type="group">
+                <visible>!$EXP[BobiIsMore]</visible>
+                <include content="PosterArt" />
+                <include content="ArtBadges" />
+              </control>
+              <include content="MoreTile"><param name="visible">$EXP[BobiIsMore]</param></include>
             </control>
           </itemlayout>
           <focusedlayout width="264" height="380">
@@ -141,15 +137,22 @@
               <left>24</left><top>20</top>
               <include content="Lift"><param name="center">116,174</param><param name="zoom">106</param></include>
               <control type="group">
-                <visible>Control.HasFocus($PARAM[id])</visible>
-                <include content="CardShadow"><param name="w">288</param><param name="h">392</param></include>
+                <visible>!$EXP[BobiIsMore]</visible>
+                <control type="group">
+                  <visible>Control.HasFocus($PARAM[id])</visible>
+                  <include content="CardShadow"><param name="w">288</param><param name="h">392</param></include>
+                </control>
+                <include content="PosterArt" />
+                <include content="ArtBadges" />
+                <control type="group">
+                  <visible>Control.HasFocus($PARAM[id])</visible>
+                  <include content="FocusRing" />
+                </control>
               </control>
-              <include content="PosterArt" />
-              <include content="ArtBadges" />
-              <control type="group">
-                <visible>Control.HasFocus($PARAM[id])</visible>
-                <include content="FocusRing" />
-              </control>
+              <include content="MoreTile">
+                <param name="visible">$EXP[BobiIsMore]</param>
+                <param name="focused">Control.HasFocus($PARAM[id])</param>
+              </include>
             </control>
           </focusedlayout>
           <content target="videos" limit="20" browse="never">$PARAM[content]</content>
@@ -197,25 +200,43 @@
           <itemlayout width="432" height="380">
             <control type="group">
               <left>24</left><top>20</top>
-              <include content="WideCard" />
+              <control type="group">
+                <visible>!$EXP[BobiIsMore]</visible>
+                <include content="WideCard" />
+              </control>
+              <include content="MoreTile">
+                <param name="visible">$EXP[BobiIsMore]</param>
+                <param name="w">400</param><param name="h">225</param>
+              </include>
             </control>
           </itemlayout>
           <focusedlayout width="432" height="380">
             <control type="group">
               <left>24</left><top>20</top>
               <control type="group">
-                <include content="Lift"><param name="center">200,112</param><param name="zoom">105</param></include>
+                <visible>!$EXP[BobiIsMore]</visible>
                 <control type="group">
-                  <visible>Control.HasFocus($PARAM[id])</visible>
-                  <include content="CardShadow"><param name="w">456</param><param name="h">269</param></include>
+                  <include content="Lift"><param name="center">200,112</param><param name="zoom">105</param></include>
+                  <control type="group">
+                    <visible>Control.HasFocus($PARAM[id])</visible>
+                    <include content="CardShadow"><param name="w">456</param><param name="h">269</param></include>
+                  </control>
+                  <include content="WideArt" />
+                  <control type="group">
+                    <visible>Control.HasFocus($PARAM[id])</visible>
+                    <include content="FocusRing"><param name="w">416</param><param name="h">241</param></include>
+                  </control>
                 </control>
-                <include content="WideArt" />
-                <control type="group">
-                  <visible>Control.HasFocus($PARAM[id])</visible>
-                  <include content="FocusRing"><param name="w">416</param><param name="h">241</param></include>
-                </control>
+                <include content="WideCaption"><param name="focused">Control.HasFocus($PARAM[id])</param></include>
               </control>
-              <include content="WideCaption"><param name="focused">Control.HasFocus($PARAM[id])</param></include>
+              <control type="group">
+                <include content="Lift"><param name="center">200,112</param><param name="zoom">105</param></include>
+                <include content="MoreTile">
+                  <param name="visible">$EXP[BobiIsMore]</param>
+                  <param name="focused">Control.HasFocus($PARAM[id])</param>
+                  <param name="w">400</param><param name="h">225</param>
+                </include>
+              </control>
             </control>
           </focusedlayout>
           <content target="videos" limit="20" browse="never">$PARAM[content]</content>
@@ -271,6 +292,243 @@
     <include>WideCaption</include>
   </include>
 
+  <!-- ===== "more" tile: replaces a plugin's 下一页 row in rails and walls =====
+       Quiet outline card with an arrow in a disc; focus fills the card white. -->
+  <include name="MoreTile">
+    <param name="visible">true</param>
+    <param name="focused">false</param>
+    <param name="w">232</param>
+    <param name="h">348</param>
+    <definition>
+      <control type="group">
+        <visible>$PARAM[visible]</visible>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="surface" border="14">bobi/r14.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="surface_line" border="12">bobi/ring-thin-r10.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="focus" border="14">bobi/r14.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="group">
+          <centerleft>50%</centerleft><centertop>50%</centertop><width>200</width><height>136</height>
+          <control type="image">
+            <left>64</left><top>0</top><width>72</width><height>72</height>
+            <texture colordiffuse="surface_hi">bobi/pill.png</texture>
+            <visible>!$PARAM[focused]</visible>
+          </control>
+          <control type="image">
+            <left>64</left><top>0</top><width>72</width><height>72</height>
+            <texture colordiffuse="on_focus">bobi/pill.png</texture>
+            <visible>$PARAM[focused]</visible>
+          </control>
+          <control type="image">
+            <left>82</left><top>18</top><width>36</width><height>36</height>
+            <texture colordiffuse="text">bobi/icons/arrow-right.png</texture>
+            <visible>!$PARAM[focused]</visible>
+          </control>
+          <control type="image">
+            <left>82</left><top>18</top><width>36</width><height>36</height>
+            <texture colordiffuse="focus">bobi/icons/arrow-right.png</texture>
+            <visible>$PARAM[focused]</visible>
+          </control>
+          <control type="label">
+            <left>0</left><top>88</top><width>200</width><height>44</height>
+            <label>查看更多</label>
+            <font>Label28</font><textcolor>text2</textcolor><align>center</align><aligny>center</aligny>
+            <visible>!$PARAM[focused]</visible>
+          </control>
+          <control type="label">
+            <left>0</left><top>88</top><width>200</width><height>44</height>
+            <label>查看更多</label>
+            <font>Label28</font><textcolor>on_focus</textcolor><align>center</align><aligny>center</aligny>
+            <visible>$PARAM[focused]</visible>
+          </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== library source tile (网盘 / NAS / 片库): 16:9 surface card, never a blank poster =====
+       Item kinds from plugin.video.bobbi.library root: a source (folder) or the manage entry. -->
+  <variable name="LibraryTileIcon">
+    <value condition="$EXP[BobiIsManage]">bobi/icons/plus.png</value>
+    <value condition="String.Contains(ListItem.Label,网盘) | String.Contains(ListItem.Label,云) | String.Contains(ListItem.Label,115) | String.Contains(ListItem.Label,WebDAV)">bobi/icons/cloud.png</value>
+    <value condition="ListItem.IsFolder">bobi/icons/server.png</value>
+    <value>bobi/icons/file-video.png</value>
+  </variable>
+  <variable name="LibraryTileTitle">
+    <value condition="$EXP[BobiIsManage]">添加或管理</value>
+    <value>$INFO[ListItem.Label]</value>
+  </variable>
+  <variable name="LibraryTileHint">
+    <value condition="$EXP[BobiIsManage]">网盘 · NAS · 片库</value>
+    <value condition="!String.IsEmpty(ListItem.Label2)">$INFO[ListItem.Label2]</value>
+    <value condition="ListItem.IsFolder">打开目录</value>
+    <value>播放</value>
+  </variable>
+  <include name="LibraryTile">
+    <param name="focused">false</param>
+    <param name="w">400</param>
+    <param name="h">225</param>
+    <definition>
+      <!-- card -->
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="surface_hi" border="14">bobi/r14.png</texture>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="1FFF8A3D" diffuse="bobi/mask-400x225.png">bobi/glow-corner.png</texture>
+        <visible>!$PARAM[focused] + !$EXP[BobiIsManage]</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="surface_line" border="12">bobi/ring-thin-r10.png</texture>
+        <visible>!$PARAM[focused] + $EXP[BobiIsManage]</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="focus" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <!-- icon disc -->
+      <control type="image">
+        <left>32</left><top>32</top><width>72</width><height>72</height>
+        <texture colordiffuse="33FF8A3D">bobi/pill.png</texture>
+        <visible>!$PARAM[focused] + !$EXP[BobiIsManage]</visible>
+      </control>
+      <control type="image">
+        <left>32</left><top>32</top><width>72</width><height>72</height>
+        <texture colordiffuse="surface">bobi/pill.png</texture>
+        <visible>!$PARAM[focused] + $EXP[BobiIsManage]</visible>
+      </control>
+      <control type="image">
+        <left>32</left><top>32</top><width>72</width><height>72</height>
+        <texture colordiffuse="on_focus">bobi/pill.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>50</left><top>50</top><width>36</width><height>36</height>
+        <texture colordiffuse="accent_text">$VAR[LibraryTileIcon]</texture>
+        <visible>!$PARAM[focused] + !$EXP[BobiIsManage]</visible>
+      </control>
+      <control type="image">
+        <left>50</left><top>50</top><width>36</width><height>36</height>
+        <texture colordiffuse="text2">$VAR[LibraryTileIcon]</texture>
+        <visible>!$PARAM[focused] + $EXP[BobiIsManage]</visible>
+      </control>
+      <control type="image">
+        <left>50</left><top>50</top><width>36</width><height>36</height>
+        <texture colordiffuse="focus">$VAR[LibraryTileIcon]</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <!-- text -->
+      <control type="label">
+        <left>32</left><top>124</top><width>336</width><height>48</height>
+        <label>$VAR[LibraryTileTitle]</label>
+        <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>32</left><top>124</top><width>336</width><height>48</height>
+        <label>$VAR[LibraryTileTitle]</label>
+        <font>Head34</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+        <scroll>true</scroll>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>32</left><top>170</top><width>300</width><height>32</height>
+        <label>$VAR[LibraryTileHint]</label>
+        <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>32</left><top>170</top><width>300</width><height>32</height>
+        <label>$VAR[LibraryTileHint]</label>
+        <font>Meta22</font><textcolor>B30A0B0E</textcolor><aligny>center</aligny>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>336</left><top>170</top><width>32</width><height>32</height>
+        <texture colordiffuse="on_focus">bobi/icons/arrow-right.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <variable name="LibraryStageKicker">
+    <value>我的网盘与 NAS</value>
+  </variable>
+  <variable name="LibraryStageTitle">
+    <value condition="String.Contains(Container(9820).ListItem.FolderPath,action=manage)">添加或管理片库</value>
+    <value>$INFO[Container(9820).ListItem.Label]</value>
+  </variable>
+  <variable name="LibraryStageHint">
+    <value condition="String.Contains(Container(9820).ListItem.FolderPath,action=manage)">连接 SMB、NFS、WebDAV 共享，或导入片单。地址和账号只保存在这台设备上。</value>
+    <value>按 确认 打开目录，选择视频直接播放。目录按名称排列，视频以文件原样播放。</value>
+  </variable>
+
+  <!-- rail of library sources: same 420 rhythm as the media rails so rows move one at a time -->
+  <include name="HomeRailLibrary">
+    <param name="id" />
+    <param name="title" />
+    <param name="content" />
+    <param name="up" />
+    <param name="down" />
+    <definition>
+      <control type="group">
+        <width>1920</width><height>420</height>
+        <visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
+        <control type="label">
+          <left>96</left><top>0</top><width>1100</width><height>48</height>
+          <label>$PARAM[title]</label>
+          <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="list" id="$PARAM[id]">
+          <left>72</left><top>40</top><width>1848</width><height>380</height>
+          <orientation>horizontal</orientation>
+          <scrolltime tween="cubic" easing="out">180</scrolltime>
+          <focusposition>0</focusposition>
+          <movement>0</movement>
+          <onup>$PARAM[up]</onup>
+          <ondown>$PARAM[down]</ondown>
+          <onleft>noop</onleft>
+          <onright>noop</onright>
+          <onfocus>SetProperty(BobiRail,$PARAM[id],Home)</onfocus>
+          <onback condition="!Integer.IsEqual(Container($PARAM[id]).CurrentItem,1)">Control.SetFocus($PARAM[id],0)</onback>
+          <onback condition="Integer.IsEqual(Container($PARAM[id]).CurrentItem,1)">SetFocus(9701)</onback>
+          <itemlayout width="432" height="380">
+            <control type="group">
+              <left>24</left><top>20</top>
+              <include content="LibraryTile" />
+            </control>
+          </itemlayout>
+          <focusedlayout width="432" height="380">
+            <control type="group">
+              <left>24</left><top>20</top>
+              <include content="Lift"><param name="center">200,112</param><param name="zoom">105</param></include>
+              <control type="group">
+                <visible>Control.HasFocus($PARAM[id])</visible>
+                <include content="CardShadow"><param name="w">456</param><param name="h">269</param></include>
+              </control>
+              <include content="LibraryTile"><param name="focused">Control.HasFocus($PARAM[id])</param></include>
+            </control>
+          </focusedlayout>
+          <content target="videos" limit="20" browse="never">$PARAM[content]</content>
+        </control>
+      </control>
+    </definition>
+  </include>
+
   <!-- quiet placeholder posters while a rail loads (no spinner, no motion) -->
   <include name="SkeletonRow">
     <control type="image"><left>0</left><top>0</top><width>232</width><height>348</height><texture colordiffuse="surface" border="14">bobi/r14.png</texture></control>
@@ -301,7 +559,41 @@
   </include>
 
   <include name="HomeStage">
+    <!-- library mode: the NAS rail has focus, so the stage names the source instead of a film -->
+    <control type="group" id="9640">
+      <visible>String.IsEqual(Window(Home).Property(BobiRail),9820)</visible>
+      <include>FadeVisible</include>
+      <control type="image">
+        <left>760</left><top>0</top><width>1160</width><height>765</height>
+        <texture colordiffuse="2EFF8A3D">bobi/glow-corner-r.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>400</top><width>1920</width><height>380</height>
+        <texture colordiffuse="bg">bobi/scrim-bottom.png</texture>
+      </control>
+      <control type="group">
+        <left>96</left><top>150</top>
+        <control type="label">
+          <left>0</left><top>0</top><width>1200</width><height>36</height>
+          <label>$VAR[LibraryStageKicker]</label>
+          <font>Label24</font><textcolor>accent_text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>0</left><top>40</top><width>1500</width><height>96</height>
+          <label>$VAR[LibraryStageTitle]</label>
+          <font>Display72</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="textbox">
+          <left>2</left><top>156</top><width>900</width><height>110</height>
+          <label>$VAR[LibraryStageHint]</label>
+          <font>Body26</font><textcolor>text2</textcolor>
+          <autoscroll>false</autoscroll>
+        </control>
+      </control>
+    </control>
     <control type="group" id="9600">
+      <visible>!String.IsEqual(Window(Home).Property(BobiRail),9820)</visible>
+      <include>FadeVisible</include>
       <control type="image">
         <left>560</left><top>0</top><width>1360</width><height>765</height>
         <aspectratio>scale</aspectratio>

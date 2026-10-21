@@ -161,11 +161,9 @@ def show_continue_watching(params=None):
 
         directory_items.append((url, list_item, False))
 
-    # "Next Page (N more)"
     if end < total:
-        total_pages = -(-total // per_page)
-        remaining_pages = total_pages - page
-        list_item = make_list_item(label=f"Next Page ({remaining_pages} more)")
+        list_item = make_list_item(label="下一页")
+        list_item.setProperty("Bobi.NextPage", "true")
         list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "nextpage.png")})
         directory_items.append(
             (build_url("continue_watching_menu", page=page + 1), list_item, True)

@@ -1,0 +1,13 @@
+Timeout (0:00:20)!
+Thread 0x9e8ff180 (most recent call first):
+  File "/usr/lib/python3.11/threading.py", line 331 in wait
+  File "/usr/lib/python3.11/threading.py", line 629 in wait
+  File "/storage/.kodi/temp/bobbi-ui-smoke-1792567594434869000/smoke.py", line 161 in capture_frames
+  File "/usr/lib/python3.11/threading.py", line 982 in run
+  File "/usr/lib/python3.11/threading.py", line 1045 in _bootstrap_inner
+  File "/usr/lib/python3.11/threading.py", line 1002 in _bootstrap
+
+Thread 0xa3302180 (most recent call first):
+  File "/storage/.kodi/temp/bobbi-ui-smoke-1792567594434869000/smoke.py", line 52 in framebuffer_png
+  File "/storage/.kodi/temp/bobbi-ui-smoke-1792567594434869000/smoke.py", line 72 in inspect
+  File "/storage/.kodi/temp/bobbi-ui-smoke-1792567594434869000/smoke.py", line 175 in <module>
