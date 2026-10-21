@@ -25,13 +25,50 @@ def from_details(data, identifier):
     return SingleSeason(identifier, seasons[0]['episode_count'])
 
 
+def declarations(text, title):
+    """Subtitle-only, title-aware season/special evidence, never video authority."""
+    words = re.findall(r'[^\W_]+', title, re.UNICODE)
+    if words:
+        text = re.sub(r'(?<![^\W_])' + r'[\W_]+'.join(map(re.escape, words))
+                      + r'(?![^\W_])', ' ', text, flags=re.I)
+    seasons = {int(s) for s in re.findall(r'(?i)(?<![a-z0-9])s(\d{1,3})(?=e\d|[^a-z0-9]|$)', text)}
+    seasons.update(int(s) for s in re.findall(r'(?i)\bseason[ ._-]+(\d{1,3})\b', text))
+    seasons.update(int(s) for s in re.findall(r'(?i)\b(\d{1,3})(?:st|nd|rd|th)[ ._-]+season\b', text))
+    for token in re.findall(r'第\s*([0-9零〇一二两兩三四五六七八九十百]+)\s*[季期]', text):
+        if token.isdecimal():
+            seasons.add(int(token))
+        else:
+            digits = dict(zip('零〇一二两兩三四五六七八九', (0, 0, 1, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9)))
+            total = current = 0
+            for char in token:
+                if char in digits:
+                    current = digits[char]
+                else:
+                    total += (current or 1) * (10 if char == '十' else 100)
+                    current = 0
+            seasons.add(total + current)
+    if re.search(r'(?i)(?<![a-z0-9])(?:ova|oad|specials?|sp)(?![a-z0-9])|番外篇?|特别篇|特別篇|特典', text):
+        seasons.add(0)
+    return seasons
+
+
 def matches(filename, context, declared_seasons):
     parsed = parse_filename(filename)
     target = (context['season'], context['episode'])
+    seasons = set(declared_seasons) | declarations(filename, context['title'])
+    if seasons and seasons != {target[0]}:
+        return False
+    asian = tuple(re.finditer(r'第\s*(\d{1,4})\s*[话話集回]', filename))
+    # Lists are not single-episode files, including bare second numbers and
+    # bracketed/revised forms. This does not change the common video grammar.
+    for marker in parsed.markers + asian:
+        if re.match(r'(?:v\d+)?[\s\]\)]*[,，、;；/+&–~～-]\s*(?:第|(?:s\d+)?e(?:p(?:isode)?)?\s*)?\d',
+                    filename[marker.end():], re.I):
+            return False
     if parsed.strong:
         return parsed.episode_pairs() == {target}
     scope = context.get('_subtitle_single_season')
-    authorized = (declared_seasons == {target[0]} or
+    authorized = (seasons == {target[0]} or
         isinstance(scope, SingleSeason) and type(context.get('tmdb')) is int and scope.tmdb == context['tmdb']
         and target[0] == 1 and 1 <= target[1] <= scope.episodes)
     if not authorized:
@@ -41,7 +78,6 @@ def matches(filename, context, declared_seasons):
     if any(parsed.range_after(marker) for marker in markers):
         return False
     numbers = {int(marker['episode']) for marker in markers}
-    asian = tuple(re.finditer(r'第\s*(\d{1,4})\s*[话話集回]', filename))
     if any(re.match(r'\s*[-–~～+&]', filename[m.end():]) for m in asian):
         return False
     numbers.update(int(m[1]) for m in asian)

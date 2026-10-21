@@ -13,6 +13,8 @@ class HistoryWriter:
     def __init__(self, report):
         self.queue, self.done, self.report = Queue(maxsize=32), Event(), report
         self.admission = Lock()
+        self.accepted = self.completed = self.failed = self.diagnostic_failures = 0
+        self.worker_failed = False
         self.worker = Thread(target=self.run, name='bobbi-standard-history', daemon=True)
         self.worker.start()
 
@@ -22,8 +24,15 @@ class HistoryWriter:
                 return
             try:
                 self.queue.put_nowait(deepcopy(data))
+                self.accepted += 1
             except Full:
-                self.report('HISTORY_QUEUE_FULL')
+                self.diagnose('HISTORY_QUEUE_FULL')
+
+    def diagnose(self, code):
+        try:
+            self.report(code)
+        except Exception:
+            self.diagnostic_failures += 1
 
     def run(self):
         while not self.done.is_set() or not self.queue.empty():
@@ -35,12 +44,23 @@ class HistoryWriter:
                 from lib.utils.general.utils import set_watched_file
                 set_watched_file(data)
             except Exception:
-                self.report('HISTORY_WRITE_FAILED')
+                self.failed += 1
+                self.diagnose('HISTORY_WRITE_FAILED')
+            except BaseException:
+                self.worker_failed = True
+                self.failed += 1
+                self.diagnose('HISTORY_WORKER_FAILED')
+                return
+            finally:
+                self.completed += 1
+                self.queue.task_done()
 
     def close(self):
         with self.admission:
             self.done.set()
         self.worker.join()  # Every accepted history write must finish.
+        if self.worker_failed or self.completed != self.accepted or not self.queue.empty():
+            raise RuntimeError('HISTORY_DRAIN_INCOMPLETE')
 
 
 def discover(data, host, deadline, cancelled):

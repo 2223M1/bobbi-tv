@@ -120,16 +120,26 @@ class KodiHost:
         # Ask an upgraded host to drain BEFORE Kodi holds its addon/service
         # locks and starts a five-second forced Python abort. Acknowledgement
         # is only acceptance; the OS lease remains the replacement barrier.
+        legacy = False
         if runtime.is_file():
             try:
                 status = call('status', {}, timeout=.3)
-            except (OSError, ValueError):
-                status = None  # Legacy/dead registrations retain the old path.
+            except (OSError, ValueError, RuntimeError):
+                status = None
             if isinstance(status, dict) and status.get('quiesce_protocol') == 1:
                 reply = call('quiesce', {'protocol': 1}, timeout=.5)
                 if reply != {'accepted': True}:
                     raise UpdateError('CINEMA_STOP_NOT_ACCEPTED')
-                self._acquire_runtime_lease(runtime, until)
+            # Only a complete live pre-protocol reply authorizes the old Kodi
+            # stop path. Missing IPC/marker can mean a modern owner is STILL
+            # draining after a failed close, including across installer objects.
+            legacy = (isinstance(status, dict) and 'quiesce_protocol' not in status
+                      and status.get('ready') is True and status.get('version') == '0.1.0'
+                      and all(type(status.get(key)) is bool for key in
+                              ('native_owner', 'preparation', 'shares'))
+                      and isinstance(status.get('account'), dict))
+        if not legacy:
+            self._acquire_runtime_lease(runtime, until)
         for name in ('plugin.video.bobbi', 'plugin.video.bobbi.torrent'):
             if (self.details(name) or {}).get('enabled'):
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': False})

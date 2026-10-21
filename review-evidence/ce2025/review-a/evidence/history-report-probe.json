@@ -1,0 +1,43 @@
+{
+  "purpose": "historical_fault_injection_not_ci_gate",
+  "declared_source_ref": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "source_ref_verified": false,
+  "source_root": "/workspace/scratch/4b810e46745b/ce2024-audit/source_closure/source",
+  "source_sha256": {
+    "addons/plugin.video.bobbi/lib/services/standard_playback.py": "64f81dbce3e524f380fe08ddc6153889404db90fc0452fa581bcf3ebfdf576b1",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py": "5f32ab078f78d188166e7ef688a21d47dbfc31c3a46d78ac69ef9c4c5566e689",
+    "addons/script.module.bobbi.platform/lib/bobbi_platform/playback.py": "e547c552cf9369310ded619614e5c4fd1ad9a3485145ce06f593661f3bd4357b"
+  },
+  "negative_control": {
+    "report_raises": false,
+    "attempted": [
+      1,
+      2
+    ],
+    "diagnostic_codes": [
+      "HISTORY_WRITE_FAILED"
+    ],
+    "worker_errors": [],
+    "close_error": null,
+    "pending_records": 0,
+    "worker_alive": false
+  },
+  "fault_injection": {
+    "report_raises": true,
+    "attempted": [
+      1
+    ],
+    "diagnostic_codes": [
+      "HISTORY_WRITE_FAILED"
+    ],
+    "worker_errors": [
+      "RuntimeError"
+    ],
+    "close_error": null,
+    "pending_records": 1,
+    "worker_alive": false
+  },
+  "defect_reproduced": true,
+  "status": "target_defect_reproduced",
+  "exit_code": 1
+}

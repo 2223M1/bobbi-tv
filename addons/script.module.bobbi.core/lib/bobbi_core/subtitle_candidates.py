@@ -119,10 +119,9 @@ def rank(row, context, allow_season_pack=False, allow_incomplete=False):
         if (not years or not years <= allowed) and not (allow_incomplete and not years):
             return None
     else:
-        from bobbi_core.subtitle_episode import matches as subtitle_episode_matches
+        from bobbi_core.subtitle_episode import matches as subtitle_episode_matches, declarations
         episodes = episode_tags(text)
-        seasons = {int(s) for s in re.findall(r'(?i)(?<![a-z0-9])s(\d{1,3})(?![a-z0-9])', text)}
-        seasons.update(int(s) for s in re.findall(r'(?i)\bseason[ ._-]+(\d{1,3})\b', text))
+        seasons = set().union(*(declarations(part, context['title']) for part in parts))
         if seasons and seasons != {context['season']}:
             return None
         if episodes and episodes != {(context['season'], context['episode'])}:

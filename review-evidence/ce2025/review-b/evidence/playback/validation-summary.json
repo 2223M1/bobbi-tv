@@ -1,0 +1,468 @@
+{
+  "schema": 1,
+  "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "python": "3.12.14",
+  "product_tests": {
+    "unique": 59,
+    "passed": 59,
+    "failed": 0,
+    "first_run": {
+      "passed": 56,
+      "environment_blocked": 3,
+      "reason": "sandbox blocked AF_INET socket.socket before product logic"
+    },
+    "authorized_loopback_rerun": {
+      "passed": 13,
+      "newly_resolved": 3,
+      "duplicates": 10
+    },
+    "tests": [
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_exact_episode_forms_accepted[Ping Pong The Animation 2014 - EP01 [BD 1920x1080 HEVC-yuv444p10 FLACx2 PGSx2 Chap] - LittleBakas!.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_exact_episode_forms_accepted[[GTX-Raws] \\u30d4\\u30f3\\u30dd\\u30f3 THE ANIMATION \\u7b2c01\\u8a71 (1920x1080 AVC Hi10P AAC).ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_exact_episode_forms_accepted[[Group] Ping Pong [01].chs.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_exact_episode_forms_accepted[Ping Pong S01E01.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong EP02.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong \\u7b2c02\\u8a71.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong S02E01.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong EP01-EP02.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong [01-02].ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong \\u7b2c01\\u8a71-\\u7b2c02\\u8a71.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong 1080p 2014.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[[01] Group Ping Pong.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_wrong_or_ambiguous_file_rejected[Ping Pong EP01 EP02.ass]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_unproven_or_wrong_scope_rejected[None]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_unproven_or_wrong_scope_rejected[scope1]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_unproven_or_wrong_scope_rejected[scope2]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_unproven_or_wrong_scope_rejected[scope3]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_explicit_package_season_works_without_single_season_exception",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_ce2023_subtitle_episodes",
+        "name": "test_details_require_only_canonical_first_season_and_exact_id",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2023_subtitle_scope",
+        "name": "test_cache_only_scope_is_id_and_age_bound[60-60811-1-True]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2023_subtitle_scope",
+        "name": "test_cache_only_scope_is_id_and_age_bound[518400-60811-1-True]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2023_subtitle_scope",
+        "name": "test_cache_only_scope_is_id_and_age_bound[691200-60811-1-False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2023_subtitle_scope",
+        "name": "test_cache_only_scope_is_id_and_age_bound[-100-60811-1-False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2023_subtitle_scope",
+        "name": "test_cache_only_scope_is_id_and_age_bound[60-999-1-False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2023_subtitle_scope",
+        "name": "test_cache_only_scope_is_id_and_age_bound[60-60811-2-False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2023_subtitle_scope",
+        "name": "test_missing_cache_never_creates_network_fallback",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_real_session_arrival_preserves_key_and_later_user_navigation[0-False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_real_session_arrival_preserves_key_and_later_user_navigation[0-True]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_real_session_arrival_preserves_key_and_later_user_navigation[1-False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_real_session_arrival_preserves_key_and_later_user_navigation[1-True]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_real_session_arrival_preserves_key_and_later_user_navigation[2-False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_real_session_arrival_preserves_key_and_later_user_navigation[2-True]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_quality_keys_survive_add_remove_and_counts[False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_quality_keys_survive_add_remove_and_counts[True]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_list_binding",
+        "name": "test_withdrawal_has_stable_nearest_neighbor_without_auto_play",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[none]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[gap]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[timeout]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[eof]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[stop]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[replacement]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[cancel]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[boot]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[epoch]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[instance]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2015_monitor",
+        "name": "test_monitor_distinguishes_current_terminal_retired_and_unknown[malformed]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.private_baseline.test_ce2020_native_stop",
+        "name": "test_native_owner_and_auxiliary_monitor_exit_without_kodi_disable",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_growth_reports_each_fetch_and_write_through_first_maximum_block",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_total_budget_includes_terminal_record_and_transport_is_unchanged",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_failed_fetch_has_bounded_timing_and_no_exception_text",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_partial_write_is_measured_without_fetching_another_block[False]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_partial_write_is_measured_without_fetching_another_block[True]",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_observer_failure_cannot_change_byte_ranges_or_delivery",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_head_does_not_fetch_or_add_block_events",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_schema_drops_unknown_fields_and_rejects_sensitive_or_unbounded_values",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_observe_boundary_filters_before_custom_sink",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_host_sends_structured_observation_to_existing_report_not_stdout",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_pending_observations_remain_outside_the_read_gate",
+        "status": "passed",
+        "failure_message": null
+      },
+      {
+        "classname": "tests.test_share_stream_observations",
+        "name": "test_loopback_http_preserves_exact_range_and_uses_only_existing_fetches",
+        "status": "passed",
+        "failure_message": null
+      }
+    ]
+  },
+  "independent_checks": {
+    "ui_original_five": "5 passed / 0 failed; no interface changes",
+    "monitor_original_five": "5 passed / 0 failed; bounded timeout keyword and EOF authority-read ordinal adapter only",
+    "subtitle_scope": "20 assertions: 14 pass / 6 fail; 6 new wrong-scope candidate admissions",
+    "subtitle_scope_baseline": "the 6 wrong-scope cases all rejected; 3 CE2024 positive additions unsupported on CE2021"
+  },
+  "sources": [
+    {
+      "path": "addons/plugin.video.bobbi/lib/gui/source_select.py",
+      "git_blob_sha1": "6708bae30ac309c746fab2c4dcdde3433c5cbb8c",
+      "sha256": "643b80ca56a853897f2fce044d4435629bd73009d0faa1fe4c8421226ed99013",
+      "bytes": 59305
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "git_blob_sha1": "bda44fc51f6bcf71687ee9585020530784297415",
+      "sha256": "1d66f88f59262a1103465b22749b3437038e2d784cd929c44a85742c6d47c065",
+      "bytes": 135177
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/clients/tmdb/subtitle_scope.py",
+      "git_blob_sha1": "8b8bb9431250f7a95577fb83803bf03d9f53d056",
+      "sha256": "ad53d2d2e87ab94c7da38ba7b4c6461d94c4dd1bc7be0356e43538421fa61f8d",
+      "bytes": 1429
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/clients/tmdb/detail_cache.py",
+      "git_blob_sha1": "7cebb61b39e66fd4b5357adc1bddb9763e83b610",
+      "sha256": "6f6180b24ea43950d0ce1589030abaf522cda9483ff3e8da184804c01d5a7052",
+      "bytes": 5581
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/clients/tmdb/original_audio.py",
+      "git_blob_sha1": "d966f6009ad1932ca55d0531f24ff216833f15e6",
+      "sha256": "8fcb9cf4a62055b84d516d2e932de431d5d0c0adbb0f3d7a4cc61f4150a17585",
+      "bytes": 2450
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/subtitle_fallback.py",
+      "git_blob_sha1": "2690a556e675bbfb901cd4c4f0ab980db41ccab0",
+      "sha256": "766e5bbf5acfc3d023474582b65184c5dfe08b10898ecef3e51c979e9d4fdcc8",
+      "bytes": 9697
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/playback_control.py",
+      "git_blob_sha1": "182b932ae0b3885d238454a5f8df4d4c2305be2d",
+      "sha256": "6799815563db67f4f573cdcc3b82faa546bfb03a14a6ba6736c0c3f4ac4e50ea",
+      "bytes": 20281
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_candidates.py",
+      "git_blob_sha1": "075c027bdc7417c4e0bc87c41f9daa20372ccb8d",
+      "sha256": "f638475cf8a206479c8e20c78268b952420fe108ae74173ffb1665ebc418a93b",
+      "bytes": 35223
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_episode.py",
+      "git_blob_sha1": "a94bdc0fda6c7e55b38a05a8e5abee8477eba922",
+      "sha256": "b6acb61af5f23bf8ba3ae0139602778b6a391f9c10c094a0071d628209dbbd63",
+      "bytes": 2084
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/filename_semantics.py",
+      "git_blob_sha1": "b48b9d6ce77f44dfdcbcade70fffa7990e787117",
+      "sha256": "84d54cff797c423aafd698f586b7c45c117bcfb9f9b2331f9ee890d7fa4c3a60",
+      "bytes": 3388
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py",
+      "git_blob_sha1": "911ccf38542e6be0b972340c541b251ff2ed7efd",
+      "sha256": "fc81be0dbd9d2ed64e5221c29775223ec1bb5aeff3e9fdfb980da96147f842e8",
+      "bytes": 12654
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_authority.py",
+      "git_blob_sha1": "1d9a44485e06fd47d352f0d4cbc8af64cb682057",
+      "sha256": "db4147f951340a88bbf75ddb63db49727f78ff6707c4048d2b17c28cd1ac3518",
+      "bytes": 46090
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py",
+      "git_blob_sha1": "b7c534105ac2fcff12f417e3293d8daccc982848",
+      "sha256": "6bad433d5ff7e02cc872f9674eba3b9016a736ffacd99da6d67abeb9138d7e99",
+      "bytes": 14693
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py",
+      "git_blob_sha1": "1973717f9e5f35bd235031103502ea46924c2a2f",
+      "sha256": "6fc5bc93afba2a5b01593159f69fb9d6907548b285b86eaaf14bf5966b020df3",
+      "bytes": 48720
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+{
+  "probe": "ce2024_subtitle_episode_admission",
+  "reviewed_head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "method": "AST-extracted real pure definitions; synthetic metadata/filenames",
+  "limits": [
+    "No Kodi, network, subtitle bytes, full addon initialization, or device test",
+    "Does not test video selection/automatic continuation or claim an observed wrong subtitle",
+    "Compatible changed files are allowed; inspect their reported hashes"
+  ],
+  "repo": "/workspace/scratch/4b810e46745b/ce2024-audit/ui_playback_review/source",
+  "source_files": [
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/filename_semantics.py",
+      "bytes": 3388,
+      "sha256": "84d54cff797c423aafd698f586b7c45c117bcfb9f9b2331f9ee890d7fa4c3a60",
+      "git_blob_sha1": "b48b9d6ce77f44dfdcbcade70fffa7990e787117",
+      "reviewed_blob_sha1": "b48b9d6ce77f44dfdcbcade70fffa7990e787117",
+      "matches_reviewed_blob": true
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_episode.py",
+      "bytes": 2084,
+      "sha256": "b6acb61af5f23bf8ba3ae0139602778b6a391f9c10c094a0071d628209dbbd63",
+      "git_blob_sha1": "a94bdc0fda6c7e55b38a05a8e5abee8477eba922",
+      "reviewed_blob_sha1": "a94bdc0fda6c7e55b38a05a8e5abee8477eba922",
+      "matches_reviewed_blob": true
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_candidates.py",
+      "bytes": 35223,
+      "sha256": "f638475cf8a206479c8e20c78268b952420fe108ae74173ffb1665ebc418a93b",
+      "git_blob_sha1": "075c027bdc7417c4e0bc87c41f9daa20372ccb8d",
+      "reviewed_blob_sha1": "075c027bdc7417c4e0bc87c41f9daa20372ccb8d",
+      "matches_reviewed_blob": true
+    }
+  ],
+  "controls": [
+    {
+      "case": "positive: Ping Pong EP01.ass",
+      "expected": true,
+      "actual": true,
+      "passed": true
+    },
+    {
+      "case": "positive: Ping Pong 第01話.ass",
+      "expected": true,
+      "actual": true,
+      "passed": true
+    },
+    {
+      "case": "positive: [Group] Ping Pong [01].chs.ass",
+      "expected": true,
+      "actual": true,
+      "passed": true
+    },
+    {
+      "case": "positive: Ping Pong S01E01.ass",
+      "expected": true,
+      "actual": true,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong EP02.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong 第02話.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong S02E01.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong EP01-EP02.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong [01-02].ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong 第01話-第02話.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong 1080p 2014.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: [01] Group Ping Pong.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "negative: Ping Pong EP01 EP02.ass",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "scope: missing",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "scope: untyped",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "scope: wrong_tmdb",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "scope: zero_episodes",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "explicit season 2: accepted for season 2",
+      "expected": true,
+      "actual": true,
+      "passed": true
+    },
+    {
+      "case": "explicit season 2: rejected for season 1",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "details: canonical single season",
+      "expected": true,
+      "actual": true,
+      "passed": true
+    },
+    {
+      "case": "details: mismatched TMDb",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    },
+    {
+      "case": "details: multiple seasons",
+      "expected": false,
+      "actual": false,
+      "passed": true
+    }
+  ],
+  "ambiguous_cases": [
+    {
+      "filename": "Ping Pong EP01,02.ass",
+      "expected": "reject ambiguous episode enumeration",
+      "admitted": true,
+      "rank": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "filename": "Ping Pong EP01、02.ass",
+      "expected": "reject ambiguous episode enumeration",
+      "admitted": true,
+      "rank": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "filename": "Ping Pong 第01話、02話.ass",
+      "expected": "reject ambiguous episode enumeration",
+      "admitted": true,
+      "rank": [
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "filename": "Ping Pong EP01;02.ass",
+      "expected": "reject ambiguous episode enumeration",
+      "admitted": true,
+      "rank": [
+        0,
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "controls_passed": true,
+  "ambiguous_admitted": 4,
+  "exit_code": 1,
+  "status": "ambiguity_defect_observed_in_fixture"
+}

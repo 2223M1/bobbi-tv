@@ -1,0 +1,765 @@
+{
+  "schema": 1,
+  "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+  "count": 12,
+  "all_blobs_match": true,
+  "scope": "Independent parsing and fixed-tree verification of author-supplied receipts only.",
+  "receipts": [
+    {
+      "path": "review-evidence/bobbi-ui-smoke-1792551057134188800/progress.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "e3d64ce44816bcf5d8f44955d6d7c9ceb02a862e",
+      "sha256": "5ff525e6865111bd187a39c887561f728231985eb66273b823dde469e6ada480",
+      "bytes": 1777,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/bobbi-ui-smoke-1792551057134188800/progress.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test"
+    },
+    {
+      "path": "review-evidence/bobbi-ui-smoke-1792551057134188800/result.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "040921eca8d357096aebac1af109bf7a991463e5",
+      "sha256": "c674e5c7773ae95063ad3d280adceda3f7b955ce90a91815ef08155ac70e2733",
+      "bytes": 2976,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/bobbi-ui-smoke-1792551057134188800/result.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "exit_code": 0,
+      "diagnostic_present": false,
+      "passed": true,
+      "ui_result": {
+        "scope": "real installed UI; synthetic QR/card data; no login exchange or playback",
+        "panels": [
+          {
+            "name": "account",
+            "dialog": 13001,
+            "focus": 9001,
+            "capture_method": "displayed-gui-framebuffer; no video plane",
+            "title": "登录自己的 115 网盘",
+            "cancelled": true
+          },
+          {
+            "name": "terminal",
+            "dialog": 13002,
+            "focus": 9003,
+            "capture_method": "displayed-gui-framebuffer; no video plane",
+            "title": "本集已播完",
+            "no_play_action": true
+          },
+          {
+            "name": "metadata",
+            "dialog": 13001,
+            "focus": 9001,
+            "capture_method": "displayed-gui-framebuffer; no video plane"
+          },
+          {
+            "name": "sources-before",
+            "dialog": 13002,
+            "focus": 1000,
+            "capture_method": "displayed-gui-framebuffer; no video plane"
+          },
+          {
+            "name": "sources-after",
+            "dialog": 13002,
+            "focus": 1000,
+            "capture_method": "displayed-gui-framebuffer; no video plane",
+            "resets": 0,
+            "focus_commands": 5,
+            "original_items_retained": true,
+            "selected_key_retained": true,
+            "quality_retained": true,
+            "quality_keys": [
+              "__all__",
+              "1080p",
+              "4k"
+            ],
+            "native_item_count": 7,
+            "frame_samples": 74,
+            "stable_card_pixels": true
+          }
+        ],
+        "display_before": {
+          "System.ScreenSaverActive": false,
+          "System.DPMSActive": false,
+          "Window.IsActive(screensaver)": false
+        },
+        "display_after": {
+          "System.ScreenSaverActive": false,
+          "System.DPMSActive": false,
+          "Window.IsActive(screensaver)": false
+        },
+        "initial_selection": {
+          "position": 1,
+          "source_key": "c5afba180ab9d885c683dec37943c2c3d0e26484ae18f07560a76b35c4dad5d1",
+          "quality": "1080p",
+          "filter": [
+            "quality_tab",
+            "1080p"
+          ]
+        },
+        "arrival_selections": [
+          {
+            "position": 1,
+            "source_key": "c5afba180ab9d885c683dec37943c2c3d0e26484ae18f07560a76b35c4dad5d1",
+            "quality": "1080p"
+          },
+          {
+            "position": 1,
+            "source_key": "c5afba180ab9d885c683dec37943c2c3d0e26484ae18f07560a76b35c4dad5d1",
+            "quality": "1080p"
+          },
+          {
+            "position": 1,
+            "source_key": "c5afba180ab9d885c683dec37943c2c3d0e26484ae18f07560a76b35c4dad5d1",
+            "quality": "1080p"
+          },
+          {
+            "position": 1,
+            "source_key": "c5afba180ab9d885c683dec37943c2c3d0e26484ae18f07560a76b35c4dad5d1",
+            "quality": "1080p"
+          },
+          {
+            "position": 1,
+            "source_key": "c5afba180ab9d885c683dec37943c2c3d0e26484ae18f07560a76b35c4dad5d1",
+            "quality": "1080p"
+          }
+        ],
+        "passed": true
+      }
+    },
+    {
+      "path": "review-evidence/ce-new-work-further_universe-inspect-1792551658645820500.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "4ddc77c623305d01da3fe3c267716003f0a133b1",
+      "sha256": "a0c8bda0be052aeadf13279ef4dc7393245327995ea2d5434542b80ed542875b",
+      "bytes": 4904,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce-new-work-further_universe-inspect-1792551658645820500.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "exit_code": 0,
+      "transport_exit_code": 0,
+      "trial_exit_code": 0,
+      "diagnostic_present": false,
+      "operation": "inspect",
+      "attempt": 1,
+      "regression_attempt": false,
+      "identity_and_timing": {
+        "request_id": "e8dcd175363743c18245db61a162b2ed",
+        "native_instance": "a879e25b-3e14-4c9a-99c2-8893de0d6857",
+        "selected_at": 2281456.594189308,
+        "first_av_observed_at": 2281541.374913581,
+        "select_to_av_observed_seconds": 84.78072427306324,
+        "selection_identity": "bt:88b8dfd984020f0eaa23b8031892d86cf6791385"
+      },
+      "sample": {
+        "seconds": 19.523,
+        "duration": 1426.097,
+        "currentaudiostream": {
+          "bitrate": 291500,
+          "channels": 6,
+          "codec": "opus",
+          "index": 1,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "eng",
+          "name": "English 5.1",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "eng",
+          "name": "English (Full) [MegaMTBB]"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "Encoded by Motbob",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": false,
+        "caching": true,
+        "decoder_counters": {
+          "frame count": 489,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "request_id": "e8dcd175363743c18245db61a162b2ed",
+          "native_instance": "a879e25b-3e14-4c9a-99c2-8893de0d6857",
+          "subtitle_intent": 0,
+          "subtitle_auto_intent": 0,
+          "phase": "AV_STARTED"
+        },
+        "subtitle_label": "已匹配字幕候选但未能加载 · 可手动选择"
+      }
+    },
+    {
+      "path": "review-evidence/ce-new-work-further_universe-select-1792551613815505200.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "bcf2e2051923f7eb75ccc51aa70a53111d0848c8",
+      "sha256": "252f9f05a324dfff423b9ab88512fc2043f46e57bc7579d2064c22632c947db0",
+      "bytes": 58203,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce-new-work-further_universe-select-1792551613815505200.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "exit_code": 2,
+      "transport_exit_code": 0,
+      "trial_exit_code": 2,
+      "diagnostic_present": false,
+      "operation": "select",
+      "attempt": 1,
+      "regression_attempt": false,
+      "identity_and_timing": {
+        "request_id": "e8dcd175363743c18245db61a162b2ed",
+        "selected_at": 2281456.594189308,
+        "selection_identity": "bt:88b8dfd984020f0eaa23b8031892d86cf6791385"
+      },
+      "trace_health": {
+        "no_observed_stall": true,
+        "max_observed_stall_seconds": 0.0,
+        "clock_discontinuities": 0,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "trace_coverage": {
+        "legacy_health": {
+          "no_observed_stall": true,
+          "max_observed_stall_seconds": 0.0,
+          "clock_discontinuities": 0,
+          "observation_gaps": 0,
+          "stall_threshold_seconds": 1
+        },
+        "av_sample_count": 0,
+        "positive_av_sample_count": 0,
+        "positive_adjacent_interval_count": 0,
+        "longest_contiguous_positive_av_span_seconds": 0.0,
+        "whole_startup_or_render_continuity_proven": false,
+        "status": "not_covered",
+        "reason": "NO_AV_STARTED_WITHIN_CAPTURE",
+        "passed": null
+      },
+      "trace_signal_diagnostics": {
+        "caching_sample_runs": [],
+        "stationary_decoder_with_caching_runs": [],
+        "stationary_clock_with_decoder_progress_runs": [],
+        "observation_gap_events": [],
+        "clock_step_events": [],
+        "decoder_counter_reset_events": [],
+        "changes_legacy_result": false,
+        "render_continuity_proven": false,
+        "exact_transition_times_proven": false
+      },
+      "trace_passed": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-grand_budapest-observe-1792551462588057300.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "8ef0474853683238085bdd42e967a72924d01a57",
+      "sha256": "c7729f2132ddd4925ac41039d90824d8dfb4aa26aab38c30f36d5cea9ab3a566",
+      "bytes": 24819,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce-new-work-grand_budapest-observe-1792551462588057300.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "exit_code": 0,
+      "transport_exit_code": 0,
+      "trial_exit_code": 0,
+      "diagnostic_present": false,
+      "operation": "observe",
+      "attempt": 1,
+      "regression_attempt": false,
+      "identity_and_timing": {
+        "request_id": "71083324f51b49a785ad837693a5f9d3",
+        "native_instance": "eede869b-0737-4590-ba4c-2a3823bee2e1",
+        "selected_at": 2281249.231730723,
+        "first_av_observed_at": 2281260.437383335,
+        "select_to_av_observed_seconds": 11.205652612261474,
+        "selection_identity": "transport:b4f7a16dec93cf175481494d952ad1cdd629215f6322602f54f8253b365eacd0"
+      },
+      "passed": true,
+      "wall_seconds": 30.331,
+      "play_seconds": 30.155,
+      "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+      "raw_decoder_channels": [
+        {
+          "channel": 0,
+          "values": {
+            "device name": "dvbldec",
+            "frame count": "1755",
+            "drop count": "8",
+            "fra err count": "8",
+            "hw err count": "8"
+          }
+        },
+        {
+          "channel": 1,
+          "values": {
+            "device name": "dveldec",
+            "frame count": "1755",
+            "drop count": "0",
+            "fra err count": "0",
+            "hw err count": "0"
+          }
+        }
+      ],
+      "sample_decoder_counters": [
+        {
+          "frame count": 1027,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        {
+          "frame count": 1269,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        {
+          "frame count": 1512,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        {
+          "frame count": 1755,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        }
+      ]
+    },
+    {
+      "path": "review-evidence/ce-new-work-grand_budapest-select-1792551406474811700.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "2537a00e39acc72b02c4079e65833f2ee93d4f40",
+      "sha256": "78095d12dd814fce5c4f6a49b7bf02a8b6f8502b79b8c0bc8b3d7249564a39ff",
+      "bytes": 92568,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce-new-work-grand_budapest-select-1792551406474811700.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "exit_code": 1,
+      "transport_exit_code": 0,
+      "trial_exit_code": 1,
+      "diagnostic_present": false,
+      "operation": "select",
+      "attempt": 1,
+      "regression_attempt": false,
+      "identity_and_timing": {
+        "request_id": "71083324f51b49a785ad837693a5f9d3",
+        "native_instance": "eede869b-0737-4590-ba4c-2a3823bee2e1",
+        "selected_at": 2281249.231730723,
+        "first_av_observed_at": 2281260.437383335,
+        "select_to_av_observed_seconds": 11.205652612261474,
+        "selection_identity": "transport:b4f7a16dec93cf175481494d952ad1cdd629215f6322602f54f8253b365eacd0"
+      },
+      "trace_health": {
+        "no_observed_stall": false,
+        "max_observed_stall_seconds": 17.477149272803217,
+        "clock_discontinuities": 4,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "trace_coverage": {
+        "legacy_health": {
+          "no_observed_stall": false,
+          "max_observed_stall_seconds": 17.477149272803217,
+          "clock_discontinuities": 4,
+          "observation_gaps": 0,
+          "stall_threshold_seconds": 1
+        },
+        "av_sample_count": 58,
+        "positive_av_sample_count": 58,
+        "positive_adjacent_interval_count": 57,
+        "longest_contiguous_positive_av_span_seconds": 28.50079245492816,
+        "whole_startup_or_render_continuity_proven": false,
+        "status": "observed_anomaly",
+        "reason": "ORIGINAL_HEALTH_FAILURE_PRESERVED",
+        "passed": false
+      },
+      "trace_signal_diagnostics": {
+        "caching_sample_runs": [
+          {
+            "first_index": 36,
+            "last_index": 57,
+            "first_wall": 2281267.411813394,
+            "last_wall": 2281277.915165275,
+            "wall_seconds": 10.503351880703121
+          }
+        ],
+        "stationary_decoder_with_caching_runs": [
+          {
+            "first_index": 36,
+            "last_index": 40,
+            "first_wall": 2281267.411813394,
+            "last_wall": 2281269.417520682,
+            "wall_seconds": 2.005707287695259
+          },
+          {
+            "first_index": 43,
+            "last_index": 45,
+            "first_wall": 2281270.912491384,
+            "last_wall": 2281271.910729798,
+            "wall_seconds": 0.9982384140603244
+          },
+          {
+            "first_index": 48,
+            "last_index": 57,
+            "first_wall": 2281273.411686173,
+            "last_wall": 2281277.915165275,
+            "wall_seconds": 4.50347910169512
+          }
+        ],
+        "stationary_clock_with_decoder_progress_runs": [
+          {
+            "first_index": 22,
+            "last_index": 23,
+            "first_wall": 2281260.438016002,
+            "last_wall": 2281260.974119817,
+            "wall_seconds": 0.5361038148403168
+          },
+          {
+            "first_index": 58,
+            "last_index": 59,
+            "first_wall": 2281278.429906506,
+            "last_wall": 2281278.927776076,
+            "wall_seconds": 0.4978695698082447
+          },
+          {
+            "first_index": 60,
+            "last_index": 62,
+            "first_wall": 2281279.426069812,
+            "last_wall": 2281280.409512172,
+            "wall_seconds": 0.9834423600696027
+          },
+          {
+            "first_index": 64,
+            "last_index": 67,
+            "first_wall": 2281281.43108209,
+            "last_wall": 2281282.913006738,
+            "wall_seconds": 1.4819246479310095
+          }
+        ],
+        "observation_gap_events": [],
+        "clock_step_events": [
+          {
+            "first_index": 35,
+            "last_index": 36,
+            "wall_seconds": 0.5045624892227352,
+            "media_seconds": 6.839,
+            "direction": "forward",
+            "decoder_advanced": false,
+            "meaning": "CLOCK_STEP_NOT_SEEK_PROOF"
+          },
+          {
+            "first_index": 62,
+            "last_index": 63,
+            "wall_seconds": 0.5158195840194821,
+            "media_seconds": 1.6270000000000007,
+            "direction": "forward",
+            "decoder_advanced": true,
+            "meaning": "CLOCK_STEP_NOT_SEEK_PROOF"
+          },
+          {
+            "first_index": 67,
+            "last_index": 68,
+            "wall_seconds": 0.5063264723867178,
+            "media_seconds": 2.1270000000000007,
+            "direction": "forward",
+            "decoder_advanced": true,
+            "meaning": "CLOCK_STEP_NOT_SEEK_PROOF"
+          }
+        ],
+        "decoder_counter_reset_events": [
+          {
+            "first_index": 35,
+            "last_index": 36
+          }
+        ],
+        "changes_legacy_result": false,
+        "render_continuity_proven": false,
+        "exact_transition_times_proven": false
+      },
+      "trace_passed": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-ping_pong-inspect-1792551289427135300.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "662b29411f8bc507407d235f2148a8db0a1a8d78",
+      "sha256": "991dfd4237b2636c808f21dd7a8efd39127743a428ae82454224d99330be071b",
+      "bytes": 4952,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce-new-work-ping_pong-inspect-1792551289427135300.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "exit_code": 0,
+      "transport_exit_code": 0,
+      "trial_exit_code": 0,
+      "diagnostic_present": false,
+      "operation": "inspect",
+      "attempt": 4,
+      "regression_attempt": true,
+      "identity_and_timing": {
+        "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+        "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+        "selected_at": 2281101.791146105,
+        "first_av_observed_at": 2281106.479231561,
+        "select_to_av_observed_seconds": 4.688085455913097,
+        "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a"
+      },
+      "sample": {
+        "seconds": 65.685,
+        "duration": 1372.007,
+        "currentaudiostream": {
+          "bitrate": 191305,
+          "channels": 2,
+          "codec": "opus",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "Japanese 2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 3,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "0e933dfb680de97b2de666ec4d9fc4c9 （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "Vodes Encode",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "decoder_counters": {
+          "frame count": 1595,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "subtitle_auto_intent": 0,
+          "phase": "AV_STARTED"
+        },
+        "subtitle_label": "中文字幕已加载"
+      }
+    },
+    {
+      "path": "review-evidence/ce-new-work-ping_pong-select-1792551258994701500.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "02c26adef60dba45b89e8e3d6f3d1511e7e3b11c",
+      "sha256": "b488cd8dea4520b9bbd53dc213d30a9e116646c02a540ee11913ba1fe4c7da78",
+      "bytes": 97905,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce-new-work-ping_pong-select-1792551258994701500.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "exit_code": 0,
+      "transport_exit_code": 0,
+      "trial_exit_code": 0,
+      "diagnostic_present": false,
+      "operation": "select",
+      "attempt": 4,
+      "regression_attempt": true,
+      "identity_and_timing": {
+        "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+        "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+        "selected_at": 2281101.791146105,
+        "first_av_observed_at": 2281106.479231561,
+        "select_to_av_observed_seconds": 4.688085455913097,
+        "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a"
+      },
+      "trace_health": {
+        "no_observed_stall": true,
+        "max_observed_stall_seconds": 0.0,
+        "clock_discontinuities": 0,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "trace_coverage": {
+        "legacy_health": {
+          "no_observed_stall": true,
+          "max_observed_stall_seconds": 0.0,
+          "clock_discontinuities": 0,
+          "observation_gaps": 0,
+          "stall_threshold_seconds": 1
+        },
+        "av_sample_count": 71,
+        "positive_av_sample_count": 70,
+        "positive_adjacent_interval_count": 69,
+        "longest_contiguous_positive_av_span_seconds": 34.479455769993365,
+        "whole_startup_or_render_continuity_proven": false,
+        "status": "no_anomaly_in_observed_window",
+        "reason": "BOUNDED_OBSERVATION_ONLY",
+        "passed": true
+      },
+      "trace_signal_diagnostics": {
+        "caching_sample_runs": [],
+        "stationary_decoder_with_caching_runs": [],
+        "stationary_clock_with_decoder_progress_runs": [],
+        "observation_gap_events": [],
+        "clock_step_events": [],
+        "decoder_counter_reset_events": [],
+        "changes_legacy_result": false,
+        "render_continuity_proven": false,
+        "exact_transition_times_proven": false
+      },
+      "trace_passed": true
+    },
+    {
+      "path": "review-evidence/ce2023/budapest-startup-diagnostics.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "f2f667f4641793a8bac808791571d7799ae7977c",
+      "sha256": "c1742253760adbe0649259eb6ee8d0f3ca3d00c1556f61378f6e4460ced09f3a",
+      "bytes": 15286,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce2023/budapest-startup-diagnostics.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "transport_exit": 0,
+      "diagnostic_present": false
+    },
+    {
+      "path": "review-evidence/ce2023/further-universe-cache-presence.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "44965d353f9051e687c36f1bb73528219dd4b4d7",
+      "sha256": "9b57e2cd4096581cb5b9f08f0f232947c5c4c6de35018f851e977e91b25ca908",
+      "bytes": 20491,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce2023/further-universe-cache-presence.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "transport_exit": 0,
+      "diagnostic_present": false,
+      "metadata_presence": [
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "bobi_frontend_v1:tv:76013",
+          "present": true,
+          "bytes": 1877,
+          "expires": "2026-10-28 02:58:21.986938"
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": 76013}, \"zh-CN\"]",
+          "present": false,
+          "bytes": null,
+          "expires": null
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": \"76013\"}, \"zh-CN\"]",
+          "present": false,
+          "bytes": null,
+          "expires": null
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": 76013}, \"en-US\"]",
+          "present": true,
+          "bytes": 6168,
+          "expires": "2026-10-28 02:58:18.020420"
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": \"76013\"}, \"en-US\"]",
+          "present": false,
+          "bytes": null,
+          "expires": null
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": 76013}, \"zh-cn\"]",
+          "present": false,
+          "bytes": null,
+          "expires": null
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": \"76013\"}, \"zh-cn\"]",
+          "present": false,
+          "bytes": null,
+          "expires": null
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": 76013}, \"en-us\"]",
+          "present": false,
+          "bytes": null,
+          "expires": null
+        },
+        {
+          "database": "plugin.video.bobbi.cached.sqlite",
+          "key": "am6b_details283|[\"tv_details\", {\"id\": \"76013\"}, \"en-us\"]",
+          "present": false,
+          "bytes": null,
+          "expires": null
+        }
+      ],
+      "torrent_stage_diagnostics": [
+        {
+          "download_bps": 1390806,
+          "elapsed_ms": 48496,
+          "peers": 7,
+          "request_id": "e8dcd175363743c18245db61a162b2ed",
+          "selected_file_bytes": 2018592654,
+          "stage": "final_selection",
+          "stage_ms": {
+            "add": 215,
+            "backend": 102,
+            "buffering": 46401,
+            "download": 97,
+            "metadata": 1552,
+            "selector": 99
+          },
+          "torrent_preload_target": 32212254,
+          "torrent_preloaded": 33521664
+        }
+      ]
+    },
+    {
+      "path": "review-evidence/ce2023/subtitle-cache-check.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "3c0c56f4a3d61b31724dd51c19130c3454dc29b4",
+      "sha256": "496b6d8a003befb92e19731de772eefcdb4dd422b435b54c136b4ac01641f094",
+      "bytes": 11579,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce2023/subtitle-cache-check.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "transport_exit": 0,
+      "diagnostic_present": false
+    },
+    {
+      "path": "review-evidence/ce2023/subtitle-detail-check.json",
+      "head": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
+      "git_blob_sha1": "e10af4aaa20c85921eb312cf21893de11a581152",
+      "sha256": "9ed34ed9359adcbf3f3ba97c65dd2218dc90bc4ede198668cd4f7a1376fc235f",
+      "bytes": 15092,
+      "tree_match": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/c4e0baca6acefa58f031979bff71e7cd1028efdf/review-evidence/ce2023/subtitle-detail-check.json",
+      "origin": "author device receipt, independently read; not a new reviewer device test",
+      "transport_exit": 0,
+      "diagnostic_present": false,
+      "subtitle_candidate_detail_count": 2,
+      "subtitle_details_scope": "provider labels and filenames; no subtitle body or applied-hash mapping included"
+    }
+  ]
+}

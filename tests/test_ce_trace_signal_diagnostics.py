@@ -11,6 +11,7 @@ SOURCE = Path(__file__).resolve().parents[1] / 'tools/ce_trial_remote.py'
 
 
 def functions(*names):
+    names = set(names) | {'decoder_snapshot', 'decoder_intervals', 'decoder_frame_pair'}
     tree = ast.parse(SOURCE.read_text(encoding='utf-8'))
     nodes = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]
     namespace = {}
@@ -108,7 +109,7 @@ def test_sample_brackets_separate_rpc_observation_times_without_more_device_read
             return {'Player.Caching': False}
         return {}
     ns.update(state=state, rpc=rpc, re=re, time=SimpleNamespace(monotonic=monotonic),
-              Path=lambda _: SimpleNamespace(read_text=lambda: 'frame count : 24\n'))
+              Path=lambda _: SimpleNamespace(read_text=lambda: 'vdec channel 0 statistics:\n device name : h264\nframe count : 24\n'))
     value = ns['sample']({'request_id': 'request'})
     times = value['observation_times']
     assert times['sample_started'] < value['wall'] < times['player_time_started']
