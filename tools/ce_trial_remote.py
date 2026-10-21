@@ -1,5 +1,6 @@
 """Real ordinary playback trials; no independent video/CDN reads or lower-quality fallback."""
 import ast
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -722,7 +723,13 @@ else:
             result['trace_passed']=result['trace_coverage']['passed'] is True
             with record_path.with_suffix('.startup.json').open('x') as output:
                 json.dump(result,output)
-        print(json.dumps(result,ensure_ascii=True))
+            path=record_path.with_suffix('.startup.json')
+            raw=path.read_bytes()
+            # Full per-channel diagnostics exceed the bounded control wire.
+            # Keep them intact in a sidecar; the local caller verifies/downloads it.
+            print(json.dumps(dict(artifact=str(path),bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())))
+        else:
+            print(json.dumps(result,ensure_ascii=True))
     elif OP=='picker_wait':
         result = wait_picker_idle(record, globals().get('DURATION', 35))
         print(json.dumps(dict(name=NAME, operation=OP, record=record, **result), ensure_ascii=True))
