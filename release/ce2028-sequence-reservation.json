@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "allocated": [2026102021, 2026102022, 2026102023, 2026102024, 2026102025, 2026102026, 2026102027],
+  "candidate": 2026102028,
+  "baseline": "b48b1666cecd052befb2c6118418a264f36475dd",
+  "scope": "Display the persisted library location on actual source tiles; retain generic cast labels and previous candidate artifacts"
+}

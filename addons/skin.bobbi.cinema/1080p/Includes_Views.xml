@@ -412,7 +412,7 @@
         </control>
         <control type="label">
           <left>-20</left><top>208</top><width>200</width><height>30</height>
-          <label>$VAR[BobiLibraryLocation]</label>
+          <label>$INFO[ListItem.Label2]</label>
           <font>Meta22</font><textcolor>text3</textcolor><align>center</align><aligny>center</aligny>
         </control>
       </control>

@@ -1,5 +1,6 @@
 """Ordinary UI tests for previously untested works, with native owner guards."""
 import argparse
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -7,6 +8,20 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
+
+
+def decode_trace(raw, descriptor, expected_path, work, retained=False):
+    if descriptor.get('artifact') != expected_path:
+        raise ValueError('UNEXPECTED_TRACE_PATH')
+    if len(raw) > 4*1024*1024:
+        raise ValueError('TRACE_TOO_LARGE')
+    if not retained and (hashlib.sha256(raw).hexdigest() != descriptor.get('sha256')
+                         or len(raw) != descriptor.get('bytes')):
+        raise ValueError('TRACE_CHANGED')
+    result = json.loads(raw)
+    if result.get('name') != work or result.get('operation') != 'select':
+        raise ValueError('TRACE_IDENTITY_MISMATCH')
+    return result
 
 
 def result_exit_code(result, remote_code=0, diagnostic=False, operation=None):
@@ -39,7 +54,7 @@ def main():
     parser.add_argument('work',choices=('perfect_days','eizouken','grand_budapest','further_universe','ping_pong','amelie','barakamon','coherence','odd_taxi','wild_tales','girls_last_tour','burning','flip_flappers',
                                       'lives_of_others','tokyo_godfathers','haibane_renmei','man_from_earth','lain',
                                       'twelve_angry_men','tatami_galaxy','rashomon','cowboy_bebop'))
-    parser.add_argument('operation',choices=('start','cards','select','picker_wait','wait','inspect','observe','stop','cancel',
+    parser.add_argument('operation',choices=('start','cards','select','collect','picker_wait','wait','inspect','observe','stop','cancel',
         'seek','manual_off','font_switch'), help='seek/manual_off/font_switch currently record read-only NOT TESTED evidence (exit 2); they never issue unguarded controls')
     parser.add_argument('--transport-source',type=Path,required=True)
     parser.add_argument('--title')
@@ -66,7 +81,18 @@ def main():
     script='import json,traceback,sys\nsys.dont_write_bytecode=True\ntry:\n    exec(compile('+repr(code)+',"ce-ordinary-ui-trial","exec"))\nexcept Exception as error:\n    print(json.dumps(dict(error=type(error).__name__,reason=str(error) if isinstance(error,AssertionError) else "TRIAL_ERROR",frames=[dict(function=f.name,line=f.lineno) for f in traceback.extract_tb(error.__traceback__)])))\n'
     client,wire=transport.connect()
     try:
-        rc,result,diagnostic=wire.readonly(client,script.encode(),deadline_seconds=60)
+        artifact='/storage/.local/share/bobbi-private-trials/20261020/trial-'+args.work+('' if args.attempt==1 else '-'+str(args.attempt))+'.startup.json'
+        if args.operation=='collect':
+            rc,result,diagnostic=0,dict(artifact=artifact),False
+        else:
+            rc,result,diagnostic=wire.readonly(client,script.encode(),deadline_seconds=60)
+        if result.get('artifact'):
+            if result['artifact']!=artifact:raise ValueError('UNEXPECTED_TRACE_PATH')
+            with client.open_sftp() as sftp:
+                with sftp.open(artifact,'rb') as stream:raw=stream.read(4*1024*1024+1)
+            result=decode_trace(raw,result,artifact,args.work,retained=args.operation=='collect')
+    except Exception as error:
+        rc,result,diagnostic=1,dict(error=type(error).__name__,reason='TRIAL_TRANSPORT_OR_TRACE_ERROR'),False
     finally:client.close()
     output=ROOT/'review-evidence'/('ce-new-work-'+args.work+'-'+args.operation+'-'+str(time.time_ns())+'.json')
     code = result_exit_code(result, rc, diagnostic, args.operation)

@@ -370,7 +370,7 @@
   </variable>
   <variable name="LibraryTileHint">
     <value condition="$EXP[BobiIsManage]">网盘 · NAS · 片库</value>
-    <value condition="!String.IsEmpty(ListItem.Label2)">$INFO[ListItem.Label2]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(Bobi.Library.Location)) | !String.IsEmpty(ListItem.Label2)">$VAR[BobiLibraryLocation]</value>
     <value condition="ListItem.IsFolder">打开目录</value>
     <value>播放</value>
   </variable>

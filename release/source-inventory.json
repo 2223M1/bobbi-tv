@@ -604,7 +604,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "82b5f37cb20f645bb105a906bf26ef3c88ae44c8bc7fb413aeb3e8bc9a708803",
+      "addon.xml": "fe689e5ff5f37cbef7a3ad83f42dc1df2bcdb56c35beb4855f19a6c64d4eb525",
       "default.py": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
     },
     "script.module.bobbi.catalog": {
@@ -848,11 +848,11 @@
       "1080p/Includes_BobiArctic.xml": "315a2806ab8608df6c16f5bf4400ae25be2a4cb2231ad79523caba1645402f5e",
       "1080p/Includes_Compatibility.xml": "80970d9cdcd7e56546a55f4844c650a510fd9a39e12f89839599f0e483e8f9fe",
       "1080p/Includes_Dialogs.xml": "f6cf382692567783cc06e40a4baab0c3294e90cd415b4bf816238da9818985bf",
-      "1080p/Includes_Home.xml": "399cdebf3b0d4d7d995b6a435f658cb441af83e5102ed0c4611e0454f62bc4bf",
+      "1080p/Includes_Home.xml": "51f5e5eaa888950d2468031b3eccf1a37371296bae5b7ff7af3bef8dc4afaf91",
       "1080p/Includes_OSD.xml": "a77c7dd81c30e0691220f4ca142403f3fc4e28f0bddc839c2a369eb2785cc48f",
       "1080p/Includes_Paths.xml": "1897583baf944f98c36f0a874781f35d043f81e949ced5db7bb850313fb9ec89",
       "1080p/Includes_Titles.xml": "7586f97352dba0c1dc344e8ca3c0fe7a037a04511f72db8a26628e60f3cd8b06",
-      "1080p/Includes_Views.xml": "331c685db49b9bff14d02ba65c1b6a6c069e01eef07bdcfbabe2288a31ce6114",
+      "1080p/Includes_Views.xml": "b3b528ae965cec5858c912dc8bf379db8444cd94f75386a308aadbbf9d9a2229",
       "1080p/IncludesBackgroundBuilding.xml": "444cdbe074552aea53691c225f95583f18d4f019f0eb65c19cecb84a76df4a6b",
       "1080p/IncludesCinema.xml": "43f275c1c773b1152916d6405ca9b27309eafe7ebb5c1d6d88011172265382d5",
       "1080p/IncludesCinemaDirectory.xml": "26a3648027f2c472bb6705b1286bf2c8cb74ecbaf955588244d037956095e6e3",
@@ -911,7 +911,7 @@
       "1080p/ViewsPVRGuide.xml": "1e7858f9f4bef6cfa474081aa43fa972592282001f4520b9f744c0d7d94bc606",
       "1080p/ViewsVideoLibrary.xml": "38e4003a733f1507f5ac7ed9ab97042053ffe26cd1467e2a9132b01b481d9019",
       "1080p/ViewsWeather.xml": "338efacb7fe0ac3ae56de273de465735a046f163b1f46315e419c66f71135e61",
-      "addon.xml": "f152e928131dc62d4255dbcd2428caa310fc567094f5f8d1a3ba9b4a95f996f8",
+      "addon.xml": "c4f4820ca183b611386824ec309a18ef50db086da576cc03af61246f8a4fc694",
       "backgrounds/media-overlay.jpg": "c74612b7e5529cbbf0297e304ca70a6839dc986e8024b9e2f7d970b1ac5f192f",
       "backgrounds/settings.jpg": "5a4f0f4d1aead0eec5b2020091f5eeb8081796f6a6d82562487a41e41d34306c",
       "backgrounds/tv.jpg": "57a1216595dafb728cff8373a0d036369a6cfcba0d7c4da38c124aade6f28490",
