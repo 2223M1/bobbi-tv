@@ -37,7 +37,7 @@ class Movie(TMDb):
     def details(
         self,
         movie_id,
-        append_to_response="videos,trailers,images,casts,translations,keywords,release_dates,runtime,external_ids",
+        append_to_response="videos,trailers,images,casts,translations,keywords,release_dates,runtime,external_ids,alternative_titles",
         language=None,
     ):
         """

@@ -816,30 +816,36 @@ def tmdb_url(path, size):
     return tmdb_image_url(path, size)
 
 
-def get_rpdb_poster(imdb_id, api_key):
+def get_rpdb_poster(imdb_id, api_key, cached_only=False):
     cache_key = f"rpdb_poster|{imdb_id}"
     cached = cache.get(cache_key)
     if cached:
         return cached
 
+    from bobbi_core.metadata_transport import request_remaining
+    remaining = request_remaining(10)
+    if cached_only or not remaining:
+        return None
+
     try:
         response = requests.get(
             f"https://api.ratingposterdb.com/{api_key}/imdb/{imdb_id}?lang=en",
-            timeout=10,
+            timeout=max(.05, remaining),
         )
         if response.status_code == 200:
             data = response.json()
             poster_url = data.get("poster") or data.get("poster_large")
             if poster_url:
-                cache.set(cache_key, poster_url, timedelta(hours=24))
+                if request_remaining(10):
+                    cache.set(cache_key, poster_url, timedelta(hours=24))
                 return poster_url
     except requests.RequestException as e:
-        kodilog(f"RPDB request error: {e}")
+        kodilog('RPDB request error: ' + type(e).__name__)
 
     return None
 
 
-def build_media_metadata(ids, mode: str) -> dict:
+def build_media_metadata(ids, mode: str, enrich_art=True, details=None) -> dict:
     metadata = {
         "poster": "",
         "fanart": "",
@@ -887,7 +893,8 @@ def build_media_metadata(ids, mode: str) -> dict:
     if tmdb_id:
         from lib.clients.tmdb.utils.utils import get_tmdb_media_details
 
-        details = get_tmdb_media_details(tmdb_id, mode)
+        if details is None:
+            details = get_tmdb_media_details(tmdb_id, mode)
         if details is None:
             # Optional TMDb enrichment must not block already discovered
             # sources from reaching the playback dialog.
@@ -902,7 +909,7 @@ def build_media_metadata(ids, mode: str) -> dict:
         if imdb_id and get_setting_fresh("rpdb_enabled"):
             rpdb_api_key = get_setting_fresh("rpdb_api_key", "")
             if rpdb_api_key:
-                rpdb_poster = get_rpdb_poster(imdb_id, rpdb_api_key)
+                rpdb_poster = get_rpdb_poster(imdb_id, rpdb_api_key, cached_only=not enrich_art)
                 if rpdb_poster:
                     metadata["poster"] = rpdb_poster
 
@@ -941,7 +948,8 @@ def build_media_metadata(ids, mode: str) -> dict:
 
     # Fanart details
     if tmdb_id or tvdb_id:
-        fanart_details = get_fanart_details(tvdb_id=tvdb_id, tmdb_id=tmdb_id, mode=mode)
+        fanart_details = get_fanart_details(tvdb_id=tvdb_id, tmdb_id=tmdb_id, mode=mode,
+                                          cached_only=not enrich_art)
 
         if not tmdb_logo_path and fanart_details.get("clearlogo"):
             metadata["clearlogo"] = fanart_details.get("clearlogo")
@@ -1029,11 +1037,13 @@ def is_in_library(title):
     return pickle_db.get_item("jt:lib", title) is not None
 
 
-def get_fanart_details(tvdb_id="", tmdb_id="", mode="tv"):
+def get_fanart_details(tvdb_id="", tmdb_id="", mode="tv", cached_only=False):
     identifier = "{}|{}".format("fanart.tv", tvdb_id if tvdb_id and tvdb_id != "None" else tmdb_id)
     cached = cache.get(identifier)
-    if cached:
+    if isinstance(cached, dict) and cached and cached.get('fanart_added') is not False:
         return cached
+    if cached_only:
+        return {}
 
     from lib.clients.tmdb.utils.utils import LANGUAGES
 
@@ -1048,7 +1058,8 @@ def get_fanart_details(tvdb_id="", tmdb_id="", mode="tv"):
     else:
         data = get_fanart(mode, lang, tmdb_id)
 
-    if data:
+    from bobbi_core.metadata_transport import request_remaining
+    if isinstance(data, dict) and data.get('fanart_added') is True and request_remaining(12):
         hours = get_cache_expiration() if is_cache_enabled() else 0
         cache.set(identifier, data, timedelta(hours=hours))
 
@@ -1236,7 +1247,9 @@ def clear_cache_on_update():
 
 
 def clear_all_cache():
+    import uuid
     cache.clean_all()
+    cache.set('bobi_metadata_epoch', uuid.uuid4().hex, timedelta(days=180))
 
 
 def clear_trakt_db_cache():
@@ -1248,6 +1261,9 @@ def clear_trakt_db_cache():
 
 
 def clear_tmdb_cache():
+    import uuid
+    # Cancel idle navigation work before removing its shared success caches.
+    cache.set('bobi_metadata_epoch', uuid.uuid4().hex, timedelta(days=180))
     prefixes = [
         "search_%",
         "movie_%",
@@ -1270,6 +1286,10 @@ def clear_tmdb_cache():
 
     for prefix in prefixes:
         cache.delete_like(f"{prefix}|%")
+    for pattern in ('am6b_details283|%', 'movie-years303|%', 'movie-details-retry|%',
+                    'bobi_episode_order_v1:%', 'bobi_related_movies_%',
+                    'bobi_frontend_v1:%', 'am6b_season_card_v1:%'):
+        cache.delete_like(pattern)
     TMDb().cache_clear()
     notification(translation(30240))
 

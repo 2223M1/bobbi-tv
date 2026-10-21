@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 def real_text():
-    return json.loads((ROOT/'review-evidence/ce-new-work-grand_budapest-observe-1792551462588057300.json').read_text())['result']['decoder']
+    return json.loads((ROOT/'review-evidence/ce-new-work-grand_budapest-observe-1792551462588057300.json').read_text(encoding='utf-8'))['result']['decoder']
 
 
 def test_real_channels_survive_both_orders_without_summing_layers():

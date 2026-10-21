@@ -43,6 +43,7 @@ from lib.utils.kodi.utils import (
     build_url,
     close_busy_dialog,
     end_of_directory,
+    get_setting,
     kodilog,
     make_list_item,
     notification,
@@ -688,28 +689,42 @@ class TmdbClient(BaseTmdbClient):
         ids["imdb_id"] = tmdb_obj.get("external_ids", {}).get("imdb_id", "")
         tvdb_id = tmdb_obj.get("external_ids", {}).get("tvdb_id", "") or ""
         ids["tvdb_id"] = tvdb_id
+        from lib.clients.tmdb.navigation import prepare, regular_seasons
+        prepared = prepare(tmdb_obj, ids) if xbmc.getSkinDir() == 'skin.bobbi.cinema' else None
         from lib.clients.tmdb.episode_order import show_collapsed_seasons
-        if show_collapsed_seasons(tmdb_obj, title, ids, mode, media_type):
+        if show_collapsed_seasons(tmdb_obj, title, ids, mode, media_type, prepared=prepared):
             return
-        number_of_seasons = tmdb_obj.get("number_of_seasons", 1) or 1
-        anime_hub = (xbmc.getSkinDir() == 'skin.bobbi.cinema'
-                     and any(genre.get('id') == 16 for genre in tmdb_obj.get('genres', [])
-                             if hasattr(genre, 'get')))
-        if number_of_seasons == 1 and not anime_hub:
+        seasons = regular_seasons(tmdb_obj)
+        films = (prepared or {}).get('movies')
+        if len(seasons) == 1 and not (films or {}).get('movies'):
+            from lib.clients.tmdb.related_movies import directory_entries
+            from lib.utils.views.shows import _process_season
+            extras = directory_entries(ids, include_cached=True, prepared=films) if prepared is not None else []
+            # A skipped hub must not make enabled specials inaccessible.
+            for special in tmdb_obj.get('seasons', []):
+                if special.get('season_number') == 0 and get_setting('include_tvshow_specials'):
+                    from lib.api.tmdbv3api.as_obj import AsObj
+                    item = _process_season(AsObj(special) if isinstance(special, dict) else special,
+                        tmdb_obj, title, ids, mode, media_type, {})
+                    if item:
+                        extras.insert(0, (item[1], item[2], True))
             TmdbClient.show_episodes_details(
                 tv_name=title,
                 ids=ids,
                 mode=mode,
                 media_type=media_type,
-                season=number_of_seasons,
+                season=seasons[0],
+                prepared_pages=(prepared or {}).get('pages', {}).get(seasons[0]),
+                extra_rows=extras,
             )
         else:
-            TmdbClient.show_seasons_details(ids=ids, mode=mode, media_type=media_type)
+            TmdbClient.show_seasons_details(ids=ids, mode=mode, media_type=media_type,
+                details=tmdb_obj, related=films)
 
     @staticmethod
-    def show_seasons_details(ids, mode, media_type):
+    def show_seasons_details(ids, mode, media_type, details=None, related=None):
         set_content_type("season")
-        if show_season_info(ids, mode, media_type) is False:
+        if show_season_info(ids, mode, media_type, details=details, related=related) is False:
             from lib.utils.directory_failure import fail_directory
 
             return fail_directory()
@@ -717,9 +732,10 @@ class TmdbClient(BaseTmdbClient):
         _apply_tmdb_view("season")
 
     @staticmethod
-    def show_episodes_details(tv_name, ids, mode, media_type, season):
+    def show_episodes_details(tv_name, ids, mode, media_type, season, prepared_pages=None, extra_rows=None):
         set_content_type("episode")
-        if show_episode_info(tv_name, season, ids, mode, media_type) is None:
+        if show_episode_info(tv_name, season, ids, mode, media_type,
+                prepared_pages=prepared_pages, extra_rows=extra_rows) is None:
             from lib.utils.directory_failure import fail_directory
 
             return fail_directory("分集信息暂时无法加载，请稍后重试")

@@ -26,10 +26,8 @@ def get_order(tmdb_id, fetch=False):
     from lib.utils.tmdb_init import ensure_tmdb_init
     ensure_tmdb_init()
     client = TMDb()
-    previous_language = client.language
-    client.language = 'zh-CN'
     def request(path):
-        value = client._request_obj(path)
+        value = client._request_obj(path, params='language=zh-CN', add_lang=False)
         return value.to_dict() if hasattr(value, 'to_dict') else value
     try:
         listing = request('/tv/{}/episode_groups'.format(identifier))
@@ -47,14 +45,15 @@ def get_order(tmdb_id, fetch=False):
                 continue
         unique = {order['digest']: order for order in orders}
         result = next(iter(unique.values())) if len(unique) == 1 else None
+        from bobbi_core.metadata_transport import request_remaining
+        if not request_remaining(24):
+            return None
         cache.set(key, {'order': result}, timedelta(hours=24))
         return result
     except Exception as error:
         from lib.utils.kodi.utils import kodilog
         kodilog('Episode order unavailable: ' + type(error).__name__)
         return None
-    finally:
-        client.language = previous_language
 
 
 def release_pair(ids, tv_data):
@@ -93,14 +92,14 @@ def selected_release_binding(ids, tv_data, info_hash, title):
                 provenance=('tmdb-continuous-order:' if absolute else 'tmdb-production-order:') + pair['provider_group'])
 
 
-def show_collapsed_seasons(metadata, title, ids, mode, media_type):
+def show_collapsed_seasons(metadata, title, ids, mode, media_type, prepared=None):
     import xbmc
     if xbmc.getSkinDir() != 'skin.bobbi.cinema' or metadata.get('number_of_seasons') != 1:
         return False
     genres = metadata.get('genres', [])
     if not any((genre.get('id') if hasattr(genre, 'get') else None) == 16 for genre in genres):
         return False
-    order = get_order(ids.get('tmdb_id'), fetch=True)
+    order = prepared.get('order') if prepared is not None else get_order(ids.get('tmdb_id'), fetch=True)
     if order is None:
         return False
     from lib.utils.kodi.utils import make_list_item, build_url, add_directory_items_batch, end_of_directory, apply_section_view
@@ -130,7 +129,8 @@ def show_collapsed_seasons(metadata, title, ids, mode, media_type):
                                mode=mode, media_type=media_type), item, True))
     set_content_type('season')
     from lib.clients.tmdb.related_movies import directory_entries
-    items.extend(directory_entries(ids, include_cached=True))
+    items.extend(directory_entries(ids, include_cached=True,
+        prepared=prepared.get('movies') if prepared is not None else None))
     add_directory_items_batch(items)
     end_of_directory()
     apply_section_view('view.seasons', content_type='seasons')

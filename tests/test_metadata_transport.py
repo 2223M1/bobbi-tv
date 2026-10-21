@@ -15,6 +15,64 @@ transport = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(transport)
 
 
+def test_request_budget_is_nested_cancelable_and_thread_local():
+    from concurrent.futures import ThreadPoolExecutor
+    cancelled = [False]
+    assert not transport.request_silent()
+    with transport.request_budget(time.monotonic() + 2, lambda: cancelled[0], quiet=True):
+        assert 0 < transport.request_remaining(10) <= 2
+        with transport.request_budget(time.monotonic() + 20):
+            assert transport.request_remaining(10) <= 2 and transport.request_silent()
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            assert pool.submit(transport.request_remaining, 10).result() == 10
+        cancelled[0] = True
+        assert transport.request_remaining(10) == 0
+    assert transport.request_remaining(10) == 10 and not transport.request_silent()
+
+
+def test_verified_doh_route_reuse_avoids_repeated_system_connect_penalty(monkeypatch):
+    calls=[]
+    monkeypatch.setattr(transport,'_DNS_CACHE',{})
+    monkeypatch.setattr(transport,'_SUCCESS_ROUTE',{})
+    def connect(host,ip=None,timeout=5):
+        calls.append(ip)
+        if ip is None:raise OSError('system route unavailable')
+        return Connection()
+    # Connection construction itself is normally nonblocking; make failure
+    # occur in request(), as the real HTTPS.connect does.
+    class Failed(Connection):
+        def request(self,*a,**k):raise OSError('system route unavailable')
+    def create(host,ip=None,timeout=5):
+        calls.append(ip)
+        return Failed() if ip is None else Connection()
+    def resolver(host,*a):
+        transport._DNS_CACHE[host]=(time.monotonic()+60,('1.1.1.1',))
+        return ['1.1.1.1']
+    transport.fetch('https://image.tmdb.org/t/p/w342/test.jpg',time.monotonic()+2,connect=create,resolver=resolver)
+    assert calls==[None,'1.1.1.1']
+    calls.clear()
+    transport.fetch('https://image.tmdb.org/t/p/w342/test.jpg',time.monotonic()+2,connect=create,resolver=resolver)
+    assert calls==['1.1.1.1']
+
+
+@pytest.mark.parametrize('failure', ['TLS', 'SHORT_READ'])
+def test_failed_preferred_address_is_not_pinned_for_following_images(monkeypatch,failure):
+    calls=[]
+    monkeypatch.setattr(transport,'_SUCCESS_ROUTE',{'image.tmdb.org':('1.1.1.1',time.monotonic()+60)})
+    class Broken(Connection):
+        def request(self,*a,**k):
+            if failure=='TLS':raise ssl.SSLError('invalid certificate')
+            raise transport.MetadataError('SHORT_READ')
+    def connect(host,ip=None,timeout=5):
+        calls.append(ip)
+        return Broken() if ip else Connection()
+    with pytest.raises(transport.MetadataError,match=failure):
+        transport.fetch('https://image.tmdb.org/t/p/w342/a.jpg',time.monotonic()+2,connect=connect)
+    assert calls==['1.1.1.1']  # No TLS bypass inside the failing request.
+    transport.fetch('https://image.tmdb.org/t/p/w342/b.jpg',time.monotonic()+2,connect=connect)
+    assert calls==['1.1.1.1',None]
+
+
 class Response:
     status = 200
     def __init__(self, raw=b'{}', declared='2'):

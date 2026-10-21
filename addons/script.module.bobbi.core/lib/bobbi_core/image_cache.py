@@ -11,11 +11,13 @@ import os
 from pathlib import Path
 import re
 import secrets
+import socket
 from socketserver import ThreadingMixIn
 import tempfile
 from threading import BoundedSemaphore, Event, Lock, Thread
 import time
 from urllib.parse import urlsplit
+from weakref import WeakSet
 
 from bobbi_core.metadata_transport import fetch, MetadataError, MAX_BYTES
 
@@ -23,6 +25,29 @@ ART = re.compile(r'/t/p/(original|[wh][1-9][0-9]{1,3})/([A-Za-z0-9_-]{1,128}\.(?
 CACHE_NAME = re.compile(r'[a-f0-9]{64}\.(?:jpg|jpeg|png|webp)')
 MAX_CACHE = 128 * 1024 * 1024
 MAX_FILES = 2048
+_services = WeakSet()
+_services_lock = Lock()
+
+
+def visible_images_busy():
+    """Same-host idle work yields to visible texture misses, without disk IPC."""
+    with _services_lock:
+        services = list(_services)
+    return any(service.started and not service.closed and service.cache.busy() for service in services)
+
+
+def _configuration(location):
+    try:
+        if location.is_symlink() or location.stat().st_size > 512:
+            return None
+        config = json.loads(location.read_text(encoding='utf-8'))
+        if (set(config) == {'port', 'token'} and type(config['port']) is int
+                and 1024 <= config['port'] <= 65535 and isinstance(config['token'], str)
+                and re.fullmatch('[a-f0-9]{64}', config['token'])):
+            return config
+    except (OSError, ValueError, TypeError):
+        pass
+    return None
 
 
 def image_path(value, size=None):
@@ -48,7 +73,16 @@ def image_url(value, size=None, root=None):
     """Cheap presentation helper. Kodi's texture worker performs the GET later."""
     if not value:
         return ''
+    if not isinstance(value, str):
+        return value
     try:
+        # Rebind old presentation-only local URLs when rendering stored resume
+        # metadata. This permits only our exact public TMDb image path grammar.
+        parsed = urlsplit(value)
+        if (parsed.scheme == 'http' and parsed.hostname == '127.0.0.1'
+                and not parsed.query and not parsed.fragment and not parsed.username
+                and re.fullmatch(r'/art/[a-f0-9]{64}/(?:original|[wh][1-9][0-9]{1,3})/[A-Za-z0-9_-]{1,128}\.(?:jpg|jpeg|png|webp)', parsed.path)):
+            value = 'https://image.tmdb.org/t/p/' + parsed.path.split('/', 3)[3]
         path = image_path(value, size)
     except (TypeError, ValueError):
         return value  # Non-TMDb artwork remains its existing independent source.
@@ -58,12 +92,8 @@ def image_url(value, size=None, root=None):
             from bobbi_platform.paths import profile
             root = profile()
         location = Path(root) / 'image-runtime.json'
-        if location.is_symlink() or location.stat().st_size > 512:
-            return original
-        config = json.loads(location.read_text(encoding='utf-8'))
-        if (set(config) != {'port', 'token'} or type(config['port']) is not int
-                or not 1024 <= config['port'] <= 65535
-                or not isinstance(config['token'], str) or not re.fullmatch('[a-f0-9]{64}', config['token'])):
+        config = _configuration(location)
+        if config is None:
             return original
         return 'http://127.0.0.1:{}/art/{}/{}'.format(config['port'], config['token'], path[5:])
     except (OSError, ValueError, TypeError, ImportError):
@@ -91,6 +121,12 @@ class ImageCache:
             raise ValueError('IMAGE_CACHE_PATH')
         self.root.mkdir(parents=True, exist_ok=True)
         self.lock, self.inflight, self.failures = Lock(), {}, {}
+        self.downloads = BoundedSemaphore(6)
+        self.last_activity = 0
+
+    def busy(self):
+        with self.lock:
+            return bool(self.inflight) or time.monotonic() - self.last_activity < 1
 
     def _file(self, path):
         return self.root / (hashlib.sha256(path.encode()).hexdigest() + '.' + path.rsplit('.', 1)[1])
@@ -127,6 +163,7 @@ class ImageCache:
             owner = wait is None
             if owner:
                 wait = self.inflight[path] = Event()
+                self.last_activity = time.monotonic()
         if not owner:
             while not wait.wait(.05):
                 self._guard(deadline)
@@ -135,8 +172,12 @@ class ImageCache:
             if cached:
                 return cached
             raise MetadataError('IMAGE_UNAVAILABLE')
-        temporary = None
+        temporary, downloading = None, False
         try:
+            while not self.downloads.acquire(timeout=.05):
+                self._guard(deadline)
+            downloading = True
+            self._guard(deadline)
             result = self.transport('https://image.tmdb.org' + path, deadline, self.stopped.is_set)
             self._guard(deadline)
             if result['status'] != 200:
@@ -165,10 +206,13 @@ class ImageCache:
             self.report('IMAGE_' + getattr(error, 'stage', 'IO'))
             raise
         finally:
+            if downloading:
+                self.downloads.release()
             if temporary is not None:
                 Path(temporary).unlink(missing_ok=True)
             with self.lock:
                 self.inflight.pop(path, None)
+                self.last_activity = time.monotonic()
                 wait.set()
 
     def _prune(self, preserve):
@@ -189,10 +233,23 @@ class ImageCache:
 class _Server(ThreadingMixIn, HTTPServer):
     daemon_threads = False
     block_on_close = True
-    allow_reuse_address = False
+    allow_reuse_address = os.name != 'nt'
+    request_queue_size = 32
+    def server_bind(self):
+        if os.name == 'nt' and hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
     def process_request(self, request, address):
         if not self.slots.acquire(False):
-            request.close()
+            # Bounded HTTP admission is distinct from expensive upstream IO.
+            # Never silently reset a cached texture's connection at slot five.
+            try:
+                request.settimeout(.1)
+                request.sendall(b'HTTP/1.1 503 Service Unavailable\r\nContent-Length: 0\r\nRetry-After: 1\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n')
+            except OSError:
+                pass
+            finally:
+                request.close()
             return
         try:
             super().process_request(request, address)
@@ -231,6 +288,7 @@ class _Handler(BaseHTTPRequestHandler):
             self.send_response(503)
             self.send_header('Content-Length', '0')
             self.send_header('Cache-Control', 'no-store')
+            self.send_header('Retry-After', '1')
             self.end_headers()
             return
         self.send_response(200)
@@ -248,11 +306,24 @@ class ImageService:
     def __init__(self, root, report=lambda code:None, transport=fetch):
         self.root, self.stop = Path(root), Event()
         self.path = self.root / 'image-runtime.json'
+        self.endpoint = self.root / 'image-endpoint.json'
         self.cache = ImageCache(self.root / 'images', self.stop, transport, report)
-        self.server = _Server(('127.0.0.1', 0), _Handler)
-        self.server.token, self.server.cache, self.server.slots = secrets.token_hex(32), self.cache, BoundedSemaphore(4)
+        if self.endpoint.is_symlink():
+            raise ValueError('IMAGE_ENDPOINT_PATH')
+        config = _configuration(self.endpoint) or _configuration(self.path)
+        # Public read-only artwork keeps a stable endpoint across ordinary host
+        # restarts; account/control capabilities still have separate lifetimes.
+        try:
+            self.server = _Server(('127.0.0.1', config['port'] if config else 0), _Handler)
+        except OSError:
+            self.server = _Server(('127.0.0.1', 0), _Handler)
+            report('IMAGE_ENDPOINT_RELOCATED')
+        self.server.token = config['token'] if config else secrets.token_hex(32)
+        self.server.cache, self.server.slots = self.cache, BoundedSemaphore(32)
         self.thread = Thread(target=self.server.serve_forever, kwargs={'poll_interval':.1}, daemon=True)
         self.started, self.closed = False, False
+        with _services_lock:
+            _services.add(self)
     def start(self):
         temporary = None
         try:
@@ -264,6 +335,12 @@ class ImageService:
             self.thread.start()
             self.started = True
             os.replace(temporary, self.path)
+            fd, temporary = tempfile.mkstemp(dir=str(self.root), prefix='.image-endpoint-')
+            with os.fdopen(fd, 'wb') as stream:
+                stream.write(self.path.read_bytes())
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, self.endpoint)
         except BaseException:
             self.close()
             raise
@@ -280,8 +357,11 @@ class ImageService:
         if self.started:
             self.thread.join()
         try:
-            if json.loads(self.path.read_text())['token'] == self.server.token:
+            config = json.loads(self.path.read_text())
+            if config.get('token') == self.server.token and config.get('port') == self.server.server_port:
                 self.path.unlink()
         except (OSError, ValueError, KeyError):
             pass
         self.closed = True
+        with _services_lock:
+            _services.discard(self)

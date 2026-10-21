@@ -47,6 +47,8 @@ class StartupPreloader:
 
     def __init__(self, monitor=None):
         self.monitor = monitor
+        from lib.services.navigation_warmer import NavigationWarmer
+        self.navigation = NavigationWarmer()
 
     def run(self):
         worker = Thread(
@@ -71,6 +73,7 @@ class StartupPreloader:
         next_catalog_refresh = monotonic() + AM6B_CATALOG_REFRESH_INTERVAL_SECONDS
 
         while not monitor.abortRequested():
+            self.navigation.tick(monitor, player)
             self._run_deferred_hydration(player)
             self._refresh_pending_view(player)
             now = monotonic()
@@ -82,6 +85,7 @@ class StartupPreloader:
 
     def _wait_until_safe(self, monitor, player):
         while not monitor.abortRequested():
+            self.navigation.tick(monitor, player)
             self._run_deferred_hydration(player)
             self._refresh_pending_view(player)
             if self._safe_for_catalog_work(player):
@@ -92,25 +96,29 @@ class StartupPreloader:
 
     @staticmethod
     def _safe_for_catalog_work(player):
+        from lib.services.navigation_warmer import resources_available
         try:
             has_network = bool(xbmc.getCondVisibility("System.HasNetwork"))
         except Exception:
             has_network = False
         try:
-            playing_video = bool(player.isPlayingVideo())
+            playing_video = bool(player.isPlaying())
         except Exception:
             playing_video = False
         try:
             idle_seconds = int(xbmc.getGlobalIdleTime())
         except Exception:
             idle_seconds = 0
-        return has_network and not playing_video and idle_seconds >= AM6B_PRELOAD_REQUIRED_IDLE_SECONDS
+        return (has_network and not playing_video and idle_seconds >= AM6B_PRELOAD_REQUIRED_IDLE_SECONDS
+                and not xbmc.getCondVisibility('System.HasModalDialog') and resources_available())
 
     @staticmethod
     def _run_deferred_hydration(player):
         """Launch one queued metadata job only after playback and network recover."""
         try:
-            if player.isPlayingVideo():
+            from lib.services.navigation_warmer import resources_available
+            if (player.isPlaying() or xbmc.getCondVisibility('System.HasModalDialog')
+                    or not resources_available()):
                 return False
             if not xbmc.getCondVisibility("System.HasNetwork"):
                 return False
@@ -144,7 +152,8 @@ class StartupPreloader:
             window = xbmcgui.Window(10000)
             if window.getProperty(AM6B_REFRESH_PENDING_PROPERTY) != "true":
                 return False
-            if player.isPlayingVideo():
+            if (player.isPlaying() or xbmc.getCondVisibility('System.HasModalDialog')
+                    or int(xbmc.getGlobalIdleTime()) < AM6B_PRELOAD_REQUIRED_IDLE_SECONDS):
                 return False
             home_active = xbmc.getCondVisibility("Window.IsActive(home)")
             if not home_active:

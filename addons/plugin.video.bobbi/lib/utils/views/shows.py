@@ -44,23 +44,27 @@ def show_seasons_details(params):
     apply_section_view("view.seasons", content_type="seasons")
 
 
-def show_season_info(ids, mode, media_type):
+def show_season_info(ids, mode, media_type, details=None, related=None):
     tmdb_id = ids.get("tmdb_id")
     tvdb_id = ids.get("tvdb_id")
     imdb_id = ids.get("imdb_id")
 
-    if imdb_id:
+    if not tmdb_id and imdb_id:
         res = tmdb_get("find_by_imdb_id", imdb_id)
         if res and res.get("tv_results"):
             tmdb_id = res["tv_results"][0]["id"]
 
     # Keep one localized request and the upstream external-ID repair. Do not
     # re-fetch trailers/credits or mutate a process-global language setting.
-    details = tmdb_get("tv_details", {
-        "id": tmdb_id, "language": "zh-CN", "append_to_response": "external_ids",
-    })
+    if details is None:
+        # Same request as the work entry/search, rather than another payload
+        # under a different detail-cache key.
+        details = tmdb_get('tv_details', tmdb_id)
     if not details:
         return False
+    from lib.api.tmdbv3api.as_obj import AsObj
+    if isinstance(details, dict):
+        details = AsObj(details)
 
     # Callers such as the Nuvio library only know the tmdb_id. Resolve the
     # missing external ids from the details we already fetched, otherwise the
@@ -77,7 +81,7 @@ def show_season_info(ids, mode, media_type):
 
     name = details.name
     seasons = details.seasons
-    fanart_details = get_fanart_details(tvdb_id=tvdb_id, mode=mode)
+    fanart_details = get_fanart_details(tvdb_id=tvdb_id, mode=mode, cached_only=True)
 
     results = execute_thread_pool_collection(
         seasons,
@@ -97,7 +101,7 @@ def show_season_info(ids, mode, media_type):
         [(url, list_item, True) for _, url, list_item in results if list_item is not None]
     )
     from lib.clients.tmdb.related_movies import append_directory_entry
-    append_directory_entry(ids, include_cached=True)
+    append_directory_entry(ids, include_cached=True, prepared=related)
 
 
 def _process_season(season, details, name, ids, mode, media_type, fanart_details):
@@ -188,12 +192,17 @@ def _is_chinese_episode_title(value):
     return has_han and not has_kana
 
 
-def _fetch_localized_season_pages(tmdb_id, season):
+def _fetch_localized_season_pages(tmdb_id, season, deadline=None, cancelled=lambda: False, quiet=False):
     requests = ("zh-CN", "zh-TW", "en-US")
 
     def load(language):
         try:
-            return tmdb_get(
+            from contextlib import nullcontext
+            from bobbi_core.metadata_transport import request_budget
+            if cancelled():
+                return None
+            with request_budget(deadline, cancelled, quiet=quiet) if deadline is not None else nullcontext():
+                return tmdb_get(
                 "season_details",
                 {
                     "id": tmdb_id,
@@ -252,9 +261,10 @@ def _build_localized_episode_rows(localized_pages):
     return rows
 
 
-def show_episode_info(tv_name, season, ids, mode, media_type):
+def show_episode_info(tv_name, season, ids, mode, media_type, prepared_pages=None, extra_rows=None):
     tmdb_id = ids.get("tmdb_id")
-    localized_pages = _fetch_localized_season_pages(tmdb_id, season) if tmdb_id else {}
+    localized_pages = prepared_pages if prepared_pages is not None else (
+        _fetch_localized_season_pages(tmdb_id, season) if tmdb_id else {})
     localized_rows = _build_localized_episode_rows(localized_pages)
 
     if not localized_rows:
@@ -284,7 +294,7 @@ def show_episode_info(tv_name, season, ids, mode, media_type):
             len(localized_rows), tmdb_id, season
         )
     )
-    fanart_details = get_fanart_details(tvdb_id=ids.get("tvdb_id"), mode=mode)
+    fanart_details = get_fanart_details(tvdb_id=ids.get("tvdb_id"), mode=mode, cached_only=True)
 
     results = execute_thread_pool_collection(
         localized_rows,
@@ -301,8 +311,10 @@ def show_episode_info(tv_name, season, ids, mode, media_type):
     add_directory_items_batch(
         [(url, list_item, False) for _, url, list_item in results if list_item is not None]
     )
-    from lib.clients.tmdb.related_movies import append_directory_entry
-    append_directory_entry(ids)
+    if extra_rows is not None:
+        add_directory_items_batch(extra_rows)
+    # Film cards live on the work hub, not behind every season and episode.
+    # Direct single-season work entry explicitly passes verified cards/status.
     return item_count
 
 

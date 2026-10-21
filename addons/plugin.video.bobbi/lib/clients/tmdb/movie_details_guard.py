@@ -41,7 +41,8 @@ def valid(params, data):
 
 
 def get(params, identifier, legacy_identifier, cache, fetch, expires,
-        report=lambda *_: None, lock_root=None):
+        report=lambda *_: None, lock_root=None, require_aliases=False):
+    from bobbi_core.metadata_transport import request_remaining
     digest = hashlib.sha256(identifier.encode('utf-8')).hexdigest()
     failure_key = 'movie-details-retry|' + digest
     lock = _locks[int(digest[:8], 16) % len(_locks)]
@@ -51,7 +52,13 @@ def get(params, identifier, legacy_identifier, cache, fetch, expires,
         row = cache.get(key=key)
         return row if valid(params, row) else None
 
+    def covered(row):
+        return row is not None and (not require_aliases or row.get('alternative_titles') is not None
+            or cache.get(key=identifier + '|aliases-requested') is True)
+
     def store(key, data, ttl):
+        if not request_remaining(24):
+            return
         try:
             cache.set(key=key, data=data, expires=ttl)
         except (AttributeError, OSError, ValueError, TypeError):
@@ -59,13 +66,13 @@ def get(params, identifier, legacy_identifier, cache, fetch, expires,
             report('CACHE_WRITE_UNAVAILABLE')
 
     current = saved(identifier)
-    if current is not None:
+    if covered(current):
         return current
-    old = saved(legacy_identifier)
+    old = current if current is not None else saved(legacy_identifier)
     if not lock.acquire(blocking=False):
         if old is not None:
             return old
-        if not lock.acquire(timeout=22):
+        if not lock.acquire(timeout=request_remaining(22)):
             report('COALESCED_REQUEST_TIMEOUT')
             return None
     try:
@@ -77,20 +84,22 @@ def get(params, identifier, legacy_identifier, cache, fetch, expires,
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             stripe = str(int(digest[:8], 16) % len(_locks))
             lease = InstanceLock(directory / stripe)
-            until = monotonic() + 24
+            until = monotonic() + request_remaining(24)
             while True:
                 try:
                     lease.acquire()
                     break
                 except (BlockingIOError, PermissionError):
-                    if old is not None or monotonic() >= until:
+                    if old is not None or monotonic() >= until or not request_remaining(24):
                         report('REFRESH_IN_FLIGHT' if old is not None else 'COALESCED_REQUEST_TIMEOUT')
                         return old
                     sleep(.05)
         current = saved(identifier)
-        if current is not None:
+        if covered(current):
             return current
-        old = saved(legacy_identifier)
+        old = current if current is not None else saved(legacy_identifier)
+        if not request_remaining(24):
+            return old
         with _failure_lock:
             recent = _failures.get(failure_key)
         persisted = cache.get(key=failure_key)
@@ -104,6 +113,9 @@ def get(params, identifier, legacy_identifier, cache, fetch, expires,
             if not valid(params, data):
                 raise ValueError('INVALID_MOVIE_DETAILS')
         except Exception as error:
+            if not request_remaining(24) or getattr(error, 'metadata_stage', '') == 'CANCELLED':
+                report('REQUEST_BUDGET')
+                return old
             failed = time()
             with _failure_lock:
                 if len(_failures) >= 512:
@@ -113,6 +125,8 @@ def get(params, identifier, legacy_identifier, cache, fetch, expires,
             report(type(error).__name__)
             return old
         store(identifier, data, expires)
+        if require_aliases:
+            store(identifier + '|aliases-requested', True, expires)
         with _failure_lock:
             _failures.pop(failure_key, None)
         return data

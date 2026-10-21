@@ -129,3 +129,67 @@ def test_old_service_cannot_remove_new_registration(tmp_path):
     (tmp_path/'image-runtime.json').write_text(json.dumps(replacement))
     service.close()
     assert json.loads((tmp_path/'image-runtime.json').read_text()) == replacement
+
+
+def test_restart_keeps_art_url_identity_and_kodi_texture_cache(tmp_path):
+    first=ImageService(tmp_path,transport=lambda *a:dict(status=200,body=PNG))
+    first.start()
+    original=image_url('/test.png','w342',tmp_path)
+    with build_opener(ProxyHandler({})).open(original,timeout=2) as response:
+        assert response.read()==PNG
+    first.close()
+    second=ImageService(tmp_path,transport=lambda *a:dict(status=200,body=PNG))
+    second.start()
+    try:
+        assert image_url('/test.png','w342',tmp_path)==original
+        with build_opener(ProxyHandler({})).open(original,timeout=2) as response:
+            assert response.read()==PNG
+    finally:second.close()
+
+
+def test_same_token_relocated_service_is_not_removed_by_old_close(tmp_path):
+    first=ImageService(tmp_path);first.start()
+    second=ImageService(tmp_path);second.start()
+    try:
+        assert first.server.token==second.server.token
+        assert first.server.server_port!=second.server.server_port
+        first.close()
+        assert json.loads((tmp_path/'image-runtime.json').read_text())['port']==second.server.server_port
+    finally:
+        first.close();second.close()
+
+
+def test_old_local_art_is_rebound_without_allowing_arbitrary_loopback_paths(tmp_path):
+    (tmp_path/'image-runtime.json').write_text(json.dumps(dict(port=12345,token='b'*64)))
+    old='http://127.0.0.1:54321/art/'+'a'*64+'/w342/poster.jpg'
+    assert image_url(old,root=tmp_path)=='http://127.0.0.1:12345/art/'+'b'*64+'/w342/poster.jpg'
+    assert image_url('http://127.0.0.1:54321/control',root=tmp_path)=='http://127.0.0.1:54321/control'
+
+
+def test_cached_poster_is_not_refused_behind_four_slow_misses(tmp_path):
+    from threading import Lock
+    entered,release,lock=Event(),Event(),Lock()
+    count=[0]
+    def fetch(url,*args):
+        if 'hot.png' not in url:
+            with lock:
+                count[0]+=1
+                if count[0]>=4:entered.set()
+            assert release.wait(3)
+        return dict(status=200,body=PNG)
+    service=ImageService(tmp_path,transport=fetch)
+    service.start()
+    service.cache.get('/t/p/w342/hot.png',time.monotonic()+1)
+    def get(name):
+        with build_opener(ProxyHandler({})).open(image_url('/'+name+'.png','w342',tmp_path),timeout=4) as response:
+            return response.read()
+    try:
+        with ThreadPoolExecutor(max_workers=5) as pool:
+            futures=[pool.submit(get,'cold'+str(n)) for n in range(4)]
+            assert entered.wait(1)
+            try:
+                assert pool.submit(get,'hot').result(timeout=1)==PNG
+            finally:release.set()
+            assert all(f.result()==PNG for f in futures)
+    finally:
+        release.set();service.close()

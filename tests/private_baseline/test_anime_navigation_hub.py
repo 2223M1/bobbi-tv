@@ -22,7 +22,7 @@ def movie():
 
 
 def cached(now=1000):
-    return dict(schema=2, id=1200, time=now, show=show(), movies=[movie()])
+    return dict(schema=3, id=1200, time=now, show=show(), movies=[movie()], complete=True)
 
 
 class Item:
@@ -97,9 +97,9 @@ def test_explicit_discovery_records_evidence_and_reuses_bounded_success_cache():
     def fetch(action, args):
         calls.append(action)
         return (show() if action == 'tv_details' else movie() if action == 'movie_details'
-                else dict(results=[movie()], total_results=1))
+                else dict(results=[movie()], total_results=1, total_pages=1, page=1))
     value, stale = films.discover(1200, fetch, now=1000)
-    assert stale is False and value['schema'] == 2
+    assert stale is False and value['schema'] == 3 and value['complete']
     assert value['show'] == show() and value['movies'] == [movie()]
     assert calls == ['tv_details', 'search_movie', 'search_movie', 'movie_details']
     assert films.discover(1200, lambda *_: pytest.fail('Fresh cache makes no request'),
@@ -115,20 +115,18 @@ def test_only_successful_related_cache_can_be_used_when_network_fails():
         films.discover(1200, offline, value, now=1000 + 8 * 86400)
 
 
-def test_inline_movie_and_lazy_entry_do_not_fetch_or_start_playback(ui, monkeypatch):
+def test_complete_inline_movies_have_no_placeholder_or_detail_hop(ui, monkeypatch):
     from lib.db.cached import cache
     monkeypatch.setattr(films.time, 'time', lambda: 1000)
     monkeypatch.setattr(cache, 'get', lambda key: cached() if key == films.CACHE_PREFIX + '1200' else None)
     monkeypatch.setattr(films, 'discover', lambda *_: pytest.fail('Season page must not search movies'))
     rows = films.directory_entries({'tmdb_id': 1200}, include_cached=True)
-    assert len(rows) == 2
+    assert len(rows) == 1
     route, item, is_folder = rows[0]
-    assert route == dict(action='show_tmdb_item', mode='movies', submode='', id=8900,
-                         title='剧场版 测试动画', media_type='movie')
+    assert route == dict(action='search', mode='movies', ids={'tmdb_id': 8900},
+                         query='剧场版 测试动画', media_type='movie', force_select=True)
     assert is_folder is False and item.properties['IsPlayable'] == 'false'
-    assert item.label == '相关电影 · 剧场版 测试动画'
-    assert rows[1][0] == dict(action='bobi_related_movies', ids={'tmdb_id': 1200})
-    assert rows[1][2] is True
+    assert item.label == '剧场版 测试动画'
 
 
 def test_first_open_keeps_lazy_movie_entry_without_extra_requests(ui, monkeypatch):
@@ -140,18 +138,20 @@ def test_first_open_keeps_lazy_movie_entry_without_extra_requests(ui, monkeypatc
 
 
 @pytest.mark.parametrize('skin,animation,expected', [
-    ('skin.bobbi.cinema', True, 'seasons'), ('skin.bobbi.cinema', False, 'episodes'),
+    ('skin.bobbi.cinema', True, 'episodes'), ('skin.bobbi.cinema', False, 'episodes'),
     ('skin.estuary', True, 'episodes'),
 ])
-def test_single_season_anime_enters_hub_only_in_current_ui(monkeypatch, skin, animation, expected):
+def test_single_season_without_confirmed_movies_skips_unnecessary_hub(monkeypatch, skin, animation, expected):
     from lib.clients.tmdb.tmdb import TmdbClient
-    from lib.clients.tmdb import episode_order
+    from lib.clients.tmdb import episode_order, navigation
     monkeypatch.setattr(xbmc, 'getSkinDir', lambda: skin)
-    monkeypatch.setattr(episode_order, 'show_collapsed_seasons', lambda *a: False)
+    monkeypatch.setattr(episode_order, 'show_collapsed_seasons', lambda *a, **k: False)
+    monkeypatch.setattr(navigation, 'prepare', lambda *a: dict(order=None, movies=None, pages={}))
+    monkeypatch.setattr(films, 'directory_entries', lambda *a, **k: [])
     seasons, episodes = MagicMock(), MagicMock()
     monkeypatch.setattr(TmdbClient, 'show_seasons_details', seasons)
     monkeypatch.setattr(TmdbClient, 'show_episodes_details', episodes)
-    metadata = dict(show(), number_of_seasons=1, genres=[{'id': 16 if animation else 18}])
+    metadata = dict(show(), number_of_seasons=1, genres=[{'id': 16 if animation else 18}], seasons=[{'season_number': 1}])
     TmdbClient._show_tmdb_shows(metadata, 'tv', '测试动画', 1200, 'tv')
     assert bool(seasons.call_count) == (expected == 'seasons')
     assert bool(episodes.call_count) == (expected == 'episodes')
@@ -170,7 +170,7 @@ def test_multiseason_browser_keeps_every_season_before_movie_entries(monkeypatch
                         lambda ids, **opts: appended.append((ids, opts)))
     shows.show_season_info({'tmdb_id': 1200}, 'tv', 'tv')
     assert [row[0] for row in collected] == ['season:1', 'season:2', 'season:3']
-    assert appended[0][1] == {'include_cached': True}
+    assert appended[0][1] == {'include_cached': True, 'prepared': None}
 
 
 def test_collapsed_production_seasons_keep_specials_and_independent_films(ui, monkeypatch):
@@ -281,26 +281,27 @@ def test_public_odd_taxi_metadata_discovers_independent_movie_once():
     def fetch(action, args):
         calls.append((action, args))
         return (series if action == 'tv_details' else feature if action == 'movie_details'
-                else dict(results=[hit], total_results=1))
+                else dict(results=[hit], total_results=1, total_pages=1, page=1))
     value, stale = films.discover(116727, fetch, now=1000)
     assert not stale and [item['id'] for item in value['movies']] == [919609]
     assert [args['query'] for action, args in calls if action == 'search_movie'] == ['オッドタクシー', '奇巧计程车']
-    assert [args['id'] for action, args in calls if action == 'movie_details'] == [919609]
+    assert [args for action, args in calls if action == 'movie_details'] == [919609]
     # The original-language alias alone must shortlist before alternatives are fetched.
     assert films.candidate(series, dict(hit, title=''))
 
 
-def test_expanded_names_do_not_increase_search_or_detail_budget():
+def test_all_ten_verified_movies_are_visible_not_arbitrary_first_five():
     values = [dict(movie(), id=9000 + n, title='映画 Example Story: Journey ' + str(n),
                    original_title='') for n in range(10)]
     calls = []
     def fetch(action, args):
         calls.append(action)
-        return (show() if action == 'tv_details' else values[args['id'] - 9000]
-                if action == 'movie_details' else dict(results=values, total_results=10))
+        return (show() if action == 'tv_details' else values[args - 9000]
+                if action == 'movie_details' else dict(results=values, total_results=10, total_pages=1, page=1))
     value, _ = films.discover(1200, fetch, now=1000)
-    assert calls.count('search_movie') == 2 and calls.count('movie_details') == 5
-    assert [item['id'] for item in value['movies']] == list(range(9000, 9005))
+    assert calls.count('search_movie') == 2 and calls.count('movie_details') == 10
+    assert [item['id'] for item in value['movies']] == list(range(9000, 9010))
+    assert value['complete']
 
 
 def test_old_empty_relation_cache_is_not_reused_after_matching_policy_change(ui, monkeypatch):
@@ -313,4 +314,78 @@ def test_old_empty_relation_cache_is_not_reused_after_matching_policy_change(ui,
     monkeypatch.setattr(cache, 'get', get)
     rows = films.directory_entries({'tmdb_id': 1200}, include_cached=True)
     assert len(rows) == 1
-    assert requested == ['bobi_related_movies_v3:1200']
+    assert requested == ['bobi_related_movies_v4:1200']
+
+
+@pytest.mark.parametrize('mutation', ['missing-language', 'wrong-page', 'empty-page', 'missing-pages'])
+def test_incomplete_metadata_or_pagination_never_proves_no_movies(mutation):
+    series = show()
+    page = dict(results=[movie()], total_results=1, total_pages=1, page=1)
+    if mutation == 'missing-language':
+        page['results'] = [dict(movie(), original_language='')]
+    elif mutation == 'wrong-page':
+        page['page'] = 2
+    elif mutation == 'empty-page':
+        page['results'] = []
+    else:
+        page.pop('total_pages')
+    value, _ = films.discover(1200, lambda action, args: movie() if action == 'movie_details' else page,
+                              show=series, now=1000)
+    assert not value['complete']
+
+
+def test_later_page_failure_preserves_first_page_verified_movie():
+    hit = movie()
+    others = [dict(hit, id=9000+n, title='Unrelated', original_title='Unrelated') for n in range(19)]
+    def fetch(action, args):
+        if action == 'movie_details':
+            return hit
+        if args['page'] == 2:
+            raise OSError('offline')
+        return dict(results=[hit] + others, page=1, total_pages=2, total_results=21)
+    value, _ = films.discover(1200, fetch, show=show(), now=1000)
+    assert not value['complete'] and value['movies'] == [hit]
+
+
+def test_sixth_search_page_is_reachable_and_movie_is_not_hidden():
+    def fetch(action, args):
+        if action == 'movie_details':
+            return movie()
+        page = args['page']
+        hits = [dict(movie(), id=10000+page*20+n, title='Unrelated', original_title='Unrelated') for n in range(20)]
+        if page == 6:
+            hits = [movie()]
+        return dict(results=hits, page=page, total_pages=6, total_results=101)
+    value, _ = films.discover(1200, fetch, show=show(), now=1000)
+    assert value['complete'] and value['movies'] == [movie()]
+
+
+def test_expired_direct_inline_cache_is_labeled_stale(ui, monkeypatch):
+    from lib.db.cached import cache
+    monkeypatch.setattr(films.time, 'time', lambda: 1000 + 2*86400)
+    monkeypatch.setattr(cache, 'get', lambda key: dict(cached(), movies=[]))
+    rows = films.directory_entries({'tmdb_id': 1200}, include_cached=True)
+    assert len(rows) == 1 and '旧缓存' in rows[0][1].label
+
+
+def test_candidate_101_is_checked_when_first_100_are_not_related():
+    hits = [dict(movie(), id=n) for n in range(1, 102)]
+    visited = []
+    def fetch(action, args):
+        if action == 'movie_details':
+            visited.append(args)
+            return dict(hits[args-1], original_language='ja' if args == 101 else 'en', alternative_titles={})
+        number = args['page']
+        return dict(results=hits[(number-1)*20:number*20], page=number, total_pages=6, total_results=101)
+    value, _ = films.discover(1200, fetch, show=show(), now=1000)
+    assert value['complete'] and [row['id'] for row in value['movies']] == [101]
+    assert 101 in visited
+
+
+@pytest.mark.parametrize('pages', [0, 1])
+def test_real_tmdb_empty_search_may_report_one_empty_page(pages):
+    # Actual CE metadata response captured 2026-10-21: page=1,total_results=0,
+    # total_pages=1,results=[] for both original and English Samurai Champloo.
+    value, _ = films.discover(1200, lambda *a: dict(page=1, total_results=0,
+        total_pages=pages, results=[]), show=show(), now=1000)
+    assert value['complete'] and value['movies'] == []
