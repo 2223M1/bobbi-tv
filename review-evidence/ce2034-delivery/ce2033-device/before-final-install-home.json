@@ -1,0 +1,22 @@
+{
+  "mode": "home",
+  "timestamp": 1792595272.551601,
+  "exit": 0,
+  "diagnostic": false,
+  "result": {
+    "elapsed_seconds": 0.403,
+    "gui": {
+      "currentcontrol": {
+        "label": "降临"
+      },
+      "currentwindow": {
+        "id": 10000,
+        "label": "主界面"
+      }
+    },
+    "labels": {
+      "ListItem.DBType": "movie",
+      "ListItem.Label": "降临"
+    }
+  }
+}

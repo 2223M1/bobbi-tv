@@ -1,0 +1,116 @@
+{
+  "scope": "displayed original public TMDb w342 posters; same local runtime URL",
+  "count": 12,
+  "success": 12,
+  "seconds": 0.095,
+  "rows": [
+    {
+      "control": "Container(50).ListItemAbsolute(0).Art(poster)",
+      "path_digest": "6889140c72081d057814a5639b428672e0c61bec33fb9c3b8473975c02b35942",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 73683,
+      "sha256": "2d30f1b6d8c4d35f6255fca5e29169d6fbe2888f192ab44cbcaaf143b922c334",
+      "seconds": 0.024
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(1).Art(poster)",
+      "path_digest": "77af4ac9a69a537f3a11796916949698e08c988b0231e95fc47b70088d86fd3c",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 47142,
+      "sha256": "f936bd73cc7ff3ccf698ee1c91134b65c981adf18a053797bfde7e68ede1db7f",
+      "seconds": 0.012
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(10).Art(poster)",
+      "path_digest": "b227c24f5ee4fb59df1ca02c184406c6fc6ab74ec4f2074daf83b8e08f50af2e",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 46416,
+      "sha256": "1012e952d2479b5746b5000a38be0fa688f673f8924fe32cc4d4025fb933e48f",
+      "seconds": 0.026
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(11).Art(poster)",
+      "path_digest": "e7b5d82a09d3419cf768f8ccd455d817ad78944016dcfaa9184d21377196f46d",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 98427,
+      "sha256": "d174839b44d75eae7e09d5503cc506475e77c8cd69aad7c15d88dbc825aa3d82",
+      "seconds": 0.038
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(2).Art(poster)",
+      "path_digest": "70a3b5f199e3bfc8653363eaf47a8ea7d594076362704afe6a8fc3e26701b6c8",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 53379,
+      "sha256": "4cec1d5fc113a333c2c576e9b60dd9c9e44620acd50e8065e92248dcbbc80df9",
+      "seconds": 0.033
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(3).Art(poster)",
+      "path_digest": "6b3f3ca406a3ec77298bd899c95d39858de57621341257fe9170ec4e9b7aed45",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 72850,
+      "sha256": "50446f329c1dae5b287c84fc3a073d9fb91094a68bb235aa4bd9d7a3bf543061",
+      "seconds": 0.054
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(4).Art(poster)",
+      "path_digest": "88581e31bd4277391d563bd8a4a4689759527f2516f45afc4414d576e0387425",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 60416,
+      "sha256": "6b320c919598d5f2d8d0576014d582a39be8cb330ea16156cc5873d4c64a3533",
+      "seconds": 0.043
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(5).Art(poster)",
+      "path_digest": "80b8f00d60e231ad13de8c602f89cbb2af903ea11643fc307818e14657863e7d",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 63129,
+      "sha256": "d3b542ea988f0c95e5449a5c6389932d23f44641caab8c188826814f3c89fe23",
+      "seconds": 0.041
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(6).Art(poster)",
+      "path_digest": "a7ef49fe9a7e3242e0347ba8507cece5c3585288069a2ededb2f91f650d73051",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 47360,
+      "sha256": "1cfce1e6168fd7fbf141379cd2c4355b565691fda194b840032a0f85ad0baa14",
+      "seconds": 0.036
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(7).Art(poster)",
+      "path_digest": "f1b31aaa84b10f9c44f8f571c1869b3190867ed0c0f19dab6210abb40827f16f",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 58293,
+      "sha256": "d9d9df2637c136d46da0f467180ed9c86b3112da6390caa2fa10859bb8a875cc",
+      "seconds": 0.03
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(8).Art(poster)",
+      "path_digest": "b88341f98d79d404f7f76c4d47b001ab3781709516486eaeb3a07cb2ba886882",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 67283,
+      "sha256": "893807adadf228d26cac177b6f2dc375ab264e6503ebfb2bc1a7994faaf29375",
+      "seconds": 0.032
+    },
+    {
+      "control": "Container(50).ListItemAbsolute(9).Art(poster)",
+      "path_digest": "3c8d98540b13d9348ed2237f4399b198a36f01d23a1b756c1b2c71dcafa846a2",
+      "cached_before": true,
+      "status": 200,
+      "bytes": 71545,
+      "sha256": "5d933517f59ed8669043919b2a07fa1b744d54292fca99379e3b4e99f1707555",
+      "seconds": 0.029
+    }
+  ]
+}

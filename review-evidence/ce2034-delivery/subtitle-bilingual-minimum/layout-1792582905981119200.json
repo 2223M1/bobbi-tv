@@ -1,0 +1,974 @@
+{
+  "exit_code": 0,
+  "diagnostic_present": false,
+  "result": {
+    "before": {
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "native": {
+        "native_instance": "84c698ac-7f7f-4efb-beb0-adf549620baf",
+        "request_id": "392a8139183d46d2b9d5d854a64a102c",
+        "phase": "AV_STARTED",
+        "subtitle_intent": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_visible": null,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "0496b805d0d6d301dcf1d31fb24ffffefbe316ac8e5d3094e34bd24512b7cd66",
+        "sequence": 3,
+        "user_intent": 1
+      },
+      "player": {
+        "currentaudiostream": {
+          "bitrate": 2524827,
+          "channels": 8,
+          "codec": "dtshd_ma",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "eng",
+          "name": "DTS-HD MA 7.1",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 45,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "0496b805d0d6d301dcf1d31fb24ffffe （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 2160,
+          "index": 0,
+          "language": "eng",
+          "name": "",
+          "width": 3840
+        },
+        "percentage": 1.343349575996399,
+        "speed": 0,
+        "subtitleenabled": true,
+        "subtitles": [
+          {
+            "index": 0,
+            "isdefault": false,
+            "isforced": true,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "FORCED"
+          },
+          {
+            "index": 1,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 2,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": true,
+            "language": "eng",
+            "name": "SDH"
+          },
+          {
+            "index": 3,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 4,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "FORCED"
+          },
+          {
+            "index": 5,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 6,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "FORCED"
+          },
+          {
+            "index": 7,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ara",
+            "name": ""
+          },
+          {
+            "index": 8,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          {
+            "index": 9,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          {
+            "index": 10,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          {
+            "index": 11,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "cze",
+            "name": ""
+          },
+          {
+            "index": 12,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "cze",
+            "name": "FORCED"
+          },
+          {
+            "index": 13,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "dan",
+            "name": ""
+          },
+          {
+            "index": 14,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "dut",
+            "name": ""
+          },
+          {
+            "index": 15,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "est",
+            "name": ""
+          },
+          {
+            "index": 16,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "fin",
+            "name": ""
+          },
+          {
+            "index": 17,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "fre",
+            "name": ""
+          },
+          {
+            "index": 18,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "fre",
+            "name": "FORCED"
+          },
+          {
+            "index": 19,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ger",
+            "name": ""
+          },
+          {
+            "index": 20,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ger",
+            "name": "FORCED"
+          },
+          {
+            "index": 21,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "hun",
+            "name": ""
+          },
+          {
+            "index": 22,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "hun",
+            "name": "FORCED"
+          },
+          {
+            "index": 23,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ice",
+            "name": ""
+          },
+          {
+            "index": 24,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ita",
+            "name": ""
+          },
+          {
+            "index": 25,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ita",
+            "name": "FORCED"
+          },
+          {
+            "index": 26,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "kor",
+            "name": ""
+          },
+          {
+            "index": 27,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "lav",
+            "name": ""
+          },
+          {
+            "index": 28,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "lit",
+            "name": ""
+          },
+          {
+            "index": 29,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "nor",
+            "name": ""
+          },
+          {
+            "index": 30,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "pol",
+            "name": ""
+          },
+          {
+            "index": 31,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "por",
+            "name": ""
+          },
+          {
+            "index": 32,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "por",
+            "name": "FORCED"
+          },
+          {
+            "index": 33,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "por",
+            "name": ""
+          },
+          {
+            "index": 34,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "rum",
+            "name": ""
+          },
+          {
+            "index": 35,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "rus",
+            "name": ""
+          },
+          {
+            "index": 36,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "rus",
+            "name": "FORCED"
+          },
+          {
+            "index": 37,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": ""
+          },
+          {
+            "index": 38,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": "FORCED"
+          },
+          {
+            "index": 39,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": ""
+          },
+          {
+            "index": 40,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": "FORCED"
+          },
+          {
+            "index": 41,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "swe",
+            "name": ""
+          },
+          {
+            "index": 42,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "tha",
+            "name": ""
+          },
+          {
+            "index": 43,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "tha",
+            "name": "FORCED"
+          },
+          {
+            "index": 44,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "tur",
+            "name": ""
+          },
+          {
+            "index": 45,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "0496b805d0d6d301dcf1d31fb24ffffe （外挂）"
+          }
+        ],
+        "time": {
+          "hours": 0,
+          "milliseconds": 927,
+          "minutes": 1,
+          "seconds": 33
+        },
+        "totaltime": {
+          "hours": 1,
+          "milliseconds": 0,
+          "minutes": 56,
+          "seconds": 32
+        }
+      }
+    },
+    "settings": {
+      "subtitles.marginvertical": 7.5,
+      "subtitles.align": {
+        "unavailable": true
+      },
+      "subtitles.overridefonts": false,
+      "subtitles.overridestyles": 0,
+      "subtitles.overrideass": false,
+      "subtitles.fontsize": 32,
+      "subtitles.fontname": "DEFAULT",
+      "subtitles.colorpick": "FFBDBDBD",
+      "subtitles.pgsverticalmode": 5,
+      "subtitles.pgsverticaloffset": 1,
+      "videoscreen.screenmode": "0192001080060.00000pstd",
+      "videoplayer.adjustrefreshrate": 2,
+      "videoplayer.usedisplayasclock": {
+        "unavailable": true
+      }
+    },
+    "labels": {
+      "Player.Subtitle": "",
+      "Player.SubtitleDelay": "0.000 s",
+      "Player.SubtitleOffset": "",
+      "Skin.CurrentTheme": "SKINDEFAULT",
+      "System.ScreenHeight": "2160",
+      "System.ScreenResolution": "3840x2160 @ 23.98 Hz - 全屏",
+      "System.ScreenWidth": "3840",
+      "VideoPlayer.Title": "降临",
+      "VideoPlayer.VideoAspect": "1.78"
+    },
+    "gui": {
+      "currentcontrol": {
+        "label": ""
+      },
+      "currentwindow": {
+        "id": 12005,
+        "label": "全屏视频"
+      },
+      "skin": {
+        "id": "skin.bobbi.cinema",
+        "name": "bobbi TV"
+      }
+    },
+    "saved_calibrations": [
+      "<resolution>\n            <description>720x480 @ 60.00 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>720</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>720x480 @ 59.94 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>720</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>720x576 @ 50.00 - Full Screen</description>\n            <subtitles>555</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>720</right>\n                <bottom>576</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x720 @ 60.00 - Full Screen</description>\n            <subtitles>694</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>720</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x720 @ 59.94 - Full Screen</description>\n            <subtitles>694</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>720</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 60.00i - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 59.94i - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 60.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 59.94 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 120.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x720 @ 50.00 - Full Screen</description>\n            <subtitles>694</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>720</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 50.00i - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 30.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 29.97 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 50.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 25.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 24.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 23.98 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 30.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 29.97 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 25.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 24.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 23.98 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>4096x2160 @ 24.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>4096x2160 @ 23.98 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 50.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 60.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 59.94 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>640x480 @ 60.00 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>640</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>640x480 @ 59.94 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>640</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>800x600 @ 60.00 - Full Screen</description>\n            <subtitles>579</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>800</right>\n                <bottom>600</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>800x600 @ 59.94 - Full Screen</description>\n            <subtitles>579</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>800</right>\n                <bottom>600</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1024x768 @ 60.00 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1024</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1024x768 @ 59.94 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1024</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x1024 @ 60.00 - Full Screen</description>\n            <subtitles>988</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>1024</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x1024 @ 59.94 - Full Screen</description>\n            <subtitles>988</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>1024</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1360x768 @ 60.00 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1360</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1360x768 @ 59.94 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1360</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n    "
+    ],
+    "saved_position_settings": {
+      "subtitles.pgsverticalmode": "5",
+      "subtitles.pgsverticaloffset": "1",
+      "subtitles.pgsmanualactiveaspect": "auto"
+    },
+    "position_definitions": [
+      "<setting id=\"subtitles.pgsverticalmode\" type=\"integer\" label=\"65100\" help=\"65101\">\n          <level>2</level>\n          <default>0</default>\n          <constraints>\n            <minimum>0</minimum>\n            <maximum>5</maximum>\n            <options>\n              <option label=\"65102\">0</option>\n              <option label=\"65103\">1</option>\n              <option label=\"65104\">2</option>\n              <option label=\"65105\">3</option>\n              <option label=\"65106\">4</option>\n              <option label=\"65107\">5</option>\n            </options>\n          </constraints>\n          <control type=\"list\" format=\"string\" />\n        </setting>\n        ",
+      "<setting id=\"subtitles.pgsverticaloffset\" type=\"integer\" parent=\"subtitles.pgsverticalmode\" label=\"65108\" help=\"65109\">\n          <level>2</level>\n          <default>0</default>\n          <constraints>\n            <minimum>-60</minimum>\n            <step>1</step>\n            <maximum>60</maximum>\n          </constraints>\n          <dependencies>\n            <dependency type=\"visible\" setting=\"subtitles.pgsverticalmode\" operator=\"is\">5</dependency>\n          </dependencies>\n          <control type=\"spinner\" format=\"integer\" />\n        </setting>\n        ",
+      "<setting id=\"subtitles.pgsmanualactiveaspect\" type=\"string\" parent=\"subtitles.pgsverticalmode\" label=\"65110\" help=\"65111\">\n          <level>2</level>\n          <default>auto</default>\n          <constraints>\n            <options>\n              <option label=\"65112\">auto</option>\n              <option label=\"65113\">16:9</option>\n              <option label=\"65114\">1.85:1</option>\n              <option label=\"65115\">2.20:1</option>\n              <option label=\"65116\">2.35:1</option>\n              <option label=\"65117\">2.39:1</option>\n            </options>\n          </constraints>\n          <dependencies>\n            <dependency type=\"visible\">\n              <or>\n                <condition setting=\"subtitles.pgsverticalmode\" operator=\"is\">1</condition>\n                <condition setting=\"subtitles.pgsverticalmode\" operator=\"is\">2</condition>\n              </or>\n            </dependency>\n          </dependencies>\n          <control type=\"list\" format=\"string\" />\n        </setting>\n        "
+    ],
+    "after": {
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "native": {
+        "native_instance": "84c698ac-7f7f-4efb-beb0-adf549620baf",
+        "request_id": "392a8139183d46d2b9d5d854a64a102c",
+        "phase": "AV_STARTED",
+        "subtitle_intent": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_visible": null,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "0496b805d0d6d301dcf1d31fb24ffffefbe316ac8e5d3094e34bd24512b7cd66",
+        "sequence": 3,
+        "user_intent": 1
+      },
+      "player": {
+        "currentaudiostream": {
+          "bitrate": 2524827,
+          "channels": 8,
+          "codec": "dtshd_ma",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "eng",
+          "name": "DTS-HD MA 7.1",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 45,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "0496b805d0d6d301dcf1d31fb24ffffe （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 2160,
+          "index": 0,
+          "language": "eng",
+          "name": "",
+          "width": 3840
+        },
+        "percentage": 1.343349575996399,
+        "speed": 0,
+        "subtitleenabled": true,
+        "subtitles": [
+          {
+            "index": 0,
+            "isdefault": false,
+            "isforced": true,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "FORCED"
+          },
+          {
+            "index": 1,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 2,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": true,
+            "language": "eng",
+            "name": "SDH"
+          },
+          {
+            "index": 3,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 4,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "FORCED"
+          },
+          {
+            "index": 5,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 6,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "FORCED"
+          },
+          {
+            "index": 7,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ara",
+            "name": ""
+          },
+          {
+            "index": 8,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          {
+            "index": 9,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          {
+            "index": 10,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          {
+            "index": 11,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "cze",
+            "name": ""
+          },
+          {
+            "index": 12,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "cze",
+            "name": "FORCED"
+          },
+          {
+            "index": 13,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "dan",
+            "name": ""
+          },
+          {
+            "index": 14,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "dut",
+            "name": ""
+          },
+          {
+            "index": 15,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "est",
+            "name": ""
+          },
+          {
+            "index": 16,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "fin",
+            "name": ""
+          },
+          {
+            "index": 17,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "fre",
+            "name": ""
+          },
+          {
+            "index": 18,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "fre",
+            "name": "FORCED"
+          },
+          {
+            "index": 19,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ger",
+            "name": ""
+          },
+          {
+            "index": 20,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ger",
+            "name": "FORCED"
+          },
+          {
+            "index": 21,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "hun",
+            "name": ""
+          },
+          {
+            "index": 22,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "hun",
+            "name": "FORCED"
+          },
+          {
+            "index": 23,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ice",
+            "name": ""
+          },
+          {
+            "index": 24,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ita",
+            "name": ""
+          },
+          {
+            "index": 25,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "ita",
+            "name": "FORCED"
+          },
+          {
+            "index": 26,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "kor",
+            "name": ""
+          },
+          {
+            "index": 27,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "lav",
+            "name": ""
+          },
+          {
+            "index": 28,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "lit",
+            "name": ""
+          },
+          {
+            "index": 29,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "nor",
+            "name": ""
+          },
+          {
+            "index": 30,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "pol",
+            "name": ""
+          },
+          {
+            "index": 31,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "por",
+            "name": ""
+          },
+          {
+            "index": 32,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "por",
+            "name": "FORCED"
+          },
+          {
+            "index": 33,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "por",
+            "name": ""
+          },
+          {
+            "index": 34,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "rum",
+            "name": ""
+          },
+          {
+            "index": 35,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "rus",
+            "name": ""
+          },
+          {
+            "index": 36,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "rus",
+            "name": "FORCED"
+          },
+          {
+            "index": 37,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": ""
+          },
+          {
+            "index": 38,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": "FORCED"
+          },
+          {
+            "index": 39,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": ""
+          },
+          {
+            "index": 40,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "spa",
+            "name": "FORCED"
+          },
+          {
+            "index": 41,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "swe",
+            "name": ""
+          },
+          {
+            "index": 42,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "tha",
+            "name": ""
+          },
+          {
+            "index": 43,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "tha",
+            "name": "FORCED"
+          },
+          {
+            "index": 44,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "tur",
+            "name": ""
+          },
+          {
+            "index": 45,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "0496b805d0d6d301dcf1d31fb24ffffe （外挂）"
+          }
+        ],
+        "time": {
+          "hours": 0,
+          "milliseconds": 927,
+          "minutes": 1,
+          "seconds": 33
+        },
+        "totaltime": {
+          "hours": 1,
+          "milliseconds": 0,
+          "minutes": 56,
+          "seconds": 32
+        }
+      }
+    },
+    "image": "/storage/.kodi/temp/bobbi-subtitle-layout/1792582905981119200.png",
+    "scope": "Displayed Kodi GUI/subtitle plane; hardware video plane not captured",
+    "local_image": "D:\\AM6B-Project\\ce2029-results-20261021\\subtitle-bilingual-minimum\\layout-1792582905981119200.png"
+  }
+}

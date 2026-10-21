@@ -1,0 +1,468 @@
+{
+  "mode": "directory",
+  "timestamp": 1792594042.4819973,
+  "exit": 0,
+  "diagnostic": false,
+  "result": {
+    "rows": [
+      {
+        "label": "混沌武士",
+        "title": "疾風怒涛",
+        "filetype": "file",
+        "season": 1,
+        "episode": 1,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Tempestuous%20Temperaments\", \"display_name\": \"%E7%96%BE%E9%A2%A8%E6%80%92%E6%B6%9B\", \"display_name_zh\": \"%E7%96%BE%E9%A2%A8%E6%80%92%E6%B6%9B\", \"display_name_en\": \"Tempestuous%20Temperaments\", \"episode\": 1, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "百鬼夜行",
+        "filetype": "file",
+        "season": 1,
+        "episode": 2,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Redeye%20Reprisal\", \"display_name\": \"%E7%99%BE%E9%AC%BC%E5%A4%9C%E8%A1%8C\", \"display_name_zh\": \"%E7%99%BE%E9%AC%BC%E5%A4%9C%E8%A1%8C\", \"display_name_en\": \"Redeye%20Reprisal\", \"episode\": 2, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "以心传心，其一",
+        "filetype": "file",
+        "season": 1,
+        "episode": 3,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Hellhounds%20for%20Hire%20%281%29\", \"display_name\": \"%E4%BB%A5%E5%BF%83%E4%BC%A0%E5%BF%83%EF%BC%8C%E5%85%B6%E4%B8%80\", \"display_name_zh\": \"%E4%BB%A5%E5%BF%83%E4%BC%A0%E5%BF%83%EF%BC%8C%E5%85%B6%E4%B8%80\", \"display_name_en\": \"Hellhounds%20for%20Hire%20%281%29\", \"episode\": 3, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "以心传心，其二",
+        "filetype": "file",
+        "season": 1,
+        "episode": 4,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Hellhounds%20for%20Hire%20%282%29\", \"display_name\": \"%E4%BB%A5%E5%BF%83%E4%BC%A0%E5%BF%83%EF%BC%8C%E5%85%B6%E4%BA%8C\", \"display_name_zh\": \"%E4%BB%A5%E5%BF%83%E4%BC%A0%E5%BF%83%EF%BC%8C%E5%85%B6%E4%BA%8C\", \"display_name_en\": \"Hellhounds%20for%20Hire%20%282%29\", \"episode\": 4, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "马耳东风",
+        "filetype": "file",
+        "season": 1,
+        "episode": 5,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Artistic%20Anarchy\", \"display_name\": \"%E9%A9%AC%E8%80%B3%E4%B8%9C%E9%A3%8E\", \"display_name_zh\": \"%E9%A9%AC%E8%80%B3%E4%B8%9C%E9%A3%8E\", \"display_name_en\": \"Artistic%20Anarchy\", \"episode\": 5, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "赤毛异人",
+        "filetype": "file",
+        "season": 1,
+        "episode": 6,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Stranger%20Searching\", \"display_name\": \"%E8%B5%A4%E6%AF%9B%E5%BC%82%E4%BA%BA\", \"display_name_zh\": \"%E8%B5%A4%E6%AF%9B%E5%BC%82%E4%BA%BA\", \"display_name_en\": \"Stranger%20Searching\", \"episode\": 6, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "四面楚歌",
+        "filetype": "file",
+        "season": 1,
+        "episode": 7,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"A%20Risky%20Racket\", \"display_name\": \"%E5%9B%9B%E9%9D%A2%E6%A5%9A%E6%AD%8C\", \"display_name_zh\": \"%E5%9B%9B%E9%9D%A2%E6%A5%9A%E6%AD%8C\", \"display_name_en\": \"A%20Risky%20Racket\", \"episode\": 7, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "惟我独尊",
+        "filetype": "file",
+        "season": 1,
+        "episode": 8,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"The%20Art%20of%20Altercation\", \"display_name\": \"%E6%83%9F%E6%88%91%E7%8B%AC%E5%B0%8A\", \"display_name_zh\": \"%E6%83%9F%E6%88%91%E7%8B%AC%E5%B0%8A\", \"display_name_en\": \"The%20Art%20of%20Altercation\", \"episode\": 8, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "魑魅魍魉",
+        "filetype": "file",
+        "season": 1,
+        "episode": 9,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Beatbox%20Bandits\", \"display_name\": \"%E9%AD%91%E9%AD%85%E9%AD%8D%E9%AD%89\", \"display_name_zh\": \"%E9%AD%91%E9%AD%85%E9%AD%8D%E9%AD%89\", \"display_name_en\": \"Beatbox%20Bandits\", \"episode\": 9, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "以毒制毒",
+        "filetype": "file",
+        "season": 1,
+        "episode": 10,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Lethal%20Lunacy\", \"display_name\": \"%E4%BB%A5%E6%AF%92%E5%88%B6%E6%AF%92\", \"display_name_zh\": \"%E4%BB%A5%E6%AF%92%E5%88%B6%E6%AF%92\", \"display_name_en\": \"Lethal%20Lunacy\", \"episode\": 10, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "堕落天使",
+        "filetype": "file",
+        "season": 1,
+        "episode": 11,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Gamblers%20and%20Gallantry\", \"display_name\": \"%E5%A0%95%E8%90%BD%E5%A4%A9%E4%BD%BF\", \"display_name_zh\": \"%E5%A0%95%E8%90%BD%E5%A4%A9%E4%BD%BF\", \"display_name_en\": \"Gamblers%20and%20Gallantry\", \"episode\": 11, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "温故知新",
+        "filetype": "file",
+        "season": 1,
+        "episode": 12,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"The%20Disorder%20Diaries\", \"display_name\": \"%E6%B8%A9%E6%95%85%E7%9F%A5%E6%96%B0\", \"display_name_zh\": \"%E6%B8%A9%E6%95%85%E7%9F%A5%E6%96%B0\", \"display_name_en\": \"The%20Disorder%20Diaries\", \"episode\": 12, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "暗夜行路，其之一",
+        "filetype": "file",
+        "season": 1,
+        "episode": 13,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Misguided%20Miscreants%20%281%29\", \"display_name\": \"%E6%9A%97%E5%A4%9C%E8%A1%8C%E8%B7%AF%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%80\", \"display_name_zh\": \"%E6%9A%97%E5%A4%9C%E8%A1%8C%E8%B7%AF%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%80\", \"display_name_en\": \"Misguided%20Miscreants%20%281%29\", \"episode\": 13, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "暗夜行路，其之二",
+        "filetype": "file",
+        "season": 1,
+        "episode": 14,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Misguided%20Miscreants%20%282%29\", \"display_name\": \"%E6%9A%97%E5%A4%9C%E8%A1%8C%E8%B7%AF%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%BA%8C\", \"display_name_zh\": \"%E6%9A%97%E5%A4%9C%E8%A1%8C%E8%B7%AF%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%BA%8C\", \"display_name_en\": \"Misguided%20Miscreants%20%282%29\", \"episode\": 14, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "彻头彻尾",
+        "filetype": "file",
+        "season": 1,
+        "episode": 15,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Bogus%20Booty\", \"display_name\": \"%E5%BD%BB%E5%A4%B4%E5%BD%BB%E5%B0%BE\", \"display_name_zh\": \"%E5%BD%BB%E5%A4%B4%E5%BD%BB%E5%B0%BE\", \"display_name_en\": \"Bogus%20Booty\", \"episode\": 15, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "醉生梦死，一梦",
+        "filetype": "file",
+        "season": 1,
+        "episode": 16,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Lullabies%20of%20the%20Lost%20%281%29\", \"display_name\": \"%E9%86%89%E7%94%9F%E6%A2%A6%E6%AD%BB%EF%BC%8C%E4%B8%80%E6%A2%A6\", \"display_name_zh\": \"%E9%86%89%E7%94%9F%E6%A2%A6%E6%AD%BB%EF%BC%8C%E4%B8%80%E6%A2%A6\", \"display_name_en\": \"Lullabies%20of%20the%20Lost%20%281%29\", \"episode\": 16, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "醉生梦死，二梦",
+        "filetype": "file",
+        "season": 1,
+        "episode": 17,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Lullabies%20of%20the%20Lost%20%282%29\", \"display_name\": \"%E9%86%89%E7%94%9F%E6%A2%A6%E6%AD%BB%EF%BC%8C%E4%BA%8C%E6%A2%A6\", \"display_name_zh\": \"%E9%86%89%E7%94%9F%E6%A2%A6%E6%AD%BB%EF%BC%8C%E4%BA%8C%E6%A2%A6\", \"display_name_en\": \"Lullabies%20of%20the%20Lost%20%282%29\", \"episode\": 17, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "文武两道",
+        "filetype": "file",
+        "season": 1,
+        "episode": 18,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"War%20of%20the%20Words\", \"display_name\": \"%E6%96%87%E6%AD%A6%E4%B8%A4%E9%81%93\", \"display_name_zh\": \"%E6%96%87%E6%AD%A6%E4%B8%A4%E9%81%93\", \"display_name_en\": \"War%20of%20the%20Words\", \"episode\": 18, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "因果报应",
+        "filetype": "file",
+        "season": 1,
+        "episode": 19,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Unholy%20Union\", \"display_name\": \"%E5%9B%A0%E6%9E%9C%E6%8A%A5%E5%BA%94\", \"display_name_zh\": \"%E5%9B%A0%E6%9E%9C%E6%8A%A5%E5%BA%94\", \"display_name_en\": \"Unholy%20Union\", \"episode\": 19, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "悲歌慷慨，其之一",
+        "filetype": "file",
+        "season": 1,
+        "episode": 20,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Elegy%20of%20Entrapment%20%281%29\", \"display_name\": \"%E6%82%B2%E6%AD%8C%E6%85%B7%E6%85%A8%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%80\", \"display_name_zh\": \"%E6%82%B2%E6%AD%8C%E6%85%B7%E6%85%A8%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%80\", \"display_name_en\": \"Elegy%20of%20Entrapment%20%281%29\", \"episode\": 20, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "悲歌慷慨，其之二",
+        "filetype": "file",
+        "season": 1,
+        "episode": 21,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Elegy%20of%20Entrapment%20%282%29\", \"display_name\": \"%E6%82%B2%E6%AD%8C%E6%85%B7%E6%85%A8%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%BA%8C\", \"display_name_zh\": \"%E6%82%B2%E6%AD%8C%E6%85%B7%E6%85%A8%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%BA%8C\", \"display_name_en\": \"Elegy%20of%20Entrapment%20%282%29\", \"episode\": 21, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "怒发冲天（彗星撞击）",
+        "filetype": "file",
+        "season": 1,
+        "episode": 22,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Cosmic%20Collisions\", \"display_name\": \"%E6%80%92%E5%8F%91%E5%86%B2%E5%A4%A9%EF%BC%88%E5%BD%97%E6%98%9F%E6%92%9E%E5%87%BB%EF%BC%89\", \"display_name_zh\": \"%E6%80%92%E5%8F%91%E5%86%B2%E5%A4%A9%EF%BC%88%E5%BD%97%E6%98%9F%E6%92%9E%E5%87%BB%EF%BC%89\", \"display_name_en\": \"Cosmic%20Collisions\", \"episode\": 22, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "一球入魂",
+        "filetype": "file",
+        "season": 1,
+        "episode": 23,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Baseball%20Blues\", \"display_name\": \"%E4%B8%80%E7%90%83%E5%85%A5%E9%AD%82\", \"display_name_zh\": \"%E4%B8%80%E7%90%83%E5%85%A5%E9%AD%82\", \"display_name_en\": \"Baseball%20Blues\", \"episode\": 23, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "生死流转，其之一",
+        "filetype": "file",
+        "season": 1,
+        "episode": 24,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Evanescent%20Encounter%20%281%29\", \"display_name\": \"%E7%94%9F%E6%AD%BB%E6%B5%81%E8%BD%AC%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%80\", \"display_name_zh\": \"%E7%94%9F%E6%AD%BB%E6%B5%81%E8%BD%AC%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%80\", \"display_name_en\": \"Evanescent%20Encounter%20%281%29\", \"episode\": 24, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "生死流转，其之二",
+        "filetype": "file",
+        "season": 1,
+        "episode": 25,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Evanescent%20Encounter%20%282%29\", \"display_name\": \"%E7%94%9F%E6%AD%BB%E6%B5%81%E8%BD%AC%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%BA%8C\", \"display_name_zh\": \"%E7%94%9F%E6%AD%BB%E6%B5%81%E8%BD%AC%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%BA%8C\", \"display_name_en\": \"Evanescent%20Encounter%20%282%29\", \"episode\": 25, \"season\": 1}"
+        }
+      },
+      {
+        "label": "混沌武士",
+        "title": "生死流转，其之三",
+        "filetype": "file",
+        "season": 1,
+        "episode": 26,
+        "year": 2004,
+        "route": {
+          "action": "search",
+          "mode": "tv",
+          "media_type": "tv",
+          "query": "Samurai Champloo",
+          "ids": "{\"tmdb_id\": \"1063\", \"imdb_id\": \"tt0423731\", \"tvdb_id\": 79089}",
+          "tv_data": "{\"name\": \"Evanescent%20Encounter%20%283%29\", \"display_name\": \"%E7%94%9F%E6%AD%BB%E6%B5%81%E8%BD%AC%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%89\", \"display_name_zh\": \"%E7%94%9F%E6%AD%BB%E6%B5%81%E8%BD%AC%EF%BC%8C%E5%85%B6%E4%B9%8B%E4%B8%89\", \"display_name_en\": \"Evanescent%20Encounter%20%283%29\", \"episode\": 26, \"season\": 1}"
+        }
+      }
+    ],
+    "limits": {
+      "end": 26,
+      "start": 0,
+      "total": 26
+    },
+    "elapsed_seconds": 4.291,
+    "gui": {
+      "currentcontrol": {
+        "label": "[伊藤润二惊选集]"
+      },
+      "currentwindow": {
+        "id": 10025,
+        "label": "视频"
+      }
+    },
+    "labels": {
+      "Container(50).ListItemAbsolute(0).Label": "伊藤润二惊选集",
+      "Container(50).ListItemAbsolute(1).Label": "命运之夜 前传",
+      "Container(50).ListItemAbsolute(10).Label": "头文字D",
+      "Container(50).ListItemAbsolute(11).Label": "宝可梦",
+      "Container(50).ListItemAbsolute(12).Label": "潮与虎",
+      "Container(50).ListItemAbsolute(13).Label": "三月的狮子",
+      "Container(50).ListItemAbsolute(14).Label": "薇薇 -萤石眼之歌-",
+      "Container(50).ListItemAbsolute(15).Label": "海底娇娃蓝华",
+      "Container(50).ListItemAbsolute(16).Label": "魔神Z",
+      "Container(50).ListItemAbsolute(17).Label": "不死不幸",
+      "Container(50).ListItemAbsolute(18).Label": "吹响吧！上低音号",
+      "Container(50).ListItemAbsolute(19).Label": "死亡游行",
+      "Container(50).ListItemAbsolute(2).Label": "橘色奇迹",
+      "Container(50).ListItemAbsolute(20).Label": "下一页",
+      "Container(50).ListItemAbsolute(3).Label": "月色真美",
+      "Container(50).ListItemAbsolute(4).Label": "男子高中生的日常",
+      "Container(50).ListItemAbsolute(5).Label": "骚动时节的少女们啊。",
+      "Container(50).ListItemAbsolute(6).Label": "鲁邦三世",
+      "Container(50).ListItemAbsolute(7).Label": "尸鬼",
+      "Container(50).ListItemAbsolute(8).Label": "勇者斗恶龙 达伊的大冒险",
+      "Container(50).ListItemAbsolute(9).Label": "魔女的使命",
+      "Container.FolderName": "bobbi Cinema · CE 候选",
+      "Container.NumItems": "21",
+      "ListItem.DBType": "tvshow",
+      "ListItem.Label": "伊藤润二惊选集"
+    }
+  }
+}

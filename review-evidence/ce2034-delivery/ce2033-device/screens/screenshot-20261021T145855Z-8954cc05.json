@@ -1,0 +1,40 @@
+{
+  "mode": "screenshot",
+  "transaction": "preview-20261021T151000Z-00002035",
+  "window": null,
+  "operations": [
+    {
+      "mode": "screenshot",
+      "exit_code": 0,
+      "result": {
+        "screenshot": {
+          "remote_path": "/storage/.bobbi-ui-preview/preview-20261021T151000Z-00002035/framebuffer-1792594735933357809.png",
+          "sha256": "19d097dae3738ab27d8fc6855d30b9686a361917207a12432d7e1c0da34c2838",
+          "bytes": 1768032,
+          "method": "displayed GUI framebuffer; excludes hardware video plane",
+          "window": {
+            "id": 10138,
+            "label": ""
+          },
+          "target": null,
+          "local_path": "D:\\AM6B-Project\\ce2029-results-20261021\\ce2033-device\\screens\\screenshot-20261021T145855Z-8954cc05.png"
+        }
+      },
+      "diagnostic_present": false
+    }
+  ],
+  "result": {
+    "screenshot": {
+      "remote_path": "/storage/.bobbi-ui-preview/preview-20261021T151000Z-00002035/framebuffer-1792594735933357809.png",
+      "sha256": "19d097dae3738ab27d8fc6855d30b9686a361917207a12432d7e1c0da34c2838",
+      "bytes": 1768032,
+      "method": "displayed GUI framebuffer; excludes hardware video plane",
+      "window": {
+        "id": 10138,
+        "label": ""
+      },
+      "target": null,
+      "local_path": "D:\\AM6B-Project\\ce2029-results-20261021\\ce2033-device\\screens\\screenshot-20261021T145855Z-8954cc05.png"
+    }
+  }
+}

@@ -1,5 +1,8 @@
 # CE2032 navigation and idle preparation — working receipt
 
+Historical intermediate state. Final results and remaining limitations are in
+[CE2034 private delivery](CE2034-PRIVATE-REVIEW-DELIVERY.md).
+
 Scope: selected-work catalogue/navigation and the existing source picker. No
 native player, codec, bitrate, CD2, account, Yatse or subtitle position changes.
 The user accepted the existing minimum subtitle setting, measured 22 px in the
@@ -62,10 +65,13 @@ An additional user report of very slow/missing anime posters arrived after the
 the then-live CE2031 predates the new idle warmer, so that report cannot be
 attributed to the not-yet-installed warmer.
 
-Real directory RPC for previously untested Samurai Champloo (TMDb 1063): old
+Real directory RPC regression for Samurai Champloo (TMDb 1063): old
 CE2031 returned a season+placeholder hub in 7.657 s; new CE2032 returned 26
 episode actions directly in 14.044 s on first preparation, then 2.8 s warm.
 These are different amounts of work, not a like-for-like latency speedup claim.
+Later inventory review found this work in older retained BT-engine data; it is
+not counted as a new-work playback sample. New playback candidates are Gattaca
+(782) and Baccano! (34121), with no matches in prior retained test reports.
 The unnecessary empty-film retry exposed a real TMDb boundary: zero hits may
 report total_pages=1. CE2033 accepts either zero or one empty page, with the
 captured provider evidence and both regression cases retained.

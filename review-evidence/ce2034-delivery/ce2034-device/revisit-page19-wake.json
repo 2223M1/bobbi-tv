@@ -1,0 +1,45 @@
+{
+  "mode": "right",
+  "timestamp": 1792595688.6599393,
+  "exit": 0,
+  "diagnostic": false,
+  "result": {
+    "elapsed_seconds": 0.203,
+    "gui": {
+      "currentcontrol": {
+        "label": "[魔笛MAGI 辛巴达的冒险]"
+      },
+      "currentwindow": {
+        "id": 10025,
+        "label": "视频"
+      }
+    },
+    "labels": {
+      "Container(50).ListItemAbsolute(0).Label": "魔笛MAGI 辛巴达的冒险",
+      "Container(50).ListItemAbsolute(1).Label": "Campione! 弒神者",
+      "Container(50).ListItemAbsolute(10).Label": "魔乳秘剑帖",
+      "Container(50).ListItemAbsolute(11).Label": "命运／冠位指定 绝对魔兽战线巴比伦尼亚",
+      "Container(50).ListItemAbsolute(12).Label": "半田君传说",
+      "Container(50).ListItemAbsolute(13).Label": "新妹魔王的契约者",
+      "Container(50).ListItemAbsolute(14).Label": "超能力女儿",
+      "Container(50).ListItemAbsolute(15).Label": "邪恶力量 动画版",
+      "Container(50).ListItemAbsolute(16).Label": "徒然喜欢你",
+      "Container(50).ListItemAbsolute(17).Label": "他和她的故事",
+      "Container(50).ListItemAbsolute(18).Label": "阿拉蕾",
+      "Container(50).ListItemAbsolute(19).Label": "宇宙骑士",
+      "Container(50).ListItemAbsolute(2).Label": "网络胜利组",
+      "Container(50).ListItemAbsolute(20).Label": "下一页",
+      "Container(50).ListItemAbsolute(3).Label": "小智是女孩啦！",
+      "Container(50).ListItemAbsolute(4).Label": "我要【招架】一切~逆向误解的世界最强梦想成为冒险者～",
+      "Container(50).ListItemAbsolute(5).Label": "鬼神童子",
+      "Container(50).ListItemAbsolute(6).Label": "轮回七次的恶役千金，在前敌国享受随心所欲的新婚生活",
+      "Container(50).ListItemAbsolute(7).Label": "佐贺偶像是传奇",
+      "Container(50).ListItemAbsolute(8).Label": "转生史莱姆日记",
+      "Container(50).ListItemAbsolute(9).Label": "异种族风俗娘评鉴指南",
+      "Container.FolderName": "bobbi Cinema · CE 候选",
+      "Container.NumItems": "21",
+      "ListItem.DBType": "tvshow",
+      "ListItem.Label": "魔笛MAGI 辛巴达的冒险"
+    }
+  }
+}

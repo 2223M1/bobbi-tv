@@ -1,0 +1,329 @@
+{
+  "mode": "directory",
+  "timestamp": 1792595024.2159245,
+  "exit": 0,
+  "diagnostic": false,
+  "result": {
+    "rows": [
+      {
+        "label": "歪小子斯科特：火力全开",
+        "title": "歪小子斯科特：火力全开",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2023,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "155292",
+          "title": "Scott Pilgrim Takes Off"
+        }
+      },
+      {
+        "label": "虫笼的卡伽斯特尔",
+        "title": "虫笼的卡伽斯特尔",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2020,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "94795",
+          "title": "Cagaster of an Insect Cage"
+        }
+      },
+      {
+        "label": "小魔女学园",
+        "title": "小魔女学园",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2017,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "69293",
+          "title": "Little Witch Academia"
+        }
+      },
+      {
+        "label": "特别的她",
+        "title": "特别的她",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2000,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "5895",
+          "title": "FLCL"
+        }
+      },
+      {
+        "label": "血战-C",
+        "title": "血战-C",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2011,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "43270",
+          "title": "BLOOD-C"
+        }
+      },
+      {
+        "label": "圣斗士星矢Ω",
+        "title": "圣斗士星矢Ω",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2012,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "44317",
+          "title": "Saint Seiya Omega"
+        }
+      },
+      {
+        "label": "亚人",
+        "title": "亚人",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2016,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "65292",
+          "title": "Ajin"
+        }
+      },
+      {
+        "label": "妖精的尾巴",
+        "title": "妖精的尾巴",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2009,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "46261",
+          "title": "Fairy Tail"
+        }
+      },
+      {
+        "label": "GAMERS电玩咖！",
+        "title": "GAMERS电玩咖！",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2017,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "72426",
+          "title": "GAMERS!"
+        }
+      },
+      {
+        "label": "装甲重拳",
+        "title": "装甲重拳",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2018,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "77939",
+          "title": "MEGALOBOX"
+        }
+      },
+      {
+        "label": "只有我能进入的隐藏迷宫",
+        "title": "只有我能进入的隐藏迷宫",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2021,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "103157",
+          "title": "The Hidden Dungeon Only I Can Enter"
+        }
+      },
+      {
+        "label": "绝园的暴风雨",
+        "title": "绝园的暴风雨",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2012,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "46283",
+          "title": "Blast of Tempest"
+        }
+      },
+      {
+        "label": "阿滋漫画大王",
+        "title": "阿滋漫画大王",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2002,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "12143",
+          "title": "Azumanga Daioh"
+        }
+      },
+      {
+        "label": "青之箱",
+        "title": "青之箱",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2024,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "207347",
+          "title": "Blue Box"
+        }
+      },
+      {
+        "label": "杀戮的天使",
+        "title": "杀戮的天使",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2018,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "80477",
+          "title": "Angels of Death"
+        }
+      },
+      {
+        "label": "治愈魔法的错误使用法",
+        "title": "治愈魔法的错误使用法",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2024,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "131365",
+          "title": "The Wrong Way to Use Healing Magic"
+        }
+      },
+      {
+        "label": "拜托了，老师",
+        "title": "拜托了，老师",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2002,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "19780",
+          "title": "Please Teacher!"
+        }
+      },
+      {
+        "label": "彼得·格里尔的贤者时间",
+        "title": "彼得·格里尔的贤者时间",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2020,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "99080",
+          "title": "Peter Grill and the Philosopher's Time"
+        }
+      },
+      {
+        "label": "游戏王GX",
+        "title": "游戏王GX",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 2004,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "12536",
+          "title": "Yu-Gi-Oh! GX"
+        }
+      },
+      {
+        "label": "新机动战记高达W",
+        "title": "新机动战记高达W",
+        "filetype": "directory",
+        "season": -1,
+        "episode": -1,
+        "year": 1995,
+        "route": {
+          "action": "show_tmdb_item",
+          "mode": "tv",
+          "id": "21730",
+          "title": "Mobile Suit Gundam Wing"
+        }
+      },
+      {
+        "label": "下一页",
+        "title": "",
+        "filetype": "directory",
+        "season": null,
+        "episode": null,
+        "year": null,
+        "route": {
+          "action": "next_page_anime",
+          "mode": "anime"
+        }
+      }
+    ],
+    "limits": {
+      "end": 21,
+      "start": 0,
+      "total": 21
+    },
+    "elapsed_seconds": 2.672,
+    "gui": {
+      "currentcontrol": {
+        "label": "[第 1 季]"
+      },
+      "currentwindow": {
+        "id": 10025,
+        "label": "视频"
+      }
+    },
+    "labels": {
+      "Container(50).ListItemAbsolute(0).Label": "第 1 季",
+      "Container(50).ListItemAbsolute(1).Label": "剧场版魔法少女小圆 前篇：起始的故事",
+      "Container(50).ListItemAbsolute(2).Label": "剧场版魔法少女小圆 后篇：永远的故事",
+      "Container(50).ListItemAbsolute(3).Label": "剧场版魔法少女小圆 新篇：叛逆的物语",
+      "Container(50).ListItemAbsolute(4).Label": "剧场版 魔法少女小圆〈魔女之夜的回天〉",
+      "Container.FolderName": "bobbi Cinema · CE 候选",
+      "Container.NumItems": "5",
+      "ListItem.DBType": "season",
+      "ListItem.Label": "第 1 季",
+      "ListItem.Season": "1"
+    }
+  }
+}

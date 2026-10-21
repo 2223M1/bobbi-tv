@@ -1,0 +1,32 @@
+{
+  "timestamp": 1792594930.1141965,
+  "focus": {
+    "action": "play_media"
+  },
+  "labels": {
+    "ListItem.DBType": "movie",
+    "ListItem.Label": "降临"
+  },
+  "gui": {
+    "currentwindow": {
+      "id": 10000,
+      "label": "主界面"
+    }
+  },
+  "players": [],
+  "cache_present": true,
+  "related": {
+    "blob_sha256": "23dbbea7cbad75cb46f86b8909368d503abc45c92d72e4da651587fa0a800733",
+    "bytes": 55758,
+    "expires": "2026-10-28 14:44:52.308654",
+    "schema": 3,
+    "id": 39218,
+    "time": 1792593884.2626448,
+    "complete": false,
+    "detail_after": null,
+    "movie_ids": [
+      152042,
+      152044
+    ]
+  }
+}
