@@ -1,5 +1,7 @@
 # 私库审阅附件索引 · 2026-10-19
 
+> 2026-10-21 存放位置更新：两份 Juku ZIP 已迁至 [AM6B 研究归档](https://github.com/2223M1/am6b-community-baseline-v4/releases/tag/juku-research-0.80-20261021)。统一研究、原始校验记录和下载见 [Juku 研究说明](https://github.com/2223M1/am6b-community-baseline-v4/blob/juku-research-0.80-20261021/docs/JUKU-RESEARCH.zh-CN.md)。下文“7 个附件”是 2026-10-19 的原交付记录；迁移后 bobbi TV 保留其余 5 个附件。历史清单不改写，Juku 条目按新位置读取。
+
 这些是停用候选和历史研究成果，不是安装或继续测试的授权。盒子已恢复原深度定制。
 源码冻结标签为 `audit-20261019-private-ce1909`，提交为
 `cdf0c487c3640228cfe5844a3af2813e5367aa3b`；后续文档提交不改变该源码快照。
@@ -37,8 +39,8 @@
 | [成果 02](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/bobbi-web-artifacts-20261019-02.zip) | 1,449,990,466 | `5ec8043bf2a900b3b1f7125d7a14cf0889aba6ac10e7b710b72612500f102f1a` |
 | [成果 03](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/bobbi-web-artifacts-20261019-03.zip) | 1,449,989,981 | `d961ba272419182b76cd912f850563c351c72b24f17412636432b11e8d68ca00` |
 | [成果 04](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/bobbi-web-artifacts-20261019-04.zip) | 444,894,642 | `a0ca5b6dfb4d6f04f7d865c5a13223eb51852f288e506d1d2b3d9f39e92b6868` |
-| [Juku AMD64](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/juku-0.80-amd64-full-static.zip) | 49,114,616 | `507afb7d91792188e285f89c2ef84b29aadea766833c0b52b405c43521bef7a9` |
-| [Juku ARM64](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/juku-0.80-arm64-full-static.zip) | 51,980,628 | `20685353b7567a8eb1702881a24361a06e699a7fd7bc14c651d94cfd9dbc8100` |
+| [Juku AMD64](https://github.com/2223M1/am6b-community-baseline-v4/releases/download/juku-research-0.80-20261021/juku-0.80-amd64-full-static.zip) | 49,114,616 | `507afb7d91792188e285f89c2ef84b29aadea766833c0b52b405c43521bef7a9` |
+| [Juku ARM64](https://github.com/2223M1/am6b-community-baseline-v4/releases/download/juku-research-0.80-20261021/juku-0.80-arm64-full-static.zip) | 51,980,628 | `20685353b7567a8eb1702881a24361a06e699a7fd7bc14c651d94cfd9dbc8100` |
 | [完整产物清单](https://github.com/2223M1/bobbi-tv/releases/download/audit-20261019-private-ce1909/web-artifact-manifest-20261019.json) | 37,771,745 | `a58ae6a6f7393c50a97a2ae12bcb801dde5fa7584bb1e0a4f5cb65f72ee0b6d1` |
 
 ## 按原路径取证

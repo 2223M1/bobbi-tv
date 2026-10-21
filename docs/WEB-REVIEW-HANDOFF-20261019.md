@@ -24,9 +24,9 @@ Windows/Android 已暂停；其源码、原生产物与历史证据仍保留，�
    [原生改动与维护顺序](CE-NATIVE-REVIEW-20261019.md)。旧检查点以各自明确的代次为准。
 3. [新作品验收边界](research/NEW-WORK-ACCEPTANCE-20261019.md)、
    [设备问题](research/DEVICE-FINDINGS-20261019.md)、`review-evidence/` 原始结果。
-4. [Juku 完整研究结论](research/juku-full-20261019/SUMMARY.zh-CN.md)、
-   [设计比较](research/juku-full-20261019/DESIGN.md)、
-   [官方插件及群文件审查](research/juku-full-20261019/ASSETS.md)。
+4. [Juku 完整研究结论](https://github.com/2223M1/am6b-community-baseline-v4/blob/juku-research-0.80-20261021/docs/JUKU-RESEARCH.zh-CN.md#juku-summary)、
+   [设计比较](https://github.com/2223M1/am6b-community-baseline-v4/blob/juku-research-0.80-20261021/docs/JUKU-RESEARCH.zh-CN.md#juku-design)、
+   [官方插件及群文件审查](https://github.com/2223M1/am6b-community-baseline-v4/blob/juku-research-0.80-20261021/docs/JUKU-RESEARCH.zh-CN.md#juku-assets)。
 
 `release/gates.json` 已区分停用的审查候选 1909 与活动的旧深度定制系统；1907 状态
 单独归入历史。历史失败不能因为新代次编译/安装成功或恢复完成而被改成通过。
@@ -113,6 +113,8 @@ selector 的像素后缀修复独立，**生产代码尚未修复**。
 CA 证书、没有私钥标记，并已列入源码/依赖清单。不得整体放开 `*.pem`。
 
 ## 必须保留并作为私库附件交付的生成产物
+
+2026-10-21：以下两份 Juku ZIP 的现存位置为 [AM6B 研究归档](https://github.com/2223M1/am6b-community-baseline-v4/releases/tag/juku-research-0.80-20261021)，其余附件不变。下面的数量、旧本地路径及 2026-10-19 回执作为历史证据保留，不代表 Juku 包仍附在 bobbi TV。
 
 以下成果已打包上传：四个内容寻址归档、两个 Juku 全量静态包及一个完整产物清单，
 共 7 件、4,933,734,432 字节；GitHub 均返回 `uploaded`。509 个原路径的映射和

@@ -239,7 +239,8 @@ def sanitize(source, output):
         if raw is None or not font_supports(raw, '波比影院中文ABC0123'):
             raise ValueError('Licensed font missing or replacement symbols unsupported')
     icon = (ROOT / 'assets/fonts' / ICON_FONT).read_bytes()
-    icon_license = (ROOT / 'licenses/vendor' / ICON_LICENSE).read_bytes()
+    from provenance_document import read_source
+    icon_license = read_source(ROOT, 'licenses/vendor/' + ICON_LICENSE)
     if (hashlib.sha256(icon).hexdigest() != ICON_SHA256
             or hashlib.sha256(icon_license).hexdigest() != ICON_LICENSE_SHA256
             or not font_supports(icon, ''.join(ICONS.values()))):

@@ -15,7 +15,7 @@
 - [审查交接](https://github.com/2223M1/bobbi-tv/blob/codex/private-three-platform-20261019/docs/WEB-REVIEW-HANDOFF-20261019.md)
 - [恢复说明](https://github.com/2223M1/bobbi-tv/blob/codex/private-three-platform-20261019/docs/CE-LEGACY-RESTORE-20261019.md)
 - [发行门禁](https://github.com/2223M1/bobbi-tv/blob/codex/private-three-platform-20261019/release/gates.json)
-- [Juku 全量结论](https://github.com/2223M1/bobbi-tv/blob/codex/private-three-platform-20261019/docs/research/juku-full-20261019/SUMMARY.zh-CN.md)
+- [Juku 全量结论](https://github.com/2223M1/am6b-community-baseline-v4/blob/juku-research-0.80-20261021/docs/JUKU-RESEARCH.zh-CN.md#juku-summary)
 
 保留全部源码、部署/回退工具、测试结果及失败记录。1909 不能称为完整播放认证：
 BT 首段缓冲、115 首播停顿、准备链路身份疑点和未验收项均在交接文档中列出。

@@ -5,6 +5,7 @@ from pathlib import Path
 import zipfile
 import xml.etree.ElementTree as ET
 from build_release import files, sources, OFFICIAL
+from provenance_document import component_records
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = ('script.module.bobbi.platform', 'script.bobbi.setup', 'plugin.video.bobbi.library',
@@ -32,6 +33,7 @@ def build(output):
                for dep in xml.findall('./requires/import') if dep.get('optional') != 'true'):
             raise ValueError('Diagnostic dependency closure changed')
         dest = output / (addon + '-' + xml.attrib['version'] + '.zip')
+        notices = component_records(ROOT, root)
         with zipfile.ZipFile(dest, 'w') as archive:
             for name in names:
                 path = root / name
@@ -40,7 +42,8 @@ def build(output):
                 info = zipfile.ZipInfo(addon + '/' + name, date_time=(1980, 1, 1, 0, 0, 0))
                 info.create_system = 3
                 info.external_attr = 0o100644 << 16
-                archive.writestr(info, path.read_bytes(), compress_type=zipfile.ZIP_STORED)
+                raw = notices[name] if name in notices else path.read_bytes()
+                archive.writestr(info, raw, compress_type=zipfile.ZIP_STORED)
         manifest['components'].append({'id': addon, 'version': xml.attrib['version'],
             'file': dest.name, 'bytes': dest.stat().st_size,
             'sha256': hashlib.sha256(dest.read_bytes()).hexdigest()})

@@ -8,6 +8,9 @@ param(
 # install artifacts, change Git refs, or read/upload authentication material.
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+# This frozen-receipt verifier checks the original 2026-10-19 main/ref state.
+# Juku attachments moved on 2026-10-21; current research/download entry:
+# https://github.com/2223M1/am6b-community-baseline-v4/releases/tag/juku-research-0.80-20261021
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $sourceFreeze = 'cdf0c487c3640228cfe5844a3af2813e5367aa3b'
 
@@ -19,6 +22,8 @@ function Get-GitHubJson([string]$Path) {
 
 $repo = Get-GitHubJson "repos/$Repository"
 $release = Get-GitHubJson "repos/$Repository/releases/tags/$Tag"
+$researchRepo = Get-GitHubJson 'repos/2223M1/am6b-community-baseline-v4'
+$researchRelease = Get-GitHubJson 'repos/2223M1/am6b-community-baseline-v4/releases/tags/juku-research-0.80-20261021'
 $branchRef = Get-GitHubJson "repos/$Repository/git/ref/heads/$Branch"
 $mainRef = Get-GitHubJson "repos/$Repository/git/ref/heads/main"
 $tagRef = Get-GitHubJson "repos/$Repository/git/ref/tags/$Tag"
@@ -43,13 +48,15 @@ $checks = @{
     main_unchanged = [bool]($mainRef.object.sha -eq '71ea55831c58f26cd6ab89ff5331b86ae33ca869')
     manifest_matches_source_freeze = [bool]($localManifestBlob -ceq $frozenManifestBlob)
     unique_expected_names = [bool](@($expected | ForEach-Object { [IO.Path]::GetFileName($_.path) } | Sort-Object -Unique).Count -eq $expected.Count)
-    expected_asset_count = [bool](@($release.assets).Count -eq $expected.Count)
+    expected_asset_count = [bool](@($release.assets).Count + @($researchRelease.assets).Count -eq $expected.Count)
+    research_repository_private = [bool]$researchRepo.private
     no_quarantined_paths = [bool]($manifest.statistics.quarantined_paths -eq 0)
 }
 $assets = @()
 foreach ($entry in $expected) {
     $name = [IO.Path]::GetFileName($entry.path)
-    $remote = @($release.assets | Where-Object { $_.name -ceq $name })
+    $owner = if ($name -in @('juku-0.80-amd64-full-static.zip','juku-0.80-arm64-full-static.zip')) { $researchRelease } else { $release }
+    $remote = @($owner.assets | Where-Object { $_.name -ceq $name })
     $localPath = Join-Path $projectRoot $entry.path
     $localFile = Get-Item -LiteralPath $localPath
     $localHash = (Get-FileHash -LiteralPath $localPath -Algorithm SHA256).Hash.ToLowerInvariant()

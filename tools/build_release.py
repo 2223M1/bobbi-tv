@@ -10,6 +10,7 @@ from pathlib import Path
 import shutil
 import xml.etree.ElementTree as ET
 import zipfile
+from provenance_document import component_records
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / 'release/source-inventory.json'
@@ -40,6 +41,10 @@ def files(root):
             if (root.name, name) == LOCAL_RESOURCE:
                 continue  # Separate maintainer input; a clean Git clone stays testable.
             result[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    for name, raw in component_records(ROOT, root).items():
+        if name in result:
+            raise ValueError('Duplicate standalone license source: ' + name)
+        result[name] = hashlib.sha256(raw).hexdigest()
     return result
 
 
@@ -57,12 +62,14 @@ def refresh():
 
 def archive(root, names, output, extra=None):
     output.parent.mkdir(parents=True, exist_ok=True)
+    notices = component_records(ROOT, root)
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as target:
         for name in sorted(names):
             info = zipfile.ZipInfo(root.name + '/' + name, (1980, 1, 1, 0, 0, 0))
             info.create_system = 3
             info.external_attr = 0o100644 << 16
-            target.writestr(info, (root / name).read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+            raw = notices[name] if name in notices else (root / name).read_bytes()
+            target.writestr(info, raw, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
         for name, raw in sorted((extra or {}).items()):
             if name in names or (root.name, name) != LOCAL_RESOURCE:
                 raise ValueError('Unreviewed local build resource')
