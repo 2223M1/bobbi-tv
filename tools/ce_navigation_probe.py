@@ -33,6 +33,8 @@ elif MODE=='back':
  rpc('Input.Back');time.sleep(.4);result={}
 elif MODE=='home':
  rpc('GUI.ActivateWindow',dict(window='home'));time.sleep(.4);result={}
+elif MODE in ('left','right'):
+ rpc('Input.'+MODE.title());time.sleep(.2);result={}
 else:result={}
 result['elapsed_seconds']=round(time.monotonic()-began,3)
 result['gui']=rpc('GUI.GetProperties',{'properties':['currentwindow','currentcontrol']})
@@ -45,7 +47,7 @@ print(json.dumps(result,ensure_ascii=False))
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('mode', choices=('directory', 'open', 'view', 'back', 'home'))
+    parser.add_argument('mode', choices=('directory', 'open', 'view', 'back', 'home', 'left', 'right'))
     parser.add_argument('--url')
     parser.add_argument('--transport-source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
@@ -55,8 +57,11 @@ def main():
         fields = parse_qs(parts.query)
         if (parts.scheme != 'plugin' or parts.netloc != 'plugin.video.bobbi'
                 or fields.get('action') not in (['handle_tmdb_search'], ['show_tmdb_item'],
-                    ['show_episodes_details'], ['bobi_related_movies'])):
+                    ['show_episodes_details'], ['bobi_related_movies'], ['search_item'])):
             parser.error('Catalogue route required')
+        if fields.get('action') == ['search_item'] and (fields.get('api') != ['tmdb']
+                or fields.get('mode') != ['anime'] or fields.get('submode') not in (['tv'], ['movies'])):
+            parser.error('TMDb anime directory only')
         if fields.get('action') == ['show_tmdb_item'] and fields.get('mode') != ['tv']:
             parser.error('TV directory only; film selection is a separate attended action')
     if args.output.exists():

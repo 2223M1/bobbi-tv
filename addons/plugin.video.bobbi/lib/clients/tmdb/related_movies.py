@@ -291,6 +291,16 @@ def discover(identifier, fetch, cached=None, now=None, show=None, deadline=None,
                 except Exception:
                     complete = False
             identifiers = sorted(candidates)
+            # Rotate the first pair on each pass. A persistent slow prefix
+            # must not consume every subsequent pass before later films run.
+            # This cursor grants no identity/completeness: every pass still
+            # validates the entire current candidate set or stays partial.
+            detail_after = cached.get('detail_after') if valid and not cached['complete'] else None
+            if type(detail_after) is int and detail_after in identifiers:
+                split = identifiers.index(detail_after) + 1
+                identifiers = identifiers[split:] + identifiers[:split]
+            else:
+                detail_after = None
             # Submit pairs, not a hundred queued jobs that outlive navigation.
             for offset in range(0, len(identifiers), 2):
                 if cancelled() or time.monotonic() >= deadline or len(movies) >= MAX_MOVIES:
@@ -300,6 +310,11 @@ def discover(identifier, fetch, cached=None, now=None, show=None, deadline=None,
                 # picker; don't warm a reduced payload under a different key.
                 pending = [(movie_id, pool.submit(request, 'movie_details', movie_id))
                     for movie_id in identifiers[offset:offset + 2]]
+                if offset == 0:
+                    # Rotating past the LAST submitted pair would starve a
+                    # final candidate that starts with insufficient budget:
+                    # cursor=end would repeat the original slow prefix forever.
+                    detail_after = pending[-1][0]
                 for movie_id, future in pending:
                     try:
                         value = future.result()
@@ -327,6 +342,7 @@ def discover(identifier, fetch, cached=None, now=None, show=None, deadline=None,
                     'genres', 'genre_ids', 'alternative_titles') if key in show}
         return dict(schema=3, id=identifier, time=cached['time'] if valid and not complete else now,
                     show=evidence, complete=complete,
+                    detail_after=None if complete else detail_after,
                     movies=sorted(movies.values(), key=lambda m: (m['release_date'], m['id']))[:MAX_MOVIES]), bool(not complete and valid)
     except Exception:
         if valid and 0 <= now - cached.get('time', 0) < 7 * 86400:

@@ -14,6 +14,9 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'baccano': {'title': 'Baccano!', 'tmdb_id': 34121, 'kind': 'tv', 'year': 2007, 'season': 1, 'episode': 1, 'animation': True},
+    'gattaca': {'title': 'Gattaca', 'tmdb_id': 782, 'kind': 'movie', 'year': 1997},
+    'samurai_champloo': {'title': 'Samurai Champloo', 'tmdb_id': 1063, 'kind': 'tv', 'year': 2004, 'season': 1, 'episode': 1, 'animation': True},
     'arrival': {'title': 'Arrival', 'tmdb_id': 329865, 'kind': 'movie', 'year': 2016},
     'mushishi': {'title': 'Mushi-Shi', 'tmdb_id': 26867, 'kind': 'tv', 'year': 2005, 'season': 1, 'episode': 1, 'animation': True},
     'grand_budapest': {'title': 'The Grand Budapest Hotel', 'tmdb_id': 120467, 'kind': 'movie', 'year': 2014},

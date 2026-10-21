@@ -11,7 +11,7 @@ def rpc(method,params=None):
  q=urllib.request.Request('http://127.0.0.1:8080/jsonrpc',json.dumps(dict(jsonrpc='2.0',id=1,method=method,params=params or {})).encode(),{'Content-Type':'application/json'})
  with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(q,timeout=4) as f:return json.load(f)['result']
 if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
-labels=['Container(%d).ListItemAbsolute(%d).Art(poster)'%(cid,i) for cid in (9850,9860) for i in range(8)]
+labels=['Container(%d).ListItemAbsolute(%d).Art(poster)'%(cid,i) for cid in (50,9850,9860) for i in range(12)]
 values=rpc('XBMC.GetInfoLabels',{'labels':labels})
 items=[]
 for key,url in values.items():
