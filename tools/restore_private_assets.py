@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 
 from prepare_candidate import rename
 from sanitize_skin import font_supports, sanitize_xml
+from provenance_document import write_source
 
 ROOT = Path(__file__).resolve().parents[1]
 REV = 'ff530e09c34c6285ccb05c1d4179140b097174fb'
@@ -26,8 +27,7 @@ def restore(repo):
         original = read(source)
         value = original if data is None else data
         target = ROOT / destination
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(value)
+        write_source(ROOT, destination, value)
         records.append(dict(source=source, target=destination, bytes=len(value),
                             source_sha256=hashlib.sha256(original).hexdigest(),
                             sha256=hashlib.sha256(value).hexdigest()))
@@ -65,7 +65,7 @@ def restore(repo):
     report = dict(schema=1, source_commit=REV, distribution='private-personal', files=records,
                   rights='Original notices retained; no blanket third-party redistribution grant asserted.',
                   excluded='Legacy auth, remote execution, firmware, updater and library-clearing scripts remain excluded.')
-    (ROOT / 'release/private-assets.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    write_source(ROOT, 'release/private-assets.json', (json.dumps(report, ensure_ascii=False, indent=2) + '\n').encode('utf-8'))
     print(json.dumps(dict(restored=len(records), fonts=sum(r['target'].endswith('.ttf') for r in records),
                          sounds=sum(r['target'].endswith('.wav') for r in records))))
 
