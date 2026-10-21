@@ -1,0 +1,984 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "perfect_days",
+    "operation": "observe",
+    "target": null,
+    "settle": [],
+    "samples": [
+      {
+        "wall": 2299153.785139382,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda|transport:c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "monotonic_us": 2299021378098,
+          "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 132.226,
+        "duration": 7505.281,
+        "currentaudiostream": {
+          "bitrate": 2406226,
+          "channels": 6,
+          "codec": "dtshd_ma",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日语",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "简体中字"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 2160,
+          "index": 0,
+          "language": "jpn",
+          "name": "完美的日子",
+          "width": 3840
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2299153.848423843,
+          "read_completed": 2299153.848750343,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 83392 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 367 KB\n  frame count : 3196\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1103496 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 83192 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 364 KB\n  frame count : 3195\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1103452 KB\nratio_control : 9000\n\n",
+          "sha256": "aa9a9cf8c3527ec788524df8b448c2bff698513459ea6b1625b0afa0ae086801",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 3196,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            },
+            {
+              "channel": 1,
+              "device": "dveldec",
+              "counters": {
+                "frame width": 1920,
+                "frame height": 1080,
+                "frame count": 3195,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 3196,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "observation_times": {
+          "sample_started": 2299153.76654903,
+          "player_time_started": 2299153.788620669,
+          "player_time_completed": 2299153.794262954,
+          "caching_started": 2299153.794310578,
+          "caching_completed": 2299153.806311563,
+          "decoder_started": 2299153.848423843,
+          "decoder_completed": 2299153.848750343,
+          "sample_completed": 2299153.849004967
+        }
+      },
+      {
+        "wall": 2299163.87516671,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda|transport:c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "monotonic_us": 2299021378098,
+          "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 142.309,
+        "duration": 7505.281,
+        "currentaudiostream": {
+          "bitrate": 2406226,
+          "channels": 6,
+          "codec": "dtshd_ma",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日语",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "简体中字"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 2160,
+          "index": 0,
+          "language": "jpn",
+          "name": "完美的日子",
+          "width": 3840
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2299163.972423975,
+          "read_completed": 2299163.972729609,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 78152 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 0 KB\n  frame count : 3439\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1201306 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 78432 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 0 KB\n  frame count : 3439\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1201715 KB\nratio_control : 9000\n\n",
+          "sha256": "e74129820cb93904fe4cf28a5514d558d9d5f5f52073e7e5cd6edafc1cb2ad85",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 3439,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            },
+            {
+              "channel": 1,
+              "device": "dveldec",
+              "counters": {
+                "frame width": 1920,
+                "frame height": 1080,
+                "frame count": 3439,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 3439,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "observation_times": {
+          "sample_started": 2299163.849166199,
+          "player_time_started": 2299163.879777217,
+          "player_time_completed": 2299163.882745691,
+          "caching_started": 2299163.88276798,
+          "caching_completed": 2299163.930929621,
+          "decoder_started": 2299163.972423975,
+          "decoder_completed": 2299163.972729609,
+          "sample_completed": 2299163.972967917
+        }
+      },
+      {
+        "wall": 2299173.989078059,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda|transport:c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "monotonic_us": 2299021378098,
+          "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 152.559,
+        "duration": 7505.281,
+        "currentaudiostream": {
+          "bitrate": 2406226,
+          "channels": 6,
+          "codec": "dtshd_ma",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日语",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "简体中字"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 2160,
+          "index": 0,
+          "language": "jpn",
+          "name": "完美的日子",
+          "width": 3840
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2299174.055302922,
+          "read_completed": 2299174.055586018,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 76416 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 428 KB\n  frame count : 3681\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1300209 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 76448 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 1350 KB\n  frame count : 3680\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1300176 KB\nratio_control : 9000\n\n",
+          "sha256": "a0e654ef7f5d237bd7d8ac51d297a85b853929d3cdf1768d949c36f27e2edb4c",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 3681,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            },
+            {
+              "channel": 1,
+              "device": "dveldec",
+              "counters": {
+                "frame width": 1920,
+                "frame height": 1080,
+                "frame count": 3680,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 3681,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "observation_times": {
+          "sample_started": 2299173.973117417,
+          "player_time_started": 2299173.991724993,
+          "player_time_completed": 2299173.995278334,
+          "caching_started": 2299173.995299499,
+          "caching_completed": 2299174.0101233,
+          "decoder_started": 2299174.055302922,
+          "decoder_completed": 2299174.055586018,
+          "sample_completed": 2299174.055798704
+        }
+      },
+      {
+        "wall": 2299184.083661852,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda|transport:c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "monotonic_us": 2299021378098,
+          "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 162.643,
+        "duration": 7505.281,
+        "currentaudiostream": {
+          "bitrate": 2406226,
+          "channels": 6,
+          "codec": "dtshd_ma",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "日语",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "简体中字"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 2160,
+          "index": 0,
+          "language": "jpn",
+          "name": "完美的日子",
+          "width": 3840
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2299184.180589085,
+          "read_completed": 2299184.180859808,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 82688 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 386 KB\n  frame count : 3924\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1406173 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 82184 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 386 KB\n  frame count : 3923\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1406125 KB\nratio_control : 9000\n\n",
+          "sha256": "d602c38f59d93e4dd7041b0b556e1bad903adf3456ca0506672e2f65d925c2fb",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 3924,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            },
+            {
+              "channel": 1,
+              "device": "dveldec",
+              "counters": {
+                "frame width": 1920,
+                "frame height": 1080,
+                "frame count": 3923,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 3924,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "observation_times": {
+          "sample_started": 2299184.055890335,
+          "player_time_started": 2299184.08682062,
+          "player_time_completed": 2299184.097424102,
+          "caching_started": 2299184.097468056,
+          "caching_completed": 2299184.137401691,
+          "decoder_started": 2299184.180589085,
+          "decoder_completed": 2299184.180859808,
+          "sample_completed": 2299184.181063162
+        }
+      }
+    ],
+    "passed": true,
+    "startup_clock": {
+      "stable": true,
+      "budget_seconds": 5,
+      "elapsed_seconds": 0.8172379219904542,
+      "samples": [
+        {
+          "wall": 2299152.959290887,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda|transport:c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+            "monotonic_us": 2299021378098,
+            "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 131.434,
+          "duration": 7505.281,
+          "currentaudiostream": {
+            "bitrate": 2406226,
+            "channels": 6,
+            "codec": "dtshd_ma",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "日语",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "简体中字"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 2160,
+            "index": 0,
+            "language": "jpn",
+            "name": "完美的日子",
+            "width": 3840
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder": {
+            "schema": 2,
+            "read_started": 2299153.062236632,
+            "read_completed": 2299153.062753048,
+            "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 77880 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 445 KB\n  frame count : 3177\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1095532 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 78168 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 381 KB\n  frame count : 3176\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1095432 KB\nratio_control : 9000\n\n",
+            "sha256": "6d203c75adf6bc46194d56995950a968a89ea3747625d3196be81fe4076a2e38",
+            "channels": [
+              {
+                "channel": 0,
+                "device": "dvbldec",
+                "counters": {
+                  "frame width": 3840,
+                  "frame height": 2160,
+                  "frame count": 3177,
+                  "drop count": 0,
+                  "fra err count": 0,
+                  "hw err count": 0
+                }
+              },
+              {
+                "channel": 1,
+                "device": "dveldec",
+                "counters": {
+                  "frame width": 1920,
+                  "frame height": 1080,
+                  "frame count": 3176,
+                  "drop count": 0,
+                  "fra err count": 0,
+                  "hw err count": 0
+                }
+              }
+            ],
+            "identity_known": true,
+            "primary_channel": 0
+          },
+          "decoder_counters": {
+            "frame width": 3840,
+            "frame height": 2160,
+            "frame count": 3177,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "decoder_counter_source": {
+            "channel": 0,
+            "device": "dvbldec"
+          },
+          "observation_times": {
+            "sample_started": 2299152.948960859,
+            "player_time_started": 2299152.965299463,
+            "player_time_completed": 2299152.968248126,
+            "caching_started": 2299152.968272001,
+            "caching_completed": 2299153.015945399,
+            "decoder_started": 2299153.062236632,
+            "decoder_completed": 2299153.062753048,
+            "sample_completed": 2299153.065159836
+          }
+        },
+        {
+          "wall": 2299153.349885767,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda|transport:c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+            "monotonic_us": 2299021378098,
+            "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 131.809,
+          "duration": 7505.281,
+          "currentaudiostream": {
+            "bitrate": 2406226,
+            "channels": 6,
+            "codec": "dtshd_ma",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "日语",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "简体中字"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 2160,
+            "index": 0,
+            "language": "jpn",
+            "name": "完美的日子",
+            "width": 3840
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder": {
+            "schema": 2,
+            "read_started": 2299153.431435206,
+            "read_completed": 2299153.431773205,
+            "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 83392 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 1292 KB\n  frame count : 3186\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1099425 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 78168 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 0 KB\n  frame count : 3185\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1098472 KB\nratio_control : 9000\n\n",
+            "sha256": "21f5c7ad911b8661554d0fb42c5a608f7039b2d989142944534a8dcb14160cb1",
+            "channels": [
+              {
+                "channel": 0,
+                "device": "dvbldec",
+                "counters": {
+                  "frame width": 3840,
+                  "frame height": 2160,
+                  "frame count": 3186,
+                  "drop count": 0,
+                  "fra err count": 0,
+                  "hw err count": 0
+                }
+              },
+              {
+                "channel": 1,
+                "device": "dveldec",
+                "counters": {
+                  "frame width": 1920,
+                  "frame height": 1080,
+                  "frame count": 3185,
+                  "drop count": 0,
+                  "fra err count": 0,
+                  "hw err count": 0
+                }
+              }
+            ],
+            "identity_known": true,
+            "primary_channel": 0
+          },
+          "decoder_counters": {
+            "frame width": 3840,
+            "frame height": 2160,
+            "frame count": 3186,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "decoder_counter_source": {
+            "channel": 0,
+            "device": "dvbldec"
+          },
+          "observation_times": {
+            "sample_started": 2299153.315311353,
+            "player_time_started": 2299153.353297805,
+            "player_time_completed": 2299153.358139757,
+            "caching_started": 2299153.358163382,
+            "caching_completed": 2299153.387344136,
+            "decoder_started": 2299153.431435206,
+            "decoder_completed": 2299153.431773205,
+            "sample_completed": 2299153.432052913
+          }
+        },
+        {
+          "wall": 2299153.699068741,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda|transport:c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+            "monotonic_us": 2299021378098,
+            "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "c39640a30e12530c9149b45a0a24f7dd4a7c681c60984a3bbe9f2ebcf4f8e30a",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 132.226,
+          "duration": 7505.281,
+          "currentaudiostream": {
+            "bitrate": 2406226,
+            "channels": 6,
+            "codec": "dtshd_ma",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "日语",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "简体中字"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 2160,
+            "index": 0,
+            "language": "jpn",
+            "name": "完美的日子",
+            "width": 3840
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder": {
+            "schema": 2,
+            "read_started": 2299153.76561774,
+            "read_completed": 2299153.765930448,
+            "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 83392 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 387 KB\n  frame count : 3194\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1102760 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 83192 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 420 KB\n  frame count : 3193\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1102702 KB\nratio_control : 9000\n\n",
+            "sha256": "45829f7203bd468897a691ce960eec3be8e79e38cdf9d8f20a94641621aec706",
+            "channels": [
+              {
+                "channel": 0,
+                "device": "dvbldec",
+                "counters": {
+                  "frame width": 3840,
+                  "frame height": 2160,
+                  "frame count": 3194,
+                  "drop count": 0,
+                  "fra err count": 0,
+                  "hw err count": 0
+                }
+              },
+              {
+                "channel": 1,
+                "device": "dveldec",
+                "counters": {
+                  "frame width": 1920,
+                  "frame height": 1080,
+                  "frame count": 3193,
+                  "drop count": 0,
+                  "fra err count": 0,
+                  "hw err count": 0
+                }
+              }
+            ],
+            "identity_known": true,
+            "primary_channel": 0
+          },
+          "decoder_counters": {
+            "frame width": 3840,
+            "frame height": 2160,
+            "frame count": 3194,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "decoder_counter_source": {
+            "channel": 0,
+            "device": "dvbldec"
+          },
+          "observation_times": {
+            "sample_started": 2299153.682316596,
+            "player_time_started": 2299153.704992192,
+            "player_time_completed": 2299153.711211976,
+            "caching_started": 2299153.711255184,
+            "caching_completed": 2299153.720743005,
+            "decoder_started": 2299153.76561774,
+            "decoder_completed": 2299153.765930448,
+            "sample_completed": 2299153.766178531
+          }
+        }
+      ],
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "record": {
+      "test": {
+        "title": "Perfect Days",
+        "tmdb_id": 976893,
+        "kind": "movie",
+        "year": 2023
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 976893,
+          "title": "Perfect Days",
+          "original_title": "PERFECT DAYS",
+          "original_language": "ja",
+          "release_date": "2023-11-10"
+        },
+        "route": "system-direct",
+        "checked_at": 1792569058.926895
+      },
+      "prior_request": null,
+      "started": 2298942.385927105,
+      "home": {
+        "generation": 76,
+        "intent": 2,
+        "retired_generation": 74,
+        "observed_at": 2298942.997414482
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2298942.997725898,
+      "picker": {
+        "window": 13001,
+        "generation": 77,
+        "intent": 2,
+        "tmdb_id": 976893,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2298945.297385136,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Perfect.Days.2023.2160p.BluRay.REMUX.DV.HEVC.DTS-HD.MA.5.1.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "69.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "8ecfee760418e2266d4916ee0290139793bd9c5776f171a2bc04bf04ebaa878d",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2299007.460263384,
+      "request_id": "aa4416ef91d9492cb17e18dc6b4c4cd8",
+      "selection_identity": "transport:e6a519a07560eb1a0f9b221cd0986cae25413c1a14ba7452f00debbe92c10bda",
+      "native_instance": "9e3aed84-413a-4703-b3ec-788b18409bfb",
+      "first_av_observed_at": 2299021.70701586,
+      "select_to_av_observed_seconds": 14.24675247585401
+    },
+    "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+    "wall_seconds": 30.299,
+    "play_seconds": 30.417,
+    "decoder": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 82688 kbps\n       status : 53\n    frame dur : 4000\n   frame data : 386 KB\n  frame count : 3924\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1406173 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 82184 kbps\n       status : 5\n    frame dur : 4000\n   frame data : 386 KB\n  frame count : 3923\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 1406125 KB\nratio_control : 9000\n\n",
+    "crashes": [
+      "kodi_crashlog_20261012021405.log",
+      "kodi_crashlog_20261012135249.log",
+      "kodi_crashlog_20261019200619.log",
+      "kodi_crashlog_20261020222956.log"
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "perfect_days",
+  "operation": "observe",
+  "attempt": 2,
+  "regression_attempt": true
+}

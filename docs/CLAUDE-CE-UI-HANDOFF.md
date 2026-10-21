@@ -1,4 +1,4 @@
-# Claude UI 联调交接（CE2027 候选）
+# Claude UI 联调交接（CE2028 候选）
 
 本轮在独立候选 `D:/AM6B-Project/bobbi-tv-ce2025-review-20261021` 修改。
 用户确认的 UI 分支是 `codex/ce2024-reviewed-delivery-20261021`，对应
@@ -45,6 +45,11 @@ ReloadSkin → 截取实际显示的 framebuffer → 保存提交记录。
 - 原生 Kodi 文件窗口会重新应用 `%D` 次标签格式，把上述 Label2 清空。
   因此同步提供 `Bobi.Library.Location`，皮肤 `BobiLibraryLocation` 优先读此属性、再回退 Label2。
   这是实机发现的兼容要求；不借用片名/制作编号等无关字段、不改原生内核。
+- CE2028 把此变量接到真正的 `Includes_Home.xml/LibraryTileHint`（普通与聚焦卡共用），
+  不改演员卡的角色 Label2。CE2027 的位置属性虽已到达，来源卡仍显示“打开目录”；
+  因此只检查属性不能证明视觉验收通过。Claude 后续同步时请保留此项差异。
+- CE2028 实机 `bobbi-library-1792570328053453100/library-root.png` 已看到“本机目录”；
+  同次文件行截图已看到大小和日期，临时来源移除成功。
 - `Bobi.Library.Kind`：smb / nfs / webdav / catalog；本机路径另用 local，不能伪装成网盘。
 - 管理入口：`Bobi.Library.Manage=true`。
 - 文件：Kodi 原生 `ListItem.Size` / `ListItem.Date`；本机目录一次 scandir 读取，网络目录使用一次 Files.GetDirectory 的 size/lastmodified。
@@ -73,4 +78,4 @@ ReloadSkin → 截取实际显示的 framebuffer → 保存提交记录。
 `D:/AM6B-Project/ce2025-results-20261021/keyboard/bobbi-keyboard-1792567368931001500`。
 首轮探针在异步 setFocus 后立即断言而失败，原失败保留；探针改为等待实际焦点后通过。
 
-本地定向测试 133 项已通过；最终整包/实播状态见本轮交付报告，不能由本文件推断。
+本地定向测试 133 项已通过；最终整包/实播状态见 `CE2028-DELIVERY.md`，不能由本文件推断。

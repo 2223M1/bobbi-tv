@@ -1,0 +1,12 @@
+{
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "expected_sequence": 2026102028,
+  "result": {
+    "sequence": 2026102028,
+    "files": 1150,
+    "matched": true,
+    "mismatches": [],
+    "scope": "Owned program files; original dependencies and user data not overwritten or compared"
+  }
+}

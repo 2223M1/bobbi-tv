@@ -58,7 +58,9 @@ try:
     store=registry(xbmcvfs.translatePath)
     store.save(source)
     url='plugin://plugin.video.bobbi.library/?action=root'
-    xbmc.executebuiltin('ActivateWindow(Videos,'+url+',return)')
+    # A previous removable fixture may be remembered by the native window.
+    # Replace that navigation entry instead of restoring a deleted directory.
+    xbmc.executebuiltin('ReplaceWindow(Videos,'+url+')')
     wait(lambda:xbmc.getInfoLabel('Container.FolderPath')==url and not xbmc.getCondVisibility('Container.IsUpdating')
         and int(xbmc.getInfoLabel('Container(50).NumItems') or 0)>=2)
     window=xbmcgui.Window(10025)
@@ -102,6 +104,12 @@ except Exception as error:
     (ROOT/'library-root.png').write_bytes(framebuffer_png())
 finally:
     if not xbmc.Player().isPlaying() and xbmc.getInfoLabel('Container.FolderPath').startswith('plugin://plugin.video.bobbi.library/'):
+        # Retire the fixture path while it still exists. Home alone leaves the
+        # native Videos window remembering a source that cleanup will remove.
+        root_url='plugin://plugin.video.bobbi.library/?action=root'
+        xbmc.executebuiltin('Container.Update('+root_url+',replace)')
+        try:wait(lambda:xbmc.getInfoLabel('Container.FolderPath')==root_url and not xbmc.getCondVisibility('Container.IsUpdating'))
+        except RuntimeError:pass
         xbmc.executebuiltin('ActivateWindow(Home)')
         try:wait(lambda:xbmcgui.getCurrentWindowId()==10000)
         except RuntimeError:pass
