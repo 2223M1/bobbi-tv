@@ -1,9 +1,11 @@
 """Static cross-platform design checks, not claims of TV screenshot validation."""
 from pathlib import Path
 import hashlib
+import sys
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
 TOKENS = {
     'cinema_bg': ('bg', '0A0B0E'), 'cinema_surface': ('surface', '15171C'),
     'cinema_surface_hi': ('surface_hi', '1E2128'), 'cinema_line': ('surface_line', '2A2E37'),
@@ -34,10 +36,11 @@ def test_remote_focus_and_reduced_motion_contract():
 
 
 def test_fonts_are_unchanged_and_licensed_in_project_assets():
+    from provenance_document import read_source
     expected = {
         'HarmonyOS_SansSC_Regular.ttf': '984cf609545acee8ef060780fb70fc3099b058c0553416331b6e863fdf7c26fa',
         'HarmonyOS_SansSC_Bold.ttf': 'c215d8ab1cb6709fec2e063f8213e9af86d7587d345b56325e36b67d6b947d98',
         'LICENCE-HarmonyOS-Sans.txt': '327e0147d4a3ca2d89e81abce45b210576b0f9fe2b29d900f64b58039f12a102',
     }
     for name, digest in expected.items():
-        assert hashlib.sha256((ROOT / 'assets/fonts' / name).read_bytes()).hexdigest() == digest
+        assert hashlib.sha256(read_source(ROOT, 'assets/fonts/' + name)).hexdigest() == digest

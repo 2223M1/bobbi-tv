@@ -3,6 +3,7 @@ import argparse
 import hashlib
 from pathlib import Path
 import shutil
+from provenance_document import read_source
 
 ROOT = Path(__file__).resolve().parents[1]
 FONTS = {
@@ -16,18 +17,23 @@ def prepare(source=None):
     public = ROOT / 'assets/fonts'
     source = Path(source) if source is not None else public
     android = ROOT / 'android/app/src/main/assets/fonts'
+    payloads = {}
     for name, expected in FONTS.items():
         path = source / name
-        if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+        raw = read_source(ROOT, 'assets/fonts/' + name) if source == public else path.read_bytes()
+        if path.is_symlink() or hashlib.sha256(raw).hexdigest() != expected:
             raise ValueError('Licensed font input changed: ' + name)
+        payloads[name] = raw
     for dest_root in (public, android):
         dest_root.mkdir(parents=True, exist_ok=True)
         for name in FONTS:
+            if dest_root == public and name.startswith('LICENCE-'):
+                continue  # Canonical source remains inside COPYRIGHT.zh-CN.md.
             source_file, dest = source / name, dest_root / name
             if source_file.resolve() != dest.resolve():
                 if dest.is_symlink():
                     raise ValueError('Symlink font output')
-                shutil.copyfile(source_file, dest)
+                dest.write_bytes(payloads[name])
     return {'fonts': 2, 'license': True, 'modified_font_binaries': False}
 
 

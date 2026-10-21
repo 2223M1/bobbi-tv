@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+from provenance_document import read_source, records
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMIT = 'af620534bfc3c2d4cbefcfeec29603bbe7809e64'  # Font Awesome Free 6.7.2
@@ -25,8 +26,8 @@ def fetch():
     result = {}
     for source, (output, size, git_blob) in INPUTS.items():
         dest = ROOT / output
-        if dest.is_file():
-            raw = dest.read_bytes()
+        if dest.is_file() or output in records(ROOT):
+            raw = read_source(ROOT, output)
         else:
             reply = subprocess.run(['gh', 'api', 'repos/FortAwesome/Font-Awesome/contents/'
                                     + source + '?ref=' + COMMIT], capture_output=True, check=True, timeout=30)

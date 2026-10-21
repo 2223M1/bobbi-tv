@@ -5,6 +5,7 @@ import json
 from pathlib import Path, PurePosixPath
 from urllib.request import urlopen
 import zipfile
+from provenance_document import write_source
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = {
@@ -50,7 +51,7 @@ def main():
         manifest[addon] = dict(repository='https://github.com/' + repo, commit=commit,
             archive_sha256=hashlib.sha256(raw).hexdigest(), files=files)
         print(addon, len(files), 'pinned files')
-    (ROOT / 'release/kodi-vendors.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+    write_source(ROOT, 'release/kodi-vendors.json', (json.dumps(manifest, indent=2) + '\n').encode('utf-8'))
 
 
 if __name__ == '__main__':

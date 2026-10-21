@@ -1,11 +1,13 @@
 import importlib.util
 import hashlib
+import sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
 SPEC = importlib.util.spec_from_file_location('sanitize_skin', ROOT / 'tools/sanitize_skin.py')
 skin = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(skin)
@@ -89,7 +91,8 @@ def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
               for p in source.rglob('*') if p.is_file()}
     output = source
     import json
-    proof = json.loads((ROOT / 'release/private-assets.json').read_text(encoding='utf-8'))
+    from provenance_document import read_source
+    proof = json.loads(read_source(ROOT, 'release/private-assets.json'))
     assert proof['source_commit'] == 'ff530e09c34c6285ccb05c1d4179140b097174fb'
     font_rows = [row for row in proof['files'] if row['target'].endswith('.ttf')]
     sound_rows = [row for row in proof['files'] if row['target'].endswith('.wav')]
@@ -106,7 +109,7 @@ def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
     for font in skin.TEXT_FONTS:
         assert hashlib.sha256((output / 'fonts' / font).read_bytes()).hexdigest() == before['fonts/' + font]
     assert hashlib.sha256((output / 'fonts' / skin.ICON_FONT).read_bytes()).hexdigest() == skin.ICON_SHA256
-    assert (output / 'fonts' / skin.ICON_LICENSE).is_file()
+    assert read_source(ROOT, 'addons/skin.bobbi.cinema/fonts/' + skin.ICON_LICENSE)
     assert skin.font_supports((output / 'fonts/BobiAF-Solid.ttf').read_bytes(), '\uf058\uf01b\uf13e\uf1ab\uf6ff\uf55a\uf0a8\uf0a9\uf05c')
     addon = ET.parse(output / 'addon.xml').getroot()
     assert addon.get('id') == 'skin.bobbi.cinema'
