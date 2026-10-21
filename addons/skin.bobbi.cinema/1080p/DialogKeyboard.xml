@@ -56,7 +56,7 @@
       <control type="label" id="314">
         <left>72</left><top>204</top><width>1224</width><height>64</height>
         <font>Label30</font><textcolor>text2</textcolor><aligny>center</aligny>
-        <animation effect="fade" start="100" end="0" time="0" condition="!String.IsEmpty(Window(10103).Property(BobiIME.Ready))">Conditional</animation>
+        <animation effect="fade" start="100" end="0" time="0" condition="$EXP[BobiIMECurrent]">Conditional</animation>
       </control>
       <control type="grouplist" id="8100">
         <left>56</left><top>204</top><width>1240</width><height>64</height>
@@ -69,7 +69,7 @@
           <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus><texturenofocus />
           <pulseonselect>false</pulseonselect>
           <visible>Control.IsVisible(500) + String.StartsWith(Control.GetLabel(314),&lt;)</visible>
-          <onclick>SendClick(10103,305)</onclick>
+          <onclick condition="$EXP[BobiIMECurrent]">SendClick(10103,305)</onclick>
         </control>
         <include content="KbWord"><param name="n">0</param></include>
         <include content="KbWord"><param name="n">1</param></include>
@@ -88,7 +88,7 @@
           <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus><texturenofocus />
           <pulseonselect>false</pulseonselect>
           <visible>Control.IsVisible(500) + String.EndsWith(Control.GetLabel(314),&gt;)</visible>
-          <onclick>SendClick(10103,306)</onclick>
+          <onclick condition="$EXP[BobiIMECurrent]">SendClick(10103,306)</onclick>
         </control>
       </control>
 

@@ -609,8 +609,8 @@
         <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <texturenofocus />
         <pulseonselect>false</pulseonselect>
-        <visible>!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + !String.IsEmpty(Window(10103).Property(BobiIME.Word$PARAM[n]))</visible>
-        <onclick>SendClick(10103,40$PARAM[n])</onclick>
+        <visible>$EXP[BobiIMECurrent] + !String.IsEmpty(Window(10103).Property(BobiIME.Word$PARAM[n]))</visible>
+        <onclick condition="$EXP[BobiIMECurrent]">SendClick(10103,40$PARAM[n])</onclick>
         <onclick>SetFocus(120)</onclick>
       </control>
     </definition>

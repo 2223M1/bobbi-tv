@@ -1791,6 +1791,19 @@ def parse_time(item):
                 normalized,
             )
 
+            # Our legacy writer uses a 12-hour English timestamp. Kodi's
+            # embedded locale/_strptime may be unavailable; email's RFC parser
+            # silently ignores AM/PM. Parse this known format without locale.
+            legacy = re.fullmatch(r"[A-Za-z]+, (\d{1,2}) ([A-Za-z]{3}) (\d{4}) (\d{1,2}):(\d{2}) (AM|PM)", normalized, re.I)
+            if legacy:
+                day, month, year, hour, minute, period = legacy.groups()
+                hour = int(hour)
+                if not 1 <= hour <= 12:
+                    return datetime.min
+                month = ('jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec').index(month.lower()) + 1
+                return datetime(int(year), month, int(day), hour % 12 + (12 if period.upper() == 'PM' else 0), int(minute))
+            if re.search(r"\b(?:AM|PM)\b", normalized, re.I):
+                return datetime.min  # Never let RFC fallback drop a meridiem.
             try:
                 return datetime.strptime(normalized, "%a, %d %b %Y %I:%M %p")
             except Exception:

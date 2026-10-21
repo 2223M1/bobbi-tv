@@ -11,7 +11,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--transport-source',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--probe',choices=('keyboard','library'),default='keyboard')
+    parser.add_argument('--probe',choices=('keyboard','library','personal'),default='keyboard')
     args=parser.parse_args()
     sys.path.insert(0,str(args.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('keyboard_wire',args.transport_source/'ui-redesign/tools/device_transport.py')
@@ -40,7 +40,8 @@ print(p.read_text() if p.exists() else json.dumps(dict(passed=False,code='PROBE_
 '''
         rc,result,diag=wire.readonly(client,('RUN='+repr(run)+'\nPROBE='+repr(probe)+'\n'+remote).encode(),deadline_seconds=55)
         with client.open_sftp() as sftp:
-            for name in ('keyboard-candidates.png','keyboard-selected.png','library-root.png','library-file.png','library-next.png'):
+            for name in ('keyboard-candidates.png','keyboard-selected.png','library-root.png','library-file.png','library-next.png',
+                         'personal-directory.png','personal-page.png'):
                 try:sftp.get(run+'/'+name,str(destination/name))
                 except OSError:pass
         value=dict(exit_code=rc,diagnostic_present=bool(diag),run=run,result=result)

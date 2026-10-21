@@ -94,7 +94,19 @@ try:
     result['next']=labels()
     if result['next']['Label']!='下一页' or result['next']['Property(Bobi.NextPage)']!='true':raise RuntimeError('NEXT_PAGE_MISSING')
     (ROOT/'library-next.png').write_bytes(framebuffer_png())
-    result['passed']=result['root_metadata_passed']
+    # Exercise the real folder action, not merely its label/property contract.
+    rpc('Input.Select')
+    wait(lambda:'offset=200' in xbmc.getInfoLabel('Container.FolderPath')
+        and not xbmc.getCondVisibility('Container.IsUpdating'))
+    wait(lambda:int(xbmc.getInfoLabel('Container(50).NumItems') or 0) in (1,2))
+    result['second_page']=[]
+    control=window.getControl(50)
+    for index in range(int(xbmc.getInfoLabel('Container(50).NumItems') or 0)):
+        control.selectItem(index);monitor.waitForAbort(.15)
+        result['second_page'].append(labels())
+    result['passed']=(result['root_metadata_passed']
+        and any(row['Label']=='fixture-200.mkv' for row in result['second_page'])
+        and not any(row['Property(Bobi.NextPage)']=='true' for row in result['second_page']))
 except Exception as error:
     result.update(passed=False,error=type(error).__name__,code=str(error),
         frames=[dict(function=f.name,line=f.lineno) for f in traceback.extract_tb(error.__traceback__)])

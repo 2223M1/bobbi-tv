@@ -157,7 +157,7 @@
       </control>
       <control type="label">
         <left>32</left><top>176</top><width>750</width><height>64</height>
-        <label>从「网盘与 NAS」或首页片单选一部开始；进度会留在这里。</label>
+        <label>从首页片单选一部开始；未看完的影院影片会留在这里。</label>
         <font>Body26</font><textcolor>text3</textcolor><aligny>center</aligny>
         <wrapmultiline>true</wrapmultiline>
       </control>

@@ -1,6 +1,7 @@
-"""Read-only device subtitle settings and instance-bound GUI-plane captures.
+"""Device subtitle evidence; explicit backed-up idle offset adjustment.
 
-Never changes settings, player, position, subtitles, account or calibration.
+Status/capture never mutate settings or playback. offset-idle changes only the
+observed F9 offset, never mode, font, styles, player, account or calibration.
 The screenshot includes GUI/subtitle overlays, not the AMLogic hardware video plane.
 """
 import argparse
@@ -40,7 +41,7 @@ def require(row):
 result=dict(before=current(),settings={})
 for name in ['subtitles.marginvertical','subtitles.align','subtitles.overridefonts','subtitles.overridestyles',
              'subtitles.overrideass','subtitles.fontsize','subtitles.fontname','subtitles.colorpick',
-             'subtitles.pgsverticalmode','subtitles.pgsverticaloffsetsteps','videoscreen.screenmode','videoplayer.adjustrefreshrate',
+             'subtitles.pgsverticalmode','subtitles.pgsverticaloffset','videoscreen.screenmode','videoplayer.adjustrefreshrate',
              'videoplayer.usedisplayasclock']:
     try:result['settings'][name]=rpc('Settings.GetSettingValue',dict(setting=name))['value']
     except RuntimeError:result['settings'][name]=dict(unavailable=True)
@@ -50,6 +51,22 @@ result['labels']=rpc('XBMC.GetInfoLabels',dict(labels=labels))
 result['gui']=rpc('GUI.GetProperties',dict(properties=['currentwindow','currentcontrol','skin']))
 document=ET.parse('/storage/.kodi/userdata/guisettings.xml').getroot()
 result['saved_calibrations']=[ET.tostring(n,encoding='unicode') for n in document.findall('./resolutions/resolution')]
+result['saved_position_settings']={n.get('id'):n.text for n in document.findall('setting') if n.get('id','').startswith('subtitles.pgs')}
+definition=Path('/usr/share/kodi/system/settings/settings.xml')
+if definition.is_file():
+ result['position_definitions']=[ET.tostring(n,encoding='unicode') for n in ET.parse(definition).iter('setting') if n.get('id','').startswith('subtitles.pgs')]
+if OFFSET is not None:
+    assert not result['before']['players'],'PLAYBACK_ACTIVE'
+    assert result['settings']['subtitles.pgsverticalmode']==5,'MODE_CHANGED'
+    assert result['settings']['subtitles.pgsverticaloffset']==EXPECTED_OFFSET,'OFFSET_CHANGED'
+    target=Path('/storage/.kodi/temp/bobbi-subtitle-layout');target.mkdir(exist_ok=True)
+    backup=target/(STAMP+'-settings-before.json')
+    with backup.open('x') as stream:json.dump(result['settings'],stream)
+    assert not current()['players'],'PLAYBACK_STARTED'
+    assert rpc('Settings.SetSettingValue',dict(setting='subtitles.pgsverticaloffset',value=OFFSET)) is True,'SET_FAILED'
+    result['offset_after']=rpc('Settings.GetSettingValue',dict(setting='subtitles.pgsverticaloffset'))['value']
+    assert result['offset_after']==OFFSET,'OFFSET_NOT_APPLIED'
+    result['settings_backup']=str(backup)
 if CAPTURE:
     require(result['before'])
     target=Path('/storage/.kodi/temp/bobbi-subtitle-layout')
@@ -66,15 +83,21 @@ print(json.dumps(result,ensure_ascii=True))
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('mode',choices=('status','capture'))
+    p.add_argument('mode',choices=('status','capture','offset-idle'))
     p.add_argument('--transport-source',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--instance')
     p.add_argument('--request')
     p.add_argument('--brief',action='store_true')
+    p.add_argument('--offset',type=int,choices=range(4))
+    p.add_argument('--expect-offset',type=int,choices=range(4))
     a=p.parse_args()
     if a.mode=='capture' and not (a.instance and a.request):
         p.error('capture requires observed --instance and --request')
+    if a.mode=='offset-idle' and (a.offset is None or a.expect_offset is None):
+        p.error('offset-idle requires --offset and the observed --expect-offset')
+    if a.mode!='offset-idle' and (a.offset is not None or a.expect_offset is not None):
+        p.error('offset arguments are only allowed in offset-idle')
     sys.path.insert(0,str(a.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('layout_wire',a.transport_source/'ui-redesign/tools/device_transport.py')
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -83,7 +106,8 @@ def main():
     helper=(ROOT/'tools/ce_ui_preview_remote.py').read_text(encoding='utf-8')
     node=next(n for n in ast.parse(helper).body if isinstance(n,ast.FunctionDef) and n.name=='framebuffer_png')
     header='from pathlib import Path\n'+ast.get_source_segment(helper,node)+'\n'
-    values=dict(CAPTURE=a.mode=='capture',INSTANCE=a.instance,REQUEST=a.request,STAMP=stamp)
+    values=dict(CAPTURE=a.mode=='capture',INSTANCE=a.instance,REQUEST=a.request,STAMP=stamp,
+                OFFSET=a.offset,EXPECTED_OFFSET=a.expect_offset)
     script='\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'+header+REMOTE
     client,wire=m.connect()
     try:
@@ -98,7 +122,7 @@ def main():
     record=a.output/('layout-'+stamp+'.json')
     record.write_text(json.dumps(dict(exit_code=rc,diagnostic_present=bool(diagnostic),result=result),
         ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    display={k:v for k,v in result.items() if k not in ('saved_calibrations','before','after')} if a.brief else result
+    display={k:v for k,v in result.items() if k not in ('saved_calibrations','position_definitions','before','after')} if a.brief else result
     print(json.dumps(dict(evidence=str(record),**display),ensure_ascii=False))
     return int(bool(rc or diagnostic))
 

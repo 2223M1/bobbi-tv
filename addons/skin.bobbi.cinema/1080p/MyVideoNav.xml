@@ -14,7 +14,7 @@
       <include content="StateBlock"><param name="y">420</param><param name="loading">true</param></include>
     </control>
     <control type="group">
-      <visible>!Container.IsUpdating + Integer.IsEqual(Container.NumItems,0)</visible>
+      <visible>!Container.IsUpdating + !Window.IsVisible(busydialog) + !Window.IsVisible(busydialognocancel) + Integer.IsEqual(Container.NumItems,0)</visible>
       <include content="StateBlock">
         <param name="y">420</param>
         <param name="empty">true</param>

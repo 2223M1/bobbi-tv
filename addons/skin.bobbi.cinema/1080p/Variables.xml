@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <includes>
+  <expression name="BobiIMECurrent">!String.IsEmpty(Window(10103).Property(BobiIME.Ready)) + String.IsEqual(Control.GetLabel(313),Window(10103).Property(BobiIME.Code)) + String.IsEqual(Control.GetLabel(314),Window(10103).Property(BobiIME.Page))</expression>
   <!-- Legacy recommendations must distinguish explicit person metadata from movie titles. -->
   <expression name="Exp_IsPersonInfo">String.IsEqual(ListItem.DBType,actor) | String.IsEqual(ListItem.DBType,person) | String.IsEqual(ListItem.Property(item.type),person) | String.IsEqual(ListItem.Property(tmdb_type),person)</expression>
   <!-- A "next page" row from any of our plugins: the explicit flag, the Chinese label, or the
