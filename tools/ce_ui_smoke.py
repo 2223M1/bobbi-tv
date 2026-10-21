@@ -41,6 +41,7 @@ print(path.read_text() if path.exists() else json.dumps(dict(passed=False,error=
             with client.open_sftp() as sftp:
                 sftp.mkdir(run, mode=0o700)
                 sftp.put(str(ROOT/'tools/ce_ui_smoke_remote.py'), run+'/smoke.py')
+                sftp.put(str(ROOT/'tools/ce_ui_preview_remote.py'), run+'/ce_ui_preview_remote.py')
         rc, result, diagnostic = wire.readonly(client, ('RUN='+repr(run)+'\nCOLLECT='+repr(bool(args.collect))+'\n'+script).encode(), deadline_seconds=48)
         (output/'result.json').write_text(json.dumps(dict(exit_code=rc,result=result,
             diagnostic_present=bool(diagnostic)),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

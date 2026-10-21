@@ -1,0 +1,65 @@
+{
+  "exit_code": 0,
+  "result": {
+    "scope": "real installed UI; synthetic QR/card data; no login exchange or playback",
+    "panels": [
+      {
+        "name": "account",
+        "dialog": 13001,
+        "focus": 9001,
+        "capture_method": "displayed-gui-framebuffer; no video plane",
+        "title": "登录自己的 115 网盘",
+        "cancelled": true
+      },
+      {
+        "name": "terminal",
+        "dialog": 13002,
+        "focus": 9003,
+        "capture_method": "displayed-gui-framebuffer; no video plane",
+        "title": "本集已播完",
+        "no_play_action": true
+      },
+      {
+        "name": "metadata",
+        "dialog": 13001,
+        "focus": 9001,
+        "capture_method": "displayed-gui-framebuffer; no video plane"
+      },
+      {
+        "name": "sources-before",
+        "dialog": 13002,
+        "focus": 1000
+      }
+    ],
+    "display_before": {
+      "System.ScreenSaverActive": false,
+      "System.DPMSActive": false,
+      "Window.IsActive(screensaver)": false
+    },
+    "display_after": {
+      "System.ScreenSaverActive": false,
+      "System.DPMSActive": false,
+      "Window.IsActive(screensaver)": false
+    },
+    "passed": false,
+    "error": "RuntimeError",
+    "frames": [
+      {
+        "module": "smoke.py",
+        "function": "<module>",
+        "line": 138
+      },
+      {
+        "module": "smoke.py",
+        "function": "inspect",
+        "line": 72
+      },
+      {
+        "module": "smoke.py",
+        "function": "framebuffer_png",
+        "line": 55
+      }
+    ]
+  },
+  "diagnostic_present": false
+}

@@ -34,6 +34,22 @@ def click(control):
     monitor.waitForAbort(.15)
 
 
+def capture(name):
+    # Candidate focus/commit triggers a short skin animation. Keep the stable
+    # framebuffer check; retry only its explicit pan-race, within one second.
+    for attempt in range(5):
+        if monitor.waitForAbort(.15) or not ours():
+            raise RuntimeError('CAPTURE_OWNERSHIP_CHANGED')
+        try:
+            raw=framebuffer_png()
+        except RuntimeError as error:
+            if str(error)!='FRAMEBUFFER_MOVING' or attempt==4:raise
+        else:
+            if not ours():raise RuntimeError('CAPTURE_OWNERSHIP_CHANGED')
+            (ROOT/name).write_bytes(raw)
+            return
+
+
 def drive():
     original_layout=None
     try:
@@ -55,15 +71,23 @@ def drive():
                 if len(matches)!=1:raise RuntimeError('CHARACTER_KEY_NOT_UNIQUE')
                 click(matches[0])
             wait(lambda:window.getProperty('BobiIME.Ready')=='1'
-                and xbmc.getInfoLabel('Control.GetLabel(313)')=='shi')
+                and xbmc.getInfoLabel('Control.GetLabel(313)')=='shi'
+                and window.getProperty('BobiIME.Code')=='shi'
+                and window.getProperty('BobiIME.Page')==xbmc.getInfoLabel('Control.GetLabel(314)'))
             expected=window.getProperty('BobiIME.Word%d'%index)
+            binding=(window.getProperty('BobiIME.Code'),window.getProperty('BobiIME.Page'))
             if not expected:raise RuntimeError('TEN_CANDIDATES_NOT_AVAILABLE')
             before=window.getControl(312).getText()
-            if index==0:(ROOT/'keyboard-candidates.png').write_bytes(framebuffer_png())
+            if index==0:capture('keyboard-candidates.png')
             # Use the visible candidate's actual XML onclick, not a direct
             # text assignment and not a synthetic call to the hidden button.
             window.setFocusId(500+index)
             wait(lambda:ours() and window.getFocusId()==500+index)
+            if (window.getProperty('BobiIME.Ready')!='1' or window.getFocusId()!=500+index
+                    or binding!=(xbmc.getInfoLabel('Control.GetLabel(313)'),xbmc.getInfoLabel('Control.GetLabel(314)'))
+                    or binding!=(window.getProperty('BobiIME.Code'),window.getProperty('BobiIME.Page'))
+                    or window.getProperty('BobiIME.Word%d'%index)!=expected):
+                raise RuntimeError('CANDIDATE_PAGE_CHANGED_BEFORE_SELECT')
             response=json.loads(xbmc.executeJSONRPC(json.dumps(dict(jsonrpc='2.0',id=1,
                 method='Input.Select'))))
             if 'error' in response:raise RuntimeError('CANDIDATE_CLICK_FAILED')
@@ -71,11 +95,15 @@ def drive():
             row=dict(visible_button=500+index,native_button=400+index,expected=expected,
                      actual=window.getControl(312).getText(),composition=xbmc.getInfoLabel('Control.GetLabel(313)'))
             result['rounds'].append(row)
-            if index==0:(ROOT/'keyboard-selected.png').write_bytes(framebuffer_png())
+            if index==0:capture('keyboard-selected.png')
         result['passed']=True
     except Exception as error:
         result.update(passed=False,error=type(error).__name__,code=str(error),
             frames=[dict(function=f.name,line=f.lineno) for f in traceback.extract_tb(error.__traceback__)])
+        if ours():
+            result['failure_state']=dict(focus=window.getFocusId(),ready=window.getProperty('BobiIME.Ready'),
+                native_code=xbmc.getInfoLabel('Control.GetLabel(313)'),published_code=window.getProperty('BobiIME.Code'),
+                native_page=xbmc.getInfoLabel('Control.GetLabel(314)'),published_page=window.getProperty('BobiIME.Page'))
     finally:
         if ours():
             # Preserve the previous layout; do not alter the configured list.

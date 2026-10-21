@@ -54,10 +54,19 @@ def main():
                 focused = window.getFocusId()
                 if 500 <= focused <= 511:
                     window.setFocusId(120)
+                window.setProperty('BobiIME.Code', code)
+                window.setProperty('BobiIME.Page', raw)
                 for i in range(10):
                     window.setProperty('BobiIME.Word' + str(i), words[i] if i < len(words) else '')
-                window.setProperty('BobiIME.Ready', '1' if words else '')
-                previous = current
+                # Labels can change between IPC reads while the user types.
+                # Publish only a complete page which is still native-current.
+                confirmed = (xbmc.getInfoLabel('Control.GetLabel(313)'),
+                             xbmc.getInfoLabel('Control.GetLabel(314)'))
+                if confirmed == current:
+                    window.setProperty('BobiIME.Ready', '1' if words else '')
+                    previous = current
+                else:
+                    previous = None
             if window.getProperty('BobiIME.Clear'):
                 window.clearProperty('BobiIME.Clear')
                 for _ in range(min(len(code), 256)):
@@ -70,7 +79,7 @@ def main():
         pass
     finally:
         if window.getProperty('BobiIME.Owner') == owner:
-            for name in ['Owner', 'Ready', 'Clear'] + ['Word' + str(i) for i in range(10)]:
+            for name in ['Owner', 'Ready', 'Clear', 'Code', 'Page'] + ['Word' + str(i) for i in range(10)]:
                 window.clearProperty('BobiIME.' + name)
 
 

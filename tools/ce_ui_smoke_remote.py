@@ -4,8 +4,6 @@ from pathlib import Path
 import sys
 import time
 import traceback
-import struct
-import zlib
 import hashlib
 import faulthandler
 from threading import Event, Thread
@@ -14,6 +12,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcvfs
+from ce_ui_preview_remote import framebuffer_png
 
 ROOT = Path(__file__).resolve().parent
 trace = (ROOT/'smoke-stack.txt').open('w')
@@ -35,41 +34,24 @@ frame_stop = Event()
 frame_worker = None
 
 
-def framebuffer_png():
-    # Same displayed-GUI capture used by the existing CE preview tools. Kodi's
-    # GL TakeScreenshot can read a blank back buffer on this AMLogic stack.
-    base = Path('/sys/class/graphics/fb0')
-    stride = int((base/'stride').read_text())
-    width, virtual_height = map(int,(base/'virtual_size').read_text().strip().split(','))
-    height = 1080
-    if not 0 < width*4 <= stride <= 32768 or not height <= virtual_height <= 16384:
-        raise RuntimeError('INVALID_FRAMEBUFFER_DIMENSIONS')
-    for attempt in range(3):
-        y = int((base/'pan').read_text().split(',')[1])
-        if not 0 <= y <= virtual_height-height: raise RuntimeError('INVALID_FRAMEBUFFER_OFFSET')
-        with Path('/dev/fb0').open('rb',buffering=0) as stream:
-            stream.seek(y*stride)
-            raw=stream.read(stride*height)
-        if len(raw)!=stride*height: raise RuntimeError('INCOMPLETE_FRAMEBUFFER')
-        if y==int((base/'pan').read_text().split(',')[1]): break
-    else: raise RuntimeError('FRAMEBUFFER_MOVING')
-    raw=b''.join(raw[row*stride:row*stride+width*4] for row in range(height))
-    rgba=bytearray(raw)
-    rgba[0::4],rgba[2::4]=raw[2::4],raw[0::4]
-    scan=b''.join(b'\0'+rgba[row*width*4:(row+1)*width*4] for row in range(height))
-    def chunk(kind,data):
-        return struct.pack('!I',len(data))+kind+data+struct.pack('!I',zlib.crc32(kind+data)&0xffffffff)
-    return (b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('!2I5B',width,height,8,6,0,0,0))
-        +chunk(b'IDAT',zlib.compress(scan,3))+chunk(b'IEND',b''))
-
-
 def inspect(name, current):
     if monitor.waitForAbort(.8) or xbmc.Player().isPlaying():
         raise RuntimeError('UI_SMOKE_INTERRUPTED')
     row = dict(name=name, dialog=xbmcgui.getCurrentWindowDialogId(), focus=current.getFocusId())
     result['panels'].append(row)
     (ROOT/'progress.json').write_text(json.dumps(result,ensure_ascii=False),encoding='utf-8')
-    (ROOT/(name+'.png')).write_bytes(framebuffer_png())
+    for attempt in range(5):
+        if xbmc.Player().isPlaying() or xbmcgui.getCurrentWindowDialogId()!=row['dialog']:
+            raise RuntimeError('UI_SMOKE_INTERRUPTED')
+        try:
+            raw=framebuffer_png()
+        except RuntimeError as error:
+            if str(error)!='FRAMEBUFFER_MOVING' or attempt==4:raise
+            if monitor.waitForAbort(.15):raise RuntimeError('UI_SMOKE_INTERRUPTED')
+        else:
+            (ROOT/(name+'.png')).write_bytes(raw)
+            row['capture_retries']=attempt
+            break
     row['capture_method'] = 'displayed-gui-framebuffer; no video plane'
     return row
 

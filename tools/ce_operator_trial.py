@@ -41,22 +41,47 @@ if OP in ('pause','resume'):
  # operator uses Kodi's ordinary control instead, never fabricates that token.
  own(snapshot())
  out['command_result']=rpc('Player.PlayPause',dict(playerid=1,play=OP=='resume'))
-elif OP in ('subtitle-position-manual','subtitle-position-original'):
+elif OP in ('subtitle-position-manual','subtitle-position-original','subtitle-offset-test'):
  names=['subtitles.align','subtitles.marginvertical','subtitles.overrideass','subtitles.overridestyles',
-        'subtitles.overridefonts','subtitles.fontname','subtitles.fontsize','subtitles.colorpick','subtitles.pgsverticalmode']
- def settings():return {n:rpc('Settings.GetSettingValue',dict(setting=n))['value'] for n in names}
+        'subtitles.overridefonts','subtitles.fontname','subtitles.fontsize','subtitles.colorpick','subtitles.pgsverticalmode','subtitles.pgsverticaloffset']
+ def settings():
+  values={}
+  for n in names:
+   try:values[n]=rpc('Settings.GetSettingValue',dict(setting=n))['value']
+   except AssertionError:
+    if n not in ('subtitles.align','subtitles.pgsverticaloffset'):raise
+    values[n]=None  # F9 JSON-RPC hides inactive dependent controls.
+  return values
  out['settings_before']=settings()
  target_align=0 if OP=='subtitle-position-manual' else 5
- assert out['settings_before']['subtitles.align']==(5 if target_align==0 else 0),'ALIGNMENT_CHANGED'
+ expected_align=0 if OP=='subtitle-position-original' else 5
+ assert out['settings_before']['subtitles.align']==expected_align,'ALIGNMENT_CHANGED'
  assert out['settings_before']['subtitles.overrideass'] is False,'STYLE_OVERRIDE_ACTIVE'
  assert out['settings_before']['subtitles.overridefonts'] is False,'FONT_OVERRIDE_ACTIVE'
  backup=pathlib.Path(RECORD).parent/('subtitle-position-backup-'+str(time.time_ns())+'.json')
  with backup.open('x') as stream:json.dump(out['settings_before'],stream)
  out['settings_backup']=str(backup)
  own(snapshot())
- assert rpc('Settings.SetSettingValue',dict(setting='subtitles.align',value=target_align)) is True,'SET_FAILED'
+ changes={'subtitles.align':target_align}
+ if OP=='subtitle-offset-test':
+  assert out['settings_before']['subtitles.pgsverticalmode']==0,'OFFSET_MODE_CHANGED'
+  assert rpc('Settings.SetSettingValue',dict(setting='subtitles.pgsverticalmode',value=5)) is True,'MODE_SET_FAILED'
+  try:
+   offset=rpc('Settings.GetSettingValue',dict(setting='subtitles.pgsverticaloffset'))['value']
+   assert offset==0,'OFFSET_CHANGED'
+   out['settings_before']['subtitles.pgsverticaloffset']=offset
+   backup.write_text(json.dumps(out['settings_before']))
+  except BaseException:
+   rpc('Settings.SetSettingValue',dict(setting='subtitles.pgsverticalmode',value=0))
+   raise
+  changes={'subtitles.pgsverticaloffset':3,'subtitles.pgsverticalmode':5}
+ for setting,value in changes.items():
+  own(snapshot())
+  assert rpc('Settings.SetSettingValue',dict(setting=setting,value=value)) is True,'SET_FAILED'
  out['settings_after']=settings()
- assert out['settings_after']==dict(out['settings_before'],**{'subtitles.align':target_align}),'OTHER_SETTING_CHANGED'
+ expected=dict(out['settings_before'],**changes)
+ if OP=='subtitle-offset-test':expected['subtitles.align']=None
+ assert out['settings_after']==expected,'OTHER_SETTING_CHANGED'
 elif OP=='subtitle-index':
  tracks=rpc('Player.GetProperties',dict(playerid=1,properties=['subtitles']))['subtitles']
  matches=[s for s in tracks if s['index']==SUB_INDEX and s['name']==SUB_NAME]
@@ -79,7 +104,7 @@ elif OP in ('subtitle-off','subtitle-on'):
 else:raise AssertionError('OPERATOR_SCOPE')
 out['observations']=[]
 for index in range(6):
- time.sleep(.2 if OP in ('pause','resume','subtitle-position-manual','subtitle-position-original','subtitle-index') else 2)
+ time.sleep(.2 if OP in ('pause','resume','subtitle-position-manual','subtitle-position-original','subtitle-offset-test','subtitle-index') else 2)
  value=snapshot();out['observations'].append(value)
  if value['native'].get('native_instance')!=record.get('native_instance'):break
 out['same_instance_after']=all(v['native'].get('native_instance')==record.get('native_instance') for v in out['observations'])
@@ -101,7 +126,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('work',choices=('arrival','mushishi','coherence','odd_taxi','tokyo_godfathers','flip_flappers','haibane_renmei'))
     parser.add_argument('operation',choices=('seek-tail','seek-middle','seek-exact','subtitle-off','subtitle-on',
-                                            'pause','resume','subtitle-position-manual','subtitle-position-original','subtitle-index'))
+                                            'pause','resume','subtitle-position-manual','subtitle-position-original','subtitle-offset-test','subtitle-index'))
     parser.add_argument('--seconds',type=float)
     parser.add_argument('--subtitle-index',type=int)
     parser.add_argument('--subtitle-name')

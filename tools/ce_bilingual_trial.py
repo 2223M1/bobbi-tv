@@ -85,13 +85,15 @@ def main():
     p.add_argument('work',choices=('arrival',))
     p.add_argument('--apply',action='store_true')
     p.add_argument('--inspect-applied',action='store_true')
+    p.add_argument('--attempt',type=int,choices=range(1,11),default=1)
     p.add_argument('--transport-source',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
     a=p.parse_args()
     sys.path.insert(0,str(a.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('bilingual_wire',a.transport_source/'ui-redesign/tools/device_transport.py')
     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-    code=('from pathlib import Path\nRECORD='+repr('/storage/.local/share/bobbi-private-trials/20261020/trial-'+a.work+'.json')+
+    record='trial-'+a.work+('' if a.attempt==1 else '-'+str(a.attempt))+'.json'
+    code=('from pathlib import Path\nRECORD='+repr('/storage/.local/share/bobbi-private-trials/20261020/'+record)+
           '\nAPPLY='+repr(a.apply)+'\nINSPECT='+repr(a.inspect_applied)+'\n'+REMOTE)
     wrapped='import json,traceback\ntry:\n exec(compile('+repr(code)+',"bilingual-trial","exec"))\nexcept Exception as e:\n print(json.dumps(dict(error=type(e).__name__,reason=str(e) if isinstance(e,AssertionError) else "BILINGUAL_TRIAL_FAILED",frames=[dict(function=f.name,line=f.lineno) for f in traceback.extract_tb(e.__traceback__)])))\n'
     c,w=m.connect()
