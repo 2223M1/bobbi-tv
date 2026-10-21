@@ -7,6 +7,7 @@ import traceback
 import struct
 import zlib
 import hashlib
+import faulthandler
 from threading import Event, Thread
 
 import xbmc
@@ -15,6 +16,8 @@ import xbmcgui
 import xbmcvfs
 
 ROOT = Path(__file__).resolve().parent
+trace = (ROOT/'smoke-stack.txt').open('w')
+faulthandler.dump_traceback_later(20, file=trace)
 addons = Path(xbmcvfs.translatePath('special://home/addons'))
 for path in sorted(addons.glob('script.module.*/lib')):
     sys.path.insert(0, str(path))
@@ -65,6 +68,7 @@ def inspect(name, current):
         raise RuntimeError('UI_SMOKE_INTERRUPTED')
     row = dict(name=name, dialog=xbmcgui.getCurrentWindowDialogId(), focus=current.getFocusId())
     result['panels'].append(row)
+    (ROOT/'progress.json').write_text(json.dumps(result,ensure_ascii=False),encoding='utf-8')
     (ROOT/(name+'.png')).write_bytes(framebuffer_png())
     row['capture_method'] = 'displayed-gui-framebuffer; no video plane'
     return row
@@ -192,4 +196,6 @@ finally:
     frame_stop.set()
     if frame_worker: frame_worker.join(2)
     if window is not None: window.close()
+    faulthandler.cancel_dump_traceback_later()
+    trace.close()
     (ROOT/'result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')

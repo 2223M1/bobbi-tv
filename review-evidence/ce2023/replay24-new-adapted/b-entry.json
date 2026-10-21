@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "probe": "entry_builder_document_dependency",
+  "scope": "isolated two-component synthetic fixture; no production signing or device validation",
+  "repository_mutated": false,
+  "production_checks_bypassed": false,
+  "temporary_private_key": "memory_only",
+  "cases": [
+    {
+      "with_license": false,
+      "signature_and_component_integrity": "passed",
+      "build": "passed",
+      "sequence": 2026102022
+    },
+    {
+      "with_license": true,
+      "signature_and_component_integrity": "passed",
+      "build": "passed",
+      "sequence": 2026102022
+    }
+  ],
+  "status": "blocker_not_reproduced",
+  "exit_code": 0
+}

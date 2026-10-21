@@ -1,0 +1,54 @@
+..............................F......................................... [ 93%]
+.....                                                                    [100%]
+================================== FAILURES ===================================
+_ test_real_dependency_adapter_seeds_absent_original_without_overwriting_existing _
+
+tmp_path = WindowsPath('C:/Users/theon/AppData/Local/Temp/pytest-of-2223M1/pytest-1189/test_real_dependency_adapter_s0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000174517DCC20>
+
+    def test_real_dependency_adapter_seeds_absent_original_without_overwriting_existing(tmp_path, monkeypatch):
+        import sys
+        import xml.etree.ElementTree as ET
+        from bobbi_platform.ce_install_ui import KodiHost
+        import bobbi_platform.ce_install_ui as ui
+        stage, live = tmp_path / 'stage', tmp_path / 'addons'
+        stage.mkdir(); live.mkdir()
+        for name in FULL_COMPONENTS:
+            target = stage / name
+            target.mkdir()
+            (target / 'addon.xml').write_text('<addon id="%s" version="1.0.0"><requires/></addon>' % name)
+            (target / 'notice').write_text('original author')
+        existing = live / 'script.module.requests'
+        existing.mkdir()
+        (existing / 'addon.xml').write_text('<addon id="script.module.requests" version="99.0.0"/>')
+        (existing / 'origin').write_text('repository.xbmc.org')
+        enabled, commands = set(), []
+        def details(name):
+            if name == 'script.module.pycryptodome':
+                return dict(version='3.4.3', enabled=True)
+            path = live / name / 'addon.xml'
+            return dict(version=ET.parse(path).getroot().get('version'), enabled=name in enabled) if path.exists() else None
+        monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=lambda: None,
+            executebuiltin=lambda *args: commands.append(args)))
+        monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(live)))
+        monkeypatch.setattr(ui, 'rpc', lambda method, params: enabled.add(params['addonid']))
+        host = KodiHost()
+        monkeypatch.setattr(host, 'details', details)
+>       host.dependencies(stage)
+
+tests\test_ce_general_installer.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+addons\script.module.bobbi.platform\lib\bobbi_platform\ce_install_ui.py:92: in dependencies
+    self.refresh()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <bobbi_platform.ce_install_ui.KodiHost object at 0x00000174517DD130>
+
+    def refresh(self):
+>       import xbmcgui
+E       ModuleNotFoundError: No module named 'xbmcgui'
+
+addons\script.module.bobbi.platform\lib\bobbi_platform\ce_install_ui.py:52: ModuleNotFoundError
+=========================== short test summary info ===========================
+FAILED tests/test_ce_general_installer.py::test_real_dependency_adapter_seeds_absent_original_without_overwriting_existing
+1 failed, 76 passed in 28.60s

@@ -1,0 +1,38 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261021-104200",
+  "mode": "view",
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "result": {
+    "players": [],
+    "gui": {
+      "currentcontrol": {
+        "label": "乒乓"
+      },
+      "currentwindow": {
+        "id": 10000,
+        "label": "主界面"
+      }
+    },
+    "labels": {
+      "Container(6).CurrentItem": "",
+      "Container(6).ListItem.Label": "",
+      "Container(6).NumItems": "",
+      "Control.GetLabel(1)": "",
+      "Control.GetLabel(10)": "",
+      "Control.GetLabel(11)": "",
+      "Control.GetLabel(2)": "",
+      "Control.GetLabel(3)": "",
+      "Control.GetLabel(4)": "",
+      "Control.GetLabel(5)": "",
+      "Control.GetLabel(6)": "",
+      "Window.Property(playback_error)": ""
+    },
+    "installation": {
+      "sequence": 2026102024,
+      "high_watermark": 2026102024,
+      "phase": "complete",
+      "tx": "d9fe5dbcb11047539f87edd5d1a3cf9c"
+    }
+  }
+}

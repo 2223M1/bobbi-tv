@@ -43,7 +43,12 @@ try:
              'special://home/addons/plugin.video.bobbi/service.py')
     quiesce_only = globals().get('QUIESCE_ONLY', False)
     result['quiesce_only'] = quiesce_only
-    for path in (() if quiesce_only else dict.fromkeys(paths)):
+    cooperative = globals().get('COOPERATIVE_STOP', False)
+    result['cooperative_stop'] = cooperative
+    if cooperative and not quiesce_only:
+        if call('quiesce', {'protocol':1}, timeout=.5) != {'accepted':True}:
+            raise RuntimeError('COOPERATIVE_STOP_NOT_ACCEPTED')
+    for path in (() if quiesce_only or cooperative else dict.fromkeys(paths)):
         xbmc.executebuiltin('StopScript('+path+')')
     until = time.monotonic()+15
     while not quiesce_only:

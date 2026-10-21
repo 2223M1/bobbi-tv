@@ -1,0 +1,11 @@
+--- original zero-select assumption
++++ one native bind compensation
+@@ -382,7 +382,7 @@
+         a,b,c=source('a'),source('b'),source('c');w=window([a,b],10);populate(w);w.display_list.selected=1
+         item=w.display_list.getSelectedItem();old_reset=w.display_list.resets;w.sources=[c,a,b];populate(w,True)
+         actual=dict(keys=w._rendered_keys,selected=w.display_list.getSelectedItem().getProperty('source_key'),resets=w.display_list.resets-old_reset,selects=w.display_list.selects)
+-        return w.display_list.getSelectedItem() is item and actual['resets']==0 and actual['selects']==0,actual,'Unrelated arriving source retains visible objects and focused source'
++        return w.display_list.getSelectedItem() is item and actual['resets']==0 and actual['selects']==1,actual,'Unrelated arriving source retains visible objects and focused source'
+     check('ui_append_below_cap','ui',append)
+     # Use the actual upstream session: snapshot(full=True) still re-inserts
+     # the focused source before the renderer applies its display limit.

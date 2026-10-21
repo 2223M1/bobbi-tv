@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "result": {
+    "passed": false,
+    "error": "UI_SMOKE_TIMEOUT"
+  },
+  "diagnostic_present": false
+}

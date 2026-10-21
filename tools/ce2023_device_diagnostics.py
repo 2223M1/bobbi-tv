@@ -36,11 +36,28 @@ for name in ('kodi.old.log','kodi.log'):
  with p.open('rb') as f:
   f.seek(max(0,p.stat().st_size-2*1024*1024));lines=f.read().decode('utf-8','replace').splitlines()
  for line in lines:
-  if 'subtitles297]' in line or 'subtitles283]' in line or '[BOBBI-TORRENT]' in line or '[bobbi-torrent]' in line:
+  if any(tag in line for tag in ('subtitles297]','subtitles283]','[BOBBI-TORRENT]','[bobbi-torrent]',
+      'CVideoPlayer','CDVD','CFileCache','CAMLCodec','CURLFile','SHARE_STREAM','sharestream')):
    # Fixed diagnostics only; avoid serializing URLs or arbitrary response bodies.
    if re.search(r'https?://|magnet:|Cookie|Authorization',line,re.I):continue
    out['log_events'].append(dict(log=name,text=line[:700]))
 out['log_events']=out['log_events'][-100:]
+if METADATA_ID:
+ import sqlite3,datetime
+ out['metadata_presence']=[]
+ for database in sorted(pathlib.Path('/storage/.kodi/userdata/addon_data/plugin.video.bobbi').glob('*.cached.sqlite'))[:8]:
+  connection=sqlite3.connect(database.as_uri()+'?mode=ro',uri=True,timeout=2)
+  try:
+   keys=['bobi_frontend_v1:tv:'+str(METADATA_ID)]
+   for locale in ('zh-CN','en-US','zh-cn','en-us'):
+    for ident in (METADATA_ID,str(METADATA_ID)):
+     keys.append('am6b_details283|'+json.dumps(['tv_details',{'id':ident},locale],sort_keys=True))
+   for key in keys:
+    # Do not deserialize arbitrary cached objects or renew/delete expired rows.
+    row=connection.execute('SELECT length(data), CAST(expires AS TEXT) FROM cached WHERE key=?',(key,)).fetchone()
+    out['metadata_presence'].append(dict(database=database.name,key=key,present=bool(row),
+      bytes=row[0] if row else None,expires=row[1] if row else None))
+  finally:connection.close()
 out['subtitle_cache']=[]
 base=pathlib.Path('/storage/.kodi/userdata/addon_data/plugin.video.bobbi/subtitle-cache283')
 if base.is_dir():
@@ -68,11 +85,11 @@ print(json.dumps(out))
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--subtitle-detail',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--subtitle-detail',action='store_true');p.add_argument('--metadata-id',type=int,choices=(60811,76013));a=p.parse_args()
     sys.path.insert(0,str(a.transport_source/'ui-redesign/runtime/ssh-python'))
     s=importlib.util.spec_from_file_location('diag_wire',a.transport_source/'ui-redesign/tools/device_transport.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
     c,w=m.connect()
-    try:rc,result,diag=w.readonly(c,('SUBTITLE_DETAIL='+repr(a.subtitle_detail)+'\n'+REMOTE).encode(),deadline_seconds=30)
+    try:rc,result,diag=w.readonly(c,('SUBTITLE_DETAIL='+repr(a.subtitle_detail)+'\nMETADATA_ID='+repr(a.metadata_id)+'\n'+REMOTE).encode(),deadline_seconds=30)
     finally:c.close()
     a.output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps(dict(transport_exit=rc,diagnostic_present=bool(diag),result=result),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
