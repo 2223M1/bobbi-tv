@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "73376a4558cfb2f2edefaeb96a41fde024494367c426414108930585547e3632",
+      "addon.xml": "96b648a4ac8dc13f7a98db6da75c8d0a7f2f6f710d21a943c33476e14c00615b",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "0e663d1c71de01063ab720be2467a19212975ad8f7edf0aa4c1ab3749f60cee5",
       "CHANGELOG.md": "bbaf386d6e9fe0a3faadc41bb3ef13fe862611ca35736567e68e2afa9a947c15",
@@ -214,7 +214,7 @@
       "lib/clients/tmdb/navigation.py": "9166db6857d7ea34113b70fe08d29d80fb4f4451addf5b08791a12363b127047",
       "lib/clients/tmdb/original_audio.py": "8fcb9cf4a62055b84d516d2e932de431d5d0c0adbb0f3d7a4cc61f4150a17585",
       "lib/clients/tmdb/people_client.py": "188b9e9434bf0b432173498b9bb280e052b563092784531b05b5553965f79766",
-      "lib/clients/tmdb/related_movies.py": "8c229804fd66ac131f63dc0ce5733f7dc75948071d1f2c9c01bcb0b072ea68f0",
+      "lib/clients/tmdb/related_movies.py": "8ccb9f02bf1fbeb9fb1dada4643c63c681bcbfc50116b592fe46eb25804e93c9",
       "lib/clients/tmdb/season_card.py": "7d0c5b628ed538880ddeb92bae52ec91b4014ff9415bbd49b4c7c4ccbd73107a",
       "lib/clients/tmdb/season_cards.py": "5e1598c6344294802403915a9bb5907fb394e6b15b03af7172687a8c42e04e70",
       "lib/clients/tmdb/subtitle_scope.py": "ad53d2d2e87ab94c7da38ba7b4c6461d94c4dd1bc7be0356e43538421fa61f8d",
@@ -605,7 +605,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "bebfa8c5af61d617e016a62188f5316a69b9a89e70c13b4261845e70f3ff1206",
+      "addon.xml": "771dd4e032551fb3aaa6a63754e9322e0a06e33e6c33e4bbc4a7ce86e109303c",
       "default.py": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
     },
     "script.module.bobbi.catalog": {

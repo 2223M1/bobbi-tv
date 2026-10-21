@@ -1,4 +1,4 @@
-<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.22" provider-name="bobbi TV / Sam-Max and contributors">
+<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.23" provider-name="bobbi TV / Sam-Max and contributors">
   <requires>
     <import addon="script.module.bobbi.core" version="0.1.21" />
     <import addon="script.module.bobbi.mdsub" version="0.1.0" />

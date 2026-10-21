@@ -25,6 +25,50 @@ def cached(now=1000):
     return dict(schema=3, id=1200, time=now, show=show(), movies=[movie()], complete=True)
 
 
+@pytest.mark.parametrize('identifiers,slow_seconds,healthy_seconds', [
+    ((100, 101, 8900, 8901), 4, 1),
+    ((100, 101, 8901), 3.5, 2),  # Last candidate starts but exhausts remainder.
+])
+def test_partial_discovery_rotates_past_persistent_slow_prefix(monkeypatch, identifiers, slow_seconds, healthy_seconds):
+    """A later healthy movie must not lose every 8 s pass to the same failures."""
+    from concurrent.futures import Future
+    clock, calls, until = [0.0], [], [8]
+    monkeypatch.setattr(films.time, 'monotonic', lambda: clock[0])
+    class InlinePool:
+        def __init__(self, **_): pass
+        def __enter__(self): return self
+        def __exit__(self, *_): pass
+        def submit(self, fn, *args):
+            future = Future()
+            try: future.set_result(fn(*args))
+            except Exception as error: future.set_exception(error)
+            return future
+    monkeypatch.setattr(films, 'ThreadPoolExecutor', InlinePool)
+    rows = [dict(movie(), id=i) for i in identifiers]
+    def fetch(action, args):
+        if action == 'search_movie':
+            return dict(results=rows, page=1, total_pages=1, total_results=len(rows))
+        assert action == 'movie_details'
+        calls.append(args)
+        if args in (100, 101):
+            clock[0] += slow_seconds
+            raise TimeoutError('persistent prefix')
+        if clock[0] + healthy_seconds > until[0]:
+            clock[0] = until[0]
+            raise TimeoutError('budget truncated final candidate')
+        clock[0] += healthy_seconds
+        return dict(movie(), id=args)
+    value = dict(cached(), complete=False)
+    value, _ = films.discover(1200, fetch, value, now=1000, show=show(), deadline=8)
+    assert not value['complete'] and [row['id'] for row in value['movies']] == [8900]
+    clock[0] = 60
+    until[0] = 68
+    value, _ = films.discover(1200, fetch, value, now=1060, show=show(), deadline=68)
+    assert not value['complete']  # Failures are never reclassified as success.
+    assert [row['id'] for row in value['movies']] == [8900, 8901]
+    assert calls.count(8901) == (2 if healthy_seconds == 2 else 1)
+
+
 class Item:
     def __init__(self, label):
         self.label, self.properties, self.tag = label, {}, MagicMock()

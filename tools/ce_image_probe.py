@@ -9,7 +9,7 @@ root=pathlib.Path('/storage/.kodi')
 profile=root/'userdata/addon_data/script.module.bobbi.platform'
 runtime=profile/'image-runtime.json'
 config=json.loads(runtime.read_text()) if runtime.is_file() else {}
-result=dict(runtime_present=bool(config),port=config.get('port'),texture_origins={},old_local_ports={},current_local_rows=0)
+result=dict(runtime_present=bool(config),port=config.get('port'),stable_endpoint_present=(profile/'image-endpoint.json').is_file(),texture_origins={},old_local_ports={},current_local_rows=0)
 def rpc(method,params):
  q=urllib.request.Request('http://127.0.0.1:8080/jsonrpc',json.dumps(dict(jsonrpc='2.0',id=1,method=method,params=params)).encode(),{'Content-Type':'application/json'})
  with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(q,timeout=4) as f:return json.load(f).get('result',{})
