@@ -1,4 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- Control defaults for windows that have not been rebuilt by hand yet.
+     Only colours and textures change here; positions and sizes stay as inherited so
+     untouched windows keep their layout. Text tokens: white=F5F3EF, grey3=7E7D79,
+     grey2=B4B2AD (colors/defaults.xml). Focus = white fill with dark text where the
+     control can recolour text; otherwise the raised row-focus ring (settings rows,
+     spin/slider/select) which Kodi draws without changing the label colour. -->
 <includes>
   <default type="image">
     <left>0</left>
@@ -21,8 +27,9 @@
   <default type="button">
     <width>450</width>
     <height>63</height>
-    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
-    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+    <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
+    <focusedcolor>on_focus</focusedcolor>
     <font>font13</font>
     <textcolor>white</textcolor>
     <disabledcolor>grey3</disabledcolor>
@@ -35,10 +42,10 @@
     <top>251</top>
     <width>30</width>
     <height>30</height>
-    <texturefocus>am6b/icon-up-focus.png</texturefocus>
-    <texturenofocus>am6b/icon-up.png</texturenofocus>
-    <alttexturefocus>am6b/icon-down-focus.png</alttexturefocus>
-    <alttexturenofocus>am6b/icon-down.png</alttexturenofocus>
+    <texturefocus colordiffuse="focus">bobi/icons/chevron-down.png</texturefocus>
+    <texturenofocus colordiffuse="text2">bobi/icons/chevron-down.png</texturenofocus>
+    <alttexturefocus colordiffuse="focus">bobi/icons/chevron-up.png</alttexturefocus>
+    <alttexturenofocus colordiffuse="text2">bobi/icons/chevron-up.png</alttexturenofocus>
     <textcolor>white</textcolor>
     <label />
     <font>font13</font>
@@ -57,21 +64,21 @@
   <default type="progress">
     <left>150</left>
     <top>488</top>
-    <texturebg border="9,13,9,13">am6b/progress-bg.png</texturebg>
+    <texturebg colordiffuse="40FFFFFF" border="4,0,4,0">bobi/bar8.png</texturebg>
     <lefttexture />
-    <midtexture border="9,13,9,13">am6b/progress-fill.png</midtexture>
+    <midtexture colordiffuse="accent" border="4,0,4,0">bobi/bar8.png</midtexture>
     <righttexture />
     <overlaytexture />
   </default>
   <default type="spincontrol">
     <left>495</left>
     <top>189</top>
-    <textureup>am6b/icon-up.png</textureup>
-    <texturedown>am6b/icon-down.png</texturedown>
-    <textureupdisabled colordiffuse="40FFFFFF">am6b/icon-up.png</textureupdisabled>
-    <texturedowndisabled colordiffuse="40FFFFFF">am6b/icon-down.png</texturedowndisabled>
-    <textureupfocus>am6b/icon-up-focus.png</textureupfocus>
-    <texturedownfocus>am6b/icon-down-focus.png</texturedownfocus>
+    <textureup colordiffuse="text2">bobi/icons/chevron-up.png</textureup>
+    <texturedown colordiffuse="text2">bobi/icons/chevron-down.png</texturedown>
+    <textureupdisabled colordiffuse="text_disabled">bobi/icons/chevron-up.png</textureupdisabled>
+    <texturedowndisabled colordiffuse="text_disabled">bobi/icons/chevron-down.png</texturedowndisabled>
+    <textureupfocus colordiffuse="focus">bobi/icons/chevron-up.png</textureupfocus>
+    <texturedownfocus colordiffuse="focus">bobi/icons/chevron-down.png</texturedownfocus>
     <align>right</align>
     <width>50</width>
     <height>33</height>
@@ -91,14 +98,14 @@
     <height>63</height>
     <spinwidth>50</spinwidth>
     <spinheight>33</spinheight>
-    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+    <texturefocus />
     <texturenofocus />
-    <textureup>am6b/icon-up.png</textureup>
-    <texturedown>am6b/icon-down.png</texturedown>
-    <textureupdisabled colordiffuse="40FFFFFF">am6b/icon-up.png</textureupdisabled>
-    <texturedowndisabled colordiffuse="40FFFFFF">am6b/icon-down.png</texturedowndisabled>
-    <textureupfocus>am6b/icon-up-focus.png</textureupfocus>
-    <texturedownfocus>am6b/icon-down-focus.png</texturedownfocus>
+    <textureup colordiffuse="text2">bobi/icons/chevron-up.png</textureup>
+    <texturedown colordiffuse="text2">bobi/icons/chevron-down.png</texturedown>
+    <textureupdisabled colordiffuse="text_disabled">bobi/icons/chevron-up.png</textureupdisabled>
+    <texturedowndisabled colordiffuse="text_disabled">bobi/icons/chevron-down.png</texturedowndisabled>
+    <textureupfocus colordiffuse="focus">bobi/icons/chevron-up.png</textureupfocus>
+    <texturedownfocus colordiffuse="focus">bobi/icons/chevron-down.png</texturedownfocus>
     <font>font13</font>
     <textcolor>white</textcolor>
     <disabledcolor>grey3</disabledcolor>
@@ -114,14 +121,15 @@
     <height>63</height>
     <radiowidth>36</radiowidth>
     <radioheight>36</radioheight>
-    <textureradioonfocus>am6b/radio-on.png</textureradioonfocus>
-    <textureradioonnofocus>am6b/radio-on.png</textureradioonnofocus>
-    <textureradioofffocus>am6b/radio-off.png</textureradioofffocus>
-    <textureradiooffnofocus>am6b/radio-off.png</textureradiooffnofocus>
-    <textureradioondisabled colordiffuse="40FFFFFF">am6b/radio-on.png</textureradioondisabled>
-    <textureradiooffdisabled colordiffuse="40FFFFFF">am6b/radio-off.png</textureradiooffdisabled>
-    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
-    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <textureradioonfocus colordiffuse="on_focus">bobi/radio-on.png</textureradioonfocus>
+    <textureradioonnofocus colordiffuse="accent">bobi/radio-on.png</textureradioonnofocus>
+    <textureradioofffocus colordiffuse="on_focus">bobi/radio-off.png</textureradioofffocus>
+    <textureradiooffnofocus colordiffuse="text3">bobi/radio-off.png</textureradiooffnofocus>
+    <textureradioondisabled colordiffuse="text_disabled">bobi/radio-on.png</textureradioondisabled>
+    <textureradiooffdisabled colordiffuse="text_disabled">bobi/radio-off.png</textureradiooffdisabled>
+    <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+    <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
+    <focusedcolor>on_focus</focusedcolor>
     <font>font11</font>
     <textcolor>white</textcolor>
     <disabledcolor>grey3</disabledcolor>
@@ -154,13 +162,13 @@
     <height>75</height>
     <label />
     <font>font12</font>
-    <texturefocus />
-    <texturenofocus />
-    <texturebg>am6b/button-focus.png</texturebg>
-    <textureleft>scroll-left.png</textureleft>
-    <textureleftfocus>scroll-left-focus.png</textureleftfocus>
-    <textureright>scroll-right.png</textureright>
-    <texturerightfocus>scroll-right-focus.png</texturerightfocus>
+    <texturefocus>bobi/row-focus.png</texturefocus>
+    <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
+    <texturebg />
+    <textureleft colordiffuse="text2">bobi/icons/chevron-left.png</textureleft>
+    <textureleftfocus colordiffuse="focus">bobi/icons/chevron-left.png</textureleftfocus>
+    <textureright colordiffuse="text2">bobi/icons/chevron-right.png</textureright>
+    <texturerightfocus colordiffuse="focus">bobi/icons/chevron-right.png</texturerightfocus>
     <textcolor>white</textcolor>
     <disabledcolor>grey3</disabledcolor>
     <aligny>center</aligny>
@@ -174,14 +182,14 @@
     <height>53</height>
     <textoffsetx>11</textoffsetx>
     <aligny>center</aligny>
-    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
-    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <texturefocus>bobi/row-focus.png</texturefocus>
+    <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
     <sliderwidth>150</sliderwidth>
     <sliderheight>20</sliderheight>
-    <texturesliderbar>osd_slider_bg.png</texturesliderbar>
-    <texturesliderbardisabled colordiffuse="black">osd_slider_bg.png</texturesliderbardisabled>
-    <textureslidernib>osd_slider_nibNF.png</textureslidernib>
-    <textureslidernibfocus>osd_slider_nib.png</textureslidernibfocus>
+    <texturesliderbar colordiffuse="40FFFFFF" border="12,0,12,0">bobi/slider-track.png</texturesliderbar>
+    <texturesliderbardisabled colordiffuse="text_disabled" border="12,0,12,0">bobi/slider-track.png</texturesliderbardisabled>
+    <textureslidernib colordiffuse="text2">bobi/dot.png</textureslidernib>
+    <textureslidernibfocus colordiffuse="accent">bobi/dot.png</textureslidernibfocus>
     <font>font12</font>
     <textcolor>white</textcolor>
     <disabledcolor>grey3</disabledcolor>
@@ -189,22 +197,23 @@
   <default type="mover">
     <left>90</left>
     <top>288</top>
-    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
-    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
+    <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
   </default>
   <default type="resize">
     <left>90</left>
     <top>288</top>
-    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
-    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
+    <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
   </default>
   <default type="edit">
     <left>450</left>
     <top>300</top>
     <width>450</width>
     <height>63</height>
-    <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
-    <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+    <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
+    <texturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</texturenofocus>
+    <focusedcolor>on_focus</focusedcolor>
     <font>font13</font>
     <textcolor>white</textcolor>
     <disabledcolor>grey3</disabledcolor>

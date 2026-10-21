@@ -150,7 +150,7 @@
         <align>center</align>
         <aligny>center</aligny>
         <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <label>186</label>
         <font>font12_title</font>
       </control>
@@ -161,7 +161,7 @@
         <align>center</align>
         <aligny>center</aligny>
         <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+            <texturefocus colordiffuse="focus" border="14">bobi/r14.png</texturefocus>
         <label>13007</label>
         <font>font12_title</font>
       </control>

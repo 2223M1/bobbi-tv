@@ -31,9 +31,13 @@
   <color name="text_shadow">C0000000</color>
   <color name="grey3">FF5A5A5A</color>
   <color name="surface2">FF282830</color>
-  <color name="blue">FFE50914</color>
-  <color name="lightblue">FFF45B63</color>
-  <color name="orange">FFE50914</color>
-  <color name="red">FFE50914</color>
-  <color name="warning">FFF5A623</color>
+  <color name="blue">FFFF8A3D</color>
+  <color name="lightblue">FFFFB27F</color>
+  <color name="orange">FFFF8A3D</color>
+  <color name="red">FFFF5A5F</color>
+  <color name="warning">FFF5C451</color>
+  <!-- Compatibility names retained by Kodi's legacy windows. -->
+  <color name="button_focus">FFFFFFFF</color>
+  <color name="Box2">FF2A2E37</color>
+  <color name="Fallback">FF15171C</color>
 </colors>

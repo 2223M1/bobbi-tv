@@ -12,7 +12,7 @@
         <top>0</top>
         <width>1680</width>
         <height>1080</height>
-        <texture colordiffuse="FF161616">am6b/white.png</texture>
+        <texture colordiffuse="surface">bobi/white.png</texture>
       </control>
       <control type="button">
         <description>Close Window button</description>
@@ -105,7 +105,7 @@
                 <width>1140</width>
                 <height>45</height>
                 <visible>Control.HasFocus(49)</visible>
-                <texture colordiffuse="FF383838">am6b/white.png</texture>
+                <texture colordiffuse="focus">bobi/white.png</texture>
                 <include>VisibleFadeEffect</include>
               </control>
               <control type="label">

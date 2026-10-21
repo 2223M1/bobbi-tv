@@ -67,7 +67,7 @@
                 <height>20</height>
                 <bottom>50</bottom>
                 <textoffsetx>20</textoffsetx>
-                <selectedcolor>blue</selectedcolor>
+                <selectedcolor>accent</selectedcolor>
               </control>
               <control type="label">
                 <font>font10</font>
@@ -76,7 +76,7 @@
                 <height>20</height>
                 <bottom>20</bottom>
                 <textoffsetx>20</textoffsetx>
-                <selectedcolor>blue</selectedcolor>
+                <selectedcolor>accent</selectedcolor>
               </control>
             </control>
           </control>
@@ -107,7 +107,7 @@
                 <height>20</height>
                 <bottom>50</bottom>
                 <textoffsetx>20</textoffsetx>
-                <selectedcolor>blue</selectedcolor>
+                <selectedcolor>accent</selectedcolor>
               </control>
               <control type="label">
                 <font>font10</font>
@@ -116,7 +116,7 @@
                 <height>20</height>
                 <bottom>20</bottom>
                 <textoffsetx>20</textoffsetx>
-                <selectedcolor>blue</selectedcolor>
+                <selectedcolor>accent</selectedcolor>
               </control>
             </control>
           </control>
@@ -291,7 +291,7 @@
           <width>1220</width>
           <label>[COLOR=ffededed][B]$INFO[VideoPlayer.Season,S,]$INFO[VideoPlayer.Episode,E, ]$INFO[VideoPlayer.Title,, ~ ][/B][/COLOR]$INFO[VideoPlayer.Plot]</label>
           <font>font10</font>
-          <textcolor>FFE50914</textcolor>
+          <textcolor>text2</textcolor>
           <height>72</height>
           <autoscroll time="2000" delay="2000" repeat="4000">true</autoscroll>
         </control>

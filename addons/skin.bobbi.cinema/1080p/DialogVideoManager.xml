@@ -35,7 +35,7 @@
           <width>216</width>
           <height>240</height>
           <aspectratio>stretch</aspectratio>
-          <texture colordiffuse="FF161616">am6b/white.png</texture>
+          <texture colordiffuse="surface">bobi/white.png</texture>
           <colordiffuse>AAFFFFFF</colordiffuse>
         </control>
         <control type="list" id="50">
@@ -54,7 +54,7 @@
               <top>0</top>
               <width>625</width>
               <height>129</height>
-              <texture colordiffuse="FF242424">am6b/white.png</texture>
+              <texture colordiffuse="surface_hi">bobi/white.png</texture>
             </control>
             <control type="image">
               <left>3</left>
@@ -96,7 +96,7 @@
               <top>0</top>
               <width>625</width>
               <height>129</height>
-              <texture colordiffuse="FF242424">am6b/white.png</texture>
+              <texture colordiffuse="surface_hi">bobi/white.png</texture>
               <visible>!Control.HasFocus(50)</visible>
               <include>VisibleFadeEffect</include>
             </control>
@@ -105,7 +105,7 @@
               <top>0</top>
               <width>625</width>
               <height>129</height>
-              <texture colordiffuse="FF454545">am6b/white.png</texture>
+              <texture colordiffuse="focus">bobi/white.png</texture>
               <visible>Control.HasFocus(50)</visible>
               <include>VisibleFadeEffect</include>
             </control>
@@ -178,88 +178,88 @@
           <top>48</top>
           <onleft>50</onleft>
           <onright>50</onright>
-          <control type="button" id="21">
+<control type="button" id="21">
             <description>Play button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[208]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
           </control>
-          <control type="button" id="22">
+<control type="button" id="22">
             <description>Add version button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[40014]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
             <visible>Window.IsVisible(managevideoversions)</visible>
           </control>
-          <control type="button" id="23">
+<control type="button" id="23">
             <description>Add extras button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[40015]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
             <visible>Window.IsVisible(managevideoextras)</visible>
           </control>
-          <control type="button" id="27">
+<control type="button" id="27">
             <description>Choose art button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[13511]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
           </control>
-          <control type="button" id="24">
+<control type="button" id="24">
             <description>Rename version button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[40004]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
             <visible>Window.IsVisible(managevideoversions)</visible>
           </control>
-          <control type="button" id="28">
+<control type="button" id="28">
             <description>Rename extra button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[118]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
             <visible>Window.IsVisible(managevideoextras)</visible>
           </control>
-          <control type="button" id="26">
+<control type="button" id="26">
             <description>Remove button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[15015]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
           </control>
-          <control type="button" id="25">
+<control type="button" id="25">
             <description>Set Default button</description>
             <width>300</width>
             <height>60</height>
             <label>$LOCALIZE[40023]</label>
             <font>font12_title</font>
             <textcolor>white</textcolor>
-            <focusedcolor>white</focusedcolor>
+            <focusedcolor>on_focus</focusedcolor>
             <align>center</align>
             <visible>Window.IsVisible(managevideoversions)</visible>
           </control>

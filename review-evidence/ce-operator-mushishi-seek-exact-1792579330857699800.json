@@ -1,0 +1,378 @@
+{
+  "result": {
+    "operation": "seek-exact",
+    "before": {
+      "at": 2309201.200386633,
+      "native": {
+        "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+        "monotonic_us": 2308867163075,
+        "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+        "open_epoch": 5,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "3dafd1f2136040dea472b0df943ecc07",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+        "user_intent": 0
+      },
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "properties": {
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "CASO-SC"
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "time": {
+          "hours": 0,
+          "milliseconds": 575,
+          "minutes": 5,
+          "seconds": 28
+        },
+        "totaltime": {
+          "hours": 0,
+          "milliseconds": 40,
+          "minutes": 23,
+          "seconds": 39
+        }
+      }
+    },
+    "atomic_instance_control": false,
+    "operator_test": true,
+    "command_result": {
+      "percentage": 23.17003059387207,
+      "time": {
+        "hours": 0,
+        "milliseconds": 792,
+        "minutes": 5,
+        "seconds": 28
+      },
+      "totaltime": {
+        "hours": 0,
+        "milliseconds": 40,
+        "minutes": 23,
+        "seconds": 39
+      }
+    },
+    "target_seconds": 156.0,
+    "observations": [
+      {
+        "at": 2309203.724267221,
+        "native": {
+          "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "monotonic_us": 2308867163075,
+          "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3dafd1f2136040dea472b0df943ecc07",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "CASO-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 803,
+            "minutes": 5,
+            "seconds": 28
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 40,
+            "minutes": 23,
+            "seconds": 39
+          }
+        }
+      },
+      {
+        "at": 2309205.737279984,
+        "native": {
+          "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "monotonic_us": 2308867163075,
+          "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3dafd1f2136040dea472b0df943ecc07",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "CASO-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 346,
+            "minutes": 2,
+            "seconds": 35
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 40,
+            "minutes": 23,
+            "seconds": 39
+          }
+        }
+      },
+      {
+        "at": 2309207.748116492,
+        "native": {
+          "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "monotonic_us": 2308867163075,
+          "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3dafd1f2136040dea472b0df943ecc07",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "CASO-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 815,
+            "minutes": 2,
+            "seconds": 37
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 40,
+            "minutes": 23,
+            "seconds": 39
+          }
+        }
+      },
+      {
+        "at": 2309209.759094789,
+        "native": {
+          "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "monotonic_us": 2308867163075,
+          "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3dafd1f2136040dea472b0df943ecc07",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "CASO-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 733,
+            "minutes": 2,
+            "seconds": 38
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 40,
+            "minutes": 23,
+            "seconds": 39
+          }
+        }
+      },
+      {
+        "at": 2309211.768418584,
+        "native": {
+          "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "monotonic_us": 2308867163075,
+          "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3dafd1f2136040dea472b0df943ecc07",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "CASO-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 336,
+            "minutes": 2,
+            "seconds": 42
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 40,
+            "minutes": 23,
+            "seconds": 39
+          }
+        }
+      },
+      {
+        "at": 2309213.779635342,
+        "native": {
+          "file_identity": "transport:60f10a9def8f21fad25acfa74be4a0c25543070e54f1c11507a8e6d790d3b7e4|transport:7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "monotonic_us": 2308867163075,
+          "native_instance": "2b7addd3-9e5f-44be-bbd2-f213af90a188",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "3dafd1f2136040dea472b0df943ecc07",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "7a3ef539f2aa4753173d3ef3487b4ee145762a99d94d9b6283876647c2662875",
+          "user_intent": 0
+        },
+        "players": [
+          {
+            "playerid": 1,
+            "playertype": "internal",
+            "type": "video"
+          }
+        ],
+        "properties": {
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": "CASO-SC"
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "time": {
+            "hours": 0,
+            "milliseconds": 321,
+            "minutes": 2,
+            "seconds": 43
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 40,
+            "minutes": 23,
+            "seconds": 39
+          }
+        }
+      }
+    ],
+    "same_instance_after": true
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

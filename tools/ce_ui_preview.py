@@ -14,7 +14,7 @@ import uuid
 import xml.etree.ElementTree as ET
 import zipfile
 
-from ce_ui_preview_remote import allowed
+from ce_ui_preview_remote import allowed, window_name
 
 REMOTE = Path(__file__).with_name('ce_ui_preview_remote.py')
 COMPONENTS = {'skin': 'addons/skin.bobbi.cinema', 'dialogs': 'addons/plugin.video.bobbi/resources/skins'}
@@ -56,11 +56,15 @@ def main():
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--scope', choices=('skin', 'dialogs', 'both'), default='both')
     parser.add_argument('--transaction')
+    parser.add_argument('--window', type=window_name,
+        help='Verified idle navigation: home, personal/mine, library, videos, settings, skinsettings, addonbrowser, cinema, keyboard')
     args = parser.parse_args()
     if args.mode == 'deploy' and not args.source_root:
         parser.error('deploy requires --source-root')
     if args.mode in ('rollback', 'screenshot') and not args.transaction:
         parser.error(args.mode + ' requires --transaction')
+    if args.window and args.mode not in ('deploy', 'screenshot'):
+        parser.error('--window is supported by deploy and screenshot only')
     args.output.mkdir(parents=True, exist_ok=True)
     sys.path.insert(0, str(args.transport_source / 'ui-redesign/runtime/ssh-python'))
     spec = importlib.util.spec_from_file_location('preview_wire', args.transport_source / 'ui-redesign/tools/device_transport.py')
@@ -68,7 +72,7 @@ def main():
     spec.loader.exec_module(transport)
     client, wire = transport.connect()
     stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + '-' + uuid.uuid4().hex[:8]
-    record = dict(mode=args.mode, transaction=args.transaction, operations=[])
+    record = dict(mode=args.mode, transaction=args.transaction, window=args.window, operations=[])
     def remote(mode, params):
         script = 'MODE=' + repr(mode) + '\nPARAMS=' + repr(params) + '\n' + REMOTE.read_text(encoding='utf-8')
         rc, result, diag = wire.readonly(client, script.encode('utf-8'), deadline_seconds=55)
@@ -90,6 +94,8 @@ def main():
             record['files'] = files
             if not files:
                 record['state'] = 'unchanged'
+                if args.window:
+                    record['result'] = remote('screenshot', dict(transaction=transaction, window=args.window))
             else:
                 components = {name.split('/')[0] for name in files}
                 prepared = remote('prepare', dict(transaction=transaction, files=files,
@@ -97,9 +103,9 @@ def main():
                 with client.open_sftp() as sftp:
                     sftp.put(str(archive), prepared['remote_path'])
                 record['result'] = remote('deploy', dict(transaction=transaction,
-                    sha256=hashlib.sha256(archive.read_bytes()).hexdigest()))
+                    sha256=hashlib.sha256(archive.read_bytes()).hexdigest(), window=args.window))
         else:
-            record['result'] = remote(args.mode, dict(transaction=args.transaction))
+            record['result'] = remote(args.mode, dict(transaction=args.transaction, window=args.window))
         screenshot = record.get('result', {}).get('screenshot')
         if screenshot:
             local = args.output / (args.mode + '-' + stamp + '.png')
@@ -116,6 +122,7 @@ def main():
         output.write_text(json.dumps(record, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
     print(json.dumps(dict(evidence=str(output), transaction=record['transaction'],
         changed_files=len(record.get('files', {})), state=record.get('state', record.get('result', {}).get('state')),
+        window=args.window,
         screenshot=record.get('result', {}).get('screenshot', {}).get('local_path'), error=record.get('error')), ensure_ascii=False))
     return int('error' in record)
 

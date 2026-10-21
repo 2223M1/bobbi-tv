@@ -47,7 +47,7 @@
           <top>0</top>
           <width>788</width>
           <height>60</height>
-          <texture colordiffuse="FF242424">am6b/white.png</texture>
+          <texture colordiffuse="surface_hi">bobi/white.png</texture>
         </control>
         <control type="label">
           <left>15</left>
@@ -69,7 +69,7 @@
           <width>788</width>
           <height>60</height>
           <visible>!Control.HasFocus(10)</visible>
-          <texture colordiffuse="FF242424">am6b/white.png</texture>
+          <texture colordiffuse="surface_hi">bobi/white.png</texture>
         </control>
         <control type="image">
           <left>0</left>
@@ -77,7 +77,7 @@
           <width>788</width>
           <height>62</height>
           <visible>Control.HasFocus(10)</visible>
-          <texture colordiffuse="FF454545">am6b/white.png</texture>
+          <texture colordiffuse="focus">bobi/white.png</texture>
         </control>
         <control type="label">
           <left>15</left>
@@ -120,8 +120,8 @@
         <font>font12_title</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <onup>18</onup>
         <onleft>60</onleft>
         <onright>10</onright>
@@ -137,8 +137,8 @@
         <font>font12_title</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <onup>11</onup>
         <onleft>60</onleft>
         <onright>10</onright>
@@ -154,8 +154,8 @@
         <font>font12_title</font>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <onup>13</onup>
         <onleft>60</onleft>
         <onright>10</onright>
@@ -185,8 +185,8 @@
       <aligny>center</aligny>
       <label />
       <font>font13</font>
-      <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
-      <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
+      <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
+      <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
       <onup>10</onup>
       <onleft>12</onleft>
       <onright>19</onright>
@@ -203,8 +203,8 @@
         <height>60</height>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>186</label>
         <font>font12_title</font>
         <onup>12</onup>
@@ -220,8 +220,8 @@
         <height>60</height>
         <align>center</align>
         <aligny>center</aligny>
-        <texturenofocus colordiffuse="FF242424">am6b/white.png</texturenofocus>
-        <texturefocus colordiffuse="FF454545">am6b/white.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi">bobi/white.png</texturenofocus>
+        <texturefocus colordiffuse="focus">bobi/white.png</texturefocus>
         <label>222</label>
         <font>font12_title</font>
         <onup>12</onup>

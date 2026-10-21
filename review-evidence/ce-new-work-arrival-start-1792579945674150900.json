@@ -1,0 +1,576 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "arrival",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Arrival",
+        "tmdb_id": 329865,
+        "kind": "movie",
+        "year": 2016
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 329865,
+          "title": "Arrival",
+          "original_title": "Arrival",
+          "original_language": "en",
+          "release_date": "2016-11-10"
+        },
+        "route": "system-direct",
+        "checked_at": 1792579917.9004467
+      },
+      "prior_request": "3dafd1f2136040dea472b0df943ecc07",
+      "started": 2309801.359463199,
+      "home": {
+        "generation": 232,
+        "intent": 7,
+        "retired_generation": 232,
+        "observed_at": 2309801.728760329
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2309801.729077097,
+      "picker": {
+        "window": 13001,
+        "generation": 233,
+        "intent": 7,
+        "tmdb_id": 329865,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2309815.03179752
+    },
+    "samples": [
+      {
+        "wall": 2309801.978990768,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309802.00906185,
+          "read_completed": 2309802.009282571,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309801.967622216,
+          "decoder_started": 2309802.00906185,
+          "decoder_completed": 2309802.009282571,
+          "sample_completed": 2309802.009686804
+        }
+      },
+      {
+        "wall": 2309804.127680454,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309804.158568908,
+          "read_completed": 2309804.159066312,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309804.106892599,
+          "decoder_started": 2309804.158568908,
+          "decoder_completed": 2309804.159066312,
+          "sample_completed": 2309804.15924824
+        }
+      },
+      {
+        "wall": 2309806.284534325,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309806.339854289,
+          "read_completed": 2309806.340454741,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309806.238236226,
+          "decoder_started": 2309806.339854289,
+          "decoder_completed": 2309806.340454741,
+          "sample_completed": 2309806.340604208
+        }
+      },
+      {
+        "wall": 2309808.500612777,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309808.553141966,
+          "read_completed": 2309808.553368271,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309808.483759003,
+          "decoder_started": 2309808.553141966,
+          "decoder_completed": 2309808.553368271,
+          "sample_completed": 2309808.553458652
+        }
+      },
+      {
+        "wall": 2309810.681554,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309810.749237009,
+          "read_completed": 2309810.749491149,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309810.664524805,
+          "decoder_started": 2309810.749237009,
+          "decoder_completed": 2309810.749491149,
+          "sample_completed": 2309810.749588821
+        }
+      },
+      {
+        "wall": 2309812.923359019,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309812.98480577,
+          "read_completed": 2309812.985034992,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309812.894889045,
+          "decoder_started": 2309812.98480577,
+          "decoder_completed": 2309812.985034992,
+          "sample_completed": 2309812.985120997
+        }
+      },
+      {
+        "wall": 2309815.045332838,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309815.068309155,
+          "read_completed": 2309815.068549585,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309815.032553272,
+          "decoder_started": 2309815.068309155,
+          "decoder_completed": 2309815.068549585,
+          "sample_completed": 2309815.068637049
+        }
+      },
+      {
+        "wall": 2309817.153114311,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309817.166011671,
+          "read_completed": 2309817.166267602,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309817.1409372,
+          "decoder_started": 2309817.166011671,
+          "decoder_completed": 2309817.166267602,
+          "sample_completed": 2309817.16639411
+        }
+      },
+      {
+        "wall": 2309819.361412835,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309819.3962301,
+          "read_completed": 2309819.396723836,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309819.222310661,
+          "decoder_started": 2309819.3962301,
+          "decoder_completed": 2309819.396723836,
+          "sample_completed": 2309819.396871303
+        }
+      },
+      {
+        "wall": 2309821.670755314,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309821.683324853,
+          "read_completed": 2309821.68365658,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309821.556587108,
+          "decoder_started": 2309821.683324853,
+          "decoder_completed": 2309821.68365658,
+          "sample_completed": 2309821.683742168
+        }
+      },
+      {
+        "wall": 2309823.797478686,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Arrival.2016.UHD.BluRay.2160p.DTS-HD.MA.7.1.DV.HEVC.HYBRID.REMUX-FraMeSToR",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "60",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "79"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309823.887370207,
+          "read_completed": 2309823.887805273,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309823.782087993,
+          "decoder_started": 2309823.887370207,
+          "decoder_completed": 2309823.887805273,
+          "sample_completed": 2309823.887939072
+        }
+      },
+      {
+        "wall": 2309826.385493579,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Arrival.2016.UHD.BluRay.2160p.DTS-HD.MA.7.1.DV.HEVC.HYBRID.REMUX-FraMeSToR",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "79",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "79"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309826.398650852,
+          "read_completed": 2309826.398962744,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309826.368422756,
+          "decoder_started": 2309826.398650852,
+          "decoder_completed": 2309826.398962744,
+          "sample_completed": 2309826.399066208
+        }
+      },
+      {
+        "wall": 2309828.537457625,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Arrival.2016.UHD.BluRay.2160p.DTS-HD.MA.7.1.DV.HEVC.HYBRID.REMUX-FraMeSToR",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "79",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "79"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2309828.559083399,
+          "read_completed": 2309828.559310703,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2309828.516747443,
+          "decoder_started": 2309828.559083399,
+          "decoder_completed": 2309828.559310703,
+          "sample_completed": 2309828.559392624
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "arrival",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

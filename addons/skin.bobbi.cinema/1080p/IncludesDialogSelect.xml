@@ -390,25 +390,9 @@
         <description>Close Window button</description>
         <left>1127</left>
         <top>10</top>
-        <control type="label">
-          <left>0</left>
-          <top>0</top>
-          <width>79</width>
-          <height>46</height>
-          <label>波比</label>
-          <font>BobiLogo</font>
-          <textcolor>FFF5F5F5</textcolor>
-          <aligny>center</aligny>
-        </control>
-        <control type="label">
-          <left>82</left>
-          <top>1</top>
-          <width>48</width>
-          <height>46</height>
-          <label>TV</label>
-          <font>BobiLogoLatin</font>
-          <textcolor>FFE50914</textcolor>
-          <aligny>center</aligny>
+        <control type="image">
+          <left>0</left><top>0</top><width>224</width><height>56</height>
+          <texture>bobi/logo-bobbi.png</texture>
         </control>
       </control>
       <control type="list" id="3">

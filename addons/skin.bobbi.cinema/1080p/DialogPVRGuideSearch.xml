@@ -39,6 +39,7 @@
     </control>
     <control type="edit" id="9">
       <description>Search string</description>
+      <focusedcolor>text</focusedcolor>
       <left>53</left>
       <top>158</top>
       <width>1185</width>

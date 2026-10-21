@@ -7,7 +7,7 @@ import time
 import uuid
 import xml.etree.ElementTree as ET
 
-from .ce_installer import Installer, MANAGED, blocked
+from .ce_installer import Installer, MANAGED, PlaybackActive, blocked
 from .kodi import rpc
 from .paths import profile
 from .updates import UpdateError, _safe_path
@@ -112,7 +112,7 @@ class KodiHost:
     def check_idle(self):
         """Reject an already active player before opening an install journal."""
         if self.xbmc.Player().isPlaying():
-            raise UpdateError('PLAYBACK_ACTIVE')
+            raise PlaybackActive('PLAYBACK_ACTIVE')
 
     def quiesce(self):
         # Recheck after staging: a preflight is not an exclusive playback lease.

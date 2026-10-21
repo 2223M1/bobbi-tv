@@ -1,0 +1,56 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "mushishi",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Mushishi S01E01-[1080i][JP.BD.Remux][lolice-mix].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.47 GB",
+        "Container(1000).ListItem.Property(source_key)": "94e376bff661a639916eaa348a4d19ad22630ec400934daa9113c245819702a1",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Mushishi - 01.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.36 GB",
+        "Container(1000).ListItem.Property(source_key)": "0acdf0e42b0554a9eedcaf8bf57d7652229015715779a79eca963741034a1dd7",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[a-S] Mushi-Shi (01-26) (1080p)",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "11.2 GB",
+        "Container(1000).ListItem.Property(source_key)": "357843365a42589c7529205013618e50ff0c42daf0bad7ec00dd416f83e6a4f4",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Judas] Mushishi (Mushi-Shi) (Seasons 1-3 + Movie + Special) [BD 1080p][HEVC x265 10bit][Eng-Subs] (Batch)",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "10.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "024220a58193ffeb1cc964dde3e5e0a79226bef435558e3bfe3f499dda7c9a5a",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 4,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "mushishi",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

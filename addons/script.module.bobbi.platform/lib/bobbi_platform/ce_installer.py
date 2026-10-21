@@ -22,6 +22,10 @@ MANAGED = OWNED_COMPONENTS - {ENTRY}
 RUNNABLE = ('activation_pending', 'restore_pending', 'complete', 'restored')
 
 
+class PlaybackActive(UpdateError):
+    """Host refusal before any quiesce effects; never used after draining starts."""
+
+
 def blocked(work):
     path = Path(work) / 'installation.json'
     if not path.exists():
@@ -123,6 +127,16 @@ class Installer:
         if check is not None:
             check()
 
+    def _undo_unstarted_journal(self, previous, state):
+        # Only the typed, pre-effect quiesce refusal may reopen the old gate.
+        # Keep the rejected attempt for diagnosis, including on first install.
+        target = _safe_path(self.work / state['tx'] / ('refused-' + uuid.uuid4().hex + '.json'))
+        _atomic(target, state)
+        if previous is None:
+            os.replace(self.state, target)
+        else:
+            self._write(previous)
+
     def recover(self):
         with _Lock(self.work / 'installation.lock'):
             state = self._read()
@@ -147,9 +161,14 @@ class Installer:
             if not state or state['phase'] not in ('complete', 'activation_pending'):
                 raise UpdateError('NO_PREVIOUS_PROGRAM_GENERATION')
             self._check_idle()
+            previous = dict(state)
             state['phase'] = 'restoring'
             self._write(state)
-            self.host.quiesce()
+            try:
+                self.host.quiesce()
+            except PlaybackActive:
+                self._undo_unstarted_journal(previous, state)
+                raise
             self._restore(state)
 
     def apply(self, bundle):
@@ -192,8 +211,10 @@ class Installer:
                 # quiesce still owns the final guarded replacement barrier.
                 self._check_idle()
                 self._write(state)  # Gate entrypoints before quiescing any code.
+                quiesced = False
                 try:
                     self.host.quiesce()
+                    quiesced = True
                     state['phase'] = 'switching'
                     self._write(state)
                     for row in items:
@@ -209,7 +230,10 @@ class Installer:
                     # watermark even if activation or a later rollback fails.
                     state['high_watermark'] = manifest['sequence']
                     self._write(state)
-                except BaseException:
+                except BaseException as error:
+                    if isinstance(error, PlaybackActive) and not quiesced:
+                        self._undo_unstarted_journal(previous, state)
+                        raise
                     state['phase'] = 'restoring'
                     self._write(state)
                     self.host.quiesce()

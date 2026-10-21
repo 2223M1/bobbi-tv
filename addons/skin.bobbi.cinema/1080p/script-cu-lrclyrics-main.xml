@@ -84,7 +84,7 @@
               <font>font30</font>
               <aligny>center</aligny>
               <align>left</align>
-              <textcolor>FFE50914</textcolor>
+              <textcolor>accent_text</textcolor>
               <label>$INFO[ListItem.Label]</label>
             </control>
           </focusedlayout>

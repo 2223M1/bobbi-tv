@@ -466,6 +466,9 @@
           <control type="togglebutton" id="34">
             <description>TV/Radio toggle</description>
             <width>300</width>
+            <texturefocus border="14">bobi/row-focus.png</texturefocus>
+            <alttexturefocus border="14">bobi/row-focus.png</alttexturefocus>
+            <alttexturenofocus colordiffuse="surface_hi" border="14">bobi/r14.png</alttexturenofocus>
             <include>ButtonInfoDialogsCommonValues</include>
             <label>$LOCALIZE[19174]</label>
             <altlabel>$LOCALIZE[19173]</altlabel>

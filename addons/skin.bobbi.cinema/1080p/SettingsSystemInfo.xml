@@ -20,7 +20,7 @@
         <top>10</top>
         <width>3</width>
         <height>27</height>
-        <texture colordiffuse="FFE50924">am6b/white.png</texture>
+        <texture colordiffuse="accent">am6b/white.png</texture>
       </control>
       <control type="label">
         <left>14</left>
@@ -39,7 +39,7 @@
         <height>48</height>
         <label>TV</label>
         <font>BobiLogoLatin</font>
-        <textcolor>FFE50924</textcolor>
+        <textcolor>accent</textcolor>
         <aligny>center</aligny>
       </control>
     </control>
@@ -364,7 +364,7 @@
       <height>4</height>
       <info>System.CPUUsage</info>
       <texturebg colordiffuse="FF242424">am6b/white.png</texturebg>
-      <midtexture colordiffuse="FFE50914">am6b/white.png</midtexture>
+      <midtexture colordiffuse="accent">am6b/white.png</midtexture>
     </control>
     <control type="progress">
       <left>502</left>
@@ -373,7 +373,7 @@
       <height>4</height>
       <info>system.memory(used)</info>
       <texturebg colordiffuse="FF242424">am6b/white.png</texturebg>
-      <midtexture colordiffuse="FFE50914">am6b/white.png</midtexture>
+      <midtexture colordiffuse="accent">am6b/white.png</midtexture>
     </control>
     <control type="label" id="52">
       <description>Kodi Build Version</description>

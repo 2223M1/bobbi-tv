@@ -204,6 +204,7 @@
       </control>
       <control type="edit" id="12">
         <width>$PARAM[w]</width><height>80</height>
+        <focusedcolor>text</focusedcolor>
         <font>Label28</font><textcolor>text</textcolor><disabledcolor>text_disabled</disabledcolor><invalidcolor>error</invalidcolor>
         <textoffsetx>28</textoffsetx><aligny>center</aligny>
         <texturefocus border="20">bobi/row-focus.png</texturefocus>
@@ -435,6 +436,133 @@
             <label>$INFO[ListItem.Label2]</label>
             <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
           </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== hub row (我的): icon tile, name, one-line description, chevron =====
+       Focus is the white fill from SelectRow; compact drops the icon tile for the right column. -->
+  <include name="HubRow">
+    <param name="focused">false</param>
+    <param name="compact">false</param>
+    <param name="w">880</param>
+    <param name="h">88</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="focus" border="14">bobi/r14.png</texture>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="surface" border="14">bobi/r14.png</texture>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <!-- roomy row: 64px icon tile, name over description -->
+      <control type="group">
+        <visible>!$PARAM[compact]</visible>
+        <control type="image">
+          <left>16</left><top>12</top><width>64</width><height>64</height>
+          <texture colordiffuse="surface_hi" border="14">bobi/r14.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>16</left><top>12</top><width>64</width><height>64</height>
+          <texture colordiffuse="1A0A0B0E" border="14">bobi/r14.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>32</left><top>28</top><width>32</width><height>32</height>
+          <texture colordiffuse="text2">$INFO[ListItem.Icon]</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>32</left><top>28</top><width>32</width><height>32</height>
+          <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>96</left><top>8</top><width>640</width><height>40</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>text</textcolor><aligny>center</aligny>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>96</left><top>8</top><width>640</width><height>40</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>96</left><top>44</top><width>680</width><height>32</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>96</left><top>44</top><width>680</width><height>32</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>Meta22</font><textcolor>B30A0B0E</textcolor><aligny>center</aligny>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>822</left><top>28</top><width>32</width><height>32</height>
+          <texture colordiffuse="text3">bobi/icons/chevron-right.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>822</left><top>28</top><width>32</width><height>32</height>
+          <texture colordiffuse="on_focus">bobi/icons/chevron-right.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+      </control>
+      <!-- compact row (right column): 32px glyph, both lines inside $PARAM[h] = 72 -->
+      <control type="group">
+        <visible>$PARAM[compact]</visible>
+        <control type="image">
+          <left>16</left><top>20</top><width>32</width><height>32</height>
+          <texture colordiffuse="text3">$INFO[ListItem.Icon]</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>16</left><top>20</top><width>32</width><height>32</height>
+          <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>72</left><top>4</top><width>600</width><height>36</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>text</textcolor><aligny>center</aligny>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>72</left><top>4</top><width>600</width><height>36</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Label28</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>72</left><top>38</top><width>640</width><height>28</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>72</left><top>38</top><width>640</width><height>28</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>Meta22</font><textcolor>B30A0B0E</textcolor><aligny>center</aligny>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>770</left><top>20</top><width>32</width><height>32</height>
+          <texture colordiffuse="text3">bobi/icons/chevron-right.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>770</left><top>20</top><width>32</width><height>32</height>
+          <texture colordiffuse="on_focus">bobi/icons/chevron-right.png</texture>
+          <visible>$PARAM[focused]</visible>
         </control>
       </control>
     </definition>

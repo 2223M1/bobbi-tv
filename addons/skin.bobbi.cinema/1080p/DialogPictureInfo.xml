@@ -14,7 +14,7 @@
         <top>0</top>
         <width>1200</width>
         <height>945</height>
-        <texture colordiffuse="FF161616">am6b/white.png</texture>
+        <texture colordiffuse="surface">bobi/white.png</texture>
         <visible>!Window.IsVisible(Slideshow)</visible>
       </control>
       <control type="image">
@@ -23,7 +23,7 @@
         <top>0</top>
         <width>1200</width>
         <height>945</height>
-        <texture colordiffuse="FF161616">am6b/white.png</texture>
+        <texture colordiffuse="surface">bobi/white.png</texture>
         <visible>Window.IsVisible(Slideshow)</visible>
       </control>
       <control type="image">
@@ -97,7 +97,7 @@
             <top>0</top>
             <width>1080</width>
             <height>60</height>
-            <texture colordiffuse="FF242424">am6b/white.png</texture>
+            <texture colordiffuse="surface_hi">bobi/white.png</texture>
           </control>
           <control type="label">
             <left>15</left>
@@ -133,14 +133,14 @@
             <width>1080</width>
             <height>60</height>
             <visible>!Control.HasFocus(5)</visible>
-            <texture colordiffuse="FF242424">am6b/white.png</texture>
+            <texture colordiffuse="surface_hi">bobi/white.png</texture>
           </control>
           <control type="image">
             <left>0</left>
             <top>0</top>
             <width>1080</width>
             <height>60</height>
-            <texture colordiffuse="FF454545">am6b/white.png</texture>
+            <texture colordiffuse="focus">bobi/white.png</texture>
             <visible>Control.HasFocus(5)</visible>
           </control>
           <control type="label">

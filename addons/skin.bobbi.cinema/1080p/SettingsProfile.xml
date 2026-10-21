@@ -75,7 +75,7 @@
           <height>46</height>
           <label>TV</label>
           <font>BobiLogoLatin</font>
-          <textcolor>FFE50914</textcolor>
+          <textcolor>accent</textcolor>
           <aligny>center</aligny>
         </control>
       </control>

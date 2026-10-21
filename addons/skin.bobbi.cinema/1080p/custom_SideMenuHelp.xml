@@ -45,7 +45,7 @@
       <align>left</align>
       <label>31412</label>
     </control>
-    <control type="button" id="100">
+<control type="button" id="100">
       <description>OK button</description>
       <left>1080</left>
       <top>750</top>
@@ -54,7 +54,7 @@
       <label>12321</label>
       <font>font12_title</font>
       <textcolor>white</textcolor>
-      <focusedcolor>white</focusedcolor>
+      <focusedcolor>on_focus</focusedcolor>
       <align>center</align>
       <onclick>Skin.Setbool(FirstTimeRun)</onclick>
       <onclick>back</onclick>
