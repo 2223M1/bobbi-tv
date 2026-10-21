@@ -1,0 +1,299 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "further_universe",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "A Place Further Than the Universe",
+        "tmdb_id": 76059,
+        "kind": "tv",
+        "year": 2018,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 76059,
+          "name": "A Place Further than the Universe",
+          "original_name": "宇宙よりも遠い場所",
+          "original_language": "ja",
+          "first_air_date": "2018-01-02"
+        },
+        "route": "system-direct",
+        "checked_at": 1792568053.7469406
+      },
+      "prior_request": null,
+      "started": 2297937.205955395,
+      "home": {
+        "generation": 18,
+        "intent": 0,
+        "retired_generation": 18,
+        "observed_at": 2297937.705730258
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2297937.706361713,
+      "picker": {
+        "window": 13001,
+        "generation": 19,
+        "intent": 0,
+        "tmdb_id": 76059,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2297942.224911915
+    },
+    "samples": [
+      {
+        "wall": 2297937.949564559,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2297937.972887421,
+          "read_completed": 2297937.97331771,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2297937.925888825,
+          "decoder_started": 2297937.972887421,
+          "decoder_completed": 2297937.97331771,
+          "sample_completed": 2297937.974170746
+        }
+      },
+      {
+        "wall": 2297940.107994362,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2297940.142507365,
+          "read_completed": 2297940.143105278,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2297940.081612768,
+          "decoder_started": 2297940.142507365,
+          "decoder_completed": 2297940.143105278,
+          "sample_completed": 2297940.143305735
+        }
+      },
+      {
+        "wall": 2297942.249102313,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2297942.273485877,
+          "read_completed": 2297942.27411129,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2297942.225846077,
+          "decoder_started": 2297942.273485877,
+          "decoder_completed": 2297942.27411129,
+          "sample_completed": 2297942.274284039
+        }
+      },
+      {
+        "wall": 2297944.334703808,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Sora yori mo Tooi Basho S01E01 (BDRemux 1920x1080 AVC LPCM).mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2297944.38242365,
+          "read_completed": 2297944.382683815,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2297944.324325495,
+          "decoder_started": 2297944.38242365,
+          "decoder_completed": 2297944.382683815,
+          "sample_completed": 2297944.382777314
+        }
+      },
+      {
+        "wall": 2297946.464633211,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Sora yori mo Tooi Basho S01E01 (BDRemux 1920x1080 AVC LPCM).mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2297946.475664604,
+          "read_completed": 2297946.475921769,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2297946.446571568,
+          "decoder_started": 2297946.475664604,
+          "decoder_completed": 2297946.475921769,
+          "sample_completed": 2297946.476081851
+        }
+      },
+      {
+        "wall": 2297948.549409844,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Sora yori mo Tooi Basho S01E01 (BDRemux 1920x1080 AVC LPCM).mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 2297948.580363369,
+          "read_completed": 2297948.580791575,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 2297948.537790122,
+          "decoder_started": 2297948.580363369,
+          "decoder_completed": 2297948.580791575,
+          "sample_completed": 2297948.580942616
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "further_universe",
+  "operation": "start",
+  "attempt": 4,
+  "regression_attempt": true
+}

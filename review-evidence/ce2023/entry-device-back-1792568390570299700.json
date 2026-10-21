@@ -1,0 +1,38 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261021-153800",
+  "mode": "back",
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "result": {
+    "players": [],
+    "gui": {
+      "currentcontrol": {
+        "label": "NFL Football Fanatic"
+      },
+      "currentwindow": {
+        "id": 10000,
+        "label": "主界面"
+      }
+    },
+    "labels": {
+      "Container(6).CurrentItem": "",
+      "Container(6).ListItem.Label": "",
+      "Container(6).NumItems": "",
+      "Control.GetLabel(1)": "",
+      "Control.GetLabel(10)": "",
+      "Control.GetLabel(11)": "",
+      "Control.GetLabel(2)": "",
+      "Control.GetLabel(3)": "",
+      "Control.GetLabel(4)": "",
+      "Control.GetLabel(5)": "",
+      "Control.GetLabel(6)": "",
+      "Window.Property(playback_error)": ""
+    },
+    "installation": {
+      "sequence": 2026102026,
+      "high_watermark": 2026102026,
+      "phase": "complete",
+      "tx": "e5c0c64ed80b43d4bdedb8e7bed05442"
+    }
+  }
+}

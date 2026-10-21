@@ -297,6 +297,7 @@
     <value condition="$EXP[BobiIsMore]">继续加载</value>
     <value condition="!String.IsEmpty(ListItem.Size) + !String.IsEmpty(ListItem.Date)">$INFO[ListItem.Size]   ·   $INFO[ListItem.Date]</value>
     <value condition="!String.IsEmpty(ListItem.Size)">$INFO[ListItem.Size]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(Bobi.Library.Location))">$INFO[ListItem.Property(Bobi.Library.Location)]</value>
     <value condition="!String.IsEmpty(ListItem.Label2)">$INFO[ListItem.Label2]</value>
   </variable>
   <include name="FileRow">
@@ -411,7 +412,7 @@
         </control>
         <control type="label">
           <left>-20</left><top>208</top><width>200</width><height>30</height>
-          <label>$INFO[ListItem.Label2]</label>
+          <label>$VAR[BobiLibraryLocation]</label>
           <font>Meta22</font><textcolor>text3</textcolor><align>center</align><aligny>center</aligny>
         </control>
       </control>

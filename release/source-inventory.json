@@ -555,8 +555,8 @@
       "service.py": "b2798840e40a8cf4985b094484a909ee1716ba48f2b6e6b066fe72ffd78168d6"
     },
     "plugin.video.bobbi.library": {
-      "addon.xml": "6aaa9fdeab234d6859edbda606a5be5fa7fa1f94bfa84a611b7612db6aa8051a",
-      "default.py": "4f99e1c4c0f6479ae86c5a97a03073ce441589cff3f118442e093be9cff731f2"
+      "addon.xml": "4023b5ca3140353ef4385af2e83062d86ea9e928f3b1a328335d4cc41fbec42a",
+      "default.py": "049db9cccaa216d6bc655f2eec0b0af36f6338da05b4ae355e79dc24350dc2d1"
     },
     "plugin.video.bobbi.torrent": {
       "addon.xml": "e413a35f6f8df8a8b8a8c627a1a38da78f178499b52812d3d82b2a02ee9792cf",
@@ -604,7 +604,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "00edbd452f926ad7cf70166bc221b5c0007878a843051456e3520e8755c6ee4f",
+      "addon.xml": "82b5f37cb20f645bb105a906bf26ef3c88ae44c8bc7fb413aeb3e8bc9a708803",
       "default.py": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
     },
     "script.module.bobbi.catalog": {
@@ -740,7 +740,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "38eed43cbca3ff88cdb0f828d3b387c049352b27647a4a73dd21edad91971a48",
+      "addon.xml": "dee43e0c9963d2e6a1bf570bc59a4a8e8e2e23617058556e468d60bdaab808f2",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -761,7 +761,7 @@
       "lib/bobbi_platform/instance_lock.py": "e3395ade1e550e51721d9cc501df09bb5950cbce516b0903546c394caa7a82a7",
       "lib/bobbi_platform/kodi.py": "c15b58052d2783f670c17755c37293121dacd89faac5b53b424a2d914c136c83",
       "lib/bobbi_platform/libraries.py": "c87b6455cc9762654bfbb243cc1d4f9f52c19862f249ce6616ef32ff5175c72b",
-      "lib/bobbi_platform/library_listing.py": "493dc5ef54d280e1749d7e10d7ad7157d184b17ba9fb48ee2cbe8bd03dcc09cc",
+      "lib/bobbi_platform/library_listing.py": "c59800db1544acd900fe736e0b01645e3b031332c23deb5a2a91a792ca820770",
       "lib/bobbi_platform/library_ui.py": "e3d86f08385441f7af88522c1b54a631e3d90d5ca91153caf98443d2572f6ed9",
       "lib/bobbi_platform/maintenance_lease.py": "2b6db97b34e234e9aaf876306599070f761b7dd5f585f7c343032bfa70974f38",
       "lib/bobbi_platform/native_engine.py": "d00504fa5bc6c508b4adaa7733dc5b8cc4667610b7810652eeb4c989d01590e9",
@@ -852,7 +852,7 @@
       "1080p/Includes_OSD.xml": "a77c7dd81c30e0691220f4ca142403f3fc4e28f0bddc839c2a369eb2785cc48f",
       "1080p/Includes_Paths.xml": "1897583baf944f98c36f0a874781f35d043f81e949ced5db7bb850313fb9ec89",
       "1080p/Includes_Titles.xml": "7586f97352dba0c1dc344e8ca3c0fe7a037a04511f72db8a26628e60f3cd8b06",
-      "1080p/Includes_Views.xml": "ff862c343e2fb5ddf02ee987b7c8c50c5f4787b39a3b2cacb75cd384b3acc6db",
+      "1080p/Includes_Views.xml": "331c685db49b9bff14d02ba65c1b6a6c069e01eef07bdcfbabe2288a31ce6114",
       "1080p/IncludesBackgroundBuilding.xml": "444cdbe074552aea53691c225f95583f18d4f019f0eb65c19cecb84a76df4a6b",
       "1080p/IncludesCinema.xml": "43f275c1c773b1152916d6405ca9b27309eafe7ebb5c1d6d88011172265382d5",
       "1080p/IncludesCinemaDirectory.xml": "26a3648027f2c472bb6705b1286bf2c8cb74ecbaf955588244d037956095e6e3",
@@ -899,7 +899,7 @@
       "1080p/SmartPlaylistRule.xml": "ee3ae58e2b84f32912662e3cf208e1924e3b729a3a5ca53ce75865b284b8d52d",
       "1080p/Startup.xml": "3b705c750c5e2c7d865a39bcf5780259803c6488148e3b372eddb695247c134e",
       "1080p/Timers.xml": "9ff400516f1d81abe276a49980e0d52d228b1c8feab0f52dfc3a49edf6219d0a",
-      "1080p/Variables.xml": "234b8e57c47ff8e41e574ddb94673d84e11f30774a27aa84ca876d6fcdaef656",
+      "1080p/Variables.xml": "dbe6517be9a754881c7e2339fd7b3e803b89488b66742fc313a4097c63efc90a",
       "1080p/VideoFullScreen.xml": "84f878ed7fe4340dae574949a7b8c9f844742310138b2df587ee775627988697",
       "1080p/VideoOSD.xml": "69c5d5e9c3ae75e50bd59b3c34f8829d81d6243724360de619cffff021d52a17",
       "1080p/VideoOSDBookmarks.xml": "f8ba7e67a79911ce38d0966fd1b349a58bddc2c9de268f5ef16f4746a73d498f",
@@ -911,7 +911,7 @@
       "1080p/ViewsPVRGuide.xml": "1e7858f9f4bef6cfa474081aa43fa972592282001f4520b9f744c0d7d94bc606",
       "1080p/ViewsVideoLibrary.xml": "38e4003a733f1507f5ac7ed9ab97042053ffe26cd1467e2a9132b01b481d9019",
       "1080p/ViewsWeather.xml": "338efacb7fe0ac3ae56de273de465735a046f163b1f46315e419c66f71135e61",
-      "addon.xml": "2155875578a254b049b64bf08065b2a93eeb2851cad549ac5d5be1628b093c1e",
+      "addon.xml": "f152e928131dc62d4255dbcd2428caa310fc567094f5f8d1a3ba9b4a95f996f8",
       "backgrounds/media-overlay.jpg": "c74612b7e5529cbbf0297e304ca70a6839dc986e8024b9e2f7d970b1ac5f192f",
       "backgrounds/settings.jpg": "5a4f0f4d1aead0eec5b2020091f5eeb8081796f6a6d82562487a41e41d34306c",
       "backgrounds/tv.jpg": "57a1216595dafb728cff8373a0d036369a6cfcba0d7c4da38c124aade6f28490",

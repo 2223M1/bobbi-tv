@@ -95,6 +95,7 @@ def test_root_lists_sources_without_network_or_credentials(plugin):
     assert plugin.rows[0][1].properties['Bobi.Library.Manage'] == 'true'
     assert plugin.rows[1][1].properties['Bobi.Library.Kind'] == 'smb'
     assert plugin.rows[1][1].label2 == 'SMB · nas.example'
+    assert plugin.rows[1][1].properties['Bobi.Library.Location'] == 'SMB · nas.example'
     assert all('test-secret' not in target and 'nas.example' not in target for target, _, _ in plugin.rows)
     assert plugin.content == 'files' and plugin.closed == 1
 
@@ -107,6 +108,7 @@ def test_browse_filters_files_and_routes_only_local_ids(plugin):
     target, row, folder = plugin.rows[1]
     assert not folder and row.properties['IsPlayable'] == 'true'
     assert row.lookup is False
+    assert row.info['size'] == -1  # missing metadata is not a zero-byte file
     assert 'test-secret' not in target
     assert dict(parse_qsl(urlsplit(target).query)) == {
         'action': 'play', 'source': plugin.source.id, 'relative': 'film.mkv'}

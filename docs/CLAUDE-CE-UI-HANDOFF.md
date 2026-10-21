@@ -1,4 +1,4 @@
-# Claude UI 联调交接（CE2026 候选）
+# Claude UI 联调交接（CE2027 候选）
 
 本轮在独立候选 `D:/AM6B-Project/bobbi-tv-ce2025-review-20261021` 修改。
 用户确认的 UI 分支是 `codex/ce2024-reviewed-delivery-20261021`，对应
@@ -42,10 +42,15 @@ ReloadSkin → 截取实际显示的 framebuffer → 保存提交记录。
 ## 片库数据契约
 
 - 根来源 Label2：`SMB · nas.local`、`NFS · nas.local`、`WebDAV · nas.local`、`目录 · N 项`。
+- 原生 Kodi 文件窗口会重新应用 `%D` 次标签格式，把上述 Label2 清空。
+  因此同步提供 `Bobi.Library.Location`，皮肤 `BobiLibraryLocation` 优先读此属性、再回退 Label2。
+  这是实机发现的兼容要求；不借用片名/制作编号等无关字段、不改原生内核。
 - `Bobi.Library.Kind`：smb / nfs / webdav / catalog；本机路径另用 local，不能伪装成网盘。
 - 管理入口：`Bobi.Library.Manage=true`。
-- 文件：Kodi 原生 `ListItem.Size` / `ListItem.Date`；优先使用一次 Files.GetDirectory 的 size/lastmodified。
+- 文件：Kodi 原生 `ListItem.Size` / `ListItem.Date`；本机目录一次 scandir 读取，网络目录使用一次 Files.GetDirectory 的 size/lastmodified。
   不对一页 200 文件分别 Stat；目录不支持元数据时回退普通列表，不伪造大小/日期。
+  未登记为 Kodi 可共享源的远端路径可能被该 API 拒绝；不会擅自改 sources.xml 或开放目录。
+  此时文件仍能浏览/手选播放，但大小和日期保持未知，不能把本机测试当作真实 NAS 通过。
 - 导入目录 schema 不变，支持可选 `size`（非负字节整数）、`modified`（ISO 日期或日期时间）。
   老目录继续可用；没有这些值就保持未知，不向全部媒体 URL 发 HEAD。
 - URL、账号、密码、签名参数不进入 Label2，也不写入 UI 路由或诊断。
