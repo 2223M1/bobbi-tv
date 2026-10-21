@@ -2029,13 +2029,14 @@ class JacktookPLayer(xbmc.Player):
             self.start_direct_preparation()
             return
         attempts = getattr(self, '_cinema_prepare_attempts', 0)
-        if (getattr(self, '_cinema_prepare_sent', False) or not self._owns_playback_session()
+        if (getattr(self, '_cinema_prepare_sent', False)
                 or getattr(self, '_cinema_prepare_inflight', None) is not None or attempts >= 6
                 or monotonic() < getattr(self, '_cinema_prepare_due', 0)):
             return
         cancel = getattr(self, '_cinema_cancel', None)
         if (cancel is None or cancel.is_set()
-                or get_property('bobbi_cinema_cancel') == self.playback_session_id):
+                or get_property('bobbi_cinema_cancel') == self.playback_session_id
+                or not self._owns_playback_session()):
             return
         try:
             from lib.cinema.preparation_client import source_intent, advance_intent
@@ -2125,9 +2126,10 @@ class JacktookPLayer(xbmc.Player):
     def start_direct_preparation(self):
         """Local idempotent intake only; slow transfer/probes belong to service."""
         attempts = getattr(self, '_direct_prepare_attempts', 0)
-        if (getattr(self, '_direct_prepare_sent', False) or not self._owns_playback_session()
+        if (getattr(self, '_direct_prepare_sent', False)
                 or self._cinema_cancel.is_set() or attempts >= 6
-                or monotonic() < getattr(self, '_direct_prepare_due', 0)):
+                or monotonic() < getattr(self, '_direct_prepare_due', 0)
+                or not self._owns_playback_session()):
             return
         self._direct_prepare_due = monotonic() + 15
         applicable = False

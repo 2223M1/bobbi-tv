@@ -1,25 +1,18 @@
 """Bounded, release-specific Chinese sidecars from the selected torrent only."""
 
-import hashlib
 import json
-import logging
 import os
 import re
-import tempfile
 import time
 from urllib.parse import quote
 
 
 MAX_SUBTITLE_BYTES = 2 * 1024 * 1024
-MAX_CACHE_FILES = 32
 MATCHER_POLICY = 'declared-group-language-v1'
-SUBTITLE_TIMEOUT = (1.0, 3.0)
-SUBTITLE_BUDGET = 4.0
 _EXTENSIONS = {".ass", ".ssa", ".srt"}
 _SIMPLIFIED = {"chs", "sc", "jpsc", "zh-cn", "zh-hans", "简体", "简体中文", "简中"}
 _TRADITIONAL = {"cht", "tc", "jptc", "zh-tw", "zh-hant", "繁体", "繁體", "繁體中文", "繁中"}
 _CHINESE = {"zh", "chi", "zho", "chinese", "中文"}
-_CACHE_NAME = re.compile(r"^[0-9a-f]{64}\.zh(?:-Hans|-Hant)?\.(?:ass|ssa|srt)$")
 
 
 def checked_context(metadata, file_identity):
@@ -190,101 +183,3 @@ def matching_chinese_sidecars(media_path, file_stats):
     best_rank = min(rank for rank, _ in matches)
     best = [candidate for rank, candidate in matches if rank == best_rank]
     return best if len(best) == 1 else []
-
-
-def _valid_chinese_subtitle(data, extension):
-    if not data or len(data) > MAX_SUBTITLE_BYTES:
-        return False
-    encodings = ["utf-16"] if data.startswith((b"\xff\xfe", b"\xfe\xff")) else ["utf-8-sig", "gb18030"]
-    text = None
-    for encoding in encodings:
-        try:
-            text = data.decode(encoding)
-            break
-        except UnicodeError:
-            continue
-    if text is None or "<html" in text[:1024].casefold() or "\x00" in text:
-        return False
-    if extension in (".ass", ".ssa"):
-        lines = [line for line in text.splitlines() if line.casefold().startswith("dialogue:")]
-        return any(re.search(r"\d+:\d{2}:\d{2}[.,]\d+", line) and re.search(r"[\u3400-\u9fff]", line) for line in lines)
-    return bool(re.search(r"\d{2}:\d{2}:\d{2}[,.]\d{3}\s*-->\s*\d{2}:\d{2}:\d{2}[,.]\d{3}", text) and re.search(r"[\u3400-\u9fff]", text))
-
-
-def cache_chinese_sidecar(api, info_hash, media_path, candidates, cache_dir):
-    """Return a validated local subtitle, or no subtitle without blocking playback."""
-    media_path = _safe_path(media_path)
-    if not re.fullmatch(r"[0-9a-fA-F]{40}", str(info_hash)) or not media_path:
-        return []
-    selected = matching_chinese_sidecars(media_path, candidates)
-    if not selected:
-        return []
-    candidate = selected[0]
-    path = _safe_path(candidate["path"])
-    extension = os.path.splitext(path)[1].casefold()
-    media_stem = os.path.splitext(media_path.rsplit("/", 1)[-1])[0].casefold()
-    sidecar_stem = os.path.splitext(path.rsplit("/", 1)[-1])[0].casefold()
-    labels = path.split("/")[:-1] + [sidecar_stem[len(media_stem):]]
-    ranks = [rank for rank in (_sidecar_language(label, media_stem) for label in labels) if rank is not None]
-    language = {0: "zh-Hans", 1: "zh-Hant", 2: "zh"}.get(min(ranks), "zh")
-    identity = "{}|{}|{}|{}|{}".format(api._base_url, info_hash.lower(), media_path, candidate["id"], path)
-    filename = hashlib.sha256(identity.encode("utf-8")).hexdigest() + "." + language + extension
-    destination = os.path.join(cache_dir, filename)
-    temporary = None
-    response = None
-    try:
-        if os.path.isfile(destination) and os.path.getsize(destination) <= MAX_SUBTITLE_BYTES:
-            with open(destination, "rb") as existing:
-                if _valid_chinese_subtitle(existing.read(MAX_SUBTITLE_BYTES + 1), extension):
-                    return [destination]
-        started = time.monotonic()
-        response = api._get(
-            "/stream/" + quote(path, safe="/"),
-            params={"link": info_hash, "index": candidate["id"], "play": "true"},
-            headers={"Range": "bytes=0-{}".format(candidate["length"] - 1), "Accept-Encoding": "identity"},
-            stream=True, timeout=SUBTITLE_TIMEOUT, allow_redirects=False,
-        )
-        if response.status_code not in (200, 206):
-            logging.info("JackTorr subtitle cache: HTTP status %s", response.status_code)
-            return []
-        if "html" in response.headers.get("Content-Type", "").casefold():
-            return []
-        declared = response.headers.get("Content-Length")
-        if declared and int(declared) > MAX_SUBTITLE_BYTES:
-            return []
-        data = bytearray()
-        for chunk in response.iter_content(65536):
-            if time.monotonic() - started > SUBTITLE_BUDGET:
-                return []
-            data.extend(chunk)
-            if len(data) > MAX_SUBTITLE_BYTES:
-                return []
-        if len(data) != candidate["length"] or not _valid_chinese_subtitle(bytes(data), extension):
-            logging.info("JackTorr subtitle cache: incomplete or invalid Chinese text")
-            return []
-        os.makedirs(cache_dir, exist_ok=True)
-        cached = [entry for entry in os.scandir(cache_dir) if entry.is_file(follow_symlinks=False) and _CACHE_NAME.fullmatch(entry.name)]
-        # Only this module's content-addressed cache is eligible for eviction.
-        for entry in sorted(cached, key=lambda item: item.stat().st_mtime)[:max(0, len(cached) - MAX_CACHE_FILES + 1)]:
-            os.unlink(entry.path)
-        with tempfile.NamedTemporaryFile(dir=cache_dir, prefix=".subtitle-", delete=False) as output:
-            temporary = output.name
-            output.write(data)
-        os.replace(temporary, destination)
-        temporary = None
-        logging.info("JackTorr subtitle cache: exact sidecar ready, bytes=%d", len(data))
-        return [destination]
-    except Exception as error:
-        logging.info("JackTorr subtitle cache: optional fetch failed (%s)", "timeout" if getattr(error, "timed_out", False) else type(error).__name__)
-        return []
-    finally:
-        if response is not None:
-            try:
-                response.close()
-            except Exception:
-                pass
-        if temporary is not None:
-            try:
-                os.unlink(temporary)
-            except OSError:
-                pass
