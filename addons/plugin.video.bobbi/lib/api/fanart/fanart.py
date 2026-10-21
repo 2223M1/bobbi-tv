@@ -36,9 +36,13 @@ def get_fanart(media_type: str, language: str, media_id: str) -> dict:
     url = BASE_URL.format(media_type=media_type, media_id=media_id)
     client_key = get_setting("fanart_client_key") or CLIENT_KEY
     headers = {"client-key": client_key, "api-key": API_KEY}
+    from bobbi_core.metadata_transport import request_remaining
+    remaining = request_remaining(TIMEOUT)
+    if not remaining:
+        return DEFAULT_FANART.copy()
 
     try:
-        response = session.get(url, headers=headers, timeout=TIMEOUT)
+        response = session.get(url, headers=headers, timeout=max(.05, remaining))
         data = response.json()
     except Exception:
         return DEFAULT_FANART.copy()

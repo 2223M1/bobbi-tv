@@ -20,6 +20,7 @@ HOSTS = frozenset(('api.themoviedb.org', 'image.tmdb.org'))
 RESOLVERS = (('dns.alidns.com', '223.5.5.5'), ('doh.pub', '1.12.12.12'))
 MAX_BYTES = 8 * 1024 * 1024
 _DNS_CACHE, _DNS_LOCK = {}, Lock()
+_SUCCESS_ROUTE = {}
 
 
 class MetadataError(RuntimeError):
@@ -157,6 +158,14 @@ def resolve(host, deadline, cancelled, connect=HTTPS):
     raise MetadataError('DNS')
 
 
+def _forget_success(host, address):
+    if address is not None:
+        with _DNS_LOCK:
+            current = _SUCCESS_ROUTE.get(host)
+            if current and current[0] == address:
+                _SUCCESS_ROUTE.pop(host, None)
+
+
 def fetch(url, deadline, cancelled=lambda: False, method='GET', body=None, headers=None,
           connect=HTTPS, resolver=resolve):
     try:
@@ -173,10 +182,18 @@ def fetch(url, deadline, cancelled=lambda: False, method='GET', body=None, heade
         path += '?' + parts.query
     # Successful normal HTTPS does not pay a DoH query. TLS failures do not
     # trigger bypass; redirects are not followed to a relay or unknown origin.
-    addresses, accelerated = [None], False
+    with _DNS_LOCK:
+        route = _SUCCESS_ROUTE.get(parts.hostname)
+        if route and route[1] <= time.monotonic():
+            _SUCCESS_ROUTE.pop(parts.hostname, None)
+            route = None
+    # A TLS-verified successful official address may be reused only inside its
+    # DNS TTL. Don't pay the same known-bad system route for every poster.
+    addresses, resolved, attempted = ([route[0], None] if route else [None]), False, set()
     last = 'CONNECT'
     while addresses:
         address = addresses.pop(0)
+        attempted.add(address)
         _guard(deadline, cancelled)
         connection = connect(parts.hostname, ip=address, timeout=min(3, deadline - time.monotonic()))
         stage = 'CONNECT'
@@ -188,11 +205,19 @@ def fetch(url, deadline, cancelled=lambda: False, method='GET', body=None, heade
             raw = receive(response, connection, deadline, cancelled)
             if 300 <= response.status < 400:
                 raise MetadataError('REDIRECT')
+            if address is not None and 200 <= response.status < 300:
+                with _DNS_LOCK:
+                    cached = _DNS_CACHE.get(parts.hostname)
+                    if cached and cached[0] > time.monotonic() and address in cached[1]:
+                        _SUCCESS_ROUTE[parts.hostname] = (address, cached[0])
             return dict(status=response.status, headers=dict(response.getheaders()), body=raw,
-                        route='doh-direct' if accelerated else 'system-direct')
+                        route='doh-direct' if address is not None else 'system-direct')
         except ssl.SSLError:
+            _forget_success(parts.hostname, address)
             raise MetadataError('TLS') from None
-        except MetadataError:
+        except MetadataError as error:
+            if error.stage != 'CANCELLED':
+                _forget_success(parts.hostname, address)
             raise
         except (socket.gaierror, OSError, http.client.HTTPException) as error:
             _guard(deadline, cancelled)
@@ -200,15 +225,60 @@ def fetch(url, deadline, cancelled=lambda: False, method='GET', body=None, heade
             # Only idempotent GET can be retried after a possibly sent request.
             if method != 'GET':
                 raise MetadataError(last) from None
-            if not accelerated:
-                addresses = resolver(parts.hostname, deadline, cancelled)[:2]
-                accelerated = True
+            _forget_success(parts.hostname, address)
+            if not addresses and not resolved:
+                addresses = [value for value in resolver(parts.hostname, deadline, cancelled)[:2]
+                             if value not in attempted]
+                resolved = True
         finally:
             connection.close()
-    if accelerated:
+    if resolved:
         with _DNS_LOCK:
             _DNS_CACHE.pop(parts.hostname, None)
+            _SUCCESS_ROUTE.pop(parts.hostname, None)
     raise MetadataError(last)
+
+
+from contextlib import contextmanager
+from contextvars import ContextVar
+
+_request_scope = ContextVar('bobbi_metadata_request_scope', default=None)
+
+
+@contextmanager
+def request_budget(deadline, cancelled=lambda: False, quiet=False):
+    """Per-task budget; never mutate global timeouts or another worker's locale."""
+    previous = _request_scope.get()
+    if previous:
+        prior_deadline, prior_cancel, prior_quiet = previous
+        deadline, cancel = min(deadline, prior_deadline), cancelled
+        cancelled = lambda: cancel() or prior_cancel()
+        quiet = quiet or prior_quiet
+    predicate, stopped = cancelled, [False]
+    def sticky_cancelled():
+        if not stopped[0] and predicate():
+            stopped[0] = True
+        return stopped[0]
+    token = _request_scope.set((deadline, sticky_cancelled, quiet))
+    try:
+        yield
+    finally:
+        _request_scope.reset(token)
+
+
+def request_remaining(default):
+    scope = _request_scope.get()
+    if scope:
+        deadline, cancelled, _ = scope
+        if cancelled():
+            return 0.0
+        return max(0.0, min(default, deadline - time.monotonic()))
+    return default
+
+
+def request_silent():
+    scope = _request_scope.get()
+    return bool(scope and scope[2])
 
 
 def request(method, url, data=None, json=None, proxies=None, timeout=None):
@@ -223,7 +293,9 @@ def request(method, url, data=None, json=None, proxies=None, timeout=None):
     try:
         if proxies:
             raise MetadataError('PROXY_DISABLED')
-        result = fetch(url, time.monotonic() + 12, method=str(method).upper(), body=body, headers=headers)
+        deadline, cancelled, _ = _request_scope.get() or (time.monotonic() + 12, lambda: False, False)
+        result = fetch(url, min(deadline, time.monotonic() + 12), cancelled=cancelled,
+                       method=str(method).upper(), body=body, headers=headers)
     except MetadataError as error:
         wrapped = requests.ConnectionError(str(error))
         wrapped.metadata_stage = error.stage

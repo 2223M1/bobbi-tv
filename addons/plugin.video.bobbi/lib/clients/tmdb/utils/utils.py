@@ -351,7 +351,8 @@ def tmdb_get(path, params=None) -> Optional[AsObj]:
         def report(state, reason):
             # No provider exception bodies, request URLs or credentials.
             kodilog('AM6B details {}: {} ({})'.format(state, path, reason))
-            if state == 'stale':
+            from bobbi_core.metadata_transport import request_silent
+            if state == 'stale' and not request_silent():
                 import xbmcgui
                 window = xbmcgui.Window(10000)
                 previous = window.getProperty('AM6B.MetadataCacheNotice')
@@ -381,7 +382,8 @@ def tmdb_get(path, params=None) -> Optional[AsObj]:
         try:
             return guarded_movie_details(params, identifier, legacy_identifier, cache,
                 handlers[path], timedelta(hours=get_cache_expiration() if is_cache_enabled() else 0),
-                lambda reason: kodilog('TMDb movie detail attempt: ' + reason), lock_root=lock_root)
+                lambda reason: kodilog('TMDb movie detail attempt: ' + reason), lock_root=lock_root,
+                require_aliases=not isinstance(params, dict) or 'alternative_titles' in params.get('append_to_response', ''))
         except (OSError, ValueError, TypeError) as error:
             kodilog('TMDb movie detail coordination failed: ' + type(error).__name__)
             return None
@@ -392,7 +394,8 @@ def tmdb_get(path, params=None) -> Optional[AsObj]:
         kodilog('TMDb request failed: {} ({})'.format(path, type(e).__name__))
         return None
 
-    if data is not None:
+    from bobbi_core.metadata_transport import request_remaining
+    if data is not None and request_remaining(12):
         cache.set(
             key=identifier,
             data=data,

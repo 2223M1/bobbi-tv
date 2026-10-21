@@ -278,7 +278,7 @@ def _extract_english_tmdb_title(details, mode: str) -> str:
     return ""
 
 
-def _infer_tmdb_year(ids: dict, mode: str) -> Optional[int]:
+def _infer_tmdb_year(ids: dict, mode: str, details=None) -> Optional[int]:
     if not ids or mode not in ("movies", "tv"):
         return None
     tmdb_id = ids.get("tmdb_id")
@@ -287,7 +287,8 @@ def _infer_tmdb_year(ids: dict, mode: str) -> Optional[int]:
     try:
         from lib.clients.tmdb.utils.utils import get_tmdb_media_details
 
-        details = get_tmdb_media_details(tmdb_id, mode)
+        if details is None:
+            details = get_tmdb_media_details(tmdb_id, mode)
         date_value = (
             getattr(details, "release_date", None)
             if mode == "movies"
@@ -306,6 +307,7 @@ def _build_title_fallback_queries(
     variant: str = SearchVariant.DEFAULT,
     year: Optional[int] = None,
     title_language_mode: Optional[str] = None,
+    details=None,
 ) -> List[str]:
     variant = _normalize_search_variant(variant)
     title_language_mode = _normalize_title_language_mode(
@@ -337,7 +339,8 @@ def _build_title_fallback_queries(
     try:
         from lib.clients.tmdb.utils.utils import get_tmdb_media_details
 
-        details = get_tmdb_media_details(tmdb_id, mode)
+        if details is None:
+            details = get_tmdb_media_details(tmdb_id, mode)
     except Exception as e:
         kodilog(f"Failed to load TMDB titles for fallback: {e}")
         details = None
@@ -427,14 +430,15 @@ def _anime_release_query(ids, mode):
         return ''
 
 
-def _cinema_catalog_aliases(ids, mode):
+def _cinema_catalog_aliases(ids, mode, details=None):
     """Reuse the existing bounded/cached detail request, with exact ID binding."""
     if mode not in ('tv', 'movies') or not (ids or {}).get('tmdb_id'):
         return []
     from lib.clients.tmdb.utils.utils import get_tmdb_media_details
     from lib.api.tmdbv3api.as_obj import AsObj
     try:
-        details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        if details is None:
+            details = get_tmdb_media_details(ids['tmdb_id'], mode)
         if isinstance(details, AsObj):
             details = details.to_dict()
         if not isinstance(details, dict) or str(details.get('id')) != str(ids['tmdb_id']):
@@ -453,7 +457,7 @@ def _cinema_catalog_aliases(ids, mode):
         return []
 
 
-def _cinema_anime_queries(ids, mode):
+def _cinema_anime_queries(ids, mode, details=None):
     """Independent ID/genre evidence for a bounded multilingual anime plan."""
     if mode != 'tv' or not (ids or {}).get('tmdb_id'):
         return []
@@ -461,7 +465,8 @@ def _cinema_anime_queries(ids, mode):
     from lib.api.tmdbv3api.as_obj import AsObj
     from lib.utils.general.anime_identity import catalog_anime_queries
     try:
-        details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        if details is None:
+            details = get_tmdb_media_details(ids['tmdb_id'], mode)
         if isinstance(details, AsObj):
             details = details.to_dict()
         return catalog_anime_queries(details, ids['tmdb_id'])
@@ -469,14 +474,15 @@ def _cinema_anime_queries(ids, mode):
         return []
 
 
-def _cinema_anime_range_context(ids, mode, catalog_season, release_season, episode):
+def _cinema_anime_range_context(ids, mode, catalog_season, release_season, episode, details=None):
     if mode != 'tv' or not (ids or {}).get('tmdb_id'):
         return None
     from lib.clients.tmdb.utils.utils import get_tmdb_media_details
     from lib.api.tmdbv3api.as_obj import AsObj
     from bobbi_core.anime_range_candidates import context
     try:
-        details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        if details is None:
+            details = get_tmdb_media_details(ids['tmdb_id'], mode)
         if isinstance(details, AsObj):
             details = details.to_dict()
         return context(details, ids['tmdb_id'], catalog_season, release_season, episode)
@@ -2170,19 +2176,23 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         manager.result_cache = ProviderResultCache(cache, scope,
             hours=get_cache_expiration() if is_cache_enabled() else 0,
             refresh=rescrape, cacheable=lambda key: key in (Indexer.JACKETT, 'animegarden'))
+        details = {}
+        if ids.get('tmdb_id') and mode in ('tv', 'movies'):
+            from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+            details = get_tmdb_media_details(ids['tmdb_id'], mode) or {}
         if ids:
-            context.update(build_media_metadata(ids, mode))
+            context.update(build_media_metadata(ids, mode, enrich_art=False, details=details))
         if mode in ('tv', 'movies') and ids.get('tmdb_id'):
-            context['catalog_aliases'] = _cinema_catalog_aliases(ids, mode)
+            context['catalog_aliases'] = _cinema_catalog_aliases(ids, mode, details=details)
         if mode == 'tv' and 16 in (context.get('genre_ids') or []):
             target = context.get('release_order') or tv_data
             context['anime_range_context'] = _cinema_anime_range_context(ids, mode, _cinema_release_season(season),
-                _cinema_release_season(target.get('season', season)), int(target.get('episode', episode)))
+                _cinema_release_season(target.get('season', season)), int(target.get('episode', episode)), details=details)
         movie_catalog[0] = _movie_catalog_context(ids, mode)
         tv_completed[0] = _tv_completed_context(ids, mode, tv_data, context.get('release_order'))
         session.set_metadata({key: value for key, value in context.items()
                               if key not in ('mode', 'query', 'media_type')})
-        inferred_year = year if year is not None else _infer_tmdb_year(ids, mode)
+        inferred_year = year if year is not None else _infer_tmdb_year(ids, mode, details=details)
         movie_years = None
         if mode == 'movies':
             from lib.clients.tmdb.movie_years import cached_movie_years
@@ -2190,7 +2200,7 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
             if movie_years is not None:
                 inferred_year = movie_years.primary_year
         aliases = _build_title_fallback_queries(query, ids, mode, SearchVariant.DEFAULT,
-            inferred_year, title_language_mode=title_language_mode)
+            inferred_year, title_language_mode=title_language_mode, details=details)
         if manager.cancelled.is_set():
             return
         if not scoped_addon_url and not jackgram_only and ids.get('tmdb_id'):
@@ -2209,7 +2219,10 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
             # No BGM subject ID is promoted to trusted TMDb catalogue identity.
             from lib.clients.animegarden_provider import find_sources as animegarden_sources
             manager.submit_task('AnimeGarden RSS', 'animegarden', animegarden_sources,
-                ids, mode, _cinema_anime_queries(ids, mode), manager.deadline, manager.cancelled)
+                ids, mode, _cinema_anime_queries(ids, mode, details=details), manager.deadline, manager.cancelled)
+
+        # Optional RPDB/Fanart IO belongs to idle navigation warming. A picker
+        # uses cached art (or TMDb art) and releases its search lease promptly.
 
     pump = ProgressiveSearch(session, setup, transform, workers=min(4, _search_worker_count()))
     pump.start()

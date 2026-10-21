@@ -45,7 +45,13 @@ def valid(path, params, data):
 
 
 def get(path, params, language, cache, fetch, report=lambda *_: None, clock=time.time, lock_root=None):
+    from bobbi_core.metadata_transport import request_remaining
     params = dict(params) if isinstance(params, dict) else {'id': params}
+    # Kodi routes carry decimal strings; idle work carries integers. They are
+    # the same public identity and must join the same cache/lease, not fetch twice.
+    for field in ('id', 'season'):
+        if field in params and type(params[field]) in (int, str) and str(params[field]).isdecimal():
+            params[field] = int(params[field])
     wants_aliases = path == 'tv_details' and ('append_to_response' not in params or
         'alternative_titles' in str(params.get('append_to_response') or '').split(','))
     key = 'am6b_details283|' + json.dumps([path, params, params.get('language') or language], sort_keys=True)
@@ -79,7 +85,7 @@ def get(path, params, language, cache, fetch, report=lambda *_: None, clock=time
     if not lock.acquire(blocking=False):
         if old:
             return fallback(old, 'REFRESH_IN_FLIGHT')
-        if not lock.acquire(timeout=22):
+        if not lock.acquire(timeout=request_remaining(22)):
             return fallback(None, 'COALESCED_REQUEST_TIMEOUT')
     try:
         # Kodi directory invocations use separate Python interpreters. A file
@@ -90,18 +96,20 @@ def get(path, params, language, cache, fetch, report=lambda *_: None, clock=time
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             stripe = str(int(hashlib.sha256(key.encode()).hexdigest()[:8], 16) % 64)
             lease = InstanceLock(directory / stripe)
-            until = time.monotonic() + 24
+            until = time.monotonic() + request_remaining(24)
             while True:
                 try:
                     lease.acquire()
                     break
                 except (BlockingIOError, PermissionError):
-                    if old or time.monotonic() >= until:
+                    if old or time.monotonic() >= until or not request_remaining(24):
                         return fallback(old, 'REFRESH_IN_FLIGHT' if old else 'COALESCED_REQUEST_TIMEOUT')
                     time.sleep(.05)
         old = saved()
         if fresh(old):
             return deepcopy(old['data'])
+        if not request_remaining(24):
+            return fallback(old, 'REQUEST_BUDGET')
         with _failure_lock:
             recent = _failures.get(key, 0)
         persisted_failure = cache.get(key=key + '|failure')
@@ -114,12 +122,16 @@ def get(path, params, language, cache, fetch, report=lambda *_: None, clock=time
             if not valid(path, params, data):
                 raise ValueError('INVALID_DETAILS')
         except Exception as error:
+            if not request_remaining(24) or getattr(error, 'metadata_stage', '') == 'CANCELLED':
+                return fallback(old, 'REQUEST_BUDGET')
             with _failure_lock:
                 if len(_failures) >= 512:
                     _failures.pop(next(iter(_failures)))
                 _failures[key] = clock()
             cache.set(key=key + '|failure', data=clock(), expires=timedelta(seconds=20))
             return fallback(old, type(error).__name__)
+        if not request_remaining(24):
+            return fallback(old, 'REQUEST_BUDGET')
         cache.set(key=key, data={'fetched': clock(), 'data': deepcopy(data),
             'tv_aliases_requested': wants_aliases}, expires=timedelta(seconds=STALE))
         with _failure_lock:

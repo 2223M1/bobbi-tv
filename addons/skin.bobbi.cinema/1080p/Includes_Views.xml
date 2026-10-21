@@ -15,7 +15,12 @@
     <value condition="$EXP[BobiInLibrary] + $EXP[BobiLibraryRoot]">我的网盘与 NAS</value>
     <value condition="$EXP[BobiInLibrary]">我的网盘与 NAS   ·   $INFO[Container.NumItems,, 项]</value>
     <value condition="Container.Content(seasons)">选择季 / 相关电影</value>
-    <value condition="Container.Content(episodes)">$VAR[SeasonLabel]   ·   选择集</value>
+    <value condition="Container.Content(episodes) + String.IsEqual(ListItem.DBType,episode)">$VAR[SeasonLabel]   ·   选择集</value>
+    <value condition="Container.Content(episodes)">选择集 / 其他内容</value>
+  </variable>
+  <variable name="EpisodeRowTitle">
+    <value condition="String.IsEqual(ListItem.DBType,episode)">[COLOR accent_text]$VAR[EpisodeLabel][/COLOR]$VAR[EpisodeTitleSep]</value>
+    <value>$INFO[ListItem.Label]</value>
   </variable>
   <!-- library: plugin category is "源名 / a/b/c"; show the last segment large, the rest small -->
   <variable name="LibraryHeading">
@@ -217,7 +222,7 @@
       </control>
       <control type="label">
         <left>368</left><top>16</top><width>1200</width><height>44</height>
-        <label>[COLOR accent_text]$VAR[EpisodeLabel][/COLOR]$VAR[EpisodeTitleSep]</label>
+        <label>$VAR[EpisodeRowTitle]</label>
         <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
         <scroll>$PARAM[focused]</scroll>
       </control>

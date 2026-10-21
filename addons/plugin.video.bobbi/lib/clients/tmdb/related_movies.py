@@ -1,4 +1,4 @@
-"""Lazy, conservative TV-to-movie discovery. Never merge movie IDs into seasons.
+"""Bounded, conservative TV-to-movie discovery. Never merge IDs into seasons.
 
 TMDb has no TV-to-movie collection edge. We label these as related-film
 candidates, requiring a full catalog title plus an explicit film marker,
@@ -9,10 +9,13 @@ import json
 import re
 import time
 import unicodedata
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 
 # A policy change must not reuse a previously successful empty result.
-CACHE_PREFIX = 'bobi_related_movies_v3:'
+CACHE_PREFIX = 'bobi_related_movies_v4:'
+MAX_PAGES = 500  # TMDb's actual ceiling; wall-time, not five pages, bounds a pass.
+MAX_MOVIES = 100
 
 
 def plain(value):
@@ -113,14 +116,15 @@ def candidate(show, movie):
     return False
 
 
-def directory_entry(ids):
+def directory_entry(ids, label='相关电影资料未完成 · 重试'):
     import xbmc
     from lib.utils.kodi.utils import make_list_item, build_url
     if xbmc.getSkinDir() != 'skin.bobbi.cinema' or not (ids or {}).get('tmdb_id'):
         return None
-    item = make_list_item(label='剧场版 / 相关电影')
-    item.getVideoInfoTag().setTitle('剧场版 / 相关电影')
-    item.getVideoInfoTag().setPlot('按完整作品名与电影标识查找独立电影；不是特别篇或观影礼仪短片。')
+    item = make_list_item(label=label)
+    item.getVideoInfoTag().setTitle(label)
+    item.getVideoInfoTag().setPlot('当前电影目录尚未确认完整；可重试，不代表没有关联电影。')
+    item.setProperty('Bobi.CatalogStatus', 'incomplete')
     item.setProperty('IsPlayable', 'false')
     return (build_url('bobi_related_movies', ids={'tmdb_id': ids['tmdb_id']}), item, True)
 
@@ -129,22 +133,26 @@ def movie_entries(movies, inline=False):
     """Independent movie actions, never series episodes or playable resolver URLs."""
     from lib.clients.tmdb.base import BaseTmdbClient
     from lib.utils.general.utils import set_media_infoTag
-    from lib.utils.kodi.utils import make_list_item
+    from lib.utils.kodi.utils import make_list_item, build_url
     rows = []
     for movie in movies:
         title = movie.get('title') or movie.get('original_title')
         item = make_list_item(label=title)
         set_media_infoTag(item, data=movie, mode='movies')
         item.setProperty('Bobi.RelationEvidence', 'catalog-full-title-film-marker')
-        row = BaseTmdbClient.add_media_directory_item(list_item=item, mode='movies', title=title,
-            ids={'tmdb_id': movie['id']}, media_type='movie', batch=True)
+        ids = {'tmdb_id': movie['id']}
+        if (movie.get('external_ids') or {}).get('imdb_id'):
+            ids['imdb_id'] = movie['external_ids']['imdb_id']
+        BaseTmdbClient.add_media_directory_item(list_item=item, mode='movies', title=title,
+            ids=ids, media_type='movie', batch=True)
+        # A checked film card already has its own identity. No extra movie
+        # detail hop; the normal search still enriches/rechecks that identity.
+        row = (build_url('search', mode='movies', media_type='movie', query=title,
+                         ids=ids, force_select=True), item, False)
         # BaseTmdbClient predates manual source picking; this action only opens
         # the usual movie search. It must not start a Kodi resolver callback.
         item.setProperty('IsPlayable', 'false')
-        if inline:
-            caption = '相关电影 · ' + title
-            item.setLabel(caption)
-            item.getVideoInfoTag().setTitle(caption)
+        item.setProperty('Bobi.RelatedMovie', 'true')
         rows.append(row)
     return rows
 
@@ -152,12 +160,13 @@ def movie_entries(movies, inline=False):
 def checked_cache(identifier, cached, now=None):
     """Recheck association evidence without fetching data on the season page."""
     now = time.time() if now is None else now
-    if (not isinstance(cached, dict) or cached.get('schema') != 2
+    if (not isinstance(cached, dict) or cached.get('schema') != 3
             or type(identifier) is not int or identifier <= 0 or cached.get('id') != identifier
             or not isinstance(cached.get('show'), dict) or cached['show'].get('id') != identifier
             or type(cached.get('time')) not in (int, float)
             or not 0 <= now - cached['time'] < 7 * 86400
-            or not isinstance(cached.get('movies'), list) or len(cached['movies']) > 5):
+            or type(cached.get('complete')) is not bool
+            or not isinstance(cached.get('movies'), list) or len(cached['movies']) > MAX_MOVIES):
         return None
     try:
         movies = cached['movies']
@@ -170,71 +179,170 @@ def checked_cache(identifier, cached, now=None):
     return cached
 
 
-def directory_entries(ids, include_cached=False):
-    entry = directory_entry(ids)
-    if not entry:
+def directory_entries(ids, include_cached=False, prepared=None):
+    import xbmc
+    if xbmc.getSkinDir() != 'skin.bobbi.cinema' or not (ids or {}).get('tmdb_id'):
         return []
-    rows = []
-    if include_cached:
+    rows, saved = [], prepared
+    if include_cached and saved is None:
         from lib.db.cached import cache
         try:
             identifier = int(ids['tmdb_id'])
             saved = checked_cache(identifier, cache.get(CACHE_PREFIX + str(identifier)))
-            if saved is not None:
-                rows = movie_entries(saved['movies'], inline=True)
+            if saved is not None and time.time() - saved['time'] >= 86400:
+                saved = dict(saved, stale=True)
         except (OSError, ValueError, TypeError, KeyError):
             pass  # Optional movie metadata cannot remove the season browser.
-    return rows + [entry]
+    label = '相关电影资料未完成 · 重试'
+    if saved is not None:
+        rows = movie_entries(saved.get('movies', []), inline=True)
+        if saved.get('complete') and not saved.get('stale'):
+            return rows
+        label = ('相关电影使用旧缓存 · 重试' if saved.get('stale') else
+                 '电影目录未查全 · 重试')
+    return rows + [directory_entry(ids, label)]
 
 
-def append_directory_entry(ids, include_cached=False):
+def append_directory_entry(ids, include_cached=False, prepared=None):
     from lib.utils.kodi.utils import add_directory_items_batch
-    rows = directory_entries(ids, include_cached=include_cached)
+    rows = directory_entries(ids, include_cached=include_cached, prepared=prepared)
     if rows:
         add_directory_items_batch(rows)
 
 
-def discover(identifier, fetch, cached=None, now=None):
-    """At most two searches + five candidate details, only on explicit entry."""
+def discover(identifier, fetch, cached=None, now=None, show=None, deadline=None, cancelled=lambda: False, quiet=False):
+    """Selected work only. Page explicitly, retain every verified film, no top-5.
+
+    Two IO workers share a wall-time budget. Partial/failed discovery is never
+    a complete negative result. Already verified films survive sibling failure.
+    """
+    from bobbi_core.metadata_transport import request_budget
     now = time.time() if now is None else now
+    deadline = time.monotonic() + 12 if deadline is None else deadline
     valid = checked_cache(identifier, cached, now) is not None
-    if valid and 0 <= now - cached.get('time', 0) < 86400:
+    if valid and cached['complete'] and 0 <= now - cached.get('time', 0) < 86400:
         return cached, False
+
+    def request(action, args):
+        if cancelled() or time.monotonic() >= deadline:
+            raise TimeoutError('MOVIE_DISCOVERY_BUDGET')
+        with request_budget(deadline, cancelled, quiet=quiet):
+            return plain(fetch(action, args))
+
     try:
-        show = plain(fetch('tv_details', {'id': identifier, 'language': 'zh-CN', 'append_to_response': 'alternative_titles'}))
-        if not isinstance(show, dict) or show.get('id') != identifier:
+        show = plain(show) if show is not None else request('tv_details', identifier)
+        if (not isinstance(show, dict) or show.get('id') != identifier
+                or not show.get('original_language') or not ('genres' in show or 'genre_ids' in show)):
             raise ValueError('TV metadata unavailable')
         queries = list(dict.fromkeys(v for v in (show.get('original_name'), show.get('name')) if v))[:2]
         if not queries:
             raise ValueError('TV title unavailable')
-        candidates = {}
-        for query in queries:
-            page = plain(fetch('search_movie', {'query': query, 'page': 1}))
-            # The bundled AsObj maps an empty JSON array to {} on to_dict().
-            # Accept this only when the provider explicitly reports zero hits;
-            # malformed/failed responses must still use the failure path.
-            if isinstance(page, dict) and page.get('total_results') == 0 and page.get('results') == {}:
-                page = dict(page, results=[])
-            if not isinstance(page, dict) or not isinstance(page.get('results'), list):
-                raise ValueError('Movie search unavailable')
-            for value in page['results'][:20]:
-                if candidate(show, value):
-                    candidates[value['id']] = value
-        movies = []
-        for movie_id in sorted(candidates)[:5]:
-            value = plain(fetch('movie_details', {'id': movie_id, 'language': 'zh-CN', 'append_to_response': 'alternative_titles,external_ids'}))
-            if not isinstance(value, dict) or value.get('id') != movie_id:
-                raise ValueError('Movie details unavailable')
-            if related(show, value):
-                movies.append(value)
+        def search(query):
+            candidates, complete = {}, True
+            pages, total, seen = 1, None, set()
+            for number in range(1, MAX_PAGES + 1):
+                if number > pages:
+                    break
+                try:
+                    page = request('search_movie', {'query': query, 'page': number})
+                except Exception:
+                    return candidates, False
+                # AsObj maps an empty array to {}; only explicit zero is valid.
+                if isinstance(page, dict) and page.get('total_results') == 0 and page.get('results') == {}:
+                    page = dict(page, results=[])
+                if (not isinstance(page, dict) or not isinstance(page.get('results'), list)
+                        or type(page.get('total_results')) is not int or page['total_results'] < 0):
+                    return candidates, False
+                received_pages = page.get('total_pages')
+                # A provider must state pagination. A short first page alone
+                # cannot prove there are no later films.
+                expected_pages = ({0, 1} if page['total_results'] == 0
+                                  else {(page['total_results'] + 19) // 20})
+                if type(received_pages) is not int or received_pages not in expected_pages:
+                    received_pages, complete = 1, False
+                if number == 1:
+                    pages, total = received_pages, page['total_results']
+                if (received_pages != pages or page['total_results'] != total
+                        or page.get('page') != number
+                        or len(page['results']) != min(20, max(0, total - 20 * (number - 1)))):
+                    complete = False
+                complete = complete and pages <= MAX_PAGES and len(page['results']) <= 20
+                for value in page['results'][:20]:
+                    if (not isinstance(value, dict) or type(value.get('id')) is not int
+                            or not value.get('original_language') or not aliases(value, 'movie')):
+                        complete = False
+                        continue
+                    if value['id'] in seen:
+                        complete = False
+                    seen.add(value['id'])
+                    if candidate(show, value):
+                        candidates[value['id']] = value
+            return candidates, complete
+
+        candidates, complete = {}, True
+        movies = {row['id']: row for row in cached['movies']} if valid else {}
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(search, query) for query in queries]
+            for future in futures:
+                try:
+                    found, done = future.result()
+                    candidates.update(found)
+                    complete = complete and done
+                except Exception:
+                    complete = False
+            identifiers = sorted(candidates)
+            # Submit pairs, not a hundred queued jobs that outlive navigation.
+            for offset in range(0, len(identifiers), 2):
+                if cancelled() or time.monotonic() >= deadline or len(movies) >= MAX_MOVIES:
+                    complete = False
+                    break
+                # Canonical full details are also consumed by the source
+                # picker; don't warm a reduced payload under a different key.
+                pending = [(movie_id, pool.submit(request, 'movie_details', movie_id))
+                    for movie_id in identifiers[offset:offset + 2]]
+                for movie_id, future in pending:
+                    try:
+                        value = future.result()
+                        if (not isinstance(value, dict) or value.get('id') != movie_id
+                                or not value.get('original_language') or not aliases(value, 'movie')
+                                or not ('genres' in value or 'genre_ids' in value)
+                                or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value.get('release_date') or '')):
+                            raise ValueError('Movie details unavailable')
+                        if related(show, value):
+                            movies[movie_id] = value
+                        elif value.get('alternative_titles') is None:
+                            # A legacy canonical payload may be the validated
+                            # fallback after its one-time alias upgrade failed.
+                            complete = False
+                        else:
+                            movies.pop(movie_id, None)
+                    except Exception:
+                        complete = False
+        if cancelled():
+            raise TimeoutError('MOVIE_DISCOVERY_CANCELLED')
+        if complete:
+            movies = {key: value for key, value in movies.items() if key in candidates}
+        complete = complete and len(movies) <= MAX_MOVIES
         evidence = {key: show[key] for key in ('id', 'name', 'original_name', 'original_language',
                     'genres', 'genre_ids', 'alternative_titles') if key in show}
-        return dict(schema=2, id=identifier, time=now, show=evidence,
-                    movies=sorted(movies, key=lambda m: m['release_date'])), False
+        return dict(schema=3, id=identifier, time=cached['time'] if valid and not complete else now,
+                    show=evidence, complete=complete,
+                    movies=sorted(movies.values(), key=lambda m: (m['release_date'], m['id']))[:MAX_MOVIES]), bool(not complete and valid)
     except Exception:
         if valid and 0 <= now - cached.get('time', 0) < 7 * 86400:
             return cached, True
         raise
+
+
+def load(identifier, show=None, deadline=None, cancelled=lambda: False, quiet=False):
+    from lib.db.cached import cache
+    from lib.clients.tmdb.utils.utils import tmdb_get
+    key = CACHE_PREFIX + str(identifier)
+    value, stale = discover(identifier, tmdb_get, cache.get(key), show=show,
+                            deadline=deadline, cancelled=cancelled, quiet=quiet)
+    if not cancelled():
+        cache.set(key, value, timedelta(days=7))
+    return dict(value, stale=stale)
 
 
 def show_related_movies(params):
@@ -247,10 +355,8 @@ def show_related_movies(params):
         identifier = int(json.loads(params.get('ids', '{}')).get('tmdb_id', 0))
         if identifier <= 0:
             raise ValueError('TV ID required')
-        key = CACHE_PREFIX + str(identifier)
-        value, stale = discover(identifier, tmdb_get, cache.get(key))
-        if not stale:
-            cache.set(key, value, timedelta(days=7))
+        value = load(identifier)
+        stale = value.get('stale')
     except Exception as error:
         kodilog('Related movie catalog failed: ' + type(error).__name__)
         return fail_directory('相关电影资料请求失败，可重试')
@@ -258,10 +364,12 @@ def show_related_movies(params):
         notification('网络不可用，显示最近缓存的相关电影')
     rows = movie_entries(value['movies'])
     set_content_type('movies')
-    if not rows:
+    if not value['complete'] or stale:
+        rows.append(directory_entry({'tmdb_id': identifier}, '电影目录未查全 · 重试'))
+    elif not rows:
         notification('未找到可可靠关联的电影，可在全局电影搜索中继续查找')
-        item = make_list_item(label='暂无可可靠关联的电影 · 返回作品')
-        item.getVideoInfoTag().setTitle('暂无可可靠关联的电影 · 返回作品')
+        item = make_list_item(label='未找到已确认关联的电影 · 打开作品季目录')
+        item.getVideoInfoTag().setTitle('未找到已确认关联的电影 · 打开作品季目录')
         item.setProperty('IsPlayable', 'false')
         rows.append((build_url('show_seasons_details', ids={'tmdb_id': identifier}, mode='tv', media_type='tv'), item, True))
     add_directory_items_batch(rows)

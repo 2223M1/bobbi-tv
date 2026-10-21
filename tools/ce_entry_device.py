@@ -27,6 +27,7 @@ def builtin(action):
 def view():
  out={'players':rpc('Player.GetActivePlayers'),'gui':rpc('GUI.GetProperties',{'properties':['currentwindow','currentcontrol']})}
  labels=['Window.Property(playback_error)','Control.GetLabel(1)','Control.GetLabel(2)','Control.GetLabel(3)','Control.GetLabel(4)','Control.GetLabel(5)','Control.GetLabel(6)','Control.GetLabel(10)','Control.GetLabel(11)','Container(6).NumItems','Container(6).CurrentItem','Container(6).ListItem.Label']
+ labels+=['Container(3).NumItems','Container(3).CurrentItem']+['Container(3).ListItemAbsolute(%d).Label'%i for i in range(12)]
  try:out['labels']=rpc('XBMC.GetInfoLabels',{'labels':labels})
  except Exception as e:out['labels_error']=type(e).__name__
  p=pathlib.Path('/storage/.kodi/userdata/addon_data/script.bobbi.start/installation.json')
