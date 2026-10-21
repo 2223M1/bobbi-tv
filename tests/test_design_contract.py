@@ -33,11 +33,11 @@ def test_remote_focus_and_reduced_motion_contract():
     assert 'setMinHeight(dp(56))' in text
 
 
-def test_fonts_are_unchanged_and_licensed_in_project_assets():
+def test_fonts_are_unchanged_in_document_clean_project_assets():
     expected = {
         'HarmonyOS_SansSC_Regular.ttf': '984cf609545acee8ef060780fb70fc3099b058c0553416331b6e863fdf7c26fa',
         'HarmonyOS_SansSC_Bold.ttf': 'c215d8ab1cb6709fec2e063f8213e9af86d7587d345b56325e36b67d6b947d98',
-        'LICENCE-HarmonyOS-Sans.txt': '327e0147d4a3ca2d89e81abce45b210576b0f9fe2b29d900f64b58039f12a102',
     }
     for name, digest in expected.items():
         assert hashlib.sha256((ROOT / 'assets/fonts' / name).read_bytes()).hexdigest() == digest
+    assert not (ROOT / 'assets/fonts/LICENCE-HarmonyOS-Sans.txt').exists()

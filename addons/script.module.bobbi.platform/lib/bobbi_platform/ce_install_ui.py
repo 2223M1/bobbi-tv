@@ -91,15 +91,40 @@ class KodiHost:
             raise UpdateError('PLAYBACK_ACTIVE')
         if self.skin() == 'skin.bobbi.cinema':
             rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': 'skin.estuary'})
+        from .runtime import call
+        runtime = profile(name='runtime.json')
+        until = time.monotonic() + 15
+        # Ask an upgraded host to drain BEFORE Kodi holds its addon/service
+        # locks and starts a five-second forced Python abort. Acknowledgement
+        # is only acceptance; the OS lease remains the replacement barrier.
+        if runtime.is_file():
+            try:
+                status = call('status', {}, timeout=.3)
+            except (OSError, ValueError):
+                status = None  # Legacy/dead registrations retain the old path.
+            if isinstance(status, dict) and status.get('quiesce_protocol') == 1:
+                reply = call('quiesce', {'protocol': 1}, timeout=.5)
+                if reply != {'accepted': True}:
+                    raise UpdateError('CINEMA_STOP_NOT_ACCEPTED')
+                self._acquire_runtime_lease(runtime, until)
         for name in ('plugin.video.bobbi', 'plugin.video.bobbi.torrent'):
             if (self.details(name) or {}).get('enabled'):
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': False})
         # A registration can survive os._exit. Acquire the stable OS lease,
         # recheck disabled state, then remove only that dead host's marker.
         # Retain the lease through file replacement, until activate/restore.
+        self._acquire_runtime_lease(runtime, until)
+        if any((self.details(n) or {}).get('enabled') for n in
+               ('plugin.video.bobbi', 'plugin.video.bobbi.torrent')):
+            raise UpdateError('CINEMA_DISABLE_NOT_CONFIRMED')
+        _safe_path(runtime)
+        if runtime.exists():
+            runtime.unlink()
+        if self.xbmc.Player().isPlaying():
+            raise UpdateError('PLAYBACK_STARTED_DURING_INSTALL')
+
+    def _acquire_runtime_lease(self, runtime, until):
         from .instance_lock import InstanceLock
-        runtime = profile(name='runtime.json')
-        until = time.monotonic() + 15
         while getattr(self, '_runtime_lease', None) is None:
             lease = InstanceLock(str(runtime) + '.lock')
             try:
@@ -107,22 +132,10 @@ class KodiHost:
             except OSError:
                 pass
             else:
-                try:
-                    if any((self.details(n) or {}).get('enabled') for n in
-                           ('plugin.video.bobbi', 'plugin.video.bobbi.torrent')):
-                        raise UpdateError('CINEMA_DISABLE_NOT_CONFIRMED')
-                    _safe_path(runtime)
-                    if runtime.exists():
-                        runtime.unlink()
-                    self._runtime_lease = lease
-                    break
-                except BaseException:
-                    lease.close()
-                    raise
+                self._runtime_lease = lease
+                break
             if self.monitor.waitForAbort(.1) or time.monotonic() >= until:
                 raise UpdateError('CINEMA_SERVICE_NOT_STOPPED')
-        if self.xbmc.Player().isPlaying():
-            raise UpdateError('PLAYBACK_STARTED_DURING_INSTALL')
 
     def verify(self, versions):
         for name, version in versions.items():
@@ -191,10 +204,23 @@ class KodiHost:
                 except OSError:
                     pass  # A live owner may still be completing initialization.
                 else:
-                    lease.close()
-                    # Enabled-but-never-running after process loss. The real
-                    # service still checks its boot gate and exclusive lease.
-                    self.xbmc.executebuiltin('RunScript(special://home/addons/plugin.video.bobbi/service.py)')
+                    try:
+                        # A path RunScript has neither addon context nor a
+                        # ServiceAddonManager handle. Restart only this enabled
+                        # provider via a real managed state transition. Keep
+                        # the lease until disabled is confirmed; an initializing
+                        # old invocation cannot acquire replacement ownership.
+                        name = 'plugin.video.bobbi'
+                        if not (self.details(name) or {}).get('enabled'):
+                            raise UpdateError('CINEMA_PROVIDER_NOT_ENABLED')
+                        rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': False})
+                        if (self.details(name) or {}).get('enabled'):
+                            raise UpdateError('CINEMA_DISABLE_NOT_CONFIRMED')
+                    finally:
+                        lease.close()
+                    # The transaction remains pending if enabling or readiness
+                    # fails. Retrying restores its complete desired vector.
+                    rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': True})
                     launched = True
             if self.monitor.waitForAbort(.1) or time.monotonic() >= deadline:
                 raise UpdateError('CINEMA_SERVICE_NOT_READY')

@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites name="PR3 nonblocking observations">
+  <testsuite name="shutdown" tests="2" failures="1" errors="0">
+    <testcase classname="shutdown" name="STANDARD-SLOW-HISTORY-QUIESCE">
+      <failure message="Review contract violated">{
+  "id": "STANDARD-SLOW-HISTORY-QUIESCE",
+  "passed": false,
+  "expected": "installer replacement permission follows all admitted history writes, with normal drained shutdown still succeeding",
+  "actual": {
+    "initial_owner_lease_exclusive": true,
+    "quiesce_error": "CINEMA_SERVICE_NOT_STOPPED",
+    "elapsed_seconds": 15.0,
+    "installer_holds_runtime_lease": false,
+    "history_worker_alive_at_quiesce_return": true,
+    "old_writes_after_quiesce": 0,
+    "writes": [
+      {
+        "key": "jt:lfh",
+        "subkey": "[B][COLOR FFA2F0C6][Cached][/COLOR][/B] - Review episode",
+        "value": {
+          "title": "Review episode",
+          "type": "",
+          "current_time": 100,
+          "terminal_reason": "NATURAL_EOF",
+          "review_item": 2,
+          "timestamp": "Wed, 21 Oct 2026 07:47 AM"
+        },
+        "after_installer_quiesce": false
+      }
+    ],
+    "errors": [],
+    "enabled": false,
+    "installer_returned": false,
+    "shutdown_completed": true
+  }
+}</failure>
+    </testcase>
+    <testcase classname="shutdown" name="CONTROL-STANDARD-DRAINED-HISTORY" />
+  </testsuite>
+  <testsuite name="trial_driver" tests="11" failures="0" errors="0">
+    <testcase classname="trial_driver" name="observe explicit failure" />
+    <testcase classname="trial_driver" name="observe success" />
+    <testcase classname="trial_driver" name="stop explicit failure" />
+    <testcase classname="trial_driver" name="stop success" />
+    <testcase classname="trial_driver" name="cancel explicit failure" />
+    <testcase classname="trial_driver" name="cancel success" />
+    <testcase classname="trial_driver" name="select missing result" />
+    <testcase classname="trial_driver" name="observe missing result" />
+    <testcase classname="trial_driver" name="cards read" />
+    <testcase classname="trial_driver" name="inspect read" />
+    <testcase classname="trial_driver" name="unsupported control" />
+  </testsuite>
+</testsuites>

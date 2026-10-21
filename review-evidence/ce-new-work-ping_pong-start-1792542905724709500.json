@@ -1,0 +1,28 @@
+{
+  "exit_code": 1,
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "result": {
+    "error": "AssertionError",
+    "reason": "OLD_WINDOW_NOT_RETIRED",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 4
+      },
+      {
+        "function": "<module>",
+        "line": 534
+      },
+      {
+        "function": "prepare_home",
+        "line": 408
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "ping_pong",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

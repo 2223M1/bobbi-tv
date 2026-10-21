@@ -1,0 +1,45 @@
+--- frozen-original
++++ adapted-fixture
+@@ -52,9 +52,11 @@
+         'script.bobbi.start/default.py': b'# fixture bootstrap\n',
+         module.EMBEDDED: bundle,
+     })
+-    outer = zipped({module.BUNDLE: bundle, module.ENTRY: entry,
++    members = {module.BUNDLE: bundle, module.ENTRY: entry,
+                     module.REPORT: b'Fixture input report; replaced by repository report.\n',
+-                    'README.md': b'Fixture input.\n'})
++                    'README.md': b'Fixture input.\n'}
++    members['MANIFEST.json'] = json.dumps(dict(schema=1,files=[dict(path=n,bytes=len(v),sha256=hashlib.sha256(v).hexdigest()) for n,v in members.items()])).encode()
++    outer = zipped(members)
+     return outer, bundle
+ 
+ 
+@@ -114,7 +116,15 @@
+                         with module.SignedBundle(original_path, trust, profile) as signed:
+                             row['input_actual_signed_bundle_check'] = signed.check_all()['sequence']
+                     out = case_root / 'out'
+-                    sys.argv = [str(module_path), '--key', str(pem), '--input', str(input_path), '--output', str(out)]
++                    with zipfile.ZipFile(BytesIO(bundle)) as z:
++                        expected_components = json.loads(z.read('release.json'))['components']
++                    with zipfile.ZipFile(BytesIO(outer)) as z:
++                        entry_raw = z.read(module.ENTRY)
++                    identity = case_root/'identity.json'
++                    identity.write_text(json.dumps(dict(sequence=2026102021, components=expected_components, outer_sha256=hashlib.sha256(outer).hexdigest(),payload_sha256=hashlib.sha256(bundle).hexdigest(),entry_sha256=hashlib.sha256(entry_raw).hexdigest())))
++                    registry = case_root/'registry.json'
++                    registry.write_text(json.dumps(dict(allocated=[2026102022])))
++                    sys.argv = [str(module_path), '--key', str(pem), '--input', str(input_path), '--output', str(out), '--identity',str(identity),'--registry',str(registry),'--sequence','2026102023']
+                     try:
+                         with contextlib.redirect_stdout(StringIO()):
+                             module.main()
+@@ -122,9 +132,9 @@
+                     except ValueError as exc:
+                         row.update(accepted=False, rejection=str(exc))
+                     if row['accepted']:
+-                        with module.SignedBundle(out / 'bobbi-private-2026102022-coreelec.bobbi-update.zip', trust, 'coreelec') as signed:
++                        with module.SignedBundle(out / 'bobbi-private-2026102023-coreelec.bobbi-update.zip', trust, 'coreelec') as signed:
+                             row['output_actual_signed_bundle_check'] = signed.check_all()['sequence']
+-                        with zipfile.ZipFile(out / 'ce2021-clean-delivery-20261021.zip') as cleaned:
++                        with zipfile.ZipFile(out / 'ce2021-clean-2026102023.zip') as cleaned:
+                             metadata = json.loads(cleaned.read('MANIFEST.json'))
+                         result = json.loads((out / 'packaging-result.json').read_text())
+                         row.update(reported_original_sequence=metadata['original_sequence'],

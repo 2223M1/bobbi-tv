@@ -1,0 +1,24 @@
+Frozen commit: b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2
+Workflow run: https://github.com/2223M1/bobbi-tv/actions/runs/39525777378
+Job: https://github.com/2223M1/bobbi-tv/actions/runs/39525777378/job/118979948586
+Source: GitHub Actions raw job log, retrieved read-only. Excerpts preserve original UTC timestamps.
+
+L299: 2026-10-21T01:12:13.1799975Z ______________ test_preview_is_reproducible_and_dependency_closed ______________
+L325: 2026-10-21T01:12:13.1819035Z >               raise ValueError('Review and update explicit source inventory: ' + addon)
+L326: 2026-10-21T01:12:13.1820064Z E               ValueError: Review and update explicit source inventory: script.module.bobbi.platform
+L329: 2026-10-21T01:12:13.1821476Z ___________ test_fonts_are_unchanged_and_licensed_in_project_assets ____________
+L361: 2026-10-21T01:12:13.1858908Z E       FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/bobbi-tv/bobbi-tv/assets/fonts/LICENCE-HarmonyOS-Sans.txt'
+L364: 2026-10-21T01:12:13.1861203Z ________________________ test_public_inventory_is_exact ________________________
+L958: 2026-10-21T01:12:13.2771113Z tests/test_public_release.py:30: AssertionError
+L959: 2026-10-21T01:12:13.2771980Z _____ test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts _____
+L987: 2026-10-21T01:12:13.2796149Z E       AssertionError: assert False
+L993: 2026-10-21T01:12:13.2801484Z ____________ test_checked_in_notices_and_truthful_unresolved_status ____________
+L1025: 2026-10-21T01:12:13.2822716Z E       FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/bobbi-tv/bobbi-tv/licenses/THIRD-PARTY.json'
+L1035: 2026-10-21T01:12:13.2832050Z SKIPPED [5] tests/test_maintenance_lease.py:81: real Windows inherited-pipe API binding
+L1036: 2026-10-21T01:12:13.2833214Z 5 failed, 1741 passed, 5 skipped, 1 warning in 73.95s (0:01:13)
+L1060: 2026-10-21T01:12:18.8505773Z 761 passed in 5.21s
+L1075: 2026-10-21T01:12:25.4406365Z 177 passed in 6.29s
+L1092: 2026-10-21T01:12:25.5721209Z     raise ValueError('Source inventory changed: ' + addon)
+L1093: 2026-10-21T01:12:25.5721981Z ValueError: Source inventory changed: plugin.video.bobbi
+L1112: 2026-10-21T01:12:25.6722615Z     raise ValueError('Source inventory changed: ' + addon)
+L1113: 2026-10-21T01:12:25.6723409Z ValueError: Source inventory changed: plugin.video.bobbi

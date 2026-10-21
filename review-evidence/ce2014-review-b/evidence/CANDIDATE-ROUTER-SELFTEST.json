@@ -1,0 +1,14 @@
+{
+  "scope": "Runner candidate-routing self-test using synthetic source tree, not a Git working tree or installed product",
+  "returncode": 1,
+  "stdout": "{\"total\": 48, \"passed\": 42, \"failed\": 6, \"errors\": 0, \"status\": \"OPEN_FINDINGS_REPRODUCED\"}\nRESULT=/tmp/pr3-candidate-router-wxlkp9hp/result/RESULT.json\n",
+  "stderr": "",
+  "source_tree_unchanged": true,
+  "files": 13,
+  "counts": {
+    "total": 48,
+    "passed": 42,
+    "failed": 6,
+    "errors": 0
+  }
+}

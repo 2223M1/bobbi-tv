@@ -16,10 +16,10 @@ def test_local_application_input_is_not_required_by_git_inventory(tmp_path):
     root = tmp_path / 'script.module.bobbi.core'
     target = root / 'resources/tmdb-project.json'
     target.parent.mkdir(parents=True)
-    (root / 'LICENSE').write_text('license')
+    (root / 'default.py').write_text('pass')
     before = builder.files(root)
     target.write_text('private configuration is separately validated')
-    assert builder.files(root) == before == {'LICENSE': builder.hashlib.sha256(b'license').hexdigest()}
+    assert builder.files(root) == before == {'default.py': builder.hashlib.sha256(b'pass').hexdigest()}
 
 
 def test_project_input_validates_then_packages_exact_application_fields(tmp_path):

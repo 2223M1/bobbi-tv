@@ -1,0 +1,72 @@
+{
+  "group": "shutdown",
+  "total": 5,
+  "passed": 1,
+  "failed": 4,
+  "errors": 0,
+  "cases": [
+    {
+      "name": "shutdown_drain_none",
+      "passed": true,
+      "actual": {
+        "task": "none",
+        "old_task_still_running": false,
+        "replacement_lease_acquired": true,
+        "close_returned": true,
+        "errors": []
+      },
+      "expected": "No replacement lease while any resident task still runs",
+      "group": "shutdown"
+    },
+    {
+      "name": "shutdown_drain_next",
+      "passed": false,
+      "actual": {
+        "task": "next",
+        "old_task_still_running": true,
+        "replacement_lease_acquired": true,
+        "close_returned": true,
+        "errors": []
+      },
+      "expected": "No replacement lease while any resident task still runs",
+      "group": "shutdown"
+    },
+    {
+      "name": "shutdown_drain_subtitle",
+      "passed": false,
+      "actual": {
+        "task": "subtitle",
+        "old_task_still_running": true,
+        "replacement_lease_acquired": true,
+        "close_returned": true,
+        "errors": []
+      },
+      "expected": "No replacement lease while any resident task still runs",
+      "group": "shutdown"
+    },
+    {
+      "name": "shutdown_drain_history",
+      "passed": false,
+      "actual": {
+        "task": "history",
+        "old_task_still_running": true,
+        "replacement_lease_acquired": true,
+        "close_returned": true,
+        "errors": []
+      },
+      "expected": "No replacement lease while any resident task still runs",
+      "group": "shutdown"
+    },
+    {
+      "name": "shutdown_cleanup_exception",
+      "passed": false,
+      "actual": {
+        "exception": "OSError",
+        "catalog_worker_alive": true,
+        "replacement_lease_acquired": true
+      },
+      "expected": "One cleanup error must not release ownership over still-running consumers",
+      "group": "shutdown"
+    }
+  ]
+}

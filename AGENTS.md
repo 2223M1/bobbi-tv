@@ -1,8 +1,9 @@
 # bobbi TV
 
 Private distribution only (owner decision 2026-10-19). Do not create public
-releases or anonymous update endpoints. Restored visual/audio assets retain
-their original notices; private hosting does not confer redistribution rights.
+releases or anonymous update endpoints. Owner confirmed document-only cleanup
+on 2026-10-21. Follow tools/delivery_policy.py; do not restore standalone notice
+documents as a build prerequisite. Private hosting does not confer rights.
 Do not copy account state, device backups or signing secrets into installers.
 Curated resource catalogues are authorized; rebuild from whitelisted tables,
 never copy login state or unexamined database pages.

@@ -1,0 +1,143 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "amelie",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Amelie",
+        "tmdb_id": 194,
+        "kind": "movie",
+        "year": 2001
+      },
+      "prior_request": null,
+      "started": 2272308.760787674,
+      "home": {
+        "generation": 45,
+        "intent": 0,
+        "retired_generation": 45,
+        "observed_at": 2272309.075306844
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2272309.075617676,
+      "picker": {
+        "window": 13001,
+        "generation": 46,
+        "intent": 0,
+        "tmdb_id": 194,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2272311.375705947,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "天使爱美丽.Amelie.2001.BluRay.1080p.x265.10bit.2Audio.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "8.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "9c005e7061bf69f647cc6baede6a96f8d8f769d4f9d037c474eb0aa95e23fa1c",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2272388.437575562,
+      "request_id": "16223d6207524e5dabae88e7fc151486",
+      "selection_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce",
+      "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+      "first_av_observed_at": 2272402.632322943,
+      "select_to_av_observed_seconds": 14.194747380912304
+    },
+    "sample": {
+      "wall": 2272447.957271892,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+        "monotonic_us": 2272402503187,
+        "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "16223d6207524e5dabae88e7fc151486",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 45.213,
+      "duration": 7295.328,
+      "currentaudiostream": {
+        "bitrate": 640000,
+        "channels": 6,
+        "codec": "ac3",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "fre",
+        "name": "",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 1,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": ""
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 816,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 1112,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "observation_times": {
+        "sample_started": 2272447.940379937,
+        "player_time_started": 2272447.959793676,
+        "player_time_completed": 2272447.963003584,
+        "caching_started": 2272447.963035543,
+        "caching_completed": 2272448.005169554,
+        "decoder_started": 2272448.058165495,
+        "decoder_completed": 2272448.059083826,
+        "sample_completed": 2272448.059085826
+      }
+    }
+  },
+  "diagnostic_present": false,
+  "work": "amelie",
+  "operation": "inspect",
+  "attempt": 1,
+  "regression_attempt": false
+}

@@ -1,0 +1,5 @@
+# Review workstation only. Product runtime compatibility remains Kodi 21/Python 3.8+.
+# Run these probes with Python 3.12, as used for the recorded results.
+pytest==9.1.1
+cryptography==50.0.1
+requests==2.34.2

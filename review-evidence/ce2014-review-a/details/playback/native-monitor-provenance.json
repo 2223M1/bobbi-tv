@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "base_commit": "ee65742bfcbaf08831f70306faed11bd1f8d6cc6",
+  "head_commit": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "base_snapshot": "PR2-head snapshot; parent verified same tree as PR3 base",
+  "scope": "AST equality ignores source location/comments only; used to establish inherited monitor logic",
+  "methods": [
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "qualified_name": "JacktookPLayer._owns_playback_session",
+      "base_lines": [
+        149,
+        162
+      ],
+      "head_lines": [
+        149,
+        162
+      ],
+      "ast_equal": true,
+      "base_ast_sha256": "9574dade230d0df5fcaa9f2d1067dba3f3354528e72f0b659444ff94380e150e",
+      "head_ast_sha256": "9574dade230d0df5fcaa9f2d1067dba3f3354528e72f0b659444ff94380e150e"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "qualified_name": "JacktookPLayer._matches_requested_playback",
+      "base_lines": [
+        653,
+        671
+      ],
+      "head_lines": [
+        653,
+        671
+      ],
+      "ast_equal": true,
+      "base_ast_sha256": "baa33474a7bad0abcf0d810886b55a3380925271cb1620e2c31aab077a75f78b",
+      "head_ast_sha256": "baa33474a7bad0abcf0d810886b55a3380925271cb1620e2c31aab077a75f78b"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "qualified_name": "JacktookPLayer.monitor",
+      "base_lines": [
+        673,
+        762
+      ],
+      "head_lines": [
+        673,
+        762
+      ],
+      "ast_equal": true,
+      "base_ast_sha256": "22651ea2e8cb345d816ebd998f002a29d02af4ad2cb018f89a32265d89000ab6",
+      "head_ast_sha256": "22651ea2e8cb345d816ebd998f002a29d02af4ad2cb018f89a32265d89000ab6"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "qualified_name": "JacktookPLayer.wait_cinema_terminal",
+      "base_lines": [
+        2313,
+        2360
+      ],
+      "head_lines": [
+        2313,
+        2360
+      ],
+      "ast_equal": false,
+      "base_ast_sha256": "320f28f274a78138ac24288f488efd6b992fe37a3b3f75a4715b10031caa9241",
+      "head_ast_sha256": "b85c6d18182541df697bb553ed1e820af377e285b75a21c5aae5b93f9983c1ef"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py",
+      "qualified_name": "owned_state",
+      "base_lines": [
+        189,
+        203
+      ],
+      "head_lines": [
+        189,
+        203
+      ],
+      "ast_equal": true,
+      "base_ast_sha256": "ca4c382c67164e2c8719db2ee8ed0256481ec30ba474f633d8e19076570b2b55",
+      "head_ast_sha256": "ca4c382c67164e2c8719db2ee8ed0256481ec30ba474f633d8e19076570b2b55"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py",
+      "qualified_name": "terminal_state",
+      "base_lines": null,
+      "head_lines": [
+        206,
+        229
+      ],
+      "ast_equal": false,
+      "base_ast_sha256": null,
+      "head_ast_sha256": "9d505949ac905c4a3675667931d6b4b06d895fe7f50fe5d3bbc86946f5cd623a"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py",
+      "qualified_name": "PlaybackOwner.observe_terminal",
+      "base_lines": [
+        264,
+        279
+      ],
+      "head_lines": [
+        264,
+        279
+      ],
+      "ast_equal": true,
+      "base_ast_sha256": "2c5626035f08bb2cddcc1485178102a10189f9821d09bc8d5a07178fb3eead57",
+      "head_ast_sha256": "2c5626035f08bb2cddcc1485178102a10189f9821d09bc8d5a07178fb3eead57"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py",
+      "qualified_name": "PlaybackOwner.consume_next",
+      "base_lines": [
+        281,
+        290
+      ],
+      "head_lines": [
+        281,
+        290
+      ],
+      "ast_equal": true,
+      "base_ast_sha256": "98fd553c319e71605315a7c92e002cbd04b4f521c37df190b580c74e9c9d2ccf",
+      "head_ast_sha256": "98fd553c319e71605315a7c92e002cbd04b4f521c37df190b580c74e9c9d2ccf"
+    }
+  ]
+}

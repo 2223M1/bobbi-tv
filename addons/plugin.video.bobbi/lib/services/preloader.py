@@ -45,17 +45,22 @@ class StartupPreloader:
     user returns, without a second provider request or a manual refresh.
     """
 
+    def __init__(self, monitor=None):
+        self.monitor = monitor
+
     def run(self):
-        Thread(
+        worker = Thread(
             target=self._preload,
             name="AM6BPrimaryCatalogWarmup",
             daemon=True,
-        ).start()
+        )
+        worker.start()
+        return worker
 
     def _preload(self):
         from lib.utils.tmdb_init import ensure_tmdb_init
         ensure_tmdb_init()
-        monitor = xbmc.Monitor()
+        monitor = self.monitor or xbmc.Monitor()
         player = xbmc.Player()
 
         if monitor.waitForAbort(AM6B_PRELOAD_STARTUP_GRACE_SECONDS):

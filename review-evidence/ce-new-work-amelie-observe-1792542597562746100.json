@@ -1,0 +1,686 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "amelie",
+    "operation": "observe",
+    "target": null,
+    "settle": [],
+    "samples": [
+      {
+        "wall": 2272450.000742561,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "monotonic_us": 2272402503187,
+          "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "16223d6207524e5dabae88e7fc151486",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 47.256,
+        "duration": 7295.328,
+        "currentaudiostream": {
+          "bitrate": 640000,
+          "channels": 6,
+          "codec": "ac3",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "fre",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 1,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": ""
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 816,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1160,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2272449.977208207,
+          "player_time_started": 2272450.005364215,
+          "player_time_completed": 2272450.008694497,
+          "caching_started": 2272450.008725622,
+          "caching_completed": 2272450.053799834,
+          "decoder_started": 2272450.098166173,
+          "decoder_completed": 2272450.098472422,
+          "sample_completed": 2272450.098474381
+        }
+      },
+      {
+        "wall": 2272460.118905355,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "monotonic_us": 2272402503187,
+          "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "16223d6207524e5dabae88e7fc151486",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 57.475,
+        "duration": 7295.328,
+        "currentaudiostream": {
+          "bitrate": 640000,
+          "channels": 6,
+          "codec": "ac3",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "fre",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 1,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": ""
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 816,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1403,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2272460.098630911,
+          "player_time_started": 2272460.12131789,
+          "player_time_completed": 2272460.1237388,
+          "caching_started": 2272460.123759884,
+          "caching_completed": 2272460.142119417,
+          "decoder_started": 2272460.198020056,
+          "decoder_completed": 2272460.19870143,
+          "sample_completed": 2272460.19870643
+        }
+      },
+      {
+        "wall": 2272470.214883193,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "monotonic_us": 2272402503187,
+          "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "16223d6207524e5dabae88e7fc151486",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 67.485,
+        "duration": 7295.328,
+        "currentaudiostream": {
+          "bitrate": 640000,
+          "channels": 6,
+          "codec": "ac3",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "fre",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 1,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": ""
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 816,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1645,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2272470.198842779,
+          "player_time_started": 2272470.217213895,
+          "player_time_completed": 2272470.219596889,
+          "caching_started": 2272470.21961693,
+          "caching_completed": 2272470.235547803,
+          "decoder_started": 2272470.288127075,
+          "decoder_completed": 2272470.28935028,
+          "sample_completed": 2272470.28935478
+        }
+      },
+      {
+        "wall": 2272480.320562996,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "monotonic_us": 2272402503187,
+          "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+          "open_epoch": 1,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "16223d6207524e5dabae88e7fc151486",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 77.662,
+        "duration": 7295.328,
+        "currentaudiostream": {
+          "bitrate": 640000,
+          "channels": 6,
+          "codec": "ac3",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "fre",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 1,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": ""
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 816,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1887,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2272480.289525999,
+          "player_time_started": 2272480.322873365,
+          "player_time_completed": 2272480.325494357,
+          "caching_started": 2272480.325513649,
+          "caching_completed": 2272480.328821806,
+          "decoder_started": 2272480.375453177,
+          "decoder_completed": 2272480.375737176,
+          "sample_completed": 2272480.375739259
+        }
+      }
+    ],
+    "passed": true,
+    "startup_clock": {
+      "stable": true,
+      "budget_seconds": 5,
+      "elapsed_seconds": 0.7437101230025291,
+      "samples": [
+        {
+          "wall": 2272449.243633724,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+            "monotonic_us": 2272402503187,
+            "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "16223d6207524e5dabae88e7fc151486",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 46.464,
+          "duration": 7295.328,
+          "currentaudiostream": {
+            "bitrate": 640000,
+            "channels": 6,
+            "codec": "ac3",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "fre",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 1,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 816,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1142,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2272449.233269293,
+            "player_time_started": 2272449.246118301,
+            "player_time_completed": 2272449.252267201,
+            "caching_started": 2272449.252288534,
+            "caching_completed": 2272449.256469856,
+            "decoder_started": 2272449.303438813,
+            "decoder_completed": 2272449.305380308,
+            "sample_completed": 2272449.305384308
+          }
+        },
+        {
+          "wall": 2272449.564799943,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+            "monotonic_us": 2272402503187,
+            "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "16223d6207524e5dabae88e7fc151486",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 46.839,
+          "duration": 7295.328,
+          "currentaudiostream": {
+            "bitrate": 640000,
+            "channels": 6,
+            "codec": "ac3",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "fre",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 1,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 816,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1150,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2272449.555504968,
+            "player_time_started": 2272449.567065062,
+            "player_time_completed": 2272449.569569097,
+            "caching_started": 2272449.569590555,
+            "caching_completed": 2272449.59188337,
+            "decoder_started": 2272449.635067837,
+            "decoder_completed": 2272449.635393461,
+            "sample_completed": 2272449.635395919
+          }
+        },
+        {
+          "wall": 2272449.904537153,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce|transport:3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+            "monotonic_us": 2272402503187,
+            "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+            "open_epoch": 1,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "16223d6207524e5dabae88e7fc151486",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "3b92f8c44547c275933f52899c39995180fa2189badd524d754a5fbd10cd202c",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 47.256,
+          "duration": 7295.328,
+          "currentaudiostream": {
+            "bitrate": 640000,
+            "channels": 6,
+            "codec": "ac3",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "fre",
+            "name": "",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 1,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "chi",
+            "name": ""
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 816,
+            "index": 0,
+            "language": "",
+            "name": "",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": true,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1158,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2272449.885582037,
+            "player_time_started": 2272449.907163563,
+            "player_time_completed": 2272449.910357137,
+            "caching_started": 2272449.910380929,
+            "caching_completed": 2272449.924436141,
+            "decoder_started": 2272449.976246668,
+            "decoder_completed": 2272449.976939333,
+            "sample_completed": 2272449.976943833
+          }
+        }
+      ],
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "record": {
+      "test": {
+        "title": "Amelie",
+        "tmdb_id": 194,
+        "kind": "movie",
+        "year": 2001
+      },
+      "prior_request": null,
+      "started": 2272308.760787674,
+      "home": {
+        "generation": 45,
+        "intent": 0,
+        "retired_generation": 45,
+        "observed_at": 2272309.075306844
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2272309.075617676,
+      "picker": {
+        "window": 13001,
+        "generation": 46,
+        "intent": 0,
+        "tmdb_id": 194,
+        "kind": "movie"
+      },
+      "picker_observed_at": 2272311.375705947,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "天使爱美丽.Amelie.2001.BluRay.1080p.x265.10bit.2Audio.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "8.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "9c005e7061bf69f647cc6baede6a96f8d8f769d4f9d037c474eb0aa95e23fa1c",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2272388.437575562,
+      "request_id": "16223d6207524e5dabae88e7fc151486",
+      "selection_identity": "transport:6ac2685d17dc1a5f29fe38acd9155e09e732a9360da6863b5b689b2bb9a10fce",
+      "native_instance": "d484d32d-7ece-42dd-a127-b34144b4acdc",
+      "first_av_observed_at": 2272402.632322943,
+      "select_to_av_observed_seconds": 14.194747380912304
+    },
+    "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+    "wall_seconds": 30.32,
+    "play_seconds": 30.406,
+    "decoder": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 1920\n frame height : 816\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 1887\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 6c00\n\n",
+    "crashes": [
+      "kodi_crashlog_20261012021405.log",
+      "kodi_crashlog_20261012135249.log",
+      "kodi_crashlog_20261019200619.log",
+      "kodi_crashlog_20261020222956.log"
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "amelie",
+  "operation": "observe",
+  "attempt": 1,
+  "regression_attempt": false
+}

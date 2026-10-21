@@ -151,12 +151,21 @@ class Runtime:
     def close(self, release_lease=True):
         if self.closed:
             return
-        self.closed = True
+        def report(code):
+            try:
+                getattr(self, 'report', lambda value: None)(code)
+            except Exception:
+                pass  # Never skip a drain because optional logging failed.
         if self.started:
+            report('RUNTIME_CLOSE_SHUTDOWN_BEGIN')
             self.server.shutdown()
+            report('RUNTIME_CLOSE_SHUTDOWN_END')
+        report('RUNTIME_CLOSE_REQUEST_DRAIN_BEGIN')
         self.server.server_close()
+        report('RUNTIME_CLOSE_REQUEST_DRAIN_END')
         if self.started:
-            self.thread.join(timeout=2)
+            self.thread.join()
+        report('RUNTIME_CLOSE_LOOP_JOINED')
         # A newer service instance must not lose its own registration.
         try:
             if json.loads(self.path.read_text())['token'] == self.server.token:
@@ -165,3 +174,4 @@ class Runtime:
             pass
         if release_lease:
             self.lease.close()
+        self.closed = True

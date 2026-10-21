@@ -1,0 +1,237 @@
+{
+  "before": {
+    "window": 13001,
+    "generation": 65,
+    "intent": 0,
+    "labels": {
+      "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+      "Window.Property(info.media_type)": "tv",
+      "Window.Property(info.mode)": "tv",
+      "Window.Property(info.query)": "Barakamon",
+      "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+      "Window.Property(info.year)": "None",
+      "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+      "Window.Property(source_count)": "14",
+      "Window.Property(source_loading)": "false"
+    },
+    "modal": false,
+    "visible": [
+      13001
+    ],
+    "stable": true
+  },
+  "after": [
+    {
+      "window": 13001,
+      "generation": 65,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 65,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": false
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    },
+    {
+      "window": 13001,
+      "generation": 66,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Barakamon",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+        "Window.Property(source_count)": "14",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    }
+  ],
+  "action": "one_verified_Back",
+  "players": []
+}

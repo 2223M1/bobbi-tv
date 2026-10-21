@@ -1,0 +1,184 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "amelie",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001.1080p.BluRay.REMUX.MULTi.FRE.LAT.ITA.JAP.RUS.TrueHD.H264-BTM",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "28 GB",
+        "Container(1000).ListItem.Property(source_key)": "dae018ac9303af46bda2d94014499b5a7af31eba0f22bf69479820ab55dc689b",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001.1080p.BluRay.x264-CtrlHD",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "12.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "a62facdd693c614901cb2f4269198ceec1dbde73022fe2a2a8537a5c704a56e2",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie 2001 1080p BluRay x264-OFT",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.46 GB",
+        "Container(1000).ListItem.Property(source_key)": "f7952091c0ec2891637abaa4415d3f3fd28fc2b869b93a8c58bf2028c1099a6b",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001.FRENCH.1080p.BluRay.AC35.1.x265-SMaSH",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "2.34 GB",
+        "Container(1000).ListItem.Property(source_key)": "c1cfd0504fc46518aa10dc715170cbfb2f50d255d99bd2a0e3dd4f12c24dbf26",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001.UK.Bluray.1080p.DTS-HD.x264-Grym",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "16.8 GB",
+        "Container(1000).ListItem.Property(source_key)": "e2f83f08d7ae97b117312cb1472f51a68ae335778b83aa3286adcf5d2386596c",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001.1080p.BRRip.AC3.x264-LESS",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "2.77 GB",
+        "Container(1000).ListItem.Property(source_key)": "b7bf9cac8c58f2fa00fb6af2618d2f1afbff4314cf02fdc3f829f66c172dd787",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001.720p.BluRay.x264-PublicHD Le Fabuleux Destin Poulain ...",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.06 GB",
+        "Container(1000).ListItem.Property(source_key)": "2e72f5a0981206ee9b83100e35ec150e9b89dde0fcf72f4e9b25c18406bab0b5",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001 BDRip 720p Spanish French comentario Director",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.36 GB",
+        "Container(1000).ListItem.Property(source_key)": "3868bf0580420f34fb268a89a68e7670764a3d509e5fecdf774004ecc528f5ad",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie 2001 720p BluRay x264-GeneMige",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "7.04 GB",
+        "Container(1000).ListItem.Property(source_key)": "e25d8857dc46eff34e52339f36bc76eb3232450f7bcc8de9387f442999b32902",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie (2001) 720p BRrip_sujaidr",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "717 MB",
+        "Container(1000).ListItem.Property(source_key)": "bb7e27e1c7b86b63ff438a548a4a868b1fe6e7cb0d0b6d72ea24d8e3f903162d",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie-2001--ReEncode-720p-FR.w.EN.subs-x265-HEVC.mp4",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.01e+03 MB",
+        "Container(1000).ListItem.Property(source_key)": "1ac0746fe63d524782f033eb6e74ec59692cef9d8a6c152c37570a0f731dba08",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie [2001] 720p BRRip H264 AC3 - CODY",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.8 GB",
+        "Container(1000).ListItem.Property(source_key)": "8076b810cfbd5ad195c73ea2d2603dae2ebad79f73f436e53190640c67598be9",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie (2001) [ENG Subs] - 480p 400mb - YIFY",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "400 MB",
+        "Container(1000).ListItem.Property(source_key)": "364f97982a7207fb3086c1a487b883c6db363aeb648bfa596be739e19cd38f3a",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie 2001 English subs BluRay Rip",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "696 MB",
+        "Container(1000).ListItem.Property(source_key)": "b684d32229463e2e559bc5be6927cf8b3c04a11e934013397398c0d3a1083fcc",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie 2001 m1080p BluRay x264-GeneMige",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.95 GB",
+        "Container(1000).ListItem.Property(source_key)": "c33a5405e520ffd25ec9b87dc49555af051688d1a2984400d6602c7c42edecde",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie [2001] BRRip XviD - CODY",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "903 MB",
+        "Container(1000).ListItem.Property(source_key)": "ff42c6c2d1cb2fb3eb3d508461ceed286abeff8ab1e594ed497fe136184037c3",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie[2001]BRrip[French][Eng Subs][Ac3-5.1]-=[CaLvIn]=-",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "828 MB",
+        "Container(1000).ListItem.Property(source_key)": "38c25bcff0caa01164ee5431a8db59e58598cfabbcffff22b57d7609b3c23890",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Amelie.2001.BRRip.H264.AAC.5.1ch.Gopo",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "2.02 GB",
+        "Container(1000).ListItem.Property(source_key)": "e30d0fbc9606b498c7ede2519228a781721e7dbcf001b536aaba337447e1fda0",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "AMELIE.2001.DVDRip.(EngSubs).mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.35 GB",
+        "Container(1000).ListItem.Property(source_key)": "7c91335b6d2404e67f866ace01abf7ffa12fb27bf18637a8f2fdd5a67bcbcfbe",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "天使爱美丽.Amelie.2001.BluRay.1080p.x265.10bit.2Audio.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "8.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "9c005e7061bf69f647cc6baede6a96f8d8f769d4f9d037c474eb0aa95e23fa1c",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 38,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "amelie",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

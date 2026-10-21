@@ -62,7 +62,7 @@ def product(monkeypatch):
     def require(value, authenticated=False):
         if value != account: raise ValueError('STALE_ACCOUNT')
     host = SimpleNamespace(accounts=SimpleNamespace(require_current=require, is_current=lambda v: v == account),
-        report=state.reports.append, bind_owner=lambda fn: None, sidecar_candidate=None)
+        report=state.reports.append, bind_owner=lambda fn: None, sidecar_candidate=None, stopping=Event())
     actor = module.StandardPlayback(host)
     clock = [100.]
     actor.session.clock = lambda: clock[0]

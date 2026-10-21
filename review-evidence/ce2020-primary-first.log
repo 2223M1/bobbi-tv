@@ -1,0 +1,322 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+........................................................................ [ 36%]
+...............................s........................................ [ 40%]
+..........sss........................................................... [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 61%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+....................................................FF.................. [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+...................s.................................................... [ 93%]
+.............s.......................................................... [ 97%]
+..........................................                               [100%]
+================================== FAILURES ===================================
+_ test_successor_exception_stays_in_request_and_host_keeps_running[item-before_submission_failed] _
+
+capabilities = {'native_contract_available': False}
+
+    def main(capabilities=None):
+        import xbmc
+        from bobbi_platform.host import Host
+        from bobbi_platform.paths import profile
+        from bobbi_platform.kodi import rpc
+        from bobbi_core.runtime_paths import configure, native_subtitle_abi
+        capabilities = capabilities or {}
+        native = capabilities.get('native_contract_available') is True
+        abi = native_subtitle_abi(capabilities)
+        configure(profile('plugin.video.bobbi'), subtitle_root=abi['root'] if abi else None,
+                  native_sha256=abi['sha256'] if abi else None)
+        host = Host(profile(), report=lambda code: xbmc.log('[bobbi] ' + code, xbmc.LOGINFO),
+                    native_rpc=rpc if native else None)
+        try:
+            host.start()
+            host.can_quiesce = lambda: not xbmc.Player().isPlaying()
+            host.configure_preparation(profile('plugin.video.bobbi'))
+            def refresh_catalog(**kwargs):
+                from bobbi_core.share_catalog import juku_enabled
+                if not juku_enabled():
+                    return {'state': 'DISABLED'}
+                from bobbi_core.juku_catalog import refresh_one
+                return refresh_one(**kwargs)
+            def idle():
+                host.playing = xbmc.Player().isPlaying()
+                return not host.playing and xbmc.getGlobalIdleTime() >= 30
+            host.configure_catalog_refresh(refresh_catalog, idle)
+            if native:
+                # Keep the original actor on the Kodi thread, including ordered
+                # events, subtitles and continuation. No stock fake receipt path.
+                from lib.services.background_service import JacktookMOnitor
+                JacktookMOnitor().run_owner_loop(host=host)
+            else:
+                from lib.services.standard_playback import StandardPlayback
+                standard = StandardPlayback(host)
+                monitor = xbmc.Monitor()
+>               while not host.stopping.is_set() and not monitor.waitForAbort(.1):
+                          ^^^^^^^^^^^^^
+E               AttributeError: 'types.SimpleNamespace' object has no attribute 'stopping'
+
+addons\plugin.video.bobbi\lib\portable_runtime.py:40: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+product = namespace(state=namespace(playing=False, item=<test_standard_product.product.<locals>.Item object at 0x00000266B9B16DE...\\lib\\services\\standard_playback.py'>, account={'account_id': '', 'authenticated': False, 'epoch': 0}, clock=[100.3])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000266B9E99160>
+boundary = 'item', status = 'before_submission_failed'
+
+    @pytest.mark.parametrize('boundary,status', [('item', 'before_submission_failed'),
+        ('play', 'submission_unknown')])
+    def test_successor_exception_stays_in_request_and_host_keeps_running(product, monkeypatch, boundary, status):
+        import bobbi_platform.kodi as kodi
+        from lib import portable_runtime
+        data, successor = ended_with_next(product)
+        product.clock[0] += .3
+        if boundary == 'play':
+            original = sys.modules['xbmc'].Player.play
+            def fail(player, url, item):
+                original(player, url, item)
+                raise RuntimeError('API failed after command may have been sent')
+            monkeypatch.setattr(sys.modules['xbmc'].Player, 'play', fail)
+        else:
+            def fail(*args, **kwargs): raise RuntimeError('ListItem failed before send')
+            monkeypatch.setattr(sys.modules['xbmcgui'], 'ListItem', fail)
+        # Run the actual resident main/finally; only host IO and monitor are fake.
+        state = SimpleNamespace(ticks=0, closed=False, abort=False)
+        host = product.actor.host
+        host.start = lambda: None
+        host.configure_preparation = lambda *a: None
+        host.configure_catalog_refresh = lambda *a: None
+        def tick(): state.ticks += 1
+        def close(): state.closed = True
+        host.tick, host.close = tick, close
+        def wait(seconds):
+            state.abort = state.ticks >= 4
+            return state.abort
+        monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **kw: host))
+        monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a, **kw: '/test-profile'))
+        monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(
+            configure=lambda *a, **kw: None, native_subtitle_abi=lambda *a: None))
+        monkeypatch.setattr(sys.modules['xbmc'], 'Monitor', lambda: SimpleNamespace(waitForAbort=wait), raising=False)
+        monkeypatch.setitem(sys.modules, 'lib.services.standard_playback', SimpleNamespace(StandardPlayback=lambda h: product.actor))
+>       portable_runtime.main({'native_contract_available': False})
+
+tests\test_standard_product.py:272: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+capabilities = {'native_contract_available': False}
+
+    def main(capabilities=None):
+        import xbmc
+        from bobbi_platform.host import Host
+        from bobbi_platform.paths import profile
+        from bobbi_platform.kodi import rpc
+        from bobbi_core.runtime_paths import configure, native_subtitle_abi
+        capabilities = capabilities or {}
+        native = capabilities.get('native_contract_available') is True
+        abi = native_subtitle_abi(capabilities)
+        configure(profile('plugin.video.bobbi'), subtitle_root=abi['root'] if abi else None,
+                  native_sha256=abi['sha256'] if abi else None)
+        host = Host(profile(), report=lambda code: xbmc.log('[bobbi] ' + code, xbmc.LOGINFO),
+                    native_rpc=rpc if native else None)
+        try:
+            host.start()
+            host.can_quiesce = lambda: not xbmc.Player().isPlaying()
+            host.configure_preparation(profile('plugin.video.bobbi'))
+            def refresh_catalog(**kwargs):
+                from bobbi_core.share_catalog import juku_enabled
+                if not juku_enabled():
+                    return {'state': 'DISABLED'}
+                from bobbi_core.juku_catalog import refresh_one
+                return refresh_one(**kwargs)
+            def idle():
+                host.playing = xbmc.Player().isPlaying()
+                return not host.playing and xbmc.getGlobalIdleTime() >= 30
+            host.configure_catalog_refresh(refresh_catalog, idle)
+            if native:
+                # Keep the original actor on the Kodi thread, including ordered
+                # events, subtitles and continuation. No stock fake receipt path.
+                from lib.services.background_service import JacktookMOnitor
+                JacktookMOnitor().run_owner_loop(host=host)
+            else:
+                from lib.services.standard_playback import StandardPlayback
+                standard = StandardPlayback(host)
+                monitor = xbmc.Monitor()
+                while not host.stopping.is_set() and not monitor.waitForAbort(.1):
+                    host.tick()
+                    if not host.stopping.is_set():
+                        standard.tick()
+        finally:
+            # Opt-in maintainer diagnostics contain stack locations only, never
+            # locals, response bodies or credentials. Disabled on normal installs.
+            trace = None
+>           if (host.root / 'shutdown-stack-enabled').is_file():
+                ^^^^^^^^^
+E           AttributeError: 'types.SimpleNamespace' object has no attribute 'root'
+
+addons\plugin.video.bobbi\lib\portable_runtime.py:48: AttributeError
+_ test_successor_exception_stays_in_request_and_host_keeps_running[play-submission_unknown] _
+
+capabilities = {'native_contract_available': False}
+
+    def main(capabilities=None):
+        import xbmc
+        from bobbi_platform.host import Host
+        from bobbi_platform.paths import profile
+        from bobbi_platform.kodi import rpc
+        from bobbi_core.runtime_paths import configure, native_subtitle_abi
+        capabilities = capabilities or {}
+        native = capabilities.get('native_contract_available') is True
+        abi = native_subtitle_abi(capabilities)
+        configure(profile('plugin.video.bobbi'), subtitle_root=abi['root'] if abi else None,
+                  native_sha256=abi['sha256'] if abi else None)
+        host = Host(profile(), report=lambda code: xbmc.log('[bobbi] ' + code, xbmc.LOGINFO),
+                    native_rpc=rpc if native else None)
+        try:
+            host.start()
+            host.can_quiesce = lambda: not xbmc.Player().isPlaying()
+            host.configure_preparation(profile('plugin.video.bobbi'))
+            def refresh_catalog(**kwargs):
+                from bobbi_core.share_catalog import juku_enabled
+                if not juku_enabled():
+                    return {'state': 'DISABLED'}
+                from bobbi_core.juku_catalog import refresh_one
+                return refresh_one(**kwargs)
+            def idle():
+                host.playing = xbmc.Player().isPlaying()
+                return not host.playing and xbmc.getGlobalIdleTime() >= 30
+            host.configure_catalog_refresh(refresh_catalog, idle)
+            if native:
+                # Keep the original actor on the Kodi thread, including ordered
+                # events, subtitles and continuation. No stock fake receipt path.
+                from lib.services.background_service import JacktookMOnitor
+                JacktookMOnitor().run_owner_loop(host=host)
+            else:
+                from lib.services.standard_playback import StandardPlayback
+                standard = StandardPlayback(host)
+                monitor = xbmc.Monitor()
+>               while not host.stopping.is_set() and not monitor.waitForAbort(.1):
+                          ^^^^^^^^^^^^^
+E               AttributeError: 'types.SimpleNamespace' object has no attribute 'stopping'
+
+addons\plugin.video.bobbi\lib\portable_runtime.py:40: AttributeError
+
+During handling of the above exception, another exception occurred:
+
+product = namespace(state=namespace(playing=False, item=<test_standard_product.product.<locals>.Item object at 0x00000266B9C054F...\\lib\\services\\standard_playback.py'>, account={'account_id': '', 'authenticated': False, 'epoch': 0}, clock=[100.3])
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000266B9B81610>
+boundary = 'play', status = 'submission_unknown'
+
+    @pytest.mark.parametrize('boundary,status', [('item', 'before_submission_failed'),
+        ('play', 'submission_unknown')])
+    def test_successor_exception_stays_in_request_and_host_keeps_running(product, monkeypatch, boundary, status):
+        import bobbi_platform.kodi as kodi
+        from lib import portable_runtime
+        data, successor = ended_with_next(product)
+        product.clock[0] += .3
+        if boundary == 'play':
+            original = sys.modules['xbmc'].Player.play
+            def fail(player, url, item):
+                original(player, url, item)
+                raise RuntimeError('API failed after command may have been sent')
+            monkeypatch.setattr(sys.modules['xbmc'].Player, 'play', fail)
+        else:
+            def fail(*args, **kwargs): raise RuntimeError('ListItem failed before send')
+            monkeypatch.setattr(sys.modules['xbmcgui'], 'ListItem', fail)
+        # Run the actual resident main/finally; only host IO and monitor are fake.
+        state = SimpleNamespace(ticks=0, closed=False, abort=False)
+        host = product.actor.host
+        host.start = lambda: None
+        host.configure_preparation = lambda *a: None
+        host.configure_catalog_refresh = lambda *a: None
+        def tick(): state.ticks += 1
+        def close(): state.closed = True
+        host.tick, host.close = tick, close
+        def wait(seconds):
+            state.abort = state.ticks >= 4
+            return state.abort
+        monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **kw: host))
+        monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a, **kw: '/test-profile'))
+        monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(
+            configure=lambda *a, **kw: None, native_subtitle_abi=lambda *a: None))
+        monkeypatch.setattr(sys.modules['xbmc'], 'Monitor', lambda: SimpleNamespace(waitForAbort=wait), raising=False)
+        monkeypatch.setitem(sys.modules, 'lib.services.standard_playback', SimpleNamespace(StandardPlayback=lambda h: product.actor))
+>       portable_runtime.main({'native_contract_available': False})
+
+tests\test_standard_product.py:272: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+capabilities = {'native_contract_available': False}
+
+    def main(capabilities=None):
+        import xbmc
+        from bobbi_platform.host import Host
+        from bobbi_platform.paths import profile
+        from bobbi_platform.kodi import rpc
+        from bobbi_core.runtime_paths import configure, native_subtitle_abi
+        capabilities = capabilities or {}
+        native = capabilities.get('native_contract_available') is True
+        abi = native_subtitle_abi(capabilities)
+        configure(profile('plugin.video.bobbi'), subtitle_root=abi['root'] if abi else None,
+                  native_sha256=abi['sha256'] if abi else None)
+        host = Host(profile(), report=lambda code: xbmc.log('[bobbi] ' + code, xbmc.LOGINFO),
+                    native_rpc=rpc if native else None)
+        try:
+            host.start()
+            host.can_quiesce = lambda: not xbmc.Player().isPlaying()
+            host.configure_preparation(profile('plugin.video.bobbi'))
+            def refresh_catalog(**kwargs):
+                from bobbi_core.share_catalog import juku_enabled
+                if not juku_enabled():
+                    return {'state': 'DISABLED'}
+                from bobbi_core.juku_catalog import refresh_one
+                return refresh_one(**kwargs)
+            def idle():
+                host.playing = xbmc.Player().isPlaying()
+                return not host.playing and xbmc.getGlobalIdleTime() >= 30
+            host.configure_catalog_refresh(refresh_catalog, idle)
+            if native:
+                # Keep the original actor on the Kodi thread, including ordered
+                # events, subtitles and continuation. No stock fake receipt path.
+                from lib.services.background_service import JacktookMOnitor
+                JacktookMOnitor().run_owner_loop(host=host)
+            else:
+                from lib.services.standard_playback import StandardPlayback
+                standard = StandardPlayback(host)
+                monitor = xbmc.Monitor()
+                while not host.stopping.is_set() and not monitor.waitForAbort(.1):
+                    host.tick()
+                    if not host.stopping.is_set():
+                        standard.tick()
+        finally:
+            # Opt-in maintainer diagnostics contain stack locations only, never
+            # locals, response bodies or credentials. Disabled on normal installs.
+            trace = None
+>           if (host.root / 'shutdown-stack-enabled').is_file():
+                ^^^^^^^^^
+E           AttributeError: 'types.SimpleNamespace' object has no attribute 'root'
+
+addons\plugin.video.bobbi\lib\portable_runtime.py:48: AttributeError
+============================== warnings summary ===============================
+tests/test_ce_progressive_http.py::test_progressive_first_byte_precedes_whole_block
+  tests\test_ce_progressive_http.py:147: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_progressive_first_byte_precedes_whole_block(record_property):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_ce_state_migration.py:137: host cannot create a symlink
+SKIPPED [3] tests\test_ce_torrent_migration.py:113: Host cannot create symlink fixtures
+SKIPPED [1] tests\test_updates.py:334: Host does not permit symlink fixture
+SKIPPED [1] tests\test_upstream_addons.py:170: Host does not permit symlink fixture
+2 failed, 1762 passed, 6 skipped, 1 warning in 181.50s (0:03:01)

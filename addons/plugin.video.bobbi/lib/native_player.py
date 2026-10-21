@@ -150,7 +150,14 @@ class JacktookPLayer(xbmc.Player):
         if getattr(self, 'data', {}).get('selection_policy') == 'exact':
             from lib.cinema.playback_request import owned_state
             try:
-                owned_state(self.playback_session_id)
+                snapshot = owned_state(self.playback_session_id)
+                original = getattr(self, '_owner_context', None)
+                if original and any(snapshot.get(key) != original.get(key) for key in ('boot_id', 'epoch')):
+                    return False
+                observed = snapshot.get('observed') or {}
+                pinned = getattr(self, '_native_instance', None)
+                if pinned and observed and observed.get('native_instance') != pinned:
+                    return False
                 return True
             except OSError as error:
                 kodilog('[CINEMA-OWNER] SNAPSHOT_UNAVAILABLE ' + type(error).__name__, level=xbmc.LOGWARNING)
@@ -672,6 +679,7 @@ class JacktookPLayer(xbmc.Player):
 
     def monitor(self):
         ensure_dialog_closed = False
+        observation_timed_out = False
         kodilog("[PLAYER] monitor() entered")
 
         try:
@@ -705,8 +713,42 @@ class JacktookPLayer(xbmc.Player):
                 stinger_thread.start()
 
             # Monitor loop
+            unknown_deadline = None
             while self.isPlayingVideo():
-                if not self._owns_playback_session() or not self._matches_requested_playback():
+                if self.data.get('selection_policy') == 'exact':
+                    from lib.cinema.playback_request import monitor_state
+                    observed_at = monotonic()
+                    if self._cinema_cancel.is_set():
+                        return
+                    budget = .3 if unknown_deadline is None else min(.3, unknown_deadline - observed_at)
+                    if budget <= 0:
+                        observation_timed_out = True
+                        self._cinema_phase('OWNER_OBSERVATION_TIMEOUT')
+                        return
+                    state = monitor_state(getattr(self, '_owner_context', None),
+                                          getattr(self, '_native_instance', None), timeout=budget)
+                    if unknown_deadline is not None and monotonic() >= unknown_deadline:
+                        observation_timed_out = True
+                        self._cinema_phase('OWNER_OBSERVATION_TIMEOUT')
+                        return
+                    if state == 'TERMINAL':
+                        break  # Same-instance EOF may clear observed after isPlayingVideo.
+                    if state == 'UNKNOWN':
+                        if unknown_deadline is None:
+                            unknown_deadline = observed_at + TERMINAL_RECONCILIATION_SECONDS
+                        remaining = unknown_deadline - monotonic()
+                        if remaining <= 0:
+                            observation_timed_out = True
+                            self._terminal_reason = 'UNKNOWN'
+                            self._cinema_phase('OWNER_OBSERVATION_TIMEOUT')
+                            return  # No cleanup/control authority from a cached snapshot.
+                        sleep(min(50, max(1, int(remaining * 1000))))
+                        continue
+                    unknown_deadline = None
+                    superseded = state == 'SUPERSEDED'
+                else:
+                    superseded = not self._owns_playback_session() or not self._matches_requested_playback()
+                if superseded:
                     self._was_superseded = True
                     kodilog("[PLAYER] monitor superseded by a newer playback session")
                     return
@@ -737,7 +779,12 @@ class JacktookPLayer(xbmc.Player):
                 self._wait_monitor_tick()
 
             self._cinema_phase('TERMINAL_RECONCILIATION_BEGIN')
-            self.wait_cinema_terminal(budget_seconds=TERMINAL_RECONCILIATION_SECONDS)
+            # A read gap and subsequent terminal reconciliation share one
+            # absolute transition window; do not turn 3 seconds into 3+3.
+            remaining = (TERMINAL_RECONCILIATION_SECONDS if unknown_deadline is None
+                         else min(TERMINAL_RECONCILIATION_SECONDS, unknown_deadline - monotonic()))
+            if remaining > 0:
+                self.wait_cinema_terminal(budget_seconds=remaining)
             self._cinema_phase('TERMINAL_RECONCILIATION_END')
             self.queue_cinema_natural_end()
             self._cinema_phase('STOP_BOOKKEEPING_BEGIN')
@@ -752,7 +799,7 @@ class JacktookPLayer(xbmc.Player):
         finally:
             if hasattr(self, '_cinema_cancel'):
                 self._cinema_cancel.set()
-            if self._owns_playback_session():
+            if not observation_timed_out and self._owns_playback_session():
                 kodilog("[PLAYER] monitor: owner cleanup for playback session")
                 self.clear_playback_properties()
                 self._release_playback_session()

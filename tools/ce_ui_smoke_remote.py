@@ -120,10 +120,10 @@ try:
     from lib.gui.source_select import SourceSelect
     from lib.domain.torrent import TorrentStream
     from bobbi_core.source_list_session import SourceListSession
-    def source(number):
+    def source(number, quality='1080p'):
         return TorrentStream(type='Torrent', guid='ui-fixture:'+str(number),
-            title='[UI preview] S01E01 1080p x264 '+str(number), size=1024**3,
-            infoHash=('%040x'%number), indexer='Preview')
+            title='[UI preview] S01E01 '+quality+' x264 '+str(number), size=1024**3,
+            infoHash=('%040x'%number), indexer='Preview', quality=quality)
     session = SourceListSession({'tmdb_id': 30991, 'season': 1, 'episode': 1},
         rank=lambda rows: list(reversed(rows)))
     session.publish(session.epoch, 'fixture', [source(1), source(2)], state='RUNNING')
@@ -132,8 +132,18 @@ try:
     window.source_session = session
     window.show()
     inspect('sources-before', window)
+    qualities = window.getControl(1300)
+    qualities.selectItem(window._quality_keys.index('1080p'))
+    monitor.waitForAbort(.2)
+    window._handle_quality_select_action()  # Same filter handler as user click.
+    monitor.waitForAbort(.2)
+    window.display_list.selectItem(1)
+    monitor.waitForAbort(.3)
     original = dict(window._rendered_cards)
     selected = window.display_list.getSelectedItem().getProperty('source_key')
+    selected_quality = qualities.getSelectedItem().getProperty('quality')
+    result['initial_selection'] = dict(position=window.display_list.getSelectedPosition(),
+        source_key=selected,quality=selected_quality,filter=list(window._filter_spec))
     class Meter:
         def __init__(self, control): self.control, self.resets, self.selects = control, 0, 0
         def __getattr__(self, name): return getattr(self.control, name)
@@ -149,9 +159,13 @@ try:
     frame_worker=Thread(target=capture_frames,daemon=True)
     frame_worker.start()
     for number in range(3, 8):
-        session.publish(session.epoch, 'fixture', [source(number)], state='RUNNING')
+        arrivals = [source(number)] + ([source(8, '2160p')] if number == 3 else [])
+        session.publish(session.epoch, 'fixture', arrivals, state='RUNNING')
         window._refresh_progressive_sources()
         if monitor.waitForAbort(.35): raise RuntimeError('UI_SMOKE_INTERRUPTED')
+        result.setdefault('arrival_selections', []).append(dict(position=window.display_list.getSelectedPosition(),
+            source_key=window.display_list.getSelectedItem().getProperty('source_key'),
+            quality=qualities.getSelectedItem().getProperty('quality')))
     session.publish(session.epoch, 'fixture', state='COMPLETE')
     window._refresh_progressive_sources()
     row = inspect('sources-after', window)
@@ -160,11 +174,16 @@ try:
     row.update(resets=meter.resets, focus_commands=meter.selects,
         original_items_retained=all(window._rendered_cards[k] is v for k,v in original.items()),
         selected_key_retained=window.display_list.getSelectedItem().getProperty('source_key') == selected,
+        quality_retained=qualities.getSelectedItem().getProperty('quality') == selected_quality,
+        quality_keys=window._quality_keys,
         native_item_count=window.display_list.size(),frame_samples=len(frame_hashes),
         stable_card_pixels=bool(frame_hashes and frame_expected and all(h==frame_expected for h in frame_hashes)))
     result['passed'] = (result['panels'][0]['focus'] == 9001 and result['panels'][0]['cancelled']
         and result['panels'][1]['focus'] == 9003 and result['panels'][1]['no_play_action']
-        and row['resets'] == 0 and row['focus_commands'] == 0 and row['original_items_retained']
+        and row['resets'] == 0 and row['focus_commands'] == 5 and row['original_items_retained']
+        and result['initial_selection']['position'] == 1 and selected_quality == '1080p'
+        and all(s['source_key']==selected and s['quality']==selected_quality for s in result['arrival_selections'])
+        and row['quality_retained'] and '4k' in row['quality_keys']
         and row['selected_key_retained'] and row['native_item_count'] == 7 and row['stable_card_pixels'])
 except Exception as error:
     result.update(passed=False, error=type(error).__name__,

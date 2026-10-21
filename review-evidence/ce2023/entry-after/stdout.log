@@ -1,0 +1,1 @@
+{"count": 2, "passed": 2, "failed": 0, "errors": 0, "removed": [{"archive": "fixture-entry", "path": "script.bobbi.start/bootstrap/LICENSE", "sha256": "7d6bfddd309879451e428f1490504971d47d50f3b4ea2a8864fd013840a5d2db", "bytes": 22, "rule": "private-document-clean-v1", "category": "standalone-document"}], "clean_check_nested_passed": true, "non_document_bootstrap_unchanged": true}

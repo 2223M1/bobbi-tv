@@ -1,0 +1,12 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792541338491871000",
+  "result": {
+    "state": "pending",
+    "passed": null
+  },
+  "transport_exit_code": 0,
+  "trial_exit_code": null,
+  "exit_code": 0,
+  "pending": true,
+  "diagnostic_present": false
+}

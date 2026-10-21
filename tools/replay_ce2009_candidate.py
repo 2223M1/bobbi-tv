@@ -9,6 +9,7 @@ import importlib.util
 import os
 from pathlib import Path
 import sys
+from threading import Event
 
 ROOT = Path(__file__).resolve().parents[1]
 REVIEW = ROOT / 'review-evidence/ce2009-prealpha/BobiTV-CE2009-PreAlpha-1d421b1-Review-20261020/run_review.py'
@@ -39,8 +40,24 @@ def child_run(command, **kwargs):
     return original_run(command, **kwargs)
 
 
+original_module = review.module
+def module(name, **attributes):
+    # The old resident-host IO double predates the cooperative stop signal.
+    # Supply an unset Event, not a successful stop or replacement decision.
+    if name == 'bobbi_platform.host' and 'Host' in attributes:
+        factory = attributes['Host']
+        def host(*args, **kwargs):
+            value = factory(*args, **kwargs)
+            if not hasattr(value, 'stopping'):
+                value.stopping = Event()
+            return value
+        attributes['Host'] = host
+    return original_module(name, **attributes)
+
+
 if __name__ == '__main__':
     review.setup_packages = setup_packages
     review.atomic = atomic
     review.subprocess.run = child_run
+    review.module = module
     raise SystemExit(review.main())

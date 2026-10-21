@@ -10,6 +10,7 @@ from pathlib import Path
 import shutil
 import xml.etree.ElementTree as ET
 import zipfile
+from delivery_policy import require_clean
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / 'release/source-inventory.json'
@@ -40,6 +41,7 @@ def files(root):
             if (root.name, name) == LOCAL_RESOURCE:
                 continue  # Separate maintainer input; a clean Git clone stays testable.
             result[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    require_clean(result)
     return result
 
 

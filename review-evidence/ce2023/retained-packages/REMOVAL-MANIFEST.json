@@ -1,0 +1,275 @@
+{
+  "policy": "private-document-clean-v1",
+  "entries": [
+    {
+      "archive": "plugin.video.bobbi.library/plugin.video.bobbi.library-0.1.0.zip",
+      "path": "plugin.video.bobbi.library/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi.torrent/plugin.video.bobbi.torrent-0.1.3.zip",
+      "path": "plugin.video.bobbi.torrent/LICENSE",
+      "sha256": "a05bbc56b47b33eac1d575afa1435afdbf108a782e67b9404c0a722d0a0ff994",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi.torrent/plugin.video.bobbi.torrent-0.1.3.zip",
+      "path": "plugin.video.bobbi.torrent/THIRD-PARTY.md",
+      "sha256": "a771dcdb413453b9360078545667c8a8101eee177bd5bf691139b77855ccf91c",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/lib/api/tmdbv3api/LICENSE-MIT-supplement.txt",
+      "sha256": "ee558f429942f6129809e3ad750b835674a55c33836c5b572f55279f0ea2ad55",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/lib/api/tmdbv3api/UPSTREAM-SETUP-LICENSE-EVIDENCE.txt",
+      "sha256": "42fde0503d50bc327052cd3efd323a724326cd503b4058023791f46b79e045ee",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/licenses/flatbencode-0.2.1-LICENSE.txt",
+      "sha256": "65f3400a83066b1e82f6114df0b64028880860e8d89d6da4237e0f31e0066dbd",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/licenses/fontawesome-free-6.7.2-LICENSE.txt",
+      "sha256": "9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/licenses/jacktook-upstream-LICENSE.txt",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/licenses/segno-1.6.6-LICENSE.txt",
+      "sha256": "de6c85fccf5d52902aa13dfe2dc6d2a2a106fc3419ed438f3460f0d4b76a6935",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/licenses/tmdbv3api-1.9.0-setup-evidence.txt",
+      "sha256": "42fde0503d50bc327052cd3efd323a724326cd503b4058023791f46b79e045ee",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/licenses/torf-4.2.0-LICENSE.txt",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/licenses/xmltodict-0.13.0-LICENSE.txt",
+      "sha256": "d66d5eb8f83a0ba21d3dd04318b8817588e8764daabea852d1035e3f07ffda55",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "path": "plugin.video.bobbi/resources/skins/Default/media/am6b/cinema/LICENSE-Arctic-Fuse.txt",
+      "sha256": "95cc16779fa07b82bb7069b50fd6a788db75f3ab53426d0f3692c7be34d18b4c",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "repository.bobbi/repository.bobbi-0.1.0.zip",
+      "path": "repository.bobbi/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "resource.uisounds.bobbi-modern/resource.uisounds.bobbi-modern-2026.9.6.0.zip",
+      "path": "resource.uisounds.bobbi-modern/LICENSE",
+      "sha256": "64741185bfb63f5a9c8fd1881cb8cdeb5db95ff5bcf2f2e76d7dd7bc20133c19",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.bobbi.opensubtitles/script.bobbi.opensubtitles-0.1.1.zip",
+      "path": "script.bobbi.opensubtitles/LICENSE.txt",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.bobbi.opensubtitles/script.bobbi.opensubtitles-0.1.1.zip",
+      "path": "script.bobbi.opensubtitles/NOTICE.md",
+      "sha256": "acb8d66de72a01d67ba741733b5949aaa2e2468d71f7d320fc9e8a89ef869d78",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.bobbi.setup/script.bobbi.setup-0.1.4.zip",
+      "path": "script.bobbi.setup/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.bobbi.setup/script.bobbi.setup-0.1.4.zip",
+      "path": "script.bobbi.setup/resources/TMDB-ATTRIBUTION.md",
+      "sha256": "e6c45f409e8b79750b4072616187aae098985dff4c3a876227ddb0d1ef731b6c",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.bobbi.start/script.bobbi.start-0.2.13.zip",
+      "path": "script.bobbi.start/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.bobbi.catalog/script.module.bobbi.catalog-0.1.1.zip",
+      "path": "script.module.bobbi.catalog/LICENSE",
+      "sha256": "3b094c9973bf62930b8a75ca279e44a8a45c0ccd1963c6baa1c8e2299a150d91",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.bobbi.core/script.module.bobbi.core-0.1.16.zip",
+      "path": "script.module.bobbi.core/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.bobbi.core/script.module.bobbi.core-0.1.16.zip",
+      "path": "script.module.bobbi.core/LICENSES.md",
+      "sha256": "3b743828701a3d6afb35661287ed787aff6a96796c7042d718c4ec0d2ff2b3bb",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.bobbi.mdsub/script.module.bobbi.mdsub-0.1.0.zip",
+      "path": "script.module.bobbi.mdsub/LICENSE",
+      "sha256": "3b094c9973bf62930b8a75ca279e44a8a45c0ccd1963c6baa1c8e2299a150d91",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.17.zip",
+      "path": "script.module.bobbi.platform/LICENSE",
+      "sha256": "605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.17.zip",
+      "path": "script.module.bobbi.platform/lib/bobbi_platform/_vendor/segno/LICENSE",
+      "sha256": "de6c85fccf5d52902aa13dfe2dc6d2a2a106fc3419ed438f3460f0d4b76a6935",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.certifi/script.module.certifi-2023.5.7.zip",
+      "path": "script.module.certifi/LICENSE.txt",
+      "sha256": "a02f6c638f9fb84d06f7764c3ab085d8af7eda5b93c166da54312479077c6fb0",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.chardet/script.module.chardet-5.1.0.zip",
+      "path": "script.module.chardet/LICENSE.txt",
+      "sha256": "6095e9ffa777dd22839f7801aa845b31c9ed07f3d6bf8a26dc5d2dec8ccc0ef3",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.idna/script.module.idna-3.10.0.zip",
+      "path": "script.module.idna/LICENSE.txt",
+      "sha256": "a59f0b0ef3635874109a4461ca44ff7a70d50696e814767bfaf721d4c9b0db0f",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.requests/script.module.requests-2.31.0.zip",
+      "path": "script.module.requests/LICENSE.txt",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.routing/script.module.routing-0.2.3+matrix.1.zip",
+      "path": "script.module.routing/LICENSE.txt",
+      "sha256": "0ae0485a5bd37a63e63603596417e4eb0e653334fa6c7f932ca3a0e85d4af227",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.module.urllib3/script.module.urllib3-2.2.3.zip",
+      "path": "script.module.urllib3/LICENSE.txt",
+      "sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "script.skinvariables/script.skinvariables-2.2.9.zip",
+      "path": "script.skinvariables/LICENSE.txt",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/ASSET-PROVENANCE.md",
+      "sha256": "81d280f416e3979de3224888699e3f44340c939fba693388d229a8b83975adc6",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/LICENSE-Arctic-Fuse.txt",
+      "sha256": "95cc16779fa07b82bb7069b50fd6a788db75f3ab53426d0f3692c7be34d18b4c",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/LICENSE.txt",
+      "sha256": "89931c1fb1f3716694175763cf3221cfcd63d6935031cf6b4512d17ffe5d9860",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/fonts/LICENCE-HarmonyOS-Sans.txt",
+      "sha256": "327e0147d4a3ca2d89e81abce45b210576b0f9fe2b29d900f64b58039f12a102",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/fonts/LICENCE-Heebo.txt",
+      "sha256": "6d13374a47f3db882aad98f5788620d425e0b44a2d7221bb14fb185e8425ae2d",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/fonts/LICENCE-Mardoto.txt",
+      "sha256": "5bd41e468075ebba75da768007d24166f67d4e9626e173ce562ab4a95ac4a01c",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/fonts/LICENCE-OFL.txt",
+      "sha256": "4bd805bb254c8b69c26addf1e100c745ec09e2737ec624b722bd509ea9ae240a",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/fonts/LICENCE-Roboto.txt",
+      "sha256": "5bd41e468075ebba75da768007d24166f67d4e9626e173ce562ab4a95ac4a01c",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/fonts/fontawesome-free-6.7.2-LICENSE.txt",
+      "sha256": "9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/licenses/UPSTREAM-ASSET-PROVENANCE.md",
+      "sha256": "8df35ab6799656c3559f895719aec21fe51889b13964b333e4b54204d5bba689",
+      "rule": "private-document-clean-v1"
+    },
+    {
+      "archive": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "path": "skin.bobbi.cinema/licenses/arctic-fuse3.txt",
+      "sha256": "95cc16779fa07b82bb7069b50fd6a788db75f3ab53426d0f3692c7be34d18b4c",
+      "rule": "private-document-clean-v1"
+    }
+  ]
+}

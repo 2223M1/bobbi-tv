@@ -1,0 +1,158 @@
+[
+  {
+    "report_link": "../review-evidence/ce-recovery-snapshot-1792541762634937900.json",
+    "git_path": "review-evidence/ce-recovery-snapshot-1792541762634937900.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-recovery-native-stack-1792541775218323700.json",
+    "git_path": "review-evidence/ce-recovery-native-stack-1792541775218323700.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-managed-recovery-1792542169758322200.json",
+    "git_path": "review-evidence/ce-managed-recovery-1792542169758322200.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-managed-recovery-1792542384367042600.json",
+    "git_path": "review-evidence/ce-managed-recovery-1792542384367042600.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-adapted-reviews-final/RESULT.json",
+    "git_path": "review-evidence/ce2021-adapted-reviews-final/RESULT.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-primary-final.xml",
+    "git_path": "review-evidence/ce2021-primary-final.xml",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-baseline-final.xml",
+    "git_path": "review-evidence/ce2021-baseline-final.xml",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-preparation-final.xml",
+    "git_path": "review-evidence/ce2021-preparation-final.xml",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-prior18-final/RESULT.json",
+    "git_path": "review-evidence/ce2021-prior18-final/RESULT.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-prior15-final/RESULT.json",
+    "git_path": "review-evidence/ce2021-prior15-final/RESULT.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-tools-final.xml",
+    "git_path": "review-evidence/ce2021-tools-final.xml",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-entry-audit.json",
+    "git_path": "review-evidence/ce2021-entry-audit.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-artifacts.json",
+    "git_path": "review-evidence/ce2021-artifacts.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-reproducible-build.log",
+    "git_path": "review-evidence/ce2021-reproducible-build.log",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/bobbi-ui-smoke-1792540046661100200/result.json",
+    "git_path": "review-evidence/bobbi-ui-smoke-1792540046661100200/result.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-new-work-amelie-select-1792542545658750900.json",
+    "git_path": "review-evidence/ce-new-work-amelie-select-1792542545658750900.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-new-work-amelie-observe-1792542597562746100.json",
+    "git_path": "review-evidence/ce-new-work-amelie-observe-1792542597562746100.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-new-work-barakamon-select-1792542745213797400.json",
+    "git_path": "review-evidence/ce-new-work-barakamon-select-1792542745213797400.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-new-work-ping_pong-select-1792543305484733700.json",
+    "git_path": "review-evidence/ce-new-work-ping_pong-select-1792543305484733700.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-new-work-ping_pong-observe-1792543373288420100.json",
+    "git_path": "review-evidence/ce-new-work-ping_pong-observe-1792543373288420100.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-new-work-ping_pong-start-1792542905724709500.json",
+    "git_path": "review-evidence/ce-new-work-ping_pong-start-1792542905724709500.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-picker-navigation-awake-back.json",
+    "git_path": "review-evidence/ce2021-picker-navigation-awake-back.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-continuation-ping_pong-1792543501997766000.json",
+    "git_path": "review-evidence/ce-continuation-ping_pong-1792543501997766000.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce-continuation-ping_pong-1792543529822933700.json",
+    "git_path": "review-evidence/ce-continuation-ping_pong-1792543529822933700.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-final-device-state.json",
+    "git_path": "review-evidence/ce2021-final-device-state.json",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  },
+  {
+    "report_link": "../review-evidence/ce2021-post-concurrent-cleanup-build.log",
+    "git_path": "review-evidence/ce2021-post-concurrent-cleanup-build.log",
+    "present_at_frozen_head": false,
+    "release_archive_presence": "not independently checked"
+  }
+]

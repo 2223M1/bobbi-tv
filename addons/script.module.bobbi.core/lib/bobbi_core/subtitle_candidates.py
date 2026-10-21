@@ -119,6 +119,7 @@ def rank(row, context, allow_season_pack=False, allow_incomplete=False):
         if (not years or not years <= allowed) and not (allow_incomplete and not years):
             return None
     else:
+        from bobbi_core.subtitle_episode import matches as subtitle_episode_matches
         episodes = episode_tags(text)
         seasons = {int(s) for s in re.findall(r'(?i)(?<![a-z0-9])s(\d{1,3})(?![a-z0-9])', text)}
         seasons.update(int(s) for s in re.findall(r'(?i)\bseason[ ._-]+(\d{1,3})\b', text))
@@ -126,13 +127,14 @@ def rank(row, context, allow_season_pack=False, allow_incomplete=False):
             return None
         if episodes and episodes != {(context['season'], context['episode'])}:
             return None
-        if not episodes and not ((allow_season_pack and seasons == {context['season']})
+        filename = row.get('filename')
+        file_matches = bool(filename and subtitle_episode_matches(str(filename), context, seasons))
+        if not episodes and not (file_matches or (allow_season_pack and seasons == {context['season']})
                                  or (allow_incomplete and not seasons)):
             return None
         # Every downloaded file must name this episode itself. A package title
         # may authorize inspection, never a differently numbered file.
-        filename = row.get('filename')
-        if filename and episode_tags(str(filename)) != {(context['season'], context['episode'])}:
+        if filename and not file_matches:
             return None
     release = str(context.get('release') or '')[:1024]
     edition = {normalized(m.group()) for m in EDITION.finditer(text)}

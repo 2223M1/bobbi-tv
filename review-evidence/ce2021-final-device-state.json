@@ -1,0 +1,57 @@
+{
+  "mode": "readonly",
+  "players": [],
+  "window": {
+    "currentwindow": {
+      "id": 10000,
+      "label": "主界面"
+    }
+  },
+  "skin": {
+    "value": "skin.bobbi.cinema"
+  },
+  "status": {
+    "ok": true,
+    "result": {
+      "ready": true,
+      "version": "0.1.0",
+      "native_owner": true,
+      "quiesce_protocol": 1,
+      "playback_adapter": "native",
+      "preparation": true,
+      "shares": true,
+      "account": {
+        "account_id": "115:e39e34bc383954212ba4adb2c9c31f051af962df79ae6b9f2c1cb6e937420b02",
+        "epoch": 1,
+        "authenticated": true
+      }
+    }
+  },
+  "versions": {
+    "plugin.video.bobbi": {
+      "addonid": "plugin.video.bobbi",
+      "enabled": true,
+      "type": "xbmc.python.pluginsource",
+      "version": "0.1.15"
+    },
+    "script.module.bobbi.platform": {
+      "addonid": "script.module.bobbi.platform",
+      "enabled": true,
+      "type": "xbmc.python.module",
+      "version": "0.1.17"
+    },
+    "script.module.bobbi.core": {
+      "addonid": "script.module.bobbi.core",
+      "enabled": true,
+      "type": "xbmc.python.module",
+      "version": "0.1.16"
+    },
+    "script.bobbi.start": {
+      "addonid": "script.bobbi.start",
+      "enabled": true,
+      "type": "xbmc.python.script",
+      "version": "0.2.13"
+    }
+  },
+  "temporary_diagnostics_enabled": false
+}

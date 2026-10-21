@@ -1,0 +1,74 @@
+{
+  "scope": "Actual cleanup and audit with real isolated bootstrap import; SignedBundle fixture replaces only signature/payload boundary; no release asset or device test",
+  "review_reference_commit": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "actual_checkout_commit": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "source_identity_authority": "sources[].sha256 records the actual files executed; review_reference_commit is only the fixed review baseline",
+  "removed": [
+    {
+      "archive": "fixture-entry",
+      "path": "script.bobbi.start/bootstrap/LICENSE",
+      "sha256": "7d6bfddd309879451e428f1490504971d47d50f3b4ea2a8864fd013840a5d2db",
+      "bytes": 22,
+      "rule": "private-document-clean-v1",
+      "category": "standalone-document"
+    }
+  ],
+  "non_document_bootstrap_unchanged": true,
+  "clean_check_nested_passed": true,
+  "tests": [
+    {
+      "id": "CONTROL-ORIGINAL-ENTRY",
+      "passed": true,
+      "audit": {
+        "schema": 1,
+        "sequence": 2026102022,
+        "user_entry": "CONTROL-ORIGINAL-ENTRY.zip",
+        "kodi_addon_xml": "passed",
+        "same_generation_bootstrap": "passed",
+        "isolated_bootstrap_import": "passed",
+        "account_state_copied": false,
+        "scope": "fixture ZIP; actual isolated bootstrap import; no release asset or device test",
+        "signature_boundary": "fixture; cryptographic verification not executed",
+        "sequence_origin": "fixture; no release manifest downloaded"
+      }
+    },
+    {
+      "id": "CLEAN-ENTRY-CURRENT-AUDIT",
+      "passed": true,
+      "audit": {
+        "schema": 1,
+        "sequence": 2026102022,
+        "user_entry": "CLEAN-ENTRY-CURRENT-AUDIT.zip",
+        "kodi_addon_xml": "passed",
+        "same_generation_bootstrap": "passed",
+        "isolated_bootstrap_import": "passed",
+        "account_state_copied": false,
+        "scope": "fixture ZIP; actual isolated bootstrap import; no release asset or device test",
+        "signature_boundary": "fixture; cryptographic verification not executed",
+        "sequence_origin": "fixture; no release manifest downloaded"
+      }
+    }
+  ],
+  "count": 2,
+  "passed": 2,
+  "failed": 0,
+  "errors": 0,
+  "sources": [
+    {
+      "path": "tools/package_ce2021_github.py",
+      "sha256": "5c986c8546f940d594127d24ab0371e38b436930c43fb2990568b59035771b70"
+    },
+    {
+      "path": "tools/audit_ce_entry.py",
+      "sha256": "a93490ca7c9d632ebb23d57cec03c84cea408afe615c302e109a74b355d6b546"
+    },
+    {
+      "path": "tools/build_ce_entry.py",
+      "sha256": "3b1a098bdca07485966b72e6c3dae87b00beb2df2aa44b5af9fe22afdc2ed5ed"
+    },
+    {
+      "path": "addons/script.bobbi.start/default.py",
+      "sha256": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
+    }
+  ]
+}

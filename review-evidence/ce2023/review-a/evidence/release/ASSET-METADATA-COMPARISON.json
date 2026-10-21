@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "release": {
+    "id": 419038503,
+    "tag_name": "ce2021-clean-delivery-20261021",
+    "name": "CE2021 文档清理重签交付（序列 2026102022）",
+    "draft": true,
+    "prerelease": false,
+    "target_commitish": "codex/ce2021-clean-delivery-20261021",
+    "created_at": "2026-10-21T01:11:15Z",
+    "published_at": null
+  },
+  "scope": "Repository receipt and user attachment versus GitHub release metadata only; not a download, signature verification, nested archive audit, or device test of any release ZIP.",
+  "assets": [
+    {
+      "id": 660975259,
+      "name": "bobbi-private-2026102022-coreelec.bobbi-update.zip",
+      "bytes": 96135572,
+      "sha256": "c0ebea710ef3dda667c4336aa42b4b212469399468f6081f60d806e8171ca696",
+      "release_bytes_downloaded": false,
+      "repository_receipt_matches_release_metadata": true
+    },
+    {
+      "id": 660975250,
+      "name": "CE-REVIEW-CLOSURE-2021-20261021.md",
+      "bytes": 16320,
+      "sha256": "a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722",
+      "release_bytes_downloaded": false,
+      "repository_receipt_matches_release_metadata": true,
+      "user_attachment_matches_repository_bytes": true,
+      "user_attachment_matches_release_metadata": true
+    },
+    {
+      "id": 660975253,
+      "name": "ce2021-clean-delivery-20261021.zip",
+      "bytes": 199794948,
+      "sha256": "4188691ab12040ac0f1e33bcba6761c6a02fc5bc6c00932f23991192988da708",
+      "release_bytes_downloaded": false,
+      "repository_receipt_matches_release_metadata": true
+    },
+    {
+      "id": 660975249,
+      "name": "packaging-result.json",
+      "bytes": 1000,
+      "sha256": "7e3e621207f131b18cc420b12d015377b84180af890651ae4060d13ac5593c64",
+      "release_bytes_downloaded": false,
+      "repository_original_bytes": 968,
+      "repository_original_sha256": "b3241c8ececaea66005b0159affecd9ad76e4089494977b10ecd6e3f0002435a",
+      "repository_lf_count": 32,
+      "repository_lf_to_crlf_matches_release_metadata": true,
+      "explanation": "Size and digest are exactly reproduced by LF-to-CRLF conversion; release asset body was not retrieved."
+    },
+    {
+      "id": 660975254,
+      "name": "script.bobbi.start-0.2.13-ce2021-clean.zip",
+      "bytes": 96233587,
+      "sha256": "bf10e21a30f98a74c99671985600a79da692371733f5ca17a21179565a72cb6b",
+      "release_bytes_downloaded": false,
+      "repository_receipt_matches_release_metadata": true
+    }
+  ]
+}

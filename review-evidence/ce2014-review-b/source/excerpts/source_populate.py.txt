@@ -1,0 +1,148 @@
+    def populate_sources_list(self, incremental=False) -> None:
+        self.list_sources = (
+            self.filtered_sources
+            if self.filter_applied and self.filtered_sources is not None
+            else self.sources
+        )
+        if getattr(self, 'source_session', None):
+            self.list_sources = _manual_source_limit(self.list_sources, self.source_session.limit)
+        key_for = (self.source_session.key if getattr(self, 'source_session', None)
+                   else lambda source: str(id(source)))
+        cards = getattr(self, '_rendered_cards', {}) if incremental else {}
+        keys = list(getattr(self, '_rendered_keys', [])) if incremental else []
+        if not incremental:
+            self.display_list.reset()  # Explicit filter/reopen, never provider publication.
+        desired = {key_for(source): source for source in self.list_sources}
+        selected = self.display_list.getSelectedItem() if incremental else None
+        selected_key = selected.getProperty('source_key') if selected else None
+        # Remove only withdrawn/superseded rows (e.g. exact BT -> 115 duplicate).
+        # Every surviving card keeps its native object and relative position.
+        for position in range(len(keys) - 1, -1, -1):
+            if keys[position] not in desired:
+                cards.pop(keys.pop(position))
+                self.display_list.removeItem(position)
+        keys += [key for key in desired if key not in cards]
+        self.list_sources = [desired[key] for key in keys]
+        aliases = {}
+        with contextlib.suppress(Exception):
+            aliases = cache.get(STREMIO_ADDON_ALIASES_KEY) or {}
+
+        chinese_subtitle_count = sum(
+            1 for source in self.list_sources if _has_chinese_candidate(source)
+        )
+        self.setProperty("chinese_subtitle_count", str(chinese_subtitle_count))
+        self.setProperty("source_count", str(len(self.list_sources)))
+
+        from lib.utils.general.cinema_source_rank import source_preference
+        menu_items = []
+        for position, source in enumerate(self.list_sources):
+            info = parse_title_info(source.title)
+            key = key_for(source)
+            if key not in cards:
+                cards[key] = xbmcgui.ListItem(label=source.title)
+                menu_items.append(cards[key])
+            elif cards[key].getLabel() != source.title:
+                cards[key].setLabel(source.title)
+            menu_item = _CardUpdate(cards[key])
+            if getattr(self, 'source_session', None):
+                menu_item.setProperty('source_key', self.source_session.key(source))
+            menu_item.setProperty("title", source.title)
+            menu_item.setProperty("display_title", info["clean_title"])
+            menu_item.setProperty("codec", info["codec"])
+            menu_item.setProperty("audio", info["audio"])
+            menu_item.setProperty("hdr_info", info["badges"])
+            menu_item.setProperty("badges_plain", _plain_source_badges(info["badges"]))
+            release_group = info["release_group"] or ""
+            from lib.cinema.subtitle_projection import source_card_label, source_label
+            chinese_subtitles = detect_chinese_subtitle_kind(
+                source.title,
+                languages=getattr(source, "languages", None),
+                full_languages=getattr(source, "fullLanguages", None),
+                stream_subtitles=getattr(source, "streamSubtitles", None),
+                metadata=getattr(source, "stremioMetadata", None),
+            )
+            menu_item.setProperty("chinese_subtitle_detail", source_label(source) or chinese_subtitles)
+            chinese_subtitles = source_card_label(source) or chinese_subtitles
+            from lib.utils.general.cinema_source_rank import chinese_subtitle_preference
+            subtitle_evidence = chinese_subtitle_preference(source)[1]
+            if subtitle_evidence and not source_label(source):
+                chinese_subtitles = subtitle_evidence
+                menu_item.setProperty('chinese_subtitle_detail', subtitle_evidence)
+            menu_item.setProperty("release_group", release_group)
+            menu_item.setProperty("show_release_group", "true" if _show_release_group(getattr(self, "item_information", {}), source) else "false")
+            menu_item.setProperty("provider_raw", release_group)
+            menu_item.setProperty("chinese_subtitles", chinese_subtitles)
+            from lib.clients.catalog_providers import provider_for
+            if provider_for(source):
+                # A file named bilingual has not established subtitle presence
+                # or synchronization. Keep provenance separate from evidence.
+                chinese_subtitles = subtitle_evidence
+                menu_item.setProperty('chinese_subtitles', subtitle_evidence)
+                menu_item.setProperty('chinese_subtitle_detail', subtitle_evidence or '字幕未验证')
+                menu_item.setProperty('source_provenance', source.subindexer)
+            menu_item.setProperty(
+                "has_chinese_subtitles", "true" if chinese_subtitles else "false"
+            )
+            kodilog(f"SourceSelect populate_sources_list: source.type={source.type}")
+            if source.type in IndexerType.TORRENT:
+                if source.addedToDebrid and source.debridType:
+                    provider_name = source.debridType
+                else:
+                    provider_name = source.type or source.subindexer
+            elif source.type == IndexerType.DEBRID:
+                provider_name = source.debridType or source.type
+            elif source.type == IndexerType.STREMIO_DEBRID:
+                if source.debridType:
+                    provider_name = source.debridType
+                elif source.isCached and not source.infoHash:
+                    provider_name = source.type
+                else:
+                    provider_name = source.subindexer or source.type
+            elif source.type == IndexerType.DIRECT:
+                provider_name = source_platform_label(source) or source.type
+            else:
+                provider_name = source.debridType or source.type
+            indexer_label = _get_source_indexer_label(source, aliases)
+            menu_item.setProperty("type", get_provider_color(provider_name))
+            menu_item.setProperty("indexer", get_random_color(indexer_label))
+            menu_item.setProperty("source_site", source_site_label(indexer_label, source.type))
+            menu_item.setProperty("guid", source.guid)
+            menu_item.setProperty("infoHash", source.infoHash)
+            menu_item.setProperty("size", bytes_to_human_readable(int(source.size)))
+            if source.seeders and not source.isCached:
+                menu_item.setProperty("seeders", str(source.seeders))
+            if source.peers and not source.isCached:
+                menu_item.setProperty("peers", str(source.peers))
+            menu_item.setProperty("fullLanguages", get_colored_languages(source.fullLanguages))
+            # The primary provider field is intentionally the release/encode
+            # group, not the indexer website.  The source site remains available
+            # separately as a low-priority diagnostic label.
+            menu_item.setProperty("provider", get_random_color(release_group) if release_group else '')
+            menu_item.setProperty("publishDate", extract_publish_date(source.publishDate))
+            menu_item.setProperty("quality", source.quality)
+            menu_item.setProperty("quality_plain", _source_quality(source))
+            menu_item.setProperty("type_plain", _provider_display_name(provider_name))
+            menu_item.setProperty("languages_plain", _plain_source_label(get_colored_languages(source.fullLanguages)))
+            menu_item.setProperty("status", get_source_status(source))
+            status = _plain_source_label(get_source_status(source))
+            status = {"Download": "待验证片源", "Cached": "服务标记已缓存", "Added": "已提交 · 待就绪"}.get(status, status)
+            menu_item.setProperty("status_plain", status)
+            preference = source_preference(source, getattr(self, "item_information", {}))
+            from lib.cinema.source_presentation import recommendation_label
+            first_label = recommendation_label(True, preference['caution'], status)
+            recommended = (self.source_session.key(source) == getattr(self, '_recommended_key', None)
+                           if getattr(self, 'source_session', None) else position == 0)
+            menu_item.setProperty("recommendation", first_label if recommended else "")
+            menu_item.setProperty("recommendation_reason", preference["reason"])
+            menu_item.setProperty("recommendation_status", recommendation_label(recommended, preference['caution'], status))
+            menu_item.setProperty("isPack", str(source.isPack))
+
+        if menu_items:
+            self.display_list.addItems(menu_items)
+        self._rendered_cards, self._rendered_keys = cards, keys
+        if incremental and selected_key in keys:
+            # Usually no selection command at all: do not restart scrolling or
+            # focus animation when a provider merely adds results at the end.
+            position = keys.index(selected_key)
+            if self.display_list.getSelectedPosition() != position:
+                self.display_list.selectItem(position)

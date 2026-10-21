@@ -1,0 +1,11 @@
+--- synchronous release rendezvous
++++ independent IO completion
+@@ -110,6 +110,8 @@
+             initially_exclusive = True
+         finally:
+             before.close()
++        if blocked:
++            threading.Timer(.8, release.set).start()
+         started = time.monotonic()
+         try:
+             installer.quiesce()

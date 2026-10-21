@@ -1,0 +1,221 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "barakamon",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Barakamon",
+        "tmdb_id": 67048,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "b113a728e3b54593822b0997c3c3013a",
+      "started": 2278518.165435583,
+      "home": {
+        "generation": 94,
+        "intent": 1,
+        "retired_generation": 94,
+        "observed_at": 2278518.523461856
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2278518.523778151,
+      "picker": {
+        "window": 13001,
+        "generation": 98,
+        "intent": 1,
+        "tmdb_id": 67048,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2278523.055559801
+    },
+    "samples": [
+      {
+        "wall": 2278518.707798513,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2278518.688570946,
+          "decoder_started": 2278518.722092396,
+          "decoder_completed": 2278518.723004073,
+          "sample_completed": 2278518.723008282
+        }
+      },
+      {
+        "wall": 2278520.90448436,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2278520.842806153,
+          "decoder_started": 2278520.94547519,
+          "decoder_completed": 2278520.945741902,
+          "sample_completed": 2278520.945744152
+        }
+      },
+      {
+        "wall": 2278523.071470827,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2278523.056124849,
+          "decoder_started": 2278523.09181324,
+          "decoder_completed": 2278523.092427455,
+          "sample_completed": 2278523.092431122
+        }
+      },
+      {
+        "wall": 2278525.214093565,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2278525.188327587,
+          "decoder_started": 2278525.237863602,
+          "decoder_completed": 2278525.238190231,
+          "sample_completed": 2278525.238192814
+        }
+      },
+      {
+        "wall": 2278527.440908135,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2278527.406171674,
+          "decoder_started": 2278527.527831307,
+          "decoder_completed": 2278527.52812056,
+          "sample_completed": 2278527.528122894
+        }
+      },
+      {
+        "wall": 2278529.629631558,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2278529.604521631,
+          "decoder_started": 2278529.654450023,
+          "decoder_completed": 2278529.654708151,
+          "sample_completed": 2278529.654709901
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "barakamon",
+  "operation": "start",
+  "attempt": 2,
+  "regression_attempt": true
+}

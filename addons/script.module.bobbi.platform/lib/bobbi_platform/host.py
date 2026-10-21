@@ -15,8 +15,9 @@ from .runtime import Runtime
 
 
 class _Call:
-    def __init__(self, value):
+    def __init__(self, value, lifecycle=False):
         self.value, self.deadline = value, time.monotonic() + .25
+        self.lifecycle = lifecycle
         self.done, self.lock = Event(), Lock()
         self.cancelled, self.result, self.error = False, None, False
 
@@ -36,9 +37,11 @@ class Host:
         self.engine_worker, self.engine_lock = None, Lock()
         self.refresh = self.refresh_worker = self.refresh_result = None
         self.idle_probe = lambda: False
+        self.can_quiesce = lambda: False
         self.refresh_due, self.idle_check, self.idle = 0, 0, False
         self.stopping = Event()
         self.runtime = Runtime(self.dispatch, self.root / 'runtime.json')
+        self.runtime.report = report
         self.unsubscribe = lambda: None
 
     def start(self):
@@ -128,10 +131,10 @@ class Host:
             raise AccountError('SUBTITLE_ACCOUNT_SCOPE_MISSING')
         return self.accounts.run_if_current(expected, lambda: candidate)
 
-    def _owner_request(self, body):
+    def _owner_request(self, body, lifecycle=False):
         if self.owner is None:
             raise ValueError('NATIVE_OWNER_UNAVAILABLE')
-        job = _Call(body)
+        job = _Call(body, lifecycle=lifecycle)
         try:
             self.calls.put_nowait(job)
         except Full:
@@ -150,6 +153,10 @@ class Host:
             raise ValueError('RUNTIME_NOT_READY')
         if not isinstance(body, dict):
             raise ValueError('RUNTIME_FIELDS')
+        if action == 'quiesce' and body == {'protocol': 1} and type(body['protocol']) is int:
+            # Serialized with playback, never decide isPlaying on an HTTP
+            # worker. The existing per-instance bearer token scopes this call.
+            return self._owner_request(body, lifecycle=True)
         if action == 'account_status' and not body:
             return self.accounts.snapshot()
         if action == 'account_install' and set(body) == {'credentials', 'expected'}:
@@ -215,6 +222,7 @@ class Host:
             return self.preparation.request(body['method'], body['body'], scope)
         if action == 'status' and not body:
             return dict(ready=True, version='0.1.0', native_owner=self.owner is not None and self.native_rpc is not None,
+                        quiesce_protocol=1,
                         playback_adapter=('starting' if self.owner is None else
                                           'native' if self.native_rpc is not None else 'standard'),
                         preparation=self.preparation is not None, shares=self.streams is not None,
@@ -252,12 +260,22 @@ class Host:
                     job.error = 'unavailable'
                 else:
                     try:
-                        job.result = self.owner(job.value)
+                        if job.lifecycle:
+                            if self.can_quiesce() is not True:
+                                raise ValueError('PLAYBACK_ACTIVE_OR_UNKNOWN')
+                            self.stopping.set()
+                            job.result = {'accepted': True}
+                        elif self.stopping.is_set():
+                            raise OSError('NATIVE_OWNER_UNAVAILABLE')
+                        else:
+                            job.result = self.owner(job.value)
                     except OSError:
                         job.error = 'unavailable'
                     except Exception:
                         job.error = True
                 job.done.set()
+        if self.stopping.is_set():
+            return
         for _ in range(8):
             try:
                 hashes = self.revocations.get_nowait()
@@ -344,36 +362,55 @@ class Host:
             self.report('OPTIONAL_PREPARATION_UNAVAILABLE')
 
     def close(self):
-        if self.stopping.is_set():
+        if getattr(self, '_shutdown_complete', False):
             return
         self.stopping.set()
         self.idle = False
-        # Stop admission first, but keep ownership while dependent services
-        # close. A missing runtime.json alone is not permission to replace code.
-        self.runtime.close(release_lease=False)
-        try:
-            if self.images is not None:
-                self.images.close()
-            self.unsubscribe()
-            if self.preparation is not None:
-                self.preparation.close()
-            if self.streams is not None:
-                self.streams.close()
-            with self.engine_lock:
-                engine, self.engine = self.engine, None
-            if engine is not None:
-                engine.close()
-            if self.engine_worker is not None:
-                self.engine_worker.join()
-            if self.refresh_worker is not None:
-                self.refresh_worker.join()
-            self.owner = self.preparation = None
-            while True:
-                try:
-                    job = self.calls.get_nowait()
-                except Empty:
-                    break
-                job.error = True
-                job.done.set()
-        finally:
-            self.runtime.lease.close()
+        errors = []
+        def report(code):
+            try:
+                self.report(code)
+            except Exception:
+                pass  # Observability must not interrupt ownership drainage.
+        def drain(close, label):
+            report('SHUTDOWN_BEGIN_' + label)
+            try:
+                close()
+            except BaseException as error:
+                errors.append(error)
+                report('SHUTDOWN_FAILED_' + label + '_' + type(error).__name__)
+            else:
+                report('SHUTDOWN_DRAINED_' + label)
+        # Reject queued owner calls before draining HTTP. No new work may be
+        # admitted after stopping; every already admitted consumer stays owned.
+        while True:
+            try:
+                job = self.calls.get_nowait()
+            except Empty:
+                break
+            job.error = True
+            job.done.set()
+        drain(lambda: self.runtime.close(release_lease=False), 'RUNTIME')
+        playback = getattr(self, 'playback', None)
+        if playback is not None:
+            drain(playback.close, 'PLAYBACK')
+        for label, component in (('IMAGES', self.images), ('PREPARATION', self.preparation), ('STREAMS', self.streams)):
+            if component is not None:
+                drain(component.close, label)
+        drain(self.unsubscribe, 'ACCOUNT_SUBSCRIPTION')
+        with self.engine_lock:
+            engine = self.engine
+        if engine is not None:
+            drain(engine.close, 'ENGINE')
+        for label, worker in (('ENGINE_WORKER', self.engine_worker), ('CATALOG_WORKER', self.refresh_worker)):
+            if worker is not None:
+                drain(worker.join, label)
+        self.shutdown_errors = tuple(type(error).__name__ for error in errors)
+        if errors:
+            # Unknown drainage is not quiescence. Retain the OS descriptor;
+            # retry may finish cleanup, or actual process exit reclaims it.
+            # The installer still has its independent 15-second refusal bound.
+            raise errors[0]
+        self.owner = self.preparation = self.engine = None
+        self._shutdown_complete = True
+        self.runtime.lease.close()

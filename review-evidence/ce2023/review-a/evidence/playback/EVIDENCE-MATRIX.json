@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "reviewed_head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "reviewed_tree": "bbe592e62a7a6790c62725738b63dae9b9f9405a",
+  "scope": "Markdown relative review-evidence links in delivered report checked against complete fixed Git tree; release handoff ZIP contents not examined here",
+  "tree_truncated": false,
+  "report_path": "docs/CE-REVIEW-CLOSURE-2021-20261021.md",
+  "report_sha256": "a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722",
+  "markdown_evidence_link_count": 26,
+  "present_count": 0,
+  "missing_count": 26,
+  "links": [
+    {
+      "path": "review-evidence/bobbi-ui-smoke-1792540046661100200/result.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-continuation-ping_pong-1792543501997766000.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-continuation-ping_pong-1792543529822933700.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-managed-recovery-1792542169758322200.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-managed-recovery-1792542384367042600.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-amelie-observe-1792542597562746100.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-amelie-select-1792542545658750900.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-barakamon-select-1792542745213797400.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-ping_pong-observe-1792543373288420100.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-ping_pong-select-1792543305484733700.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-new-work-ping_pong-start-1792542905724709500.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-recovery-native-stack-1792541775218323700.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce-recovery-snapshot-1792541762634937900.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-adapted-reviews-final/RESULT.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-artifacts.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-baseline-final.xml",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-entry-audit.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-final-device-state.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-picker-navigation-awake-back.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-post-concurrent-cleanup-build.log",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-preparation-final.xml",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-primary-final.xml",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-prior15-final/RESULT.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-prior18-final/RESULT.json",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-reproducible-build.log",
+      "present_in_git_tree": false
+    },
+    {
+      "path": "review-evidence/ce2021-tools-final.xml",
+      "present_in_git_tree": false
+    }
+  ],
+  "explicit_limit": "Absence from the branch does not establish absence from the separate release ZIP, nor demonstrate that claimed CE2021 fixes inside unacquired packages fail."
+}

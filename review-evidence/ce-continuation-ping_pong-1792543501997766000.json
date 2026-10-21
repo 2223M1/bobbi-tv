@@ -1,0 +1,538 @@
+{
+  "result": {
+    "samples": [
+      {
+        "at": 2273364.220355124,
+        "native": {
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "monotonic_us": 2273358001568,
+          "native_instance": "74c5e3a7-8e88-4ad1-9848-8f6e22f4677a",
+          "open_epoch": 6,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "user_intent": 0
+        },
+        "selection_epoch": 6,
+        "terminal": {},
+        "desired": {
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "epoch": 5,
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "selection_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 193305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 167,
+            "minutes": 0,
+            "seconds": 6
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 919,
+            "minutes": 22,
+            "seconds": 51
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Ping Pong the Animation",
+          "season": 1,
+          "showtitle": "Ping Pong the Animation",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2273369.322921474,
+        "native": {
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "monotonic_us": 2273358001568,
+          "native_instance": "74c5e3a7-8e88-4ad1-9848-8f6e22f4677a",
+          "open_epoch": 6,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "user_intent": 0
+        },
+        "selection_epoch": 6,
+        "terminal": {},
+        "desired": {
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "epoch": 5,
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "selection_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 193305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 255,
+            "minutes": 0,
+            "seconds": 11
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 919,
+            "minutes": 22,
+            "seconds": 51
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Ping Pong the Animation",
+          "season": 1,
+          "showtitle": "Ping Pong the Animation",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2273374.457356628,
+        "native": {
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "monotonic_us": 2273358001568,
+          "native_instance": "74c5e3a7-8e88-4ad1-9848-8f6e22f4677a",
+          "open_epoch": 6,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "user_intent": 0
+        },
+        "selection_epoch": 6,
+        "terminal": {},
+        "desired": {
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "epoch": 5,
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "selection_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 193305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 385,
+            "minutes": 0,
+            "seconds": 16
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 919,
+            "minutes": 22,
+            "seconds": 51
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Ping Pong the Animation",
+          "season": 1,
+          "showtitle": "Ping Pong the Animation",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2273379.594575353,
+        "native": {
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "monotonic_us": 2273358001568,
+          "native_instance": "74c5e3a7-8e88-4ad1-9848-8f6e22f4677a",
+          "open_epoch": 6,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "user_intent": 0
+        },
+        "selection_epoch": 6,
+        "terminal": {},
+        "desired": {
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "epoch": 5,
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "selection_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 193305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 515,
+            "minutes": 0,
+            "seconds": 21
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 919,
+            "minutes": 22,
+            "seconds": 51
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Ping Pong the Animation",
+          "season": 1,
+          "showtitle": "Ping Pong the Animation",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      },
+      {
+        "at": 2273384.715677924,
+        "native": {
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "monotonic_us": 2273358001568,
+          "native_instance": "74c5e3a7-8e88-4ad1-9848-8f6e22f4677a",
+          "open_epoch": 6,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "user_intent": 0
+        },
+        "selection_epoch": 6,
+        "terminal": {},
+        "desired": {
+          "request_id": "b113a728e3b54593822b0997c3c3013a",
+          "epoch": 5,
+          "file_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe|transport:92776af681b1e8e71b0fc1ee78ad5351bcc761f44f125eaae120081b419766c4",
+          "selection_identity": "prepared:0e4a78134e3c0a85fadd07daa6412e2a612c988308757ef294c969e222408bfe",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 193305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 645,
+            "minutes": 0,
+            "seconds": 26
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 919,
+            "minutes": 22,
+            "seconds": 51
+          }
+        },
+        "item": {
+          "episode": 2,
+          "label": "Ping Pong the Animation",
+          "season": 1,
+          "showtitle": "Ping Pong the Animation",
+          "title": "",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": true,
+        "ordered_eof_handoff_log": true,
+        "successor_observed": true
+      }
+    ]
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

@@ -1,0 +1,20 @@
+{
+  "command": [
+    ".venv-closure/Scripts/python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "-rs",
+    "tests",
+    "--ignore=tests/private_baseline",
+    "--ignore=tests/preparation_regression",
+    "--junitxml=review-evidence/ce2023/primary-final.xml"
+  ],
+  "cwd": "D:\\AM6B-Project\\bobbi-tv-ce2023-closure-20261021",
+  "started": 1792549077.9002717,
+  "elapsed": 179.5961263179779,
+  "exit_code": 0,
+  "runner_sha256": "1701efc16c6647fc74cb3f5a83aeb2cfca505021471a1e666c4f508c76a7c227",
+  "commit": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "dirty": true
+}

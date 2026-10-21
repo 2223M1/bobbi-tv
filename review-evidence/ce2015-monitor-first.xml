@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="11" time="0.582" timestamp="2026-10-21T07:37:30.638752+08:00" hostname="Paimon"><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[none]" time="0.001"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020688A774D0&gt;
+fault = 'none'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[gap]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020688A765A0&gt;
+fault = 'gap'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[timeout]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020688A8EE10&gt;
+fault = 'timeout'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[eof]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020689DD3F80&gt;
+fault = 'eof'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[stop]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020689FC3650&gt;
+fault = 'stop'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[replacement]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020689F9BE30&gt;
+fault = 'replacement'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[cancel]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020689F9BD10&gt;
+fault = 'cancel'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[boot]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020688A8F5C0&gt;
+fault = 'boot'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[epoch]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020688A76DB0&gt;
+fault = 'epoch'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[instance]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020689FB7410&gt;
+fault = 'instance'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase><testcase classname="tests.private_baseline.test_ce2015_monitor" name="test_monitor_distinguishes_current_terminal_retired_and_unknown[malformed]" time="0.000"><failure message="TypeError: issubclass() arg 1 must be a class">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000020689FB7500&gt;
+fault = 'malformed'
+
+    @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
+                                      'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+    def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
+        owner = PlaybackOwner(boot_id='c'*32)
+        rid, selection = 'a'*32, 'transport:'+'1'*64
+        identity = selection+'|'+'2'*64
+        owner.select(owner.boot_id, owner.epoch, rid, selection)
+        owner.bind_file(owner.boot_id, owner.epoch, rid, selection, identity)
+        owner.claim_start(owner.boot_id, owner.epoch, rid, 'player_play')
+        owner.observe_started(owner.boot_id, owner.epoch, rid, 'native-A', identity)
+        clock, calls, events = [100.], [], []
+        playing = [True]
+&gt;       player = native.JacktookPLayer.__new__(native.JacktookPLayer)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\private_baseline\test_ce2015_monitor.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+cls = &lt;MagicMock spec='str' id='2227108059264'&gt;, spec = None, wraps = None
+name = None, spec_set = None, parent = None, _spec_state = None, _new_name = ''
+_new_parent = None, _spec_as_instance = False, _eat_self = None, unsafe = False
+kwargs = {}
+
+    def __new__(
+            cls, spec=None, wraps=None, name=None, spec_set=None,
+            parent=None, _spec_state=None, _new_name='', _new_parent=None,
+            _spec_as_instance=False, _eat_self=None, unsafe=False, **kwargs
+        ):
+        # every instance has its own class
+        # so we can create magic methods on the
+        # class without stomping on other mocks
+        bases = (cls,)
+&gt;       if not issubclass(cls, AsyncMockMixin):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: issubclass() arg 1 must be a class
+
+C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:429: TypeError</failure></testcase></testsuite></testsuites>

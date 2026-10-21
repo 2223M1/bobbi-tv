@@ -26,7 +26,7 @@ first_run_update_prop = "bobbi.first_run_update"
 pause_services_prop = "bobbi.pause_services"
 
 
-def _start_optional_sync(module_name, class_name, flags, credentials=()):
+def _start_optional_sync(module_name, class_name, flags, credentials=(), monitor=None):
     """Do not import provider clients or create idle threads for disabled sync."""
     if not all(str(get_setting(key)).lower() == "true" for key in flags):
         return None
@@ -36,7 +36,8 @@ def _start_optional_sync(module_name, class_name, flags, credentials=()):
     def run():
         try:
             from importlib import import_module
-            service = getattr(import_module(module_name), class_name)()
+            service_type = getattr(import_module(module_name), class_name)
+            service = service_type(monitor=monitor) if monitor is not None else service_type()
             # Each service retains its own auth/profile checks and stop loop.
             service.run()
         except Exception as error:
@@ -72,6 +73,9 @@ class DatabaseSetup:
 
 
 class UpdateCheck:
+    def __init__(self, monitor=None):
+        self.monitor = monitor
+
     def run(self):
         kodilog("Update Check Service Started...", level=xbmc.LOGINFO)
         if get_property_no_fallback(first_run_update_prop) == "true":
@@ -80,7 +84,7 @@ class UpdateCheck:
 
         try:
             end_pause = time() + update_delay()
-            monitor = xbmc.Monitor()
+            monitor = self.monitor or xbmc.Monitor()
             player = xbmc.Player()
 
             while not monitor.abortRequested():
@@ -261,11 +265,15 @@ class JacktookMOnitor(xbmc.Monitor):
         self._owner_stopped = Event()
         self._auxiliary_thread = None
         self._auxiliary_status = 'NOT_STARTED'
+        self._auxiliary_workers = []
+        self._control = None
 
     def run_owner_loop(self, host=None):
         from lib.services.playback_control import PlaybackControlServer
         control = PlaybackControlServer(events=self._playback_events)
+        self._control = control
         if host is not None:
+            host.playback = self
             host.bind_owner(control.authority.dispatch)
             control.native.subtitle_fallback.share_provider = host.sidecar_candidate
             control.native.subtitle_fallback.accounts = host.accounts
@@ -276,7 +284,7 @@ class JacktookMOnitor(xbmc.Monitor):
             self._auxiliary_thread = Thread(target=self._start_auxiliary_services,
                                             name='JacktookAuxiliaryStartup', daemon=True)
             self._auxiliary_thread.start()
-            while not self.abortRequested():
+            while not self.abortRequested() and (host is None or not host.stopping.is_set()):
                 if self._playback_event_overflow:
                     # Never keep issuing playback actions after losing ordering.
                     raise RuntimeError('Playback receipt queue overflow; owner stopped')
@@ -294,7 +302,40 @@ class JacktookMOnitor(xbmc.Monitor):
             self._owner_stopped.set()
             if host is not None:
                 host.bind_owner(None)
-            control.close()
+            if host is None:
+                self.close()
+
+    def close(self):
+        self._owner_stopped.set()
+        errors = []
+        try:
+            if self._control is not None:
+                xbmc.log('[BOBBI-SHUTDOWN] native control begin', xbmc.LOGINFO)
+                self._control.close()
+                self._control = None
+                xbmc.log('[BOBBI-SHUTDOWN] native control drained', xbmc.LOGINFO)
+        except BaseException as error:
+            errors.append(error)
+        # Startup can still be registering child jobs. Drain it before taking
+        # the final child inventory; Kodi's addon abort wakes their stop loops.
+        if self._auxiliary_thread is not None:
+            xbmc.log('[BOBBI-SHUTDOWN] auxiliary startup join ' + self._auxiliary_status, xbmc.LOGINFO)
+            self._auxiliary_thread.join()
+        for worker in self._auxiliary_workers:
+            xbmc.log('[BOBBI-SHUTDOWN] auxiliary worker join ' + worker.name, xbmc.LOGINFO)
+            worker.join()
+        xbmc.log('[BOBBI-SHUTDOWN] auxiliary workers drained', xbmc.LOGINFO)
+        if errors:
+            raise errors[0]
+
+    def _start_worker(self, target):
+        worker = Thread(target=target, daemon=True)
+        worker.start()
+        return worker
+
+    def _worker_monitor(self):
+        from bobbi_platform.stop_monitor import StopMonitor
+        return StopMonitor(self._owner_stopped, xbmc.Monitor())
 
     def _start_auxiliary_services(self):
         self._auxiliary_status = 'RUNNING'
@@ -319,23 +360,25 @@ class JacktookMOnitor(xbmc.Monitor):
             # persistent catalog preloader below as the startup cache warmer.
             lambda: CheckKodiVersion().run(),
             lambda: DatabaseSetup().run(), run_migrations,
-            lambda: Thread(target=UpdateCheck().run).start(),
+            lambda: self._start_worker(UpdateCheck(self._worker_monitor()).run),
             lambda: _start_optional_sync("lib.services.trakt_sync", "TraktSyncService",
-                                         ("trakt_enabled", "is_trakt_auth")),
+                                         ("trakt_enabled", "is_trakt_auth"), monitor=self._worker_monitor()),
             lambda: _start_optional_sync("lib.services.simkl_sync", "SimklSyncService",
                                          ("simkl_enabled", "simkl_authenticated"),
-                                         ("simkl_access_token",)),
+                                         ("simkl_access_token",), monitor=self._worker_monitor()),
             lambda: _start_optional_sync("lib.services.nuvio_sync", "NuvioSyncService",
                                          ("nuvio_enabled", "nuvio_authenticated"),
-                                         ("nuvio_access_token", "nuvio_profile_id")),
-            lambda: (Thread(target=DebridExpirationCheck().run, daemon=True).start()
+                                         ("nuvio_access_token", "nuvio_profile_id"), monitor=self._worker_monitor()),
+            lambda: (self._start_worker(DebridExpirationCheck().run)
                      if get_setting("debrid_expiration_enabled") else None),
-            lambda: StartupPreloader().run(), lambda: DownloaderSetup().run(), TMDBHelperAutoInstall,
+            lambda: StartupPreloader(self._worker_monitor()).run(), lambda: DownloaderSetup().run(), TMDBHelperAutoInstall,
         )
         for operation in operations:
             if self._owner_stopped.is_set() or self.abortRequested():
                 return
-            operation()
+            worker = operation()
+            if isinstance(worker, Thread):
+                self._auxiliary_workers.append(worker)
         if self._owner_stopped.is_set() or self.abortRequested():
             return
         try:
@@ -349,7 +392,7 @@ class JacktookMOnitor(xbmc.Monitor):
         try:
             from lib.services.widget_refresh import WidgetRefreshService
 
-            Thread(target=WidgetRefreshService().run).start()
+            self._auxiliary_workers.append(self._start_worker(WidgetRefreshService(self._worker_monitor()).run))
         except Exception as e:
             kodilog(f"WidgetRefresh failed: {e}", level=xbmc.LOGERROR)
 

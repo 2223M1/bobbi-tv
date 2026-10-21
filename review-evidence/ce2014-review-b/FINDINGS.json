@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "findings": [
+    {
+      "id": "G01",
+      "priority": "P1",
+      "title": "Replacement lease released before every resident consumer has stopped",
+      "status": "OPEN_INDEPENDENTLY_REPRODUCED",
+      "paths": [
+        "addons/script.module.bobbi.platform/lib/bobbi_platform/standard_session.py:196-200",
+        "addons/plugin.video.bobbi/lib/services/standard_playback.py:36-38,285-290",
+        "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py:346-385",
+        "addons/plugin.video.bobbi/lib/portable_runtime.py"
+      ],
+      "cases": [
+        "shutdown_drain_next",
+        "shutdown_drain_subtitle",
+        "shutdown_drain_history",
+        "shutdown_cleanup_exception"
+      ],
+      "root": "Two owners of shutdown responsibilities; timed-out joins and exceptional cleanup can outlive the permission lease.",
+      "origin": "Incomplete closure of preexisting standard-worker ownership; cleanup-finally release is in this PR.",
+      "remediation": "Drain/cancel all resident workers before final lease release; cleanup errors must not skip other consumers. Keep bounded installer refusal.",
+      "limitations": "Real threads and OS lease; IO/Kodi boundary doubles and exact Host.close excerpt. No device write or demonstrated physical corruption."
+    },
+    {
+      "id": "G03",
+      "priority": "P3",
+      "title": "Retained source cards keep obsolete seeder/peer counts when zero or cached",
+      "status": "CONDITIONAL_LOCAL_HARDENING_NOT_MERGE_BLOCKER",
+      "paths": [
+        "addons/plugin.video.bobbi/lib/gui/source_select.py:844-847"
+      ],
+      "cases": [
+        "ui_clear_peers_zero",
+        "ui_clear_peers_cached"
+      ],
+      "root": "Optional-field omission assumes fresh ListItem, but this PR retains the object.",
+      "origin": "New retained-UI-state regression.",
+      "remediation": "Optional narrow explicit-clear hardening; do not expand into source-pool redesign.",
+      "limitations": "Renderer accepts conditional changed metadata and retains obsolete fields. Actual SourceListSession.publish keeps first same-key metadata; no normal end-to-end provider reproduction established.",
+      "reference_patch": "patches/0001-clear-retained-source-counts.diff"
+    }
+  ],
+  "merge_recommendation": "REQUEST_SCOPED_CLOSEOUT_BEFORE_MERGE_NOT_REVERT",
+  "hardware_admission_gate": false,
+  "excluded_suspicions": [
+    {
+      "id": "G02",
+      "priority": null,
+      "title": "Display cap removes a valid focused source on unrelated high-ranked arrival",
+      "status": "EXCLUDED_AFTER_ACTUAL_SOURCE_SESSION_CHECK",
+      "paths": [
+        "addons/plugin.video.bobbi/lib/gui/source_select.py:733-760"
+      ],
+      "cases": [
+        "ui_focused_card_at_cap"
+      ],
+      "root": "Preliminary renderer-only fixture omitted existing focus reinsertion in real SourceListSession.snapshot.",
+      "origin": "Inherited cap/ranking boundary left inconsistent with new stable-visibility behavior.",
+      "remediation": "No product fix required for this suspicion. Preserve current focus reinsertion and keep the integration regression.",
+      "limitations": "Actual renderer method, Kodi list and metadata helper doubles; no wrong playback proven."
+    }
+  ],
+  "merge_blocking_findings": [
+    "G01"
+  ]
+}

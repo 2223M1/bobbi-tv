@@ -1,0 +1,27 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792539948211724700",
+  "result": {
+    "scope": "real CE native managed recovery and quiesce; no media commands",
+    "events": [],
+    "initial_owner": {
+      "adapter": "native",
+      "boot_id": "7cadcc0797924c36b995e4762efeb4f8"
+    },
+    "passed": false,
+    "error": "RuntimeError",
+    "code": "OLD_SERVICE_DID_NOT_STOP",
+    "frames": [
+      {
+        "file": "trial.py",
+        "function": "<module>",
+        "line": 36
+      }
+    ],
+    "restored_at_exit": true
+  },
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "exit_code": 1,
+  "pending": false,
+  "diagnostic_present": false
+}

@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "review_date_utc": "2026-10-21",
+  "repository": "2223M1/bobbi-tv",
+  "branch": "codex/ce2021-clean-delivery-20261021",
+  "reviewed_head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "reviewed_tree": "bbe592e62a7a6790c62725738b63dae9b9f9405a",
+  "rewritten_ce2014_base": "f6ef6a7e3c5868a2ab8ed8e600a592d51ba97167",
+  "changed_paths_relative_to_rewritten_ce2014_base": [
+    {
+      "path": "docs/CE-REVIEW-CLOSURE-2021-20261021.md",
+      "status": "added"
+    },
+    {
+      "path": "review-evidence/ce2021-clean-packaging-result.json",
+      "status": "added"
+    },
+    {
+      "path": "tools/package_ce2021_github.py",
+      "status": "added"
+    }
+  ],
+  "report": {
+    "path": "docs/CE-REVIEW-CLOSURE-2021-20261021.md",
+    "git_blob_sha1": "09b78639392c9c5a0515d62c2995ccf6759bb598",
+    "tree_git_blob_sha1": "09b78639392c9c5a0515d62c2995ccf6759bb598",
+    "sha256": "a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722",
+    "attachment_identical_to_branch_report": true,
+    "attachment_sha256": "a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722"
+  },
+  "source_identity": [
+    {
+      "path": "addons/plugin.video.bobbi/lib/gui/source_select.py",
+      "bytes": 58252,
+      "git_blob_sha1": "75709649cba63d2800593f3ed4414f24577157ef",
+      "tree_git_blob_sha1": "75709649cba63d2800593f3ed4414f24577157ef",
+      "sha256": "3195afffe966aef4ba302ff0663a4e1b1e4c4a31bce46ad71634d1716a14b222",
+      "matches_current_tree": true,
+      "byte_identical_to_prior_ce2014_review_snapshot": true,
+      "independently_refetched_at_fixed_head": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/gui/source_select.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "bytes": 132296,
+      "git_blob_sha1": "ad17c8b8c1d84fbc07b52376632b05558c703733",
+      "tree_git_blob_sha1": "ad17c8b8c1d84fbc07b52376632b05558c703733",
+      "sha256": "dfee971410d5d2096da2cff89a56f2ad24cb3e44c4a6bd9c7c60a371ea506a00",
+      "matches_current_tree": true,
+      "byte_identical_to_prior_ce2014_review_snapshot": true,
+      "independently_refetched_at_fixed_head": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/native_player.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py",
+      "bytes": 10917,
+      "git_blob_sha1": "ba40a13c099823537748c5fa75b930d0aad3d102",
+      "tree_git_blob_sha1": "ba40a13c099823537748c5fa75b930d0aad3d102",
+      "sha256": "b3af151fdec93ec28bed5410c5175c8e76cd2e23b25322290c9c412721b3815f",
+      "matches_current_tree": true,
+      "byte_identical_to_prior_ce2014_review_snapshot": true,
+      "independently_refetched_at_fixed_head": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py",
+      "bytes": 14693,
+      "git_blob_sha1": "b7c534105ac2fcff12f417e3293d8daccc982848",
+      "tree_git_blob_sha1": "b7c534105ac2fcff12f417e3293d8daccc982848",
+      "sha256": "6bad433d5ff7e02cc872f9674eba3b9016a736ffacd99da6d67abeb9138d7e99",
+      "matches_current_tree": true,
+      "byte_identical_to_prior_ce2014_review_snapshot": true,
+      "independently_refetched_at_fixed_head": false,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py"
+    },
+    {
+      "path": "tests/private_baseline/test_source_incremental_ui.py",
+      "bytes": 4687,
+      "git_blob_sha1": "c965e322da47dc378d2ca23fb0b437ae5241a5f3",
+      "tree_git_blob_sha1": "c965e322da47dc378d2ca23fb0b437ae5241a5f3",
+      "sha256": "ce07334e6aafdf87c2430027f1287cc9a57be83f88da04fa3603e9da39f079d4",
+      "matches_current_tree": true,
+      "byte_identical_to_prior_ce2014_review_snapshot": true,
+      "independently_refetched_at_fixed_head": false,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tests/private_baseline/test_source_incremental_ui.py"
+    },
+    {
+      "path": "tools/ce_ui_smoke_remote.py",
+      "bytes": 8577,
+      "git_blob_sha1": "775bf535add302f47435da1de0c29f513b3780ee",
+      "tree_git_blob_sha1": "775bf535add302f47435da1de0c29f513b3780ee",
+      "sha256": "f0b0a698885fe2cae9ce70d0052e7bbe6aa333241813ad2a2ba88c41d4020566",
+      "matches_current_tree": true,
+      "byte_identical_to_prior_ce2014_review_snapshot": true,
+      "independently_refetched_at_fixed_head": false,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/ce_ui_smoke_remote.py"
+    },
+    {
+      "path": "tools/ce_standard_real_remote.py",
+      "bytes": 8714,
+      "git_blob_sha1": "b27946f212d00fec82e602fea61932fa916ce1f8",
+      "tree_git_blob_sha1": "b27946f212d00fec82e602fea61932fa916ce1f8",
+      "sha256": "0e57ed9a9bc4dc408a2b80637a9377f2844515c68fd96cc0ea666c7189469f84",
+      "matches_current_tree": true,
+      "byte_identical_to_prior_ce2014_review_snapshot": true,
+      "independently_refetched_at_fixed_head": false,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/ce_standard_real_remote.py"
+    }
+  ],
+  "independent_replays": [
+    {
+      "script": "checks/reproduce_native_list_focus.py",
+      "original_script_path": "pr3-ui/reproduce_native_list_focus.py",
+      "script_sha256": "e8dc54ada3dcc2a145798e767388f11fdec66a84f271a3319360b5cbc133aac5",
+      "adapter_diff": "none; exact previous independent script reused because target branch sources are unchanged",
+      "command_run": "PYTHONPATH=/workspace/scratch/609fe9af5a22/review-deps python -B pr3-ui/reproduce_native_list_focus.py --repo /workspace/scratch/609fe9af5a22/ce2021-review --output /workspace/scratch/609fe9af5a22/ce2021-playback/ui-current-head.json",
+      "result": "ui-current-head.json",
+      "result_sha256": "27431fd32becf614b023aa1c111504c5a518fbf406f657953b2e9a69d9ddf0ab",
+      "expected_process_exit_code": 1,
+      "count": 5,
+      "passed": 3,
+      "failed": 2,
+      "errors": 0,
+      "executed_source_identities": [
+        {
+          "path": "addons/plugin.video.bobbi/lib/gui/source_select.py",
+          "sha256": "3195afffe966aef4ba302ff0663a4e1b1e4c4a31bce46ad71634d1716a14b222",
+          "git_blob_sha1": "75709649cba63d2800593f3ed4414f24577157ef",
+          "matches_current_tree": true
+        },
+        {
+          "path": "addons/plugin.video.bobbi/lib/gui/base_window.py",
+          "sha256": "3b18d694019af52480250a6900618b3054278e598a79dd537e54257af4fc461e",
+          "git_blob_sha1": "14d15a02959b4e962a5e163b85bcc62bd81250b4",
+          "matches_current_tree": true
+        },
+        {
+          "path": "addons/script.module.bobbi.core/lib/bobbi_core/source_list_session.py",
+          "sha256": "e9fd838f8d44ab2708b93e81e747aeee83b3097213dfcd61eb3fda9b4e8ee47b",
+          "git_blob_sha1": "fc5fe8f8d25e85e423f3d5bdef351c7e05cea6cc",
+          "matches_current_tree": true
+        },
+        {
+          "path": "tests/private_baseline/conftest.py",
+          "sha256": "c179095655a76a206f662f2f6645f8041cd2e9a622b2aff2f9a0b916c9c95bfb",
+          "git_blob_sha1": "b4e958ebcb134275e59bd5f1b4acd11eabc65767",
+          "matches_current_tree": true
+        }
+      ]
+    },
+    {
+      "script": "checks/reproduce_native_monitor.py",
+      "original_script_path": "pr3-playback/reproduce_native_monitor.py",
+      "script_sha256": "c1e0017fe1e30fd86f9fab4180a442de2d2676cebb6cbc909c14c64b70a2fa35",
+      "adapter_diff": "none; exact previous independent script reused because target branch sources are unchanged",
+      "command_run": "PYTHONPATH=/workspace/scratch/609fe9af5a22/review-deps python -B pr3-playback/reproduce_native_monitor.py --repo /workspace/scratch/609fe9af5a22/ce2021-review --output /workspace/scratch/609fe9af5a22/ce2021-playback/native-current-head.json",
+      "result": "native-current-head.json",
+      "result_sha256": "bc3ed79918ebe0071c8b8058d4e622fd64f778f74c5068b90389349678c995ca",
+      "expected_process_exit_code": 1,
+      "count": 5,
+      "passed": 3,
+      "failed": 2,
+      "errors": 0,
+      "executed_source_identities": [
+        {
+          "path": "addons/plugin.video.bobbi/lib/native_player.py",
+          "sha256": "dfee971410d5d2096da2cff89a56f2ad24cb3e44c4a6bd9c7c60a371ea506a00",
+          "git_blob_sha1": "ad17c8b8c1d84fbc07b52376632b05558c703733",
+          "matches_current_tree": true
+        },
+        {
+          "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py",
+          "sha256": "b3af151fdec93ec28bed5410c5175c8e76cd2e23b25322290c9c412721b3815f",
+          "git_blob_sha1": "ba40a13c099823537748c5fa75b930d0aad3d102",
+          "matches_current_tree": true
+        },
+        {
+          "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py",
+          "sha256": "6bad433d5ff7e02cc872f9674eba3b9016a736ffacd99da6d67abeb9138d7e99",
+          "git_blob_sha1": "b7c534105ac2fcff12f417e3293d8daccc982848",
+          "matches_current_tree": true
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "count": 10,
+    "passed": 6,
+    "failed": 4,
+    "errors": 0
+  },
+  "scope_limits": [
+    "No production files edited",
+    "No device connected or changed",
+    "No release binaries unpacked by this playback reviewer",
+    "No claimed CE2021 fixed implementation obtained",
+    "Probe results apply to fixed Git head, not unseen signed artifacts",
+    "UI control and IPC/Kodi boundaries use explicit IO doubles, not a new live-device trial"
+  ]
+}

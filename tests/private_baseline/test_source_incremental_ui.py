@@ -47,7 +47,7 @@ def window(monkeypatch):
     return window
 
 
-def test_new_ranked_source_appends_without_reset_rebind_or_focus_scroll(window):
+def test_new_ranked_source_appends_without_reset_and_compensates_native_bind(window):
     a, b, c = [source(k) for k in 'abc']
     window.sources = [a, b]
     window.populate_sources_list()
@@ -60,11 +60,11 @@ def test_new_ranked_source_appends_without_reset_rebind_or_focus_scroll(window):
     assert window.display_list.items[:2] == old
     assert [s.guid for s in window.list_sources] == ['a', 'b', 'c']
     assert window.display_list.getSelectedItem() is old[1]
-    assert window.display_list.selects == 0
+    assert window.display_list.selects == 1
     assert [item.writes for item in old] == writes
     # Completion-only publication is a true no-op on native card fields.
     window.populate_sources_list(incremental=True)
-    assert window.display_list.resets == 1 and window.display_list.selects == 0
+    assert window.display_list.resets == 1 and window.display_list.selects == 1
     assert [item.writes for item in old] == writes
 
 
@@ -103,5 +103,5 @@ def test_quality_count_changes_in_place_without_resetting_tab_focus(window):
     window.populate_qualities_header()
     assert window.quality.items[:2] == old
     assert old[0].getLabel() == '全部 (2)'
-    assert window.quality.resets == 0 and window.quality.selects == 0
+    assert window.quality.resets == 0 and window.quality.selects == 2
     assert window.quality.getSelectedItem() is old[1]

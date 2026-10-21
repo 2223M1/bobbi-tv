@@ -1,0 +1,21 @@
+{
+  "configured_proxy": false,
+  "queries": [
+    {
+      "query": "Ping Pong the Animation",
+      "kind": "tv",
+      "year": 2014,
+      "results": [
+        {
+          "id": 60811,
+          "title": null,
+          "name": "Ping Pong the Animation",
+          "original_name": "ピンポン THE ANIMATION",
+          "original_title": null,
+          "release_date": null,
+          "first_air_date": "2014-04-11"
+        }
+      ]
+    }
+  ]
+}

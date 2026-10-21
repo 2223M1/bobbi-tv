@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "title": "Bobbi TV CE2021 clean independent review",
+  "reviewed_head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "reviewed_tree": "bbe592e62a7a6790c62725738b63dae9b9f9405a",
+  "created_at": "2026-10-21T01:37:42.597726+00:00",
+  "file_count_excluding_manifest_and_checksums": 35,
+  "excludes": [
+    "MANIFEST.json",
+    "SHA256SUMS.txt"
+  ],
+  "files": [
+    {
+      "path": "CE2021-REVIEW.zh-CN.md",
+      "bytes": 22699,
+      "sha256": "5e14597709dd02af4b29fe7d99b403de01268420c3a27f9f4a8c097757116de5"
+    },
+    {
+      "path": "CODEX-EXECUTION-PACK.zh-CN.md",
+      "bytes": 14865,
+      "sha256": "66e6cedace357a920973dbfd50b8d888a884ffe74c405ea701338c79eddd9529"
+    },
+    {
+      "path": "FINDINGS.json",
+      "bytes": 3739,
+      "sha256": "7caaf55c6b6ebdb05aa149281841b160755ba2726724b46235f94174256fb709"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 1904,
+      "sha256": "aef65d43dba925d6546cfdbdc9d06e5def067f384cdc3f694e61481c4ee827fb"
+    },
+    {
+      "path": "checks/README.md",
+      "bytes": 1837,
+      "sha256": "001a3bfeda865746dcfae2e3ea4cfa083abe18eaa5f13df7e46a975e20675416"
+    },
+    {
+      "path": "checks/reproduce_clean_entry_audit.py",
+      "bytes": 7014,
+      "sha256": "5581e059f80e91bd24e732b2164691045a01e4581db51cf6e6ac4aa7ff1fe6e7"
+    },
+    {
+      "path": "checks/reproduce_input_generation.py",
+      "bytes": 8510,
+      "sha256": "a9765e7968fbe24e6f5eb231ea720488515e5dceaf6590598e3d6264c49f74ec"
+    },
+    {
+      "path": "checks/reproduce_native_list_focus.py",
+      "bytes": 9601,
+      "sha256": "e8dc54ada3dcc2a145798e767388f11fdec66a84f271a3319360b5cbc133aac5"
+    },
+    {
+      "path": "checks/reproduce_native_monitor.py",
+      "bytes": 10661,
+      "sha256": "c1e0017fe1e30fd86f9fab4180a442de2d2676cebb6cbc909c14c64b70a2fa35"
+    },
+    {
+      "path": "evidence/FINAL-REMOTE-STATUS.json",
+      "bytes": 2139,
+      "sha256": "781b592c4bef301ea3f4c6686fb6283303ea1e019f00e03a6f0191e8339dc984"
+    },
+    {
+      "path": "evidence/GIT-TREE.json",
+      "bytes": 1452242,
+      "sha256": "32ad8eb1607d46bf2789ad5a9c313bf134a9c8cbb713a8289ecd86e7de98bcc1"
+    },
+    {
+      "path": "evidence/SOURCE-IDENTITY.json",
+      "bytes": 13852,
+      "sha256": "0e3da60b57ead551c9f1a90832ea0d2f365ae976b17a8480f72128557c2f247f"
+    },
+    {
+      "path": "evidence/TREE-DELTA-VS-CE2014.json",
+      "bytes": 7220,
+      "sha256": "8270abaef60ce450208dd87bb7e5defa2998bb07008ece6bf535568d44346647"
+    },
+    {
+      "path": "evidence/ci/CE2021-clean-CI.zip",
+      "bytes": 102202,
+      "sha256": "06312c59736013153a1a18058382adaced7d24ab9c22d05f162420580a528e45"
+    },
+    {
+      "path": "evidence/ci/CI-JUNIT-VERIFIED.json",
+      "bytes": 149241,
+      "sha256": "34e04a416ca7c4433b36b2a5472a98d24f3f327e0cc4ccb8012dfe5ca1171528"
+    },
+    {
+      "path": "evidence/ci/CI-METADATA.json",
+      "bytes": 3763,
+      "sha256": "8e62bf4caaa035c3779fde3bda789485d2d4da7421e656334fd2566e2ad36722"
+    },
+    {
+      "path": "evidence/ci/CI-SUMMARY.json",
+      "bytes": 68484,
+      "sha256": "e14bb52898d19f42e55b07fc8d3e6e55abeb6ea9ae03663ad3640364680075f9"
+    },
+    {
+      "path": "evidence/ci/ci.log",
+      "bytes": 138509,
+      "sha256": "f106a946bf727c08065b8081fd9f3225534d70d6d75ff199c9c36428a43b444e"
+    },
+    {
+      "path": "evidence/installer/CLEAN-ENTRY-AUDIT-CONTRACT.json",
+      "bytes": 2075,
+      "sha256": "88c969769541042ecec1c396bfa51f9f382891d16b6b8d450a0ba2395ee19345"
+    },
+    {
+      "path": "evidence/installer/INSTALLER-ASSESSMENT.json",
+      "bytes": 3892,
+      "sha256": "85e66fd325c0c4df5ed1dacda8e761a6839c958ae70232506de090430d885395"
+    },
+    {
+      "path": "evidence/installer/LIFECYCLE-SOURCE-IDENTITY.json",
+      "bytes": 5770,
+      "sha256": "d3fafe55452f7dc9cd98b0171c880656e4ecac38c762c32772e255f940dfc821"
+    },
+    {
+      "path": "evidence/installer/REPORTED-EVIDENCE-AVAILABILITY.json",
+      "bytes": 1213,
+      "sha256": "ce3136c224bdf73e1ea7bc99635eff91d6c3f409b231c2601f29765318cbd407"
+    },
+    {
+      "path": "evidence/packager/INPUT-GENERATION-RESULT.json",
+      "bytes": 2326,
+      "sha256": "8ade03e7b19b22c0c722e9981241b4539d2527667bf30afabed48bec23f79668"
+    },
+    {
+      "path": "evidence/playback/EVIDENCE-MATRIX.json",
+      "bytes": 3919,
+      "sha256": "d46e00f5453f66212e1f6eddd570c1fbfe28e92a90b21f706a4d0299b3b8dc86"
+    },
+    {
+      "path": "evidence/playback/SOURCE-PROVENANCE.json",
+      "bytes": 9851,
+      "sha256": "9dd5b6793dac26681798885873d2d70dcb32a056167e72af30c57f5fa3fb4cbc"
+    },
+    {
+      "path": "evidence/playback/native-current-head.json",
+      "bytes": 7264,
+      "sha256": "bc3ed79918ebe0071c8b8058d4e622fd64f778f74c5068b90389349678c995ca"
+    },
+    {
+      "path": "evidence/playback/ui-current-head.json",
+      "bytes": 3854,
+      "sha256": "27431fd32becf614b023aa1c111504c5a518fbf406f657953b2e9a69d9ddf0ab"
+    },
+    {
+      "path": "evidence/release/ASSET-METADATA-COMPARISON.json",
+      "bytes": 2517,
+      "sha256": "fdb5e9c6db0b03a23d3b9d27c8e3b7bb9c1bd9f148fa7d615c7bd6ae219bece3"
+    },
+    {
+      "path": "evidence/release/RELEASE-FINDINGS.json",
+      "bytes": 4403,
+      "sha256": "ae7b1a7978548b81b6ef6aa164e3ece33c33f7309a74df18f49d8d69e0dce052"
+    },
+    {
+      "path": "evidence/release/SOURCE-PROVENANCE.json",
+      "bytes": 3492,
+      "sha256": "ad6414a2093dcbe9df47af4105acf0af0b5113123f834a3cb3e39ce86f82a8f2"
+    },
+    {
+      "path": "evidence/release/packaging-result.json",
+      "bytes": 968,
+      "sha256": "b3241c8ececaea66005b0159affecd9ad76e4089494977b10ecd6e3f0002435a"
+    },
+    {
+      "path": "reviews/INSTALLER-REVIEW.zh-CN.md",
+      "bytes": 13999,
+      "sha256": "a37b21b7a25b649fd8b6b271d346b4c894fddde6776c3b7794123c9c9466bcc8"
+    },
+    {
+      "path": "reviews/NEXT-PLAYBACK-GUIDANCE.zh-CN.md",
+      "bytes": 11257,
+      "sha256": "22ab48718592c7c93dec2e85c3d312f31a086ea14102fe13f648ed72b7d114fb"
+    },
+    {
+      "path": "reviews/PLAYBACK-UI-REVIEW.zh-CN.md",
+      "bytes": 11115,
+      "sha256": "86c230bdf3a85bb67a7c2816e474b3aa4e6b1918cdac0ea3c6b5ccbfd9028be4"
+    },
+    {
+      "path": "reviews/RELEASE-REVIEW.zh-CN.md",
+      "bytes": 16947,
+      "sha256": "797d16635712b34cb1530cabd7740bd5e5673a455cfffabfbc84d1ec1aeb831e"
+    }
+  ]
+}

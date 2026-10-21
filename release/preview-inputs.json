@@ -2,11 +2,9 @@
   "schema": 1,
   "components": {
     "script.module.bobbi.platform": [
-      "LICENSE",
       "addon.xml",
       "lib/bobbi_platform/__init__.py",
       "lib/bobbi_platform/_vendor/__init__.py",
-      "lib/bobbi_platform/_vendor/segno/LICENSE",
       "lib/bobbi_platform/_vendor/segno/__init__.py",
       "lib/bobbi_platform/_vendor/segno/consts.py",
       "lib/bobbi_platform/_vendor/segno/encoder.py",
@@ -39,6 +37,7 @@
       "lib/bobbi_platform/signatures.py",
       "lib/bobbi_platform/standard_session.py",
       "lib/bobbi_platform/standard_subtitle_ui.py",
+      "lib/bobbi_platform/stop_monitor.py",
       "lib/bobbi_platform/torrserver.py",
       "lib/bobbi_platform/transport_preferences.py",
       "lib/bobbi_platform/updates.py",
@@ -46,24 +45,19 @@
       "resources/skins/Default/1080i/account-login.xml"
     ],
     "script.bobbi.setup": [
-      "LICENSE",
       "addon.xml",
       "default.py",
       "metadata_credits.py",
-      "resources/TMDB-ATTRIBUTION.md",
       "resources/skins/Default/1080i/tmdb-attribution.xml",
       "resources/tmdb-logo.png",
       "resources/tmdb-logo.svg",
       "resources/white.png"
     ],
     "plugin.video.bobbi.library": [
-      "LICENSE",
       "addon.xml",
       "default.py"
     ],
     "script.module.bobbi.core": [
-      "LICENSE",
-      "LICENSES.md",
       "addon.xml",
       "lib/bobbi_core/__init__.py",
       "lib/bobbi_core/account_readiness.py",
@@ -152,6 +146,7 @@
       "lib/bobbi_core/subtitle_binding.py",
       "lib/bobbi_core/subtitle_candidates.py",
       "lib/bobbi_core/subtitle_cues.py",
+      "lib/bobbi_core/subtitle_episode.py",
       "lib/bobbi_core/subtitle_export.py",
       "lib/bobbi_core/subtitle_font_preparation.py",
       "lib/bobbi_core/subtitle_io.py",
@@ -176,7 +171,6 @@
       "resources/cinema/episode-mappings.json"
     ],
     "script.module.requests": [
-      "LICENSE.txt",
       "addon.xml",
       "lib/requests/__init__.py",
       "lib/requests/__version__.py",
@@ -199,7 +193,6 @@
       "resources/icon.png"
     ],
     "script.module.certifi": [
-      "LICENSE.txt",
       "addon.xml",
       "lib/certifi/__init__.py",
       "lib/certifi/__main__.py",
@@ -208,7 +201,6 @@
       "resources/icon.png"
     ],
     "script.module.chardet": [
-      "LICENSE.txt",
       "addon.xml",
       "lib/chardet/__init__.py",
       "lib/chardet/big5freq.py",
@@ -261,7 +253,6 @@
       "resources/icon.png"
     ],
     "script.module.idna": [
-      "LICENSE.txt",
       "addon.xml",
       "lib/idna/__init__.py",
       "lib/idna/codec.py",
@@ -274,7 +265,6 @@
       "resources/icon.png"
     ],
     "script.module.urllib3": [
-      "LICENSE.txt",
       "addon.xml",
       "lib/urllib3/__init__.py",
       "lib/urllib3/_base_connection.py",

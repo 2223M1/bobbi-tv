@@ -1,0 +1,34 @@
+    def close(self):
+        if self.stopping.is_set():
+            return
+        self.stopping.set()
+        self.idle = False
+        # Stop admission first, but keep ownership while dependent services
+        # close. A missing runtime.json alone is not permission to replace code.
+        self.runtime.close(release_lease=False)
+        try:
+            if self.images is not None:
+                self.images.close()
+            self.unsubscribe()
+            if self.preparation is not None:
+                self.preparation.close()
+            if self.streams is not None:
+                self.streams.close()
+            with self.engine_lock:
+                engine, self.engine = self.engine, None
+            if engine is not None:
+                engine.close()
+            if self.engine_worker is not None:
+                self.engine_worker.join()
+            if self.refresh_worker is not None:
+                self.refresh_worker.join()
+            self.owner = self.preparation = None
+            while True:
+                try:
+                    job = self.calls.get_nowait()
+                except Empty:
+                    break
+                job.error = True
+                job.done.set()
+        finally:
+            self.runtime.lease.close()

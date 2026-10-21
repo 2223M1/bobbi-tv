@@ -1,0 +1,25 @@
+{
+  "scope": "Delivery runner error handling only; no product or device test",
+  "count": 3,
+  "passed": 3,
+  "tests": [
+    {
+      "id": "valid_exit2",
+      "passed": true,
+      "errors_correctly_classified": 1,
+      "junit_cases": 2
+    },
+    {
+      "id": "missing_receipt",
+      "passed": true,
+      "errors_correctly_classified": 1,
+      "junit_cases": 1
+    },
+    {
+      "id": "shutdown",
+      "passed": true,
+      "errors_correctly_classified": 1,
+      "junit_cases": 1
+    }
+  ]
+}

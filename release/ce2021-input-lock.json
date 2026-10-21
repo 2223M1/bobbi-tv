@@ -1,0 +1,162 @@
+{
+  "sequence": 2026102021,
+  "components": [
+    {
+      "file": "plugin.video.bobbi/plugin.video.bobbi-0.1.15.zip",
+      "id": "plugin.video.bobbi",
+      "sha256": "bb0dbb0002d17857652e11a82c5574e2319fbeed038ba7648970ef3447034c8a",
+      "size": 3523893,
+      "version": "0.1.15"
+    },
+    {
+      "file": "plugin.video.bobbi.library/plugin.video.bobbi.library-0.1.0.zip",
+      "id": "plugin.video.bobbi.library",
+      "sha256": "94703f7d479559e34eb9de5685b39daa90bf5350cb9f84c17d3e5b9ad8b04d3e",
+      "size": 15366,
+      "version": "0.1.0"
+    },
+    {
+      "file": "plugin.video.bobbi.torrent/plugin.video.bobbi.torrent-0.1.3.zip",
+      "id": "plugin.video.bobbi.torrent",
+      "sha256": "6eeedbc95431d8632a3d8db42a07410348fcb17a4ac8c472e465d32623728042",
+      "size": 20658,
+      "version": "0.1.3"
+    },
+    {
+      "file": "repository.bobbi/repository.bobbi-0.1.0.zip",
+      "id": "repository.bobbi",
+      "sha256": "a3fe0f7f1d9f425251989ab38c1a751ca4e6d1da824b85619e15206ec0484f65",
+      "size": 13228,
+      "version": "0.1.0"
+    },
+    {
+      "file": "resource.uisounds.bobbi-modern/resource.uisounds.bobbi-modern-2026.9.6.0.zip",
+      "id": "resource.uisounds.bobbi-modern",
+      "sha256": "935717dd8ce3bb8bc67cb656f44046b6c255efea9cc20ff01bc35e31e536adcc",
+      "size": 1016265,
+      "version": "2026.9.6.0"
+    },
+    {
+      "file": "script.bobbi.opensubtitles/script.bobbi.opensubtitles-0.1.1.zip",
+      "id": "script.bobbi.opensubtitles",
+      "sha256": "8ca2cafd9d6fa257e06238e84596009bc35875241d4fc537a09f7bc2f18e0ed7",
+      "size": 23315,
+      "version": "0.1.1"
+    },
+    {
+      "file": "script.bobbi.setup/script.bobbi.setup-0.1.4.zip",
+      "id": "script.bobbi.setup",
+      "sha256": "ef7a2ec9705216693a4c6328351ef0cb77e68efa09b4a44f3fe998632821474d",
+      "size": 25971,
+      "version": "0.1.4"
+    },
+    {
+      "file": "script.bobbi.start/script.bobbi.start-0.2.13.zip",
+      "id": "script.bobbi.start",
+      "sha256": "c53d60073ab046b49df93e80293e4b5f63d3227f720a6639351b146d809b9817",
+      "size": 13457,
+      "version": "0.2.13"
+    },
+    {
+      "file": "script.module.bobbi.catalog/script.module.bobbi.catalog-0.1.1.zip",
+      "id": "script.module.bobbi.catalog",
+      "sha256": "24a81251531519bbc7bfe3ed5844ca62905fee1e3922f8182bb79e567c176281",
+      "size": 18862726,
+      "version": "0.1.1"
+    },
+    {
+      "file": "script.module.bobbi.core/script.module.bobbi.core-0.1.16.zip",
+      "id": "script.module.bobbi.core",
+      "sha256": "f4fa78440217dfcb89c9b86f439a6574144c8a2482d57da0254c20648766bd50",
+      "size": 376054,
+      "version": "0.1.16"
+    },
+    {
+      "file": "script.module.bobbi.mdsub/script.module.bobbi.mdsub-0.1.0.zip",
+      "id": "script.module.bobbi.mdsub",
+      "sha256": "89713072dcbcce9edbab374b48d76a05068f7ee60c551c043530556aa1f31165",
+      "size": 139168,
+      "version": "0.1.0"
+    },
+    {
+      "file": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.17.zip",
+      "id": "script.module.bobbi.platform",
+      "sha256": "4c47b10486356a08a1b964b14f4c716560cfa3b45c35b4e20b21aee287e7e135",
+      "size": 130206,
+      "version": "0.1.17"
+    },
+    {
+      "file": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.0.zip",
+      "id": "skin.bobbi.cinema",
+      "sha256": "e7035d063d757046bd2e02e311e85ad0a82feca2e14446c8ff9596f17f7321f5",
+      "size": 70853993,
+      "version": "0.1.0"
+    },
+    {
+      "file": "script.module.certifi/script.module.certifi-2023.5.7.zip",
+      "id": "script.module.certifi",
+      "sha256": "b8156feb551cd9b91664dd970cff834fa578a6edd9de6b224b1822ffa8b30cfc",
+      "size": 162543,
+      "version": "2023.5.7"
+    },
+    {
+      "file": "script.module.chardet/script.module.chardet-5.1.0.zip",
+      "id": "script.module.chardet",
+      "sha256": "ebaa864b640cc3764db2712a221d995fe5f8a23d74319ae8d51b84c791367a9c",
+      "size": 197392,
+      "version": "5.1.0"
+    },
+    {
+      "file": "script.module.idna/script.module.idna-3.10.0.zip",
+      "id": "script.module.idna",
+      "sha256": "694e66a5c707ce7246240c8c4547510c483e9ddf803edc796e82641534375eb7",
+      "size": 69486,
+      "version": "3.10.0"
+    },
+    {
+      "file": "script.module.infotagger/script.module.infotagger-0.1.0.zip",
+      "id": "script.module.infotagger",
+      "sha256": "5bc000928c4bfa1abed370fbe719519e6631c3728e8f8b46e29800406b220cab",
+      "size": 35416,
+      "version": "0.1.0"
+    },
+    {
+      "file": "script.module.jurialmunkey/script.module.jurialmunkey-0.2.35.zip",
+      "id": "script.module.jurialmunkey",
+      "sha256": "fc59c124bffce33af5c3c20dc6fb744a407c43c4c07ae7a951e916a88ed402a8",
+      "size": 67959,
+      "version": "0.2.35"
+    },
+    {
+      "file": "script.module.requests/script.module.requests-2.31.0.zip",
+      "id": "script.module.requests",
+      "sha256": "823349a246037212c99a637fa81d7554547c3a7d63fa5b7871e4bb29fb959aa3",
+      "size": 67446,
+      "version": "2.31.0"
+    },
+    {
+      "file": "script.module.routing/script.module.routing-0.2.3+matrix.1.zip",
+      "id": "script.module.routing",
+      "sha256": "f221f56121b94436a2578e3929a7bc1cb533df679cf6cdef3f12a4f29469fcde",
+      "size": 25358,
+      "version": "0.2.3+matrix.1"
+    },
+    {
+      "file": "script.module.urllib3/script.module.urllib3-2.2.3.zip",
+      "id": "script.module.urllib3",
+      "sha256": "8d1c893d9e5518e2a5ea45e5fda92d545a7b268db083ffc83598f1ab5def7219",
+      "size": 130231,
+      "version": "2.2.3"
+    },
+    {
+      "file": "script.skinvariables/script.skinvariables-2.2.9.zip",
+      "id": "script.skinvariables",
+      "sha256": "51187dec1f45547a1ca29f55578a36cc6d4b4eca13125a490e691e4c4c56d098",
+      "size": 236094,
+      "version": "2.2.9"
+    }
+  ],
+  "outer_sha256": "b91725bcf656750020823d1e3e318ff1e0fa65a66fc0df7c942a87fc9e6a0eb1",
+  "payload_sha256": "65af191738523f337ce92b6c3810a6af5c117b071153b6323420d7034732835f",
+  "entry_sha256": "993de4a82a674b2041594f34e48ee45c45b048aebdb8524b59b353340d44b2d4"
+}

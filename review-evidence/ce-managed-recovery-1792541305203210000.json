@@ -1,0 +1,44 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792541289444642100",
+  "result": {
+    "scope": "real CE native managed recovery and quiesce; no media commands",
+    "events": [
+      "before_initial_snapshot"
+    ],
+    "enabled_before": [
+      "plugin.video.bobbi",
+      "plugin.video.bobbi.library",
+      "plugin.video.bobbi.torrent",
+      "repository.bobbi",
+      "resource.uisounds.bobbi-modern",
+      "script.bobbi.opensubtitles",
+      "script.bobbi.setup",
+      "script.module.bobbi.catalog",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.platform",
+      "skin.bobbi.cinema"
+    ],
+    "skin_before": "skin.bobbi.cinema",
+    "initial_owner": {
+      "adapter": "native",
+      "boot_id": "7e343e3a678d457e875dd5bd3de964ed"
+    },
+    "passed": false,
+    "error": "RuntimeError",
+    "code": "OLD_SERVICE_DID_NOT_STOP",
+    "frames": [
+      {
+        "file": "trial.py",
+        "function": "<module>",
+        "line": 48
+      }
+    ],
+    "restored_at_exit": true
+  },
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "exit_code": 1,
+  "pending": false,
+  "diagnostic_present": false
+}

@@ -1,0 +1,17 @@
+{
+  "exit_code": 0,
+  "result": {
+    "state": "status",
+    "players": [],
+    "application": {
+      "version": {
+        "major": 21,
+        "minor": 3,
+        "revision": "e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+        "tag": "stable"
+      }
+    },
+    "host_file": true
+  },
+  "diagnostic_present": false
+}

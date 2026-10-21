@@ -13,9 +13,12 @@ from lib.utils.kodi.utils import (
 
 
 class WidgetRefreshService:
+    def __init__(self, monitor=None):
+        self.monitor = monitor
+
     def run(self):
         kodilog("WidgetRefresh Service Starting...", level=xbmc.LOGINFO)
-        monitor = xbmc.Monitor()
+        monitor = self.monitor or xbmc.Monitor()
         player = xbmc.Player()
         wait_for_abort = monitor.waitForAbort
 

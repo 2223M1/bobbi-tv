@@ -1,0 +1,106 @@
+{
+  "retrieved_utc": "2026-10-20 17:15:34 UTC",
+  "pr": {
+    "url": "https://github.com/2223M1/bobbi-tv/pull/3",
+    "title": "CE2014: 恢复/片尾收口、选源防闪与统一弹窗",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "base": "ee65742bfcbaf08831f70306faed11bd1f8d6cc6",
+    "head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+    "merge_commit": "f6adafd1fd5a39b58853f0d6f0d43dd758ba3062",
+    "changed_files": 230,
+    "additions": 18039,
+    "deletions": 204,
+    "updated_at": "2026-10-20T15:32:53Z"
+  },
+  "main": {
+    "sha": "ee65742bfcbaf08831f70306faed11bd1f8d6cc6"
+  },
+  "checks": {
+    "total": 2,
+    "runs": [
+      {
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+        "url": "https://github.com/2223M1/bobbi-tv/actions/runs/39448461338/job/118716561684"
+      },
+      {
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+        "url": "https://github.com/2223M1/bobbi-tv/actions/runs/39448450410/job/118716524277"
+      }
+    ]
+  },
+  "release": {
+    "id": 418559049,
+    "url": "https://github.com/2223M1/bobbi-tv/releases/tag/untagged-7e586cd5524fbc914b32",
+    "tag": "ce-general-2026102014",
+    "draft": true,
+    "prerelease": false,
+    "target": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+    "published_at": null,
+    "assets": [
+      {
+        "name": "bobbi-private-2026102014-coreelec.bobbi-update.zip",
+        "bytes": 96011740,
+        "digest": "sha256:1658413e9d037beccfdf50161d2d4b9e959f530fb2dcc2d8ac4e9c102f3187a7",
+        "url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/bobbi-private-2026102014-coreelec.bobbi-update.zip"
+      },
+      {
+        "name": "BobbiTV-CE2014-c8de17a-source.zip",
+        "bytes": 214280820,
+        "digest": "sha256:206aee7a5becb8ee281a4f305d29e0a64d2e9068859f27063a375250f023af2d",
+        "url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/BobbiTV-CE2014-c8de17a-source.zip"
+      },
+      {
+        "name": "BobbiTV-CE2014-c8de17a.diff",
+        "bytes": 16216757,
+        "digest": "sha256:c298c5b9cd5186f473b45b8dba9f73e3d10f591dde51698f00a578dbb3196f83",
+        "url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/BobbiTV-CE2014-c8de17a.diff"
+      },
+      {
+        "name": "CE2014-CI-raw.zip",
+        "bytes": 91191,
+        "digest": "sha256:48167fb52201d9d3c35d64096f225c8ab0e195fd2020c1591ffa27c4cdcd9588",
+        "url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/CE2014-CI-raw.zip"
+      },
+      {
+        "name": "CE2014-HANDOFF.md",
+        "bytes": 3083,
+        "digest": "sha256:bb550f3735c920dfa7099a05a863b77f97ea4ebd4303e6ea885985bbdf69a9b8",
+        "url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/CE2014-HANDOFF.md"
+      },
+      {
+        "name": "script.bobbi.start-0.2.6-ce2014.zip",
+        "bytes": 96178248,
+        "digest": "sha256:59e133cf78faf6448475752c8e040dcdaf6146c4cd17184378b88db73aadd15d",
+        "url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/script.bobbi.start-0.2.6-ce2014.zip"
+      }
+    ]
+  },
+  "ci": [
+    {
+      "id": 39448450410,
+      "url": "https://github.com/2223M1/bobbi-tv/actions/runs/39448450410",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+      "updated_at": "2026-10-20T15:29:09Z"
+    },
+    {
+      "id": 39448461338,
+      "url": "https://github.com/2223M1/bobbi-tv/actions/runs/39448461338",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+      "updated_at": "2026-10-20T15:29:55Z"
+    }
+  ]
+}

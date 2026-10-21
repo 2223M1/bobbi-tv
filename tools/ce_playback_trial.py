@@ -36,7 +36,7 @@ def result_exit_code(result, remote_code=0, diagnostic=False, operation=None):
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('work',choices=('coherence','odd_taxi','wild_tales','girls_last_tour','burning','flip_flappers',
+    parser.add_argument('work',choices=('grand_budapest','further_universe','ping_pong','amelie','barakamon','coherence','odd_taxi','wild_tales','girls_last_tour','burning','flip_flappers',
                                       'lives_of_others','tokyo_godfathers','haibane_renmei','man_from_earth','lain',
                                       'twelve_angry_men','tatami_galaxy','rashomon','cowboy_bebop'))
     parser.add_argument('operation',choices=('start','cards','select','picker_wait','wait','inspect','observe','stop','cancel',

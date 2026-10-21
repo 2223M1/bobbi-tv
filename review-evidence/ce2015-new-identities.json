@@ -1,0 +1,46 @@
+{
+  "configured_proxy": false,
+  "queries": [
+    {
+      "query": "Amelie",
+      "kind": "movie",
+      "year": 2001,
+      "results": [
+        {
+          "id": 194,
+          "title": "Amélie",
+          "name": null,
+          "original_name": null,
+          "original_title": "Le Fabuleux Destin d'Amélie Poulain",
+          "release_date": "2001-04-25",
+          "first_air_date": null
+        },
+        {
+          "id": 1602539,
+          "title": "Inside the Making of - Amélie",
+          "name": null,
+          "original_name": null,
+          "original_title": "Inside the Making of - Amélie",
+          "release_date": "2001-04-25",
+          "first_air_date": null
+        }
+      ]
+    },
+    {
+      "query": "Barakamon",
+      "kind": "tv",
+      "year": 2014,
+      "results": [
+        {
+          "id": 67048,
+          "title": null,
+          "name": "Barakamon",
+          "original_name": "ばらかもん",
+          "original_title": null,
+          "release_date": null,
+          "first_air_date": "2014-07-05"
+        }
+      ]
+    }
+  ]
+}

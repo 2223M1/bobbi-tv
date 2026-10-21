@@ -1,0 +1,503 @@
+{
+  "release": {
+    "url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/418559049",
+    "assets_url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/418559049/assets",
+    "upload_url": "https://uploads.github.com/repos/2223M1/bobbi-tv/releases/418559049/assets{?name,label}",
+    "html_url": "https://github.com/2223M1/bobbi-tv/releases/tag/untagged-7e586cd5524fbc914b32",
+    "id": 418559049,
+    "author": {
+      "login": "2223M1",
+      "id": 104559061,
+      "node_id": "U_kgDOBjtx1Q",
+      "avatar_url": "https://avatars.githubusercontent.com/u/104559061?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/2223M1",
+      "html_url": "https://github.com/2223M1",
+      "followers_url": "https://api.github.com/users/2223M1/followers",
+      "following_url": "https://api.github.com/users/2223M1/following{/other_user}",
+      "gists_url": "https://api.github.com/users/2223M1/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/2223M1/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/2223M1/subscriptions",
+      "organizations_url": "https://api.github.com/users/2223M1/orgs",
+      "repos_url": "https://api.github.com/users/2223M1/repos",
+      "events_url": "https://api.github.com/users/2223M1/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/2223M1/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "node_id": "RE_kwDOVO_jIs4Y8rRJ",
+    "tag_name": "ce-general-2026102014",
+    "target_commitish": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+    "name": "CE2014 私库审查候选：恢复、片尾与选源防闪",
+    "draft": true,
+    "immutable": false,
+    "prerelease": false,
+    "created_at": "2026-10-20T15:28:10Z",
+    "updated_at": "2026-10-20T15:32:13Z",
+    "published_at": null,
+    "assets": [
+      {
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/assets/659703145",
+        "id": 659703145,
+        "node_id": "RA_kwDOVO_jIs4nUkVp",
+        "name": "bobbi-private-2026102014-coreelec.bobbi-update.zip",
+        "label": "",
+        "uploader": {
+          "login": "2223M1",
+          "id": 104559061,
+          "node_id": "U_kgDOBjtx1Q",
+          "avatar_url": "https://avatars.githubusercontent.com/u/104559061?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/2223M1",
+          "html_url": "https://github.com/2223M1",
+          "followers_url": "https://api.github.com/users/2223M1/followers",
+          "following_url": "https://api.github.com/users/2223M1/following{/other_user}",
+          "gists_url": "https://api.github.com/users/2223M1/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/2223M1/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/2223M1/subscriptions",
+          "organizations_url": "https://api.github.com/users/2223M1/orgs",
+          "repos_url": "https://api.github.com/users/2223M1/repos",
+          "events_url": "https://api.github.com/users/2223M1/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/2223M1/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "size": 96011740,
+        "digest": "sha256:1658413e9d037beccfdf50161d2d4b9e959f530fb2dcc2d8ac4e9c102f3187a7",
+        "download_count": 0,
+        "created_at": "2026-10-20T15:28:12Z",
+        "updated_at": "2026-10-20T15:29:49Z",
+        "browser_download_url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/bobbi-private-2026102014-coreelec.bobbi-update.zip"
+      },
+      {
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/assets/659703136",
+        "id": 659703136,
+        "node_id": "RA_kwDOVO_jIs4nUkVg",
+        "name": "BobbiTV-CE2014-c8de17a-source.zip",
+        "label": "",
+        "uploader": {
+          "login": "2223M1",
+          "id": 104559061,
+          "node_id": "U_kgDOBjtx1Q",
+          "avatar_url": "https://avatars.githubusercontent.com/u/104559061?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/2223M1",
+          "html_url": "https://github.com/2223M1",
+          "followers_url": "https://api.github.com/users/2223M1/followers",
+          "following_url": "https://api.github.com/users/2223M1/following{/other_user}",
+          "gists_url": "https://api.github.com/users/2223M1/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/2223M1/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/2223M1/subscriptions",
+          "organizations_url": "https://api.github.com/users/2223M1/orgs",
+          "repos_url": "https://api.github.com/users/2223M1/repos",
+          "events_url": "https://api.github.com/users/2223M1/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/2223M1/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "size": 214280820,
+        "digest": "sha256:206aee7a5becb8ee281a4f305d29e0a64d2e9068859f27063a375250f023af2d",
+        "download_count": 0,
+        "created_at": "2026-10-20T15:28:11Z",
+        "updated_at": "2026-10-20T15:30:55Z",
+        "browser_download_url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/BobbiTV-CE2014-c8de17a-source.zip"
+      },
+      {
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/assets/659703141",
+        "id": 659703141,
+        "node_id": "RA_kwDOVO_jIs4nUkVl",
+        "name": "BobbiTV-CE2014-c8de17a.diff",
+        "label": "",
+        "uploader": {
+          "login": "2223M1",
+          "id": 104559061,
+          "node_id": "U_kgDOBjtx1Q",
+          "avatar_url": "https://avatars.githubusercontent.com/u/104559061?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/2223M1",
+          "html_url": "https://github.com/2223M1",
+          "followers_url": "https://api.github.com/users/2223M1/followers",
+          "following_url": "https://api.github.com/users/2223M1/following{/other_user}",
+          "gists_url": "https://api.github.com/users/2223M1/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/2223M1/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/2223M1/subscriptions",
+          "organizations_url": "https://api.github.com/users/2223M1/orgs",
+          "repos_url": "https://api.github.com/users/2223M1/repos",
+          "events_url": "https://api.github.com/users/2223M1/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/2223M1/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 16216757,
+        "digest": "sha256:c298c5b9cd5186f473b45b8dba9f73e3d10f591dde51698f00a578dbb3196f83",
+        "download_count": 0,
+        "created_at": "2026-10-20T15:28:11Z",
+        "updated_at": "2026-10-20T15:28:32Z",
+        "browser_download_url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/BobbiTV-CE2014-c8de17a.diff"
+      },
+      {
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/assets/659714674",
+        "id": 659714674,
+        "node_id": "RA_kwDOVO_jIs4nUnJy",
+        "name": "CE2014-CI-raw.zip",
+        "label": "",
+        "uploader": {
+          "login": "2223M1",
+          "id": 104559061,
+          "node_id": "U_kgDOBjtx1Q",
+          "avatar_url": "https://avatars.githubusercontent.com/u/104559061?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/2223M1",
+          "html_url": "https://github.com/2223M1",
+          "followers_url": "https://api.github.com/users/2223M1/followers",
+          "following_url": "https://api.github.com/users/2223M1/following{/other_user}",
+          "gists_url": "https://api.github.com/users/2223M1/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/2223M1/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/2223M1/subscriptions",
+          "organizations_url": "https://api.github.com/users/2223M1/orgs",
+          "repos_url": "https://api.github.com/users/2223M1/repos",
+          "events_url": "https://api.github.com/users/2223M1/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/2223M1/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "size": 91191,
+        "digest": "sha256:48167fb52201d9d3c35d64096f225c8ab0e195fd2020c1591ffa27c4cdcd9588",
+        "download_count": 0,
+        "created_at": "2026-10-20T15:32:12Z",
+        "updated_at": "2026-10-20T15:32:13Z",
+        "browser_download_url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/CE2014-CI-raw.zip"
+      },
+      {
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/assets/659714691",
+        "id": 659714691,
+        "node_id": "RA_kwDOVO_jIs4nUnKD",
+        "name": "CE2014-HANDOFF.md",
+        "label": "",
+        "uploader": {
+          "login": "2223M1",
+          "id": 104559061,
+          "node_id": "U_kgDOBjtx1Q",
+          "avatar_url": "https://avatars.githubusercontent.com/u/104559061?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/2223M1",
+          "html_url": "https://github.com/2223M1",
+          "followers_url": "https://api.github.com/users/2223M1/followers",
+          "following_url": "https://api.github.com/users/2223M1/following{/other_user}",
+          "gists_url": "https://api.github.com/users/2223M1/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/2223M1/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/2223M1/subscriptions",
+          "organizations_url": "https://api.github.com/users/2223M1/orgs",
+          "repos_url": "https://api.github.com/users/2223M1/repos",
+          "events_url": "https://api.github.com/users/2223M1/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/2223M1/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "content_type": "application/octet-stream",
+        "state": "uploaded",
+        "size": 3083,
+        "digest": "sha256:bb550f3735c920dfa7099a05a863b77f97ea4ebd4303e6ea885985bbdf69a9b8",
+        "download_count": 0,
+        "created_at": "2026-10-20T15:32:12Z",
+        "updated_at": "2026-10-20T15:32:13Z",
+        "browser_download_url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/CE2014-HANDOFF.md"
+      },
+      {
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/releases/assets/659703151",
+        "id": 659703151,
+        "node_id": "RA_kwDOVO_jIs4nUkVv",
+        "name": "script.bobbi.start-0.2.6-ce2014.zip",
+        "label": "",
+        "uploader": {
+          "login": "2223M1",
+          "id": 104559061,
+          "node_id": "U_kgDOBjtx1Q",
+          "avatar_url": "https://avatars.githubusercontent.com/u/104559061?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/2223M1",
+          "html_url": "https://github.com/2223M1",
+          "followers_url": "https://api.github.com/users/2223M1/followers",
+          "following_url": "https://api.github.com/users/2223M1/following{/other_user}",
+          "gists_url": "https://api.github.com/users/2223M1/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/2223M1/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/2223M1/subscriptions",
+          "organizations_url": "https://api.github.com/users/2223M1/orgs",
+          "repos_url": "https://api.github.com/users/2223M1/repos",
+          "events_url": "https://api.github.com/users/2223M1/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/2223M1/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "content_type": "application/zip",
+        "state": "uploaded",
+        "size": 96178248,
+        "digest": "sha256:59e133cf78faf6448475752c8e040dcdaf6146c4cd17184378b88db73aadd15d",
+        "download_count": 0,
+        "created_at": "2026-10-20T15:28:12Z",
+        "updated_at": "2026-10-20T15:29:46Z",
+        "browser_download_url": "https://github.com/2223M1/bobbi-tv/releases/download/untagged-7e586cd5524fbc914b32/script.bobbi.start-0.2.6-ce2014.zip"
+      }
+    ],
+    "tarball_url": null,
+    "zipball_url": null,
+    "body": "# CE2014 私库 Web 审查交付\n\n仅私人候选，不公开、不自动合并、不宣称稳定发行。\n\n- PR：https://github.com/2223M1/bobbi-tv/pull/3\n- commit：`c8de17ae9dabbe0f37753e1751b1d88107311316`\n- tree：`cc12e00ccba0d7cb9a8b310306437e0e8ef84ae3`\n- 冻结基线：`ee65742bfcbaf08831f70306faed11bd1f8d6cc6`\n- 说明：源码内 `docs/CE-FAULT-CLOSURE-2014-20261020.md`\n- 实际差异：`BobbiTV-CE2014-c8de17a.diff`（含新增文件及原始失败证据）\n- 完整源码/原始结果/截图：`BobbiTV-CE2014-c8de17a-source.zip`\n- 新用户入口：`script.bobbi.start-0.2.6-ce2014.zip`，96,178,248 字节，\n  SHA256 `59e133cf78faf6448475752c8e040dcdaf6146c4cd17184378b88db73aadd15d`\n- 同代完整载荷：`bobbi-private-2026102014-coreelec.bobbi-update.zip`，96,011,740 字节，\n  SHA256 `1658413e9d037beccfdf50161d2d4b9e959f530fb2dcc2d8ac4e9c102f3187a7`\n\nCE2014已部署AM6B，当前无播放并回到首页。账号、观看数据、CD2/挂载/Yatse、VPS服务不动。\n新入口包含修复后的同代bootstrap；不以仅更新已安装platform代替修复入口。\n签名校验、fresh interpreter导入及篡改负例通过；两个source-check构建63个文件字节一致。\n\n## 已验证\n\nWeb契约18/18、旧契约15/15；本地主套1745通过/6项Windows符号链接权限跳过，\n隔离继承761通过、准备177通过。\n真实UI增量追加5个结果：reset=0、焦点命令=0、保留原ListItem；70次显示层采样旧卡片区域像素稳定。\n二维码、片尾、资料说明截图已人工查看；测试二维码为example.invalid，不含账号授权。\n用户自然片尾native/cinema均记录NATURAL_EOF，无同版下一集时正常退出，不换源。\n新动漫《星际牛仔》真实标准链第1集片尾自然结束→同版第2集，实际媒体进度11.198秒。\n该结果只认证生命周期/交接，不认证整部流畅或中文字幕。\n\n## 仍未解决或未认证\n\n《十二怒汉》原4K分享已被上游取消（4100010），不可通过播放器修复；\n《罗生门》起播验收异常（后段正常不可冲销）；此前《四叠半》《玲音》的起播/中文问题与\n《这个男人来自地球》缓冲仍开放。真实clean ZIP/其他CE硬件/现场音画/第二真实账号未认证。\n不能把反例全过写成所有观看问题已解决。\n\n## CI\n\n分支：https://github.com/2223M1/bobbi-tv/actions/runs/39448450410\n\nPR集成态：https://github.com/2223M1/bobbi-tv/actions/runs/39448461338\n\n两套均成功：主套1746通过/5项仅限Windows的测试跳过，继承761通过，准备177通过，\n63个source-check输出可重现。Linux补过本地跳过的6项symlink，Windows专用5项已在本地通过。\n\n分支实际checkout为上述c8de17a；PR实际checkout为\n`f6adafd1fd5a39b58853f0d6f0d43dd758ba3062`，两者tree均为\n`cc12e00ccba0d7cb9a8b310306437e0e8ef84ae3`。PR仍为草稿、未合并。\nCI为shallow checkout，日志parents字段为空；不能据此认为没有父提交。\n原始JUnit归档随 `CE2014-CI-raw.zip` 提供，GitHub原始日志链接如上。\n"
+  },
+  "push_jobs": {
+    "jobs": [
+      {
+        "id": 118716524277,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 39448450410,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Record actual checked-out commit (PR merge versus branch head)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements-test.txt",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Primary tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Isolated inherited Kodi harness",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Isolated preparation regression",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Source-only component build (no application key or signing secrets)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Verify a second private build is byte-identical",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Preserve test receipts (not installable packages)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          }
+        ]
+      }
+    ]
+  },
+  "pr_jobs": {
+    "jobs": [
+      {
+        "id": 118716561684,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 39448461338,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Record actual checked-out commit (PR merge versus branch head)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements-test.txt",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Primary tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Isolated inherited Kodi harness",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Isolated preparation regression",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Source-only component build (no application key or signing secrets)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Verify a second private build is byte-identical",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Preserve test receipts (not installable packages)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 21
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          }
+        ]
+      }
+    ]
+  },
+  "push_artifacts": {
+    "artifacts": [
+      {
+        "id": 12277273794,
+        "name": "verify-push-39448450410",
+        "size_in_bytes": 45977,
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/actions/artifacts/12277273794",
+        "archive_download_url": "https://api.github.com/repos/2223M1/bobbi-tv/actions/artifacts/12277273794/zip",
+        "expired": false,
+        "created_at": "2026-10-20T15:29:04Z",
+        "expires_at": "2027-01-18T15:26:42Z",
+        "updated_at": "2026-10-20T15:29:04Z",
+        "digest": "sha256:353cdc54be97b5906e29290f4acf395b1c2642bb48f004d2f31e9c04b8393db2",
+        "workflow_run": {
+          "id": 39448450410,
+          "repository_id": 1425007394,
+          "head_repository_id": 1425007394,
+          "head_branch": "codex/ce2012-fault-closure-20261020",
+          "head_sha": "c8de17ae9dabbe0f37753e1751b1d88107311316"
+        }
+      }
+    ]
+  },
+  "pr_artifacts": {
+    "artifacts": [
+      {
+        "id": 12276459448,
+        "name": "verify-pull_request-39448461338",
+        "size_in_bytes": 46396,
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/actions/artifacts/12276459448",
+        "archive_download_url": "https://api.github.com/repos/2223M1/bobbi-tv/actions/artifacts/12276459448/zip",
+        "expired": false,
+        "created_at": "2026-10-20T15:29:52Z",
+        "expires_at": "2027-01-18T15:26:46Z",
+        "updated_at": "2026-10-20T15:29:52Z",
+        "digest": "sha256:7e0894e4fe85e7d9cf54e137cf38ba20f3f62aed46d2194cc013dfd36f85fc93",
+        "workflow_run": {
+          "id": 39448461338,
+          "repository_id": 1425007394,
+          "head_repository_id": 1425007394,
+          "head_branch": "codex/ce2012-fault-closure-20261020",
+          "head_sha": "c8de17ae9dabbe0f37753e1751b1d88107311316"
+        }
+      }
+    ]
+  }
+}

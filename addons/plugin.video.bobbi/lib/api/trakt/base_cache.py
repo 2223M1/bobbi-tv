@@ -4,10 +4,10 @@ import os
 import sqlite3 as database
 import time
 
-import xbmcaddon
 from xbmcvfs import translatePath
 
 from lib.utils.kodi.utils import (
+    ADDON_PROFILE_PATH,
     clear_property,
     delete_file,
     dialog_ok,
@@ -17,7 +17,9 @@ from lib.utils.kodi.utils import (
     translation,
 )
 
-userdata_path = translatePath(xbmcaddon.Addon().getAddonInfo("profile"))
+# The owner already resolved this path before starting auxiliary workers.
+# Constructing Addon during disable contends with Kodi's addon-manager lock.
+userdata_path = ADDON_PROFILE_PATH
 databases_path = os.path.join(userdata_path, "databases/")
 database_path_raw = os.path.join(userdata_path, "databases")
 trakt_db = translatePath(os.path.join(database_path_raw, "traktcache.db"))

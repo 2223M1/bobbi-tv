@@ -1,0 +1,5 @@
+{
+  "action": "restart-stalled",
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792541740695292500",
+  "restart_queued": true
+}

@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "scope": "Actual production policies with explicit IPC/Kodi IO doubles; no device trial",
+  "source": [
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "bytes": 135177,
+      "git_blob_sha1": "bda44fc51f6bcf71687ee9585020530784297415",
+      "sha256": "1d66f88f59262a1103465b22749b3437038e2d784cd929c44a85742c6d47c065"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py",
+      "bytes": 12654,
+      "git_blob_sha1": "911ccf38542e6be0b972340c541b251ff2ed7efd",
+      "sha256": "fc81be0dbd9d2ed64e5221c29775223ec1bb5aeff3e9fdfb980da96147f842e8"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py",
+      "bytes": 14693,
+      "git_blob_sha1": "b7c534105ac2fcff12f417e3293d8daccc982848",
+      "sha256": "6bad433d5ff7e02cc872f9674eba3b9016a736ffacd99da6d67abeb9138d7e99"
+    }
+  ],
+  "count": 5,
+  "passed": 1,
+  "failed": 4,
+  "errors": 0,
+  "tests": [
+    {
+      "id": "transient_ipc_recovers",
+      "passed": false,
+      "expected": "A recovered transient read gap preserves monitoring of the unchanged AV instance",
+      "actual": {
+        "transport_calls": 4,
+        "clock_elapsed": 0.7,
+        "selected_request_before": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selected_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_instance_after": "native-A",
+        "authority_terminal": null,
+        "local_terminal": "UNKNOWN",
+        "authority_still_current": true,
+        "playback_still_active": true,
+        "was_superseded": false,
+        "local_cancelled": true,
+        "events": [
+          "phase:TARGET_VIDEO_OBSERVED",
+          "started_history",
+          "monitor_exception"
+        ],
+        "logs": [
+          "[PLAYER] monitor() entered",
+          "[PLAYER] monitor: video started playing, entering main loop",
+          "[PLAYER] monitor failed: TypeError",
+          "[CINEMA-OWNER] SNAPSHOT_UNAVAILABLE OSError",
+          "[PLAYER] monitor: superseded session; skipping global cleanup",
+          "[PLAYER] monitor: exiting"
+        ]
+      }
+    },
+    {
+      "id": "eof_after_player_check",
+      "passed": false,
+      "expected": "A same-instance EOF between playing check and receipt reaches terminal reconciliation",
+      "actual": {
+        "transport_calls": 2,
+        "clock_elapsed": 0.0,
+        "selected_request_before": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selected_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_instance_after": "native-A",
+        "authority_terminal": null,
+        "local_terminal": "UNKNOWN",
+        "authority_still_current": true,
+        "playback_still_active": false,
+        "was_superseded": false,
+        "local_cancelled": true,
+        "events": [
+          "phase:TARGET_VIDEO_OBSERVED",
+          "started_history",
+          "monitor_exception",
+          "clear_playback_properties",
+          "release_playback_session",
+          "phase:OWNER_RELEASED"
+        ],
+        "logs": [
+          "[PLAYER] monitor() entered",
+          "[PLAYER] monitor: video started playing, entering main loop",
+          "[PLAYER] monitor failed: TypeError",
+          "[PLAYER] monitor: owner cleanup for playback session",
+          "[PLAYER] monitor: exiting"
+        ]
+      }
+    },
+    {
+      "id": "continuously_current",
+      "passed": false,
+      "expected": "A continuously current AV instance reaches normal terminal bookkeeping",
+      "actual": {
+        "transport_calls": 2,
+        "clock_elapsed": 0.0,
+        "selected_request_before": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selected_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_instance_after": "native-A",
+        "authority_terminal": null,
+        "local_terminal": "UNKNOWN",
+        "authority_still_current": true,
+        "playback_still_active": true,
+        "was_superseded": false,
+        "local_cancelled": true,
+        "events": [
+          "phase:TARGET_VIDEO_OBSERVED",
+          "started_history",
+          "monitor_exception",
+          "clear_playback_properties",
+          "release_playback_session",
+          "phase:OWNER_RELEASED"
+        ],
+        "logs": [
+          "[PLAYER] monitor() entered",
+          "[PLAYER] monitor: video started playing, entering main loop",
+          "[PLAYER] monitor failed: TypeError",
+          "[PLAYER] monitor: owner cleanup for playback session",
+          "[PLAYER] monitor: exiting"
+        ]
+      }
+    },
+    {
+      "id": "explicit_replacement",
+      "passed": false,
+      "expected": "Explicit new selection retires the old monitor without touching new owner UI",
+      "actual": {
+        "transport_calls": 2,
+        "clock_elapsed": 0.0,
+        "selected_request_before": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "selected_request_after": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "observed_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_instance_after": "native-A",
+        "authority_terminal": null,
+        "local_terminal": "UNKNOWN",
+        "authority_still_current": false,
+        "playback_still_active": true,
+        "was_superseded": false,
+        "local_cancelled": true,
+        "events": [
+          "phase:TARGET_VIDEO_OBSERVED",
+          "started_history",
+          "monitor_exception"
+        ],
+        "logs": [
+          "[PLAYER] monitor() entered",
+          "[PLAYER] monitor: video started playing, entering main loop",
+          "[PLAYER] monitor failed: TypeError",
+          "[PLAYER] monitor: superseded session; skipping global cleanup",
+          "[PLAYER] monitor: exiting"
+        ]
+      }
+    },
+    {
+      "id": "explicit_cancel",
+      "passed": true,
+      "expected": "Explicit cancellation retires old monitoring without reviving continuation",
+      "actual": {
+        "transport_calls": 2,
+        "clock_elapsed": 0.0,
+        "selected_request_before": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selected_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_request_after": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observed_instance_after": "native-A",
+        "authority_terminal": null,
+        "local_terminal": "UNKNOWN",
+        "authority_still_current": false,
+        "playback_still_active": true,
+        "was_superseded": false,
+        "local_cancelled": true,
+        "events": [
+          "phase:TARGET_VIDEO_OBSERVED",
+          "started_history",
+          "monitor_exception"
+        ],
+        "logs": [
+          "[PLAYER] monitor() entered",
+          "[PLAYER] monitor: video started playing, entering main loop",
+          "[PLAYER] monitor failed: TypeError",
+          "[PLAYER] monitor: superseded session; skipping global cleanup",
+          "[PLAYER] monitor: exiting"
+        ]
+      }
+    }
+  ]
+}

@@ -27,10 +27,14 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--transport-source',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--suite',choices=('ce2011','ce2012'),default='ce2011')
+    parser.add_argument('--suite',choices=('ce2011','ce2012','ce2015','ce2021'),default='ce2011')
     args=parser.parse_args()
     if args.output.exists(): raise FileExistsError('Keep earlier identity evidence')
     queries=([('movie','12 Angry Men',1957),('tv','The Tatami Galaxy',2010)] if args.suite=='ce2011'
              else [('movie','Rashomon',1950),('tv','Cowboy Bebop',1998)])
+    if args.suite=='ce2015':
+        queries=[('movie','Amelie',2001),('tv','Barakamon',2014)]
+    if args.suite=='ce2021':
+        queries=[('tv','Ping Pong the Animation',2014)]
     transport.REMOTE='QUERIES='+repr(queries)+'\n'+transport.REMOTE
     transport.run(args.transport_source,args.output)

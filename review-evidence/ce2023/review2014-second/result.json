@@ -1,0 +1,18 @@
+{
+  "command": [
+    ".venv-closure/Scripts/python.exe",
+    "-B",
+    "tools/replay_ce2014_candidate.py",
+    "--original-b",
+    "D:/Downloads/BobiTV-PR3-CE2014-c8de17a-Audit-20261021.zip",
+    "--output",
+    "review-evidence/ce2023/replay2014-second"
+  ],
+  "cwd": "D:\\AM6B-Project\\bobbi-tv-ce2023-closure-20261021",
+  "started": 1792547974.0870473,
+  "elapsed": 10.871246099472046,
+  "exit_code": 0,
+  "runner_sha256": "1701efc16c6647fc74cb3f5a83aeb2cfca505021471a1e666c4f508c76a7c227",
+  "commit": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "dirty": true
+}

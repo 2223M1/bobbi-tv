@@ -1,0 +1,125 @@
+{
+  "head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "run_id": 39525777378,
+  "jobs": {
+    "jobs": [
+      {
+        "id": 118979948586,
+        "name": "verify",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 39525777378,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Record actual checked-out commit (PR merge versus branch head)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Run python -m pip install -r requirements-test.txt",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Primary tests",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 6
+          },
+          {
+            "name": "Isolated inherited Kodi harness",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Isolated preparation regression",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Source-only component build (no application key or signing secrets)",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 9
+          },
+          {
+            "name": "Verify a second private build is byte-identical",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 10
+          },
+          {
+            "name": "Preserve test receipts (not installable packages)",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 21
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 22
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 23
+          }
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "artifacts": [
+      {
+        "id": 12313666129,
+        "name": "verify-push-39525777378",
+        "size_in_bytes": 102202,
+        "url": "https://api.github.com/repos/2223M1/bobbi-tv/actions/artifacts/12313666129",
+        "archive_download_url": "https://api.github.com/repos/2223M1/bobbi-tv/actions/artifacts/12313666129/zip",
+        "expired": false,
+        "created_at": "2026-10-21T01:12:26Z",
+        "expires_at": "2027-01-19T01:10:40Z",
+        "updated_at": "2026-10-21T01:12:26Z",
+        "digest": "sha256:06312c59736013153a1a18058382adaced7d24ab9c22d05f162420580a528e45",
+        "workflow_run": {
+          "id": 39525777378,
+          "repository_id": 1425007394,
+          "head_repository_id": 1425007394,
+          "head_branch": "codex/ce2021-clean-delivery-20261021",
+          "head_sha": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2"
+        }
+      }
+    ]
+  }
+}

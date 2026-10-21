@@ -1,0 +1,64 @@
+{
+  "exit_code": 1,
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "result": {
+    "error": "TimeoutError",
+    "reason": "TRIAL_ERROR",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 4
+      },
+      {
+        "function": "<module>",
+        "line": 524
+      },
+      {
+        "function": "rpc",
+        "line": 67
+      },
+      {
+        "function": "open",
+        "line": 519
+      },
+      {
+        "function": "_open",
+        "line": 536
+      },
+      {
+        "function": "_call_chain",
+        "line": 496
+      },
+      {
+        "function": "http_open",
+        "line": 1377
+      },
+      {
+        "function": "do_open",
+        "line": 1352
+      },
+      {
+        "function": "getresponse",
+        "line": 1395
+      },
+      {
+        "function": "begin",
+        "line": 325
+      },
+      {
+        "function": "_read_status",
+        "line": 286
+      },
+      {
+        "function": "readinto",
+        "line": 706
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "amelie",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}
