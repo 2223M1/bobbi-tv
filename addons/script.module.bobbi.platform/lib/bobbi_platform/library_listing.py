@@ -1,5 +1,6 @@
 """Presentation-only library metadata; never fetch media or expose credentials."""
 from datetime import datetime
+import os
 from urllib.parse import unquote, urlsplit
 
 from .libraries import LibraryError, MAX_DIRECTORY_ITEMS, directory_items
@@ -62,4 +63,22 @@ def native_listing(response, path):
         (dirs if folder else files).append(name)
         if not folder:
             metadata[name] = file_info(row.get('size'), row.get('lastmodified'))
+    return directory_items(dirs, files), metadata
+
+
+def local_listing(path):
+    """Local sources need not be registered for Kodi's remote-files API."""
+    dirs, files, metadata = [], [], {}
+    with os.scandir(path) as entries:
+        for index, entry in enumerate(entries):
+            if index >= MAX_DIRECTORY_ITEMS:
+                raise LibraryError('DIRECTORY_TOO_LARGE')
+            folder = entry.is_dir()
+            (dirs if folder else files).append(entry.name)
+            if not folder:
+                try:
+                    stat = entry.stat()
+                    metadata[entry.name] = file_info(stat.st_size, datetime.fromtimestamp(stat.st_mtime).isoformat())
+                except OSError:
+                    pass
     return directory_items(dirs, files), metadata

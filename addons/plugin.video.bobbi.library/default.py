@@ -1,7 +1,7 @@
 """Unified user-library entrypoint. All writes affect bobbi local settings only."""
 import sys
 import json
-from urllib.parse import parse_qsl, urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit
 from uuid import uuid4
 import xbmc
 import xbmcgui
@@ -12,7 +12,7 @@ from bobbi_platform.libraries import (LibraryError, MAX_DIRECTORY_ITEMS, directo
                                       joined_path, relative_path)
 from bobbi_platform.kodi import standard_handoff
 from bobbi_platform.playback import selected_identity
-from bobbi_platform.library_listing import source_presentation, native_listing, file_info
+from bobbi_platform.library_listing import source_presentation, native_listing, local_listing, file_info
 
 PAGE_SIZE = 200
 SELECTION = 'bobbi.portable_selection'
@@ -27,10 +27,15 @@ def item(label, target, folder=True, label2='', properties=None, info=None):
     row = xbmcgui.ListItem(label=label)
     if label2:
         row.setLabel2(label2)
+        # Kodi's native file window reapplies its %D secondary label mask.
+        # Keep the location in a dedicated field too; do not abuse video tags
+        # (production code / duration) or change native sorting to carry it.
+        row.setProperty('Bobi.Library.Location', label2)
     for key, value in (properties or {}).items():
         row.setProperty(key, value)
-    if info:
-        row.setInfo('video', info)
+    if not folder:
+        # Kodi initializes size to zero. Unknown is -1, not a fabricated 0 B.
+        row.setInfo('video', dict({'size': -1}, **(info or {})))
     row.setContentLookup(False)
     row.setArt({'icon': 'DefaultFolder.png' if folder else 'DefaultVideo.png'})
     if not folder:
@@ -41,6 +46,13 @@ def item(label, target, folder=True, label2='', properties=None, info=None):
 def listing_with_metadata(path):
     # Kodi already obtains size/date while listing SMB/NFS/WebDAV. A single
     # native listing replaces listdir + up to 200 separate remote Stat calls.
+    if urlsplit(path).scheme not in ('smb', 'nfs', 'dav', 'davs'):
+        try:
+            return local_listing(path)
+        except LibraryError:
+            raise
+        except OSError:
+            pass
     try:
         response = json.loads(xbmc.executeJSONRPC(json.dumps(dict(jsonrpc='2.0', id=1,
             method='Files.GetDirectory', params=dict(directory=path, media='files',

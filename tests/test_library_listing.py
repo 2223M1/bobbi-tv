@@ -2,7 +2,7 @@ from dataclasses import replace
 import json
 import pytest
 from bobbi_platform.libraries import import_catalog, vfs_source, LibraryError
-from bobbi_platform.library_listing import source_presentation, file_info, native_listing
+from bobbi_platform.library_listing import source_presentation, file_info, native_listing, local_listing
 
 
 @pytest.mark.parametrize('scheme,kind,label', [('smb','smb','SMB'), ('nfs','nfs','NFS'),
@@ -15,6 +15,16 @@ def test_source_protocol_and_host_only(scheme,kind,label):
 
 def test_local_not_misrepresented_as_network():
     assert source_presentation(vfs_source('Disk','/storage/media')) == ('local', '本机目录')
+
+
+def test_local_metadata_does_not_require_remote_api_permission(tmp_path):
+    (tmp_path/'film.mkv').write_bytes(b'video fixture')
+    (tmp_path/'nested').mkdir()
+    (tmp_path/'ignored.strm').write_text('never execute')
+    listing,metadata=local_listing(tmp_path)
+    assert listing==((True,'nested'),(False,'film.mkv'))
+    assert metadata['film.mkv']['size']==13
+    assert len(metadata['film.mkv']['date'])==10
 
 
 @pytest.mark.parametrize('size,date,expected', [(0,'',{'size':0}), (-1,'oops',{}),

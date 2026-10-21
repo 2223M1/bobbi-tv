@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "allocated": [2026102021, 2026102022, 2026102023, 2026102024, 2026102025, 2026102026],
+  "candidate": 2026102027,
+  "baseline": "36b85d54f6674d04e2e2966cf1037f023f17325c",
+  "scope": "Native file-window location and local metadata compatibility discovered during real UI acceptance; older candidates retained"
+}
