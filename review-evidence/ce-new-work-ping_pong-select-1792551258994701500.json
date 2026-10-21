@@ -1,0 +1,2792 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "ping_pong",
+    "operation": "select",
+    "cards": [],
+    "selected": true,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 2,
+      "reset_action": "firstpage"
+    },
+    "samples": [
+      {
+        "wall": 2281101.807011969,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 2281101.795935506,
+          "decoder_started": 2281101.827586693,
+          "decoder_completed": 2281101.829202188,
+          "sample_completed": 2281101.829205271
+        },
+        "cancelled": null,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2281102.328929497,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 2281102.29611798,
+          "decoder_started": 2281102.347238311,
+          "decoder_completed": 2281102.347483685,
+          "sample_completed": 2281102.34748556
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2281102.813041075,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 2281102.796256796,
+          "decoder_started": 2281102.836746914,
+          "decoder_completed": 2281102.837373662,
+          "sample_completed": 2281102.83737887
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 2281103.309797948,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 2281103.296366034,
+          "decoder_started": 2281103.549311374,
+          "decoder_completed": 2281103.549797081,
+          "sample_completed": 2281103.549801039
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 2281103.807010037,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 2281103.796484571,
+          "decoder_started": 2281103.830630627,
+          "decoder_completed": 2281103.831087876,
+          "sample_completed": 2281103.831092084
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 2281104.317002881,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 2281104.296601947,
+          "decoder_started": 2281104.331647291,
+          "decoder_completed": 2281104.331997207,
+          "sample_completed": 2281104.33200004
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 2281104.833663962,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 2281104.796773623,
+          "decoder_started": 2281104.866504106,
+          "decoder_completed": 2281104.867013896,
+          "sample_completed": 2281104.867018646
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 2281105.383821773,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 2281105.296958803,
+          "decoder_started": 2281105.398197393,
+          "decoder_completed": 2281105.398665391,
+          "sample_completed": 2281105.398670016
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 2281105.839856021,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 2281105.797239491,
+          "decoder_started": 2281106.443318967,
+          "decoder_completed": 2281106.443622091,
+          "sample_completed": 2281106.443623758
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {
+          "frame count": 16,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 1
+        }
+      },
+      {
+        "wall": 2281106.479842768,
+        "phase": "AV_STARTED",
+        "seconds": -0.004,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281106.443797924,
+          "player_time_started": 2281106.483210882,
+          "player_time_completed": 2281106.486967787,
+          "caching_started": 2281106.486995829,
+          "caching_completed": 2281106.509095342,
+          "decoder_started": 2281106.560501845,
+          "decoder_completed": 2281106.561291093,
+          "sample_completed": 2281106.56129326
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 16,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281106.98106997,
+        "phase": "AV_STARTED",
+        "seconds": 0.579,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281106.943922505,
+          "player_time_started": 2281106.98949836,
+          "player_time_completed": 2281106.99283435,
+          "caching_started": 2281106.99285635,
+          "caching_completed": 2281107.011473374,
+          "decoder_started": 2281107.060532718,
+          "decoder_completed": 2281107.060950717,
+          "sample_completed": 2281107.060952842
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 27,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281107.460391284,
+        "phase": "AV_STARTED",
+        "seconds": 0.996,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281107.444052169,
+          "player_time_started": 2281107.466277765,
+          "player_time_completed": 2281107.474890197,
+          "caching_started": 2281107.474937447,
+          "caching_completed": 2281107.514270031,
+          "decoder_started": 2281107.559473972,
+          "decoder_completed": 2281107.559799138,
+          "sample_completed": 2281107.559800721
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 40,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281107.96464999,
+        "phase": "AV_STARTED",
+        "seconds": 1.413,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281107.944166387,
+          "player_time_started": 2281107.967151773,
+          "player_time_completed": 2281107.973242088,
+          "caching_started": 2281107.973267504,
+          "caching_completed": 2281108.288345472,
+          "decoder_started": 2281108.308586325,
+          "decoder_completed": 2281108.309518905,
+          "sample_completed": 2281108.309521572
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 59,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281108.456769442,
+        "phase": "AV_STARTED",
+        "seconds": 2.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281108.44426269,
+          "player_time_started": 2281108.461453427,
+          "player_time_completed": 2281108.464256794,
+          "caching_started": 2281108.46427746,
+          "caching_completed": 2281108.46872478,
+          "decoder_started": 2281108.51367839,
+          "decoder_completed": 2281108.513994055,
+          "sample_completed": 2281108.513996222
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 66,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281108.977864108,
+        "phase": "AV_STARTED",
+        "seconds": 2.456,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281108.944366796,
+          "player_time_started": 2281108.983947006,
+          "player_time_completed": 2281108.990307069,
+          "caching_started": 2281108.990353611,
+          "caching_completed": 2281109.012213126,
+          "decoder_started": 2281109.061129807,
+          "decoder_completed": 2281109.061752847,
+          "sample_completed": 2281109.061756805
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 79,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281109.466724292,
+        "phase": "AV_STARTED",
+        "seconds": 3.039,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281109.444492528,
+          "player_time_started": 2281109.473036147,
+          "player_time_completed": 2281109.477846258,
+          "caching_started": 2281109.477884341,
+          "caching_completed": 2281109.514011771,
+          "decoder_started": 2281109.558370758,
+          "decoder_completed": 2281109.55902384,
+          "sample_completed": 2281109.559027881
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 91,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281109.966495662,
+        "phase": "AV_STARTED",
+        "seconds": 3.457,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281109.94460123,
+          "player_time_started": 2281109.96940832,
+          "player_time_completed": 2281109.9731221,
+          "caching_started": 2281109.973144892,
+          "caching_completed": 2281110.012267146,
+          "decoder_started": 2281110.058737419,
+          "decoder_completed": 2281110.059459583,
+          "sample_completed": 2281110.059464
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 104,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281110.485289975,
+        "phase": "AV_STARTED",
+        "seconds": 4.082,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281110.444731683,
+          "player_time_started": 2281110.487766842,
+          "player_time_completed": 2281110.491635539,
+          "caching_started": 2281110.491657705,
+          "caching_completed": 2281110.512984598,
+          "decoder_started": 2281110.558235001,
+          "decoder_completed": 2281110.558593375,
+          "sample_completed": 2281110.558594875
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 116,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281111.063350118,
+        "phase": "AV_STARTED",
+        "seconds": 4.708,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281110.944844898,
+          "player_time_started": 2281111.067695979,
+          "player_time_completed": 2281111.075177831,
+          "caching_started": 2281111.075218956,
+          "caching_completed": 2281111.096758182,
+          "decoder_started": 2281111.142599666,
+          "decoder_completed": 2281111.142910582,
+          "sample_completed": 2281111.142912457
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 130,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281111.482549874,
+        "phase": "AV_STARTED",
+        "seconds": 5.125,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281111.444959947,
+          "player_time_started": 2281111.485495948,
+          "player_time_completed": 2281111.489271645,
+          "caching_started": 2281111.489291228,
+          "caching_completed": 2281111.513811404,
+          "decoder_started": 2281111.561179218,
+          "decoder_completed": 2281111.561444092,
+          "sample_completed": 2281111.561445634
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 140,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281111.974360919,
+        "phase": "AV_STARTED",
+        "seconds": 5.542,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281111.945052591,
+          "player_time_started": 2281111.980637983,
+          "player_time_completed": 2281111.984885512,
+          "caching_started": 2281111.984907137,
+          "caching_completed": 2281112.014748046,
+          "decoder_started": 2281112.062795608,
+          "decoder_completed": 2281112.063469106,
+          "sample_completed": 2281112.063472773
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 152,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281112.46916033,
+        "phase": "AV_STARTED",
+        "seconds": 5.959,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281112.445179861,
+          "player_time_started": 2281112.472353362,
+          "player_time_completed": 2281112.476137726,
+          "caching_started": 2281112.476158726,
+          "caching_completed": 2281112.514709818,
+          "decoder_started": 2281112.562734548,
+          "decoder_completed": 2281112.563327588,
+          "sample_completed": 2281112.563331421
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 164,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281112.99047434,
+        "phase": "AV_STARTED",
+        "seconds": 6.543,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281112.945306977,
+          "player_time_started": 2281112.99320654,
+          "player_time_completed": 2281112.996260073,
+          "caching_started": 2281112.996284156,
+          "caching_completed": 2281113.015238807,
+          "decoder_started": 2281113.060242546,
+          "decoder_completed": 2281113.060550129,
+          "sample_completed": 2281113.06055167
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 176,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281113.619963528,
+        "phase": "AV_STARTED",
+        "seconds": 7.169,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281113.445440592,
+          "player_time_started": 2281113.625481303,
+          "player_time_completed": 2281113.628739252,
+          "caching_started": 2281113.628760418,
+          "caching_completed": 2281113.641248173,
+          "decoder_started": 2281113.698691667,
+          "decoder_completed": 2281113.69937454,
+          "sample_completed": 2281113.699379999
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 191,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281113.963834124,
+        "phase": "AV_STARTED",
+        "seconds": 7.586,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281113.945556262,
+          "player_time_started": 2281113.966855907,
+          "player_time_completed": 2281113.969930356,
+          "caching_started": 2281113.969951772,
+          "caching_completed": 2281113.974419009,
+          "decoder_started": 2281114.019645415,
+          "decoder_completed": 2281114.019985373,
+          "sample_completed": 2281114.019987498
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 199,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281114.492195294,
+        "phase": "AV_STARTED",
+        "seconds": 8.003,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281114.445671307,
+          "player_time_started": 2281114.495572284,
+          "player_time_completed": 2281114.499349398,
+          "caching_started": 2281114.499373564,
+          "caching_completed": 2281114.519882795,
+          "decoder_started": 2281114.561541171,
+          "decoder_completed": 2281114.561875837,
+          "sample_completed": 2281114.561878129
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 212,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281114.962505856,
+        "phase": "AV_STARTED",
+        "seconds": 8.42,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281114.945789281,
+          "player_time_started": 2281114.965310515,
+          "player_time_completed": 2281114.968500214,
+          "caching_started": 2281114.96852213,
+          "caching_completed": 2281114.975401985,
+          "decoder_started": 2281115.021442181,
+          "decoder_completed": 2281115.021753306,
+          "sample_completed": 2281115.021754764
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 223,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281115.475100169,
+        "phase": "AV_STARTED",
+        "seconds": 9.004,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281115.445918963,
+          "player_time_started": 2281115.478242035,
+          "player_time_completed": 2281115.481005818,
+          "caching_started": 2281115.481026943,
+          "caching_completed": 2281115.520693451,
+          "decoder_started": 2281115.562572412,
+          "decoder_completed": 2281115.562896077,
+          "sample_completed": 2281115.562898744
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 236,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281115.975136197,
+        "phase": "AV_STARTED",
+        "seconds": 9.421,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281115.946021741,
+          "player_time_started": 2281115.978349188,
+          "player_time_completed": 2281115.981285596,
+          "caching_started": 2281115.981307221,
+          "caching_completed": 2281116.018498278,
+          "decoder_started": 2281116.068547381,
+          "decoder_completed": 2281116.068911338,
+          "sample_completed": 2281116.068913047
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 248,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281116.622110756,
+        "phase": "AV_STARTED",
+        "seconds": 10.255,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281116.446129895,
+          "player_time_started": 2281116.628919611,
+          "player_time_completed": 2281116.636480339,
+          "caching_started": 2281116.636519506,
+          "caching_completed": 2281116.685520238,
+          "decoder_started": 2281116.736548047,
+          "decoder_completed": 2281116.73717192,
+          "sample_completed": 2281116.737175837
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 264,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281116.974899352,
+        "phase": "AV_STARTED",
+        "seconds": 10.422,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281116.946276602,
+          "player_time_started": 2281116.981342416,
+          "player_time_completed": 2281116.984138075,
+          "caching_started": 2281116.984159825,
+          "caching_completed": 2281117.020653343,
+          "decoder_started": 2281117.069916408,
+          "decoder_completed": 2281117.070815947,
+          "sample_completed": 2281117.070819697
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 272,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281117.475594391,
+        "phase": "AV_STARTED",
+        "seconds": 11.047,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281117.446414184,
+          "player_time_started": 2281117.481777582,
+          "player_time_completed": 2281117.484474574,
+          "caching_started": 2281117.484494449,
+          "caching_completed": 2281117.521334926,
+          "decoder_started": 2281117.568259165,
+          "decoder_completed": 2281117.568924413,
+          "sample_completed": 2281117.56892858
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": false,
+        "decoder_counters": {
+          "frame count": 284,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281117.975482028,
+        "phase": "AV_STARTED",
+        "seconds": 11.465,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281117.946592529,
+          "player_time_started": 2281117.981155095,
+          "player_time_completed": 2281117.983766463,
+          "caching_started": 2281117.983788088,
+          "caching_completed": 2281118.021145521,
+          "decoder_started": 2281118.065594309,
+          "decoder_completed": 2281118.065903975,
+          "sample_completed": 2281118.065905475
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 296,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281118.467017648,
+        "phase": "AV_STARTED",
+        "seconds": 12.09,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281118.446726748,
+          "player_time_started": 2281118.469433391,
+          "player_time_completed": 2281118.471814926,
+          "caching_started": 2281118.471834968,
+          "caching_completed": 2281118.478854573,
+          "decoder_started": 2281118.540994603,
+          "decoder_completed": 2281118.541296602,
+          "sample_completed": 2281118.541297977
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 307,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281118.977972641,
+        "phase": "AV_STARTED",
+        "seconds": 12.507,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281118.946839147,
+          "player_time_started": 2281118.983206251,
+          "player_time_completed": 2281118.986773782,
+          "caching_started": 2281118.986795032,
+          "caching_completed": 2281119.024792257,
+          "decoder_started": 2281119.072443578,
+          "decoder_completed": 2281119.073042535,
+          "sample_completed": 2281119.073045993
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 322,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281119.457266016,
+        "phase": "AV_STARTED",
+        "seconds": 12.924,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281119.446941504,
+          "player_time_started": 2281119.459515051,
+          "player_time_completed": 2281119.46226071,
+          "caching_started": 2281119.462279835,
+          "caching_completed": 2281119.481178907,
+          "decoder_started": 2281119.525993946,
+          "decoder_completed": 2281119.526535319,
+          "sample_completed": 2281119.526539027
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 331,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281119.955016017,
+        "phase": "AV_STARTED",
+        "seconds": 13.55,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281119.947053998,
+          "player_time_started": 2281119.957482635,
+          "player_time_completed": 2281119.959988878,
+          "caching_started": 2281119.960063795,
+          "caching_completed": 2281119.989586169,
+          "decoder_started": 2281120.029118973,
+          "decoder_completed": 2281120.029913513,
+          "sample_completed": 2281120.029917971
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 343,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281120.462205575,
+        "phase": "AV_STARTED",
+        "seconds": 13.967,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281120.447162284,
+          "player_time_started": 2281120.470926051,
+          "player_time_completed": 2281120.478229447,
+          "caching_started": 2281120.478265821,
+          "caching_completed": 2281120.522595363,
+          "decoder_started": 2281120.567647111,
+          "decoder_completed": 2281120.567992027,
+          "sample_completed": 2281120.567993985
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 356,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281120.969776811,
+        "phase": "AV_STARTED",
+        "seconds": 14.593,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281120.947297166,
+          "player_time_started": 2281120.972057929,
+          "player_time_completed": 2281120.974854046,
+          "caching_started": 2281120.974874546,
+          "caching_completed": 2281120.982707858,
+          "decoder_started": 2281121.026492817,
+          "decoder_completed": 2281121.0268259,
+          "sample_completed": 2281121.026827608
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 367,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281121.467641116,
+        "phase": "AV_STARTED",
+        "seconds": 14.968,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281121.447429297,
+          "player_time_started": 2281121.469984484,
+          "player_time_completed": 2281121.472541519,
+          "caching_started": 2281121.472560852,
+          "caching_completed": 2281121.482365699,
+          "decoder_started": 2281121.534351304,
+          "decoder_completed": 2281121.534641345,
+          "sample_completed": 2281121.534642887
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 379,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281121.974449532,
+        "phase": "AV_STARTED",
+        "seconds": 15.594,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281121.947566816,
+          "player_time_started": 2281121.977025692,
+          "player_time_completed": 2281121.979852142,
+          "caching_started": 2281121.979875142,
+          "caching_completed": 2281122.024144727,
+          "decoder_started": 2281122.07230305,
+          "decoder_completed": 2281122.072677341,
+          "sample_completed": 2281122.072679341
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 392,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281122.463509207,
+        "phase": "AV_STARTED",
+        "seconds": 16.011,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281122.447668168,
+          "player_time_started": 2281122.465959992,
+          "player_time_completed": 2281122.468570818,
+          "caching_started": 2281122.468591235,
+          "caching_completed": 2281122.484240566,
+          "decoder_started": 2281122.527712904,
+          "decoder_completed": 2281122.528143195,
+          "sample_completed": 2281122.528152695
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 403,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281122.972505964,
+        "phase": "AV_STARTED",
+        "seconds": 16.428,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281122.947866532,
+          "player_time_started": 2281122.97631512,
+          "player_time_completed": 2281122.981601355,
+          "caching_started": 2281122.981620105,
+          "caching_completed": 2281123.03146955,
+          "decoder_started": 2281123.079739958,
+          "decoder_completed": 2281123.08038229,
+          "sample_completed": 2281123.080385915
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 416,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281123.461847816,
+        "phase": "AV_STARTED",
+        "seconds": 17.053,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281123.447889605,
+          "player_time_started": 2281123.464254143,
+          "player_time_completed": 2281123.46698726,
+          "caching_started": 2281123.467005135,
+          "caching_completed": 2281123.483912797,
+          "decoder_started": 2281123.534487825,
+          "decoder_completed": 2281123.534797866,
+          "sample_completed": 2281123.534799574
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 427,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281123.963580813,
+        "phase": "AV_STARTED",
+        "seconds": 17.471,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281123.948098897,
+          "player_time_started": 2281123.965926223,
+          "player_time_completed": 2281123.96844555,
+          "caching_started": 2281123.968465841,
+          "caching_completed": 2281123.984423631,
+          "decoder_started": 2281124.035399449,
+          "decoder_completed": 2281124.035968156,
+          "sample_completed": 2281124.035971823
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 439,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281124.479227856,
+        "phase": "AV_STARTED",
+        "seconds": 18.054,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281124.448164732,
+          "player_time_started": 2281124.484340133,
+          "player_time_completed": 2281124.489635744,
+          "caching_started": 2281124.489656452,
+          "caching_completed": 2281124.528847512,
+          "decoder_started": 2281124.572239561,
+          "decoder_completed": 2281124.572561977,
+          "sample_completed": 2281124.572563477
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 452,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281124.965280366,
+        "phase": "AV_STARTED",
+        "seconds": 18.472,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281124.948260329,
+          "player_time_started": 2281124.967772984,
+          "player_time_completed": 2281124.970438685,
+          "caching_started": 2281124.970458977,
+          "caching_completed": 2281124.98811447,
+          "decoder_started": 2281125.038320667,
+          "decoder_completed": 2281125.038925457,
+          "sample_completed": 2281125.038929207
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 463,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281125.464721465,
+        "phase": "AV_STARTED",
+        "seconds": 19.097,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281125.4484523,
+          "player_time_started": 2281125.46718975,
+          "player_time_completed": 2281125.469977284,
+          "caching_started": 2281125.469995867,
+          "caching_completed": 2281125.485989157,
+          "decoder_started": 2281125.54037876,
+          "decoder_completed": 2281125.541119008,
+          "sample_completed": 2281125.541122883
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 475,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281125.979437159,
+        "phase": "AV_STARTED",
+        "seconds": 19.514,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281125.948722283,
+          "player_time_started": 2281125.984440937,
+          "player_time_completed": 2281125.989742964,
+          "caching_started": 2281125.989764464,
+          "caching_completed": 2281126.029283733,
+          "decoder_started": 2281126.080497303,
+          "decoder_completed": 2281126.081065926,
+          "sample_completed": 2281126.081069385
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 488,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281126.464092851,
+        "phase": "AV_STARTED",
+        "seconds": 19.931,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281126.448856434,
+          "player_time_started": 2281126.466446762,
+          "player_time_completed": 2281126.469223546,
+          "caching_started": 2281126.469244796,
+          "caching_completed": 2281126.48683754,
+          "decoder_started": 2281126.531606671,
+          "decoder_completed": 2281126.531890545,
+          "sample_completed": 2281126.531891962
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 499,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281126.970163581,
+        "phase": "AV_STARTED",
+        "seconds": 20.557,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281126.948974471,
+          "player_time_started": 2281126.976980896,
+          "player_time_completed": 2281126.981567884,
+          "caching_started": 2281126.981586175,
+          "caching_completed": 2281126.987320785,
+          "decoder_started": 2281127.03228354,
+          "decoder_completed": 2281127.032575081,
+          "sample_completed": 2281127.032576622
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 511,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281127.466839628,
+        "phase": "AV_STARTED",
+        "seconds": 20.974,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281127.449060134,
+          "player_time_started": 2281127.471398116,
+          "player_time_completed": 2281127.478166473,
+          "caching_started": 2281127.478188223,
+          "caching_completed": 2281127.488905028,
+          "decoder_started": 2281127.537729232,
+          "decoder_completed": 2281127.538298605,
+          "sample_completed": 2281127.538302522
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 523,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281127.972289329,
+        "phase": "AV_STARTED",
+        "seconds": 21.558,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281127.949176307,
+          "player_time_started": 2281127.974839656,
+          "player_time_completed": 2281127.977554149,
+          "caching_started": 2281127.977574149,
+          "caching_completed": 2281127.988611036,
+          "decoder_started": 2281128.038956903,
+          "decoder_completed": 2281128.039241652,
+          "sample_completed": 2281128.03924311
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 535,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281128.466071937,
+        "phase": "AV_STARTED",
+        "seconds": 21.975,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281128.449283232,
+          "player_time_started": 2281128.468522014,
+          "player_time_completed": 2281128.471144674,
+          "caching_started": 2281128.471162049,
+          "caching_completed": 2281128.489813542,
+          "decoder_started": 2281128.541195532,
+          "decoder_completed": 2281128.541534281,
+          "sample_completed": 2281128.541536156
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 547,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281128.973183147,
+        "phase": "AV_STARTED",
+        "seconds": 22.601,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281128.949394001,
+          "player_time_started": 2281128.983089454,
+          "player_time_completed": 2281128.99019756,
+          "caching_started": 2281128.990670268,
+          "caching_completed": 2281129.031293452,
+          "decoder_started": 2281129.076070168,
+          "decoder_completed": 2281129.076439292,
+          "sample_completed": 2281129.076441292
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 560,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281129.458811204,
+        "phase": "AV_STARTED",
+        "seconds": 23.018,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281129.449497687,
+          "player_time_started": 2281129.461446489,
+          "player_time_completed": 2281129.464360232,
+          "caching_started": 2281129.46438144,
+          "caching_completed": 2281129.489886082,
+          "decoder_started": 2281129.539899285,
+          "decoder_completed": 2281129.540564367,
+          "sample_completed": 2281129.540568033
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 572,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281129.96441843,
+        "phase": "AV_STARTED",
+        "seconds": 23.393,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281129.94965826,
+          "player_time_started": 2281129.966790215,
+          "player_time_completed": 2281129.96929825,
+          "caching_started": 2281129.969316375,
+          "caching_completed": 2281129.990653653,
+          "decoder_started": 2281130.04165002,
+          "decoder_completed": 2281130.041972769,
+          "sample_completed": 2281130.041974478
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 583,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281130.476576347,
+        "phase": "AV_STARTED",
+        "seconds": 24.019,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281130.449748124,
+          "player_time_started": 2281130.481866583,
+          "player_time_completed": 2281130.488820523,
+          "caching_started": 2281130.488858732,
+          "caching_completed": 2281130.533658491,
+          "decoder_started": 2281130.577549586,
+          "decoder_completed": 2281130.577858002,
+          "sample_completed": 2281130.577859835
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 596,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281130.975398601,
+        "phase": "AV_STARTED",
+        "seconds": 24.436,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281130.949876334,
+          "player_time_started": 2281130.982004876,
+          "player_time_completed": 2281130.988923941,
+          "caching_started": 2281130.988959816,
+          "caching_completed": 2281131.037480191,
+          "decoder_started": 2281131.084761528,
+          "decoder_completed": 2281131.085037069,
+          "sample_completed": 2281131.085038902
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 608,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281131.460237517,
+        "phase": "AV_STARTED",
+        "seconds": 25.061,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281131.449973752,
+          "player_time_started": 2281131.462649261,
+          "player_time_completed": 2281131.465197005,
+          "caching_started": 2281131.465216171,
+          "caching_completed": 2281131.500085915,
+          "decoder_started": 2281131.547243961,
+          "decoder_completed": 2281131.547868793,
+          "sample_completed": 2281131.547871835
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 619,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281131.963024565,
+        "phase": "AV_STARTED",
+        "seconds": 25.479,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281131.950122431,
+          "player_time_started": 2281131.965479184,
+          "player_time_completed": 2281131.968124219,
+          "caching_started": 2281131.968144427,
+          "caching_completed": 2281131.992555573,
+          "decoder_started": 2281132.03728925,
+          "decoder_completed": 2281132.037595874,
+          "sample_completed": 2281132.037597749
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 631,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281132.471427432,
+        "phase": "AV_STARTED",
+        "seconds": 26.062,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281132.450344444,
+          "player_time_started": 2281132.477798166,
+          "player_time_completed": 2281132.484354233,
+          "caching_started": 2281132.484374441,
+          "caching_completed": 2281132.494843081,
+          "decoder_started": 2281132.537751056,
+          "decoder_completed": 2281132.53803318,
+          "sample_completed": 2281132.538034639
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 643,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281132.967388134,
+        "phase": "AV_STARTED",
+        "seconds": 26.48,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281132.95051726,
+          "player_time_started": 2281132.969796336,
+          "player_time_completed": 2281132.97223808,
+          "caching_started": 2281132.972258664,
+          "caching_completed": 2281132.996828643,
+          "decoder_started": 2281133.038952328,
+          "decoder_completed": 2281133.039234952,
+          "sample_completed": 2281133.039236369
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 655,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281133.463494919,
+        "phase": "AV_STARTED",
+        "seconds": 27.105,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281133.450609869,
+          "player_time_started": 2281133.465840455,
+          "player_time_completed": 2281133.469294821,
+          "caching_started": 2281133.46933903,
+          "caching_completed": 2281133.497977083,
+          "decoder_started": 2281133.543500719,
+          "decoder_completed": 2281133.543791176,
+          "sample_completed": 2281133.543792926
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 667,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281133.96062638,
+        "phase": "AV_STARTED",
+        "seconds": 27.481,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281133.950701905,
+          "player_time_started": 2281133.962874708,
+          "player_time_completed": 2281133.96769082,
+          "caching_started": 2281133.967725112,
+          "caching_completed": 2281133.994640586,
+          "decoder_started": 2281134.039991139,
+          "decoder_completed": 2281134.040408555,
+          "sample_completed": 2281134.040410638
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 679,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281134.473941717,
+        "phase": "AV_STARTED",
+        "seconds": 27.898,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281134.450825399,
+          "player_time_started": 2281134.476210586,
+          "player_time_completed": 2281134.478899246,
+          "caching_started": 2281134.478918871,
+          "caching_completed": 2281134.495806079,
+          "decoder_started": 2281134.5411213,
+          "decoder_completed": 2281134.541452507,
+          "sample_completed": 2281134.541454091
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 691,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281134.981348747,
+        "phase": "AV_STARTED",
+        "seconds": 28.523,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281134.950945447,
+          "player_time_started": 2281134.985971818,
+          "player_time_completed": 2281134.988568729,
+          "caching_started": 2281134.988591229,
+          "caching_completed": 2281134.995324295,
+          "decoder_started": 2281135.044601214,
+          "decoder_completed": 2281135.044897047,
+          "sample_completed": 2281135.04489863
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 703,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281135.465229043,
+        "phase": "AV_STARTED",
+        "seconds": 28.94,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281135.451032579,
+          "player_time_started": 2281135.467586496,
+          "player_time_completed": 2281135.470272656,
+          "caching_started": 2281135.470291739,
+          "caching_completed": 2281135.504294489,
+          "decoder_started": 2281135.540658941,
+          "decoder_completed": 2281135.54101369,
+          "sample_completed": 2281135.54101544
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 715,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281135.983604183,
+        "phase": "AV_STARTED",
+        "seconds": 29.524,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281135.951157846,
+          "player_time_started": 2281135.988211797,
+          "player_time_completed": 2281135.993878408,
+          "caching_started": 2281135.993913782,
+          "caching_completed": 2281136.041275624,
+          "decoder_started": 2281136.086031639,
+          "decoder_completed": 2281136.086678346,
+          "sample_completed": 2281136.086682721
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 728,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281136.481084583,
+        "phase": "AV_STARTED",
+        "seconds": 29.941,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281136.451292989,
+          "player_time_started": 2281136.483469244,
+          "player_time_completed": 2281136.486097696,
+          "caching_started": 2281136.486118487,
+          "caching_completed": 2281136.497123877,
+          "decoder_started": 2281136.547416379,
+          "decoder_completed": 2281136.547691337,
+          "sample_completed": 2281136.547693212
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 739,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281136.982412609,
+        "phase": "AV_STARTED",
+        "seconds": 30.567,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281136.951427393,
+          "player_time_started": 2281136.989602508,
+          "player_time_completed": 2281137.001303355,
+          "caching_started": 2281137.001324188,
+          "caching_completed": 2281137.048070615,
+          "decoder_started": 2281137.095369542,
+          "decoder_completed": 2281137.096106123,
+          "sample_completed": 2281137.096110332
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 752,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281137.481017101,
+        "phase": "AV_STARTED",
+        "seconds": 30.984,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281137.451571964,
+          "player_time_started": 2281137.484089094,
+          "player_time_completed": 2281137.486639671,
+          "caching_started": 2281137.486660004,
+          "caching_completed": 2281137.497880519,
+          "decoder_started": 2281137.547192024,
+          "decoder_completed": 2281137.54778194,
+          "sample_completed": 2281137.547786065
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 763,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281137.977441442,
+        "phase": "AV_STARTED",
+        "seconds": 31.61,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281137.951683755,
+          "player_time_started": 2281137.983639511,
+          "player_time_completed": 2281137.993101279,
+          "caching_started": 2281137.993137321,
+          "caching_completed": 2281138.041450288,
+          "decoder_started": 2281138.08662597,
+          "decoder_completed": 2281138.086927386,
+          "sample_completed": 2281138.086929094
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 776,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281138.467888257,
+        "phase": "AV_STARTED",
+        "seconds": 32.027,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281138.451774504,
+          "player_time_started": 2281138.47085575,
+          "player_time_completed": 2281138.474564491,
+          "caching_started": 2281138.474586491,
+          "caching_completed": 2281138.499793014,
+          "decoder_started": 2281138.543870241,
+          "decoder_completed": 2281138.544263199,
+          "sample_completed": 2281138.544265157
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 787,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281138.970254428,
+        "phase": "AV_STARTED",
+        "seconds": 32.402,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281138.951912764,
+          "player_time_started": 2281138.972850089,
+          "player_time_completed": 2281138.975614666,
+          "caching_started": 2281138.975636207,
+          "caching_completed": 2281139.000239607,
+          "decoder_started": 2281139.045357749,
+          "decoder_completed": 2281139.045768581,
+          "sample_completed": 2281139.045771331
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 799,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281139.474917012,
+        "phase": "AV_STARTED",
+        "seconds": 33.028,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281139.452089274,
+          "player_time_started": 2281139.477296589,
+          "player_time_completed": 2281139.479758417,
+          "caching_started": 2281139.479777459,
+          "caching_completed": 2281139.501270949,
+          "decoder_started": 2281139.557743149,
+          "decoder_completed": 2281139.558380855,
+          "sample_completed": 2281139.55838473
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 811,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281139.977657736,
+        "phase": "AV_STARTED",
+        "seconds": 33.445,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281139.952224338,
+          "player_time_started": 2281139.98475426,
+          "player_time_completed": 2281139.99193166,
+          "caching_started": 2281139.991971077,
+          "caching_completed": 2281140.002746801,
+          "decoder_started": 2281140.055760509,
+          "decoder_completed": 2281140.056345174,
+          "sample_completed": 2281140.056349007
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 823,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281140.484409117,
+        "phase": "AV_STARTED",
+        "seconds": 34.07,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281140.452389068,
+          "player_time_started": 2281140.491149018,
+          "player_time_completed": 2281140.497457712,
+          "caching_started": 2281140.497476878,
+          "caching_completed": 2281140.504832986,
+          "decoder_started": 2281140.556442407,
+          "decoder_completed": 2281140.557101363,
+          "sample_completed": 2281140.55710653
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 835,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281140.973719968,
+        "phase": "AV_STARTED",
+        "seconds": 34.488,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281140.952537601,
+          "player_time_started": 2281140.976254962,
+          "player_time_completed": 2281140.978820622,
+          "caching_started": 2281140.978839164,
+          "caching_completed": 2281141.00531781,
+          "decoder_started": 2281141.046876629,
+          "decoder_completed": 2281141.047165087,
+          "sample_completed": 2281141.047166503
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 847,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 2281141.46052574,
+        "phase": "AV_STARTED",
+        "seconds": 35.071,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 2281141.452624967,
+          "player_time_started": 2281141.463356442,
+          "player_time_completed": 2281141.466175436,
+          "caching_started": 2281141.466195519,
+          "caching_completed": 2281141.501899769,
+          "decoder_started": 2281141.557088557,
+          "decoder_completed": 2281141.557666973,
+          "sample_completed": 2281141.557671098
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame count": 859,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "native": {
+          "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+          "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+          "subtitle_file_applied": true,
+          "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      }
+    ],
+    "record": {
+      "test": {
+        "title": "Ping Pong the Animation",
+        "tmdb_id": 60811,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": null,
+      "started": 2281027.314267833,
+      "home": {
+        "generation": 53,
+        "intent": 0,
+        "retired_generation": 53,
+        "observed_at": 2281027.79183259
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2281027.793514831,
+      "picker": {
+        "window": 13001,
+        "generation": 54,
+        "intent": 0,
+        "tmdb_id": 60811,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2281032.282168501,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.39 GB",
+        "Container(1000).ListItem.Property(source_key)": "2ee81999cb1f4e386b5c02394bd9d8a26b059ec6e8fa8582bf4a2dc9c049ca5b",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2281101.791146105,
+      "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+      "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+      "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+      "first_av_observed_at": 2281106.479231561,
+      "select_to_av_observed_seconds": 4.688085455913097
+    },
+    "trace_health": {
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "trace_signal_diagnostics": {
+      "caching_sample_runs": [],
+      "stationary_decoder_with_caching_runs": [],
+      "stationary_clock_with_decoder_progress_runs": [],
+      "observation_gap_events": [],
+      "clock_step_events": [],
+      "decoder_counter_reset_events": [],
+      "changes_legacy_result": false,
+      "render_continuity_proven": false,
+      "exact_transition_times_proven": false
+    },
+    "trace_coverage": {
+      "legacy_health": {
+        "no_observed_stall": true,
+        "max_observed_stall_seconds": 0.0,
+        "clock_discontinuities": 0,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "av_sample_count": 71,
+      "positive_av_sample_count": 70,
+      "positive_adjacent_interval_count": 69,
+      "longest_contiguous_positive_av_span_seconds": 34.479455769993365,
+      "whole_startup_or_render_continuity_proven": false,
+      "status": "no_anomaly_in_observed_window",
+      "reason": "BOUNDED_OBSERVATION_ONLY",
+      "passed": true
+    },
+    "trace_passed": true
+  },
+  "diagnostic_present": false,
+  "work": "ping_pong",
+  "operation": "select",
+  "attempt": 4,
+  "regression_attempt": true
+}

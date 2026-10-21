@@ -33,7 +33,11 @@ def view():
  if p.is_file():
   state=json.loads(p.read_text());out['installation']={k:state[k] for k in ('sequence','high_watermark','phase','host_pending','tx') if k in state}
  return out
-if MODE=='trace-on':
+if MODE=='stop-smoke':
+ if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
+ if not re.fullmatch(r'bobbi-ui-smoke-[0-9]+',SMOKE_RUN or ''):raise RuntimeError('INVALID_SMOKE_RUN')
+ builtin('StopScript(/storage/.kodi/temp/'+SMOKE_RUN+'/smoke.py)')
+elif MODE=='trace-on':
  if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
  trace=run/'entry-stack.txt'
  (run/'trace.py').write_text('import faulthandler,xbmc\nf=open('+repr(str(trace))+',"w")\nfaulthandler.dump_traceback_later(10,file=f)\nxbmc.Monitor().waitForAbort(35)\nfaulthandler.cancel_dump_traceback_later()\nf.close()\n')
@@ -125,7 +129,8 @@ print(json.dumps(view()))
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True)
-    p.add_argument('--mode',choices=('stage','open','view','choose','back','restart-idle','diagnose','native-stack','trace-on','trace-read'),required=True)
+    p.add_argument('--mode',choices=('stage','open','view','choose','back','restart-idle','diagnose','native-stack','trace-on','trace-read','stop-smoke'),required=True)
+    p.add_argument('--smoke-run')
     p.add_argument('--run-id',required=True);p.add_argument('--entry',type=Path)
     p.add_argument('--window',type=int);p.add_argument('--label');p.add_argument('--control',type=int);p.add_argument('--index',type=int);p.add_argument('--choice-label')
     a=p.parse_args()
@@ -144,7 +149,7 @@ def main():
             with c.open_sftp() as s:
                 s.mkdir(run,mode=0o700);s.put(str(a.entry),run+'/entry.zip')
         values=dict(RUN=run,MODE=a.mode,EXPECTED=hashlib.sha256(a.entry.read_bytes()).hexdigest() if a.entry else None,
-                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index,CHOICE_LABEL=a.choice_label)
+                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index,CHOICE_LABEL=a.choice_label,SMOKE_RUN=a.smoke_run)
         code='\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'
         code+='import traceback\ntry:\n'+textwrap.indent(REMOTE,' ')+'\n'
         code+='except Exception as e:\n print(json.dumps(dict(error_type=type(e).__name__,error_code=str(e) if re.fullmatch("[A-Z_0-9]{1,80}",str(e)) else None,frames=[dict(file=pathlib.Path(f.filename).name,line=f.lineno,function=f.name) for f in traceback.extract_tb(e.__traceback__)])))\n'

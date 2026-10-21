@@ -13,6 +13,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--transport-source',type=Path,required=True)
     parser.add_argument('--quiesce-only',action='store_true')
+    parser.add_argument('--cooperative-stop',action='store_true')
     parser.add_argument('--cycles',type=int,choices=range(1,5),default=1)
     args=parser.parse_args()
     sys.path.insert(0,str(args.transport_source/'ui-redesign/runtime/ssh-python'))
@@ -30,7 +31,7 @@ print(path.read_text() if path.exists() else json.dumps(dict(state='pending',pas
     try:
         with client.open_sftp() as sftp:
             sftp.mkdir(run,mode=0o700)
-            payload='QUIESCE_ONLY='+repr(args.quiesce_only)+'\nCYCLES='+repr(args.cycles)+'\n'+(ROOT/'tools/ce_managed_recovery_remote.py').read_text(encoding='utf-8')
+            payload='QUIESCE_ONLY='+repr(args.quiesce_only)+'\nCOOPERATIVE_STOP='+repr(args.cooperative_stop)+'\nCYCLES='+repr(args.cycles)+'\n'+(ROOT/'tools/ce_managed_recovery_remote.py').read_text(encoding='utf-8')
             with sftp.file(run+'/trial.py','wb') as script:
                 script.write(payload.encode('utf-8'))
         rc,result,diagnostic=wire.readonly(client,('RUN='+repr(run)+'\n'+code).encode(),deadline_seconds=58)

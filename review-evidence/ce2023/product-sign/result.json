@@ -1,0 +1,23 @@
+{
+  "command": [
+    ".venv-closure/Scripts/python.exe",
+    "tools/sign_private_bundle.py",
+    "--key",
+    "D:/AM6B-Project/bobbi-tv/.private/offline-release-rsa3072.pem",
+    "--components",
+    "dist/ce2023-product",
+    "--profile",
+    "coreelec",
+    "--sequence",
+    "2026102023",
+    "--output",
+    "dist/ce2023-delivery/bobbi-private-2026102023-coreelec.bobbi-update.zip"
+  ],
+  "cwd": "D:\\AM6B-Project\\bobbi-tv-ce2023-closure-20261021",
+  "started": 1792549389.917815,
+  "elapsed": 0.41724061965942383,
+  "exit_code": 0,
+  "runner_sha256": "1701efc16c6647fc74cb3f5a83aeb2cfca505021471a1e666c4f508c76a7c227",
+  "commit": "ea3dc1eb209af7208165a24be0b669912a8b39f5",
+  "dirty": true
+}

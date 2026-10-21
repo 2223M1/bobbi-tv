@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv-closure/Scripts/python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_ce2024_gui_fence.py",
+    "tests/test_ce2012_recovery_ui.py",
+    "tests/test_ce_general_installer.py",
+    "tests/test_ce_install_recovery.py"
+  ],
+  "cwd": "D:\\AM6B-Project\\bobbi-tv-ce2023-closure-20261021",
+  "started": 1792550384.785989,
+  "elapsed": 31.39465641975403,
+  "exit_code": 0,
+  "runner_sha256": "1701efc16c6647fc74cb3f5a83aeb2cfca505021471a1e666c4f508c76a7c227",
+  "commit": "ea3dc1eb209af7208165a24be0b669912a8b39f5",
+  "dirty": true
+}

@@ -1,0 +1,52 @@
+{
+  "action": "snapshot",
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792550754671996300",
+  "progress": {
+    "scope": "real CE native managed recovery and quiesce; no media commands",
+    "events": [
+      "before_initial_snapshot"
+    ],
+    "enabled_before": [
+      "plugin.video.bobbi",
+      "plugin.video.bobbi.library",
+      "plugin.video.bobbi.torrent",
+      "repository.bobbi",
+      "resource.uisounds.bobbi-modern",
+      "script.bobbi.opensubtitles",
+      "script.bobbi.setup",
+      "script.module.bobbi.catalog",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.platform",
+      "skin.bobbi.cinema"
+    ],
+    "skin_before": "skin.bobbi.cinema"
+  },
+  "lines": [
+    "2026-10-21 10:45:02.389 T:6112     info <general>: [bobbi] SHUTDOWN_BEGIN_RUNTIME",
+    "2026-10-21 10:45:02.389 T:6112     info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_BEGIN",
+    "2026-10-21 10:45:02.473 T:6112     info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_END",
+    "2026-10-21 10:45:02.473 T:6112     info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_BEGIN",
+    "2026-10-21 10:45:02.473 T:6112     info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_END",
+    "2026-10-21 10:45:02.473 T:6112     info <general>: [bobbi] RUNTIME_CLOSE_LOOP_JOINED",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [bobbi] SHUTDOWN_DRAINED_RUNTIME",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [bobbi] SHUTDOWN_BEGIN_PLAYBACK",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] native control begin",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] native control drained",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] auxiliary startup join COMPLETE",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-11 (run)",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-12 (run)",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] auxiliary worker join AM6BPrimaryCatalogWarmup",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-13 (run)",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [BOBBI-SHUTDOWN] auxiliary workers drained",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [bobbi] SHUTDOWN_DRAINED_PLAYBACK",
+    "2026-10-21 10:45:02.474 T:6112     info <general>: [bobbi] SHUTDOWN_BEGIN_IMAGES",
+    "2026-10-21 10:45:02.530 T:6112     info <general>: [bobbi] SHUTDOWN_DRAINED_IMAGES",
+    "2026-10-21 10:45:02.530 T:6112     info <general>: [bobbi] SHUTDOWN_BEGIN_PREPARATION",
+    "2026-10-21 10:45:02.536 T:6112     info <general>: [bobbi] SHUTDOWN_DRAINED_PREPARATION",
+    "2026-10-21 10:45:02.536 T:6112     info <general>: [bobbi] SHUTDOWN_BEGIN_ACCOUNT_SUBSCRIPTION",
+    "2026-10-21 10:45:02.536 T:6112     info <general>: [bobbi] SHUTDOWN_DRAINED_ACCOUNT_SUBSCRIPTION"
+  ],
+  "stack": "\nRemaining interpreter threads: [('MainThread', False, True)]\nCurrent thread 0xaf0b5180 (most recent call first):\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/portable_runtime.py\", line 61 in main\n  File \"/storage/.kodi/addons/plugin.video.bobbi/service.py\", line 13 in <module>\n",
+  "trial_stack": "Timeout (0:00:08)!\nThread 0xa373d180 (most recent call first):\n  File \"/storage/.kodi/temp/bobbi-recovery-1792550754671996300/trial.py\", line 56 in <module>\n"
+}

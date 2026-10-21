@@ -1,0 +1,147 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "ping_pong",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Ping Pong the Animation",
+        "tmdb_id": 60811,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": null,
+      "started": 2281027.314267833,
+      "home": {
+        "generation": 53,
+        "intent": 0,
+        "retired_generation": 53,
+        "observed_at": 2281027.79183259
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2281027.793514831,
+      "picker": {
+        "window": 13001,
+        "generation": 54,
+        "intent": 0,
+        "tmdb_id": 60811,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2281032.282168501,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.39 GB",
+        "Container(1000).ListItem.Property(source_key)": "2ee81999cb1f4e386b5c02394bd9d8a26b059ec6e8fa8582bf4a2dc9c049ca5b",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2281101.791146105,
+      "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+      "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+      "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+      "first_av_observed_at": 2281106.479231561,
+      "select_to_av_observed_seconds": 4.688085455913097
+    },
+    "sample": {
+      "wall": 2281172.15852574,
+      "phase": "AV_STARTED",
+      "native": {
+        "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+        "monotonic_us": 2281106346595,
+        "native_instance": "1630e392-f1d7-4ac6-ac80-9bc703dcbe70",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "c0ea4fb397b4467c850b7ab72c7a4159",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "0e933dfb680de97b2de666ec4d9fc4c9c5264819349f633f8717d459e5d3aa82",
+        "subtitle_intent": 0,
+        "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 65.685,
+      "duration": 1372.007,
+      "currentaudiostream": {
+        "bitrate": 191305,
+        "channels": 2,
+        "codec": "opus",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "jpn",
+        "name": "Japanese 2.0",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 3,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "",
+        "name": "0e933dfb680de97b2de666ec4d9fc4c9 （外挂）"
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1080,
+        "index": 0,
+        "language": "jpn",
+        "name": "Vodes Encode",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder_counters": {
+        "frame count": 1595,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "observation_times": {
+        "sample_started": 2281172.146332094,
+        "player_time_started": 2281172.161375152,
+        "player_time_completed": 2281172.164304647,
+        "caching_started": 2281172.164326355,
+        "caching_completed": 2281172.201276126,
+        "decoder_started": 2281172.244384512,
+        "decoder_completed": 2281172.245260469,
+        "sample_completed": 2281172.245262635
+      }
+    }
+  },
+  "diagnostic_present": false,
+  "work": "ping_pong",
+  "operation": "inspect",
+  "attempt": 4,
+  "regression_attempt": true
+}

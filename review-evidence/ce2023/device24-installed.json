@@ -1,0 +1,61 @@
+{
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "result": {
+    "time": 1792550724.3265524,
+    "players": [],
+    "window": {
+      "currentcontrol": {
+        "label": "1. 检查播放器 · 通过"
+      },
+      "currentwindow": {
+        "id": 12000,
+        "label": "选择对话框"
+      }
+    },
+    "program_state": {
+      "state.json": {
+        "sequence": 2026102021
+      }
+    },
+    "installer_state": {
+      "sequence": 2026102024,
+      "high_watermark": 2026102024,
+      "phase": "complete"
+    },
+    "versions": {
+      "script.bobbi.start": {
+        "addon": {
+          "addonid": "script.bobbi.start",
+          "enabled": true,
+          "type": "xbmc.python.script",
+          "version": "0.2.15"
+        }
+      },
+      "script.module.bobbi.platform": {
+        "addon": {
+          "addonid": "script.module.bobbi.platform",
+          "enabled": true,
+          "type": "xbmc.python.module",
+          "version": "0.1.18"
+        }
+      },
+      "script.module.bobbi.core": {
+        "addon": {
+          "addonid": "script.module.bobbi.core",
+          "enabled": true,
+          "type": "xbmc.python.module",
+          "version": "0.1.17"
+        }
+      },
+      "plugin.video.bobbi": {
+        "addon": {
+          "addonid": "plugin.video.bobbi",
+          "enabled": true,
+          "type": "xbmc.python.pluginsource",
+          "version": "0.1.16"
+        }
+      }
+    }
+  }
+}
