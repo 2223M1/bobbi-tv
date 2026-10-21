@@ -5,10 +5,12 @@ import importlib.util
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
 SPEC = importlib.util.spec_from_file_location('vendor_licenses', ROOT / 'tools/vendor_licenses.py')
 notices = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(notices)

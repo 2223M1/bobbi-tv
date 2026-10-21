@@ -6,8 +6,11 @@ from pathlib import Path, PurePosixPath
 import subprocess
 import xml.etree.ElementTree as ET
 import zipfile
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from provenance_document import read_source, write_source
 PACKAGES = {
     'script.module.requests': ('2.31.0', 67576),
     'script.module.routing': ('0.2.3+matrix.1', 25369),
@@ -33,7 +36,7 @@ def fetch(entry):
 
 def main():
     lock_path = ROOT / 'release/kodi-vendors.json'
-    lock = json.loads(lock_path.read_text(encoding='utf-8'))
+    lock = json.loads(read_source(ROOT, 'release/kodi-vendors.json'))
     for addon, version, archive, url in ThreadPoolExecutor(max_workers=4).map(fetch, PACKAGES.items()):
         digest = hashlib.sha256(archive.read_bytes()).hexdigest()
         if addon in lock and lock[addon]['archive_sha256'] != digest:
@@ -66,7 +69,7 @@ def main():
             'files': records,
         }
         print(addon, version, digest)
-    lock_path.write_text(json.dumps(lock, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
+    write_source(ROOT, 'release/kodi-vendors.json', (json.dumps(lock, ensure_ascii=False, indent=2) + '\n').encode('utf-8'))
 
 
 if __name__ == '__main__':

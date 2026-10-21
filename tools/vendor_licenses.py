@@ -10,6 +10,7 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
+from provenance_document import read_source, records
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = 'licenses/THIRD-PARTY.json'
@@ -21,7 +22,7 @@ def _hex(value, size):
 
 
 def load_manifest(root=ROOT):
-    data = json.loads((Path(root) / MANIFEST).read_text(encoding='utf-8'))
+    data = json.loads(read_source(root, MANIFEST))
     validate_manifest(data)
     return data
 
@@ -110,9 +111,12 @@ def fetch(root=ROOT, fetcher=download):
     """Verify every payload before writing any missing notice; no overwrite."""
     data = load_manifest(root)
     pending = []
+    embedded = records(root)
     for doc in data['documents']:
         dest = _destination(root, doc['file'])
-        if dest.exists():
+        if doc['file'] in embedded:
+            verify_bytes(doc, read_source(root, doc['file']))
+        elif dest.exists():
             verify_bytes(doc, dest.read_bytes())
         else:
             raw = fetcher(doc)
@@ -136,9 +140,9 @@ def verify(root=ROOT):
     data = load_manifest(root)
     for doc in data['documents']:
         dest = _destination(root, doc['file'])
-        if not dest.is_file():
+        if not dest.is_file() and doc['file'] not in records(root):
             raise ValueError('Missing pinned notice: ' + doc['id'])
-        verify_bytes(doc, dest.read_bytes())
+        verify_bytes(doc, read_source(root, doc['file']))
     return summary(data)
 
 
