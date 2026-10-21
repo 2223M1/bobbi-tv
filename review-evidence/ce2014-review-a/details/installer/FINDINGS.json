@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "repository": "2223M1/bobbi-tv",
+  "pull_request": 3,
+  "base": "ee65742bfcbaf08831f70306faed11bd1f8d6cc6",
+  "head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "reviewer_scope": "installer/recovery/host lifecycle",
+  "summary": {
+    "old_installation_contracts": {
+      "passed": 10,
+      "failed": 0
+    },
+    "focused_existing_tests": {
+      "passed": 92,
+      "failed": 0,
+      "seconds": 14.41
+    },
+    "lifecycle_counterexamples": {
+      "cases": 4,
+      "passed": 2,
+      "failed": 2
+    },
+    "standard_shutdown_counterexample": {
+      "cases": 2,
+      "passed": 1,
+      "failed": 1
+    },
+    "device_certification": false
+  },
+  "old_findings": [
+    {
+      "id": "R01",
+      "status": "original_counterexample_fixed",
+      "evidence": [
+        "installer-contracts-head.json:INSTALL-BOOT-GATE",
+        "installer-contracts-head.json:INSTALL-BOOT-AFTER-ENABLED-PROCESS-LOSS",
+        "installer-contracts-head.json:CONTROL-BLOCK-STAGED",
+        "installer-contracts-head.json:CONTROL-RESTORED-HOST-PENDING"
+      ],
+      "remaining_scope": "F01 separately covers the newly introduced raw-path fallback under already-enabled but no-running-host conditions."
+    },
+    {
+      "id": "R02",
+      "status": "original_counterexample_fixed",
+      "evidence": [
+        "installer-contracts-head.json:INSTALL-STALE-RUNTIME",
+        "installer-contracts-head.json:CONTROL-ACTIVE-RUNTIME-OWNER",
+        "focused-installer-tests.xml"
+      ],
+      "remaining_scope": "Nonblocking observation N01 covers live standard history work outliving the host lease; it does not claim stale marker recovery still fails."
+    },
+    {
+      "id": "R03",
+      "status": "original_counterexample_fixed",
+      "evidence": [
+        "installer-contracts-head.json:INSTALL-ENABLE-SNAPSHOT-UNKNOWN",
+        "focused-installer-tests.xml"
+      ],
+      "remaining_scope": "Strict GetAddonDetails/GetAddons fallback preserves unknown rather than treating failures as a disabled snapshot."
+    }
+  ],
+  "findings": [
+    {
+      "id": "INSTALL-F01",
+      "priority": "P1",
+      "status": "confirmed_with_primary_source_grounded_kodi_io_model",
+      "origin": "introduced_by_pr3",
+      "title": "已 enabled 但宿主未运行时，按文件路径 RunScript 启动绕过 addon 身份和 service 生命周期",
+      "location": {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py",
+        "start_line": 195,
+        "end_line": 198
+      },
+      "related_locations": [
+        {
+          "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py",
+          "start_line": 89,
+          "end_line": 123
+        },
+        {
+          "path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+          "start_line": 30,
+          "end_line": 46
+        },
+        {
+          "path": "addons/plugin.video.bobbi/lib/jacktook/utils.py",
+          "start_line": 11,
+          "end_line": 11
+        },
+        {
+          "path": "tests/test_ce2012_recovery_ui.py",
+          "start_line": 93,
+          "end_line": 105
+        }
+      ],
+      "precondition": "Kodi still reports plugin.video.bobbi enabled, its prior service interpreter has ended, and no live Runtime owns the stable lease; ensure_running therefore executes its raw-path recovery fallback.",
+      "demonstrated_impacts": [
+        "Native: real background_service import chain reaches a bare xbmcaddon.Addon(), fails with missing interpreter addon identity, and recovery ends CINEMA_SERVICE_NOT_READY.",
+        "Standard: actual Host/Runtime can answer ready from the untracked invocation, but a later real KodiHost.quiesce disables only the managed service handle; the recovered manual host keeps its OS lease and returns CINEMA_SERVICE_NOT_STOPPED."
+      ],
+      "positive_controls": [
+        "The same real native imports succeed with normal provider addon context.",
+        "An actual standard Host started through the managed-service IO path becomes ready and subsequently quiesces normally."
+      ],
+      "oracle": "Enabled-but-not-running recovery must start the actual service with valid Kodi identity and ownership so the same installer can later stop it.",
+      "reproducer": "reproduce_install_lifecycle.py",
+      "results": "RESULT.json",
+      "primary_sources": "PRIMARY-SOURCES.json",
+      "scope_limits": [
+        "No real Kodi or CE device was executed; exact upstream Kodi 21.3-Omega C++ invocation behavior is represented at the IO boundary.",
+        "The demonstrated failure is the fallback branch. Normal managed enable is a passing control; the finding does not assert that every installation fails.",
+        "Setting an explicit default xbmcaddon ID alone would not register the manual script with ServiceAddonManager; simply using RunScript(addon_id) does not promise the service extension."
+      ],
+      "fix_requirements": [
+        "Use Kodi's managed service lifecycle for restarting an already enabled but dead provider, or implement an equally explicit supported ownership mechanism that establishes service extension identity and stop/exit acknowledgement.",
+        "Retain actual owner readiness, boot gate, stable runtime inode, enable-vector readback and replay high-watermark rules.",
+        "Add an execution test for actual native imports with the fallback invocation identity and a standard fallback start -> second installer quiesce cycle; fake enabled/ready replies alone cannot validate either contract."
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "INSTALL-N01",
+      "priority": "P3",
+      "blocking": false,
+      "status": "observed_isolation_gap_without_demonstrated_current_upgrade_damage",
+      "origin": "inherited_close_policy_still_present_after_pr3_host_lease_changes",
+      "title": "标准播放历史 writer 仍在执行时，安装器已获得替换代次的 OS lease",
+      "location": {
+        "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+        "start_line": 36,
+        "end_line": 38
+      },
+      "related_locations": [
+        {
+          "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+          "start_line": 24,
+          "end_line": 32
+        },
+        {
+          "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+          "start_line": 285,
+          "end_line": 290
+        },
+        {
+          "path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+          "start_line": 43,
+          "end_line": 46
+        },
+        {
+          "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
+          "start_line": 346,
+          "end_line": 379
+        },
+        {
+          "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py",
+          "start_line": 100,
+          "end_line": 118
+        }
+      ],
+      "precondition": "Standard HistoryWriter has an admitted write still in disk IO for longer than its 0.3-second close join, or a remaining queue that has not drained.",
+      "demonstrated_impacts": [
+        "With real StandardPlayback, HistoryWriter, set_watched_file, Host, Runtime and KodiHost, quiesce succeeded in approximately 0.4 seconds while the old writer was alive.",
+        "With the installer's actual runtime lease still held, releasing the controlled final database IO allowed two old writes to occur after quiesce returned."
+      ],
+      "positive_controls": [
+        "With the same two real history requests fully drained first, shutdown and quiesce succeed, no history worker remains alive, and no old write occurs after replacement permission."
+      ],
+      "oracle": "The runtime lease authorizing source generation replacement must remain owned while admitted old-generation work can still execute imports or persistent writes.",
+      "reproducer": "reproduce_standard_shutdown.py",
+      "helper": "reproduce_install_lifecycle.py",
+      "results": "standard-shutdown-head.json",
+      "primary_sources": "PRIMARY-SOURCES.json",
+      "scope_limits": [
+        "The final database persistence boundary is a controlled IO double writing only temporary review data. User data corruption has not been demonstrated or claimed.",
+        "The script calls actual product close methods in portable_runtime.main's exact finally order, rather than executing an entire real Kodi interpreter.",
+        "Kodi waits for interpreter threads, but its asynchronous Disabled acknowledgement/readback does not provide an independent barrier to the installer's runtime-lease admission.",
+        "This is distinct from the now-passing R02 process-loss/stale-marker case.",
+        "Independent peer challenge: real PickleDatabase has its own cross-process flock and atomic operation-merged writes; the two observed writes remain in valid order, and the history implementation did not change in this PR. These facts limit inference from late writes to a concrete current-upgrade failure.",
+        "Retain as a nonblocking hardening observation; do not count its diagnostic exit code as a release gate until a user-visible effect or explicit stronger shutdown requirement is established."
+      ],
+      "fix_requirements": [
+        "Account for the standard history, next-candidate and subtitle workers in the host shutdown ownership protocol; stop admission and cancel where safe before draining or waiting.",
+        "Retain the runtime lease until workers have ended or have been made incapable of further old-generation effects. A join timeout alone is not evidence of quiescence.",
+        "Add real StandardPlayback/HistoryWriter shutdown coverage alongside existing HTTP/engine/catalog lease checks; ensure normal shutdown remains available and blocked work fails recoverably without granting replacement permission."
+      ]
+    }
+  ],
+  "crosscheck": {
+    "playback_monitor": {
+      "result": "native-monitor-crosscheck.json",
+      "cases": 5,
+      "passed": 3,
+      "failed": 2,
+      "note": "Peer's separate inherited monitor finding independently reproduced; do not duplicate its count here."
+    }
+  },
+  "required_environment": {
+    "python": "3.12.14 in this review; production supports Python 3.8+",
+    "dependencies": "pytest 9.1.1, requests 2.34.2, cryptography 50.0.1 available from review-deps",
+    "io": "Local loopback socket access is required by real Host/Runtime checks; no device or external service access."
+  }
+}

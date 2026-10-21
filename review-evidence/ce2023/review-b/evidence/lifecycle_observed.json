@@ -1,0 +1,27 @@
+{
+  "head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "probes": [
+    {
+      "case": "host_failure_skips_cleanup_and_releases_lease",
+      "first_error": "injected image shutdown failure",
+      "cleanup_calls": [
+        "images"
+      ],
+      "lease_free_after_failure": true,
+      "retry_cleaned_streams": false,
+      "defect_reproduced": true
+    },
+    {
+      "case": "standard_history_outlives_host_lease",
+      "history_worker_alive_after_standard_close": true,
+      "lease_free_while_history_worker_alive": true,
+      "defect_reproduced": true
+    },
+    {
+      "case": "history_accepts_after_close",
+      "worker_alive": false,
+      "queued_after_close": 1,
+      "defect_reproduced": true
+    }
+  ]
+}

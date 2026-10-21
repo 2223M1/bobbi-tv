@@ -1,0 +1,251 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "ping_pong",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Ping Pong the Animation",
+        "tmdb_id": 60811,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "af5f322c75854f85971115d6848b47db",
+      "started": 2273281.960880566,
+      "home": {
+        "generation": 77,
+        "intent": 1,
+        "retired_generation": 77,
+        "observed_at": 2273282.26170077
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_resume_percent": 98.8,
+      "launched_at": 2273282.262124436,
+      "picker": {
+        "window": 13001,
+        "generation": 78,
+        "intent": 1,
+        "tmdb_id": 60811,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2273286.76228984
+    },
+    "samples": [
+      {
+        "wall": 2273282.46389411,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273282.445621715,
+          "decoder_started": 2273282.478677975,
+          "decoder_completed": 2273282.479504764,
+          "sample_completed": 2273282.479507305
+        }
+      },
+      {
+        "wall": 2273284.652322172,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273284.612152103,
+          "decoder_started": 2273284.695440605,
+          "decoder_completed": 2273284.695744313,
+          "sample_completed": 2273284.695746354
+        }
+      },
+      {
+        "wall": 2273286.795616515,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "7"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273286.762864588,
+          "decoder_started": 2273286.814378742,
+          "decoder_completed": 2273286.814668824,
+          "sample_completed": 2273286.814670741
+        }
+      },
+      {
+        "wall": 2273288.912236285,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "8",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "8"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273288.897857793,
+          "decoder_started": 2273288.931751258,
+          "decoder_completed": 2273288.932413881,
+          "sample_completed": 2273288.932418381
+        }
+      },
+      {
+        "wall": 2273290.996629415,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "8",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "8"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273290.98036593,
+          "decoder_started": 2273291.013108358,
+          "decoder_completed": 2273291.013413898,
+          "sample_completed": 2273291.013416065
+        }
+      },
+      {
+        "wall": 2273293.200784337,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "8",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "8"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273293.178590414,
+          "decoder_started": 2273293.211592466,
+          "decoder_completed": 2273293.212158964,
+          "sample_completed": 2273293.212161548
+        }
+      },
+      {
+        "wall": 2273295.289025162,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "8",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "8"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273295.28075869,
+          "decoder_started": 2273295.310294546,
+          "decoder_completed": 2273295.31070617,
+          "sample_completed": 2273295.310708836
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "ping_pong",
+  "operation": "start",
+  "attempt": 3,
+  "regression_attempt": true
+}

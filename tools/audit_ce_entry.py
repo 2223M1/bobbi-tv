@@ -46,7 +46,9 @@ def audit(path):
                 'assert "bobbi_core" not in sys.modules')
             subprocess.run([sys.executable, '-I', '-B', '-c', script, str(temporary/'bootstrap')],
                            check=True, timeout=15, cwd=temporary)
-            assert entry.read('script.bobbi.start/bootstrap/LICENSE')
+            # Legacy entries can contain a document; current clean builds do
+            # not. Neither presence nor absence is a runtime trust primitive.
+            # Signature, same-generation code and isolated import stay required.
     return dict(schema=1, sequence=manifest['sequence'], user_entry=Path(path).name,
         kodi_addon_xml='passed', embedded_complete_signature='passed', same_generation_bootstrap='passed',
         isolated_bootstrap_import='passed', account_state_copied=False,

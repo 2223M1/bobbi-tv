@@ -39,6 +39,12 @@ def discover_candidate(context, deadline, cancelled, provider, share_provider=No
     """Shared discovery only. No native receipt creation or Kodi mutations."""
     context = dict(context)
     context.pop('_movie_years', None)
+    context.pop('_subtitle_single_season', None)
+    if context.get('mode') == 'series':
+        from lib.clients.tmdb.subtitle_scope import cached_scope
+        scope = cached_scope(context.get('tmdb'))
+        if scope is not None:
+            context['_subtitle_single_season'] = scope
     if context.get('mode') == 'movie':
         from lib.clients.tmdb.movie_years import cached_movie_years
         evidence = cached_movie_years(context.get('tmdb'))
@@ -119,7 +125,7 @@ class SubtitleFallback:
         if self.worker is not None:
             # Isolated network I/O observes cancellation every 10ms and is
             # terminated/joined before its owning worker retires.
-            self.worker.join(timeout=.3)
+            self.worker.join()
 
     def request(self, row):
         key = receipt_key(row)

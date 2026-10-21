@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "actual_independent_final_counts": {
+    "total": 48,
+    "passed": 42,
+    "failed": 6,
+    "errors": 0
+  },
+  "first_run_provisional_ui_incomplete": true,
+  "excluded_suspicion": "G02 full-cap focus passes actual SourceListSession; initial simplified fixture omitted upstream protection",
+  "conditional_advisory": "G03 direct renderer mutation only; actual publish retains original metadata",
+  "reference_patch_ui": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "scope": "Narrow G03 patch only; no G01 repair"
+  },
+  "candidate_router_selftest": "passed; synthetic tree unchanged",
+  "package_tamper_detection": "passed",
+  "full_git_blob_verified_count": 11,
+  "method_excerpt_count": 2,
+  "device_execution": false,
+  "full_repo_reexecuted": false,
+  "signed_installation_zip_independently_downloaded": false,
+  "ci_archive_sha256": "7e0894e4fe85e7d9cf54e137cf38ba20f3f62aed46d2194cc013dfd36f85fc93",
+  "ci_junit_passed": 2684,
+  "ci_junit_skipped": 5,
+  "ci_is_independent_local_run": false
+}

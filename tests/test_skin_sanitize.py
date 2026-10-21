@@ -106,7 +106,7 @@ def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
     for font in skin.TEXT_FONTS:
         assert hashlib.sha256((output / 'fonts' / font).read_bytes()).hexdigest() == before['fonts/' + font]
     assert hashlib.sha256((output / 'fonts' / skin.ICON_FONT).read_bytes()).hexdigest() == skin.ICON_SHA256
-    assert (output / 'fonts' / skin.ICON_LICENSE).is_file()
+    assert not (output / 'fonts' / skin.ICON_LICENSE).exists()
     assert skin.font_supports((output / 'fonts/BobiAF-Solid.ttf').read_bytes(), '\uf058\uf01b\uf13e\uf1ab\uf6ff\uf55a\uf0a8\uf0a9\uf05c')
     addon = ET.parse(output / 'addon.xml').getroot()
     assert addon.get('id') == 'skin.bobbi.cinema'

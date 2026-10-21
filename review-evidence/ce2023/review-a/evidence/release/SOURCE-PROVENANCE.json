@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "tree": "bbe592e62a7a6790c62725738b63dae9b9f9405a",
+  "method": "Compute Git blob SHA-1 over the actual UTF-8 bytes and compare to recursive Git tree returned for the pinned commit; also compute SHA-256.",
+  "files": [
+    {
+      "path": "tools/package_ce2021_github.py",
+      "bytes": 11844,
+      "sha256": "ace9cd97d4b0d059dc0c290862a32034c9125552881a3f8a1ff25724343c75db",
+      "git_blob_sha1": "fb1e0f413b6b8616d6dbe5ca7bf8639838112db7",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/package_ce2021_github.py"
+    },
+    {
+      "path": "review-evidence/ce2021-clean-packaging-result.json",
+      "bytes": 968,
+      "sha256": "b3241c8ececaea66005b0159affecd9ad76e4089494977b10ecd6e3f0002435a",
+      "git_blob_sha1": "bf438eb1c3e8b5a652e7f991a29df608a638859b",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/review-evidence/ce2021-clean-packaging-result.json"
+    },
+    {
+      "path": "docs/CE-REVIEW-CLOSURE-2021-20261021.md",
+      "bytes": 16320,
+      "sha256": "a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722",
+      "git_blob_sha1": "09b78639392c9c5a0515d62c2995ccf6759bb598",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/docs/CE-REVIEW-CLOSURE-2021-20261021.md"
+    },
+    {
+      "path": ".github/workflows/verify.yml",
+      "bytes": 2091,
+      "sha256": "8d375beb5d0528a52d01d4afa62aefddadcd5f59cfc29b400c5326b5d1323d33",
+      "git_blob_sha1": "68c255162d9c5ea2114b0233c19ef0a229555fdb",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/.github/workflows/verify.yml"
+    },
+    {
+      "path": "tools/build_release.py",
+      "bytes": 8217,
+      "sha256": "2bc6c6886618e72f5f19c8da7b4f4136668f12fa99af57cd268f766bf250c5ed",
+      "git_blob_sha1": "7c70a8dc5b4a7346ca14b132b1309cea21ae8acc",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/build_release.py"
+    },
+    {
+      "path": "tools/build_preview.py",
+      "bytes": 2851,
+      "sha256": "2077f3c80912b910def3414091baff1bc1e5b6a03ad6f15865863718f5438f58",
+      "git_blob_sha1": "f4720c0ad5476e75d091fd875b7b58da79d4d883",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/build_preview.py"
+    },
+    {
+      "path": "tools/build_ce_entry.py",
+      "bytes": 3939,
+      "sha256": "d38268a5df23afce711484aad5555c589f2a44620b049714c1f72efaa070162a",
+      "git_blob_sha1": "974858d6bdae4496065536b04931d8310c3b642b",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/build_ce_entry.py"
+    },
+    {
+      "path": "tools/audit_ce_entry.py",
+      "bytes": 3510,
+      "sha256": "96803a536e7894b556ecd3ff48ff77c42b3c54873abef343b5cd46ce8158bf81",
+      "git_blob_sha1": "b5aed558e33c792bec657f5503f34a21e92bbecd",
+      "git_tree_verified": true,
+      "source_url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/audit_ce_entry.py"
+    }
+  ]
+}

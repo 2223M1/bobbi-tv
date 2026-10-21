@@ -1,0 +1,219 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "ping_pong",
+    "operation": "wait",
+    "record": {
+      "test": {
+        "title": "Ping Pong the Animation",
+        "tmdb_id": 60811,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "af5f322c75854f85971115d6848b47db",
+      "started": 2273281.960880566,
+      "home": {
+        "generation": 77,
+        "intent": 1,
+        "retired_generation": 77,
+        "observed_at": 2273282.26170077
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_resume_percent": 98.8,
+      "launched_at": 2273282.262124436,
+      "picker": {
+        "window": 13001,
+        "generation": 78,
+        "intent": 1,
+        "tmdb_id": 60811,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2273286.76228984,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.39 GB",
+        "Container(1000).ListItem.Property(source_key)": "2ee81999cb1f4e386b5c02394bd9d8a26b059ec6e8fa8582bf4a2dc9c049ca5b",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2273318.209685206,
+      "request_id": "a4727a445c914c3ea4c0962295e4c276",
+      "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+      "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+      "first_av_observed_at": 2273323.599948744,
+      "select_to_av_observed_seconds": 5.390263537876308
+    },
+    "samples": [
+      {
+        "wall": 2273319.466096626,
+        "phase": null,
+        "native": {},
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13002,
+            "label": "只有视频"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273319.439387803,
+          "decoder_started": 2273319.479104623,
+          "decoder_completed": 2273319.483031651,
+          "sample_completed": 2273319.483035151
+        }
+      },
+      {
+        "wall": 2273321.505049491,
+        "phase": "OPEN",
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2273321.483149692,
+          "decoder_started": 2273321.532260397,
+          "decoder_completed": 2273321.532544354,
+          "sample_completed": 2273321.532546771
+        }
+      },
+      {
+        "wall": 2273323.600543534,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273322970392,
+          "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 1341.504,
+        "duration": 1372.007,
+        "currentaudiostream": {
+          "bitrate": 191305,
+          "channels": 2,
+          "codec": "opus",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "Japanese 2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "eng",
+          "name": "English [SCY/Commie]"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "Vodes Encode",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": false,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13002,
+            "label": "只有视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 34,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2273323.532694395,
+          "player_time_started": 2273323.610839582,
+          "player_time_completed": 2273323.618114473,
+          "caching_started": 2273323.618157264,
+          "caching_completed": 2273323.638430611,
+          "decoder_started": 2273323.702961136,
+          "decoder_completed": 2273323.703688633,
+          "sample_completed": 2273323.703694383
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "ping_pong",
+  "operation": "wait",
+  "attempt": 3,
+  "regression_attempt": true
+}

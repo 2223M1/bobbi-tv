@@ -1,0 +1,32 @@
+{
+  "sequence": 2026102022,
+  "removed_entries": 49,
+  "components": 22,
+  "original_key_verified": true,
+  "signature_verified": true,
+  "nested_zip_verified": true,
+  "non_document_files_unchanged": true,
+  "device_deployed": false,
+  "assets": [
+    {
+      "name": "bobbi-private-2026102022-coreelec.bobbi-update.zip",
+      "bytes": 96135572,
+      "sha256": "c0ebea710ef3dda667c4336aa42b4b212469399468f6081f60d806e8171ca696"
+    },
+    {
+      "name": "CE-REVIEW-CLOSURE-2021-20261021.md",
+      "bytes": 16320,
+      "sha256": "a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722"
+    },
+    {
+      "name": "ce2021-clean-delivery-20261021.zip",
+      "bytes": 199794948,
+      "sha256": "4188691ab12040ac0f1e33bcba6761c6a02fc5bc6c00932f23991192988da708"
+    },
+    {
+      "name": "script.bobbi.start-0.2.13-ce2021-clean.zip",
+      "bytes": 96233587,
+      "sha256": "bf10e21a30f98a74c99671985600a79da692371733f5ca17a21179565a72cb6b"
+    }
+  ]
+}

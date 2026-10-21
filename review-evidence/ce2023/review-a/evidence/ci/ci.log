@@ -1,0 +1,1160 @@
+﻿2026-10-21T01:10:43.9480496Z Current runner version: '2.337.0'
+2026-10-21T01:10:43.9596150Z ##[group]Runner Image Provisioner
+2026-10-21T01:10:43.9598027Z Hosted Compute Agent
+2026-10-21T01:10:43.9599143Z Version: 20261012.601
+2026-10-21T01:10:43.9600213Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-21T01:10:43.9601485Z Build Date: 2026-10-12T17:48:21Z
+2026-10-21T01:10:43.9602781Z Worker ID: {b0b60b3d-d051-4398-8976-bdc2c9712776}
+2026-10-21T01:10:43.9604026Z Region: centralus
+2026-10-21T01:10:43.9605341Z Cloud: Azure
+2026-10-21T01:10:43.9606265Z ##[endgroup]
+2026-10-21T01:10:43.9608763Z ##[group]Operating System
+2026-10-21T01:10:43.9609960Z Ubuntu
+2026-10-21T01:10:43.9610884Z 24.04.5
+2026-10-21T01:10:43.9611717Z LTS
+2026-10-21T01:10:43.9612673Z ##[endgroup]
+2026-10-21T01:10:43.9613603Z ##[group]Runner Image
+2026-10-21T01:10:43.9616567Z Image: ubuntu-24.04
+2026-10-21T01:10:43.9617679Z Version: 20261012.334.1
+2026-10-21T01:10:43.9620016Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-21T01:10:43.9622809Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-21T01:10:43.9624948Z ##[endgroup]
+2026-10-21T01:10:43.9627018Z ##[group]GITHUB_TOKEN Permissions
+2026-10-21T01:10:43.9630868Z Contents: read
+2026-10-21T01:10:43.9631942Z Metadata: read
+2026-10-21T01:10:43.9632847Z ##[endgroup]
+2026-10-21T01:10:43.9659580Z Secret source: Actions
+2026-10-21T01:10:43.9661505Z Cache mode: write
+2026-10-21T01:10:43.9663573Z Prepare workflow directory
+2026-10-21T01:10:44.0838478Z Prepare all required actions
+2026-10-21T01:10:44.1002828Z Getting action download info
+2026-10-21T01:10:44.4032388Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-21T01:10:44.5168856Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-10-21T01:10:44.6065861Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-21T01:10:44.8512426Z Complete job name: verify
+2026-10-21T01:10:44.9413861Z ##[group]Run actions/checkout@v4
+2026-10-21T01:10:44.9415310Z with:
+2026-10-21T01:10:44.9415812Z   repository: 2223M1/bobbi-tv
+2026-10-21T01:10:44.9419892Z   token: ***
+2026-10-21T01:10:44.9420341Z   ssh-strict: true
+2026-10-21T01:10:44.9420799Z   ssh-user: git
+2026-10-21T01:10:44.9421250Z   persist-credentials: true
+2026-10-21T01:10:44.9421735Z   clean: true
+2026-10-21T01:10:44.9422180Z   sparse-checkout-cone-mode: true
+2026-10-21T01:10:44.9422707Z   fetch-depth: 1
+2026-10-21T01:10:44.9423147Z   fetch-tags: false
+2026-10-21T01:10:44.9423590Z   show-progress: true
+2026-10-21T01:10:44.9424033Z   lfs: false
+2026-10-21T01:10:44.9424441Z   submodules: false
+2026-10-21T01:10:44.9425477Z   set-safe-directory: true
+2026-10-21T01:10:44.9426016Z   allow-unsafe-pr-checkout: false
+2026-10-21T01:10:44.9426923Z ##[endgroup]
+2026-10-21T01:10:45.1031289Z Syncing repository: 2223M1/bobbi-tv
+2026-10-21T01:10:45.1036577Z ##[group]Getting Git version info
+2026-10-21T01:10:45.1046692Z Working directory is '/home/runner/work/bobbi-tv/bobbi-tv'
+2026-10-21T01:10:45.1081849Z [command]/usr/bin/git version
+2026-10-21T01:10:45.1156769Z git version 2.55.0
+2026-10-21T01:10:45.1246583Z ##[endgroup]
+2026-10-21T01:10:45.1258265Z Temporarily overriding HOME='/home/runner/work/_temp/a42185fb-c5de-4510-9811-47d998ad1136' before making global git config changes
+2026-10-21T01:10:45.1260573Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-21T01:10:45.1262590Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/bobbi-tv/bobbi-tv
+2026-10-21T01:10:45.1354293Z Deleting the contents of '/home/runner/work/bobbi-tv/bobbi-tv'
+2026-10-21T01:10:45.1358660Z ##[group]Initializing the repository
+2026-10-21T01:10:45.1375976Z [command]/usr/bin/git init /home/runner/work/bobbi-tv/bobbi-tv
+2026-10-21T01:10:45.1576968Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-21T01:10:45.1595973Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-21T01:10:45.1615961Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-21T01:10:45.1623500Z hint: call:
+2026-10-21T01:10:45.1628186Z hint:
+2026-10-21T01:10:45.1629406Z hint: 	git config --global init.defaultBranch <name>
+2026-10-21T01:10:45.1631356Z hint:
+2026-10-21T01:10:45.1632453Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-21T01:10:45.1634135Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-21T01:10:45.1637623Z hint:
+2026-10-21T01:10:45.1638455Z hint: 	git branch -m <name>
+2026-10-21T01:10:45.1639560Z hint:
+2026-10-21T01:10:45.1645254Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-21T01:10:45.1647433Z Initialized empty Git repository in /home/runner/work/bobbi-tv/bobbi-tv/.git/
+2026-10-21T01:10:45.1671084Z [command]/usr/bin/git remote add origin https://github.com/2223M1/bobbi-tv
+2026-10-21T01:10:45.1674799Z ##[endgroup]
+2026-10-21T01:10:45.1686954Z ##[group]Disabling automatic garbage collection
+2026-10-21T01:10:45.1688412Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-21T01:10:45.1796393Z ##[endgroup]
+2026-10-21T01:10:45.1816126Z ##[group]Setting up auth
+2026-10-21T01:10:45.1817820Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-21T01:10:45.1868029Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-21T01:10:45.2431403Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-21T01:10:45.2494418Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-21T01:10:45.2798068Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-21T01:10:45.2845773Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-21T01:10:45.3339104Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-21T01:10:45.3346896Z ##[endgroup]
+2026-10-21T01:10:45.3349048Z ##[group]Fetching the repository
+2026-10-21T01:10:45.3352876Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2:refs/remotes/origin/codex/ce2021-clean-delivery-20261021
+2026-10-21T01:10:51.0082197Z From https://github.com/2223M1/bobbi-tv
+2026-10-21T01:10:51.0095450Z  * [new ref]         b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2 -> origin/codex/ce2021-clean-delivery-20261021
+2026-10-21T01:10:51.0098520Z ##[endgroup]
+2026-10-21T01:10:51.0099401Z ##[group]Determining the checkout info
+2026-10-21T01:10:51.0099964Z ##[endgroup]
+2026-10-21T01:10:51.0102675Z [command]/usr/bin/git sparse-checkout disable
+2026-10-21T01:10:51.0180767Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-21T01:10:51.0232720Z ##[group]Checking out the ref
+2026-10-21T01:10:51.0237310Z [command]/usr/bin/git checkout --progress --force -B codex/ce2021-clean-delivery-20261021 refs/remotes/origin/codex/ce2021-clean-delivery-20261021
+2026-10-21T01:10:52.1378295Z Updating files:  38% (1421/3706)
+2026-10-21T01:10:52.2188794Z Updating files:  39% (1446/3706)
+2026-10-21T01:10:52.2277365Z Updating files:  40% (1483/3706)
+2026-10-21T01:10:52.2346100Z Updating files:  41% (1520/3706)
+2026-10-21T01:10:52.2403858Z Updating files:  42% (1557/3706)
+2026-10-21T01:10:52.2465517Z Updating files:  43% (1594/3706)
+2026-10-21T01:10:52.2515570Z Updating files:  44% (1631/3706)
+2026-10-21T01:10:52.2565507Z Updating files:  45% (1668/3706)
+2026-10-21T01:10:52.2663418Z Updating files:  46% (1705/3706)
+2026-10-21T01:10:52.2765535Z Updating files:  47% (1742/3706)
+2026-10-21T01:10:52.2812570Z Updating files:  48% (1779/3706)
+2026-10-21T01:10:52.2846297Z Updating files:  49% (1816/3706)
+2026-10-21T01:10:52.2910862Z Updating files:  50% (1853/3706)
+2026-10-21T01:10:52.2997826Z Updating files:  51% (1891/3706)
+2026-10-21T01:10:52.3033400Z Updating files:  52% (1928/3706)
+2026-10-21T01:10:52.3081104Z Updating files:  53% (1965/3706)
+2026-10-21T01:10:52.3137015Z Updating files:  54% (2002/3706)
+2026-10-21T01:10:52.3217650Z Updating files:  55% (2039/3706)
+2026-10-21T01:10:52.3255479Z Updating files:  56% (2076/3706)
+2026-10-21T01:10:52.3300388Z Updating files:  57% (2113/3706)
+2026-10-21T01:10:52.3343330Z Updating files:  58% (2150/3706)
+2026-10-21T01:10:52.3381207Z Updating files:  59% (2187/3706)
+2026-10-21T01:10:52.3491929Z Updating files:  60% (2224/3706)
+2026-10-21T01:10:52.3538586Z Updating files:  61% (2261/3706)
+2026-10-21T01:10:52.3636896Z Updating files:  62% (2298/3706)
+2026-10-21T01:10:52.3709780Z Updating files:  63% (2335/3706)
+2026-10-21T01:10:52.3745888Z Updating files:  64% (2372/3706)
+2026-10-21T01:10:52.3762164Z Updating files:  65% (2409/3706)
+2026-10-21T01:10:52.4369559Z Updating files:  66% (2446/3706)
+2026-10-21T01:10:52.4936004Z Updating files:  67% (2484/3706)
+2026-10-21T01:10:52.5300413Z Updating files:  68% (2521/3706)
+2026-10-21T01:10:52.5326941Z Updating files:  69% (2558/3706)
+2026-10-21T01:10:52.5382021Z Updating files:  70% (2595/3706)
+2026-10-21T01:10:52.5406788Z Updating files:  71% (2632/3706)
+2026-10-21T01:10:52.5429162Z Updating files:  72% (2669/3706)
+2026-10-21T01:10:52.5465655Z Updating files:  73% (2706/3706)
+2026-10-21T01:10:52.5502019Z Updating files:  74% (2743/3706)
+2026-10-21T01:10:52.5539913Z Updating files:  75% (2780/3706)
+2026-10-21T01:10:52.5576236Z Updating files:  76% (2817/3706)
+2026-10-21T01:10:52.5623583Z Updating files:  77% (2854/3706)
+2026-10-21T01:10:52.5660590Z Updating files:  78% (2891/3706)
+2026-10-21T01:10:52.5679912Z Updating files:  79% (2928/3706)
+2026-10-21T01:10:52.5696120Z Updating files:  80% (2965/3706)
+2026-10-21T01:10:52.5733661Z Updating files:  81% (3002/3706)
+2026-10-21T01:10:52.5769228Z Updating files:  82% (3039/3706)
+2026-10-21T01:10:52.5803914Z Updating files:  83% (3076/3706)
+2026-10-21T01:10:52.5821368Z Updating files:  84% (3114/3706)
+2026-10-21T01:10:52.5848210Z Updating files:  85% (3151/3706)
+2026-10-21T01:10:52.5869662Z Updating files:  86% (3188/3706)
+2026-10-21T01:10:52.6976595Z Updating files:  87% (3225/3706)
+2026-10-21T01:10:52.7001834Z Updating files:  88% (3262/3706)
+2026-10-21T01:10:52.7028574Z Updating files:  89% (3299/3706)
+2026-10-21T01:10:52.7054839Z Updating files:  90% (3336/3706)
+2026-10-21T01:10:52.7081491Z Updating files:  91% (3373/3706)
+2026-10-21T01:10:52.7130615Z Updating files:  92% (3410/3706)
+2026-10-21T01:10:52.7170962Z Updating files:  93% (3447/3706)
+2026-10-21T01:10:52.7196962Z Updating files:  94% (3484/3706)
+2026-10-21T01:10:52.7229388Z Updating files:  95% (3521/3706)
+2026-10-21T01:10:52.7262130Z Updating files:  96% (3558/3706)
+2026-10-21T01:10:52.7287667Z Updating files:  97% (3595/3706)
+2026-10-21T01:10:52.7312809Z Updating files:  98% (3632/3706)
+2026-10-21T01:10:52.7335347Z Updating files:  99% (3669/3706)
+2026-10-21T01:10:52.7336124Z Updating files: 100% (3706/3706)
+2026-10-21T01:10:52.7336707Z Updating files: 100% (3706/3706), done.
+2026-10-21T01:10:52.9340595Z Switched to a new branch 'codex/ce2021-clean-delivery-20261021'
+2026-10-21T01:10:52.9357992Z branch 'codex/ce2021-clean-delivery-20261021' set up to track 'origin/codex/ce2021-clean-delivery-20261021'.
+2026-10-21T01:10:52.9451940Z ##[endgroup]
+2026-10-21T01:10:52.9996836Z [command]/usr/bin/git log -1 --format=%H
+2026-10-21T01:10:53.0035138Z b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2
+2026-10-21T01:10:53.0491613Z ##[group]Run actions/setup-python@v5
+2026-10-21T01:10:53.0491922Z with:
+2026-10-21T01:10:53.0492151Z   python-version: 3.11
+2026-10-21T01:10:53.0492383Z   check-latest: false
+2026-10-21T01:10:53.0495509Z   token: ***
+2026-10-21T01:10:53.0495749Z   update-environment: true
+2026-10-21T01:10:53.0495996Z   allow-prereleases: false
+2026-10-21T01:10:53.0496230Z   freethreaded: false
+2026-10-21T01:10:53.0496445Z ##[endgroup]
+2026-10-21T01:10:53.2126160Z ##[group]Installed versions
+2026-10-21T01:10:53.2286903Z (node:2084) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T01:10:53.2297420Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-21T01:10:53.2528072Z Successfully set up CPython (3.11.17)
+2026-10-21T01:10:53.2562655Z ##[endgroup]
+2026-10-21T01:10:53.2710687Z ##[group]Run printf 'event=%s ref=%s\n' "$VERIFY_EVENT" "$VERIFY_REF"
+2026-10-21T01:10:53.2711547Z [36;1mprintf 'event=%s ref=%s\n' "$VERIFY_EVENT" "$VERIFY_REF"[0m
+2026-10-21T01:10:53.2712279Z [36;1mgit show -s --format='commit=%H%ntree=%T%nparents=%P'[0m
+2026-10-21T01:10:53.3138692Z shell: /usr/bin/bash -e {0}
+2026-10-21T01:10:53.3139052Z env:
+2026-10-21T01:10:53.3139433Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3140011Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:10:53.3140582Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3141099Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3141601Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3142107Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:10:53.3142532Z   VERIFY_EVENT: push
+2026-10-21T01:10:53.3142972Z   VERIFY_REF: refs/heads/codex/ce2021-clean-delivery-20261021
+2026-10-21T01:10:53.3143407Z ##[endgroup]
+2026-10-21T01:10:53.3284115Z event=push ref=refs/heads/codex/ce2021-clean-delivery-20261021
+2026-10-21T01:10:53.3344027Z commit=b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2
+2026-10-21T01:10:53.3345096Z tree=bbe592e62a7a6790c62725738b63dae9b9f9405a
+2026-10-21T01:10:53.3345820Z parents=
+2026-10-21T01:10:53.3396837Z ##[group]Run python -m pip install -r requirements-test.txt
+2026-10-21T01:10:53.3397371Z [36;1mpython -m pip install -r requirements-test.txt[0m
+2026-10-21T01:10:53.3477315Z shell: /usr/bin/bash -e {0}
+2026-10-21T01:10:53.3477737Z env:
+2026-10-21T01:10:53.3478173Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3478882Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:10:53.3479619Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3480281Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3480942Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:53.3481616Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:10:53.3482183Z ##[endgroup]
+2026-10-21T01:10:55.8758575Z Collecting pytest==9.1.1 (from -r requirements-test.txt (line 1))
+2026-10-21T01:10:55.9540890Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+2026-10-21T01:10:56.2067277Z Collecting cryptography==50.0.1 (from -r requirements-test.txt (line 2))
+2026-10-21T01:10:56.2197295Z   Downloading cryptography-50.0.1-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (4.3 kB)
+2026-10-21T01:10:56.2523577Z Collecting requests==2.34.2 (from -r requirements-test.txt (line 3))
+2026-10-21T01:10:56.2641642Z   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+2026-10-21T01:10:56.2892345Z Collecting iniconfig>=1.0.1 (from pytest==9.1.1->-r requirements-test.txt (line 1))
+2026-10-21T01:10:56.3009704Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-21T01:10:56.3278574Z Collecting packaging>=22 (from pytest==9.1.1->-r requirements-test.txt (line 1))
+2026-10-21T01:10:56.3397539Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-21T01:10:56.3635140Z Collecting pluggy<2,>=1.5 (from pytest==9.1.1->-r requirements-test.txt (line 1))
+2026-10-21T01:10:56.3758596Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-21T01:10:56.4069309Z Collecting pygments>=2.7.2 (from pytest==9.1.1->-r requirements-test.txt (line 1))
+2026-10-21T01:10:56.4188668Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-10-21T01:10:56.5492967Z Collecting cffi>=2.0.0 (from cryptography==50.0.1->-r requirements-test.txt (line 2))
+2026-10-21T01:10:56.5614284Z   Downloading cffi-2.1.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+2026-10-21T01:10:56.7131335Z Collecting charset_normalizer<4,>=2 (from requests==2.34.2->-r requirements-test.txt (line 3))
+2026-10-21T01:10:56.7260417Z   Downloading charset_normalizer-3.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+2026-10-21T01:10:56.7622060Z Collecting idna<4,>=2.5 (from requests==2.34.2->-r requirements-test.txt (line 3))
+2026-10-21T01:10:56.7739443Z   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-10-21T01:10:56.8075141Z Collecting urllib3<3,>=1.26 (from requests==2.34.2->-r requirements-test.txt (line 3))
+2026-10-21T01:10:56.8193019Z   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-10-21T01:10:56.8491950Z Collecting certifi>=2023.5.7 (from requests==2.34.2->-r requirements-test.txt (line 3))
+2026-10-21T01:10:56.8607793Z   Downloading certifi-2026.10.19-py3-none-any.whl.metadata (2.5 kB)
+2026-10-21T01:10:56.8876042Z Collecting pycparser (from cffi>=2.0.0->cryptography==50.0.1->-r requirements-test.txt (line 2))
+2026-10-21T01:10:56.8999269Z   Downloading pycparser-3.11-py3-none-any.whl.metadata (8.2 kB)
+2026-10-21T01:10:56.9173617Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+2026-10-21T01:10:56.9609088Z Downloading cryptography-50.0.1-cp311-abi3-manylinux_2_34_x86_64.whl (4.7 MB)
+2026-10-21T01:10:57.0253870Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.7/4.7 MB 83.3 MB/s  0:00:00
+2026-10-21T01:10:57.0376689Z Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+2026-10-21T01:10:57.0527116Z Downloading charset_normalizer-3.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (269 kB)
+2026-10-21T01:10:57.0686105Z Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-10-21T01:10:57.0825935Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-21T01:10:57.0976172Z Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-10-21T01:10:57.1126676Z Downloading certifi-2026.10.19-py3-none-any.whl (136 kB)
+2026-10-21T01:10:57.1264794Z Downloading cffi-2.1.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (217 kB)
+2026-10-21T01:10:57.1416408Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-21T01:10:57.1555288Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-21T01:10:57.1703637Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-10-21T01:10:57.1778297Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 223.3 MB/s  0:00:00
+2026-10-21T01:10:57.1895190Z Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+2026-10-21T01:10:57.3083671Z Installing collected packages: urllib3, pygments, pycparser, pluggy, packaging, iniconfig, idna, charset_normalizer, certifi, requests, pytest, cffi, cryptography
+2026-10-21T01:10:58.8592433Z 
+2026-10-21T01:10:58.8607100Z Successfully installed certifi-2026.10.19 cffi-2.1.1 charset_normalizer-3.5.2 cryptography-50.0.1 idna-3.20 iniconfig-2.3.1 packaging-26.3 pluggy-1.7.0 pycparser-3.11 pygments-2.21.0 pytest-9.1.1 requests-2.34.2 urllib3-2.8.0
+2026-10-21T01:10:58.8617365Z 
+2026-10-21T01:10:58.8617957Z [notice] A new release of pip is available: 26.2.1 -> 26.2.2
+2026-10-21T01:10:58.8618965Z [notice] To update, run: pip install --upgrade pip
+2026-10-21T01:10:58.9578259Z ##[group]Run python -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=review-evidence/ci-primary.xml
+2026-10-21T01:10:58.9579397Z [36;1mpython -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=review-evidence/ci-primary.xml[0m
+2026-10-21T01:10:58.9647896Z shell: /usr/bin/bash -e {0}
+2026-10-21T01:10:58.9648407Z env:
+2026-10-21T01:10:58.9648691Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:58.9649157Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:10:58.9649594Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:58.9649981Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:58.9650369Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:10:58.9650758Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:10:58.9651135Z ##[endgroup]
+2026-10-21T01:11:02.3853400Z ........................................................................ [  4%]
+2026-10-21T01:11:03.1016187Z ........................................................................ [  8%]
+2026-10-21T01:11:04.4900816Z ..................................................................F..... [ 12%]
+2026-10-21T01:11:08.2827603Z ........................................................................ [ 16%]
+2026-10-21T01:11:17.1351137Z ........................................................................ [ 20%]
+2026-10-21T01:11:18.2962418Z ........................................................................ [ 24%]
+2026-10-21T01:11:27.0681913Z ........................................................................ [ 28%]
+2026-10-21T01:11:29.8319368Z ........................................................................ [ 32%]
+2026-10-21T01:11:34.0195270Z ........................................................................ [ 37%]
+2026-10-21T01:11:35.1341639Z ........................................................................ [ 41%]
+2026-10-21T01:11:37.6513606Z .............................................F.......................... [ 45%]
+2026-10-21T01:11:44.1339892Z ........................................................................ [ 49%]
+2026-10-21T01:11:44.5526094Z ........................................................................ [ 53%]
+2026-10-21T01:11:46.8607918Z ........................................................................ [ 57%]
+2026-10-21T01:11:47.0433673Z .................sssss.................................................. [ 61%]
+2026-10-21T01:11:50.7086131Z ........................................................................ [ 65%]
+2026-10-21T01:11:51.1518526Z ........................................................................ [ 69%]
+2026-10-21T01:11:55.5040311Z .........................F.............................................. [ 74%]
+2026-10-21T01:11:56.9989955Z ........................................................................ [ 78%]
+2026-10-21T01:11:57.6344223Z ...................F.................................................... [ 82%]
+2026-10-21T01:11:57.7420636Z ........................................................................ [ 86%]
+2026-10-21T01:11:58.0465915Z ........................................................................ [ 90%]
+2026-10-21T01:11:59.1763861Z ........................................................................ [ 94%]
+2026-10-21T01:12:11.7248320Z ........................................................................ [ 98%]
+2026-10-21T01:12:13.1797816Z .........F.............                                                  [100%]
+2026-10-21T01:12:13.1798878Z =================================== FAILURES ===================================
+2026-10-21T01:12:13.1799975Z ______________ test_preview_is_reproducible_and_dependency_closed ______________
+2026-10-21T01:12:13.1800813Z 
+2026-10-21T01:12:13.1801911Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/test_preview_is_reproducible_a0')
+2026-10-21T01:12:13.1802825Z 
+2026-10-21T01:12:13.1803373Z     def test_preview_is_reproducible_and_dependency_closed(tmp_path):
+2026-10-21T01:12:13.1804342Z         first, second = tmp_path / 'one', tmp_path / 'two'
+2026-10-21T01:12:13.1805651Z >       one, two = builder.build(first), builder.build(second)
+2026-10-21T01:12:13.1806441Z                    ^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.1807264Z 
+2026-10-21T01:12:13.1807637Z tests/test_build.py:18: 
+2026-10-21T01:12:13.1808381Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+2026-10-21T01:12:13.1809038Z 
+2026-10-21T01:12:13.1809703Z output = PosixPath('/tmp/pytest-of-runner/pytest-0/test_preview_is_reproducible_a0/one')
+2026-10-21T01:12:13.1810589Z 
+2026-10-21T01:12:13.1810947Z     def build(output):
+2026-10-21T01:12:13.1811557Z         output = Path(output)
+2026-10-21T01:12:13.1812245Z         output.mkdir(parents=True, exist_ok=True)
+2026-10-21T01:12:13.1813042Z         inventory = json.loads((ROOT / 'release/preview-inputs.json').read_text(encoding='utf-8'))
+2026-10-21T01:12:13.1813773Z         if inventory['schema'] != 1 or set(inventory['components']) != set(COMPONENTS):
+2026-10-21T01:12:13.1814391Z             raise ValueError('Unknown diagnostic preview inventory')
+2026-10-21T01:12:13.1815528Z         manifest = {'schema': 1, 'status': 'diagnostic-preview-not-cinema', 'components': []}
+2026-10-21T01:12:13.1816420Z         for addon in COMPONENTS:
+2026-10-21T01:12:13.1816829Z             root = sources()[addon]
+2026-10-21T01:12:13.1817263Z             names = inventory['components'][addon]
+2026-10-21T01:12:13.1817739Z             actual = set(files(root))
+2026-10-21T01:12:13.1818270Z             if names != sorted(set(names)) or set(names) != actual:
+2026-10-21T01:12:13.1819035Z >               raise ValueError('Review and update explicit source inventory: ' + addon)
+2026-10-21T01:12:13.1820064Z E               ValueError: Review and update explicit source inventory: script.module.bobbi.platform
+2026-10-21T01:12:13.1820694Z 
+2026-10-21T01:12:13.1820865Z tools/build_preview.py:27: ValueError
+2026-10-21T01:12:13.1821476Z ___________ test_fonts_are_unchanged_and_licensed_in_project_assets ____________
+2026-10-21T01:12:13.1821975Z 
+2026-10-21T01:12:13.1822243Z     def test_fonts_are_unchanged_and_licensed_in_project_assets():
+2026-10-21T01:12:13.1822776Z         expected = {
+2026-10-21T01:12:13.1823476Z             'HarmonyOS_SansSC_Regular.ttf': '984cf609545acee8ef060780fb70fc3099b058c0553416331b6e863fdf7c26fa',
+2026-10-21T01:12:13.1824919Z             'HarmonyOS_SansSC_Bold.ttf': 'c215d8ab1cb6709fec2e063f8213e9af86d7587d345b56325e36b67d6b947d98',
+2026-10-21T01:12:13.1826191Z             'LICENCE-HarmonyOS-Sans.txt': '327e0147d4a3ca2d89e81abce45b210576b0f9fe2b29d900f64b58039f12a102',
+2026-10-21T01:12:13.1827033Z         }
+2026-10-21T01:12:13.1827392Z         for name, digest in expected.items():
+2026-10-21T01:12:13.1828170Z >           assert hashlib.sha256((ROOT / 'assets/fonts' / name).read_bytes()).hexdigest() == digest
+2026-10-21T01:12:13.1829058Z                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.1829448Z 
+2026-10-21T01:12:13.1829622Z tests/test_design_contract.py:43: 
+2026-10-21T01:12:13.1830024Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+2026-10-21T01:12:13.1830497Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1050: in read_bytes
+2026-10-21T01:12:13.1830935Z     with self.open(mode='rb') as f:
+2026-10-21T01:12:13.1831188Z          ^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.1831466Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+2026-10-21T01:12:13.1831700Z 
+2026-10-21T01:12:13.1831986Z self = PosixPath('/home/runner/work/bobbi-tv/bobbi-tv/assets/fonts/LICENCE-HarmonyOS-Sans.txt')
+2026-10-21T01:12:13.1832553Z mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+2026-10-21T01:12:13.1832836Z 
+2026-10-21T01:12:13.1833180Z     def open(self, mode='r', buffering=-1, encoding=None,
+2026-10-21T01:12:13.1833509Z              errors=None, newline=None):
+2026-10-21T01:12:13.1833766Z         """
+2026-10-21T01:12:13.1834043Z         Open the file pointed by this path and return a file object, as
+2026-10-21T01:12:13.1834408Z         the built-in open() function does.
+2026-10-21T01:12:13.1855236Z         """
+2026-10-21T01:12:13.1855594Z         if "b" not in mode:
+2026-10-21T01:12:13.1856318Z             encoding = io.text_encoding(encoding)
+2026-10-21T01:12:13.1857029Z >       return io.open(self, mode, buffering, encoding, errors, newline)
+2026-10-21T01:12:13.1857741Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.1858908Z E       FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/bobbi-tv/bobbi-tv/assets/fonts/LICENCE-HarmonyOS-Sans.txt'
+2026-10-21T01:12:13.1859822Z 
+2026-10-21T01:12:13.1860275Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1044: FileNotFoundError
+2026-10-21T01:12:13.1861203Z ________________________ test_public_inventory_is_exact ________________________
+2026-10-21T01:12:13.1861684Z 
+2026-10-21T01:12:13.1861862Z     def test_public_inventory_is_exact():
+2026-10-21T01:12:13.1862310Z         import json
+2026-10-21T01:12:13.1862860Z         recorded = json.loads(build_release.INVENTORY.read_text())['components']
+2026-10-21T01:12:13.1863545Z         roots = build_release.sources()
+2026-10-21T01:12:13.1864022Z         assert set(recorded) == set(roots)
+2026-10-21T01:12:13.1864703Z         for addon, path in roots.items():
+2026-10-21T01:12:13.1865306Z >           assert build_release.files(path) == recorded[addon], addon
+2026-10-21T01:12:13.1865944Z E           AssertionError: plugin.video.bobbi
+2026-10-21T01:12:13.1866644Z E           assert {'CHANGELOG.m...db88afc', ...} == {'addon.xml':...a947c15', ...}
+2026-10-21T01:12:13.1867382Z E             
+2026-10-21T01:12:13.1867828Z E             Omitting 550 identical items, use -vv to show
+2026-10-21T01:12:13.1868399Z E             Right contains 11 more items:
+2026-10-21T01:12:13.1869154Z E             {'LICENSE': '605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad',
+2026-10-21T01:12:13.1870483Z E              'lib/api/tmdbv3api/LICENSE-MIT-supplement.txt': 'ee558f429942f6129809e3ad750b835674a55c33836c5b572f55279f0ea2ad55',
+2026-10-21T01:12:13.1872127Z E              'lib/api/tmdbv3api/UPSTREAM-SETUP-LICENSE-EVIDENCE.txt': '42fde0503d50bc327052cd3efd323a724326cd503b4058023791f46b79e045ee',
+2026-10-21T01:12:13.1873607Z E              'licenses/flatbencode-0.2.1-LICENSE.txt': '65f3400a83066b1e82f6114df0b64028880860e8d89d6da4237e0f31e0066dbd',
+2026-10-21T01:12:13.1875597Z E              'licenses/fontawesome-free-6.7.2-LICENSE.txt': '9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc',
+2026-10-21T01:12:13.1877039Z E              'licenses/jacktook-upstream-LICENSE.txt': '605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad',
+2026-10-21T01:12:13.1878465Z E              'licenses/segno-1.6.6-LICENSE.txt': 'de6c85fccf5d52902aa13dfe2dc6d2a2a106fc3419ed438f3460f0d4b76a6935',
+2026-10-21T01:12:13.1879743Z E              'licenses/tmdbv3api-1.9.0-setup-evidence.txt': '42fde0503d50bc327052cd3efd323a724326cd503b4058023791f46b79e045ee',
+2026-10-21T01:12:13.1880969Z E              'licenses/torf-4.2.0-LICENSE.txt': '3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986',
+2026-10-21T01:12:13.1882280Z E              'licenses/xmltodict-0.13.0-LICENSE.txt': 'd66d5eb8f83a0ba21d3dd04318b8817588e8764daabea852d1035e3f07ffda55',
+2026-10-21T01:12:13.1883685Z E              'resources/skins/Default/media/am6b/cinema/LICENSE-Arctic-Fuse.txt': '95cc16779fa07b82bb7069b50fd6a788db75f3ab53426d0f3692c7be34d18b4c'}
+2026-10-21T01:12:13.1884952Z E             
+2026-10-21T01:12:13.1885248Z E             Full diff:
+2026-10-21T01:12:13.1885565Z E               {
+2026-10-21T01:12:13.1886397Z E             +     'CHANGELOG.md': 'bbaf386d6e9fe0a3faadc41bb3ef13fe862611ca35736567e68e2afa9a947c15',
+2026-10-21T01:12:13.1887366Z E             +     'README.md': 'cde6c2783b2fbfb22884927735eb0ea96044be0a96a9a19fa75b7700d3f80aac',
+2026-10-21T01:12:13.1888275Z E                   'addon.xml': '3573a9eb629ff1e878fcb819ce6aec7d4b84aebda9c046753ffde9713040ab27',
+2026-10-21T01:12:13.1889172Z E                   'bobbi.py': 'f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc',
+2026-10-21T01:12:13.1890104Z E                   'bobbi.select.json': '0e663d1c71de01063ab720be2467a19212975ad8f7edf0aa4c1ab3749f60cee5',
+2026-10-21T01:12:13.1891254Z E             -     'CHANGELOG.md': 'bbaf386d6e9fe0a3faadc41bb3ef13fe862611ca35736567e68e2afa9a947c15',
+2026-10-21T01:12:13.1892201Z E                   'fanart.png': '65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162',
+2026-10-21T01:12:13.1893110Z E                   'icon.png': '206e58c783f6aa8f2936aafc6494edaecb28d39dcfa1d33f4335b3028109694a',
+2026-10-21T01:12:13.1894043Z E                   'lib/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.1897634Z E                   'lib/actions.py': '5155ff6b26353ea2d39208530618ef7d3cb92c89cf2971e080182a41457cb850',
+2026-10-21T01:12:13.1898642Z E                   'lib/api/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.1899714Z E                   'lib/api/debrid/alldebrid.py': '7c89492c34983397f8534dd0385e02b3705a3872ac7373806a7a88de9797fb2c',
+2026-10-21T01:12:13.1900768Z E                   'lib/api/debrid/base.py': 'b949ef73d59a0999f33ae1d2a78924c246ada7ff6b60c9dbe98386846bf1578d',
+2026-10-21T01:12:13.1901805Z E                   'lib/api/debrid/debrider.py': '718289e5b9e4ca30d285c615781682fe53f4980dae647cfdf0a2129775b621df',
+2026-10-21T01:12:13.1902871Z E                   'lib/api/debrid/easydebrid.py': '4949b164dc7ce170cce6004d90cd5b69358f73603244392070f4da42d006640f',
+2026-10-21T01:12:13.1903955Z E                   'lib/api/debrid/offcloud.py': '67b26f6bd305d662d34871305e9aadfb320ba7f4af3ff44bf12cbb61af100e84',
+2026-10-21T01:12:13.1905284Z E                   'lib/api/debrid/premiumize.py': '434f3c256ce5b0f99cf737dbc9efa24cd07aa431facc9e78f9121c400d11ed50',
+2026-10-21T01:12:13.1906379Z E                   'lib/api/debrid/realdebrid.py': 'a20c7ca4ee115e91e4dfa54aa5ae1373f3d34f5e4f2511f2afceed971289aaef',
+2026-10-21T01:12:13.1907492Z E                   'lib/api/debrid/torbox.py': '07737d8ed66e0bbbb08521b9c46848b8a294ee5686f59c58a1b265412134dd95',
+2026-10-21T01:12:13.1908516Z E                   'lib/api/fanart/fanart.py': 'bcbe03de05d2195a32633e2088fa7aee42a10bd6c6474db8bb819ae3518730d9',
+2026-10-21T01:12:13.1909565Z E                   'lib/api/imdb/imdb_scraper.py': '96313b7d9fe57f852a2cefad3a5f28906e01d256e294d9e89f3220993f5fb42b',
+2026-10-21T01:12:13.1910642Z E                   'lib/api/jacktorr/jacktorr.py': 'e58096bf5080c5cbe10238087a62baa7d3e693a3699474d29d3041340d8afa3e',
+2026-10-21T01:12:13.1911705Z E                   'lib/api/mdblist/mdblist.py': '2f87a9f5069cf80f020a008573d622ff6c36e7438663ef52ca5356da35b7ece6',
+2026-10-21T01:12:13.1912726Z E                   'lib/api/nuvio.py': 'dcb989c301dd000298b6bf1da2f9683b2eadbe615ccbcd237b464036f192329c',
+2026-10-21T01:12:13.1913731Z E                   'lib/api/nuvio_store.py': 'df3159f702c6e4808a029ffc147c850086c343cacab93ad399e1ebb3d3ed0854',
+2026-10-21T01:12:13.1915032Z E                   'lib/api/plex/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.1916060Z E                   'lib/api/plex/media_server.py': '53b0a5b1622c4df6ccbcf70e198d33c658ddf20c2172c9e8e320173a1a5fad7f',
+2026-10-21T01:12:13.1917246Z E                   'lib/api/plex/models/plex_models.py': '8156ee71b19ab87d0c1d4256616bf949dec185a8ec8c41587d89f3b4ed487152',
+2026-10-21T01:12:13.1918332Z E                   'lib/api/plex/plex.py': '7427e8ca189752ada03e7425895eb6aa6df42e2dc8eb7376ac55570384a15e9c',
+2026-10-21T01:12:13.1919565Z E                   'lib/api/plex/settings.py': 'c76edbc43af167012e6329502728dc3bc587a3686ba6da348de90a059deb813d',
+2026-10-21T01:12:13.1920590Z E                   'lib/api/plex/utils.py': '1d7ed16c47c74e6f225e52e2342a94e30531167c455c6607b9694eadd6832b01',
+2026-10-21T01:12:13.1921533Z E                   'lib/api/simkl.py': 'a94e9a5c9fad3ff51a3b700f1713a0e7215e5482c77b9ff85d3af29e58332c74',
+2026-10-21T01:12:13.1922490Z E                   'lib/api/simkl_cache.py': '55c42bb6f04d27e17d5d2940b508d7245d566c4a919d6668f2cd9d79d4cfbb59',
+2026-10-21T01:12:13.1923644Z E                   'lib/api/stremio/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.1924888Z E                   'lib/api/stremio/addon_manager.py': '6be414c9a333066344454586f2e4eb57f93af4a0538b35926829c883c02f6a57',
+2026-10-21T01:12:13.1925986Z E                   'lib/api/stremio/api_client.py': 'f22bca45c7774d5caf61f79cc370cdf4421037aead577a886a853e5a714aa3b1',
+2026-10-21T01:12:13.1927064Z E                   'lib/api/stremio/models.py': '1308317cc3d6bef6bdce057dfd29e6af159cd175aaa2a0c8eb0a305f414567f7',
+2026-10-21T01:12:13.1928106Z E                   'lib/api/tmdbv3api/__init__.py': '5732e752ff0837a4fc34287b7de70a869a13dc6a4bb81fba022ac531c60ebf66',
+2026-10-21T01:12:13.1929213Z E                   'lib/api/tmdbv3api/as_obj.py': '72ec641f0df726d50589da262d0ae22c96087fa7c456347509a0948893c669eb',
+2026-10-21T01:12:13.1930302Z E                   'lib/api/tmdbv3api/exceptions.py': 'a7bee9010ebe5d0bf8e6a061dab66efdd1c18ab415b3cd01a83e29bba5d2e3d6',
+2026-10-21T01:12:13.1931502Z E             -     'lib/api/tmdbv3api/LICENSE-MIT-supplement.txt': 'ee558f429942f6129809e3ad750b835674a55c33836c5b572f55279f0ea2ad55',
+2026-10-21T01:12:13.1932681Z E                   'lib/api/tmdbv3api/objs/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.1933782Z E                   'lib/api/tmdbv3api/objs/account.py': 'a084bd5752297b7334376e46e0d2d7f8ace62a000711a5216decccd58c869915',
+2026-10-21T01:12:13.1960208Z E                   'lib/api/tmdbv3api/objs/anime.py': 'c5ed35c4e49d4c7f6bf241e373dc663690b314b7daa8a5b9fac13c403505bbe2',
+2026-10-21T01:12:13.1961388Z E                   'lib/api/tmdbv3api/objs/auth.py': '2fed11018cae468d6ae403232b3c05b73b26c8b4402d9b75ae298280232c4ff2',
+2026-10-21T01:12:13.1962575Z E                   'lib/api/tmdbv3api/objs/certification.py': 'abe53d41aacaab9c78ad55dca6a7dc18c2ea7093a049a19037023d7bd4f1ef64',
+2026-10-21T01:12:13.1963777Z E                   'lib/api/tmdbv3api/objs/change.py': '380755b46a38d8a54ff2c7f41494367b7a1872b9ee43d5eace14003573ca0240',
+2026-10-21T01:12:13.1968706Z E                   'lib/api/tmdbv3api/objs/collection.py': 'af16f176476ec16702e2fbab01af36c1879ce89751f16f52bc4594c0ea3d9dc5',
+2026-10-21T01:12:13.1969943Z E                   'lib/api/tmdbv3api/objs/company.py': '84aec6f596e951e813a2beef56e8ba3da1905147770cd67f14faac602e53d02f',
+2026-10-21T01:12:13.1971152Z E                   'lib/api/tmdbv3api/objs/configuration.py': 'd475a7bc321a0867fda6b7a7ffc257b7604e162df74d465be44af3dc3a4c8191',
+2026-10-21T01:12:13.1972360Z E                   'lib/api/tmdbv3api/objs/credit.py': 'd1bb58d17b2a9b5f4d4a1ce4cbc7a9d189ade740d524a1eb3bc0ae9d61113325',
+2026-10-21T01:12:13.1973553Z E                   'lib/api/tmdbv3api/objs/discover.py': '360063a56ae9bf82bce85b9852c81a6eb176a1aeea7ac38d7dace9df729c15fa',
+2026-10-21T01:12:13.1975042Z E                   'lib/api/tmdbv3api/objs/episode.py': 'e6042554247f2e5accf1305a1d3021507a0e198fcb5a725893132436c3ff4d0f',
+2026-10-21T01:12:13.1976191Z E                   'lib/api/tmdbv3api/objs/find.py': 'dc351902efa0f6d0fadf69363352d13136b6550bcad0e104e6dcf6bb68c78186',
+2026-10-21T01:12:13.1977311Z E                   'lib/api/tmdbv3api/objs/genre.py': '1f731f731bd6388efb616a87ebd848fc92670a88a65fae3cf8f101b6360b69da',
+2026-10-21T01:12:13.1978408Z E                   'lib/api/tmdbv3api/objs/group.py': '2be32837b6b7a392f50430996027c2ddb8815628812a35cf4f8bb4cf4095fdc0',
+2026-10-21T01:12:13.1979739Z E                   'lib/api/tmdbv3api/objs/keyword.py': '79a32c3c8e98c8438d7b1201c245544327b9e04bbb46cb04f72186d39ded4af4',
+2026-10-21T01:12:13.1980874Z E                   'lib/api/tmdbv3api/objs/list.py': '7148307ca8d4ba0a15a13c6b56775387399a3d833993c5a8715ef30fc623b28f',
+2026-10-21T01:12:13.1982012Z E                   'lib/api/tmdbv3api/objs/movie.py': '6fde4467ea09eb4becde02cc6d17caa4f19ff500d6c4ed5333b1b6dfe4816c01',
+2026-10-21T01:12:13.1983148Z E                   'lib/api/tmdbv3api/objs/network.py': '6c9c3a0ef283491277b8d3f395da7709c73da559f20a29ecaf075697a4fad895',
+2026-10-21T01:12:13.1984460Z E                   'lib/api/tmdbv3api/objs/person.py': '2e147ba7a0bcbff10446f866e5a15fa79b10d521fc081e11928424d7899f8b31',
+2026-10-21T01:12:13.1985942Z E                   'lib/api/tmdbv3api/objs/provider.py': '52c6ec23c7e61859b17030791b92f41de702b095a77477eb1dee3c2f51fb4cc0',
+2026-10-21T01:12:13.1987091Z E                   'lib/api/tmdbv3api/objs/review.py': '5cbc2d5ab7012a825cac495c322f6329cc1e58c368a4dd225508bb6229aa736c',
+2026-10-21T01:12:13.1988238Z E                   'lib/api/tmdbv3api/objs/search.py': 'e32dcf4fdca9af243f9f5187e32488dd5a81ad4235a1f85c6e008d570dba50b6',
+2026-10-21T01:12:13.1989394Z E                   'lib/api/tmdbv3api/objs/season.py': 'd709f7398c81d754b4f011df89cc08af1bc16f863c44c9eea4f61fc9bd435d5c',
+2026-10-21T01:12:13.1990558Z E                   'lib/api/tmdbv3api/objs/trending.py': 'ec220a3c0b47f725e8a3cc506280278b659f1b5b6978d4709326fed55ce8ddd4',
+2026-10-21T01:12:13.1991686Z E                   'lib/api/tmdbv3api/objs/tv.py': 'b32ecd15102c25ffc8a0a4434620cca820ac5d77a0362fc63949d01553813cff',
+2026-10-21T01:12:13.1992736Z E                   'lib/api/tmdbv3api/tmdb.py': '7d7c50cc53ccc407142959b71955731100dba5c37a9c4987944239b6f09075ce',
+2026-10-21T01:12:13.1993966Z E             -     'lib/api/tmdbv3api/UPSTREAM-SETUP-LICENSE-EVIDENCE.txt': '42fde0503d50bc327052cd3efd323a724326cd503b4058023791f46b79e045ee',
+2026-10-21T01:12:13.1995550Z E                   'lib/api/tmdbv3api/utils.py': '06632c7bca02991b2c1d0ee9cbbd901608705bbf190222aceae9fd02812bc271',
+2026-10-21T01:12:13.1996615Z E                   'lib/api/trakt/base_cache.py': 'ca895c481b2ddc38bd500147f69717c8bdf1e535f40a8735949717cdee24bb49',
+2026-10-21T01:12:13.1997682Z E                   'lib/api/trakt/lists_cache.py': '5e3b3ce50e1ba3df79c769d455a85edc36f13ee3444f4953c9d7864ead030ae0',
+2026-10-21T01:12:13.1998724Z E                   'lib/api/trakt/main_cache.py': '5f037d6ede9c5888145575564e944c86fab2fa73677ae742c5474e22f6008856',
+2026-10-21T01:12:13.1999816Z E                   'lib/api/trakt/trakt.py': '06ee957795f8c45c79b0fcfa2370553ae7ef0155ec8aa6d3d5f143ee189fb619',
+2026-10-21T01:12:13.2000945Z E                   'lib/api/trakt/trakt_cache.py': '4b507f9bfba8876b9b4b86759ac7b9ce8a30198483333f73cd71c760c1ba9e0f',
+2026-10-21T01:12:13.2002001Z E                   'lib/api/trakt/trakt_utils.py': '6b606334214020710532ee1ed721b835e4d9cf6be44f39527f0df6c01aee9ac1',
+2026-10-21T01:12:13.2003050Z E                   'lib/api/tvdbapi/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.2004116Z E                   'lib/api/tvdbapi/tvdbapi.py': '68ca95cbf08b99cfcd0a4639b4dc05ef36593c050aedbc4ddf00f7187ef75c85',
+2026-10-21T01:12:13.2005557Z E                   'lib/api/webdav/webdav.py': '2deef043f9211aecb322459c8a13ccf89ed1f88f992d52a6ce15ad4e60b993d6',
+2026-10-21T01:12:13.2006549Z E                   'lib/boot_gate.py': 'a42925f0efebe03892336de4667eccc396326d376aa0012040eba68fa1804f15',
+2026-10-21T01:12:13.2007528Z E                   'lib/cinema/__init__.py': '4a204f3cb76aa7f0de50afc1751317b927233ad0ecb6013ec0a6f3298b7f731b',
+2026-10-21T01:12:13.2008583Z E                   'lib/cinema/account_readiness.py': '4acf7beac6686a946c23fe24507f7a82e34c3ea41092a6265efc9f0768de5ef3',
+2026-10-21T01:12:13.2009703Z E                   'lib/cinema/authenticated_cd2.py': 'b8416ebbb6c8f81e5ef9a624572f23a8c88a585c1752af813a19e0ca2a03974c',
+2026-10-21T01:12:13.2011561Z E                   'lib/cinema/candidate_metadata.py': '4e7637a5bf9c8ab6946683c46cfab0b92bbae464ed41bccae3d1e1a8098646e1',
+2026-10-21T01:12:13.2012913Z E                   'lib/cinema/candidate_titles.py': '87589eb1c74af24e89abc093ea26ebf376456982d5608971a6b017b6a87f5a49',
+2026-10-21T01:12:13.2014004Z E                   'lib/cinema/catalog_identity.py': 'e4d38181a671bf67c0c1dee349f7d9eac40b39c2a44d068b07f585f46c23dd39',
+2026-10-21T01:12:13.2015230Z E                   'lib/cinema/cd2.py': '1d4b8c0179dcf36bb4320f2a105c3f5a478d2d79a2bff5c4c1739bf8324d55d1',
+2026-10-21T01:12:13.2016555Z E                   'lib/cinema/cloud_mapping.py': 'd90d32a43e5693c99ae1abed5d930f985311d9525c54d4bb2a69ddcae098e823',
+2026-10-21T01:12:13.2017630Z E                   'lib/cinema/cloud_qualifier.py': 'f24c635cca00c4d9669dc5c911317dd6b310aba238bc48d94292d367e89e2c6e',
+2026-10-21T01:12:13.2018729Z E                   'lib/cinema/discovery_playback.py': '152aaf11fbf89e1764844a329187a75dcd943c1f43577beedbe67531e68112f2',
+2026-10-21T01:12:13.2019826Z E                   'lib/cinema/discovery_queue.py': 'f7161bcbf424f11ced6fe77c38fc2983cf6429588bc9bc7c1dbe4cb01a30251e',
+2026-10-21T01:12:13.2020920Z E                   'lib/cinema/discovery_service.py': '0196d58306d51668d33a2cc9da64cbeaf96f91c342752de8c6c506dc0f23e54e',
+2026-10-21T01:12:13.2022009Z E                   'lib/cinema/episode_order.py': 'be0debcf65c30866b793a89b604e3eac70836f956ce495c76018c3b06a30cd8a',
+2026-10-21T01:12:13.2023082Z E                   'lib/cinema/font_archive.py': '6d469de170c68e5b56676bab9d3585c2d0d8dd4a210cf342ae278fdddb2369a9',
+2026-10-21T01:12:13.2024125Z E                   'lib/cinema/font_cache.py': '0d39b8649ddc05c55d918fb98cc3ae6e69518df9e75a07fcc6c0639958fc766b',
+2026-10-21T01:12:13.2025512Z E                   'lib/cinema/font_extract_worker.py': '5a35142f21521eb6087f8bd29a22403fc933a031196b1a7812f970824abca6d9',
+2026-10-21T01:12:13.2026645Z E                   'lib/cinema/font_playback_preflight.py': '3878af1539701d0367be5aea683bae56aaf92be9a15730f6cf0d3f798ce4b1c3',
+2026-10-21T01:12:13.2027796Z E                   'lib/cinema/font_preflight_lane.py': 'bdd6ef620c2217e5a2ec8bf2d2a467fcbaf054e2fe65d3c3433ad87326537827',
+2026-10-21T01:12:13.2028937Z E                   'lib/cinema/fonts.py': 'a92dde03d02062866ea40ef62a2af74cf5218ef474b178dbb85555f21561b852',
+2026-10-21T01:12:13.2029999Z E                   'lib/cinema/frontend_contract.py': 'ed2e4bf1ea9d9e70c7b537db9bb97b3457e23b7a05c8bec73c56117ed1111e81',
+2026-10-21T01:12:13.2031138Z E                   'lib/cinema/jackett_protocol.py': 'b6789cef69635d5bade8b0e88cc1852bfcfeec074152779e29ba89b16aff127f',
+2026-10-21T01:12:13.2032201Z E                   'lib/cinema/ledger.py': '22833e41597971b584b718e5bb8a1b492e07aa2a94ccbc773bee9e2d19e7a3e8',
+2026-10-21T01:12:13.2033229Z E                   'lib/cinema/ledger_extension.py': '20b5453cfe447048b99310325e7905c0429f55b2b62b85846051b8768ff197fc',
+2026-10-21T01:12:13.2034246Z E                   'lib/cinema/media_probe.py': 'dae7673d97609cc511de6389a5956c8ee1a627ed5c2c7df24c8f0655c6213353',
+2026-10-21T01:12:13.2040257Z E                   'lib/cinema/media_profile_refresh.py': '8d4cc8dd68aeaaef01147a504d9fc99d2c15078ec5a7af971c5a140f96111f0c',
+2026-10-21T01:12:13.2041413Z E                   'lib/cinema/metadata_cache.py': '765b96330d812486dd9d4faf172d06b1c77c14d5a6a9495229736e90f040fcea',
+2026-10-21T01:12:13.2042475Z E                   'lib/cinema/native_receipt.py': 'c2e73c98630f9ee1346ae9ccd76c471a3aaed37f0d4295790b738043d9beab39',
+2026-10-21T01:12:13.2043563Z E                   'lib/cinema/next_discovery.py': 'fc30e3c255446b42823306ed6a6d282f159acfcb20cfc3e62e939b90c3af9143',
+2026-10-21T01:12:13.2044893Z E                   'lib/cinema/next_release.py': '83cccce1251a288587d4cb0369f241a5ab9fa2f5aeef6bfdbf4637c62bab656c',
+2026-10-21T01:12:13.2046025Z E                   'lib/cinema/pack_media_equivalence.py': '4c3232477859942c3e3fb3dfcd16c514981f36a154081dd0992dc13a03c5ca9b',
+2026-10-21T01:12:13.2047210Z E                   'lib/cinema/playback_authority.py': '746e2d0dd2ad8bce80815b1597017d08537748455914b6532b55b185e457bcae',
+2026-10-21T01:12:13.2048840Z E                   'lib/cinema/playback_ipc.py': '92389ecb5a8cb1ebcaa180cda4fdcce11732242c35cb1ad165e2af32d635a0cd',
+2026-10-21T01:12:13.2049906Z E                   'lib/cinema/playback_owner.py': 'f0d3036d1f081575d78059401f68dd0991704e49a537f4e31263b420f4e4909b',
+2026-10-21T01:12:13.2050965Z E                   'lib/cinema/playback_request.py': '1efceacfe6813c0787cd3d46445abceae736324a7effebf5e81a2c22402afc22',
+2026-10-21T01:12:13.2052038Z E                   'lib/cinema/preparation.py': 'c10b3a94e7789466133e64baca28b79b51cda753505b540a1df516b6dd943fa5',
+2026-10-21T01:12:13.2053338Z E                   'lib/cinema/preparation_client.py': '87e1643173f7ba71f8ecd56cd80f5d89b84f0813c601989a5db7ae160f2f72f9',
+2026-10-21T01:12:13.2054457Z E                   'lib/cinema/preparation_intake.py': '1ea9c8bf10daf4228532a7241bf3fe46d112865b5904d090b0fcee7da13a5ec1',
+2026-10-21T01:12:13.2055946Z E                   'lib/cinema/preparation_worker.py': 'b359be3ae05ad87e644d25197d7c0ad2d9a7b596d0c2eee79b7b9cf08fe58ffc',
+2026-10-21T01:12:13.2057058Z E                   'lib/cinema/prepared_index.py': '9be5b99a1f5b26fcf4f2de32c97b6c6e8bdb2820ccc203969e34f96352298996',
+2026-10-21T01:12:13.2058139Z E                   'lib/cinema/prepared_protection.py': '5c5780517d5ccae296391369261a6bb079c0cc21863dd5541776cec8af1d444b',
+2026-10-21T01:12:13.2059274Z E                   'lib/cinema/prepared_qualification.py': '37f7600811df641df81dcf97ab563fd3ad0e3044911f9f48cc0be92e6c6c8a48',
+2026-10-21T01:12:13.2060391Z E                   'lib/cinema/prepared_resolver.py': 'a428dffc061b6c554746b3f6984333c969f0031c0089653902fe089b7fb8e471',
+2026-10-21T01:12:13.2061476Z E                   'lib/cinema/prepared_retry.py': 'e87d64e6d1006134826c174bc194c8f2809660f3720eb0affeb9e4566b474b21',
+2026-10-21T01:12:13.2062596Z E                   'lib/cinema/progressive_search.py': 'c5dd3d96bbdfc8121702bc9c923c034ef62de7c6cd5fc324f15fdd9271bb388f',
+2026-10-21T01:12:13.2063706Z E                   'lib/cinema/release_font_loader.py': '3f3e6fec4631f1ab218ab8baa7d138530bd3872457762442fa25f3eb82c3fa36',
+2026-10-21T01:12:13.2064967Z E                   'lib/cinema/release_identity.py': 'cc4e01977a461dce2c070269c3f8e737f10557c16b8cd2cd612caf0076275a0b',
+2026-10-21T01:12:13.2066089Z E                   'lib/cinema/release_media_profile.py': 'eb1c44bfda0718d5aa979feb19dcb0c7a64ee386f9d2c8d19d6b3d3bdd13c404',
+2026-10-21T01:12:13.2067189Z E                   'lib/cinema/resolve_lane.py': '8c0a6555f1d33282fd89e23fdb85a8544565213415a8cd62de8d9adbff99a8a8',
+2026-10-21T01:12:13.2068203Z E                   'lib/cinema/retention.py': '97bb86ac2f356c0cbfc60074737a2aaa49400dd8818d54d4060aa3b0ca71c474',
+2026-10-21T01:12:13.2069279Z E                   'lib/cinema/search_admission.py': '380d4eeb091d14de370f2476b0c78dd86505a24abfd28fd63a8f440ac9ec91cb',
+2026-10-21T01:12:13.2070352Z E                   'lib/cinema/source_intent.py': '3af72428e1e257529b446a9307c5945f13891b5b68d1ef415711f8c3e314231c',
+2026-10-21T01:12:13.2071413Z E                   'lib/cinema/source_list_session.py': '9c6d2a2d762063d1b2d62cfe7e003a2f208fe259be04996913fc20f79af6d848',
+2026-10-21T01:12:13.2072523Z E                   'lib/cinema/source_presentation.py': '1c4eb5a253ee657c269fc85591d7590c0409ae10f12b8f8e6947985a19edbad4',
+2026-10-21T01:12:13.2073624Z E                   'lib/cinema/subtitle_binding.py': '9f6e235efa01bcf967ec509daeb4ce1c3e2fceaa25a56c1d673e136bf00b09b7',
+2026-10-21T01:12:13.2074991Z E                   'lib/cinema/subtitle_cues.py': '1ccf34118764844cf1530ef383717bcdb4eb6dc5816cbddd4c5f062c56a6a662',
+2026-10-21T01:12:13.2076057Z E                   'lib/cinema/subtitle_export.py': '6bbe872c7a982b3c27b901192cc9b4cd78a881d7340236c3fad058ff4b39b462',
+2026-10-21T01:12:13.2077181Z E                   'lib/cinema/subtitle_font_preparation.py': '8917e90cfdc8c04677faefa60a6742a8519df76a078dac3da9ffb687000367a5',
+2026-10-21T01:12:13.2078338Z E                   'lib/cinema/subtitle_lookup.py': 'a16c9c28657b2c775da60ddcb59cb71743e82fd7daea8836523c6a75a9698b78',
+2026-10-21T01:12:13.2079617Z E                   'lib/cinema/subtitle_pack.py': '29f3bbecb6a139b93d61973d2d240d32147dc24570d0d6d18973de694f01c38d',
+2026-10-21T01:12:13.2080733Z E                   'lib/cinema/subtitle_preparation.py': '0f8796e7f69f7db47b26aaaee6a737b5b19877f4cd41ee960214426b88750b01',
+2026-10-21T01:12:13.2081884Z E                   'lib/cinema/subtitle_projection.py': '49c326c37fef4f4b4982b4c20db71870c6cfa96f99913aeb35c66df45b30121a',
+2026-10-21T01:12:13.2083047Z E                   'lib/cinema/subtitle_provider.py': 'e59b491bca622de367af0006bd5af29e934222e29ed7563446e5ea7ebca5df2f',
+2026-10-21T01:12:13.2084329Z E                   'lib/cinema/subtitle_reference.py': '5dedf6c863fdfb6fefd11e9ef5b4735650f412503a6a2e2cb133f503098f0e1b',
+2026-10-21T01:12:13.2085605Z E                   'lib/cinema/subtitle_store.py': '6a92918d8a623fb0436115f1fcf2b83e3231c910bfe78e15239e78f006cd1c07',
+2026-10-21T01:12:13.2086659Z E                   'lib/cinema/subtitle_timing.py': 'ed0946536875cad5918fc51bc1623e2458d3a595243a8a7161260a2538046b50',
+2026-10-21T01:12:13.2087719Z E                   'lib/cinema/torrent_metadata.py': 'e337f191b5197ae81066d64e71b49b48eff836f303aca76679e33e07b06b6745',
+2026-10-21T01:12:13.2088760Z E                   'lib/clients/anilist.py': '472e799bcda584657292f09c1abacd45117c87a2d5c117eb21c9b3410ebad404',
+2026-10-21T01:12:13.2089826Z E                   'lib/clients/animegarden_provider.py': '36c202dc36830247d856c68a8101257e6eb560f4c73b10e98ffde5c01f1b7d85',
+2026-10-21T01:12:13.2090893Z E                   'lib/clients/anizip.py': '7982953dd6088a0ee8490134b68f0617a9f510fb3d2169f368da846b2a06d5b2',
+2026-10-21T01:12:13.2091849Z E                   'lib/clients/base.py': 'e8558dccbf94383a432ac4c920768b665b479c3c398d07d5832346565eff30e7',
+2026-10-21T01:12:13.2092825Z E                   'lib/clients/bobi_library.py': '175a3316ffc1a93dc2a04f4f0379a00b6506940112bc99863173437c537909cc',
+2026-10-21T01:12:13.2093832Z E                   'lib/clients/catalog_hub.py': 'c7bf34c1035466c1c7c58cbe323b8c3567db669f24af435762730c8a35e4196e',
+2026-10-21T01:12:13.2095228Z E                   'lib/clients/catalog_providers.py': '716ce4a4e96dacf14a725b76cba7bc191a34651a7c3bd4ecb5e1896f6dfec8b4',
+2026-10-21T01:12:13.2096321Z E                   'lib/clients/cinema_ui.py': '2aedda62ab8446699d74fcc27e5be145a562fa20ea76041cd3b47e5e97ced923',
+2026-10-21T01:12:13.2097400Z E                   'lib/clients/debrid/alldebrid.py': '444a3a8ffc6b4b9947f3fde3dce877bc710eb7ad72c4a42c3da60ba17c68ed74',
+2026-10-21T01:12:13.2098485Z E                   'lib/clients/debrid/common.py': 'd49815ffabf45f5c8d5659544b403f8465e436ccfd8a7f55b2eee9f310547855',
+2026-10-21T01:12:13.2099624Z E                   'lib/clients/debrid/debrider.py': '4243f8b79b42cddf59337a1b209b8d5ba9d8fa0f19bfd1436e827de85e6d13ce',
+2026-10-21T01:12:13.2100769Z E                   'lib/clients/debrid/easydebrid.py': '22a2bce0670a9e6b6651256fd8343ce792997f94a914d7041cfb2563b5edc5fe',
+2026-10-21T01:12:13.2101907Z E                   'lib/clients/debrid/offcloud.py': 'f1ad4073b8807fb0a176ad3055f7f5a1cfb0b00803fc0315c6d8a94845c66c10',
+2026-10-21T01:12:13.2103047Z E                   'lib/clients/debrid/premiumize.py': '55c283dbb870c4bc96c282940bb921a2eca3113d5c0ad0f47f56c1b2a2a836fd',
+2026-10-21T01:12:13.2104194Z E                   'lib/clients/debrid/realdebrid.py': '90e147769e29a111c77d6d1a9221814587da14c98f7de99fd47afce427257641',
+2026-10-21T01:12:13.2105502Z E                   'lib/clients/debrid/torbox.py': 'd9ab9aac0256a1e6c3de9185068f5c429c0a4bea381e92fa3c7fe8b0feccde00',
+2026-10-21T01:12:13.2106608Z E                   'lib/clients/easynews.py': '345acfd671c9b777a98d9c38a35ccee7a52c7af0acf0c55ca8c086f075b8cff4',
+2026-10-21T01:12:13.2107651Z E                   'lib/clients/elfhosted.py': '820a0122adc4499e520fb6e77665e759c91e42d0efe981c58ed43ed5c463e858',
+2026-10-21T01:12:13.2108745Z E                   'lib/clients/external_scraper.py': '8f29e36f21f85acfc9d9a664a7da035af0332a91dd9747830a7d7e82eade39d1',
+2026-10-21T01:12:13.2110039Z E                   'lib/clients/fanout_diagnostics.py': '6e8a8f31d6d4adea8c96ef522892f81540b1a670e87329eaa430b0196e2c5dac',
+2026-10-21T01:12:13.2111124Z E                   'lib/clients/fma.py': 'ce696326f4191a537183708d2356aea6e90a2321f236bb184bb912495191d10c',
+2026-10-21T01:12:13.2112124Z E                   'lib/clients/introdb.py': '6b444fd27b5f8c4608e3cd0f832f8d1f69c8ac08fe5474ce08a838b3e6b6ab90',
+2026-10-21T01:12:13.2113178Z E                   'lib/clients/jackett.py': '3ebf2e825beae5f9dfe5a9e967deeaec599979f5180036649aabe758cec7e82c',
+2026-10-21T01:12:13.2114419Z E                   'lib/clients/jackett_fanout.py': 'a97e04eccb6247f735ef1d04c3c7a0975b8ab0a15a64f226043ed8ee02037d2d',
+2026-10-21T01:12:13.2115833Z E                   'lib/clients/jackett_http.py': '138e59226457179f4f0fec113d457d6ab5f4bc88cd128038e068a352f2deea07',
+2026-10-21T01:12:13.2116953Z E                   'lib/clients/jackett_http_worker.py': '5b7855b3172feb5c53f87feec817d41177b0a1dc574ee01790524acf2ba746d4',
+2026-10-21T01:12:13.2118089Z E                   'lib/clients/jackgram/client.py': '1252bc0c3a00394ea6d1e077eb1538a4d77cfbbe8095df0f9517e648724e04df',
+2026-10-21T01:12:13.2119220Z E                   'lib/clients/jackgram/utils.py': 'c93d3e4f3a6be35b1ddfc391fc36acfd7356418358f3608a6484065cfa18a0c3',
+2026-10-21T01:12:13.2120332Z E                   'lib/clients/juku_provider.py': 'ae37ca4d08b0e4a4b0f17e4c85733c2a8dabb33bbdb4c56e39700cfc0f6d42ce',
+2026-10-21T01:12:13.2121458Z E                   'lib/clients/maintainable_ui.py': '6d44f45d3f94a4476dec315b7d9e80129079f895cf82b015f285569d6dc6ac79',
+2026-10-21T01:12:13.2122564Z E                   'lib/clients/mdblist/mdblist.py': '07b195ff1ba755b492d16de8b1d3914e7ba55b4f807a62eaa81dbcc40e9b15df',
+2026-10-21T01:12:13.2123688Z E                   'lib/clients/mdsub_provider.py': 'dcf4b01b5e12c84a50d449efcfdabc69c84d9b6f6ec1a5ee2ad65a4cc6bee674',
+2026-10-21T01:12:13.2124985Z E                   'lib/clients/medifusion.py': '21d23a73c5e695d1df7552b3ef1419d2f315177e3c1bf78882f84be3ddf959e8',
+2026-10-21T01:12:13.2126069Z E                   'lib/clients/nuvio/__init__.py': '67046e8adf8387c339679f9fef22e9707b36519ebc100f4a6aa9729ad277d508',
+2026-10-21T01:12:13.2127182Z E                   'lib/clients/nuvio/addon_selection.py': 'fd0f0fa8a14b089d83cff5797e18d6080d8e8c0f214947f82c0c3d8da7611995',
+2026-10-21T01:12:13.2128332Z E                   'lib/clients/nuvio/constants.py': '532315bc2d53933b4226c5e4d59d623015a9ad6df5d91b65725da49c963ab69b',
+2026-10-21T01:12:13.2129496Z E                   'lib/clients/nuvio/helpers.py': '28c2b0a13165767d2464510f1a57bc2ecbdcd2a8052ac26f2e2e94f195ca9285',
+2026-10-21T01:12:13.2130549Z E                   'lib/clients/peerflix.py': '0f51d9e38c7ec99c991750ad2950243943ba845d30fedf66492d73cca84de033',
+2026-10-21T01:12:13.2131558Z E                   'lib/clients/plex.py': '9568fdbcd93c54ec9683c2f72cfc939a581581c71988f57c565e0f46a1dbf755',
+2026-10-21T01:12:13.2132633Z E                   'lib/clients/portable_http.py': '0472abbc161da4609d56cbe2840bfa305013aefb08f136865948f50f41da9848',
+2026-10-21T01:12:13.2133691Z E                   'lib/clients/prowlarr.py': '95ca61e824002712744bf1b5718d937c27c1b04000ec92607a9010bacabc3bc0',
+2026-10-21T01:12:13.2135073Z E                   'lib/clients/qqdocs_provider.py': '0a04cc67ff98153dc4ba5093631b0c144516bb68cda7498e6e2b6e75d28fdc27',
+2026-10-21T01:12:13.2136135Z E                   'lib/clients/simkl.py': 'd88ca34f4a06c9aa89eb58c07c1d84ab906351498f39297ee01490de64fea075',
+2026-10-21T01:12:13.2137235Z E                   'lib/clients/stremio/addon_client.py': '3cfd4b572de09efb0fd13bd27be9ff242d2d0846e4fe0cb7c6bf8f6aba178956',
+2026-10-21T01:12:13.2138439Z E                   'lib/clients/stremio/addon_selection.py': '80825965badfd5b75f279e340c8ba7c36d117c4c726df7189424ab50c54c6ee8',
+2026-10-21T01:12:13.2139643Z E                   'lib/clients/stremio/authentication.py': 'f0cc016fac586f01f1cc4bf097974d7ac8e0408b2441c626153015f17cd78c26',
+2026-10-21T01:12:13.2140834Z E                   'lib/clients/stremio/catalog_menus.py': 'a6b03fb1915c6d7edfe6117684af802b5682f83dd639d969cded58fecaeae826',
+2026-10-21T01:12:13.2142173Z E                   'lib/clients/stremio/constants.py': '0d72a3ea7af3fa590a59b3e2af501270962f196323fa2ae0288d72ab05912642',
+2026-10-21T01:12:13.2143316Z E                   'lib/clients/stremio/helpers.py': '3beb8904fc3c1a7ee4f2390f3b2ae18f59f31d0a40b221be4ab1aae8a9d8cf1d',
+2026-10-21T01:12:13.2144724Z E                   'lib/clients/stremio/manage_phone.py': '3f801f425cd3a5d53ceecd0a47972832b8918389f4f498daa448f8e36e78fc7d',
+2026-10-21T01:12:13.2146070Z E                   'lib/clients/stremio/playback.py': '8d1fb517614d382c1ef2571fa3272457d975496967c82b22addbc6008155e769',
+2026-10-21T01:12:13.2147199Z E                   'lib/clients/stremio/protocol.py': 'fd2a7d62ae3306182bec8f6e3aaae40e42be67f2fe5da2826932714e5735595b',
+2026-10-21T01:12:13.2148320Z E                   'lib/clients/stremio/torrentio.py': '2257be33f421e682754880fa9de94c819ff73a39063f3543bfebe042d1dba4fb',
+2026-10-21T01:12:13.2149435Z E                   'lib/clients/subtitle/cinema.py': '2bd4dbfe7e4cef00c5fffd64a261121b0827462720eecea366b75fd2676202f2',
+2026-10-21T01:12:13.2150575Z E                   'lib/clients/subtitle/deepl.py': '806f4446cd3776e2185ede810d1d15a2e399b5bf97db60bfed335a67d35bf98a',
+2026-10-21T01:12:13.2151744Z E                   'lib/clients/subtitle/opensubstremio.py': '4c8f7c9978ab842217f92ea63de7c3be619f064a3cbb17b6dde1c8afeb7dc5c0',
+2026-10-21T01:12:13.2152947Z E                   'lib/clients/subtitle/submanager.py': '3a7b57c221dbd78f0e5707f5f506cafd36a2523ee936a7ce842f6b004d12a50f',
+2026-10-21T01:12:13.2154080Z E                   'lib/clients/subtitle/utils.py': 'ae142e05640710f75bd79b9118d60ebb260b67ae7a1674690ee75b6a0ebe0aa9',
+2026-10-21T01:12:13.2155471Z E                   'lib/clients/tmdb/anime.py': 'bf1ede654d140d6a0ad713529269e52cb6a6d3551db5dbbc6ef366895da60be5',
+2026-10-21T01:12:13.2156580Z E                   'lib/clients/tmdb/anime_fast_catalog.py': 'd5bad3b970545cce7c5fe7694af357ad457f5869257b8121b7c008866594015c',
+2026-10-21T01:12:13.2157747Z E                   'lib/clients/tmdb/anime_metadata.py': '6b409623c63a200de0a9f3d69a8dcaf0c7899b3262b48013105d5368c7a301dc',
+2026-10-21T01:12:13.2158822Z E                   'lib/clients/tmdb/base.py': '6978b6f74eb0c3914152c02d4bc82f99fe15b62c3faaeb0b8eba3b368a6cd057',
+2026-10-21T01:12:13.2159908Z E                   'lib/clients/tmdb/collections.py': '5bc32d41c84d846f572b3920433c3ab253ece9a83cac3eebf1cd017fdb73c579',
+2026-10-21T01:12:13.2161017Z E                   'lib/clients/tmdb/detail_cache.py': '6f6180b24ea43950d0ce1589030abaf522cda9483ff3e8da184804c01d5a7052',
+2026-10-21T01:12:13.2162145Z E                   'lib/clients/tmdb/episode_order.py': '33e3d829fb064ce7f77b235f4d257cb28eb5e4625691bfd37a68ce75dd5aa38c',
+2026-10-21T01:12:13.2163299Z E                   'lib/clients/tmdb/frontend_metadata.py': 'fc136bb4ca1565328a437dc93092a04ca33e304113ad160b333706031b047f90',
+2026-10-21T01:12:13.2164732Z E                   'lib/clients/tmdb/movie_details_guard.py': '56d4202b6d15d760455554ebd6d2bdab6b84a4bfc7a3d871213ef68d51edf3c2',
+2026-10-21T01:12:13.2165910Z E                   'lib/clients/tmdb/movie_years.py': '3d63340e32a6862545e4dc952666fc14429a96e778469e23522109bbe4f7967c',
+2026-10-21T01:12:13.2167032Z E                   'lib/clients/tmdb/original_audio.py': '8fcb9cf4a62055b84d516d2e932de431d5d0c0adbb0f3d7a4cc61f4150a17585',
+2026-10-21T01:12:13.2168157Z E                   'lib/clients/tmdb/people_client.py': '188b9e9434bf0b432173498b9bb280e052b563092784531b05b5553965f79766',
+2026-10-21T01:12:13.2169273Z E                   'lib/clients/tmdb/related_movies.py': '761ff1ce5e2dc591257c2798a390a957f49df940372aa2b7cfc6de72bf7040b2',
+2026-10-21T01:12:13.2170412Z E                   'lib/clients/tmdb/season_card.py': '7d0c5b628ed538880ddeb92bae52ec91b4014ff9415bbd49b4c7c4ccbd73107a',
+2026-10-21T01:12:13.2171533Z E                   'lib/clients/tmdb/season_cards.py': '5e1598c6344294802403915a9bb5907fb394e6b15b03af7172687a8c42e04e70',
+2026-10-21T01:12:13.2172598Z E                   'lib/clients/tmdb/tmdb.py': 'e1f24e3c980b9c44c8e1cf28b30bc1c2b0fa1e247f7384f8b28c86e9c7ac32a5',
+2026-10-21T01:12:13.2173812Z E                   'lib/clients/tmdb/trailers.py': '0c10ff7b68ac7fff523dc4aa16eb12c5c7edae368eaa9b69da6867ed696730e1',
+2026-10-21T01:12:13.2175236Z E                   'lib/clients/tmdb/tv_ended_window.py': 'ca3e7f112ac637a657e6387b55728fedc27bc328a739d5ec9b8b435a0d207434',
+2026-10-21T01:12:13.2176438Z E                   'lib/clients/tmdb/utils/collections_utils.py': '91a673edb47efe062c6de97645f2f9fcddf6b7dad1b613cc11b95b64b37391e0',
+2026-10-21T01:12:13.2177890Z E                   'lib/clients/tmdb/utils/excluded_languages_data.py': '4d98ab305cb58f08fd4b319877e2105129b5ff56296f36135fe80d0df274fb2b',
+2026-10-21T01:12:13.2179174Z E                   'lib/clients/tmdb/utils/utils.py': '16a69daf1066eb324a69c1f17c94f068c8e406a6f1acf5ea86f70807a5107885',
+2026-10-21T01:12:13.2180270Z E                   'lib/clients/torrentio.py': 'ac94658631d5d5ca977c339405ec0e37820e719a01ed30e3c3c0ab0b3bd7493d',
+2026-10-21T01:12:13.2181335Z E                   'lib/clients/trakt/paginator.py': '55661b7a9764fc9267225460745fab212de8d64cece7197ecda6ce3259f4181a',
+2026-10-21T01:12:13.2182412Z E                   'lib/clients/trakt/trakt.py': '834d5e7106f172d3cbf580499db47ee0dd8af56eeca8289a20d93007a4cdf672',
+2026-10-21T01:12:13.2183415Z E                   'lib/clients/trakt/utils.py': '908a4d07c84608e10234a8f51564a6559d2162cd39354413e3ce5368779c83d2',
+2026-10-21T01:12:13.2184466Z E                   'lib/clients/webdav/client.py': '15dd28adf106d224e833956ef96a535ad3abc9c82bfb6e27da50ea6c0eac155e',
+2026-10-21T01:12:13.2185726Z E                   'lib/clients/yamtrack.py': 'e4ff0aadcc36ccc6c491587ae4ac818970eb3e539aa867185fd0d4f650b5d528',
+2026-10-21T01:12:13.2186802Z E                   'lib/clients/youtube_resolver.py': '4d37e8a2c98bcb8cf7940bb8ff2c63cf878e0f21c9f723d14960bb7a7d9a2bd6',
+2026-10-21T01:12:13.2187851Z E                   'lib/clients/zilean.py': 'fb11dba69725f8c9a9c83b3352750cd8d82550cd0798bf74916b7dab5075f337',
+2026-10-21T01:12:13.2188804Z E                   'lib/db/anime.py': '6f2011d60b86b26caca9b9669210c4fc31f561e2314eda01d05e086d0b39910f',
+2026-10-21T01:12:13.2189715Z E                   'lib/db/cached.py': '2522949366ac214d795b51c99e2d737e86d003c3ae3cdbf888520e9d3664b1fe',
+2026-10-21T01:12:13.2190687Z E                   'lib/db/deferred_history.py': '7e19fac630183ac483f682de341dd7896658fad03b150be7395dfda405a6ee30',
+2026-10-21T01:12:13.2191707Z E                   'lib/db/pickle_db.py': '58e7bb4eb2ac82da968611560a514339f8b09e68de6d19a640ff8a5072b361af',
+2026-10-21T01:12:13.2192703Z E                   'lib/domain/torrent.py': '76eafd2d415ca42a0705e42893f322a264b4390fbb94dc27a3dcbe4fab3466f5',
+2026-10-21T01:12:13.2193747Z E                   'lib/download_control_flags.py': '9f6d890e883c6dd412bd8ab0f81732798b2f59beb20a471da96863b8fe34620d',
+2026-10-21T01:12:13.2195038Z E                   'lib/download_file_io.py': 'c06f687db37ee95c6d043bb6323dce28795458d17800ed08ac2967e9722d910e',
+2026-10-21T01:12:13.2196044Z E                   'lib/download_manager.py': '16ae30fd0e97a05b99c1acb38ebd5f741730d0bfa68f06652695ca130df83c35',
+2026-10-21T01:12:13.2197046Z E                   'lib/downloader.py': 'ffb74b1c7a7363dc2ff87d4252c67293fe5b598a6deb0f92bd6fdc39911ddc9d',
+2026-10-21T01:12:13.2198066Z E                   'lib/gui/actor_info_window.py': '60df1cffb5e5220bbdbd9a50e28fbd7201052c9da16c30dd77eeab8057bab317',
+2026-10-21T01:12:13.2199099Z E                   'lib/gui/base_window.py': '3b18d694019af52480250a6900618b3054278e598a79dd537e54257af4fc461e',
+2026-10-21T01:12:13.2200116Z E                   'lib/gui/custom_dialogs.py': 'cd92c952f14e16bc25f63a7a03ee4855c3e9b6e3bec556ba96a6a8ccfcb4da7c',
+2026-10-21T01:12:13.2201137Z E                   'lib/gui/custom_progress.py': 'b295e0394916e346cd11ff2c92302e186d78e2fa37ab661b58815250c98708d5',
+2026-10-21T01:12:13.2202215Z E                   'lib/gui/download_manager_window.py': 'f8457db4dc2ad0cbf875931793e3efc72e413724cb88d54569f589609e9a33c1',
+2026-10-21T01:12:13.2203574Z E                   'lib/gui/excluded_languages_dialog.py': 'f3038bc0f4f8149df83eeac982c34e4a9d2d7d7fc313ff0afa343b302cf1ef4b',
+2026-10-21T01:12:13.2204933Z E                   'lib/gui/external_scraper_dialog.py': 'f15be9c5de34e17e8f89b4dde734688cf385b678ff1dab3fc59a46edef99debd',
+2026-10-21T01:12:13.2206036Z E                   'lib/gui/extras_window.py': '23f42df44956e298d25da7922fe2696330c83a965479d971eea2f84d61c8babd',
+2026-10-21T01:12:13.2207101Z E                   'lib/gui/filter_items_window.py': 'ec8e7a5431bc5373e9ae84e981501fd813c7edf32baba7e104ab0cd74ae2860a',
+2026-10-21T01:12:13.2208335Z E                   'lib/gui/filter_type_window.py': '20a92f1335343b1d796a04e4713c6530a7841a7f43af4ddc02b6c4359a03ac79',
+2026-10-21T01:12:13.2209443Z E                   'lib/gui/play_next_window.py': 'cc7ac62bcec5931af70e59fb05823459cdec6d53416bc240014e6d8914b61949',
+2026-10-21T01:12:13.2210447Z E                   'lib/gui/play_window.py': '95d43ff97b741d04ab62b58a4ff1490a22283d3ee7c089ebfb7b1a08883cfbee',
+2026-10-21T01:12:13.2211469Z E                   'lib/gui/qr_progress_dialog.py': '1c5bce253545e35ba90340e028a899509d8ff180b42a2b09d0c51586e6a10157',
+2026-10-21T01:12:13.2212508Z E                   'lib/gui/resolver_window.py': 'e31a69f5f89ae9c1a3fc8508c3e270475d92656171508cce3821854f4a54e08f',
+2026-10-21T01:12:13.2213549Z E                   'lib/gui/resume_window.py': '8ab783c87bde0e0f2bd3aa9c0dbc19a6dea9fcfba13281dc7264e6146026fdcb',
+2026-10-21T01:12:13.2214951Z E                   'lib/gui/search_status_window.py': 'a972e850aaac20eddbc2d034803ac5345a0ab4d712e7c559e827f6bb96f6ec86',
+2026-10-21T01:12:13.2216081Z E                   'lib/gui/skip_intro_window.py': 'ed3da3fc8de69133c090ce6335896c50f0580920a99d5a8f0620d87601516791',
+2026-10-21T01:12:13.2217216Z E                   'lib/gui/source_manager_dialog.py': 'b80357ba910afd75df7dffa06dc31768b4bf0f05aec74540f8bf96c6ea3cd25b',
+2026-10-21T01:12:13.2218321Z E                   'lib/gui/source_pack_select.py': 'c3b69ca0925cb9feafb4c69bb5f08d28c16af83bd2a4ba290086871192cc8835',
+2026-10-21T01:12:13.2219431Z E                   'lib/gui/source_pack_window.py': '75ae9d3c5a2519fffe60d58cd096373bf1fa203e362747ef8c72bae60ec6d225',
+2026-10-21T01:12:13.2220518Z E                   'lib/gui/source_select.py': '3195afffe966aef4ba302ff0663a4e1b1e4c4a31bce46ad71634d1716a14b222',
+2026-10-21T01:12:13.2221574Z E                   'lib/gui/terminal_actions.py': 'abd771ee198699cd0fefc56cfaf7ba9211cecd2f757ab56657c7d68706fdc32f',
+2026-10-21T01:12:13.2222611Z E                   'lib/jacktook/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.2223627Z E                   'lib/jacktook/client.py': '85bcb0f75f3a56ee9a7123a9e76e1a8473082cad589ed38c2d0d7db01a7622f0',
+2026-10-21T01:12:13.2224825Z E                   'lib/jacktook/listener.py': '83c03a8f28ac1d364710456e2b36c4d6530a215f5debc3428be32d31f783dabe',
+2026-10-21T01:12:13.2225884Z E                   'lib/jacktook/provider_base.py': '763cbec954fa0ab99cb0cc9b102cc2fd744b72f9ce291b60613b344d975eae13',
+2026-10-21T01:12:13.2226972Z E                   'lib/jacktook/providers.py': 'd1588e98dd31f6fb3e0fff1c4f837fbba72e97ac6acec70bd9e17152b00b254d',
+2026-10-21T01:12:13.2227987Z E                   'lib/jacktook/utils.py': 'e5d406d6512ed102de661bf3a06a02b6b94808f4fbaac47335dfd353e64766cb',
+2026-10-21T01:12:13.2229040Z E                   'lib/native_player.py': 'dfee971410d5d2096da2cff89a56f2ad24cb3e44c4a6bd9c7c60a371ea506a00',
+2026-10-21T01:12:13.2230035Z E                   'lib/native_support.py': '0dbe9b6f500b5177ccf321778552acfc465a412661ca5e9cfd38572cd6e21bde',
+2026-10-21T01:12:13.2231006Z E                   'lib/nav/__init__.py': '626c8ae0d21a9e8ebcc5d79b03b802c4d701d29f95721318f098abf83d19740d',
+2026-10-21T01:12:13.2231936Z E                   'lib/nav/debrid.py': '1a65d1b96eefc98c17313c21e5b60272387447d7a07cafa03893af17c7a071a2',
+2026-10-21T01:12:13.2232933Z E                   'lib/nav/library_history.py': '4dff57f1c74c39c78902c4425cb636d9c887584db82a5e34e7c619753e223896',
+2026-10-21T01:12:13.2234124Z E                   'lib/navigation.py': '15e8fd4316c4cbaea47f542a72144df9801eedd3af8e7af9df4fb82c21617e10',
+2026-10-21T01:12:13.2235372Z E                   'lib/player.py': 'fd1f87b8e5b70d89c3707902513fab54770ac56f55e8e9f1e2d209ec83154c93',
+2026-10-21T01:12:13.2236296Z E                   'lib/portable.py': 'aaca212f133d308f1aa134eee4b1243fd662c5ca067f225f219b6acc00e77ee9',
+2026-10-21T01:12:13.2237304Z E                   'lib/portable_runtime.py': '5aa89cd58211398d09d4fc2dd4f74d94151cc6095d8c04e01f9dfc1af41d88db',
+2026-10-21T01:12:13.2238430Z E                   'lib/router.py': '6c5ca4eaae7a602e2885fc34825d80230f4465743577c0c01ccece67a80e7d48',
+2026-10-21T01:12:13.2239323Z E                   'lib/search.py': '12820d10b598b02f0d7fdcbabac6d9655f3355bcdad20969e5c3637ddd65ee59',
+2026-10-21T01:12:13.2240300Z E                   'lib/services/autostart.py': '2f20dafdf5f58818c076cef9ce12b3bdcbd1d31107c65abd018bfd5127dcb652',
+2026-10-21T01:12:13.2241400Z E                   'lib/services/background_service.py': '09049aac35cec3ea6b5c3c417de8068decd9223e85b36b9b02197edbd37e3ef5',
+2026-10-21T01:12:13.2242514Z E                   'lib/services/debrid/__init__.py': '259494db02abf9834373cad4862a7bf1608d00de0f3b3284b459c317d12b818b',
+2026-10-21T01:12:13.2243574Z E                   'lib/services/debrid/auth.py': '48ae3b0651cc1c8e9c8a45c8ebcb51b063903da7dd7dc63f6c8dbc18fb6b24ac',
+2026-10-21T01:12:13.2244847Z E                   'lib/services/debrid/download.py': '4b6531622bad6fe80c714b588b1930cab8f34b9220b61bdcb9e7a66384139691',
+2026-10-21T01:12:13.2245921Z E                   'lib/services/migrations.py': '50d610e3a50cb26fee5b44b2721eee4aae599852986bc74444ae12bd91dffae0',
+2026-10-21T01:12:13.2246963Z E                   'lib/services/nuvio_sync.py': 'cdff554be38bfefdfd1a1737441b5c272b2b52d6372110517123f78395f636fb',
+2026-10-21T01:12:13.2248038Z E                   'lib/services/playback_control.py': 'c0e65e9b4ef73f850c84e05a7ec7994e4f2ae42abcb0fc11745fa4f7130ddd9f',
+2026-10-21T01:12:13.2249106Z E                   'lib/services/preloader.py': '10f165781837e687b79f9a447a96bcf5a2d4db4ffa956303371ea303630602e8',
+2026-10-21T01:12:13.2250118Z E                   'lib/services/simkl_sync.py': 'af0202f0a73a9c0c1682c27a417cd8f4119cf889425cd49cbbfbc8da10de8704',
+2026-10-21T01:12:13.2251188Z E                   'lib/services/standard_playback.py': '79d9e8538a0c1d04cdef459842465e1cb89e3f19326870d8d5a7f51085aca64a',
+2026-10-21T01:12:13.2252288Z E                   'lib/services/subtitle_fallback.py': '733a255fbad85120f234c90cc34297003552d308fd55aedf81864d9e9669286c',
+2026-10-21T01:12:13.2253386Z E                   'lib/services/subtitle_server.py': '13ecaf52033cfe180730959edf2a1149915ca3eb1a2d6a98c6943852af7360e4',
+2026-10-21T01:12:13.2254443Z E                   'lib/services/trakt_sync.py': 'bdf45547cfdb00f61da5f75010f6a7d04985ebb3744791202df56ae84622b7ef',
+2026-10-21T01:12:13.2255766Z E                   'lib/services/webserver.py': 'f0c12183d52f5f924ec478d77293a4e4701acb9668d504c555ac462d1e4841b7',
+2026-10-21T01:12:13.2256824Z E                   'lib/services/widget_refresh.py': '0dabb9ecce7e7f28aa4d0b78560ec3bbf5d83b283f770fa7326f28c19019c723',
+2026-10-21T01:12:13.2257891Z E                   'lib/stock_player.py': '9fd6e03d43da094c5020dea0c2731ef87521240ef1327686e5d7fe08d3c7696e',
+2026-10-21T01:12:13.2258805Z E                   'lib/updater.py': '2dee224d60c9dd38b511850b8b17d011c8efbe9654ade07a9cc119813991e8e9',
+2026-10-21T01:12:13.2259796Z E                   'lib/utils/clients/utils.py': '6e82cd2d5640ed50dbf6140b43db224825f945821ee52544a7e0aa4e9258b498',
+2026-10-21T01:12:13.2260844Z E                   'lib/utils/debrid/debrid_utils.py': '5f41f32f62152ffcdbb35d62e997e72e37c966623a71ef7a2dd90099a4cdbf03',
+2026-10-21T01:12:13.2261914Z E                   'lib/utils/debrid/qrcode_utils.py': '3d6430cb143c937ceb042ec589d8db8faab71493b51217d0e2b88ba2179438ff',
+2026-10-21T01:12:13.2262992Z E                   'lib/utils/directory_failure.py': '4d89b2fb69357adeacf7a1f3510c146cbe20d845ca65e3fcebcdbf0e1c177338',
+2026-10-21T01:12:13.2264279Z E                   'lib/utils/general/anime_identity.py': '81b54ea6329b8d5923e5ee4be6c46a32106af07c70c98ac06f419b033fc2bee8',
+2026-10-21T01:12:13.2265592Z E                   'lib/utils/general/cinema_source_dedupe.py': '0801071e409a4c86be35f8d4261f9134395e91dd73e443ddacca11b4fe393f20',
+2026-10-21T01:12:13.2266725Z E                   'lib/utils/general/cinema_source_rank.py': 'be1f0d3f19f9e7690bd1077308367d9806ca7545f48475e4c1f21cb5cd990662',
+2026-10-21T01:12:13.2267821Z E                   'lib/utils/general/items_menus.py': '4dea859ae709e672df141035bce9c7774180fa693cb8883c577dabd331154773',
+2026-10-21T01:12:13.2269052Z E                   'lib/utils/general/processors.py': '56eb33c024024a7d2768fde2a7059d23c234de968bf5363af8ea9c8733926493',
+2026-10-21T01:12:13.2270158Z E                   'lib/utils/general/source_platform.py': 'd7ad79e4b0337cbae64dbadd80335436719ef494118a1fb85f5239eeaf5734a1',
+2026-10-21T01:12:13.2271298Z E                   'lib/utils/general/source_resolution.py': '3eb739d44d30634bd576bd3929c315f8dfafea617a4f80d2c7cb5842ab13254d',
+2026-10-21T01:12:13.2272393Z E                   'lib/utils/general/utils.py': '5855a3cd7cba5b958c7c8e7ad4e0773a6c7b68befc17a4bc7cca2453213a50e9',
+2026-10-21T01:12:13.2273414Z E                   'lib/utils/kodi/kodi_formats.py': '050471f1f9998a119b72b1f47539fd79b88f2739cb45af953949d22457188920',
+2026-10-21T01:12:13.2274732Z E                   'lib/utils/kodi/last_files_actions.py': '127bd48bc47b9d6c29136fe80a5ea4e4520cbb19d1c1ee8f553631e5c1833de2',
+2026-10-21T01:12:13.2275811Z E                   'lib/utils/kodi/logging.py': 'a2405e10c62db30038edebcf0a0b96bd44090586a18618d9c769e81840caf81c',
+2026-10-21T01:12:13.2276801Z E                   'lib/utils/kodi/paths.py': 'fb4a9c030a064ea8e8f9f00f202fc0d949c67d79a3e364838b2b52127eb70f43',
+2026-10-21T01:12:13.2277780Z E                   'lib/utils/kodi/settings.py': '81747db642a27422842a0d04c4ff0383b4945faea825bb78690a6fd250479d30',
+2026-10-21T01:12:13.2278803Z E                   'lib/utils/kodi/settings_backup.py': '0ae363a83321c25448f5c0fd15d5a3a93d831d5d47996307cb7f5a2ad88258e7',
+2026-10-21T01:12:13.2279833Z E                   'lib/utils/kodi/utils.py': '4e38ca2a924940f1413459d799fc3ca24250bc4009b2c1d56dcf3cbc67c05346',
+2026-10-21T01:12:13.2280953Z E                   'lib/utils/localization/countries.py': 'f0bf917e3bfd7a0325a08ecc16088200e081480fa8c4184c73949d1a8ba04f34',
+2026-10-21T01:12:13.2282191Z E                   'lib/utils/localization/language_detection.py': 'a72272621dfad92630766e32c6ab27100206596c29313b75f64e270976d5335a',
+2026-10-21T01:12:13.2283378Z E                   'lib/utils/nuvio_context.py': '483f56208f59f5b57966759f43d85371819ee0971a4cbb24a9b86b3de67f703e',
+2026-10-21T01:12:13.2284695Z E                   'lib/utils/parsers/pack_parser.py': 'ad81009a16b34bfd325cef1dcb2f9ab5586104cfc1a66a988614e56acd17914b',
+2026-10-21T01:12:13.2285887Z E                   'lib/utils/parsers/resolution.py': '6301287d387c0708f0d28aaceb7ad9b51b243b4b041a054e5e2a028b7659bec7',
+2026-10-21T01:12:13.2287034Z E                   'lib/utils/parsers/title_parser.py': '73d790680ee20d6168927e060c344a5def92e257ed166c614fc195946899b683',
+2026-10-21T01:12:13.2288168Z E                   'lib/utils/parsers/xmltodict.py': '1850a53148146bb6bcd87a9b3d4c599827d2ef23a4340cba19959d285ea0127f',
+2026-10-21T01:12:13.2289304Z E                   'lib/utils/player/continuity.py': '66db972463edc0ce8b81aece87f993e4a0a910e407fc6527b4163c3d767091a6',
+2026-10-21T01:12:13.2290485Z E                   'lib/utils/player/direct_continuity.py': '4e6d18ffba53490a3a146511a875a88ab360fd7973363b4eafabb0789ec616b0',
+2026-10-21T01:12:13.2291713Z E                   'lib/utils/player/discovery_gate.py': '65c567cead770a68e3cbfdd43e674a3bd77edc1f47f6a4387cf5928c2ac93861',
+2026-10-21T01:12:13.2292884Z E                   'lib/utils/player/episode_identity.py': '6534c4506d831c9597043ae61979f70bc7d615feae6d1385ade0810234b966df',
+2026-10-21T01:12:13.2294008Z E                   'lib/utils/player/utils.py': '7a38cb7d5ef6c6e6a9d1877c6ba989da5e9b64de9f91d72eeccd78307613abc8',
+2026-10-21T01:12:13.2295563Z E                   'lib/utils/plex/utils.py': '2434e0149da186be5c81323566351c7d984e4821f888b2ae6bff7a8a4f2492ed',
+2026-10-21T01:12:13.2296636Z E                   'lib/utils/simkl_context.py': 'f6dccaed0eb43e63241128a5fd58bd82701e3aa1ca1fc209004d62f06ab9438a',
+2026-10-21T01:12:13.2297747Z E                   'lib/utils/simkl_indicators.py': '043571964d472be4dbae4af54802843db458884439e19703fc1baf796ce49db3',
+2026-10-21T01:12:13.2298859Z E                   'lib/utils/source_manager.py': 'd2e9d5b10ddc0fbf6afbc86dac4e0a0796cc6aaaa17e5c7920ee68480280d71b',
+2026-10-21T01:12:13.2300254Z E                   'lib/utils/stremio/catalogs_utils.py': 'caa1bfb156805f116438ff3eec6b32d7799d5c8aeaf2ba8995bda72876d5c32b',
+2026-10-21T01:12:13.2301391Z E                   'lib/utils/tmdb_init.py': 'f58349b5d6cbf8ede92c2ddc3bd0cd9dce1402392adb0c3f3a69161c8e3b099f',
+2026-10-21T01:12:13.2302532Z E                   'lib/utils/torrent/display_metadata.py': 'c1f5228c3e463a4bfa42dd4abbed78d47d5d6cfa01f200c1ade869279798f0c5',
+2026-10-21T01:12:13.2303664Z E                   'lib/utils/torrent/flatbencode.py': '0fe508ff298c29f3af9e5d15d216407c1b018da69e7ba8412c676278db322b66',
+2026-10-21T01:12:13.2305186Z E                   'lib/utils/torrent/torrserver_init.py': 'b1f7d41cc3fb1c6fc6daf0bdc295dccf42de1babcf7728cb8b50041ed5746161',
+2026-10-21T01:12:13.2306368Z E                   'lib/utils/torrent/torrserver_utils.py': '673540a0e8abef26c51523af68829c914b4d490cf242617b7853119540c0e6bb',
+2026-10-21T01:12:13.2307469Z E                   'lib/utils/torrentio/utils.py': '1eff50c2ca4cad9c95aa4d7a6dd8012e2c802c9c805d0279c551af327659ca79',
+2026-10-21T01:12:13.2308577Z E                   'lib/utils/views/continue_watching.py': '6e399654ec92619b3d8062dc42730ecbbbe3c3ba443e148e3bebef0e34d4d08d',
+2026-10-21T01:12:13.2309665Z E                   'lib/utils/views/last_files.py': 'e90907f3b8336dbc00af3e9e123dec63c1df5784f358c05fd316a39311ceb306',
+2026-10-21T01:12:13.2310717Z E                   'lib/utils/views/last_titles.py': 'd8e3223d27452c8d15ee0d72c31ebf12335da844e24ef4017eededf2204615ea',
+2026-10-21T01:12:13.2311762Z E                   'lib/utils/views/library.py': 'cf434206b0ffb6923445ea9f91d327eac3044535050bad593475077181729911',
+2026-10-21T01:12:13.2312824Z E                   'lib/utils/views/nuvio_collections.py': '17893f5468a9d3ac15089b2a1e9618f3118388345a980c8137ac5964a766924f',
+2026-10-21T01:12:13.2313982Z E                   'lib/utils/views/nuvio_continue_watching.py': '53d11ff8e075375bb0b472658b128bb1d98927cc00a0c27aa498ff25ec8e1f56',
+2026-10-21T01:12:13.2315405Z E                   'lib/utils/views/nuvio_history.py': 'ce76beb8c1f7c973df52360dd487fca4621c598fa82ef74799f1a1dd80b3e93f',
+2026-10-21T01:12:13.2316511Z E                   'lib/utils/views/nuvio_library.py': '2fa50c4e967d8e0cb93f4ed4aa3445d83da661a5946f1557938cf3713ca28ef2',
+2026-10-21T01:12:13.2317580Z E                   'lib/utils/views/shows.py': 'c12abf8f12ad3fe0e18bef0d3a62ec7fc964fa93ca0a1b92541a2464c7342468',
+2026-10-21T01:12:13.2318705Z E                   'lib/utils/views/simkl_continue_watching.py': '45bd3de34d2fc4d127a7c87b5a737289a7c8f6890f2700edd0c0baa5f71393cb',
+2026-10-21T01:12:13.2319855Z E                   'lib/utils/views/simkl_history.py': '5ebc998a92fdc715bf5662c397efd892baf79283f7bc3fb6e215248407c70f59',
+2026-10-21T01:12:13.2320938Z E                   'lib/utils/views/simkl_library.py': '4e24a74ae96c65e330dfd09622170ab9e4b39402f9e758e0d914fa24944afeff',
+2026-10-21T01:12:13.2322043Z E                   'lib/utils/views/trakt_continue_watching.py': '144fe30e39d69123d1097d58f844339f28da597cf15c6b417b5f83eba8540e6e',
+2026-10-21T01:12:13.2323216Z E                   'lib/utils/views/weekly_calendar.py': 'a6441b5a1acd48c3eb216cdc451d1507b4569deb9db536670dc0871801166208',
+2026-10-21T01:12:13.2324306Z E                   'lib/vendor/segno/__init__.py': 'd6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae',
+2026-10-21T01:12:13.2325492Z E                   'lib/vendor/segno/consts.py': 'c1208e158903f493c06352a0e27cd7a2ba8569ef802054555c804975054335cc',
+2026-10-21T01:12:13.2326672Z E                   'lib/vendor/segno/encoder.py': '2f87db4903c7c64f39e72c100de01d579cc9e70c8c4be568d7126310031b3a1f',
+2026-10-21T01:12:13.2327695Z E                   'lib/vendor/segno/utils.py': '290874e0363ce280dc26f57bd4e2ef5832ffefa09bbf2f838e8a3fe2cb554cc4',
+2026-10-21T01:12:13.2328694Z E                   'lib/vendor/segno/writers.py': 'c3ce5448582c9638448178b97dcfb7e0c693fb933397611012cb7cbb5c40b505',
+2026-10-21T01:12:13.2329944Z E                   'lib/vendor/torf/__init__.py': '7e259f4a8c8f95275fee64d2769ceabcb84ae970c718ee286d44b7a86063c12e',
+2026-10-21T01:12:13.2330946Z E                   'lib/vendor/torf/_errors.py': 'b81d5f8882b0c5520d5119774e4202b734c510da41c458008868548583cbc26d',
+2026-10-21T01:12:13.2331937Z E                   'lib/vendor/torf/_generate.py': 'df64ffa210fc34c97462e87b1d50c2e56944fc50346aa08c4922d2324d3654c2',
+2026-10-21T01:12:13.2332896Z E                   'lib/vendor/torf/_magnet.py': '2d64325b8025bf964e4daaae14e298413eaf08471faec96672e7bd41ca263ab6',
+2026-10-21T01:12:13.2333837Z E                   'lib/vendor/torf/_reuse.py': '86042187740b09d9786e3a95f0ae7760e95aab3497ae4bab33f791a91620249c',
+2026-10-21T01:12:13.2335012Z E                   'lib/vendor/torf/_stream.py': '410950161b0d0ed8665bf82925ed342d815c4d28d881ebfbd0f17fecc5c1acf2',
+2026-10-21T01:12:13.2336005Z E                   'lib/vendor/torf/_torrent.py': '49345545865555fed95639037e218f9e151c44795eb7ef0962c239d9590c2dc6',
+2026-10-21T01:12:13.2336936Z E                   'lib/vendor/torf/_utils.py': '01fd587e00a1222b54e48e211752949fee3fbf6be714907938e89e49de260f44',
+2026-10-21T01:12:13.2337794Z E             -     'LICENSE': '605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad',
+2026-10-21T01:12:13.2338725Z E             -     'licenses/flatbencode-0.2.1-LICENSE.txt': '65f3400a83066b1e82f6114df0b64028880860e8d89d6da4237e0f31e0066dbd',
+2026-10-21T01:12:13.2339872Z E             -     'licenses/fontawesome-free-6.7.2-LICENSE.txt': '9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc',
+2026-10-21T01:12:13.2341028Z E             -     'licenses/jacktook-upstream-LICENSE.txt': '605e9047a563c5c8396ffb18232aa4304ec56586aee537c45064c6fb425e44ad',
+2026-10-21T01:12:13.2342115Z E             -     'licenses/segno-1.6.6-LICENSE.txt': 'de6c85fccf5d52902aa13dfe2dc6d2a2a106fc3419ed438f3460f0d4b76a6935',
+2026-10-21T01:12:13.2343220Z E             -     'licenses/tmdbv3api-1.9.0-setup-evidence.txt': '42fde0503d50bc327052cd3efd323a724326cd503b4058023791f46b79e045ee',
+2026-10-21T01:12:13.2344321Z E             -     'licenses/torf-4.2.0-LICENSE.txt': '3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986',
+2026-10-21T01:12:13.2345559Z E             -     'licenses/xmltodict-0.13.0-LICENSE.txt': 'd66d5eb8f83a0ba21d3dd04318b8817588e8764daabea852d1035e3f07ffda55',
+2026-10-21T01:12:13.2346519Z E             -     'README.md': 'cde6c2783b2fbfb22884927735eb0ea96044be0a96a9a19fa75b7700d3f80aac',
+2026-10-21T01:12:13.2347385Z E                   'resources/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+2026-10-21T01:12:13.2348392Z E                   'resources/cinema/episode-mappings.json': '1f13f05bd8221070d48099e6e8e10446191ce10a79edfb322159ae134266c1c6',
+2026-10-21T01:12:13.2349424Z E                   'resources/img/anime.png': 'd26ab4bb92c4d522fb3c59a52c756c6bb3f26a48d77ad59c823f7084028bcd11',
+2026-10-21T01:12:13.2350373Z E                   'resources/img/clear.png': '6d91ce37c8288b2619ed233e8b7defcba1ed07202df2ac1fd435baaf28f3fbf5',
+2026-10-21T01:12:13.2351359Z E                   'resources/img/cloud.png': '205d8beb4d34c0ee3631509806bcd45eb61dfb2785a61e357b096a268875f229',
+2026-10-21T01:12:13.2352314Z E                   'resources/img/cloud2.png': '0fa6d909272ad2ae73ae69abf9e0cd35c62b439b1d1f27c655de494db3bed9c6',
+2026-10-21T01:12:13.2353340Z E                   'resources/img/continue_watching.png': '9b5a8daae51d7e64056906974db41ddf779ed2266c36d3e3c476a6248ee3183d',
+2026-10-21T01:12:13.2354802Z E                   'resources/img/donate.png': '5430dd74585322ec06b2861d4de2a60ee300734da1081db8fd02384d0cc40e9a',
+2026-10-21T01:12:13.2355783Z E                   'resources/img/download.png': '6d522de81276f936a263bf757e51fdfd86e49a319e5f48270f258d17e0426988',
+2026-10-21T01:12:13.2356770Z E                   'resources/img/download2.png': '7ea8ff19693bc0ec2749d575b6778469efffdcae8c4cd3c978eb0fa96794f127',
+2026-10-21T01:12:13.2357716Z E                   'resources/img/genre.png': '83162052f386a05c9d8d32313d4121f2e10128143bd83e73a425b43296fe475c',
+2026-10-21T01:12:13.2358808Z E                   'resources/img/history.png': '7418bf618b87c412d6c04c85a24f23ac751bb00bf5184bfc86ecbd83dac0700a',
+2026-10-21T01:12:13.2359754Z E                   'resources/img/lang.png': '0143c5cbac796da689d82b5e45fd2958297e93c501e46234a6ccbff81308d291',
+2026-10-21T01:12:13.2360701Z E                   'resources/img/library.png': 'fc5ebd50cecae077172d6cbf02127e0be6410a84c91213b3af6a4a7681e62511',
+2026-10-21T01:12:13.2361664Z E                   'resources/img/magnet.png': 'dc1b04b867239c8153dbc076bfcab7a0ad46f339765d7b1515db923bc0f9ea40',
+2026-10-21T01:12:13.2362623Z E                   'resources/img/magnet2.png': '339a390bf5bbd2ef6999a158f61e9cf568309e9fe86cc39df0cac8b073da7ea8',
+2026-10-21T01:12:13.2363573Z E                   'resources/img/mdblist.png': 'b85d6e8f98e0f5bc9023b5348283810bec18f182fd4e29ac394f4b4bc5346860',
+2026-10-21T01:12:13.2364721Z E                   'resources/img/movies.png': '0549af324c5675f2683074c30e1a1bc98c1b9bc24f7b37f0213dcbe537157602',
+2026-10-21T01:12:13.2365716Z E                   'resources/img/nextpage.png': 'b96777edd63b7eaebc22605471cfa25abb8e7c3072e3ce33129eed78a36a026a',
+2026-10-21T01:12:13.2366664Z E                   'resources/img/nuvio.png': '97e056b5d1477f44f1bf213d709e45f10732afc7f55975fda0783b1236a9bffa',
+2026-10-21T01:12:13.2367583Z E                   'resources/img/search.png': '053954f778c90669fc34cb854cc27df35efd603505c44778765019a05f56de95',
+2026-10-21T01:12:13.2368530Z E                   'resources/img/settings.png': '502da90f2c064388bf8a6060c168f5d22da5b3ab4162862b3cdab7230cccbdf7',
+2026-10-21T01:12:13.2369498Z E                   'resources/img/simkl.png': 'c37fde26be09742a5b3c86cf3745d2f85e7c0a8938a62c2887e4627ce602172e',
+2026-10-21T01:12:13.2370488Z E                   'resources/img/spinner.png': '4dea966eb9ade96c0e95a9ee587ba940152f4dc72dea4330762e0501b6cdc39f',
+2026-10-21T01:12:13.2371543Z E                   'resources/img/status.png': 'cb9943a17c00d6bcdad69900923002c0af1911b0b8c2083ce5848158ca74138b',
+2026-10-21T01:12:13.2372671Z E                   'resources/img/telegram.png': 'ec5c522a117a096627b2526a83961e86ec89284e2b16ff880bfd5c878eaa5ed9',
+2026-10-21T01:12:13.2373723Z E                   'resources/img/tmdb.png': '0e6c558705193cfcb959d2ca6a3f51648490bf8bddefad5c4d6e7b5ee7bd2c7a',
+2026-10-21T01:12:13.2375101Z E                   'resources/img/torrentio.png': '9853282959f428ba2e29eedf8341a3748d4ce9ead19f37c7e8dec96f637f012f',
+2026-10-21T01:12:13.2376334Z E                   'resources/img/trakt.png': 'a1fdeba9ffb4118bfca038b9bb9165180ecf51319cf00aa8891eef962a8c3aa4',
+2026-10-21T01:12:13.2377468Z E                   'resources/img/trending.png': '5f9963d044b101842baa23b66e5194bb4380661cc628e6c1e2a0c43f2cb5f0de',
+2026-10-21T01:12:13.2378551Z E                   'resources/img/tv.png': 'a8a8915ce888ad224a6a2407c266c1a55354493a71034e7f9550c35d30965c3b',
+2026-10-21T01:12:13.2379719Z E                   'resources/language/English/strings.po': 'fccd047b2fefee3ce908acec336650d035e967ea22bc06723e462150c60e8141',
+2026-10-21T01:12:13.2381056Z E                   'resources/language/Portuguese/strings.po': '80773753f2b3df1827aeed43d3dc5e589c5d5332116a5ca1fd01bcee607ebbca',
+2026-10-21T01:12:13.2382421Z E                   'resources/language/Portuguese (Brazil)/strings.po': 'cbc401ffc8aef2d134d0d43b2f5521e6ac7907d70dfb6c16b15ff015aedb78d4',
+2026-10-21T01:12:13.2383711Z E                   'resources/language/Romanian/strings.po': '95c6344aad8d12c8861266546c41748cf0bfc259eec1c3d0ce56d41cc09fa8a0',
+2026-10-21T01:12:13.2385421Z E                   'resources/language/Russian/strings.po': '46f92a5cd75a4290c127f51891b960e9f1dc7a0a0c2db34dac89506a45591fbc',
+2026-10-21T01:12:13.2386810Z E                   'resources/language/Spanish/strings.po': '47afd344256d7a562ab02e9083487532e90da127caa5adf6e5440441c8859072',
+2026-10-21T01:12:13.2387988Z E                   'resources/settings.xml': '3688821350d910b9754711dd98a811c55e1ad3a819c2c665e6017f6e1625f694',
+2026-10-21T01:12:13.2389190Z E                   'resources/skins/Default/1080i/actor_info.xml': 'aa6fde7c8755b65a3435f167d6125bdb8b596ce6c734b06b4e901b6fe8d4fd51',
+2026-10-21T01:12:13.2390791Z E                   'resources/skins/Default/1080i/custom_progress_dialog.xml': '0ec294677a704af8369c76e1a43bbb0f56bb284df81244ece754e0948e98fa0a',
+2026-10-21T01:12:13.2392231Z E                   'resources/skins/Default/1080i/customdialog.xml': 'c8f5cdfeee66fb8961c52f04ea43fc1e16bca985ed551616c709bda3d36c9e7c',
+2026-10-21T01:12:13.2393625Z E                   'resources/skins/Default/1080i/download_manager.xml': '0f32faf07b5f51e554850dbbd90ee809634bab49aae6fa2537e51d91950b8ca6',
+2026-10-21T01:12:13.2395321Z E                   'resources/skins/Default/1080i/extras.xml': '9b43df9666ccea4221377ef9b57338ea4c4cc397747c70f474a3bf81458598f0',
+2026-10-21T01:12:13.2396615Z E                   'resources/skins/Default/1080i/filter_items.xml': 'a2e92d113e26c01745293d3ee2f98a48ee293c23f1b0d8e3277c11431026ea99',
+2026-10-21T01:12:13.2397929Z E                   'resources/skins/Default/1080i/filter_type.xml': '7e325f3f6568064c0ed61b5b228f6463025e96dea699b20a7f5f142204076179',
+2026-10-21T01:12:13.2399266Z E                   'resources/skins/Default/1080i/playing_next.xml': '55892583ae80c0305d0246fceedda2d201988e71f3dd3b39d3e4a637346fec3d',
+2026-10-21T01:12:13.2400578Z E                   'resources/skins/Default/1080i/qr_dialog.xml': 'ea059196da5238cf5fcd46fd15f3badf17a26e08eb28d511d0249758d276786d',
+2026-10-21T01:12:13.2401859Z E                   'resources/skins/Default/1080i/resolver.xml': 'b7845630274dad0eadc14c7f4a5fc1f6c6a7303dcb228ec39e54e3a607cd618a',
+2026-10-21T01:12:13.2403177Z E                   'resources/skins/Default/1080i/resume_dialog.xml': '48ccdd932694e015ccd01a83d34007f96be38653ca0d0fbe2998a3cb91ea4682',
+2026-10-21T01:12:13.2404884Z E                   'resources/skins/Default/1080i/search_status.xml': 'c13537fabeb19cad3b8f010b8fbffe3be9ff1ac8915ebe02d37d6791048c6eac',
+2026-10-21T01:12:13.2406184Z E                   'resources/skins/Default/1080i/skip_intro.xml': '2693f97197c09618a8027a824324f0bbe12e38af06a7e4010e099286a235d649',
+2026-10-21T01:12:13.2407496Z E                   'resources/skins/Default/1080i/source_pack_select.xml': '706a0ce312ad8d86d8ecb95e2779128af14141b3e3f00d0e4353af938ab85bf2',
+2026-10-21T01:12:13.2408839Z E                   'resources/skins/Default/1080i/source_select.xml': '34c860ee3afc74f6d5ac712ead1ea430217455785ef3c70d83fed91d48a6f770',
+2026-10-21T01:12:13.2410205Z E                   'resources/skins/Default/1080i/source_select_direct.xml': 'bcf40d495d2fc11d809f660470e403d9cf0f6709fd90f20b1e29fcafbbf24d39',
+2026-10-21T01:12:13.2411591Z E                   'resources/skins/Default/1080i/terminal-actions.xml': '6e8a5c808a68645c35bfdb1d8f478fc1763847a642c78b245a1a96d7a99e9908',
+2026-10-21T01:12:13.2412940Z E                   'resources/skins/Default/media/AddonWindow/black.png': 'c506358dd2958a6ae5954ab7b70db816b6fd41d723044770711a36faf1a235f7',
+2026-10-21T01:12:13.2414292Z E                   'resources/skins/Default/media/AddonWindow/white.png': '72ed1d13473ec391e897b602bcc7d9473e70d5ca8aa3c7c81f99ea87d7dbb4e5',
+2026-10-21T01:12:13.2416746Z E             +     'resources/skins/Default/media/Button/close.png': '68bcdc26a9350dec7c5ddd2113ff620b0b339a5ce3574fb182126ef391f90963',
+2026-10-21T01:12:13.2418078Z E                   'resources/skins/Default/media/am6b/backdrop.png': '3c2366265f35b9b44dd81cf49e8dff641dd14b06c2981f932790d0663dff93dd',
+2026-10-21T01:12:13.2419396Z E                   'resources/skins/Default/media/am6b/card-focus.png': '4692e47eb95aebe3a0b6672c74826f7552b9b964e78156337e156b01ef1809c4',
+2026-10-21T01:12:13.2420909Z E                   'resources/skins/Default/media/am6b/card.png': 'cdacfb99916cfdb210694b5eabe9c5f81be4b06664769851ca838e7d756a5146',
+2026-10-21T01:12:13.2422366Z E             -     'resources/skins/Default/media/am6b/cinema/LICENSE-Arctic-Fuse.txt': '95cc16779fa07b82bb7069b50fd6a788db75f3ab53426d0f3692c7be34d18b4c',
+2026-10-21T01:12:13.2423911Z E                   'resources/skins/Default/media/am6b/cinema/outline.png': '001b1b2680c398aa78fa1b93bcb34220d22acc6e9c36fce9f4e10ca22b332c0e',
+2026-10-21T01:12:13.2425709Z E                   'resources/skins/Default/media/am6b/cinema/rounded.png': 'd3c9ff302d8965ad44bb6a8e2f9811228f263ffb1673bab538cc674434b62abb',
+2026-10-21T01:12:13.2427074Z E                   'resources/skins/Default/media/am6b/divider.png': 'd2029c6fba1453f4e506b69326d3882ba0960f2c445b442c8b21f94e60513b90',
+2026-10-21T01:12:13.2429436Z E                   'resources/skins/Default/media/am6b/filter-panel.png': 'a2b73edc976a088f4cf6ef4ff48b03d80b5b775c487fad31f307a33bb9ba27fa',
+2026-10-21T01:12:13.2430877Z E                   'resources/skins/Default/media/am6b/filter-row-focus.png': '4b96f99e22a7d3379abbdd96dfb62fba3887a394d64a3afd3a29f134e41991ae',
+2026-10-21T01:12:13.2432272Z E                   'resources/skins/Default/media/am6b/filter-row.png': 'e19c1bf1df9b4709cbebbe3c841d3200e39f22562347e4a6a6c30d67d22af3e4',
+2026-10-21T01:12:13.2433600Z E                   'resources/skins/Default/media/am6b/panel.png': '1527576cdc28124712124e4c73985e4b6ba4cb571238504b1955d6d75722c90a',
+2026-10-21T01:12:13.2435231Z E                   'resources/skins/Default/media/am6b/pill-focus.png': '2cf7336f1bce7364e26476fdff4875f361ca93698b732afaef92793acd101b2c',
+2026-10-21T01:12:13.2436544Z E                   'resources/skins/Default/media/am6b/pill.png': '8d82c24a32c804349e48ce42020a501582577e36759ae3169625be71704ea7e6',
+2026-10-21T01:12:13.2437856Z E                   'resources/skins/Default/media/am6b/progress-bg.png': 'c8bb43dc06372632484d523098edc93c030d7217d57ecdf049c4780907ae183f',
+2026-10-21T01:12:13.2439212Z E                   'resources/skins/Default/media/am6b/progress-fill.png': '405008899298665b4a1d581feb0d691b35fc8f9a21600c45642688b3d408cc36',
+2026-10-21T01:12:13.2440597Z E                   'resources/skins/Default/media/am6b/quality-focus.png': 'b11a2e19ea990a87888830c3459cdd3640181f6eccb9eb4de4066142c127e729',
+2026-10-21T01:12:13.2441933Z E                   'resources/skins/Default/media/am6b/quality.png': 'd2d7aa8feba055885ffe1d564e9f907d03615c6f62f234341e1ef721fb4c778a',
+2026-10-21T01:12:13.2443291Z E                   'resources/skins/Default/media/am6b/scroll-bg.png': 'c790d5c8eb31c9757a67bcdfabaa2d57e632238d5a71920e564734a2ef1f0866',
+2026-10-21T01:12:13.2444856Z E                   'resources/skins/Default/media/am6b/scroll-thumb.png': 'e75d80c23c783c04bc9b133fd5407bf6144750ea5b10c634c36c017a76689a54',
+2026-10-21T01:12:13.2446241Z E                   'resources/skins/Default/media/am6b/spinner-ring.png': '16793cdaf3a5106fd2d721816186836cd1c330ca9eb8a77a3b978ed0f2c4cf34',
+2026-10-21T01:12:13.2447594Z E                   'resources/skins/Default/media/am6b/white.png': '6fbcc4b9129eac79a7a59e6b35290fbbcb946913f5dcbf99123699186f4c1cc9',
+2026-10-21T01:12:13.2448884Z E                   'resources/skins/Default/media/arrow_left.png': 'db484f33b0108d1d41dcd7be7d65481a3ed78522030b29dafb51e4fb9b9e95c9',
+2026-10-21T01:12:13.2450174Z E                   'resources/skins/Default/media/arrow_right.png': 'a6d04fe613c10b942dc76864cdcd372294d251864bdcbcbe6b21b9362b1734a1',
+2026-10-21T01:12:13.2451466Z E                   'resources/skins/Default/media/bobi/bar8.png': '1d8c0b023e9d8594abc947d55e126452acb01667df44547fb4556be222a549fc',
+2026-10-21T01:12:13.2452780Z E                   'resources/skins/Default/media/bobi/dot-ring.png': 'dd8ce484a0a2b5cb622d45d51f700efa82e07a9a43b4bb516fa95c55e7b1dbdd',
+2026-10-21T01:12:13.2454096Z E                   'resources/skins/Default/media/bobi/dot.png': '330fdfd671475b54cd32431a793a601e73ceca0c12f356cc60b941d1e648fd57',
+2026-10-21T01:12:13.2455877Z E                   'resources/skins/Default/media/bobi/fade-right.png': '323ad519fc7d2564e5d2aba04663438a02960ea3dbac8d929b5b0e32fef33e5b',
+2026-10-21T01:12:13.2457250Z E                   'resources/skins/Default/media/bobi/icons/audio.png': '10109b0cd484a11817b2481101183e9a70edecd757f288ecf9d42ad307076c33',
+2026-10-21T01:12:13.2458578Z E                   'resources/skins/Default/media/bobi/icons/back.png': '7438712c9c5da306810d9b021b2241ca9bdf54f9fb0b593ede382e9acdfccc38',
+2026-10-21T01:12:13.2460102Z E                   'resources/skins/Default/media/bobi/icons/bookmark.png': '07346b160c309355c42cbd157b768244bc3c027e8222e5e6dba08f68ea841f6a',
+2026-10-21T01:12:13.2461464Z E                   'resources/skins/Default/media/bobi/icons/check.png': '40b03ebb0694327cc85a5294261e531d85cd1d9488ce2e4b9c4bb001536c0fcd',
+2026-10-21T01:12:13.2462868Z E                   'resources/skins/Default/media/bobi/icons/chevron-down.png': '935223eafa47c270005ce6ba28c45c9e27bef9c1f54e940131d732f8da6a684f',
+2026-10-21T01:12:13.2464367Z E                   'resources/skins/Default/media/bobi/icons/chevron-left.png': '99efa143a84ebafc91f2d917f4aae3e51370e60ddd04bbe3bd10b7ae43cd670b',
+2026-10-21T01:12:13.2466129Z E                   'resources/skins/Default/media/bobi/icons/chevron-right.png': 'c55e0e3e854b03cb05d1ce80f1b19a85e3ccc627947270eddeafe2c6531bc4e4',
+2026-10-21T01:12:13.2467587Z E                   'resources/skins/Default/media/bobi/icons/chevron-up.png': '616dd0b43baa4aa10a9b58dcbdc4b2244cee8ae468f5823d2289b4284872f7d8',
+2026-10-21T01:12:13.2468974Z E                   'resources/skins/Default/media/bobi/icons/chip.png': '06e3027e061e8cee1bbf5ef387c25b5e44010851000b4fa87823af9140931a0e',
+2026-10-21T01:12:13.2470343Z E                   'resources/skins/Default/media/bobi/icons/clock.png': '60f6d68a8b8d5eaf3be39b17bcb6b4fbe909bb7d1ea33200e0674d4ba18c3580',
+2026-10-21T01:12:13.2471724Z E                   'resources/skins/Default/media/bobi/icons/close.png': 'a7f3ece4124491a496271e843baf63a164ded329e3818c814c20ab13e4c74d8b',
+2026-10-21T01:12:13.2473071Z E                   'resources/skins/Default/media/bobi/icons/cloud.png': 'e62429073f7fe68cb248aed88722421c06cb28c38fb935da23eef5a2c1109312',
+2026-10-21T01:12:13.2474444Z E                   'resources/skins/Default/media/bobi/icons/download.png': '8fe9bc7757ab889db6bbc3133c1ef2a5680064a77eab40c9802095b4d991b3b8',
+2026-10-21T01:12:13.2476046Z E                   'resources/skins/Default/media/bobi/icons/empty.png': '00745174e66a5fb3673e7f6a64229696d4c391ff7d345a56906b2386f0d73431',
+2026-10-21T01:12:13.2477374Z E                   'resources/skins/Default/media/bobi/icons/error.png': '730c51da2c629547038b80a1f42934cba79d819a1777818d8eafd990c042104d',
+2026-10-21T01:12:13.2478721Z E                   'resources/skins/Default/media/bobi/icons/film.png': '416714aa832c056f428261f7ec3662f48a67c74d0fe6e1cf15097099ca76a694',
+2026-10-21T01:12:13.2480067Z E                   'resources/skins/Default/media/bobi/icons/filter.png': '82bfe7cf7cdda1616ce73a922f4f09590b4259efd1c4d4e3f8178e780211c747',
+2026-10-21T01:12:13.2481426Z E                   'resources/skins/Default/media/bobi/icons/folder.png': '9f71cd78353400c52fa6644d0962b97fd84991f229bb1929e951aeebc2dd8a40',
+2026-10-21T01:12:13.2482827Z E                   'resources/skins/Default/media/bobi/icons/forward.png': '74b1e8ab53c07b4be6ed06ba5be035e60fc9c40f5aa227d89380e19b8a1942d7',
+2026-10-21T01:12:13.2484177Z E                   'resources/skins/Default/media/bobi/icons/grid.png': 'a15434fac05821594dc0a22f30991c5087dde80626ed05b4c64c848be7601592',
+2026-10-21T01:12:13.2485657Z E                   'resources/skins/Default/media/bobi/icons/hdr.png': '87bb9024257173fb9d8b2f7455676186f07c722553024048802da8e295192cb1',
+2026-10-21T01:12:13.2486974Z E                   'resources/skins/Default/media/bobi/icons/heart.png': 'fe352bc2390a613fda02f6d0acaae6d623d0ba527b3fad7c481f3dfb2ff09a2f',
+2026-10-21T01:12:13.2488543Z E                   'resources/skins/Default/media/bobi/icons/history.png': 'dd5ec247cc98b43ae3631eef3c2c6aea66e01fd6b988028800dabd1b10dee22b',
+2026-10-21T01:12:13.2489934Z E                   'resources/skins/Default/media/bobi/icons/home.png': '0c517e8291129e901d6c88cf2610e8eecc90aabf50a07dbcb1b616b01137fb64',
+2026-10-21T01:12:13.2491276Z E                   'resources/skins/Default/media/bobi/icons/info.png': '6d29cf3271b6285010411a0ee86b856e224c714c6ccdaf0e526921ced3576b10',
+2026-10-21T01:12:13.2492652Z E                   'resources/skins/Default/media/bobi/icons/list.png': '3b76390f3dac28eec126fdbbe5700ac9e88b401048d80db3ff0edfe00e4b4fcd',
+2026-10-21T01:12:13.2494298Z E                   'resources/skins/Default/media/bobi/icons/lock.png': 'ba99b18ce1d11b771948b4a83376364ce152cbbdded5ad84defdcebbe7a1bd4b',
+2026-10-21T01:12:13.2495922Z E                   'resources/skins/Default/media/bobi/icons/magnet.png': 'c163816e09190a3aa030cc272365dec89e7e724735a45311bbbef3cfb99582af',
+2026-10-21T01:12:13.2497253Z E                   'resources/skins/Default/media/bobi/icons/minus.png': 'f745184d879c2fa37798a6256f9d241d2d7f29008abddf5796339217c9bad5de',
+2026-10-21T01:12:13.2498593Z E                   'resources/skins/Default/media/bobi/icons/next.png': '7e01ec610fa3fa4f9a648ff56b1b94efb627b4d02295c0b210e172d3577ecc6a',
+2026-10-21T01:12:13.2499924Z E                   'resources/skins/Default/media/bobi/icons/pause.png': '9b12ae9c6a7f15f65d733f091d8720ba17886c0993ce9b9acad146a6780e48e0',
+2026-10-21T01:12:13.2501264Z E                   'resources/skins/Default/media/bobi/icons/people.png': '1d8239aa2b97e3d370b19d688752412f126c933c9c68f8a38e083ab03316ce38',
+2026-10-21T01:12:13.2502613Z E                   'resources/skins/Default/media/bobi/icons/picture.png': 'd217999488cb71a3324673a3b6f2c74d14265f906957dccdfe54e3dbc9ffdbcd',
+2026-10-21T01:12:13.2503942Z E                   'resources/skins/Default/media/bobi/icons/play.png': '71f35b7b56f0237deeee1be1c6b6154191e02f1a83c026c2944c4c64247ccbca',
+2026-10-21T01:12:13.2505475Z E                   'resources/skins/Default/media/bobi/icons/playing.png': 'fa0d6ba1823b2e9ca258f19e7e6de4c1b452c328f289c801b86a38eb4a892b73',
+2026-10-21T01:12:13.2506825Z E                   'resources/skins/Default/media/bobi/icons/plus.png': 'b27e28d0afebf004e9971de226969136c6ddb23e46288aa67be2a832af063b4e',
+2026-10-21T01:12:13.2508148Z E                   'resources/skins/Default/media/bobi/icons/power.png': '81d5f4a8536eaa1e7234bc16739afeaad1eb66c3f912d10478e541181036e230',
+2026-10-21T01:12:13.2509485Z E                   'resources/skins/Default/media/bobi/icons/prev.png': '597ad6b71f963960c70db683bbdcfa5689c9f290a876b19fed02b161be4dff52',
+2026-10-21T01:12:13.2510817Z E                   'resources/skins/Default/media/bobi/icons/refresh.png': 'b938dc6610f1639380232258edefc1d38aae67318369c8ae949885170b0a91a0',
+2026-10-21T01:12:13.2512155Z E                   'resources/skins/Default/media/bobi/icons/rewind.png': 'e2478d59d76bb37616a3b805b981d1aa24973ae78a2dcc7cbe5e7995246dc105',
+2026-10-21T01:12:13.2513488Z E                   'resources/skins/Default/media/bobi/icons/search.png': '344164226fa210d3834083d62fdf83b6a63406f36d79540229882451eb0d1772',
+2026-10-21T01:12:13.2515042Z E                   'resources/skins/Default/media/bobi/icons/settings.png': '728ed8ec9891405cc02bb5b7897da2ef5d101e18f02786ae3029d545eef63380',
+2026-10-21T01:12:13.2516415Z E                   'resources/skins/Default/media/bobi/icons/signal.png': '7fdd2db01db4fdbc94c4fc027c909788c9f7a920deb94925e33011ede2c723aa',
+2026-10-21T01:12:13.2517784Z E                   'resources/skins/Default/media/bobi/icons/sliders.png': '82a7fe9af113240d273b4dbc7a5d2c10b17bbd51e92f8f2b350a5231e84c3511',
+2026-10-21T01:12:13.2519145Z E                   'resources/skins/Default/media/bobi/icons/sort.png': '7e33fe911bacd789b2c3c9a75ad6191b2b1589869eced56a557705652f529603',
+2026-10-21T01:12:13.2520490Z E                   'resources/skins/Default/media/bobi/icons/sparkle.png': 'b01fb41f91f2d1891234458297f85249dd81a1833e911fcf06b9a454a772396a',
+2026-10-21T01:12:13.2522032Z E                   'resources/skins/Default/media/bobi/icons/speed.png': '625cf2669fef8091ff9fa8d727fd68618ade4a24203b4f805a581ccc6d32deed',
+2026-10-21T01:12:13.2523402Z E                   'resources/skins/Default/media/bobi/icons/star.png': '48cfc44c69f739ea7950d9ff01ac6d4081a77d2c2414ddc273de0b5c56479b8a',
+2026-10-21T01:12:13.2524925Z E                   'resources/skins/Default/media/bobi/icons/stop.png': 'b43202f0ee809ae9065fb2a0aecdfc1965c396148d286e7fb69572b12ea3368a',
+2026-10-21T01:12:13.2526294Z E                   'resources/skins/Default/media/bobi/icons/subtitles.png': 'c64409d5191b9abddccff8cfba82c754f024b02bf080899c483d9a40f29b48ef',
+2026-10-21T01:12:13.2527845Z E                   'resources/skins/Default/media/bobi/icons/tv.png': '12eed31a2f88a5a2eb8ab7d0f2ebda186ea24fb874ef3be9395d10b986bcafc0',
+2026-10-21T01:12:13.2529283Z E                   'resources/skins/Default/media/bobi/icons/user.png': '65588d55e6f0c25558c001395e32285fe12ca7e6e6aca3be01710dedd0a0bc23',
+2026-10-21T01:12:13.2530630Z E                   'resources/skins/Default/media/bobi/mask-128x128.png': 'ed9ce9af745d4b933e02759eb766087a5b62ece0eb7a11f162ef9faa3006bf9c',
+2026-10-21T01:12:13.2531993Z E                   'resources/skins/Default/media/bobi/mask-160x160.png': '17f286e896414bb12b1a9cf3e29b4f7783bcf527352cbdf5f07028c2cc587192',
+2026-10-21T01:12:13.2533325Z E                   'resources/skins/Default/media/bobi/mask-176x264.png': '48a0e1790a83991f678e048cbd7786deddc2e89f870a886a17e0166ae6df07ac',
+2026-10-21T01:12:13.2534892Z E                   'resources/skins/Default/media/bobi/mask-200x300.png': '59088b216f2299459df60c200b670513f0f935dcfe67457106a676a8c592988a',
+2026-10-21T01:12:13.2536200Z E                   'resources/skins/Default/media/bobi/mask-232x348.png': '4e4ff518f1041925d695dc663e417f7c752022677a703da49fc3091259bc9d20',
+2026-10-21T01:12:13.2537525Z E                   'resources/skins/Default/media/bobi/mask-256x384.png': '837fbb97f58a413dc0dfd26e0a454e161b6e13b2f6b5dea42b4a5c3eb9973587',
+2026-10-21T01:12:13.2538870Z E                   'resources/skins/Default/media/bobi/mask-300x450.png': 'ca83058488498cd7d0dd4a707f90cb75b0ab2afff7fa3e18c757e3116ec2227f',
+2026-10-21T01:12:13.2540201Z E                   'resources/skins/Default/media/bobi/mask-320x180.png': 'ba1e8e8dc026ec08324a5a54eee38880f724ee420601e8598b0de91a37d401a0',
+2026-10-21T01:12:13.2541524Z E                   'resources/skins/Default/media/bobi/mask-352x198.png': '41ac7966c969de1648be30e1793a5db1c028b95b9657a0a52f25c9e706581be5',
+2026-10-21T01:12:13.2542870Z E                   'resources/skins/Default/media/bobi/mask-400x225.png': '07e62de5237e0eaf4a7c661ff7935eb362fb4dbc0d29c3ba02f150a09a73009d',
+2026-10-21T01:12:13.2544236Z E                   'resources/skins/Default/media/bobi/mask-480x270.png': 'ba18b2f8c2f68ef7fe62098f25836b7943851fea4cff1ac5d4e2fb136724c055',
+2026-10-21T01:12:13.2545706Z E                   'resources/skins/Default/media/bobi/pill.png': 'ecf9667196227a76657449643aca72cdd49678c7d35c1d788880636ca17f564b',
+2026-10-21T01:12:13.2547037Z E                   'resources/skins/Default/media/bobi/r10.png': '4de4dd4fe880cf51ec78d2d9a6c04f76cb7ee1b127c5083cab635a388e7681ba',
+2026-10-21T01:12:13.2548340Z E                   'resources/skins/Default/media/bobi/r14.png': '52de679b066e28ba01518638f71b63104eb0bf894a4d346c6e67ca3e78e4122b',
+2026-10-21T01:12:13.2549610Z E                   'resources/skins/Default/media/bobi/r20.png': 'a9bdb228fff19fefda33800cbe4856f533f9130217eab1be826f7ff93c79a7b4',
+2026-10-21T01:12:13.2550880Z E                   'resources/skins/Default/media/bobi/r6.png': '0f5adef32c6b546fcde9638dde6be0c1d261946fdb1e900f962ff5a6bd5dce07',
+2026-10-21T01:12:13.2552220Z E                   'resources/skins/Default/media/bobi/ring-pill.png': 'aa7652c4e5705a94a86e5dbe1dca4a21e7ca6e656433ea2dd989f1d9f9b06ee8',
+2026-10-21T01:12:13.2553532Z E                   'resources/skins/Default/media/bobi/ring-r10.png': 'a10af9455f416782b03193091e59fc37d5291913fc2eac698c4fc18a7372b914',
+2026-10-21T01:12:13.2555085Z E                   'resources/skins/Default/media/bobi/ring-r14.png': '08bebc2458ef92b2fc02db3cebd0d46f5f8824ea348b567cccca8a6a3734d2f9',
+2026-10-21T01:12:13.2556669Z E                   'resources/skins/Default/media/bobi/ring-thin-r10.png': 'dd1252703d739651090d1b2fa987ab2d1148da60caee3586b458fd00fc5436cc',
+2026-10-21T01:12:13.2558057Z E                   'resources/skins/Default/media/bobi/row-focus.png': 'de2f9ffb3d1eb85fea3e86acf7b78a4cbafbc3488c2ffc1973c778f6805d6106',
+2026-10-21T01:12:13.2559471Z E                   'resources/skins/Default/media/bobi/scrim-bottom.png': '5be5fc70a2d61c038ecbd3f3986fb490b3851edde0b8e8c74018eca7a6671375',
+2026-10-21T01:12:13.2561006Z E                   'resources/skins/Default/media/bobi/scrim-left.png': 'e58c0280cb3cf00e545f0477705e7d39b1feced7419ec61403223d8eb97fa967',
+2026-10-21T01:12:13.2562347Z E                   'resources/skins/Default/media/bobi/scrim-osd.png': '416758ec5ee1ef8497213789fd31a3ef9264db0cae95d724726a24b4b1cef64c',
+2026-10-21T01:12:13.2563648Z E                   'resources/skins/Default/media/bobi/scrim-top.png': '591813197816890277dd5c6b838a57d98c843c4af59143dd28a02c8e6e08e3df',
+2026-10-21T01:12:13.2565234Z E                   'resources/skins/Default/media/bobi/selected-bar.png': '8ad8b7b40b1d2bbf6a9bddf5999b53bab9e714db50c4d39252186ac8a6cecdc2',
+2026-10-21T01:12:13.2566593Z E                   'resources/skins/Default/media/bobi/shadow-r14.png': 'ad4a16d2ca55dab3e24ec05657f64b795a110d435f17de1003be4655f8d1f411',
+2026-10-21T01:12:13.2567949Z E                   'resources/skins/Default/media/bobi/slider-track.png': 'fa52be6e693a122158fa96c759dd5f24b40183517ea3b78423aebe5d5818586a',
+2026-10-21T01:12:13.2569278Z E                   'resources/skins/Default/media/bobi/spinner.png': 'eb52fe1231f5c455b0d725d873fa41a812881b78c34056857bc4e0def4b6e9de',
+2026-10-21T01:12:13.2570621Z E                   'resources/skins/Default/media/bobi/tab-underline.png': 'b9e3967feb795bf8f0d151ac6365d3eb839f2c7c8782816d66604d418fdadc54',
+2026-10-21T01:12:13.2571996Z E                   'resources/skins/Default/media/bobi/toggle-off.png': '76e9b777e5cfa1623aa4433d1a9d4e815679e81ebb64d4f5c2f2662bc4c913c9',
+2026-10-21T01:12:13.2740978Z E                   'resources/skins/Default/media/bobi/toggle-on.png': '89df9b61cca7a607e19420569b07759d29e5b0d8bfda63090e68ba10977f5288',
+2026-10-21T01:12:13.2742758Z E                   'resources/skins/Default/media/bobi/toggle-track-off.png': 'ed8504a59bb70dedb949365d0f0e0a9f7dc6f0dcaa26d5b851075551f9cd9cfb',
+2026-10-21T01:12:13.2745168Z E                   'resources/skins/Default/media/bobi/toggle-track.png': 'c4b89311c45e996ef4f417e736b2264f543cf241432fe6cca865085bce15c974',
+2026-10-21T01:12:13.2746782Z E                   'resources/skins/Default/media/bobi/white.png': '1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc',
+2026-10-21T01:12:13.2748345Z E             -     'resources/skins/Default/media/Button/close.png': '68bcdc26a9350dec7c5ddd2113ff620b0b339a5ce3574fb182126ef391f90963',
+2026-10-21T01:12:13.2749898Z E                   'resources/skins/Default/media/circle.png': '6244143d37ae3575a2f4594fec99b42d59c7b360dbc75945712e5e22241e5fbc',
+2026-10-21T01:12:13.2751379Z E                   'resources/skins/Default/media/info.png': '3eabbb9b104d72c9856ccaa00ed2dc648687dc6733d206a05bfbe4d8cfbe636b',
+2026-10-21T01:12:13.2752911Z E                   'resources/skins/Default/media/jtk_clearlogo.png': '2710a31a36ac34dee3ecd0b50fec62398745fd7d3dacdc848df3bf970b7a1d61',
+2026-10-21T01:12:13.2754453Z E                   'resources/skins/Default/media/jtk_fanart.png': '65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162',
+2026-10-21T01:12:13.2756160Z E                   'resources/skins/Default/media/left-circle.png': '3dd3bc7d5469c466d6bd5dfc7f7017217de8ddf9c385cdc48c32f3d1daca47b3',
+2026-10-21T01:12:13.2757673Z E                   'resources/skins/Default/media/panel-256-box.png': '17695993a48772943407e2ff13218b78e2c7405eee55b1044199df5b157b03fd',
+2026-10-21T01:12:13.2759178Z E                   'resources/skins/Default/media/poster_w217_h320.png': '2ebd63ca8ae1ea433e72e6f926801c9c8e3c785edc1870b61711030af93dce03',
+2026-10-21T01:12:13.2761026Z E                   'resources/skins/Default/media/spinner.png': 'fb4a15169b7b2f32aace259b6891aa4804517d3c272447ec6eceb1d0f1f45cc7',
+2026-10-21T01:12:13.2762514Z E                   'resources/skins/Default/media/texture.png': '51444c63b373d493548399f29b14d9c3984a6cb8e6894e665d62fdbc23804b8c',
+2026-10-21T01:12:13.2763953Z E                   'resources/skins/Default/media/white.png': '40f823cdda34dca3435ac4bb274c7ab84283e63559634e28adce2e6a40154512',
+2026-10-21T01:12:13.2765852Z E                   'resources/web/index.html': 'b77a42cd8dc7a1b2c33199a2a96d2d5e00c5c68a8bf84803a83130f1c04d8b80',
+2026-10-21T01:12:13.2767181Z E                   'resources/web/upload.html': '1ce0fac712f61a6eccd739c830e360ce4751a148d022bbbe509fdc77596aaf2c',
+2026-10-21T01:12:13.2768435Z E                   'resources/white.png': '1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc',
+2026-10-21T01:12:13.2769576Z E                   'service.py': 'b2798840e40a8cf4985b094484a909ee1716ba48f2b6e6b066fe72ffd78168d6',
+2026-10-21T01:12:13.2770402Z E               }
+2026-10-21T01:12:13.2770760Z 
+2026-10-21T01:12:13.2771113Z tests/test_public_release.py:30: AssertionError
+2026-10-21T01:12:13.2771980Z _____ test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts _____
+2026-10-21T01:12:13.2772643Z 
+2026-10-21T01:12:13.2773131Z     def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
+2026-10-21T01:12:13.2773939Z         source = ROOT / 'addons/skin.bobbi.cinema'
+2026-10-21T01:12:13.2774954Z         # Store hashes, not private helper contents, so assertion diagnostics can
+2026-10-21T01:12:13.2775851Z         # never spill encoded credentials from an excluded input script.
+2026-10-21T01:12:13.2776808Z         before = {p.relative_to(source).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+2026-10-21T01:12:13.2777681Z                   for p in source.rglob('*') if p.is_file()}
+2026-10-21T01:12:13.2778342Z         output = source
+2026-10-21T01:12:13.2778834Z         import json
+2026-10-21T01:12:13.2779564Z         proof = json.loads((ROOT / 'release/private-assets.json').read_text(encoding='utf-8'))
+2026-10-21T01:12:13.2780566Z         assert proof['source_commit'] == 'ff530e09c34c6285ccb05c1d4179140b097174fb'
+2026-10-21T01:12:13.2781493Z         font_rows = [row for row in proof['files'] if row['target'].endswith('.ttf')]
+2026-10-21T01:12:13.2782414Z         sound_rows = [row for row in proof['files'] if row['target'].endswith('.wav')]
+2026-10-21T01:12:13.2783254Z         assert len(font_rows) == 14 and len(sound_rows) == 8
+2026-10-21T01:12:13.2783929Z         for row in font_rows + sound_rows:
+2026-10-21T01:12:13.2785059Z             assert hashlib.sha256((ROOT / row['target']).read_bytes()).hexdigest() == row['source_sha256'] == row['sha256']
+2026-10-21T01:12:13.2786235Z         after = {p.relative_to(source).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+2026-10-21T01:12:13.2787100Z                  for p in source.rglob('*') if p.is_file()}
+2026-10-21T01:12:13.2787742Z         assert before == after
+2026-10-21T01:12:13.2788607Z         assert {Path(row['target']).name for row in font_rows} <= {p.name for p in (output / 'fonts').glob('*.ttf')}
+2026-10-21T01:12:13.2789699Z         assert {p.name for p in (output / 'scripts').glob('*.py')} == skin.SAFE_SCRIPTS
+2026-10-21T01:12:13.2790511Z         fonts = ET.parse(output / '1080p/Font.xml')
+2026-10-21T01:12:13.2791406Z         assert all((output / 'fonts' / e.text).is_file() for e in fonts.iter('filename'))
+2026-10-21T01:12:13.2792206Z         for font in skin.TEXT_FONTS:
+2026-10-21T01:12:13.2793066Z             assert hashlib.sha256((output / 'fonts' / font).read_bytes()).hexdigest() == before['fonts/' + font]
+2026-10-21T01:12:13.2794260Z         assert hashlib.sha256((output / 'fonts' / skin.ICON_FONT).read_bytes()).hexdigest() == skin.ICON_SHA256
+2026-10-21T01:12:13.2795450Z >       assert (output / 'fonts' / skin.ICON_LICENSE).is_file()
+2026-10-21T01:12:13.2796149Z E       AssertionError: assert False
+2026-10-21T01:12:13.2796937Z E        +  where False = is_file()
+2026-10-21T01:12:13.2798154Z E        +    where is_file = ((PosixPath('/home/runner/work/bobbi-tv/bobbi-tv/addons/skin.bobbi.cinema') / 'fonts') / 'fontawesome-free-6.7.2-LICENSE.txt').is_file
+2026-10-21T01:12:13.2799526Z E        +      where 'fontawesome-free-6.7.2-LICENSE.txt' = skin.ICON_LICENSE
+2026-10-21T01:12:13.2800158Z 
+2026-10-21T01:12:13.2800504Z tests/test_skin_sanitize.py:109: AssertionError
+2026-10-21T01:12:13.2801484Z ____________ test_checked_in_notices_and_truthful_unresolved_status ____________
+2026-10-21T01:12:13.2802116Z 
+2026-10-21T01:12:13.2802545Z     def test_checked_in_notices_and_truthful_unresolved_status():
+2026-10-21T01:12:13.2803244Z >       result = notices.verify(ROOT)
+2026-10-21T01:12:13.2803806Z                  ^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.2804227Z 
+2026-10-21T01:12:13.2804770Z tests/test_vendor_licenses.py:36: 
+2026-10-21T01:12:13.2805464Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+2026-10-21T01:12:13.2806161Z tools/vendor_licenses.py:136: in verify
+2026-10-21T01:12:13.2806760Z     data = load_manifest(root)
+2026-10-21T01:12:13.2807464Z            ^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.2808093Z tools/vendor_licenses.py:24: in load_manifest
+2026-10-21T01:12:13.2808854Z     data = json.loads((Path(root) / MANIFEST).read_text(encoding='utf-8'))
+2026-10-21T01:12:13.2809630Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.2810485Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1058: in read_text
+2026-10-21T01:12:13.2811417Z     with self.open(mode='r', encoding=encoding, errors=errors) as f:
+2026-10-21T01:12:13.2812146Z          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.2812828Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+2026-10-21T01:12:13.2813374Z 
+2026-10-21T01:12:13.2813886Z self = PosixPath('/home/runner/work/bobbi-tv/bobbi-tv/licenses/THIRD-PARTY.json')
+2026-10-21T01:12:13.2815066Z mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+2026-10-21T01:12:13.2815680Z 
+2026-10-21T01:12:13.2816072Z     def open(self, mode='r', buffering=-1, encoding=None,
+2026-10-21T01:12:13.2816743Z              errors=None, newline=None):
+2026-10-21T01:12:13.2817303Z         """
+2026-10-21T01:12:13.2817885Z         Open the file pointed by this path and return a file object, as
+2026-10-21T01:12:13.2818624Z         the built-in open() function does.
+2026-10-21T01:12:13.2819194Z         """
+2026-10-21T01:12:13.2819640Z         if "b" not in mode:
+2026-10-21T01:12:13.2820187Z             encoding = io.text_encoding(encoding)
+2026-10-21T01:12:13.2820924Z >       return io.open(self, mode, buffering, encoding, errors, newline)
+2026-10-21T01:12:13.2821677Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:13.2822716Z E       FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/bobbi-tv/bobbi-tv/licenses/THIRD-PARTY.json'
+2026-10-21T01:12:13.2823613Z 
+2026-10-21T01:12:13.2824185Z /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/pathlib.py:1044: FileNotFoundError
+2026-10-21T01:12:13.2825348Z =============================== warnings summary ===============================
+2026-10-21T01:12:13.2826444Z tests/test_ce_progressive_http.py::test_progressive_first_byte_precedes_whole_block
+2026-10-21T01:12:13.2827755Z   tests/test_ce_progressive_http.py:147: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+2026-10-21T01:12:13.2829102Z     def test_progressive_first_byte_precedes_whole_block(record_property):
+2026-10-21T01:12:13.2829738Z 
+2026-10-21T01:12:13.2830220Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2026-10-21T01:12:13.2831111Z =========================== short test summary info ============================
+2026-10-21T01:12:13.2832050Z SKIPPED [5] tests/test_maintenance_lease.py:81: real Windows inherited-pipe API binding
+2026-10-21T01:12:13.2833214Z 5 failed, 1741 passed, 5 skipped, 1 warning in 73.95s (0:01:13)
+2026-10-21T01:12:13.3990016Z ##[error]Process completed with exit code 1.
+2026-10-21T01:12:13.4049340Z ##[group]Run python -m pytest -q -rs tests/private_baseline --junitxml=review-evidence/ci-baseline.xml
+2026-10-21T01:12:13.4050234Z [36;1mpython -m pytest -q -rs tests/private_baseline --junitxml=review-evidence/ci-baseline.xml[0m
+2026-10-21T01:12:13.4116574Z shell: /usr/bin/bash -e {0}
+2026-10-21T01:12:13.4117122Z env:
+2026-10-21T01:12:13.4128675Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:13.4129340Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:12:13.4129866Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:13.4130277Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:13.4130685Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:13.4131088Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:12:13.4131439Z ##[endgroup]
+2026-10-21T01:12:15.0221978Z ........................................................................ [  9%]
+2026-10-21T01:12:15.7939849Z ........................................................................ [ 18%]
+2026-10-21T01:12:16.2440165Z ........................................................................ [ 28%]
+2026-10-21T01:12:16.4028126Z ........................................................................ [ 37%]
+2026-10-21T01:12:16.5771837Z ........................................................................ [ 47%]
+2026-10-21T01:12:16.6307182Z ........................................................................ [ 56%]
+2026-10-21T01:12:16.6827216Z ........................................................................ [ 66%]
+2026-10-21T01:12:16.8035287Z ........................................................................ [ 75%]
+2026-10-21T01:12:17.5073326Z ........................................................................ [ 85%]
+2026-10-21T01:12:18.1816375Z ........................................................................ [ 94%]
+2026-10-21T01:12:18.8504279Z .........................................                                [100%]
+2026-10-21T01:12:18.8505773Z 761 passed in 5.21s
+2026-10-21T01:12:18.9510764Z ##[group]Run python -m pytest -q -rs tests/preparation_regression --junitxml=review-evidence/ci-preparation.xml
+2026-10-21T01:12:18.9511616Z [36;1mpython -m pytest -q -rs tests/preparation_regression --junitxml=review-evidence/ci-preparation.xml[0m
+2026-10-21T01:12:18.9575529Z shell: /usr/bin/bash -e {0}
+2026-10-21T01:12:18.9575787Z env:
+2026-10-21T01:12:18.9576065Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:18.9576533Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:12:18.9576993Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:18.9577401Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:18.9577805Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:18.9578231Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:12:18.9578578Z ##[endgroup]
+2026-10-21T01:12:20.1601972Z ........................................................................ [ 40%]
+2026-10-21T01:12:24.8791452Z ........................................................................ [ 81%]
+2026-10-21T01:12:25.4405697Z .................................                                        [100%]
+2026-10-21T01:12:25.4406365Z 177 passed in 6.29s
+2026-10-21T01:12:25.4828763Z ##[group]Run python tools/build_release.py --source-check --output dist/repository-check
+2026-10-21T01:12:25.4829450Z [36;1mpython tools/build_release.py --source-check --output dist/repository-check[0m
+2026-10-21T01:12:25.4892307Z shell: /usr/bin/bash -e {0}
+2026-10-21T01:12:25.4892562Z env:
+2026-10-21T01:12:25.4892840Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.4893323Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:12:25.4893774Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.4894161Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.4895018Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.4895453Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:12:25.4896005Z ##[endgroup]
+2026-10-21T01:12:25.5708392Z Traceback (most recent call last):
+2026-10-21T01:12:25.5717209Z   File "/home/runner/work/bobbi-tv/bobbi-tv/tools/build_release.py", line 160, in <module>
+2026-10-21T01:12:25.5718459Z     manifest = build(args.output, source_check=args.source_check)
+2026-10-21T01:12:25.5719271Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:25.5720181Z   File "/home/runner/work/bobbi-tv/bobbi-tv/tools/build_release.py", line 110, in build
+2026-10-21T01:12:25.5721209Z     raise ValueError('Source inventory changed: ' + addon)
+2026-10-21T01:12:25.5721981Z ValueError: Source inventory changed: plugin.video.bobbi
+2026-10-21T01:12:25.5791004Z ##[error]Process completed with exit code 1.
+2026-10-21T01:12:25.5823946Z ##[group]Run python tools/build_release.py --source-check --output dist/repository-second
+2026-10-21T01:12:25.5825042Z [36;1mpython tools/build_release.py --source-check --output dist/repository-second[0m
+2026-10-21T01:12:25.5825691Z [36;1mpython tools/check_repository.py dist/repository-check dist/repository-second[0m
+2026-10-21T01:12:25.5888689Z shell: /usr/bin/bash -e {0}
+2026-10-21T01:12:25.5888944Z env:
+2026-10-21T01:12:25.5889217Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.5889710Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:12:25.5890145Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.5890548Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.5890945Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.5891347Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:12:25.5891717Z ##[endgroup]
+2026-10-21T01:12:25.6717164Z Traceback (most recent call last):
+2026-10-21T01:12:25.6718453Z   File "/home/runner/work/bobbi-tv/bobbi-tv/tools/build_release.py", line 160, in <module>
+2026-10-21T01:12:25.6719760Z     manifest = build(args.output, source_check=args.source_check)
+2026-10-21T01:12:25.6720644Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-21T01:12:25.6721574Z   File "/home/runner/work/bobbi-tv/bobbi-tv/tools/build_release.py", line 110, in build
+2026-10-21T01:12:25.6722615Z     raise ValueError('Source inventory changed: ' + addon)
+2026-10-21T01:12:25.6723409Z ValueError: Source inventory changed: plugin.video.bobbi
+2026-10-21T01:12:25.6795351Z ##[error]Process completed with exit code 1.
+2026-10-21T01:12:25.6903555Z ##[group]Run actions/upload-artifact@v4
+2026-10-21T01:12:25.6903869Z with:
+2026-10-21T01:12:25.6904081Z   name: verify-push-39525777378
+2026-10-21T01:12:25.6904350Z   path: review-evidence/ci-*.xml
+2026-10-21T01:12:25.6904942Z   if-no-files-found: warn
+2026-10-21T01:12:25.6905182Z   compression-level: 6
+2026-10-21T01:12:25.6905396Z   overwrite: false
+2026-10-21T01:12:25.6905611Z   include-hidden-files: false
+2026-10-21T01:12:25.6905840Z env:
+2026-10-21T01:12:25.6906092Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.6906550Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-21T01:12:25.6906974Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.6907355Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.6907743Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-21T01:12:25.6908129Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-21T01:12:25.6908495Z ##[endgroup]
+2026-10-21T01:12:25.8709718Z (node:2527) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-21T01:12:25.8711316Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-21T01:12:25.9085430Z With the provided path, there will be 3 files uploaded
+2026-10-21T01:12:25.9118439Z Artifact name is valid!
+2026-10-21T01:12:25.9135106Z Root directory input is valid!
+2026-10-21T01:12:26.2206683Z Beginning upload of artifact content to blob storage
+2026-10-21T01:12:26.2837656Z (node:2527) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-21T01:12:26.5150042Z Uploaded bytes 102202
+2026-10-21T01:12:26.5615012Z Finished uploading artifact content to blob storage!
+2026-10-21T01:12:26.5626186Z SHA256 digest of uploaded artifact zip is 06312c59736013153a1a18058382adaced7d24ab9c22d05f162420580a528e45
+2026-10-21T01:12:26.5627472Z Finalizing artifact upload
+2026-10-21T01:12:26.8002373Z Artifact verify-push-39525777378.zip successfully finalized. Artifact ID 12313666129
+2026-10-21T01:12:26.8004134Z Artifact verify-push-39525777378 has been successfully uploaded! Final size is 102202 bytes. Artifact ID is 12313666129
+2026-10-21T01:12:26.8006062Z Artifact download URL: https://github.com/2223M1/bobbi-tv/actions/runs/39525777378/artifacts/12313666129
+2026-10-21T01:12:26.8208517Z Post job cleanup.
+2026-10-21T01:12:26.9239569Z [command]/usr/bin/git version
+2026-10-21T01:12:26.9319154Z git version 2.55.0
+2026-10-21T01:12:26.9398049Z Temporarily overriding HOME='/home/runner/work/_temp/2e78c394-7549-4456-b363-32ca43c57918' before making global git config changes
+2026-10-21T01:12:26.9405921Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-21T01:12:26.9436001Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/bobbi-tv/bobbi-tv
+2026-10-21T01:12:26.9495835Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-21T01:12:26.9596052Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-21T01:12:26.9925938Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-21T01:12:26.9970981Z http.https://github.com/.extraheader
+2026-10-21T01:12:27.0016627Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-21T01:12:27.0126371Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-21T01:12:27.0815583Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-21T01:12:27.0916037Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-21T01:12:27.1486971Z Cleaning up orphan processes
+2026-10-21T01:12:27.1774871Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

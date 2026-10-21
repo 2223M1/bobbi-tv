@@ -1,0 +1,43 @@
+{
+  "view": {
+    "window": 13001,
+    "generation": 65,
+    "intent": 0,
+    "labels": {
+      "Window.Property(info.ids)": "{'tmdb_id': 67048}",
+      "Window.Property(info.media_type)": "tv",
+      "Window.Property(info.mode)": "tv",
+      "Window.Property(info.query)": "Barakamon",
+      "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+      "Window.Property(info.year)": "None",
+      "Window.Property(playback_error)": "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。",
+      "Window.Property(source_count)": "14",
+      "Window.Property(source_loading)": "false"
+    },
+    "modal": false,
+    "visible": [
+      13001
+    ],
+    "stable": true
+  },
+  "players": [],
+  "desired": {
+    "request_id": "c71bc62a44d64ccb964854412cd9a942",
+    "epoch": 2,
+    "file_identity": "transport:ca4668d84c7de35f240f0aff2d4b74e752c49a8929d55683edf6e7f62ce1e3af",
+    "selection_identity": "transport:ca4668d84c7de35f240f0aff2d4b74e752c49a8929d55683edf6e7f62ce1e3af",
+    "file_bound": false,
+    "file_evidence": "UNBOUND",
+    "cancelled": true,
+    "start_claimed": false,
+    "route": null,
+    "resolver_failure": {
+      "request_id": "c71bc62a44d64ccb964854412cd9a942",
+      "category": "metadata_timeout"
+    },
+    "observed_once": false,
+    "fullscreen_allowed": false,
+    "fullscreen_requested": false,
+    "fullscreen_confirmed": false
+  }
+}

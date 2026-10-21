@@ -37,6 +37,8 @@ class StandardSession:
             row['state'] = 'retired'
 
     def select(self, request, account):
+        if self.closed:
+            raise RuntimeError('STANDARD_SESSION_CLOSED')
         if not isinstance(request, str) or not re.fullmatch('[a-f0-9]{32}', request):
             raise ValueError('STANDARD_REQUEST_REQUIRED')
         self.accounts.require_current(account, authenticated=False)
@@ -194,7 +196,11 @@ class StandardSession:
                 self.open_next(data)
 
     def close(self):
-        self.retire('SERVICE_STOPPED')
         self.closed = True
-        if self.worker:
-            self.worker.join(timeout=.1)
+        if self.job:
+            self.job['cancel'].set()
+        try:
+            self.retire('SERVICE_STOPPED')
+        finally:
+            if self.worker:
+                self.worker.join()

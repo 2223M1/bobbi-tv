@@ -1,0 +1,628 @@
+{
+  "total": 48,
+  "passed": 42,
+  "failed": 6,
+  "errors": 0,
+  "mode": {
+    "mode": "frozen_review_sources",
+    "commit": "c8de17ae9dabbe0f37753e1751b1d88107311316"
+  },
+  "groups": [
+    {
+      "group": "lifecycle",
+      "total": 18,
+      "passed": 18,
+      "failed": 0,
+      "errors": 0,
+      "cases": [
+        {
+          "name": "terminal_ENDED_99",
+          "passed": true,
+          "actual": {
+            "opened": 1,
+            "reason": "NATURAL_EOF"
+          },
+          "expected": {
+            "opens_next": true
+          },
+          "group": "lifecycle"
+        },
+        {
+          "name": "terminal_STOPPED_99",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "reason": "STOP"
+          },
+          "expected": {
+            "opens_next": false
+          },
+          "group": "lifecycle"
+        },
+        {
+          "name": "terminal_ERROR_99",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "reason": "ERROR"
+          },
+          "expected": {
+            "opens_next": false
+          },
+          "group": "lifecycle"
+        },
+        {
+          "name": "terminal_ENDED_25",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "reason": "ERROR"
+          },
+          "expected": {
+            "opens_next": false
+          },
+          "group": "lifecycle"
+        },
+        {
+          "name": "takeover_audio",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "state": "retired"
+          },
+          "expected": "No stale automatic playback",
+          "group": "lifecycle"
+        },
+        {
+          "name": "takeover_video",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "state": "retired"
+          },
+          "expected": "No stale automatic playback",
+          "group": "lifecycle"
+        },
+        {
+          "name": "takeover_account",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "state": "retired"
+          },
+          "expected": "No stale automatic playback",
+          "group": "lifecycle"
+        },
+        {
+          "name": "takeover_selection",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "state": "selected"
+          },
+          "expected": "No stale automatic playback",
+          "group": "lifecycle"
+        },
+        {
+          "name": "takeover_cancel",
+          "passed": true,
+          "actual": {
+            "opened": 0,
+            "state": "retired"
+          },
+          "expected": "No stale automatic playback",
+          "group": "lifecycle"
+        },
+        {
+          "name": "blank_path_not_takeover",
+          "passed": true,
+          "actual": {
+            "still_current": true
+          },
+          "expected": "Temporary open/seek evidence gap does not retire request",
+          "group": "lifecycle"
+        },
+        {
+          "name": "read_error_not_takeover",
+          "passed": true,
+          "actual": {
+            "still_current": true
+          },
+          "expected": "Temporary open/seek evidence gap does not retire request",
+          "group": "lifecycle"
+        },
+        {
+          "name": "invalid_progress_not_fresh_eof",
+          "passed": true,
+          "actual": {
+            "state": "retired",
+            "position": 99.0,
+            "progress_observed": 100.0,
+            "now": 105.0
+          },
+          "expected": "Invalid readings do not renew old EOF evidence",
+          "group": "lifecycle"
+        },
+        {
+          "name": "handoff_failure_isolated",
+          "passed": true,
+          "actual": {
+            "handoff": {
+              "request_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "status": "submission_unknown"
+            },
+            "attempts": 1,
+            "later_selection_worked": true
+          },
+          "expected": "One failed successor must not exit actor or auto resend",
+          "group": "lifecycle"
+        },
+        {
+          "name": "next_initial",
+          "passed": true,
+          "actual": {
+            "lookups": 1,
+            "open_count": 1
+          },
+          "expected": "Same-version result can arrive after first miss; one handoff",
+          "group": "lifecycle"
+        },
+        {
+          "name": "next_late",
+          "passed": true,
+          "actual": {
+            "lookups": 2,
+            "open_count": 1
+          },
+          "expected": "Same-version result can arrive after first miss; one handoff",
+          "group": "lifecycle"
+        },
+        {
+          "name": "subtitle_budget_0",
+          "passed": true,
+          "actual": {
+            "candidate_retained": true,
+            "subtitle_budgets": [
+              1.9999995289999788
+            ],
+            "elapsed": 1.9999995289999788
+          },
+          "expected": "Optional subtitle budget does not discard a resolved next video",
+          "group": "lifecycle"
+        },
+        {
+          "name": "subtitle_budget_17.5",
+          "passed": true,
+          "actual": {
+            "candidate_retained": true,
+            "subtitle_budgets": [
+              1.4999996599999577
+            ],
+            "elapsed": 18.999999659999958
+          },
+          "expected": "Optional subtitle budget does not discard a resolved next video",
+          "group": "lifecycle"
+        },
+        {
+          "name": "subtitle_budget_19.5",
+          "passed": true,
+          "actual": {
+            "candidate_retained": true,
+            "subtitle_budgets": [],
+            "elapsed": 19.5
+          },
+          "expected": "Optional subtitle budget does not discard a resolved next video",
+          "group": "lifecycle"
+        }
+      ],
+      "process_exit": 0,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-I",
+        "-B",
+        "checks/contracts.py",
+        "--group",
+        "lifecycle"
+      ]
+    },
+    {
+      "group": "installer",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "errors": 0,
+      "cases": [
+        {
+          "name": "recovery_ui_rollback",
+          "passed": true,
+          "actual": {
+            "phase": "restored",
+            "returned": true,
+            "menus": [
+              [
+                "重试恢复",
+                "回到上一程序版本（不改账号与观看记录）",
+                "退出，保留现场"
+              ]
+            ]
+          },
+          "expected": "Persistent recover failure leaves rollback/exit reachable; retry can finish",
+          "group": "installer"
+        },
+        {
+          "name": "recovery_ui_exit",
+          "passed": true,
+          "actual": {
+            "phase": "activation_pending",
+            "returned": false,
+            "menus": [
+              [
+                "重试恢复",
+                "回到上一程序版本（不改账号与观看记录）",
+                "退出，保留现场"
+              ]
+            ]
+          },
+          "expected": "Persistent recover failure leaves rollback/exit reachable; retry can finish",
+          "group": "installer"
+        },
+        {
+          "name": "recovery_ui_retry",
+          "passed": true,
+          "actual": {
+            "phase": "complete",
+            "returned": true,
+            "menus": [
+              [
+                "重试恢复",
+                "回到上一程序版本（不改账号与观看记录）",
+                "退出，保留现场"
+              ]
+            ]
+          },
+          "expected": "Persistent recover failure leaves rollback/exit reachable; retry can finish",
+          "group": "installer"
+        },
+        {
+          "name": "persistent_restore_exit",
+          "passed": true,
+          "actual": {
+            "state": "restored",
+            "pending": "restore",
+            "menus": [
+              [
+                "重试恢复",
+                "退出，保留现场"
+              ]
+            ]
+          },
+          "expected": "Failed restore stays pending and user can exit",
+          "group": "installer"
+        },
+        {
+          "name": "lease_live_owner",
+          "passed": true,
+          "actual": {
+            "result": "refused",
+            "registration_exists": true
+          },
+          "expected": "Live owner refuses replacement; dead registration is removable under real lease",
+          "group": "installer"
+        },
+        {
+          "name": "lease_dead_registration",
+          "passed": true,
+          "actual": {
+            "result": "acquired",
+            "registration_exists": false
+          },
+          "expected": "Live owner refuses replacement; dead registration is removable under real lease",
+          "group": "installer"
+        },
+        {
+          "name": "real_main_recovery_rollback",
+          "passed": true,
+          "actual": {
+            "phase": "restored",
+            "menu_titles": [
+              "安装恢复尚未完成",
+              "波比 TV"
+            ]
+          },
+          "expected": "Real main reaches recovery rollback and returns to ordinary menu",
+          "group": "installer"
+        }
+      ],
+      "process_exit": 0,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-I",
+        "-B",
+        "checks/contracts.py",
+        "--group",
+        "installer"
+      ]
+    },
+    {
+      "group": "shutdown",
+      "total": 5,
+      "passed": 1,
+      "failed": 4,
+      "errors": 0,
+      "cases": [
+        {
+          "name": "shutdown_drain_none",
+          "passed": true,
+          "actual": {
+            "task": "none",
+            "old_task_still_running": false,
+            "replacement_lease_acquired": true,
+            "close_returned": true,
+            "errors": []
+          },
+          "expected": "No replacement lease while any resident task still runs",
+          "group": "shutdown"
+        },
+        {
+          "name": "shutdown_drain_next",
+          "passed": false,
+          "actual": {
+            "task": "next",
+            "old_task_still_running": true,
+            "replacement_lease_acquired": true,
+            "close_returned": true,
+            "errors": []
+          },
+          "expected": "No replacement lease while any resident task still runs",
+          "group": "shutdown"
+        },
+        {
+          "name": "shutdown_drain_subtitle",
+          "passed": false,
+          "actual": {
+            "task": "subtitle",
+            "old_task_still_running": true,
+            "replacement_lease_acquired": true,
+            "close_returned": true,
+            "errors": []
+          },
+          "expected": "No replacement lease while any resident task still runs",
+          "group": "shutdown"
+        },
+        {
+          "name": "shutdown_drain_history",
+          "passed": false,
+          "actual": {
+            "task": "history",
+            "old_task_still_running": true,
+            "replacement_lease_acquired": true,
+            "close_returned": true,
+            "errors": []
+          },
+          "expected": "No replacement lease while any resident task still runs",
+          "group": "shutdown"
+        },
+        {
+          "name": "shutdown_cleanup_exception",
+          "passed": false,
+          "actual": {
+            "exception": "OSError",
+            "catalog_worker_alive": true,
+            "replacement_lease_acquired": true
+          },
+          "expected": "One cleanup error must not release ownership over still-running consumers",
+          "group": "shutdown"
+        }
+      ],
+      "process_exit": 1,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-I",
+        "-B",
+        "checks/contracts.py",
+        "--group",
+        "shutdown"
+      ]
+    },
+    {
+      "group": "ui",
+      "total": 6,
+      "passed": 4,
+      "failed": 2,
+      "errors": 0,
+      "cases": [
+        {
+          "name": "ui_append_below_cap",
+          "passed": true,
+          "actual": {
+            "keys": [
+              "a",
+              "b",
+              "c"
+            ],
+            "selected": "b",
+            "resets": 0,
+            "selects": 0
+          },
+          "expected": "Unrelated arriving source retains visible objects and focused source",
+          "group": "ui"
+        },
+        {
+          "name": "ui_actual_session_focused_card_at_cap",
+          "passed": true,
+          "actual": {
+            "focused_key_before": "7ad19c51624bb2e66383c1f08bfc317b8c3dfe2195b46dea54ac263f17d08194",
+            "focused_key_after": "7ad19c51624bb2e66383c1f08bfc317b8c3dfe2195b46dea54ac263f17d08194",
+            "old_visible": true,
+            "rendered_count": 100,
+            "real_session_used": true,
+            "upstream_focus_reinserted": true,
+            "reset_count": 1,
+            "select_commands": 0
+          },
+          "expected": "Full session preserves focus before renderer display cap; earlier simplified suspicion excluded",
+          "group": "ui"
+        },
+        {
+          "name": "ui_actual_session_retains_first_metadata",
+          "passed": true,
+          "actual": {
+            "seeders": 10,
+            "peers": 5,
+            "cached": false
+          },
+          "expected": "Actual publish retains first metadata: renderer-field scenarios below are conditional, not a proved complete provider path",
+          "group": "ui"
+        },
+        {
+          "name": "ui_clear_peers_zero",
+          "passed": false,
+          "actual": {
+            "seeders": "10",
+            "peers": "5",
+            "status_plain": "待验证片源"
+          },
+          "expected": "Retained card must clear obsolete optional fields",
+          "group": "ui"
+        },
+        {
+          "name": "ui_clear_peers_cached",
+          "passed": false,
+          "actual": {
+            "seeders": "10",
+            "peers": "5",
+            "status_plain": "服务标记已缓存"
+          },
+          "expected": "Retained card must clear obsolete optional fields",
+          "group": "ui"
+        },
+        {
+          "name": "ui_update_present_fields",
+          "passed": true,
+          "actual": {
+            "seeders": "7",
+            "peers": "8"
+          },
+          "expected": "Positive field updates retain object and change values",
+          "group": "ui"
+        }
+      ],
+      "process_exit": 1,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-I",
+        "-B",
+        "checks/contracts.py",
+        "--group",
+        "ui"
+      ]
+    },
+    {
+      "group": "resolution",
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "errors": 0,
+      "cases": [
+        {
+          "name": "resolution_1440x1080",
+          "passed": true,
+          "actual": 1080,
+          "expected": 1080,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_960x720",
+          "passed": true,
+          "actual": 720,
+          "expected": 720,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_1080p 1440x1080",
+          "passed": true,
+          "actual": 1080,
+          "expected": 1080,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_720p 960x720",
+          "passed": true,
+          "actual": 720,
+          "expected": 720,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_1080x1440",
+          "passed": true,
+          "actual": 0,
+          "expected": 0,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_1000x1000",
+          "passed": true,
+          "actual": 0,
+          "expected": 0,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_720p 1440x1080",
+          "passed": true,
+          "actual": 0,
+          "expected": 0,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_2160p 960x720",
+          "passed": true,
+          "actual": 0,
+          "expected": 0,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_3840x1600",
+          "passed": true,
+          "actual": 2160,
+          "expected": 2160,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_1922x1080",
+          "passed": true,
+          "actual": 1080,
+          "expected": 1080,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_7680x4320",
+          "passed": true,
+          "actual": 4320,
+          "expected": 4320,
+          "group": "resolution"
+        },
+        {
+          "name": "resolution_S01E02",
+          "passed": true,
+          "actual": 0,
+          "expected": 0,
+          "group": "resolution"
+        }
+      ],
+      "process_exit": 0,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-I",
+        "-B",
+        "checks/contracts.py",
+        "--group",
+        "resolution"
+      ]
+    }
+  ],
+  "device_execution": false,
+  "repository_modified": false,
+  "whole_suite_reexecuted": false,
+  "meaning": "Exit 1 denotes unmet correct-behavior assertions, not a repaired product.",
+  "status": "OPEN_FINDINGS_REPRODUCED"
+}

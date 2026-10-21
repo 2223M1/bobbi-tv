@@ -1,0 +1,54 @@
+--- original-PR2/checks/reproduce_installer_boundaries.py
++++ candidate-IO-adapter/checks/reproduce_installer_boundaries.py
+@@ -29,6 +29,7 @@
+     from bobbi_platform.ce_installer import Installer, MANAGED
+     from bobbi_platform.instance_lock import InstanceLock
+     import bobbi_platform.ce_install_ui as ui
++    import bobbi_platform.runtime as local_runtime
+ 
+     results = []
+     with tempfile.TemporaryDirectory(prefix='bobbi-install-review-') as folder:
+@@ -75,13 +76,22 @@
+                 enabled.discard(name)
+             return 'OK'
+         host = ui.KodiHost.__new__(ui.KodiHost)
++        # Candidate added an actual owner-thread readiness read. This fixture's
++        # service entry records host_started instead of running a Kodi loop;
++        # wire that same IO boundary to readiness, never fake enabled => ready.
++        host.xbmc = fake_xbmc
++        host.monitor = SimpleNamespace(waitForAbort=lambda _: False)
++        def readiness(*args, **kwargs):
++            if 'host_started' not in events:
++                raise OSError('fixture host not running')
++            return {'boot_id': 'fixture-running', 'desired': None}
+         host.details = lambda name: dict(version='1.0.0', enabled=name in enabled)
+         host.refresh = lambda: None
+         host.verify = lambda _: None
+         host.skin = lambda: 'skin.estuary'
+         actor = Installer(addons, work, host, trust={'test': 'already-verified-boundary'})
+         actor._write(state)
+-        with patch.dict(sys.modules, modules), patch.object(ui, 'rpc', rpc):
++        with patch.dict(sys.modules, modules), patch.object(ui, 'rpc', rpc), patch.object(local_runtime, 'call', readiness):
+             sys.modules.pop('lib.boot_gate', None)
+             actor._activate(state)
+             # Reopening is the advertised recovery, and it must not leave a
+@@ -100,7 +110,7 @@
+         state['phase'] = 'activation_pending'
+         actor._write(state)
+         events.clear()
+-        with patch.dict(sys.modules, modules), patch.object(ui, 'rpc', rpc):
++        with patch.dict(sys.modules, modules), patch.object(ui, 'rpc', rpc), patch.object(local_runtime, 'call', readiness):
+             sys.modules.pop('lib.boot_gate', None)
+             try:
+                 runpy.run_path(str(plugin / 'service.py'), run_name='__main__')
+@@ -282,6 +292,10 @@
+         original_enabled = set(enabled)
+         fail_once = [True]
+         def rpc_snapshot(method, params):
++            if method == 'Addons.GetAddons':
++                # Added strict fallback enumeration is also an IO read. The
++                # unknown-state contract permits aborting before file moves.
++                raise RuntimeError('fixture inventory unavailable')
+             if method == 'Addons.GetAddonDetails':
+                 name = params['addonid']
+                 if name == 'plugin.video.bobbi' and fail_once[0]:

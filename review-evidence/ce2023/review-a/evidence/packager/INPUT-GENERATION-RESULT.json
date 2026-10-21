@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "scope": "CE2021-only repackager input generation contract; synthetic signed fixture, not release bytes",
+  "review_reference_commit": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "actual_checkout_commit": null,
+  "module_sha256": "ace9cd97d4b0d059dc0c290862a32034c9125552881a3f8a1ff25724343c75db",
+  "fixture_boundaries": [
+    "load_trust replaced with temporary test trust; no production key accessed",
+    "single-component valid signed input; real SignedBundle and real signing used"
+  ],
+  "cases": [
+    {
+      "case": "exact_ce2021_input",
+      "input_sequence": 2026102021,
+      "expected_accepted": true,
+      "input_actual_signed_bundle_check": 2026102021,
+      "accepted": true,
+      "output_actual_signed_bundle_check": 2026102022,
+      "reported_original_sequence": 2026102021,
+      "original_sequence_truthful": true,
+      "signature_verified_flag": true,
+      "non_document_unchanged_flag": true,
+      "status": "pass"
+    },
+    {
+      "case": "earlier_signed_generation_must_be_rejected",
+      "input_sequence": 2026102014,
+      "expected_accepted": false,
+      "input_actual_signed_bundle_check": 2026102014,
+      "accepted": true,
+      "output_actual_signed_bundle_check": 2026102022,
+      "reported_original_sequence": 2026102021,
+      "original_sequence_truthful": false,
+      "signature_verified_flag": true,
+      "non_document_unchanged_flag": true,
+      "status": "fail"
+    },
+    {
+      "case": "non_increasing_sequence_rejected",
+      "input_sequence": 2026102022,
+      "expected_accepted": false,
+      "input_actual_signed_bundle_check": 2026102022,
+      "accepted": false,
+      "rejection": "New unique sequence required",
+      "status": "pass"
+    },
+    {
+      "case": "wrong_profile_rejected",
+      "input_sequence": 2026102021,
+      "expected_accepted": false,
+      "input_actual_signed_bundle_check": 2026102021,
+      "accepted": false,
+      "rejection": "Only the existing CE candidate may be repackaged",
+      "status": "pass"
+    },
+    {
+      "case": "untrusted_input_signature_rejected",
+      "input_sequence": 2026102021,
+      "expected_accepted": false,
+      "accepted": false,
+      "rejection": "Input signature rejected",
+      "status": "pass"
+    }
+  ],
+  "totals": {
+    "pass": 4,
+    "fail": 1,
+    "error": 0
+  }
+}

@@ -37,7 +37,6 @@ def build(bundle, output):
         with zipfile.ZipFile(BytesIO(signed.read(entry['file'], entry['size']))) as source:
             payload = {name: source.read(name) for name in source.namelist()}
         with zipfile.ZipFile(BytesIO(signed.read(platform['file'], platform['size']))) as source:
-            payload['script.bobbi.start/bootstrap/LICENSE'] = source.read('script.module.bobbi.platform/LICENSE')
             for name in BOOTSTRAP:
                 path = 'script.module.bobbi.platform/lib/bobbi_platform/' + name
                 payload['script.bobbi.start/bootstrap/bobbi_platform/' + name] = source.read(path)

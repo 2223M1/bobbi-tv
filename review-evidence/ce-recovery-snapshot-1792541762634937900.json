@@ -1,0 +1,76 @@
+{
+  "action": "snapshot",
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792541740695292500",
+  "progress": {
+    "scope": "real CE native managed recovery and quiesce; no media commands",
+    "events": [
+      "before_initial_snapshot",
+      "enabled_owner_missing_lease_free",
+      "managed_recovery_ready",
+      "before_normal_quiesce"
+    ],
+    "enabled_before": [
+      "plugin.video.bobbi",
+      "plugin.video.bobbi.library",
+      "plugin.video.bobbi.torrent",
+      "repository.bobbi",
+      "resource.uisounds.bobbi-modern",
+      "script.bobbi.opensubtitles",
+      "script.bobbi.setup",
+      "script.module.bobbi.catalog",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.platform",
+      "skin.bobbi.cinema"
+    ],
+    "skin_before": "skin.bobbi.cinema",
+    "initial_owner": {
+      "adapter": "native",
+      "boot_id": "b177ccfdf6894e30a0a912d40a5fb79d"
+    },
+    "quiesce_only": false,
+    "recovered_owner": {
+      "adapter": "native",
+      "boot_id": "e311a44e59d5431e9abe264a5f667c43"
+    }
+  },
+  "lines": [
+    "2026-10-21 08:15:40.800 T:25976    info <general>: [bobbi] SHUTDOWN_BEGIN_RUNTIME",
+    "2026-10-21 08:15:40.801 T:25976    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_BEGIN",
+    "2026-10-21 08:15:40.878 T:25976    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_END",
+    "2026-10-21 08:15:40.879 T:25976    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_BEGIN",
+    "2026-10-21 08:15:40.879 T:25976    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_END",
+    "2026-10-21 08:15:40.879 T:25976    info <general>: [bobbi] RUNTIME_CLOSE_LOOP_JOINED",
+    "2026-10-21 08:15:40.880 T:25976    info <general>: [bobbi] SHUTDOWN_DRAINED_RUNTIME",
+    "2026-10-21 08:15:40.880 T:25976    info <general>: [bobbi] SHUTDOWN_BEGIN_PLAYBACK",
+    "2026-10-21 08:15:40.880 T:25976    info <general>: [BOBBI-SHUTDOWN] native control begin",
+    "2026-10-21 08:15:40.880 T:25976    info <general>: [BOBBI-SHUTDOWN] native control drained",
+    "2026-10-21 08:15:40.880 T:25976    info <general>: [BOBBI-SHUTDOWN] auxiliary startup join COMPLETE",
+    "2026-10-21 08:15:40.881 T:25976    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-3 (run)",
+    "2026-10-21 08:15:40.881 T:25976    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-4 (run)",
+    "2026-10-21 08:15:40.881 T:25976    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join AM6BPrimaryCatalogWarmup",
+    "2026-10-21 08:15:40.881 T:25976    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-5 (run)",
+    "2026-10-21 08:15:40.881 T:25976    info <general>: [BOBBI-SHUTDOWN] auxiliary workers drained",
+    "2026-10-21 08:15:40.881 T:25976    info <general>: [bobbi] SHUTDOWN_DRAINED_PLAYBACK",
+    "2026-10-21 08:15:40.881 T:25976    info <general>: [bobbi] SHUTDOWN_BEGIN_IMAGES",
+    "2026-10-21 08:15:40.956 T:25976    info <general>: [bobbi] SHUTDOWN_DRAINED_IMAGES",
+    "2026-10-21 08:15:40.956 T:25976    info <general>: [bobbi] SHUTDOWN_BEGIN_PREPARATION",
+    "2026-10-21 08:15:40.974 T:25976    info <general>: [bobbi] SHUTDOWN_DRAINED_PREPARATION",
+    "2026-10-21 08:15:40.974 T:25976    info <general>: [bobbi] SHUTDOWN_BEGIN_ACCOUNT_SUBSCRIPTION",
+    "2026-10-21 08:15:40.974 T:25976    info <general>: [bobbi] SHUTDOWN_DRAINED_ACCOUNT_SUBSCRIPTION",
+    "2026-10-21 08:15:41.730 T:26163    info <general>: [bobbi] SHUTDOWN_BEGIN_RUNTIME",
+    "2026-10-21 08:15:41.730 T:26163    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_BEGIN",
+    "2026-10-21 08:15:41.820 T:26163    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_END",
+    "2026-10-21 08:15:41.820 T:26163    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_BEGIN",
+    "2026-10-21 08:15:41.820 T:26163    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_END",
+    "2026-10-21 08:15:41.820 T:26163    info <general>: [bobbi] RUNTIME_CLOSE_LOOP_JOINED",
+    "2026-10-21 08:15:41.821 T:26163    info <general>: [bobbi] SHUTDOWN_DRAINED_RUNTIME",
+    "2026-10-21 08:15:41.821 T:26163    info <general>: [bobbi] SHUTDOWN_BEGIN_PLAYBACK",
+    "2026-10-21 08:15:41.821 T:26163    info <general>: [BOBBI-SHUTDOWN] native control begin",
+    "2026-10-21 08:15:41.821 T:26163    info <general>: [BOBBI-SHUTDOWN] native control drained",
+    "2026-10-21 08:15:41.821 T:26163    info <general>: [BOBBI-SHUTDOWN] auxiliary startup join RUNNING",
+    "2026-10-21 08:15:46.741 T:25964   error <general>: CPythonInvoker(23, /storage/.kodi/addons/plugin.video.bobbi/service.py): script didn't stop in 5 seconds - let's kill it"
+  ],
+  "stack": "Timeout (0:00:02)!\nThread 0xbd3ff180 (most recent call first):\n  File \"/usr/lib/python3.11/pathlib.py\", line 1013 in stat\n  File \"/usr/lib/python3.11/pathlib.py\", line 1003 in resolve\n  File \"/storage/.kodi/addons/script.module.bobbi.core/lib/bobbi_core/project_metadata.py\", line 11 in tmdb_key\n  File \"/storage/.kodi/addons/script.module.bobbi.core/lib/bobbi_core/preparation_host.py\", line 340 in _initialize\n  File \"/storage/.kodi/addons/script.module.bobbi.core/lib/bobbi_core/preparation_host.py\", line 276 in __init__\n  File \"/storage/.kodi/addons/script.module.bobbi.core/lib/bobbi_core/preparation_host.py\", line 206 in _run\n  File \"/usr/lib/python3.11/threading.py\", line 982 in run\n  File \"/usr/lib/python3.11/threading.py\", line 1045 in _bootstrap_inner\n  File \"/usr/lib/python3.11/threading.py\", line 1002 in _bootstrap\n\nThread 0xb9aff180 (most recent call first):\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/api/trakt/base_cache.py\", line 20 in <module>\n  File \"<frozen importlib._bootstrap>\", line 241 in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap_external>\", line 940 in exec_module\n  File \"<frozen importlib._bootstrap>\", line 690 in _load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1147 in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1176 in _find_and_load\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/api/trakt/lists_cache.py\", line 1 in <module>\n  File \"<frozen importlib._bootstrap>\", line 241 in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap_external>\", line 940 in exec_module\n  File \"<frozen importlib._bootstrap>\", line 690 in _load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1147 in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1176 in _find_and_load\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/utils/general/utils.py\", line 25 in <module>\n  File \"<frozen importlib._bootstrap>\", line 241 in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap_external>\", line 940 in exec_module\n  File \"<frozen importlib._bootstrap>\", line 690 in _load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1147 in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1176 in _find_and_load\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/clients/tmdb/utils/utils.py\", line 28 in <module>\n  File \"<frozen importlib._bootstrap>\", line 241 in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap_external>\", line 940 in exec_module\n  File \"<frozen importlib._bootstrap>\", line 690 in _load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1147 in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1176 in _find_and_load\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/utils/tmdb_init.py\", line 11 in <module>\n  File \"<frozen importlib._bootstrap>\", line 241 in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap_external>\", line 940 in exec_module\n  File \"<frozen importlib._bootstrap>\", line 690 in _load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1147 in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1176 in _find_and_load\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/clients/tmdb/anime_fast_catalog.py\", line 25 in <module>\n  File \"<frozen importlib._bootstrap>\", line 241 in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap_external>\", line 940 in exec_module\n  File \"<frozen importlib._bootstrap>\", line 690 in _load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1147 in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1176 in _find_and_load\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/services/preloader.py\", line 10 in <module>\n  File \"<frozen importlib._bootstrap>\", line 241 in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap_external>\", line 940 in exec_module\n  File \"<frozen importlib._bootstrap>\", line 690 in _load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1147 in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 1176 in _find_and_load\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/services/background_service.py\", line 348 in startServices\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/services/background_service.py\", line 335 in _start_auxiliary_services\n  File \"/usr/lib/python3.11/threading.py\", line 982 in run\n  File \"/usr/lib/python3.11/threading.py\", line 1045 in _bootstrap_inner\n  File \"/usr/lib/python3.11/threading.py\", line 1002 in _bootstrap\n\nThread 0xb46ff180 (most recent call first):\n  File \"/usr/lib/python3.11/selectors.py\", line 415 in select\n  File \"/usr/lib/python3.11/socketserver.py\", line 233 in serve_forever\n  File \"/usr/lib/python3.11/threading.py\", line 982 in run\n  File \"/usr/lib/python3.11/threading.py\", line 1045 in _bootstrap_inner\n  File \"/usr/lib/python3.11/threading.py\", line 1002 in _bootstrap\n\nThread 0xcad90180 (most recent call first):\n  File \"/usr/lib/python3.11/threading.py\", line 1139 in _wait_for_tstate_lock\n  File \"/usr/lib/python3.11/threading.py\", line 1119 in join\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/services/background_service.py\", line 319 in close\n  File \"/storage/.kodi/addons/script.module.bobbi.platform/lib/bobbi_platform/host.py\", line 361 in drain\n  File \"/storage/.kodi/addons/script.module.bobbi.platform/lib/bobbi_platform/host.py\", line 379 in close\n  File \"/storage/.kodi/addons/plugin.video.bobbi/lib/portable_runtime.py\", line 51 in main\n  File \"/storage/.kodi/addons/plugin.video.bobbi/service.py\", line 13 in <module>\n",
+  "trial_stack": ""
+}

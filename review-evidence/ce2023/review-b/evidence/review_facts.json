@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "review_date": "2026-10-21",
+  "timezone": "Asia/Shanghai",
+  "repo": "2223M1/bobbi-tv",
+  "branch": "codex/ce2021-clean-delivery-20261021",
+  "head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "tree": "bbe592e62a7a6790c62725738b63dae9b9f9405a",
+  "parent": "f6ef6a7e3c5868a2ab8ed8e600a592d51ba97167",
+  "changed_files": [
+    {
+      "filename": "docs/CE-REVIEW-CLOSURE-2021-20261021.md",
+      "status": "added",
+      "additions": 199,
+      "deletions": 0,
+      "changes": 199,
+      "previous_filename": null
+    },
+    {
+      "filename": "review-evidence/ce2021-clean-packaging-result.json",
+      "status": "added",
+      "additions": 32,
+      "deletions": 0,
+      "changes": 32,
+      "previous_filename": null
+    },
+    {
+      "filename": "tools/package_ce2021_github.py",
+      "status": "added",
+      "additions": 232,
+      "deletions": 0,
+      "changes": 232,
+      "previous_filename": null
+    }
+  ],
+  "pr3": {
+    "head": "f6ef6a7e3c5868a2ab8ed8e600a592d51ba97167",
+    "draft": true,
+    "merged": false
+  },
+  "ci": {
+    "run_id": 39525777378,
+    "job_id": 118979948586,
+    "event": "push",
+    "conclusion": "failure",
+    "primary": {
+      "passed": 1741,
+      "failed": 5,
+      "skipped": 5,
+      "warning": 1
+    },
+    "inherited": {
+      "passed": 761
+    },
+    "preparation": {
+      "passed": 177
+    },
+    "source_build": "failed: Source inventory changed: plugin.video.bobbi",
+    "repeat_build": "failed before artifact comparison",
+    "skip_reason": "5 real Windows inherited-pipe API binding tests on Linux"
+  },
+  "source_versions": {
+    "plugin.video.bobbi": "0.1.9",
+    "script.module.bobbi.platform": "0.1.11",
+    "script.module.bobbi.core": "0.1.15",
+    "script.bobbi.start": "0.2.6"
+  },
+  "reported_package_versions": {
+    "plugin.video.bobbi": "0.1.15",
+    "script.module.bobbi.platform": "0.1.17",
+    "script.module.bobbi.core": "0.1.16",
+    "script.bobbi.start": "0.2.13"
+  },
+  "evidence_link_check": {
+    "relative_links": 26,
+    "absent_from_git_tree": 26,
+    "tree_entries": 4326,
+    "truncated": false
+  },
+  "inventory_path_check": {
+    "components_with_missing_paths": 20,
+    "missing_paths": 45,
+    "scope": "Path membership only; current Git tree against recorded inventory"
+  },
+  "release": {
+    "id": 419038503,
+    "draft": true,
+    "tag": "ce2021-clean-delivery-20261021",
+    "url": "https://github.com/2223M1/bobbi-tv/releases/tag/untagged-b57c2f96aec43f5080c0",
+    "assets": [
+      {
+        "id": 660975259,
+        "name": "bobbi-private-2026102022-coreelec.bobbi-update.zip",
+        "size": 96135572,
+        "digest": "sha256:c0ebea710ef3dda667c4336aa42b4b212469399468f6081f60d806e8171ca696"
+      },
+      {
+        "id": 660975250,
+        "name": "CE-REVIEW-CLOSURE-2021-20261021.md",
+        "size": 16320,
+        "digest": "sha256:a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722"
+      },
+      {
+        "id": 660975253,
+        "name": "ce2021-clean-delivery-20261021.zip",
+        "size": 199794948,
+        "digest": "sha256:4188691ab12040ac0f1e33bcba6761c6a02fc5bc6c00932f23991192988da708"
+      },
+      {
+        "id": 660975249,
+        "name": "packaging-result.json",
+        "size": 1000,
+        "digest": "sha256:7e3e621207f131b18cc420b12d015377b84180af890651ae4060d13ac5593c64"
+      },
+      {
+        "id": 660975254,
+        "name": "script.bobbi.start-0.2.13-ce2021-clean.zip",
+        "size": 96233587,
+        "digest": "sha256:bf10e21a30f98a74c99671985600a79da692371733f5ca17a21179565a72cb6b"
+      }
+    ]
+  },
+  "limits": {
+    "release_bytes_downloaded": false,
+    "reason": "Browser download redirected to release-assets.githubusercontent.com and was blocked: ERR_BLOCKED_BY_CLIENT",
+    "device_accessed": false,
+    "remote_mutations": false,
+    "full_current_repo_test_rerun": false,
+    "ci_log_read": true,
+    "local_reproductions": true
+  },
+  "observed_probes": {
+    "lifecycle": 3,
+    "ui_monitor": 3,
+    "entry_builder": 1,
+    "description": "Defect observations in frozen source or controlled synthetic fixture, not product passing tests"
+  },
+  "recommendations": [
+    "Restore and commit actually tested CE2021 source and tests",
+    "Align source inventory, preview inventory, tests and entry builder with intended file policy",
+    "Produce one new signed generation from one immutable source snapshot",
+    "Bind evidence to commit/tree, bundle and entry hashes",
+    "Validate the same generation using the normal Kodi entry and controlled device lifecycle",
+    "Investigate unresolved BT metadata and Chinese subtitle cases separately"
+  ]
+}

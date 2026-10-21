@@ -273,15 +273,15 @@ class ImageService:
     def close(self):
         if self.closed:
             return
-        self.closed = True
         self.stop.set()
         if self.started:
             self.server.shutdown()
         self.server.server_close()
         if self.started:
-            self.thread.join(.3)
+            self.thread.join()
         try:
             if json.loads(self.path.read_text())['token'] == self.server.token:
                 self.path.unlink()
         except (OSError, ValueError, KeyError):
             pass
+        self.closed = True

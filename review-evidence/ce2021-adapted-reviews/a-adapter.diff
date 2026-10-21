@@ -1,0 +1,21 @@
+--- original monitor
++++ single-read monitor seam
+@@ -51,15 +51,15 @@
+ 
+     clock, events, logs, calls = [100.0], [], [], []
+     state = SimpleNamespace(playing=True)
+-    def transport(body):
++    def transport(body, **kwargs):
+         assert body == {'operation': 'snapshot'}, body
+         calls.append(deepcopy(body))
+         if name == 'transient_ipc_recovers' and len(calls) <= 3:
+             clock[0] += .2
+             raise OSError('LOCAL_IPC_TEMPORARILY_BUSY')
+-        if name == 'eof_after_player_check' and len(calls) == 2:
++        if name == 'eof_after_player_check' and len(calls) == 1:
+             # The while condition already observed a playing video. The real
+-            # same-instance EOF arrives before the second authority snapshot.
++            # same-instance EOF arrives before the now single authority read.
+             state.playing = False
+             assert owner.observe_terminal('native-A', 'NATURAL_EOF')
+         return owner.snapshot()

@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "reference_head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "main_goal": "Close F01-F03 while retaining prior fixes and generic CE behavior",
+  "core": {
+    "command": "python run_review.py --repo /absolute/repository --output /absolute/new-results",
+    "before": {
+      "count": 14,
+      "passed": 8,
+      "failed": 6,
+      "errors": 0,
+      "exit": 1
+    },
+    "after": {
+      "count": 14,
+      "passed": 14,
+      "failed": 0,
+      "errors": 0,
+      "exit": 0
+    }
+  },
+  "work_order": [
+    "F01",
+    "F02 and F03 in isolated independent changes",
+    "preserved contracts and normal CI",
+    "scoped device boundary evidence",
+    "new candidate"
+  ],
+  "required_behaviors": [
+    {
+      "finding": "F01",
+      "checks": [
+        "enabled-but-dead native recovery has addon identity",
+        "standard recovered host is service-managed and can quiesce",
+        "normal managed native/standard controls pass",
+        "stable OS lease and journal/enabled vector retained"
+      ]
+    },
+    {
+      "finding": "F02",
+      "checks": [
+        "nonfirst source_key survives late LABEL_BIND",
+        "nondefault quality key survives new tab",
+        "early GUI delivery and first-card controls pass",
+        "new user selection takes precedence over stale refresh snapshot",
+        "metadata-only and precise replacement behave consistently"
+      ]
+    },
+    {
+      "finding": "F03",
+      "checks": [
+        "transient unknown read uses bounded reconciliation",
+        "matching same-instance terminal reaches terminal boundary",
+        "explicit cancel/replacement/boot/epoch/account changes retire old control",
+        "no stale snapshot grants control",
+        "native terminal 3-second and standard EOF 20-second absolute windows retained"
+      ]
+    }
+  ],
+  "preserved": {
+    "pr2_contracts": 18,
+    "earlier_contracts": 15,
+    "ci_reference": {
+      "primary_pass": 1746,
+      "baseline_pass": 761,
+      "preparation_pass": 177,
+      "skips": 5,
+      "skip_scope": "Windows inherited-pipe API bindings"
+    },
+    "source_check_reference_files": 63,
+    "totals_may_increase_with_new_meaningful_tests": true
+  },
+  "advisories": {
+    "C01": "Align stored transport/trial/final result semantics, preserve pending distinction",
+    "C02": "Nonblocking observation; do not claim current corruption from the IO double"
+  },
+  "product_constraints": [
+    "generic CoreELEC without model/F9/hash/second-device install gates",
+    "manual source selection and exact release identity",
+    "original quality/language/audio",
+    "subtitle manual Off and account generation isolation",
+    "stable lease/journal/recovery and retained userdata",
+    "private distribution and explicit source inventory",
+    "preserve CD2 1.0.19, mounts, Yatse, VPS, firmware"
+  ],
+  "deliverables": [
+    "reviewed diff and exact base/head/tree",
+    "per-finding behavior explanation",
+    "before/after core JSON and JUnit with source hashes",
+    "18/18 and 15/15 preserved receipts or explicit IO adapter diff",
+    "three isolated current CI suite receipts and skip reasons",
+    "two reproducible source-check builds",
+    "actual installer bytes/signature/entry audit only if built",
+    "scoped device results and retained open failures",
+    "private draft candidate"
+  ],
+  "authorization": "This review package performed no product mutation, device action, comment, merge or release. Future actions follow the active user authorization."
+}

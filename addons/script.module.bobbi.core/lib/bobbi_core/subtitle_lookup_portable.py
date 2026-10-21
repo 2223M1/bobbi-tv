@@ -71,7 +71,7 @@ class SubtitleLookup:
     def close(self):
         self.stopped = True
         self.key = self.result = self.pending = None
-        # Call is bounded to .3s. Do not block the serialized native actor or
-        # use an unbounded executor queue on rapid track/film changes.
+        # This is final host shutdown, not track switching. The call already
+        # has a .3s IO budget, but only actual completion releases code ownership.
         if self.worker is not None:
-            self.worker.join(timeout=.01)
+            self.worker.join()

@@ -203,6 +203,43 @@ def owned_state(request_id):
         return snapshot
 
 
+def monitor_state(original, native_instance, timeout=.3):
+    """One fresh observation; UNKNOWN is not loss of ownership or permission.
+
+    Terminal receipts are read-only. ACTIVE alone permits the monitor's work;
+    each actual player command still has its own instance/owner guard.
+    """
+    try:
+        snapshot = call({'operation': 'snapshot'}, timeout=timeout)
+    except (OSError, ValueError, RuntimeError):
+        return 'UNKNOWN'
+    if not isinstance(snapshot, dict) or not isinstance(original, dict):
+        return 'UNKNOWN'
+    if not all(key in snapshot for key in ('boot_id', 'epoch', 'desired', 'observed', 'terminal')):
+        return 'UNKNOWN'
+    if any(snapshot[key] != original.get(key) for key in ('boot_id', 'epoch')):
+        return 'SUPERSEDED'
+    desired = snapshot.get('desired') or {}
+    observed = snapshot.get('observed') or {}
+    terminal = snapshot.get('terminal') or {}
+    if not all(isinstance(value, dict) for value in (desired, observed, terminal)):
+        return 'UNKNOWN'
+    if desired.get('request_id') != original.get('request_id'):
+        return 'SUPERSEDED'
+    if observed and (observed.get('request_id') != original.get('request_id')
+                     or observed.get('native_instance') != native_instance):
+        return 'SUPERSEDED'
+    if (native_instance and terminal.get('request_id') == original.get('request_id')
+            and terminal.get('native_instance') == native_instance
+            and terminal.get('reason') in {'NATURAL_EOF', 'STOP', 'ERROR', 'CANCEL', 'SUPERSEDED'}):
+        return 'TERMINAL'
+    if desired.get('cancelled'):
+        return 'SUPERSEDED'
+    if observed.get('av_started') and native_instance:
+        return 'ACTIVE'
+    return 'UNKNOWN'
+
+
 def terminal_state(original, native_instance):
     """Read this immutable terminal even after STOP/ERROR revoked control.
 

@@ -1,0 +1,23 @@
+{
+  "repository": "2223M1/bobbi-tv",
+  "pr": 3,
+  "head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "tree": "cc12e00ccba0d7cb9a8b310306437e0e8ef84ae3",
+  "base": "ee65742bfcbaf08831f70306faed11bd1f8d6cc6",
+  "synthetic_merge": "f6adafd1fd5a39b58853f0d6f0d43dd758ba3062",
+  "state": "open",
+  "draft": true,
+  "merged": false,
+  "mergeable": true,
+  "branch_run": 39448450410,
+  "pr_run": 39448461338,
+  "observation_scope": "GitHub read only; final recheck recorded separately",
+  "final_recheck": {
+    "head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "mergeable": true,
+    "head_unchanged": true
+  }
+}

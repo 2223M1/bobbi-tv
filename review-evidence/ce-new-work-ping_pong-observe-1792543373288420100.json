@@ -1,0 +1,688 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "ping_pong",
+    "operation": "observe",
+    "target": null,
+    "settle": [],
+    "samples": [
+      {
+        "wall": 2273225.643986868,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273152722695,
+          "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "af5f322c75854f85971115d6848b47db",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 72.859,
+        "duration": 1372.007,
+        "currentaudiostream": {
+          "bitrate": 191305,
+          "channels": 2,
+          "codec": "opus",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "Japanese 2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "eng",
+          "name": "English [SCY/Commie]"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "Vodes Encode",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": false,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 1764,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2273225.628178173,
+          "player_time_started": 2273225.646445859,
+          "player_time_completed": 2273225.649123892,
+          "caching_started": 2273225.649149725,
+          "caching_completed": 2273225.671094857,
+          "decoder_started": 2273225.716164618,
+          "decoder_completed": 2273225.716807074,
+          "sample_completed": 2273225.716812032
+        }
+      },
+      {
+        "wall": 2273235.748201205,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273152722695,
+          "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "af5f322c75854f85971115d6848b47db",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 82.952,
+        "duration": 1372.007,
+        "currentaudiostream": {
+          "bitrate": 191305,
+          "channels": 2,
+          "codec": "opus",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "Japanese 2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "eng",
+          "name": "English [SCY/Commie]"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "Vodes Encode",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": false,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 2007,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2273235.716957897,
+          "player_time_started": 2273235.754352684,
+          "player_time_completed": 2273235.757131799,
+          "caching_started": 2273235.757152591,
+          "caching_completed": 2273235.804789217,
+          "decoder_started": 2273235.853853797,
+          "decoder_completed": 2273235.854422753,
+          "sample_completed": 2273235.854427253
+        }
+      },
+      {
+        "wall": 2273245.887691738,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273152722695,
+          "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "af5f322c75854f85971115d6848b47db",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 92.962,
+        "duration": 1372.007,
+        "currentaudiostream": {
+          "bitrate": 191305,
+          "channels": 2,
+          "codec": "opus",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "Japanese 2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "eng",
+          "name": "English [SCY/Commie]"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "Vodes Encode",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": false,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 2250,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2273245.854593937,
+          "player_time_started": 2273245.894484298,
+          "player_time_completed": 2273245.899370573,
+          "caching_started": 2273245.899393739,
+          "caching_completed": 2273245.936488777,
+          "decoder_started": 2273245.996597652,
+          "decoder_completed": 2273245.997269983,
+          "sample_completed": 2273245.997275483
+        }
+      },
+      {
+        "wall": 2273256.024823932,
+        "phase": "AV_STARTED",
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273152722695,
+          "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "af5f322c75854f85971115d6848b47db",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 103.223,
+        "duration": 1372.007,
+        "currentaudiostream": {
+          "bitrate": 191305,
+          "channels": 2,
+          "codec": "opus",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "jpn",
+          "name": "Japanese 2.0",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "eng",
+          "name": "English [SCY/Commie]"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "jpn",
+          "name": "Vodes Encode",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": false,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder_counters": {
+          "frame count": 2493,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "observation_times": {
+          "sample_started": 2273255.997433194,
+          "player_time_started": 2273256.027383965,
+          "player_time_completed": 2273256.030535954,
+          "caching_started": 2273256.030561787,
+          "caching_completed": 2273256.076852126,
+          "decoder_started": 2273256.116824904,
+          "decoder_completed": 2273256.117146111,
+          "sample_completed": 2273256.117148445
+        }
+      }
+    ],
+    "passed": true,
+    "startup_clock": {
+      "stable": true,
+      "budget_seconds": 5,
+      "elapsed_seconds": 0.7465069950558245,
+      "samples": [
+        {
+          "wall": 2273224.888852444,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+            "monotonic_us": 2273152722695,
+            "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+            "open_epoch": 4,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "af5f322c75854f85971115d6848b47db",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 72.067,
+          "duration": 1372.007,
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1746,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2273224.881557969,
+            "player_time_started": 2273224.891309102,
+            "player_time_completed": 2273224.897345331,
+            "caching_started": 2273224.897365831,
+            "caching_completed": 2273224.916662056,
+            "decoder_started": 2273224.9642116,
+            "decoder_completed": 2273224.965060805,
+            "sample_completed": 2273224.96506368
+          }
+        },
+        {
+          "wall": 2273225.230540468,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+            "monotonic_us": 2273152722695,
+            "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+            "open_epoch": 4,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "af5f322c75854f85971115d6848b47db",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 72.442,
+          "duration": 1372.007,
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1754,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2273225.215180188,
+            "player_time_started": 2273225.235992199,
+            "player_time_completed": 2273225.238677065,
+            "caching_started": 2273225.238697481,
+            "caching_completed": 2273225.249057529,
+            "decoder_started": 2273225.300960265,
+            "decoder_completed": 2273225.301273098,
+            "sample_completed": 2273225.301274889
+          }
+        },
+        {
+          "wall": 2273225.559952576,
+          "phase": "AV_STARTED",
+          "native": {
+            "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+            "monotonic_us": 2273152722695,
+            "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+            "open_epoch": 4,
+            "paused": false,
+            "phase": "AV_STARTED",
+            "protocol": 1,
+            "reason": "",
+            "request_id": "af5f322c75854f85971115d6848b47db",
+            "sequence": 2,
+            "subtitle_auto_intent": 0,
+            "subtitle_intent": 0,
+            "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+            "user_intent": 0
+          },
+          "cancelled": false,
+          "failure": null,
+          "prior_failure": null,
+          "seconds": 72.65,
+          "duration": 1372.007,
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "caching": false,
+          "labels": {
+            "Container(1000).ListItem.Label": "",
+            "Container(1000).ListItem.Property(source_site)": "",
+            "Container(1000).NumItems": "",
+            "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕",
+            "Window.Property(playback_error)": "",
+            "Window.Property(source_count)": ""
+          },
+          "window": {
+            "currentwindow": {
+              "id": 12005,
+              "label": "全屏视频"
+            }
+          },
+          "decoder_counters": {
+            "frame count": 1762,
+            "drop count": 0,
+            "fra err count": 0,
+            "hw err count": 0
+          },
+          "observation_times": {
+            "sample_started": 2273225.551410855,
+            "player_time_started": 2273225.562342276,
+            "player_time_completed": 2273225.564928434,
+            "caching_started": 2273225.564950934,
+            "caching_completed": 2273225.593603043,
+            "decoder_started": 2273225.627637966,
+            "decoder_completed": 2273225.62798709,
+            "sample_completed": 2273225.627989882
+          }
+        }
+      ],
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "record": {
+      "test": {
+        "title": "Ping Pong the Animation",
+        "tmdb_id": 60811,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "c71bc62a44d64ccb964854412cd9a942",
+      "started": 2273099.48039515,
+      "home": {
+        "generation": 67,
+        "intent": 1,
+        "retired_generation": 67,
+        "observed_at": 2273099.86070505
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2273099.861196673,
+      "picker": {
+        "window": 13001,
+        "generation": 68,
+        "intent": 1,
+        "tmdb_id": 60811,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2273102.111360802,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Ping Pong the Animation - S01E01 (BD 1080p HEVC) [Vodes].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.39 GB",
+        "Container(1000).ListItem.Property(source_key)": "2ee81999cb1f4e386b5c02394bd9d8a26b059ec6e8fa8582bf4a2dc9c049ca5b",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 2273148.290891326,
+      "request_id": "af5f322c75854f85971115d6848b47db",
+      "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+      "native_instance": "8059c6e2-d88c-45a8-bdb2-0485718c5e41",
+      "first_av_observed_at": 2273152.906344428,
+      "select_to_av_observed_seconds": 4.615453102160245
+    },
+    "start_timing_note": "Select-to-first-AV is an observed upper bound, not an exact native event timestamp; startup samples remain separate",
+    "wall_seconds": 30.381,
+    "play_seconds": 30.364,
+    "decoder": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 2493\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+    "crashes": [
+      "kodi_crashlog_20261012021405.log",
+      "kodi_crashlog_20261012135249.log",
+      "kodi_crashlog_20261019200619.log",
+      "kodi_crashlog_20261020222956.log"
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "ping_pong",
+  "operation": "observe",
+  "attempt": 2,
+  "regression_attempt": true
+}

@@ -1,0 +1,72 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792540928638414400",
+  "progress": {
+    "scope": "real CE native managed recovery and quiesce; no media commands",
+    "events": [
+      "before_initial_snapshot",
+      "enabled_owner_missing_lease_free",
+      "managed_recovery_ready",
+      "before_normal_quiesce"
+    ],
+    "enabled_before": [
+      "plugin.video.bobbi",
+      "plugin.video.bobbi.library",
+      "plugin.video.bobbi.torrent",
+      "repository.bobbi",
+      "resource.uisounds.bobbi-modern",
+      "script.bobbi.opensubtitles",
+      "script.bobbi.setup",
+      "script.module.bobbi.catalog",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.platform",
+      "skin.bobbi.cinema"
+    ],
+    "skin_before": "skin.bobbi.cinema",
+    "initial_owner": {
+      "adapter": "native",
+      "boot_id": "3d5f61995e514a808825238c657bc951"
+    },
+    "recovered_owner": {
+      "adapter": "native",
+      "boot_id": "819d1be53fa0470597ec75aa549d36f0"
+    }
+  },
+  "lines": [
+    "2026-10-21 08:02:08.700 T:23973    info <general>: [bobbi] SHUTDOWN_BEGIN_RUNTIME",
+    "2026-10-21 08:02:08.700 T:23973    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_BEGIN",
+    "2026-10-21 08:02:08.784 T:23973    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_END",
+    "2026-10-21 08:02:08.784 T:23973    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_BEGIN",
+    "2026-10-21 08:02:08.784 T:23973    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_END",
+    "2026-10-21 08:02:08.784 T:23973    info <general>: [bobbi] RUNTIME_CLOSE_LOOP_JOINED",
+    "2026-10-21 08:02:08.785 T:23973    info <general>: [bobbi] SHUTDOWN_DRAINED_RUNTIME",
+    "2026-10-21 08:02:08.785 T:23973    info <general>: [bobbi] SHUTDOWN_BEGIN_PLAYBACK",
+    "2026-10-21 08:02:08.785 T:23973    info <general>: [BOBBI-SHUTDOWN] native control begin",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [BOBBI-SHUTDOWN] native control drained",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [BOBBI-SHUTDOWN] auxiliary startup join COMPLETE",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-4 (run)",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-5 (run)",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join AM6BPrimaryCatalogWarmup",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [BOBBI-SHUTDOWN] auxiliary worker join Thread-6 (run)",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [BOBBI-SHUTDOWN] auxiliary workers drained",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [bobbi] SHUTDOWN_DRAINED_PLAYBACK",
+    "2026-10-21 08:02:08.786 T:23973    info <general>: [bobbi] SHUTDOWN_BEGIN_IMAGES",
+    "2026-10-21 08:02:08.844 T:23973    info <general>: [bobbi] SHUTDOWN_DRAINED_IMAGES",
+    "2026-10-21 08:02:08.845 T:23973    info <general>: [bobbi] SHUTDOWN_BEGIN_PREPARATION",
+    "2026-10-21 08:02:08.867 T:23973    info <general>: [bobbi] SHUTDOWN_DRAINED_PREPARATION",
+    "2026-10-21 08:02:08.867 T:23973    info <general>: [bobbi] SHUTDOWN_BEGIN_ACCOUNT_SUBSCRIPTION",
+    "2026-10-21 08:02:08.867 T:23973    info <general>: [bobbi] SHUTDOWN_DRAINED_ACCOUNT_SUBSCRIPTION",
+    "2026-10-21 08:02:09.637 T:24191    info <general>: [bobbi] SHUTDOWN_BEGIN_RUNTIME",
+    "2026-10-21 08:02:09.637 T:24191    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_BEGIN",
+    "2026-10-21 08:02:09.672 T:24191    info <general>: [bobbi] RUNTIME_CLOSE_SHUTDOWN_END",
+    "2026-10-21 08:02:09.672 T:24191    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_BEGIN",
+    "2026-10-21 08:02:09.673 T:24191    info <general>: [bobbi] RUNTIME_CLOSE_REQUEST_DRAIN_END",
+    "2026-10-21 08:02:09.673 T:24191    info <general>: [bobbi] RUNTIME_CLOSE_LOOP_JOINED",
+    "2026-10-21 08:02:09.674 T:24191    info <general>: [bobbi] SHUTDOWN_DRAINED_RUNTIME",
+    "2026-10-21 08:02:09.674 T:24191    info <general>: [bobbi] SHUTDOWN_BEGIN_PLAYBACK",
+    "2026-10-21 08:02:09.674 T:24191    info <general>: [BOBBI-SHUTDOWN] native control begin",
+    "2026-10-21 08:02:09.674 T:24191    info <general>: [BOBBI-SHUTDOWN] native control drained",
+    "2026-10-21 08:02:09.674 T:24191    info <general>: [BOBBI-SHUTDOWN] auxiliary startup join RUNNING",
+    "2026-10-21 08:02:14.642 T:24190   error <general>: CPythonInvoker(23, /storage/.kodi/addons/plugin.video.bobbi/service.py): script didn't stop in 5 seconds - let's kill it"
+  ]
+}

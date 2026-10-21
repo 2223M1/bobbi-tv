@@ -65,7 +65,7 @@ else:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('work', choices=('odd_taxi', 'flip_flappers', 'cowboy_bebop'))
+    parser.add_argument('work', choices=('ping_pong', 'odd_taxi', 'flip_flappers', 'cowboy_bebop'))
     parser.add_argument('--attempt', type=int, required=True, choices=range(1, 11))
     parser.add_argument('--transport-source', type=Path, required=True)
     parser.add_argument('--stop-request')

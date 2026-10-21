@@ -1,0 +1,72 @@
+{
+  "group": "ui",
+  "total": 5,
+  "passed": 2,
+  "failed": 3,
+  "errors": 0,
+  "cases": [
+    {
+      "name": "ui_append_below_cap",
+      "passed": true,
+      "actual": {
+        "keys": [
+          "a",
+          "b",
+          "c"
+        ],
+        "selected": "b",
+        "resets": 0,
+        "selects": 0
+      },
+      "expected": "Unrelated arriving source retains visible objects and focused source",
+      "group": "ui"
+    },
+    {
+      "name": "ui_focused_card_at_cap",
+      "passed": false,
+      "actual": {
+        "focused_before": "old-099",
+        "focused_after": "old-098",
+        "old_still_in_provider_pool": true,
+        "old_visible": false,
+        "rendered_count": 100,
+        "reset_count": 1,
+        "select_commands": 0
+      },
+      "expected": "Display cap must not evict a still-valid focused card merely because a new source ranks higher",
+      "group": "ui"
+    },
+    {
+      "name": "ui_clear_peers_zero",
+      "passed": false,
+      "actual": {
+        "seeders": "10",
+        "peers": "5",
+        "status_plain": "待验证片源"
+      },
+      "expected": "Retained card must clear obsolete optional fields",
+      "group": "ui"
+    },
+    {
+      "name": "ui_clear_peers_cached",
+      "passed": false,
+      "actual": {
+        "seeders": "10",
+        "peers": "5",
+        "status_plain": "服务标记已缓存"
+      },
+      "expected": "Retained card must clear obsolete optional fields",
+      "group": "ui"
+    },
+    {
+      "name": "ui_update_present_fields",
+      "passed": true,
+      "actual": {
+        "seeders": "7",
+        "peers": "8"
+      },
+      "expected": "Positive field updates retain object and change values",
+      "group": "ui"
+    }
+  ]
+}

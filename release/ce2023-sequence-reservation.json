@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "allocated": [2026102007, 2026102008, 2026102009, 2026102010, 2026102011, 2026102012, 2026102013, 2026102014, 2026102015, 2026102016, 2026102017, 2026102018, 2026102019, 2026102020, 2026102021, 2026102022],
+  "candidate": 2026102023,
+  "device_before": 2026102021,
+  "latest_remote_asset": 2026102022,
+  "checked_date": "2026-10-21",
+  "scope": "Read-only local release files, device state and private GitHub releases; no new remote publication"
+}

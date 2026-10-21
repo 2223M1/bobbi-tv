@@ -251,12 +251,17 @@ class SourceSelect(BaseWindow):
         qualities_list = self.getControl(1300)
         items = getattr(self, '_quality_items', {})
         keys = getattr(self, '_quality_keys', [])
+        selected = qualities_list.getSelectedItem() if keys else None
+        selected_key = selected.getProperty('quality') if selected else None
+        selected_position = keys.index(selected_key) if selected_key in keys else 0
+        rebound = False
         desired = _quality_tabs(self.sources)
         wanted = {key for _, key, _ in desired}
         for position in range(len(keys) - 1, -1, -1):
             if keys[position] not in wanted:
                 items.pop(keys.pop(position))
                 qualities_list.removeItem(position)
+                rebound = True
         self.setProperty("quality_item_width", '200')
         for display, key, count in desired:
             label = f"{display} ({count})"
@@ -267,9 +272,16 @@ class SourceSelect(BaseWindow):
                 list_item = xbmcgui.ListItem(label)
                 list_item.setProperty("quality", key)
                 qualities_list.addItem(list_item)
+                rebound = True
                 items[key] = list_item
                 keys.append(key)
         self._quality_items, self._quality_keys = items, keys
+        if rebound and keys:
+            # Kodi queues LABEL_BIND (which selects zero). Queue compensation
+            # AFTER it even when a synchronous read still reports the old index.
+            # No timer/delayed retry: subsequent user navigation wins normally.
+            qualities_list.selectItem(keys.index(selected_key) if selected_key in keys
+                                      else min(selected_position, len(keys) - 1))
 
     def doModal(self) -> bool:
         from lib.native_support import available
@@ -747,12 +759,15 @@ class SourceSelect(BaseWindow):
         desired = {key_for(source): source for source in self.list_sources}
         selected = self.display_list.getSelectedItem() if incremental else None
         selected_key = selected.getProperty('source_key') if selected else None
+        selected_position = keys.index(selected_key) if selected_key in keys else 0
+        rebound = False
         # Remove only withdrawn/superseded rows (e.g. exact BT -> 115 duplicate).
         # Every surviving card keeps its native object and relative position.
         for position in range(len(keys) - 1, -1, -1):
             if keys[position] not in desired:
                 cards.pop(keys.pop(position))
                 self.display_list.removeItem(position)
+                rebound = True
         keys += [key for key in desired if key not in cards]
         self.list_sources = [desired[key] for key in keys]
         aliases = {}
@@ -841,10 +856,8 @@ class SourceSelect(BaseWindow):
             menu_item.setProperty("guid", source.guid)
             menu_item.setProperty("infoHash", source.infoHash)
             menu_item.setProperty("size", bytes_to_human_readable(int(source.size)))
-            if source.seeders and not source.isCached:
-                menu_item.setProperty("seeders", str(source.seeders))
-            if source.peers and not source.isCached:
-                menu_item.setProperty("peers", str(source.peers))
+            menu_item.setProperty("seeders", str(source.seeders) if source.seeders and not source.isCached else '')
+            menu_item.setProperty("peers", str(source.peers) if source.peers and not source.isCached else '')
             menu_item.setProperty("fullLanguages", get_colored_languages(source.fullLanguages))
             # The primary provider field is intentionally the release/encode
             # group, not the indexer website.  The source site remains available
@@ -871,13 +884,15 @@ class SourceSelect(BaseWindow):
 
         if menu_items:
             self.display_list.addItems(menu_items)
+            rebound = True
         self._rendered_cards, self._rendered_keys = cards, keys
-        if incremental and selected_key in keys:
-            # Usually no selection command at all: do not restart scrolling or
-            # focus animation when a provider merely adds results at the end.
-            position = keys.index(selected_key)
-            if self.display_list.getSelectedPosition() != position:
-                self.display_list.selectItem(position)
+        if incremental and rebound and keys:
+            # Structural updates enqueue a full native bind, despite preserving
+            # our ListItems. Always enqueue the matching selection after that
+            # bind; reading the old position cannot tell whether it was consumed.
+            # A withdrawn card keeps its nearest surviving ordinal, never plays.
+            position = keys.index(selected_key) if selected_key in keys else min(selected_position, len(keys) - 1)
+            self.display_list.selectItem(position)
 
     def _refresh_sources_list(self) -> None:
         if not hasattr(self, "display_list"):

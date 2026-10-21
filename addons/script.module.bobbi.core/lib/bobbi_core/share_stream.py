@@ -528,7 +528,7 @@ class ShareStream:
         return session
 
     def close(self):
-        if self.stopping.is_set():
+        if getattr(self, '_closed', False):
             return
         self.stopping.set()
         self.unsubscribe()
@@ -539,7 +539,8 @@ class ShareStream:
             entry.revoke()
         self.server.shutdown()
         self.server.server_close()
-        self.thread.join(timeout=1)
+        self.thread.join()
+        self._closed = True
 
 
 class Handler(BaseHTTPRequestHandler):

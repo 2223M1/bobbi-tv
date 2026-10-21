@@ -1,0 +1,280 @@
+{
+  "schema": 1,
+  "repository": "2223M1/bobbi-tv",
+  "branch": "codex/ce2021-clean-delivery-20261021",
+  "reviewed_head": "b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2",
+  "reviewed_tree": "bbe592e62a7a6790c62725738b63dae9b9f9405a",
+  "parent": "f6ef6a7e3c5868a2ab8ed8e600a592d51ba97167",
+  "prior_review_commit": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "main_at_first_read": "910334b132de882a116761e4ea9e493c3071dc06",
+  "changed_paths": [
+    {
+      "path": "docs/CE-REVIEW-CLOSURE-2021-20261021.md",
+      "status": "added",
+      "additions": 199,
+      "deletions": 0
+    },
+    {
+      "path": "review-evidence/ce2021-clean-packaging-result.json",
+      "status": "added",
+      "additions": 32,
+      "deletions": 0
+    },
+    {
+      "path": "tools/package_ce2021_github.py",
+      "status": "added",
+      "additions": 232,
+      "deletions": 0
+    }
+  ],
+  "diff_from_prior_review": {
+    "added": 3,
+    "removed": 83,
+    "modified": 0
+  },
+  "source_files": [
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py",
+      "bytes": 13788,
+      "sha256": "7b8770762c34e961f7baac63861143252c08417af0cce17dc24f8a37a4ed4895",
+      "git_blob_sha1": "5f87167399d2ae36cc26eef5b3d404a1edd4d2d7",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
+      "bytes": 18698,
+      "sha256": "77b7a22e6419f2a8aaf989577e624684e383d28373a87a3f3d27efe7a6e0901d",
+      "git_blob_sha1": "24ba9af9df9bfe087f0a29253947a6080f8932a1",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.platform/lib/bobbi_platform/host.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/runtime.py",
+      "bytes": 6516,
+      "sha256": "a470f6007b1a0c7c352de4fcd929d8865e08e3b75a1587ca4b3a8c6023c0d870",
+      "git_blob_sha1": "cf6626c7cb70551ac0d8bb83e142a545501392f2",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.platform/lib/bobbi_platform/runtime.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/instance_lock.py",
+      "bytes": 1253,
+      "sha256": "e3395ade1e550e51721d9cc501df09bb5950cbce516b0903546c394caa7a82a7",
+      "git_blob_sha1": "307ee23c528e83bc98d73c26e27a42f3d3061bc2",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.platform/lib/bobbi_platform/instance_lock.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/offline_updates.py",
+      "bytes": 7439,
+      "sha256": "cd10c6cd4bfe80f9d2d7f9f941fe245e9cc66401b950b25495581e8b5fd4b031",
+      "git_blob_sha1": "f0327eb0178b5df4b9adf2500e18329b81beffd4",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.platform/lib/bobbi_platform/offline_updates.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/portable_runtime.py",
+      "bytes": 2045,
+      "sha256": "5aa89cd58211398d09d4fc2dd4f74d94151cc6095d8c04e01f9dfc1af41d88db",
+      "git_blob_sha1": "a410df87ce6f0d48461e8dfc11f66150abf74dc1",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/portable_runtime.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
+      "bytes": 13762,
+      "sha256": "79d9e8538a0c1d04cdef459842465e1cb89e3f19326870d8d5a7f51085aca64a",
+      "git_blob_sha1": "a1215ddfc99d24f5a95777264b9d1eff60a20aaa",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/services/standard_playback.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/services/background_service.py",
+      "bytes": 15978,
+      "sha256": "09049aac35cec3ea6b5c3c417de8068decd9223e85b36b9b02197edbd37e3ef5",
+      "git_blob_sha1": "d293fe8b9ba82183e4d8c4cfd2ac58a7c8a95241",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/services/background_service.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/boot_gate.py",
+      "bytes": 624,
+      "sha256": "a42925f0efebe03892336de4667eccc396326d376aa0012040eba68fa1804f15",
+      "git_blob_sha1": "a04398843321d4514fdea86b2dba1351008cd8be",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/boot_gate.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/gui/source_select.py",
+      "bytes": 58252,
+      "sha256": "3195afffe966aef4ba302ff0663a4e1b1e4c4a31bce46ad71634d1716a14b222",
+      "git_blob_sha1": "75709649cba63d2800593f3ed4414f24577157ef",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/gui/source_select.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "bytes": 132296,
+      "sha256": "dfee971410d5d2096da2cff89a56f2ad24cb3e44c4a6bd9c7c60a371ea506a00",
+      "git_blob_sha1": "ad17c8b8c1d84fbc07b52376632b05558c703733",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/lib/native_player.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py",
+      "bytes": 10917,
+      "sha256": "b3af151fdec93ec28bed5410c5175c8e76cd2e23b25322290c9c412721b3815f",
+      "git_blob_sha1": "ba40a13c099823537748c5fa75b930d0aad3d102",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.core/lib/bobbi_core/playback_request.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py",
+      "bytes": 14693,
+      "sha256": "6bad433d5ff7e02cc872f9674eba3b9016a736ffacd99da6d67abeb9138d7e99",
+      "git_blob_sha1": "b7c534105ac2fcff12f417e3293d8daccc982848",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.core/lib/bobbi_core/playback_owner.py"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/lib/bobbi_core/source_list_session.py",
+      "bytes": 7125,
+      "sha256": "e9fd838f8d44ab2708b93e81e747aeee83b3097213dfcd61eb3fda9b4e8ee47b",
+      "git_blob_sha1": "fc5fe8f8d25e85e423f3d5bdef351c7e05cea6cc",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.core/lib/bobbi_core/source_list_session.py"
+    },
+    {
+      "path": "addons/script.bobbi.start/default.py",
+      "bytes": 522,
+      "sha256": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e",
+      "git_blob_sha1": "e619c2a1509f4e08c935a6e64a132df2dc5dd58d",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.bobbi.start/default.py"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/addon.xml",
+      "bytes": 1557,
+      "sha256": "3573a9eb629ff1e878fcb819ce6aec7d4b84aebda9c046753ffde9713040ab27",
+      "git_blob_sha1": "53dbf4654dbf4eeccd20fa07d2d98c8fa04c0276",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/plugin.video.bobbi/addon.xml"
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/addon.xml",
+      "bytes": 701,
+      "sha256": "1652cf10d6e151dc79d936e4fd54f133766ec0aac907cb18d170a54ef3fe76c7",
+      "git_blob_sha1": "3750f733417565dca7a1add125b45c9e0ea0cb9f",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.platform/addon.xml"
+    },
+    {
+      "path": "addons/script.module.bobbi.core/addon.xml",
+      "bytes": 937,
+      "sha256": "8393f85bb010a39bfc163c5d39cf50e7a65c1c95628975fa9642cda1b27f4bdb",
+      "git_blob_sha1": "4028be5d686190e3f413b39bdea1081a8b2ce0e3",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.module.bobbi.core/addon.xml"
+    },
+    {
+      "path": "addons/script.bobbi.start/addon.xml",
+      "bytes": 959,
+      "sha256": "af78b430495e325d1d99f598c6460b9b4db794bbda30c7c455290cbf88e5e076",
+      "git_blob_sha1": "5c8b9ea7f9d6115a639a2e057ec3d7a1b51b8dad",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/addons/script.bobbi.start/addon.xml"
+    },
+    {
+      "path": "tools/package_ce2021_github.py",
+      "bytes": 11844,
+      "sha256": "ace9cd97d4b0d059dc0c290862a32034c9125552881a3f8a1ff25724343c75db",
+      "git_blob_sha1": "fb1e0f413b6b8616d6dbe5ca7bf8639838112db7",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/package_ce2021_github.py"
+    },
+    {
+      "path": "tools/audit_ce_entry.py",
+      "bytes": 3510,
+      "sha256": "96803a536e7894b556ecd3ff48ff77c42b3c54873abef343b5cd46ce8158bf81",
+      "git_blob_sha1": "b5aed558e33c792bec657f5503f34a21e92bbecd",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/audit_ce_entry.py"
+    },
+    {
+      "path": "tools/build_ce_entry.py",
+      "bytes": 3939,
+      "sha256": "d38268a5df23afce711484aad5555c589f2a44620b049714c1f72efaa070162a",
+      "git_blob_sha1": "974858d6bdae4496065536b04931d8310c3b642b",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/build_ce_entry.py"
+    },
+    {
+      "path": "tools/build_release.py",
+      "bytes": 8217,
+      "sha256": "2bc6c6886618e72f5f19c8da7b4f4136668f12fa99af57cd268f766bf250c5ed",
+      "git_blob_sha1": "7c70a8dc5b4a7346ca14b132b1309cea21ae8acc",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/build_release.py"
+    },
+    {
+      "path": "tools/build_preview.py",
+      "bytes": 2851,
+      "sha256": "2077f3c80912b910def3414091baff1bc1e5b6a03ad6f15865863718f5438f58",
+      "git_blob_sha1": "f4720c0ad5476e75d091fd875b7b58da79d4d883",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/tools/build_preview.py"
+    },
+    {
+      "path": "release/source-inventory.json",
+      "bytes": 150814,
+      "sha256": "969773ca16a6a8ce61fe987079f207bc01166e1bf5c71d53069194f54daa35a7",
+      "git_blob_sha1": "476a7ad7b8c1cf064046410aab530eb52e460317",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/release/source-inventory.json"
+    },
+    {
+      "path": "release/preview-inputs.json",
+      "bytes": 11898,
+      "sha256": "976769c271564fb138fc45021b9077ea5f01a7e6a8599af8bd4d5697b7dd530e",
+      "git_blob_sha1": "946e26f5ab66c83d90b3478d49cdba7e77826f62",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/release/preview-inputs.json"
+    },
+    {
+      "path": ".github/workflows/verify.yml",
+      "bytes": 2091,
+      "sha256": "8d375beb5d0528a52d01d4afa62aefddadcd5f59cfc29b400c5326b5d1323d33",
+      "git_blob_sha1": "68c255162d9c5ea2114b0233c19ef0a229555fdb",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/.github/workflows/verify.yml"
+    },
+    {
+      "path": "docs/CE-REVIEW-CLOSURE-2021-20261021.md",
+      "bytes": 16320,
+      "sha256": "a21661ec171c39300b182a1521e65ce0532db38a023d63ce1dcc91a8022f8722",
+      "git_blob_sha1": "09b78639392c9c5a0515d62c2995ccf6759bb598",
+      "matches_fixed_tree": true,
+      "url": "https://github.com/2223M1/bobbi-tv/blob/b20e972da6efd25eeeb19f8dcb8fae38eed1dfb2/docs/CE-REVIEW-CLOSURE-2021-20261021.md"
+    }
+  ],
+  "snapshot_method": "Only reuse old file bytes when their Git blob matches the complete fixed current tree. Critical files independently hashed; snapshot is not a full asset checkout.",
+  "full_build_evidence": "Actual current GitHub Actions full checkout; local incomplete snapshot not used to claim build failures.",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39"
+  },
+  "ci_environment": "GitHub Actions Ubuntu; Python 3.11.17 per actual job log",
+  "source_component_versions": {
+    "plugin.video.bobbi": "0.1.9",
+    "script.module.bobbi.platform": "0.1.11",
+    "script.module.bobbi.core": "0.1.15",
+    "script.bobbi.start": "0.2.6"
+  },
+  "report_claimed_component_versions": {
+    "plugin.video.bobbi": "0.1.15",
+    "script.module.bobbi.platform": "0.1.17",
+    "script.module.bobbi.core": "0.1.16",
+    "script.bobbi.start": "0.2.13"
+  }
+}

@@ -1,0 +1,337 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "barakamon",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Barakamon",
+        "tmdb_id": 67048,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1
+      },
+      "prior_request": "16223d6207524e5dabae88e7fc151486",
+      "started": 2272505.98078099,
+      "home": {
+        "generation": 55,
+        "intent": 0,
+        "retired_generation": 55,
+        "observed_at": 2272506.396706886
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 2272506.397059844,
+      "picker": {
+        "window": 13001,
+        "generation": 56,
+        "intent": 0,
+        "tmdb_id": 67048,
+        "kind": "tv"
+      },
+      "picker_observed_at": 2272515.130770404
+    },
+    "samples": [
+      {
+        "wall": 2272506.585091932,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272506.563575452,
+          "decoder_started": 2272506.597693646,
+          "decoder_completed": 2272506.598583768,
+          "sample_completed": 2272506.59858756
+        }
+      },
+      {
+        "wall": 2272508.703855878,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272508.684341267,
+          "decoder_started": 2272508.717292214,
+          "decoder_completed": 2272508.717566589,
+          "sample_completed": 2272508.717568505
+        }
+      },
+      {
+        "wall": 2272510.831438996,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272510.81307334,
+          "decoder_started": 2272510.849536819,
+          "decoder_completed": 2272510.849793818,
+          "sample_completed": 2272510.849795818
+        }
+      },
+      {
+        "wall": 2272513.04627856,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272513.030138481,
+          "decoder_started": 2272513.062888595,
+          "decoder_completed": 2272513.063148553,
+          "sample_completed": 2272513.063150845
+        }
+      },
+      {
+        "wall": 2272515.147927896,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272515.131268652,
+          "decoder_started": 2272515.162933394,
+          "decoder_completed": 2272515.163213435,
+          "sample_completed": 2272515.163215352
+        }
+      },
+      {
+        "wall": 2272517.343854866,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272517.262735725,
+          "decoder_started": 2272517.36340381,
+          "decoder_completed": 2272517.363680851,
+          "sample_completed": 2272517.363683351
+        }
+      },
+      {
+        "wall": 2272519.450945706,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272519.432859967,
+          "decoder_started": 2272519.46407371,
+          "decoder_completed": 2272519.464379376,
+          "sample_completed": 2272519.464381417
+        }
+      },
+      {
+        "wall": 2272521.786882915,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[萌月字幕组][元气囝仔][Barakamon][01][简繁][1280x720 AAC]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "8",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "8"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272521.616198158,
+          "decoder_started": 2272521.812975006,
+          "decoder_completed": 2272521.813578212,
+          "sample_completed": 2272521.813581046
+        }
+      },
+      {
+        "wall": 2272523.983617305,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[萌月字幕组][元气囝仔][Barakamon][01][简繁][1280x720 AAC]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "11",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "11"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272523.935116654,
+          "decoder_started": 2272523.99818368,
+          "decoder_completed": 2272523.998462721,
+          "sample_completed": 2272523.998464721
+        }
+      },
+      {
+        "wall": 2272526.107211522,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[萌月字幕组][元气囝仔][Barakamon][01][简繁][1280x720 AAC]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "14",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "14"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder_counters": {},
+        "observation_times": {
+          "sample_started": 2272526.080638641,
+          "decoder_started": 2272526.129104333,
+          "decoder_completed": 2272526.129586499,
+          "sample_completed": 2272526.129590332
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "barakamon",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

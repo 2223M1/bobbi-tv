@@ -92,16 +92,26 @@ def test_readiness_requires_actual_owner_queue_not_registration(tmp_path, monkey
 
 def test_enabled_without_host_restarts_actual_service_once(tmp_path, monkeypatch):
     monkeypatch.setattr(ui, 'profile', lambda **_: tmp_path/'runtime.json')
-    replies, commands = [False], []
+    replies, commands, enabled = [False], [], [True]
     def call(*args, **kwargs):
         if not replies[0]: raise OSError('not running')
         return {'adapter': 'standard', 'desired': None}
     monkeypatch.setattr(runtime, 'call', call)
     host = ui.KodiHost.__new__(ui.KodiHost)
-    host.xbmc = SimpleNamespace(executebuiltin=lambda command: (commands.append(command), replies.__setitem__(0, True)))
+    host.xbmc = SimpleNamespace(executebuiltin=lambda command: pytest.fail('Unmanaged RunScript'))
+    def rpc(method, params):
+        assert params['addonid'] == 'plugin.video.bobbi'
+        if method == 'Addons.GetAddonDetails':
+            return {'addon': {'enabled': enabled[0], 'version': '1'}}
+        assert method == 'Addons.SetAddonEnabled'
+        commands.append(params['enabled'])
+        enabled[0] = params['enabled']
+        replies[0] = enabled[0]
+        return 'OK'
+    monkeypatch.setattr(ui, 'rpc', rpc)
     host.monitor = SimpleNamespace(waitForAbort=lambda _: False)
     host.ensure_running()
-    assert commands == ['RunScript(special://home/addons/plugin.video.bobbi/service.py)']
+    assert commands == [False, True] and enabled[0]
 
 
 def test_host_shutdown_keeps_os_lease_through_dependency_close(tmp_path):

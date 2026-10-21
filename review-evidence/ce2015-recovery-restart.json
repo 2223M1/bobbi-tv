@@ -1,0 +1,5 @@
+{
+  "reason": "idle managed-recovery trial deadlock",
+  "prior_playback": "confirmed idle before trial; new work failed at owner snapshot",
+  "restart_queued": true
+}

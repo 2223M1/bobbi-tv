@@ -24,8 +24,10 @@ def test_preview_is_reproducible_and_dependency_closed(tmp_path):
         with zipfile.ZipFile(first / item['file']) as archive:
             names = archive.namelist()
             assert all(name.startswith(item['id'] + '/') for name in names)
-            assert any(item['id'] + '/' + name in names for name in
-                       ('LICENSE', 'LICENSE.txt', 'LICENSE.md', 'COPYING'))
+            from delivery_policy import require_clean
+            require_clean(names)
+            expected = json.loads((ROOT / 'release/preview-inputs.json').read_text())['components'][item['id']]
+            assert set(names) == {item['id'] + '/' + name for name in expected}
             root = ET.fromstring(archive.read(item['id'] + '/addon.xml'))
             for dep in root.findall('./requires/import'):
                 assert dep.get('addon') in ids | {'xbmc.python', 'script.module.pycryptodome'}

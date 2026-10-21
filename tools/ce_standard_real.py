@@ -10,6 +10,16 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 
 
+def receipt_status(result, transport_code=0, diagnostic=False):
+    result = result if isinstance(result, dict) else {}
+    passed = result.get('passed')
+    pending = result.get('state') in ('running', 'pending', 'not_tested') and passed is None
+    trial_exit = None if pending else 0 if passed is True else 1
+    return dict(transport_exit_code=transport_code, trial_exit_code=trial_exit,
+                exit_code=1 if transport_code or diagnostic or trial_exit == 1 else 0,
+                pending=pending, diagnostic_present=bool(diagnostic))
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--transport-source',type=Path,required=True)
@@ -42,10 +52,10 @@ print(path.read_text() if path.exists() else json.dumps(dict(state='running',pas
         rc,result,diagnostic=wire.readonly(client,('RUN='+repr(run)+'\nSTART='+repr(not args.poll)+'\n'+code).encode(),deadline_seconds=48)
     finally:client.close()
     output=ROOT/'review-evidence'/('ce-standard-real-'+str(time.time_ns())+'.json')
-    value=dict(run=run,result=result,exit_code=rc,diagnostic_present=bool(diagnostic))
+    value=dict(run=run,result=result,**receipt_status(result, rc, diagnostic))
     output.write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(dict(evidence=str(output),**value),ensure_ascii=False))
-    return 1 if rc or diagnostic or result.get('passed') is False else 0
+    return value['exit_code']
 
 
 if __name__=='__main__':raise SystemExit(main())

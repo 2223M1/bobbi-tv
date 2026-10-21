@@ -2,7 +2,7 @@
 from copy import deepcopy
 from queue import Queue, Empty, Full
 from uuid import uuid4
-from threading import Event, Thread
+from threading import Event, Thread, Lock
 import time
 
 from bobbi_platform.standard_session import StandardSession
@@ -12,14 +12,18 @@ class HistoryWriter:
     """Bounded single writer; a slow disk must not stall callbacks or IPC."""
     def __init__(self, report):
         self.queue, self.done, self.report = Queue(maxsize=32), Event(), report
+        self.admission = Lock()
         self.worker = Thread(target=self.run, name='bobbi-standard-history', daemon=True)
         self.worker.start()
 
     def save(self, data):
-        try:
-            self.queue.put_nowait(deepcopy(data))
-        except Full:
-            self.report('HISTORY_QUEUE_FULL')
+        with self.admission:
+            if self.done.is_set():
+                return
+            try:
+                self.queue.put_nowait(deepcopy(data))
+            except Full:
+                self.report('HISTORY_QUEUE_FULL')
 
     def run(self):
         while not self.done.is_set() or not self.queue.empty():
@@ -34,8 +38,9 @@ class HistoryWriter:
                 self.report('HISTORY_WRITE_FAILED')
 
     def close(self):
-        self.done.set()
-        self.worker.join(timeout=.3)
+        with self.admission:
+            self.done.set()
+        self.worker.join()  # Every accepted history write must finish.
 
 
 def discover(data, host, deadline, cancelled):
@@ -101,6 +106,7 @@ class StandardPlayback:
     def __init__(self, host):
         import xbmc
         self.host = host
+        self.closed = False
         self.events = Queue(maxsize=64)
         self.bound = ''
         self.last_handoff = None
@@ -118,8 +124,11 @@ class StandardPlayback:
                 parent.event('ERROR')
         self.player = Player()
         host.bind_owner(self.dispatch)
+        host.playback = self  # Host owns final draining AND the runtime lease.
 
     def dispatch(self, body):
+        if self.closed:
+            raise RuntimeError('STANDARD_PLAYBACK_CLOSED')
         operation = body.get('operation')
         if operation == 'select':
             self.clear_subtitle_state()
@@ -283,8 +292,24 @@ class StandardPlayback:
             self.clear_subtitle_state()
 
     def close(self):
-        self.clear_subtitle_state()
-        self.session.close()
-        self.history.close()
+        self.closed = True
+        errors = []
+        # Revoke all accepted jobs before any possibly slow drain. Cancellation
+        # is not completion; their code must leave before the host releases its
+        # replacement lease. Keep attempting cleanup after a component error.
+        for job in (self.subtitle_job, self.subtitle_pending):
+            if job:
+                job['cancel'].set()
+        self.subtitle_pending = None
+        for close in (self.clear_subtitle_state, self.session.close, self.history.close):
+            try:
+                close()
+            except BaseException as error:
+                errors.append(error)
         if self.subtitle_worker:
-            self.subtitle_worker.join(timeout=.1)
+            try:
+                self.subtitle_worker.join()
+            except BaseException as error:
+                errors.append(error)
+        if errors:
+            raise errors[0]

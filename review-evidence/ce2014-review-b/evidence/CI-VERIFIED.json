@@ -1,0 +1,40 @@
+{
+  "repository": "2223M1/bobbi-tv",
+  "head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "synthetic_merge": "f6adafd1fd5a39b58853f0d6f0d43dd758ba3062",
+  "run_id": 39448461338,
+  "artifact_id": 12276459448,
+  "sha256": "7e0894e4fe85e7d9cf54e137cf38ba20f3f62aed46d2194cc013dfd36f85fc93",
+  "expected_sha256": "7e0894e4fe85e7d9cf54e137cf38ba20f3f62aed46d2194cc013dfd36f85fc93",
+  "crc_ok": true,
+  "junit": [
+    {
+      "file": "ci-baseline.xml",
+      "tests": 761,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 761
+    },
+    {
+      "file": "ci-preparation.xml",
+      "tests": 177,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 177
+    },
+    {
+      "file": "ci-primary.xml",
+      "tests": 1751,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 5,
+      "passed": 1746
+    }
+  ],
+  "passed": 2684,
+  "skipped": 5,
+  "independent_execution": false,
+  "interpretation": "Downloaded actual CI receipts. Not a local reexecution; no physical-device certification."
+}

@@ -13,6 +13,11 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'grand_budapest': {'title': 'The Grand Budapest Hotel', 'tmdb_id': 120467, 'kind': 'movie', 'year': 2014},
+    'further_universe': {'title': 'A Place Further Than the Universe', 'tmdb_id': 76013, 'kind': 'tv', 'year': 2018, 'season': 1, 'episode': 1},
+    'ping_pong': {'title': 'Ping Pong the Animation', 'tmdb_id': 60811, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1},
+    'amelie': {'title': 'Amelie', 'tmdb_id': 194, 'kind': 'movie', 'year': 2001},
+    'barakamon': {'title': 'Barakamon', 'tmdb_id': 67048, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1},
     'rashomon': {'title': 'Rashomon', 'tmdb_id': 548, 'kind': 'movie', 'year': 1950},
     'cowboy_bebop': {'title': 'Cowboy Bebop', 'tmdb_id': 30991, 'kind': 'tv', 'year': 1998, 'season': 1, 'episode': 1},
     'twelve_angry_men': {'title': '12 Angry Men', 'tmdb_id': 389, 'kind': 'movie', 'year': 1957},

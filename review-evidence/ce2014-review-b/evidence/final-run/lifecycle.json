@@ -1,0 +1,208 @@
+{
+  "group": "lifecycle",
+  "total": 18,
+  "passed": 18,
+  "failed": 0,
+  "errors": 0,
+  "cases": [
+    {
+      "name": "terminal_ENDED_99",
+      "passed": true,
+      "actual": {
+        "opened": 1,
+        "reason": "NATURAL_EOF"
+      },
+      "expected": {
+        "opens_next": true
+      },
+      "group": "lifecycle"
+    },
+    {
+      "name": "terminal_STOPPED_99",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "reason": "STOP"
+      },
+      "expected": {
+        "opens_next": false
+      },
+      "group": "lifecycle"
+    },
+    {
+      "name": "terminal_ERROR_99",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "reason": "ERROR"
+      },
+      "expected": {
+        "opens_next": false
+      },
+      "group": "lifecycle"
+    },
+    {
+      "name": "terminal_ENDED_25",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "reason": "ERROR"
+      },
+      "expected": {
+        "opens_next": false
+      },
+      "group": "lifecycle"
+    },
+    {
+      "name": "takeover_audio",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "state": "retired"
+      },
+      "expected": "No stale automatic playback",
+      "group": "lifecycle"
+    },
+    {
+      "name": "takeover_video",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "state": "retired"
+      },
+      "expected": "No stale automatic playback",
+      "group": "lifecycle"
+    },
+    {
+      "name": "takeover_account",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "state": "retired"
+      },
+      "expected": "No stale automatic playback",
+      "group": "lifecycle"
+    },
+    {
+      "name": "takeover_selection",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "state": "selected"
+      },
+      "expected": "No stale automatic playback",
+      "group": "lifecycle"
+    },
+    {
+      "name": "takeover_cancel",
+      "passed": true,
+      "actual": {
+        "opened": 0,
+        "state": "retired"
+      },
+      "expected": "No stale automatic playback",
+      "group": "lifecycle"
+    },
+    {
+      "name": "blank_path_not_takeover",
+      "passed": true,
+      "actual": {
+        "still_current": true
+      },
+      "expected": "Temporary open/seek evidence gap does not retire request",
+      "group": "lifecycle"
+    },
+    {
+      "name": "read_error_not_takeover",
+      "passed": true,
+      "actual": {
+        "still_current": true
+      },
+      "expected": "Temporary open/seek evidence gap does not retire request",
+      "group": "lifecycle"
+    },
+    {
+      "name": "invalid_progress_not_fresh_eof",
+      "passed": true,
+      "actual": {
+        "state": "retired",
+        "position": 99.0,
+        "progress_observed": 100.0,
+        "now": 105.0
+      },
+      "expected": "Invalid readings do not renew old EOF evidence",
+      "group": "lifecycle"
+    },
+    {
+      "name": "handoff_failure_isolated",
+      "passed": true,
+      "actual": {
+        "handoff": {
+          "request_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "status": "submission_unknown"
+        },
+        "attempts": 1,
+        "later_selection_worked": true
+      },
+      "expected": "One failed successor must not exit actor or auto resend",
+      "group": "lifecycle"
+    },
+    {
+      "name": "next_initial",
+      "passed": true,
+      "actual": {
+        "lookups": 1,
+        "open_count": 1
+      },
+      "expected": "Same-version result can arrive after first miss; one handoff",
+      "group": "lifecycle"
+    },
+    {
+      "name": "next_late",
+      "passed": true,
+      "actual": {
+        "lookups": 2,
+        "open_count": 1
+      },
+      "expected": "Same-version result can arrive after first miss; one handoff",
+      "group": "lifecycle"
+    },
+    {
+      "name": "subtitle_budget_0",
+      "passed": true,
+      "actual": {
+        "candidate_retained": true,
+        "subtitle_budgets": [
+          1.9999995289999788
+        ],
+        "elapsed": 1.9999995289999788
+      },
+      "expected": "Optional subtitle budget does not discard a resolved next video",
+      "group": "lifecycle"
+    },
+    {
+      "name": "subtitle_budget_17.5",
+      "passed": true,
+      "actual": {
+        "candidate_retained": true,
+        "subtitle_budgets": [
+          1.4999996599999577
+        ],
+        "elapsed": 18.999999659999958
+      },
+      "expected": "Optional subtitle budget does not discard a resolved next video",
+      "group": "lifecycle"
+    },
+    {
+      "name": "subtitle_budget_19.5",
+      "passed": true,
+      "actual": {
+        "candidate_retained": true,
+        "subtitle_budgets": [],
+        "elapsed": 19.5
+      },
+      "expected": "Optional subtitle budget does not discard a resolved next video",
+      "group": "lifecycle"
+    }
+  ]
+}

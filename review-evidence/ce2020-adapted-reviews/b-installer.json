@@ -1,0 +1,103 @@
+{
+  "group": "installer",
+  "total": 7,
+  "passed": 5,
+  "failed": 2,
+  "errors": 2,
+  "cases": [
+    {
+      "name": "recovery_ui_rollback",
+      "passed": true,
+      "actual": {
+        "phase": "restored",
+        "returned": true,
+        "menus": [
+          [
+            "重试恢复",
+            "回到上一程序版本（不改账号与观看记录）",
+            "退出，保留现场"
+          ]
+        ]
+      },
+      "expected": "Persistent recover failure leaves rollback/exit reachable; retry can finish",
+      "group": "installer"
+    },
+    {
+      "name": "recovery_ui_exit",
+      "passed": true,
+      "actual": {
+        "phase": "activation_pending",
+        "returned": false,
+        "menus": [
+          [
+            "重试恢复",
+            "回到上一程序版本（不改账号与观看记录）",
+            "退出，保留现场"
+          ]
+        ]
+      },
+      "expected": "Persistent recover failure leaves rollback/exit reachable; retry can finish",
+      "group": "installer"
+    },
+    {
+      "name": "recovery_ui_retry",
+      "passed": true,
+      "actual": {
+        "phase": "complete",
+        "returned": true,
+        "menus": [
+          [
+            "重试恢复",
+            "回到上一程序版本（不改账号与观看记录）",
+            "退出，保留现场"
+          ]
+        ]
+      },
+      "expected": "Persistent recover failure leaves rollback/exit reachable; retry can finish",
+      "group": "installer"
+    },
+    {
+      "name": "persistent_restore_exit",
+      "passed": true,
+      "actual": {
+        "state": "restored",
+        "pending": "restore",
+        "menus": [
+          [
+            "重试恢复",
+            "退出，保留现场"
+          ]
+        ]
+      },
+      "expected": "Failed restore stays pending and user can exit",
+      "group": "installer"
+    },
+    {
+      "name": "lease_live_owner",
+      "passed": false,
+      "error": "ModuleNotFoundError",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\theon\\AppData\\Local\\Temp\\ce2014-adapted-84youd_8\\b\\checks\\contracts.py\", line 41, in check\n    result=fn()\n           ^^^^\n  File \"C:\\Users\\theon\\AppData\\Local\\Temp\\ce2014-adapted-84youd_8\\b\\checks\\contracts.py\", line 249, in stale\n    try:h.quiesce()\n        ^^^^^^^^^^^\n  File \"C:\\Users\\theon\\AppData\\Local\\Temp\\ce2014-adapted-84youd_8\\b\\source\\bobbi_platform\\ce_install_ui.py\", line 94, in quiesce\n    from .runtime import call\nModuleNotFoundError: No module named 'bobbi_platform.runtime'\n",
+      "group": "installer"
+    },
+    {
+      "name": "lease_dead_registration",
+      "passed": false,
+      "error": "ModuleNotFoundError",
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\theon\\AppData\\Local\\Temp\\ce2014-adapted-84youd_8\\b\\checks\\contracts.py\", line 41, in check\n    result=fn()\n           ^^^^\n  File \"C:\\Users\\theon\\AppData\\Local\\Temp\\ce2014-adapted-84youd_8\\b\\checks\\contracts.py\", line 249, in stale\n    try:h.quiesce()\n        ^^^^^^^^^^^\n  File \"C:\\Users\\theon\\AppData\\Local\\Temp\\ce2014-adapted-84youd_8\\b\\source\\bobbi_platform\\ce_install_ui.py\", line 94, in quiesce\n    from .runtime import call\nModuleNotFoundError: No module named 'bobbi_platform.runtime'\n",
+      "group": "installer"
+    },
+    {
+      "name": "real_main_recovery_rollback",
+      "passed": true,
+      "actual": {
+        "phase": "restored",
+        "menu_titles": [
+          "安装恢复尚未完成",
+          "波比 TV"
+        ]
+      },
+      "expected": "Real main reaches recovery rollback and returns to ordinary menu",
+      "group": "installer"
+    }
+  ]
+}

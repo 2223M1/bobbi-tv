@@ -1,0 +1,53 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-recovery-1792542366015235400",
+  "result": {
+    "scope": "real CE native managed recovery and quiesce; no media commands",
+    "events": [
+      "before_initial_snapshot",
+      "managed_recovery_ready",
+      "before_normal_quiesce",
+      "normal_quiesce_lease_acquired",
+      "managed_restore_ready",
+      "before_normal_quiesce",
+      "normal_quiesce_lease_acquired",
+      "managed_restore_ready",
+      "before_normal_quiesce",
+      "normal_quiesce_lease_acquired",
+      "managed_restore_ready"
+    ],
+    "enabled_before": [
+      "plugin.video.bobbi",
+      "plugin.video.bobbi.library",
+      "plugin.video.bobbi.torrent",
+      "repository.bobbi",
+      "resource.uisounds.bobbi-modern",
+      "script.bobbi.opensubtitles",
+      "script.bobbi.setup",
+      "script.module.bobbi.catalog",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.platform",
+      "skin.bobbi.cinema"
+    ],
+    "skin_before": "skin.bobbi.cinema",
+    "initial_owner": {
+      "adapter": "native",
+      "boot_id": "ded611494bd54f9a9496b5992791c85a"
+    },
+    "quiesce_only": true,
+    "recovered_owner": {
+      "adapter": "native",
+      "boot_id": "ded611494bd54f9a9496b5992791c85a"
+    },
+    "enabled_vector_restored": true,
+    "skin_restored": true,
+    "passed": true,
+    "cycles": 3,
+    "restored_at_exit": true
+  },
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "exit_code": 0,
+  "pending": false,
+  "diagnostic_present": false
+}

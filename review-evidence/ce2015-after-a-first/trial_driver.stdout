@@ -1,0 +1,101 @@
+{
+  "reference_head": "c8de17ae9dabbe0f37753e1751b1d88107311316",
+  "tests": [
+    {
+      "id": "observe explicit failure",
+      "actual_exit_code": 1,
+      "expected_success": false,
+      "passed": true
+    },
+    {
+      "id": "observe success",
+      "actual_exit_code": 0,
+      "expected_success": true,
+      "passed": true
+    },
+    {
+      "id": "stop explicit failure",
+      "actual_exit_code": 1,
+      "expected_success": false,
+      "passed": true
+    },
+    {
+      "id": "stop success",
+      "actual_exit_code": 0,
+      "expected_success": true,
+      "passed": true
+    },
+    {
+      "id": "cancel explicit failure",
+      "actual_exit_code": 1,
+      "expected_success": false,
+      "passed": true
+    },
+    {
+      "id": "cancel success",
+      "actual_exit_code": 0,
+      "expected_success": true,
+      "passed": true
+    },
+    {
+      "id": "select missing result",
+      "actual_exit_code": 2,
+      "expected_success": false,
+      "passed": true
+    },
+    {
+      "id": "observe missing result",
+      "actual_exit_code": 1,
+      "expected_success": false,
+      "passed": true
+    },
+    {
+      "id": "cards read",
+      "actual_exit_code": 0,
+      "expected_success": true,
+      "passed": true
+    },
+    {
+      "id": "inspect read",
+      "actual_exit_code": 0,
+      "expected_success": true,
+      "passed": true
+    },
+    {
+      "id": "unsupported control",
+      "actual_exit_code": 2,
+      "expected_success": false,
+      "passed": true
+    }
+  ],
+  "passed": 11,
+  "failed": 0,
+  "errors": 0,
+  "new_driver_observations": {
+    "retained_standard_failure": {
+      "command_exit_code": 1,
+      "saved_exit_code": 1,
+      "saved_trial_exit_code": 1,
+      "saved_transport_exit_code": 0,
+      "result_passed": false,
+      "result_state": "complete"
+    },
+    "retained_standard_success": {
+      "command_exit_code": 0,
+      "saved_exit_code": 0,
+      "saved_trial_exit_code": 0,
+      "saved_transport_exit_code": 0,
+      "result_passed": true,
+      "result_state": "complete"
+    },
+    "explicit_pending_response": {
+      "command_exit_code": 0,
+      "saved_exit_code": 0,
+      "saved_trial_exit_code": null,
+      "saved_transport_exit_code": 0,
+      "result_passed": null,
+      "result_state": "running"
+    }
+  },
+  "scope": "Actual Python driver modules; operation contract variants and original device receipts; temporary file/transport doubles, no device action"
+}

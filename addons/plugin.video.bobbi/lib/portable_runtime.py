@@ -16,6 +16,7 @@ def main(capabilities=None):
                 native_rpc=rpc if native else None)
     try:
         host.start()
+        host.can_quiesce = lambda: not xbmc.Player().isPlaying()
         host.configure_preparation(profile('plugin.video.bobbi'))
         def refresh_catalog(**kwargs):
             from bobbi_core.share_catalog import juku_enabled
@@ -36,11 +37,9 @@ def main(capabilities=None):
             from lib.services.standard_playback import StandardPlayback
             standard = StandardPlayback(host)
             monitor = xbmc.Monitor()
-            try:
-                while not monitor.waitForAbort(.1):
-                    host.tick()
+            while not host.stopping.is_set() and not monitor.waitForAbort(.1):
+                host.tick()
+                if not host.stopping.is_set():
                     standard.tick()
-            finally:
-                standard.close()
     finally:
         host.close()

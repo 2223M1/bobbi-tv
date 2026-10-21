@@ -1,0 +1,538 @@
+{
+  "result": {
+    "samples": [
+      {
+        "at": 2273324.953945867,
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273322970392,
+          "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "selection_epoch": 5,
+        "terminal": {},
+        "desired": {
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "epoch": 4,
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 755,
+            "minutes": 22,
+            "seconds": 22
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 7,
+            "minutes": 22,
+            "seconds": 52
+          }
+        },
+        "item": {
+          "episode": 1,
+          "label": "风声的妨碍",
+          "season": 1,
+          "showtitle": "乒乓",
+          "title": "风声的妨碍",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "正在查找中文字幕"
+        },
+        "next_episode_owned": false,
+        "ordered_eof_handoff_log": false,
+        "successor_observed": false
+      },
+      {
+        "at": 2273330.091902238,
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273322970392,
+          "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "selection_epoch": 5,
+        "terminal": {},
+        "desired": {
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "epoch": 4,
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 885,
+            "minutes": 22,
+            "seconds": 27
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 7,
+            "minutes": 22,
+            "seconds": 52
+          }
+        },
+        "item": {
+          "episode": 1,
+          "label": "风声的妨碍",
+          "season": 1,
+          "showtitle": "乒乓",
+          "title": "风声的妨碍",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": false,
+        "ordered_eof_handoff_log": false,
+        "successor_observed": false
+      },
+      {
+        "at": 2273335.220611306,
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273322970392,
+          "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "selection_epoch": 5,
+        "terminal": {},
+        "desired": {
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "epoch": 4,
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 15,
+            "minutes": 22,
+            "seconds": 33
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 7,
+            "minutes": 22,
+            "seconds": 52
+          }
+        },
+        "item": {
+          "episode": 1,
+          "label": "风声的妨碍",
+          "season": 1,
+          "showtitle": "乒乓",
+          "title": "风声的妨碍",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": false,
+        "ordered_eof_handoff_log": false,
+        "successor_observed": false
+      },
+      {
+        "at": 2273340.431985291,
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273322970392,
+          "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "selection_epoch": 5,
+        "terminal": {},
+        "desired": {
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "epoch": 4,
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 229,
+            "minutes": 22,
+            "seconds": 38
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 7,
+            "minutes": 22,
+            "seconds": 52
+          }
+        },
+        "item": {
+          "episode": 1,
+          "label": "风声的妨碍",
+          "season": 1,
+          "showtitle": "乒乓",
+          "title": "风声的妨碍",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": false,
+        "ordered_eof_handoff_log": false,
+        "successor_observed": false
+      },
+      {
+        "at": 2273345.554324584,
+        "native": {
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "monotonic_us": 2273322970392,
+          "native_instance": "fd45f8e1-b170-4ca0-9d48-6d712ab498b4",
+          "open_epoch": 5,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "user_intent": 0
+        },
+        "selection_epoch": 5,
+        "terminal": {},
+        "desired": {
+          "request_id": "a4727a445c914c3ea4c0962295e4c276",
+          "epoch": 4,
+          "file_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a|transport:1a695a5ef829075eb5f413266d882ea83ff9dd945607b2d00df91ac46b262993",
+          "selection_identity": "prepared:12cb5db95f692263edbd415468031760046a61b26c93a52eae1d5fb28cb8582a",
+          "file_bound": true,
+          "file_evidence": "AUTO_VERIFIED_FILE",
+          "cancelled": false,
+          "start_claimed": true,
+          "route": "player_play",
+          "resolver_failure": null,
+          "observed_once": true,
+          "fullscreen_allowed": true,
+          "fullscreen_requested": true,
+          "fullscreen_confirmed": true
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "parent_eof_consumed": false,
+        "properties": {
+          "currentaudiostream": {
+            "bitrate": 191305,
+            "channels": 2,
+            "codec": "opus",
+            "index": 0,
+            "isdefault": true,
+            "isimpaired": false,
+            "isoriginal": false,
+            "language": "jpn",
+            "name": "Japanese 2.0",
+            "samplerate": 0
+          },
+          "currentsubtitle": {
+            "index": 0,
+            "isdefault": true,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": "English [SCY/Commie]"
+          },
+          "currentvideostream": {
+            "codec": "hevc",
+            "height": 1080,
+            "index": 0,
+            "language": "jpn",
+            "name": "Vodes Encode",
+            "width": 1920
+          },
+          "speed": 1,
+          "subtitleenabled": false,
+          "time": {
+            "hours": 0,
+            "milliseconds": 442,
+            "minutes": 22,
+            "seconds": 43
+          },
+          "totaltime": {
+            "hours": 0,
+            "milliseconds": 7,
+            "minutes": 22,
+            "seconds": 52
+          }
+        },
+        "item": {
+          "episode": 1,
+          "label": "风声的妨碍",
+          "season": 1,
+          "showtitle": "乒乓",
+          "title": "风声的妨碍",
+          "type": "episode",
+          "uniqueid": {
+            "tmdb": "60811"
+          }
+        },
+        "caching": false,
+        "subtitle_state": {
+          "Window(10000).Property(AM6B.SubtitleState)": "未找到匹配中文字幕"
+        },
+        "next_episode_owned": false,
+        "ordered_eof_handoff_log": false,
+        "successor_observed": false
+      }
+    ]
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

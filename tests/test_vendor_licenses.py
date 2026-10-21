@@ -32,14 +32,12 @@ def write_manifest(root, data):
     path.write_text(json.dumps(data), encoding='utf-8')
 
 
-def test_checked_in_notices_and_truthful_unresolved_status():
-    result = notices.verify(ROOT)
-    assert result['documents'] == 6
-    assert result['unresolved_components'] == ['tmdbv3api', 'bencodepy-legacy']
-    data = notices.load_manifest(ROOT)
-    metadata = next(d for d in data['documents'] if d['id'] == 'tmdbv3api-metadata')
-    assert metadata['kind'] == 'metadata-evidence-not-license'
-    assert 'setup-evidence' in metadata['file']
+def test_clean_checkout_does_not_claim_removed_notice_verification():
+    assert not (ROOT / notices.MANIFEST).exists()
+    # The opt-in historical downloader still fails closed, rather than
+    # reporting legal clearance or downloading unlisted inputs automatically.
+    with pytest.raises(FileNotFoundError):
+        notices.verify(ROOT)
 
 
 @pytest.mark.parametrize('field,value', [

@@ -73,8 +73,10 @@ class KodiNative:
                             window.setProperty('AM6B.SubtitleState', label)
 
     def close(self):
-        self.subtitle_lookup.close()
-        self.subtitle_fallback.close()
+        try:
+            self.subtitle_lookup.close()
+        finally:
+            self.subtitle_fallback.close()
 
     @staticmethod
     def rpc(method, params=None):
@@ -380,15 +382,24 @@ class PlaybackControlServer:
 
     def close(self):
         close_io = getattr(self.native, 'close', None)
+        errors = []
+        def drain(action):
+            try:
+                action()
+            except BaseException as error:
+                errors.append(error)
         if close_io is not None:
-            close_io()
+            drain(close_io)
         for connection in tuple(self.clients):
-            self._close_client(connection)
+            drain(lambda connection=connection: self._close_client(connection))
         if self.selector is not None:
-            self.selector.close()
+            drain(self.selector.close)
         if self.listener is not None:
-            self.listener.close()
+            drain(self.listener.close)
         if self.path is not None and self.path.exists() and self.path.stat().st_ino == self.inode:
             self.path.unlink()
         if self.lock is not None:
             os.close(self.lock)
+            self.lock = None
+        if errors:
+            raise errors[0]

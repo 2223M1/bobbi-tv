@@ -1,0 +1,41 @@
+Traceback (most recent call last):
+  File "D:\AM6B-Project\review-inputs\ce2014-20261021\BobbiTV-PR3-CE2014-Review-20261021\checks\reproduce_install_lifecycle.py", line 350, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\AM6B-Project\review-inputs\ce2014-20261021\BobbiTV-PR3-CE2014-Review-20261021\checks\reproduce_install_lifecycle.py", line 318, in main
+    control = native_subprocess(repo, PROVIDER)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AM6B-Project\review-inputs\ce2014-20261021\BobbiTV-PR3-CE2014-Review-20261021\checks\reproduce_install_lifecycle.py", line 116, in native_subprocess
+    raise RuntimeError('Native import probe harness failed: ' + proc.stderr)
+RuntimeError: Native import probe harness failed: Traceback (most recent call last):
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 633, in _rmtree_unsafe
+    os.unlink(fullname)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\theon\\AppData\\Local\\Temp\\bobbi-pr3-native-context-r4b5h8t6\\profile\\plugin.video.bobbi.cached.sqlite'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\AM6B-Project\review-inputs\ce2014-20261021\BobbiTV-PR3-CE2014-Review-20261021\checks\reproduce_install_lifecycle.py", line 350, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\AM6B-Project\review-inputs\ce2014-20261021\BobbiTV-PR3-CE2014-Review-20261021\checks\reproduce_install_lifecycle.py", line 311, in main
+    print(json.dumps(native_import(repo, args.native_import or None)))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AM6B-Project\review-inputs\ce2014-20261021\BobbiTV-PR3-CE2014-Review-20261021\checks\reproduce_install_lifecycle.py", line 94, in native_import
+    with tempfile.TemporaryDirectory(prefix='bobbi-pr3-native-context-') as temporary:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 950, in __exit__
+    self.cleanup()
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 954, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 781, in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\shutil.py", line 635, in _rmtree_unsafe
+    onexc(os.unlink, fullname, err)
+  File "C:\Users\theon\AppData\Local\Programs\Python\Python312\Lib\tempfile.py", line 909, in onexc
+    _os.unlink(path)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\theon\\AppData\\Local\\Temp\\bobbi-pr3-native-context-r4b5h8t6\\profile\\plugin.video.bobbi.cached.sqlite'
+
