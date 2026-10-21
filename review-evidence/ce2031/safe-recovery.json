@@ -1,0 +1,24 @@
+{
+  "exit_code": 0,
+  "diagnostic_present": false,
+  "result": {
+    "stage": "restored",
+    "sequence": 2026102031,
+    "backup": "/storage/.local/share/bobbi-safe-recovery/1792585704374678400/temporary-safe-profile",
+    "temporary_profile_bytes": 6583537,
+    "temporary_profile_files": 629,
+    "native_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b",
+    "original_profile_sentinels": {
+      "userdata/guisettings.xml": "60a4b209f870c469dfc0891c2bd67d697ae8058d1b9723b3b0ed7c16ddb9b1c0",
+      "userdata/addon_data/plugin.video.bobbi/database.pickle": "468371b776f89ec958efb6b1d5557f9fce18f058003c31b7242354b97e86ce8c",
+      "userdata/addon_data/script.bobbi.start/installation.json": "46a85c9013849ccc1f928d2c5b614bfda5d9ddc1fb168a4a2572c31b8660425d",
+      "addons/plugin.video.bobbi/addon.xml": "8c90f3db21797afd00ba2959a1f07e0905c72d5d1a13eec10431e2142cd956e9"
+    },
+    "scope": "CoreELEC standard SAFE exit; no program or account rewrite",
+    "ready": true,
+    "boot_status": "OK",
+    "failed_directory_exists": false,
+    "program_and_history_unchanged": true,
+    "settings_unchanged": false
+  }
+}
