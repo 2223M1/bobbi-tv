@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import sys
 import time
+import textwrap
 
 ROOT=Path(__file__).resolve().parents[1]
 REMOTE=r'''
@@ -26,12 +27,41 @@ def builtin(action):
 def view():
  out={'players':rpc('Player.GetActivePlayers'),'gui':rpc('GUI.GetProperties',{'properties':['currentwindow','currentcontrol']})}
  labels=['Window.Property(playback_error)','Control.GetLabel(1)','Control.GetLabel(2)','Control.GetLabel(3)','Control.GetLabel(4)','Control.GetLabel(5)','Control.GetLabel(6)','Control.GetLabel(10)','Control.GetLabel(11)','Container(6).NumItems','Container(6).CurrentItem','Container(6).ListItem.Label']
- out['labels']=rpc('XBMC.GetInfoLabels',{'labels':labels})
+ try:out['labels']=rpc('XBMC.GetInfoLabels',{'labels':labels})
+ except Exception as e:out['labels_error']=type(e).__name__
  p=pathlib.Path('/storage/.kodi/userdata/addon_data/script.bobbi.start/installation.json')
  if p.is_file():
   state=json.loads(p.read_text());out['installation']={k:state[k] for k in ('sequence','high_watermark','phase','host_pending','tx') if k in state}
  return out
-if MODE=='stage':
+if MODE=='trace-on':
+ if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
+ trace=run/'entry-stack.txt'
+ (run/'trace.py').write_text('import faulthandler,xbmc\nf=open('+repr(str(trace))+',"w")\nfaulthandler.dump_traceback_later(10,file=f)\nxbmc.Monitor().waitForAbort(35)\nfaulthandler.cancel_dump_traceback_later()\nf.close()\n')
+ builtin('RunScript('+str(run/'trace.py')+')')
+ print(json.dumps(dict(trace=str(trace))));raise SystemExit(0)
+elif MODE=='trace-read':
+ p=run/'entry-stack.txt'
+ print(json.dumps(dict(stack=p.read_text() if p.exists() else None)));raise SystemExit(0)
+elif MODE=='native-stack':
+ if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
+ state=json.loads(pathlib.Path('/storage/.kodi/userdata/addon_data/script.bobbi.start/installation.json').read_text())
+ if state.get('phase') not in ('switching','restoring','activation_pending','restored'):raise RuntimeError('NO_PENDING_INSTALL')
+ pids=subprocess.check_output(['pidof','kodi.bin']).decode().split()
+ if len(pids)!=1:raise RuntimeError('KODI_PROCESS_AMBIGUOUS')
+ trace=subprocess.run(['gdb','-q','-batch','-p',pids[0],'-ex','set pagination off','-ex','set print frame-arguments none','-ex','thread apply all bt 14','-ex','thread 1','-ex','info registers pc lr sp r0 r1 r2 r3','-ex','x/48a $sp','-ex','detach'],capture_output=True,timeout=25)
+ print(json.dumps(dict(exit=trace.returncode,stack=trace.stdout.decode(errors='replace'),diagnostic_bytes=len(trace.stderr))));raise SystemExit(0)
+elif MODE=='diagnose':
+ out={}
+ for name in ('installation.json','entry-boot.json'):
+  p=pathlib.Path('/storage/.kodi/userdata/addon_data/script.bobbi.start')/name
+  if p.is_file():
+   state=json.loads(p.read_text());out[name]={k:state[k] for k in ('sequence','high_watermark','phase','host_pending','tx','moved','installed','previous_skin','previous_enabled') if k in state}
+ p=pathlib.Path('/storage/.kodi/temp/kodi.log')
+ with p.open('rb') as f:
+  f.seek(max(0,p.stat().st_size-500000));lines=f.read().decode('utf-8','replace').splitlines()
+ out['events']=[s[:500] for s in lines if re.search('bobbi|CPython|Python|CService|skin.estuary|OnSettingsChanged|Error Type|Error Contents|Traceback|File "',s,re.I) and not re.search('https?://|Cookie|Authorization|token|password|magnet:|CAddonMgr::FindAddons',s,re.I)][-100:]
+ print(json.dumps(out));raise SystemExit(0)
+elif MODE=='stage':
  if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
  if rpc('GUI.GetProperties',{'properties':['currentwindow']})['currentwindow']['id']!=10000:raise RuntimeError('HOME_REQUIRED')
  archive=run/'entry.zip'
@@ -63,13 +93,31 @@ elif MODE=='choose':
  if not any(EXPECTED_LABEL in str(value) for value in current['labels'].values()):raise RuntimeError('UI_LABEL_CHANGED')
  # Focus/index are chosen only from the immediately preceding real UI read.
  builtin('SetFocus(%d)'%CONTROL)
+ time.sleep(.25)
  if INDEX is not None:
   rpc('Input.ExecuteAction',{'action':'firstpage'})
-  for _ in range(INDEX):rpc('Input.Down')
+  time.sleep(.2)
+  for _ in range(INDEX):
+   rpc('Input.Down');time.sleep(.2)
+  focused=view()
+  if focused['gui']['currentcontrol']['label']!=CHOICE_LABEL:raise RuntimeError('LIST_CHOICE_NOT_CONFIRMED')
+ else:
+  focused=view()
+  if focused['gui']['currentcontrol']['label']!=focused['labels'].get('Control.GetLabel(%d)'%CONTROL):raise RuntimeError('FOCUS_NOT_CONFIRMED')
  rpc('Input.Select')
 elif MODE=='back':
  if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
  rpc('Input.ExecuteAction',{'action':'back'})
+elif MODE=='restart-idle':
+ if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
+ subprocess.run(['systemctl','restart','--no-block','kodi.service'],check=True,timeout=5)
+ time.sleep(2)
+ until=time.monotonic()+25
+ while True:
+  try:rpc('Player.GetActivePlayers');break
+  except Exception:
+   if time.monotonic()>=until:raise
+   time.sleep(.5)
 time.sleep(.3)
 print(json.dumps(view()))
 '''
@@ -77,15 +125,16 @@ print(json.dumps(view()))
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True)
-    p.add_argument('--mode',choices=('stage','open','view','choose','back'),required=True)
+    p.add_argument('--mode',choices=('stage','open','view','choose','back','restart-idle','diagnose','native-stack','trace-on','trace-read'),required=True)
     p.add_argument('--run-id',required=True);p.add_argument('--entry',type=Path)
-    p.add_argument('--window',type=int);p.add_argument('--label');p.add_argument('--control',type=int);p.add_argument('--index',type=int)
+    p.add_argument('--window',type=int);p.add_argument('--label');p.add_argument('--control',type=int);p.add_argument('--index',type=int);p.add_argument('--choice-label')
     a=p.parse_args()
     if not re.fullmatch('[0-9]{8}-[0-9]{6}',a.run_id):p.error('Exact timestamp required')
     if a.mode=='stage':
         from audit_ce_entry import audit
         audit(a.entry)
     if a.mode=='choose' and (a.window is None or not a.label or a.control is None):p.error('Observed dialog identity required')
+    if a.mode=='choose' and a.index is not None and not a.choice_label:p.error('Observed choice label required')
     sys.path.insert(0,str(a.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('entry_wire',a.transport_source/'ui-redesign/tools/device_transport.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
     run='/storage/.kodi/temp/bobbi-ce-entry-'+a.run_id
@@ -95,14 +144,24 @@ def main():
             with c.open_sftp() as s:
                 s.mkdir(run,mode=0o700);s.put(str(a.entry),run+'/entry.zip')
         values=dict(RUN=run,MODE=a.mode,EXPECTED=hashlib.sha256(a.entry.read_bytes()).hexdigest() if a.entry else None,
-                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index)
-        code='\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'+REMOTE
-        rc,result,diag=w.readonly(c,code.encode(),deadline_seconds=45)
+                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index,CHOICE_LABEL=a.choice_label)
+        code='\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'
+        code+='import traceback\ntry:\n'+textwrap.indent(REMOTE,' ')+'\n'
+        code+='except Exception as e:\n print(json.dumps(dict(error_type=type(e).__name__,error_code=str(e) if re.fullmatch("[A-Z_0-9]{1,80}",str(e)) else None,frames=[dict(file=pathlib.Path(f.filename).name,line=f.lineno,function=f.name) for f in traceback.extract_tb(e.__traceback__)])))\n'
+        # Keep exception diagnostics structured; the transport intentionally
+        # does not return arbitrary remote stderr or response bodies.
+        code='import re,pathlib,json\n'+code
+        try:
+            rc,result,diag=w.readonly(c,code.encode(),deadline_seconds=45)
+        except Exception as exc:
+            rc,result,diag=1,dict(transport_error=type(exc).__name__),False
     finally:c.close()
     out=ROOT/'review-evidence/ce2023'/('entry-device-'+a.mode+'-'+str(time.time_ns())+'.json')
     out.write_text(json.dumps(dict(run=run,mode=a.mode,transport_exit=rc,diagnostic_present=bool(diag),result=result),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    print(json.dumps(dict(evidence=str(out),result=result),ensure_ascii=False))
-    return int(bool(rc or diag))
+    display=dict(result)
+    if 'stack' in display:display['stack_bytes']=len(display.pop('stack') or '')
+    print(json.dumps(dict(evidence=str(out),result=display),ensure_ascii=False))
+    return int(bool(rc or diag or result.get('error_type') or result.get('transport_error')))
 
 
 if __name__=='__main__':raise SystemExit(main())

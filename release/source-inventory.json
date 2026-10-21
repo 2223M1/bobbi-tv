@@ -604,7 +604,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "da41e3ab19382ce9895aa622df12c93807b6c0fe362da30433dad4b4c053bd40",
+      "addon.xml": "9db356efbf73764e6de78ae93d579949bf077d475e42e67251cc56a5a28b7d45",
       "default.py": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
     },
     "script.module.bobbi.catalog": {
@@ -740,7 +740,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "705dfd3d92374050caa5cd1e696d12a0b7af13c071d98275a0dff4342f5af7ae",
+      "addon.xml": "b3d87eec2b3b69ad5a9768248de685f8aa06475a55e613a218d790ac7b86dad6",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -751,7 +751,7 @@
       "lib/bobbi_platform/account_dialog.py": "e2dccac681f901588855ab537d279f6943c88076460bae24d9be0dc3033733d8",
       "lib/bobbi_platform/account_manager.py": "37699fbf140955bb115496c17db77b92406442da7f7efdcca15909f592589dbb",
       "lib/bobbi_platform/capabilities.py": "226300a6b05da39633bf321649f2bad56782339f6b42ca675c45f2862c9d0e6f",
-      "lib/bobbi_platform/ce_install_ui.py": "8ee7aecda7b72815a4d54bad9622b6cde58c9fbf4f39e19af367ae2bdaab24ff",
+      "lib/bobbi_platform/ce_install_ui.py": "c9c64596377b3f08aed536e988b799db6c270a6c8642dcb475085b36d3a01ffa",
       "lib/bobbi_platform/ce_installer.py": "a85fc163d02faf6225af9a2a7bfe30218508e3225bc2c4e5d97c1d21adeedc8d",
       "lib/bobbi_platform/cloud115.py": "efc114cdc34ec614308b33c98e6a24d13a49356375556bdfbb4d3757f8fde73c",
       "lib/bobbi_platform/cloud_ui.py": "983d196335170911142a0173028009a19bc33ce7335fc5424699b6e9772d17b0",

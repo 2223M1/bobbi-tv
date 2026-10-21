@@ -192,8 +192,21 @@ def test_real_dependency_adapter_seeds_absent_original_without_overwriting_exist
             return dict(version='3.4.3', enabled=True)
         path = live / name / 'addon.xml'
         return dict(version=ET.parse(path).getroot().get('version'), enabled=name in enabled) if path.exists() else None
-    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=lambda: None,
-        executebuiltin=lambda *args: commands.append(args)))
+    properties, pending = {}, []
+    def submit(command, wait=False):
+        assert wait is False
+        commands.append((command, wait))
+        pending.append(command)
+    def dispatch(delay):
+        while pending:
+            command = pending.pop(0)
+            if command.startswith('SetProperty('):
+                properties[command.split('(', 1)[1].split(',', 1)[0]] = 'ready'
+        return False
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(
+        Monitor=lambda: SimpleNamespace(waitForAbort=dispatch), executebuiltin=submit))
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Window=lambda _: SimpleNamespace(
+        getProperty=lambda key: properties.get(key, ''), clearProperty=lambda key: properties.pop(key, None))))
     monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(live)))
     monkeypatch.setattr(ui, 'rpc', lambda method, params: enabled.add(params['addonid']))
     host = KodiHost()

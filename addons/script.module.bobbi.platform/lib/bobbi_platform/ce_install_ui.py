@@ -49,7 +49,24 @@ class KodiHost:
         return [name for name in sorted(MANAGED) if (self.details(name) or {}).get('enabled')]
 
     def refresh(self):
-        self.xbmc.executebuiltin('UpdateLocalAddons', True)
+        import xbmcgui
+        window = xbmcgui.Window(10000)
+        key = 'bobbi.install.refresh.' + uuid.uuid4().hex
+        deadline = time.monotonic() + 15
+        try:
+            # Synchronous executebuiltin retains the Python lock on Omega.
+            # An addon-stop job needs that lock while holding the invocation
+            # manager lock; the GUI then cannot dispatch the waiting builtin.
+            # Queue a FIFO fence and yield via Monitor, never wait in SendMsg.
+            self.xbmc.executebuiltin('UpdateLocalAddons', False)
+            self.xbmc.executebuiltin('SetProperty(%s,ready,10000)' % key, False)
+            while window.getProperty(key) != 'ready':
+                if self.monitor.waitForAbort(.05):
+                    raise UpdateError('ADDON_REFRESH_CANCELLED')
+                if time.monotonic() >= deadline:
+                    raise UpdateError('ADDON_REFRESH_NOT_CONFIRMED')
+        finally:
+            window.clearProperty(key)
 
     def dependencies(self, staged):
         minimums = dict.fromkeys(UPSTREAM_COMPONENTS, '0.0.0')
@@ -77,8 +94,14 @@ class KodiHost:
             if not installed or compare_versions(installed['version'], minimum) < 0:
                 # Kodi resolves original repository dependencies, prompts as
                 # required and picks the actual platform ABI. Never overwrite.
-                self.xbmc.executebuiltin('InstallAddon(%s)' % name, True)
-                installed = self.details(name)
+                self.xbmc.executebuiltin('InstallAddon(%s)' % name, False)
+                deadline = time.monotonic() + 15
+                while True:
+                    installed = self.details(name)
+                    if installed and compare_versions(installed['version'], minimum) >= 0:
+                        break
+                    if self.monitor.waitForAbort(.1) or time.monotonic() >= deadline:
+                        raise UpdateError('DEPENDENCY_UNAVAILABLE:' + name)
             if installed and not installed.get('enabled'):
                 rpc('Addons.SetAddonEnabled', {'addonid': name, 'enabled': True})
                 installed = self.details(name)
