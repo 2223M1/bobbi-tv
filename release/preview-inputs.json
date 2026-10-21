@@ -158,7 +158,6 @@
       "lib/bobbi_core/subtitle_pack.py",
       "lib/bobbi_core/subtitle_preparation.py",
       "lib/bobbi_core/subtitle_projection.py",
-      "lib/bobbi_core/subtitle_provider.py",
       "lib/bobbi_core/subtitle_reference.py",
       "lib/bobbi_core/subtitle_store.py",
       "lib/bobbi_core/subtitle_timing.py",

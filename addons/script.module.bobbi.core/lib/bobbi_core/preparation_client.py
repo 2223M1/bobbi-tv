@@ -1,6 +1,4 @@
-"""Bounded portable host client; explicit legacy Unix transport stays opt-in."""
-import json
-import socket
+"""Bounded account-scoped preparation through the one local host transport."""
 import time
 from uuid import uuid4
 from bobbi_core.capabilities import IPC_PROTOCOL, compatible
@@ -30,56 +28,25 @@ def capture_account(data, allow_capture=True):
 
 
 def call(method, body, socket_path=SOCKET_PATH, timeout=0.3, expected_account=_CURRENT_ACCOUNT):
+    if socket_path is not None:
+        raise ValueError('Account-scoped preparation requires host transport; legacy Unix transport is retired')
     if method not in {'prepare', 'advance', 'status', 'ping', 'resolve', 'subtitle', 'font_preflight',
                       'catalog_prepare', 'catalog_status', 'catalog_resolve', 'share_open'}:
         raise ValueError('Unsupported preparation command')
     if type(timeout) not in (int, float) or not 0 < timeout <= 0.3:
         raise ValueError('Bounded preparation IPC timeout required')
-    if socket_path is None:
-        from bobbi_platform.runtime import call as host_call
-        from bobbi_platform.account_manager import validate_snapshot
-        deadline = time.monotonic() + timeout
-        scope = (host_call('account_status', {}, timeout=min(.1, timeout))
-                 if expected_account is _CURRENT_ACCOUNT else expected_account)
-        scope = validate_snapshot(scope)
-        remaining = deadline - time.monotonic()
-        if remaining <= 0:
-            raise TimeoutError('Preparation account budget exceeded')
-        value = host_call('preparation', dict(method=method, body=body, protocol=IPC_PROTOCOL,
-                          account=scope), timeout=remaining)
-        if not isinstance(value, dict) or not compatible(value.get('component')):
-            raise ValueError('Preparation service component is incompatible')
-        return value
-    if expected_account is not _CURRENT_ACCOUNT:
-        raise ValueError('Account-scoped preparation requires host transport')
-    if not hasattr(socket, 'AF_UNIX'):
-        raise OSError('Explicit Unix preparation transport unavailable')
-    raw = json.dumps(dict(method=method, body=body, protocol=IPC_PROTOCOL), ensure_ascii=False, separators=(',', ':')).encode('utf-8') + b'\n'
-    if len(raw) > 16384:
-        raise ValueError('Preparation request exceeds byte budget')
+    from bobbi_platform.runtime import call as host_call
+    from bobbi_platform.account_manager import validate_snapshot
     deadline = time.monotonic() + timeout
-    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
-        connection.settimeout(timeout)
-        connection.connect(socket_path)
-        remaining = deadline - time.monotonic()
-        if remaining <= 0:
-            raise TimeoutError('Preparation connection budget exceeded')
-        connection.settimeout(remaining)
-        connection.sendall(raw)
-        result = bytearray()
-        while b'\n' not in result:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0 or len(result) >= 16384:
-                raise TimeoutError('Preparation IPC budget exceeded')
-            connection.settimeout(remaining)
-            chunk = connection.recv(min(4096, 16384 - len(result)))
-            if not chunk:
-                raise ConnectionError('Preparation service closed without result')
-            result.extend(chunk)
-    value = json.loads(result)
-    if not isinstance(value, dict) or value.get('ok') is not True:
-        raise ValueError('Preparation service rejected request')
-    if not compatible(value.get('component')):
+    scope = (host_call('account_status', {}, timeout=min(.1, timeout))
+             if expected_account is _CURRENT_ACCOUNT else expected_account)
+    scope = validate_snapshot(scope)
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError('Preparation account budget exceeded')
+    value = host_call('preparation', dict(method=method, body=body, protocol=IPC_PROTOCOL,
+                      account=scope), timeout=remaining)
+    if not isinstance(value, dict) or not compatible(value.get('component')):
         raise ValueError('Preparation service component is incompatible')
     return value
 
