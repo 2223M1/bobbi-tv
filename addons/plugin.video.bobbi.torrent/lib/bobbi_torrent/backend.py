@@ -140,6 +140,10 @@ class Backend:
             raise BackendError('TORRENT_CONTROL_DEADLINE')
         timeout = (min(3.05, remaining), min(8.0, remaining))
         kwargs = dict(timeout=timeout, stream=True, allow_redirects=False, auth=self.auth)
+        operation = ('echo' if path == '/echo' else 'upload' if path == '/torrent/upload'
+            else 'preload' if preload else 'add' if path == '/torrents' and (body or {}).get('action') == 'add'
+            else 'status' if path == '/torrents' and (body or {}).get('action') == 'get' else 'other')
+        diagnostic = dict(operation=operation, method=method)
         if files is not None:
             kwargs.update(files=files, data=body)
         elif body is not None:
@@ -148,7 +152,8 @@ class Backend:
             with self.session.request(method, self.config['endpoint'] + path, **kwargs) as response:
                 active()
                 if response.status_code != 200:
-                    raise BackendError('TORRENT_HTTP_REJECTED')
+                    raise BackendError('TORRENT_HTTP_REJECTED', diagnostic=dict(
+                        diagnostic, http_status=response.status_code))
                 if preload:
                     return None
                 chunks, size = [], 0
@@ -172,8 +177,8 @@ class Backend:
                 if preload:
                     # The server can still be preloading. Poll; never resubmit.
                     return None
-                raise BackendError('TORRENT_HTTP_TIMEOUT') from None
-            raise BackendError('TORRENT_HTTP_UNAVAILABLE') from None
+                raise BackendError('TORRENT_HTTP_TIMEOUT', diagnostic=diagnostic) from None
+            raise BackendError('TORRENT_HTTP_UNAVAILABLE', diagnostic=diagnostic) from None
         active()
         if self.clock() >= deadline:
             raise BackendError('TORRENT_CONTROL_DEADLINE')
@@ -222,7 +227,10 @@ class Backend:
             except BackendError as probe:
                 if probe.category in ('cancelled', 'aborted', 'superseded'):
                     raise
-                raise BackendError('TORRENT_ADD_UNCONFIRMED') from error
+                detail = dict(probe.diagnostic, substage='add_reconcile')
+                if 'http_status' in error.diagnostic:
+                    detail['initial_http_status'] = error.diagnostic['http_status']
+                raise BackendError('TORRENT_ADD_UNCONFIRMED', diagnostic=detail) from error
             self.add_reconciled = True
         if str(result.get('hash', '')).lower() != info_hash:
             raise BackendError('TORRENT_HASH_MISMATCH', 'source_identity_mismatch')

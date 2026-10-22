@@ -14,6 +14,8 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'paterson': {'title': 'Paterson', 'tmdb_id': 370755, 'kind': 'movie', 'year': 2016},
+    'planetes': {'title': 'Planetes', 'tmdb_id': 34102, 'kind': 'tv', 'year': 2003, 'season': 1, 'episode': 1, 'animation': True},
     'moon': {'title': 'Moon', 'tmdb_id': 17431, 'kind': 'movie', 'year': 2009},
     'made_in_abyss': {'title': 'Made in Abyss', 'tmdb_id': 72636, 'kind': 'tv', 'year': 2017, 'season': 1, 'episode': 1, 'animation': True},
     'nightcrawler': {'title': 'Nightcrawler', 'tmdb_id': 242582, 'kind': 'movie', 'year': 2014},

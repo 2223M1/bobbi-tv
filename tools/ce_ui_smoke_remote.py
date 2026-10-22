@@ -4,7 +4,6 @@ from pathlib import Path
 import sys
 import time
 import traceback
-import hashlib
 import faulthandler
 from threading import Event, Thread
 
@@ -12,7 +11,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcvfs
-from ce_ui_preview_remote import framebuffer_png
+from ce_ui_preview_remote import framebuffer_png, framebuffer_patch, patch_stability
 
 ROOT = Path(__file__).resolve().parent
 trace = (ROOT/'smoke-stack.txt').open('w')
@@ -58,17 +57,7 @@ def inspect(name, current):
 
 def card_patch():
     """Pixels of the first card's static quality/text; excludes status badges."""
-    base=Path('/sys/class/graphics/fb0')
-    stride=int((base/'stride').read_text())
-    for attempt in range(3):
-        pan=int((base/'pan').read_text().split(',')[1])
-        with Path('/dev/fb0').open('rb',buffering=0) as stream:
-            stream.seek((pan+220)*stride)
-            raw=stream.read(stride*70)
-        if pan==int((base/'pan').read_text().split(',')[1]):
-            patch=b''.join(raw[row*stride+620*4:row*stride+760*4] for row in range(70))
-            return hashlib.sha256(patch).hexdigest()
-    return None
+    return framebuffer_patch()
 
 
 try:
@@ -137,8 +126,17 @@ try:
         def selectItem(self, position): self.selects += 1; return self.control.selectItem(position)
     meter = Meter(window.display_list)
     window.display_list = meter
+    # Finish the deliberate filter/focus animation BEFORE publishing arrivals.
+    # Retain every baseline sample; an unreadable baseline is inconclusive.
+    if monitor.waitForAbort(1.2): raise RuntimeError('UI_SMOKE_INTERRUPTED')
+    baseline_samples = []
+    for _ in range(10):
+        baseline_samples.append(card_patch())
+        if monitor.waitForAbort(.1): raise RuntimeError('UI_SMOKE_INTERRUPTED')
+    baseline_result = patch_stability(baseline_samples[0], baseline_samples)
+    result['pre_arrival_baseline'] = dict(samples=baseline_samples, verdict=baseline_result)
     frame_hashes=[]
-    frame_expected=card_patch()
+    frame_expected=baseline_samples[-1]
     def capture_frames():
         while not frame_stop.wait(.04):
             frame_hashes.append(card_patch())
@@ -160,13 +158,15 @@ try:
     frame_worker.join(2)
     if frame_worker.is_alive(): raise RuntimeError('FRAME_SAMPLER_DID_NOT_STOP')
     row = inspect('sources-after', window)
+    pixel_result = patch_stability(frame_expected, frame_hashes)
+    result['pixel_evidence'] = dict(reference=frame_expected, samples=frame_hashes, verdict=pixel_result)
     row.update(resets=meter.resets, focus_commands=meter.selects,
         original_items_retained=all(window._rendered_cards[k] is v for k,v in original.items()),
         selected_key_retained=window.display_list.getSelectedItem().getProperty('source_key') == selected,
         quality_retained=qualities.getSelectedItem().getProperty('quality') == selected_quality,
         quality_keys=window._quality_keys,
         native_item_count=window.display_list.size(),frame_samples=len(frame_hashes),
-        stable_card_pixels=bool(frame_hashes and frame_expected and all(h==frame_expected for h in frame_hashes)))
+        stable_card_pixels=baseline_result['passed'] and pixel_result['passed'])
     result['passed'] = (result['panels'][0]['focus'] == 9001 and result['panels'][0]['cancelled']
         and result['panels'][1]['focus'] == 9003 and result['panels'][1]['no_play_action']
         and row['resets'] == 0 and row['focus_commands'] == 5 and row['original_items_retained']

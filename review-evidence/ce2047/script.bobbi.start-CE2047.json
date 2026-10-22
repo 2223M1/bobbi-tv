@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "sequence": 2026102047,
+  "entry_id": "script.bobbi.start",
+  "version": "0.2.36",
+  "file": "script.bobbi.start-CE2047.zip",
+  "bytes": 95968803,
+  "sha256": "463b301067390e73176f058ea96bf0cf3b775f7ea66e63f1babe79ebf011d026",
+  "native_hash_required": false,
+  "complete_offline_payload": true,
+  "upstream_dependencies": "signed originals if absent; existing Kodi/author channels preserved; crypto by Kodi",
+  "actual_other_hardware_tested": false
+}

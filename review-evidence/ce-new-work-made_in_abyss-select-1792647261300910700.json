@@ -1,0 +1,23 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "made_in_abyss",
+    "operation": "select",
+    "cards": [],
+    "selected": true,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 12,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "made_in_abyss",
+  "operation": "select",
+  "attempt": 4,
+  "regression_attempt": true
+}

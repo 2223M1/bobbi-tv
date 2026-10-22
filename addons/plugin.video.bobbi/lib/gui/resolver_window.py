@@ -84,15 +84,21 @@ class ResolverWindow(BaseWindow):
         self._modeless = (self.item_information.get("selection_policy") == "exact"
                           and not pack_select and not self.is_subtitle_download)
         if self._modeless:
-            from lib.cinema.playback_request import call, context
-            self._window_context = context(call({'operation': 'snapshot'}),
-                                           self.item_information.get('request_id'))
-            if not call(dict(self._window_context, operation='register_window',
-                             token=self._window_token, role='loading'))['registered']:
-                return False
-            self.show()
+            from lib.cinema.playback_request import call, context, read_snapshot, SelectionChanged
             try:
+                self._window_context = context(read_snapshot(),
+                    self.item_information.get('request_id'), self.item_information.get('_selection_context'))
+                if not call(dict(self._window_context, operation='register_window',
+                                 token=self._window_token, role='loading'))['registered']:
+                    return False
+                self.show()
                 self.resolve_source()
+            except SelectionChanged:
+                return False
+            except (OSError, ValueError, RuntimeError, KeyError) as error:
+                kodilog('[CINEMA-HANDOFF] LOADING_CONTROL_UNAVAILABLE ' + type(error).__name__, level=xbmc.LOGWARNING)
+                self.error_message = '播放控制暂时不可用，请返回选源重试。'
+                notification(self.error_message, time=5000)
             finally:
                 self.close()
         else:
@@ -157,7 +163,7 @@ class ResolverWindow(BaseWindow):
         try:
             deadline = getattr(self, '_handoff_read_deadline', None)
             if deadline is None:
-                owned_state(self.item_information.get('request_id'))
+                state = owned_state(self.item_information.get('request_id'))
             else:
                 remaining = deadline - monotonic()
                 if remaining <= 0:
@@ -166,8 +172,13 @@ class ResolverWindow(BaseWindow):
                 context(state, self.item_information.get('request_id'))
                 if monotonic() >= deadline:
                     return self._handoff_rejected('PRESENTATION_BUDGET_EXHAUSTED')
+            context(state, self.item_information.get('request_id'), getattr(self, '_window_context', None))
             return True
-        except (OSError, RuntimeError, ValueError) as error:
+        except OSError as error:
+            if not getattr(self, 'media_started', False) and not self.resolved and not self.cancel_event.is_set():
+                self.error_message = '播放控制暂时不可用，请返回选源重试。'
+            return self._handoff_rejected('SELECTION_CHECK_' + type(error).__name__.upper())
+        except (RuntimeError, ValueError) as error:
             return self._handoff_rejected('SELECTION_CHECK_' + type(error).__name__.upper())
 
     def close_windows(self):
@@ -399,7 +410,11 @@ class ResolverWindow(BaseWindow):
                 on_handoff=self.handle_handoff_confirmed,
                 on_presentation_deferred=self.handle_presentation_deferred,
             )
+            if self._modeless:
+                self.playback_info['_selection_context'] = self._window_context
             self.player.run(data=self.playback_info)
+            if getattr(self.player, '_preav_control_error', ''):
+                self.error_message = self.player._preav_control_error
         except Exception as e:
             from bobbi_catalog.api import ShareError
             from bobbi_core.share_failure import failure_value, message, PERMANENT

@@ -495,7 +495,10 @@ def test_actual_source_selection_passes_frozen_account_only_for_automatic_retry(
         body=[method], decorator_list=[])], type_ignores=[]))
     calls = []
     monkeypatch.setitem(sys.modules, 'lib.cinema.playback_request', SimpleNamespace(
-        select=lambda *args, **kwargs: calls.append((args, kwargs)), source_identity=lambda source: 'prepared:exact'))
+        select=lambda *args, **kwargs: calls.append((args, kwargs)) or dict(
+            boot_id=args[0]['boot_id'], epoch=args[0]['epoch'] + 1,
+            desired=dict(request_id=args[1], cancelled=False)),
+        context=playback_request.context, source_identity=lambda source: 'prepared:exact'))
     from uuid import uuid4
     env = dict(uuid4=uuid4, set_property=lambda *args: None)
     exec(compile(module, 'actual-source-selection', 'exec'), env)

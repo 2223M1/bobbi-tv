@@ -1,0 +1,84 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "paterson",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Paterson (2016) (1080p BluRay x265 Silence)",
+        "Container(1000).ListItem.Property(peers)": "64",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "59",
+        "Container(1000).ListItem.Property(size)": "3.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "a6d6f6839e473e0f551d056640d1f8ae0c9176c1a938bd05b5d13c34e94539b4",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Paterson.2016.Bluray.1080p.DTS-HD.x264-Grym",
+        "Container(1000).ListItem.Property(peers)": "14",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "1",
+        "Container(1000).ListItem.Property(size)": "14.8 GB",
+        "Container(1000).ListItem.Property(source_key)": "985906920b2ad795880e91c8037b03a51a26461f87f30bbd8bc4ed848fffe9d1",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Paterson.2016.1080p.WEB-DL.H264.AC3-EVO[EtHD]",
+        "Container(1000).ListItem.Property(peers)": "5",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "4",
+        "Container(1000).ListItem.Property(size)": "4.46 GB",
+        "Container(1000).ListItem.Property(source_key)": "9785a96d4c9f3413e25cce6c3e0566896296cc324f6c2eeb4b3b5b0e41a68f28",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Paterson (2016) [1080p] [YTS.AG]",
+        "Container(1000).ListItem.Property(peers)": "124",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "89",
+        "Container(1000).ListItem.Property(size)": "1.8 GB",
+        "Container(1000).ListItem.Property(source_key)": "4b2178c49803b666d9fcdb015714de267097208d4648e8ce4ea1a6e01786da2f",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Paterson (2016) 1080p BrRip x264 - VPPV",
+        "Container(1000).ListItem.Property(peers)": "1",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "1",
+        "Container(1000).ListItem.Property(size)": "2.78 GB",
+        "Container(1000).ListItem.Property(source_key)": "6247d054661a13607bec0ab098279060f35115152c3cf025292826cadc5d49bc",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Paterson.2016.720p.BRRip.x264.AAC-ETRG",
+        "Container(1000).ListItem.Property(peers)": "15",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "14",
+        "Container(1000).ListItem.Property(size)": "925 MB",
+        "Container(1000).ListItem.Property(source_key)": "c771cd0afd11aaef851455732ca719f5141fcd7ab6488bded5e046849187a9cb",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 6,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "paterson",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

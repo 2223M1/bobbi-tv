@@ -1,0 +1,28 @@
+{
+  "exit_code": 1,
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "result": {
+    "error": "AssertionError",
+    "reason": "HOME_NOT_STABLE",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 4
+      },
+      {
+        "function": "<module>",
+        "line": 704
+      },
+      {
+        "function": "prepare_home",
+        "line": 548
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "planetes",
+  "operation": "start",
+  "attempt": 2,
+  "regression_attempt": true
+}

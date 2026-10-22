@@ -1,0 +1,52 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261022-170000",
+  "mode": "view",
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "result": {
+    "players": [],
+    "gui": {
+      "currentcontrol": {
+        "label": "［BDrip］ Meidoinabisu S01 ［7³ACG］/Meidoinabisu 2017 S01E01-［1080p］［BDRIP］［x265.OPUS］.mkv  ·  0.64 GiB"
+      },
+      "currentwindow": {
+        "id": 12000,
+        "label": "选择对话框"
+      }
+    },
+    "labels": {
+      "Container(3).CurrentItem": "1",
+      "Container(3).ListItemAbsolute(0).Label": "［BDrip］ Meidoinabisu S01 ［7³ACG］/Meidoinabisu 2017 S01E01-［1080p］［BDRIP］［x265.OPUS］.mkv  ·  0.64 GiB",
+      "Container(3).ListItemAbsolute(1).Label": "",
+      "Container(3).ListItemAbsolute(10).Label": "",
+      "Container(3).ListItemAbsolute(11).Label": "",
+      "Container(3).ListItemAbsolute(2).Label": "",
+      "Container(3).ListItemAbsolute(3).Label": "",
+      "Container(3).ListItemAbsolute(4).Label": "",
+      "Container(3).ListItemAbsolute(5).Label": "",
+      "Container(3).ListItemAbsolute(6).Label": "",
+      "Container(3).ListItemAbsolute(7).Label": "",
+      "Container(3).ListItemAbsolute(8).Label": "",
+      "Container(3).ListItemAbsolute(9).Label": "",
+      "Container(3).NumItems": "1",
+      "Container(6).CurrentItem": "1",
+      "Container(6).ListItem.Label": "",
+      "Container(6).NumItems": "0",
+      "Control.GetLabel(1)": "无法自动确定正片 · 请核对真实文件（不自动续播）",
+      "Control.GetLabel(10)": "",
+      "Control.GetLabel(11)": "",
+      "Control.GetLabel(2)": "",
+      "Control.GetLabel(3)": "［BDrip］ Meidoinabisu S01 ［7³ACG］/Meidoinabisu 2017 S01E01-［1080p］［BDRIP］［x265.OPUS］.mkv  ·  0.64 GiB",
+      "Control.GetLabel(4)": "",
+      "Control.GetLabel(5)": "",
+      "Control.GetLabel(6)": "",
+      "Window.Property(playback_error)": ""
+    },
+    "installation": {
+      "sequence": 2026102047,
+      "high_watermark": 2026102047,
+      "phase": "complete",
+      "tx": "a4900858146d43c5be05c16cafa644d5"
+    }
+  }
+}

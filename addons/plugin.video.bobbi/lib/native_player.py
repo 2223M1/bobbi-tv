@@ -122,19 +122,28 @@ class JacktookPLayer(xbmc.Player):
         exact = self.data.get("selection_policy") == "exact"
         if exact:
             from lib.cinema.playback_ipc import call
-            from lib.cinema.playback_request import context, data_identity
+            from lib.cinema.playback_request import context, data_identity, read_snapshot, SelectionChanged
             try:
-                snapshot = call({'operation': 'snapshot'})
+                snapshot = read_snapshot()
                 if self.data.get('_parent_request_id'):
-                    parent = context(snapshot, self.data['_parent_request_id'])
+                    parent = context(snapshot, self.data['_parent_request_id'], self.data.get('_selection_context'))
                     snapshot = call(dict(parent, operation='reserve_child',
                         token=self.data.get('_continuation_token'), child_request_id=self.playback_session_id,
                         selection_identity=data_identity(self.data),
                         **({'account_scope': self.data.get('_account')} if self.data.get('_next_recheck') else {})))
-                self._owner_context = context(snapshot, self.playback_session_id)
-            except (OSError, ValueError, RuntimeError, KeyError) as error:
+                    self._owner_context = context(snapshot, self.playback_session_id)
+                else:
+                    self._owner_context = context(snapshot, self.playback_session_id, self.data.get('_selection_context'))
+            except SelectionChanged as error:
                 kodilog('[CINEMA-NEXT] SESSION_RESERVATION_REJECTED ' + type(error).__name__, level=xbmc.LOGWARNING)
                 self._was_superseded = True
+                return False
+            except (OSError, ValueError, RuntimeError, KeyError) as error:
+                # Only snapshot reads may retry. A lost reserve_child reply is
+                # unknown, never permission to issue a second reservation/open.
+                kodilog('[CINEMA-NEXT] SESSION_CONTROL_UNAVAILABLE ' + type(error).__name__, level=xbmc.LOGWARNING)
+                self._preav_control_error = '播放控制暂时不可用，请返回选源重试。'
+                notification(self._preav_control_error, time=5000)
                 return False
         if exact:
             # Compatibility labels only. The service above, not these strings,
@@ -201,6 +210,7 @@ class JacktookPLayer(xbmc.Player):
         data = dict(data)
         self._bobi_start_over = bool(data.pop('_bobi_start_over', False))
         self._startup_failed_for_reselect = False
+        self._preav_control_error = ''
         self.set_constants(data)
         data = self.data
         if data.get('selection_policy') == 'exact':
@@ -1569,6 +1579,7 @@ class JacktookPLayer(xbmc.Player):
                     if not grant.get('authorized'):
                         return
                     prepared.update(_parent_request_id=self.playback_session_id,
+                                    _selection_context=dict(self._owner_context),
                                     _continuation_token=grant['token'])
                 else:
                     self.stop()
@@ -2580,7 +2591,7 @@ class JacktookPLayer(xbmc.Player):
                     token=grant['token'], child_request_id=child,
                     selection_identity=data_identity(prepared),
                     **({'account_scope': prepared.get('_account')} if prepared.get('_next_recheck') else {})))
-                context(reserved, child)
+                prepared['_selection_context'] = context(reserved, child)
                 prepared['request_id'] = prepared['_ui_reserved_request'] = child
                 prepared.pop('_parent_request_id', None)
                 prepared.pop('_continuation_token', None)

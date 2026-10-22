@@ -1,0 +1,339 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "made_in_abyss",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Made in Abyss",
+        "tmdb_id": 72636,
+        "kind": "tv",
+        "year": 2017,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 72636,
+          "name": "Made in Abyss",
+          "original_name": "メイドインアビス",
+          "original_language": "ja",
+          "first_air_date": "2017-07-07"
+        },
+        "route": "system-direct",
+        "checked_at": 1792648182.0006113
+      },
+      "prior_request": "eb60b077d273451ab20efc510608a0fd",
+      "started": 63429.311404455,
+      "home": {
+        "generation": 20,
+        "intent": 1,
+        "retired_generation": 19,
+        "observed_at": 63430.123149553
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 63430.123784385,
+      "picker": {
+        "window": 13001,
+        "generation": 21,
+        "intent": 1,
+        "tmdb_id": 72636,
+        "kind": "tv"
+      },
+      "picker_observed_at": 63434.69688945
+    },
+    "samples": [
+      {
+        "wall": 63430.395518568,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "cancelled",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63430.428640061,
+          "read_completed": 63430.428875144,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63430.382429088,
+          "decoder_started": 63430.428640061,
+          "decoder_completed": 63430.428875144,
+          "sample_completed": 63430.42929056
+        }
+      },
+      {
+        "wall": 63432.597846482,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "cancelled",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63432.610779588,
+          "read_completed": 63432.611049879,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63432.574621016,
+          "decoder_started": 63432.610779588,
+          "decoder_completed": 63432.611049879,
+          "sample_completed": 63432.611153296
+        }
+      },
+      {
+        "wall": 63434.727930529,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "cancelled",
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63434.755537529,
+          "read_completed": 63434.755749071,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63434.697688949,
+          "decoder_started": 63434.755537529,
+          "decoder_completed": 63434.755749071,
+          "sample_completed": 63434.755830862
+        }
+      },
+      {
+        "wall": 63437.20541875,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "cancelled",
+        "labels": {
+          "Container(1000).ListItem.Label": "Made in Abyss S01E01-[1080p][JP.BDBOX.Remux][788-mix].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "3",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "3"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63437.220721227,
+          "read_completed": 63437.221011685,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63437.085465513,
+          "decoder_started": 63437.220721227,
+          "decoder_completed": 63437.221011685,
+          "sample_completed": 63437.221109768
+        }
+      },
+      {
+        "wall": 63439.628516574,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "cancelled",
+        "labels": {
+          "Container(1000).ListItem.Label": "Made in Abyss S01E01-[1080p][JP.BDBOX.Remux][788-mix].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "7"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63439.656283574,
+          "read_completed": 63439.656503824,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63439.494743526,
+          "decoder_started": 63439.656283574,
+          "decoder_completed": 63439.656503824,
+          "sample_completed": 63439.656574615
+        }
+      },
+      {
+        "wall": 63442.514308139,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "cancelled",
+        "labels": {
+          "Container(1000).ListItem.Label": "Made in Abyss S01E01-[1080p][JP.BDBOX.Remux][788-mix].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "2 个来源查询失败或超时",
+          "Window.Property(source_count)": "10"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63442.535310565,
+          "read_completed": 63442.53558194,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63442.219117419,
+          "decoder_started": 63442.535310565,
+          "decoder_completed": 63442.53558194,
+          "sample_completed": 63442.535671148
+        }
+      },
+      {
+        "wall": 63444.6500029,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": "cancelled",
+        "labels": {
+          "Container(1000).ListItem.Label": "Made in Abyss S01E01-[1080p][JP.BDBOX.Remux][788-mix].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "12",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "3 个来源查询失败或超时",
+          "Window.Property(source_count)": "12"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63444.66699725,
+          "read_completed": 63444.667459332,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63444.625238396,
+          "decoder_started": 63444.66699725,
+          "decoder_completed": 63444.667459332,
+          "sample_completed": 63444.667604999
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "made_in_abyss",
+  "operation": "start",
+  "attempt": 6,
+  "regression_attempt": true
+}

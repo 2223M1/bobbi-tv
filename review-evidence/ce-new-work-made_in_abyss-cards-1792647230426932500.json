@@ -1,0 +1,144 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "made_in_abyss",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Made in Abyss S01E01-[1080p][JP.BDBOX.Remux][788-mix].mkv",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "6.37 GB",
+        "Container(1000).ListItem.Property(source_key)": "022c13834473d324d7c73b4c753a7ed9dd0906886c7959772d5130ec605f04cc",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Airota][Made in Abyss][S01E01][BDRip 1080p HEVC-10bit FLAC]-HDHIVE.mkv",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "464 MB",
+        "Container(1000).ListItem.Property(source_key)": "2016c959090c0a596fd0d92cf7e3f9274576a90c92786bf4a3856060b0530c2b",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "来自深渊 - S01E01 - 巨穴之镇.mkv",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "6.37 GB",
+        "Container(1000).ListItem.Property(source_key)": "da00c79c6d648c6c40b82fbebbbf0e01cb77b8ed2d7d93bffbb07611f5f6727d",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[SweetSub&LoliHouse] 来自深渊/Made in Abyss - 01 [WebRip 1920x1080 HEVC-10bit EAC3][简繁内封]",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "300 MB",
+        "Container(1000).ListItem.Property(source_key)": "46c42a6557abc46436d3c81910995e71ada02dda02d2f8d27ec70c2361623623",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[7³ACG] 来自深渊/Meidoinabisu S01 | 01-13 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "10.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "ca67ea4d5d4fa49fd60624f939617cbbd322b2e6d98c73f2d5353a815251a478",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[SubsPlease] Made in Abyss - Retsujitsu no Ougonkyou - 01 (1080p) [81692E83].mkv",
+        "Container(1000).ListItem.Property(peers)": "26",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "26",
+        "Container(1000).ListItem.Property(size)": "487 MB",
+        "Container(1000).ListItem.Property(source_key)": "807bc4e857aa622014ce1189d0468b3e73f235e8663d51f41ed5567d7d3ab4dd",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Galator] Made in Abyss - Season 01 (BD 1080p x264 10-bit FLAC) [Dual-Audio]",
+        "Container(1000).ListItem.Property(peers)": "14",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "14",
+        "Container(1000).ListItem.Property(size)": "25.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "de483f66e5a752dca5f6a1c4a2db3ccfbca1f91832aca20607bf0aaf9595d854",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[MTBB] Made in Abyss S1 (BD 1080p)",
+        "Container(1000).ListItem.Property(peers)": "113",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "112",
+        "Container(1000).ListItem.Property(size)": "24.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "c13dd7418c366d7cd407b34b4c6ac043b1c6b8bc885fe69be86581b6b8ea92d6",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[MiniMTBB] Made in Abyss S1 (BD 1080p)",
+        "Container(1000).ListItem.Property(peers)": "25",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "25",
+        "Container(1000).ListItem.Property(size)": "3.2 GB",
+        "Container(1000).ListItem.Property(source_key)": "58d6f4608a69e126256c378f36fba4f241f63a477ce5ea6da97a30668ce961e5",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[SweetSub][来自深渊][Made in Abyss][S1 01-13 Fin][BDrip][8bit AVC][720P][繁体内嵌]",
+        "Container(1000).ListItem.Property(peers)": "2",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "1",
+        "Container(1000).ListItem.Property(size)": "3.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "cd7747c3c1040c8994c97463b3188675555d6665b5fd5d1fb8f683434fe77e09",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[SweetSub][来自深渊][Made in Abyss][S1 01-13 Fin][BDrip][8bit AVC][720P][简体内嵌]",
+        "Container(1000).ListItem.Property(peers)": "2",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "1",
+        "Container(1000).ListItem.Property(size)": "3.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "433476905a64f760a3524c772d8cbc57626e13bcaedf088924eec60f885dc996",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[yolerejiju] Made in Abyss Season 1 (S01) REPACK (BD 1080p x265 Opus - AAC) [Multi-Audio]",
+        "Container(1000).ListItem.Property(peers)": "85",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "81",
+        "Container(1000).ListItem.Property(size)": "27.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "7ebe2771d85ef962e2cd7784ecd2ccd672964d5f0051fd5d3d874044f40cf46e",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 12,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "made_in_abyss",
+  "operation": "cards",
+  "attempt": 4,
+  "regression_attempt": true
+}

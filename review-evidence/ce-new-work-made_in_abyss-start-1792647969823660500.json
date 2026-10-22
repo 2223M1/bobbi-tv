@@ -1,0 +1,32 @@
+{
+  "exit_code": 1,
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "result": {
+    "error": "RuntimeError",
+    "reason": "TRIAL_ERROR",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 4
+      },
+      {
+        "function": "<module>",
+        "line": 695
+      },
+      {
+        "function": "snapshot",
+        "line": 98
+      },
+      {
+        "function": "call",
+        "line": 81
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "made_in_abyss",
+  "operation": "start",
+  "attempt": 5,
+  "regression_attempt": true
+}
