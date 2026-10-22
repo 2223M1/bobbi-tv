@@ -103,6 +103,17 @@ class ScopedProvider:
         return guarded
 
 
+class IntentValidationError(ValueError):
+    """A safe stage receipt, without provider text, URLs or credentials."""
+    def __init__(self, stage, error):
+        from .torrent_metadata import MetadataUnavailable
+        if stage not in ('metadata', 'catalog', 'identity', 'metadata_cache'):
+            raise ValueError('PREPARATION_VALIDATION_STAGE')
+        super().__init__('PREPARATION_' + stage.upper())
+        self.stage, self.error_type = stage, type(error).__name__
+        self.reason = error.reason if isinstance(error, MetadataUnavailable) else 'validation_failed'
+
+
 class _Request:
     def __init__(self, method, body, scope):
         self.method, self.body, self.scope = method, deepcopy(body), deepcopy(scope)
@@ -343,7 +354,9 @@ class Session:
         self.metadata_cache = MetadataCache(state / 'torrent-file-metadata')
         self.ledger = self.resources.enter_context(Ledger(state / 'resources.sqlite'))
         self.queue, self.intake = PreparationQueue(self.ledger), Intake(self.ledger)
-        qualifier = CloudQualifier(c['ffprobe'], c['cd2_endpoint'], c['download_capability'], cancelled)
+        from .media_probe import qualification_probe
+        qualifier = CloudQualifier(c['ffprobe'], c['cd2_endpoint'], c['download_capability'], cancelled,
+                                   inspect=qualification_probe)
         store = SubtitleStore(self.ledger, state / 'subtitles', metadata_cache=self.metadata_cache,
                               release_matcher=matching_chinese_sidecars)
         self.subtitles = SubtitlePreparation(self.queue, store, self.metadata_cache,
@@ -481,7 +494,12 @@ class Session:
         if kind == 'account':
             self.readiness.complete(error=error)
         elif kind == 'intent':
-            self.intake.finish(value['request_id'], {'error': type(error).__name__}, False)
+            # _validate and _complete failures used to be indistinguishable.
+            # Preserve only fixed diagnostics, never exception text or bodies.
+            result = (dict(error=error.error_type, stage=error.stage, reason=error.reason)
+                      if isinstance(error, IntentValidationError) else
+                      dict(error=type(error).__name__, stage='publication', reason='publication_failed'))
+            self.intake.finish(value['request_id'], result, False)
         elif kind == 'worker':
             # Preserve submission uncertainty. Never retry a mutation because
             # a local publication or process was interrupted.
@@ -499,15 +517,28 @@ class Session:
     def _validate(self, value):
         from .torrent_metadata import registered_metadata
         from .source_intent import verified_intents
-        self.provider.account_scope()
-        metadata = self.metadata_cache.load(value['selected']['source_info_hash'])
-        if metadata is None:
-            metadata = registered_metadata(self.torrent_session, self.config['torrserver_endpoint'],
-                value['selected']['source_info_hash'], lambda: not self.lease.valid())
-        result = verified_intents(value, metadata, self.config['account'], self.config['destination'],
-                                  self.selector, self.catalog.lookup(value['media']))
-        self.lease.commit(lambda: self.metadata_cache.store(metadata))
-        return result
+        # Source proof has no cloud IO. Capture it while the selected torrent
+        # is still live, even if CD2 is temporarily offline. Provider identity
+        # remains mandatory in the separate cloud readiness/IO lanes.
+        self.lease.check()
+        stage = 'metadata'
+        try:
+            metadata = self.metadata_cache.load(value['selected']['source_info_hash'])
+            if metadata is None:
+                metadata = registered_metadata(self.torrent_session, self.config['torrserver_endpoint'],
+                    value['selected']['source_info_hash'], lambda: not self.lease.valid())
+            self.lease.check()
+            stage = 'catalog'
+            catalog = self.catalog.lookup(value['media'])
+            self.lease.check()
+            stage = 'identity'
+            result = verified_intents(value, metadata, self.config['account'], self.config['destination'],
+                                      self.selector, catalog)
+            stage = 'metadata_cache'
+            self.lease.commit(lambda: self.metadata_cache.store(metadata))
+            return result
+        except Exception as error:
+            raise IntentValidationError(stage, error) from None
 
     def _publish(self):
         from .prepared_index import publish
@@ -546,6 +577,15 @@ class Session:
                 self._submit('font_bytes', action, self.font_cache.warm_bytes, action,
                              lambda: self.lease.valid() and not self.playing)
                 return
+        # Durable local intent validation must not wait for cloud readiness:
+        # unsaved TorrServer metadata can retire during a CD2 outage. This
+        # admits a pending plan only, never a ready file or cloud submission.
+        if now >= self.next_work:
+            intent = self.lease.commit(self.intake.take)
+            if intent:
+                self.next_work = now + 1
+                self._submit('intent', intent, self._validate, intent)
+                return
         if not self.readiness.ready:
             return
         self.lease.commit(self._publish)
@@ -555,10 +595,6 @@ class Session:
         direct = self.lease.commit(self.direct_queue.next_action)
         if direct:
             self._submit('direct', direct, self.direct_queue.perform, direct)
-            return
-        intent = self.lease.commit(self.intake.take)
-        if intent:
-            self._submit('intent', intent, self._validate, intent)
             return
         action = self.lease.commit(lambda: self.worker.next_action(self.playing))
         if action:

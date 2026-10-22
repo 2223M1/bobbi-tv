@@ -93,6 +93,57 @@ def bind_selected_episode(ids, tv_data, info_hash, mappings=None):
     return dict(proof, source_info_hash=info_hash.lower()) if proof else None
 
 
+def bind_catalog_episode(ids, tv_data, request_id, selection_identity, info_hash,
+                         catalog, numbering=None):
+    """Bind checked catalogue context to this selection, retaining its mapper.
+
+    The optional numbering is an existing hash-bound AniDB/production-order
+    proof. Without it the unchanged selector requires explicit season evidence.
+    This envelope does not infer a later-season offset from a work alias.
+    """
+    from .torrent_selection import load_episode_binding
+    if not isinstance(ids, dict) or not isinstance(tv_data, dict):
+        return None
+    identifier = _number(ids.get('tmdb_id'))
+    season, episode = tv_data.get('season'), tv_data.get('episode')
+    if (isinstance(season, bool) or not str(season).isdigit()
+            or not 0 <= int(season) <= 100000 or _number(episode) is None
+            or int(episode) > 100000):
+        return None
+    if (not isinstance(catalog, dict) or catalog.get('tmdb_id') != identifier
+            or not identifier or not isinstance(catalog.get('aliases'), list)
+            or not 1 <= len(catalog['aliases']) <= 16
+            or any(not isinstance(a, str) or not 2 <= len(a) <= 128 or a.strip() != a
+                   for a in catalog['aliases'])
+            or len(set(catalog['aliases'])) != len(catalog['aliases'])
+            or (catalog.get('year') is not None and (type(catalog['year']) is not int
+                or not 1000 <= catalog['year'] <= 2999))):
+        return None
+    if (not isinstance(request_id, str) or not re.fullmatch('[0-9a-f]{32}', request_id)
+            or not isinstance(selection_identity, str)
+            or not re.fullmatch('(?:bt:[0-9a-f]{40}|transport:[0-9a-f]{64})', selection_identity)):
+        raise ValueError('Current request and selected transport required')
+    if selection_identity.startswith('bt:') and selection_identity != 'bt:' + str(info_hash).lower():
+        raise ValueError('Catalogue handoff differs from the selected torrent hash')
+    if numbering is not None:
+        raw = json.dumps(numbering, ensure_ascii=False, separators=(',', ':'))
+        numbering = load_episode_binding(raw, info_hash, season, episode)
+        if numbering['media_id'] != 'tmdb:' + str(identifier):
+            raise ValueError('Numbering belongs to another catalogue work')
+    season_years = catalog.get('season_years') or {}
+    if (not isinstance(season_years, dict) or len(season_years) > 100
+            or any(type(s) is not int or not 1 <= s <= 100000 or type(y) is not int
+                   or not 1000 <= y <= 2999 for s, y in season_years.items())):
+        raise ValueError('Invalid cached season year context')
+    value = dict(version=2, request_id=request_id, selection_identity=selection_identity,
+        media_id='tmdb:' + str(identifier), season=int(season), episode=int(episode),
+        catalog_aliases=list(catalog['aliases']), catalog_year=catalog.get('year'), numbering=numbering,
+        catalog_season_year=season_years.get(int(season), catalog.get('year') if int(season) == 1 else None))
+    while value['catalog_aliases'] and len(json.dumps(value, ensure_ascii=False).encode('utf-8')) > 2048:
+        value['catalog_aliases'].pop()
+    return value if value['catalog_aliases'] else None
+
+
 def catalog_identity(details, tmdb_id):
     """Extract title evidence only from an independently ID-checked TV detail."""
     if (not isinstance(details, dict) or _number(details.get('id')) != _number(tmdb_id)
@@ -132,7 +183,12 @@ def catalog_identity(details, tmdb_id):
         return None
     date = details.get('first_air_date')
     year = int(date[:4]) if isinstance(date, str) and re.fullmatch(r'[12][0-9]{3}-[0-9]{2}-[0-9]{2}', date) else None
-    return dict(tmdb_id=_number(tmdb_id), aliases=aliases, year=year)
+    identity = dict(tmdb_id=_number(tmdb_id), aliases=aliases, year=year)
+    from .catalog_identity import tv_season_years
+    years = tv_season_years(details, _number(tmdb_id))
+    if years:
+        identity['season_years'] = years
+    return identity
 
 
 def _transport_proof(ids, tv_data, request_id, selection_identity, mappings, catalog, candidate_scope=None):
@@ -231,6 +287,22 @@ def resolve_episode_binding(raw, request_id, selection_identity, info_hash, seas
         raise ValueError('Malformed episode handoff') from None
     if not isinstance(value, dict) or 'version' not in value:
         return raw
+    if type(value.get('version')) is int and value['version'] == 2:
+        media_id = value.get('media_id')
+        if (not isinstance(media_id, str) or not re.fullmatch('tmdb:[1-9][0-9]{0,11}', media_id)
+                or any(type(value.get(key)) is not int for key in ('season', 'episode'))):
+            raise ValueError('Invalid catalogue episode handoff')
+        catalog = dict(tmdb_id=int(media_id.split(':')[1]), aliases=value.get('catalog_aliases'),
+                       year=value.get('catalog_year'))
+        season_year = value.get('catalog_season_year')
+        if season_year is not None:
+            catalog['season_years'] = {value['season']: season_year}
+        expected = bind_catalog_episode({'tmdb_id': catalog['tmdb_id']},
+            dict(season=season, episode=episode), request_id, selection_identity, info_hash,
+            catalog, value.get('numbering'))
+        if expected is None or value != expected:
+            raise ValueError('Catalogue episode handoff changed or belongs to another request')
+        return json.dumps(value['numbering'], separators=(',', ':')) if value['numbering'] else ''
     if (type(value.get('version')) is not int or value['version'] != 1
             or not isinstance(value.get('media_id'), str)
             or not re.fullmatch('tmdb:[1-9][0-9]{0,11}', value['media_id'])
@@ -260,26 +332,27 @@ def resolve_episode_binding(raw, request_id, selection_identity, info_hash, seas
     return json.dumps(proof, ensure_ascii=False, separators=(',', ':'))
 
 
-def check_transport_episode_file(raw, path):
-    """Check the actual basename after transport proof validation and selection.
+def check_transport_episode_file(raw, path, releases=(), require_work=True):
+    """Check release, selected branch and basename after envelope validation.
 
-    Directory names, provider labels and technical tags cannot hide another work.
-    Hash-bound legacy proofs keep their existing behavior outside this new path.
+    A legacy numbering proof is insufficient for automatic work verification.
+    Its caller may offer the existing explicit, unverified manual-file route.
     """
     if raw in ('', None):
-        return
+        raise ValueError('Catalogue episode identity is required for automatic selection')
     value = json.loads(raw, object_pairs_hook=_unique_object)
     if not isinstance(value, dict) or 'version' not in value:
-        return
-    from .catalog_identity import normalized, release_title
-    if not isinstance(path, str):
-        raise ValueError('Actual selected episode filename required')
-    basename = re.split(r'[/\\]', path)[-1]
-    name, year = release_title(basename, 'tv')
-    if name not in {normalized(alias) for alias in value['catalog_aliases']}:
-        raise ValueError('Actual episode title differs from the selected catalog work')
-    if year is not None and year != value['catalog_year']:
-        raise ValueError('Actual episode year differs from the selected catalog work')
+        raise ValueError('Legacy numbering does not prove the selected catalogue work')
+    from .episode_scope import check_episode_scope
+    year = value['catalog_year']
+    if value['version'] == 2:
+        season_year = value.get('catalog_season_year')
+        # Releases may use either the whole show's year or this season's year.
+        # Preserve the existing unasserted-year path if this season is absent
+        # from the checked cache; do not manufacture dates from release text.
+        year = tuple(y for y in (year, season_year) if y is not None) if season_year is not None else None
+    check_episode_scope(path, releases, value['catalog_aliases'], value['season'],
+                        year, require_work=require_work)
     if 'candidate_scope' in value:
         if value['candidate_scope'] != 'unscoped-range-v1':
             raise ValueError('Unknown episode candidate scope')

@@ -248,6 +248,13 @@ def _legacy_matches(title, aliases, mode, release_season=None):
 def matches(title, aliases, mode, release_season=None):
     if mode == 'tv':
         context = chinese_episode_context(title, aliases)
+        if context is None or (context and context[0] is None and release_season != 1):
+            return False
+        # Shared identity boundary, regardless of which provider supplied this
+        # title. A valid alias segment cannot hide a conflicting sequel segment.
+        from bobbi_core.episode_scope import release_scope
+        if type(release_season) is int:
+            return release_scope(title, aliases, release_season) == 'matched'
         if context != ():
             if not context:
                 return False

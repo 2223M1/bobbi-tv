@@ -1,0 +1,131 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "heavenly_delusion",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Tengoku Daimakyo",
+        "tmdb_id": 208891,
+        "kind": "tv",
+        "year": 2023,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 208891,
+          "name": "Tengoku Daimakyo",
+          "original_name": "天国大魔境",
+          "original_language": "ja",
+          "first_air_date": "2023-04-01"
+        },
+        "route": "system-direct",
+        "checked_at": 1792624656.6630013
+      },
+      "prior_request": "fe504b6c7f654b318e028160435fdcfa",
+      "started": 39903.973780768,
+      "home": {
+        "generation": 18,
+        "intent": 0,
+        "retired_generation": 18,
+        "observed_at": 39904.5665897
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 39904.567191491,
+      "picker": {
+        "window": 13001,
+        "generation": 20,
+        "intent": 0,
+        "tmdb_id": 208891,
+        "kind": "tv"
+      },
+      "picker_observed_at": 39909.128966093,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[Flugel] Heavenly Delusion S01 (BD Remux 1080p AVC FLAC) [Multi Audio] | Tengoku Daimakyou",
+        "Container(1000).ListItem.Property(peers)": "59",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "59",
+        "Container(1000).ListItem.Property(size)": "64.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "916a94f8a117b6d0affc43138234d220c5ba095f013c84a33f28ac1f55b96ac2",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 39946.835586692,
+      "request_id": "66b5f52cdd2c40c7bb13f8705c62268c",
+      "selection_identity": "bt:edc729b678556a6bdc09660a15bc45c9177605ae"
+    },
+    "sample": {
+      "wall": 39996.305375246,
+      "phase": null,
+      "native": {},
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12000,
+          "label": "选择对话框"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 39996.324887351,
+        "read_completed": 39996.325136768,
+        "raw": "No vdec.\n",
+        "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+        "channels": [],
+        "identity_known": false,
+        "primary_channel": null
+      },
+      "decoder_counters": {},
+      "decoder_counter_source": null,
+      "observation_times": {
+        "sample_started": 39996.28055052,
+        "decoder_started": 39996.324887351,
+        "decoder_completed": 39996.325136768,
+        "sample_completed": 39996.325554142
+      }
+    },
+    "gui": {
+      "window": 12000,
+      "generation": 24,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "",
+        "Window.Property(info.media_type)": "",
+        "Window.Property(info.mode)": "",
+        "Window.Property(info.query)": "",
+        "Window.Property(info.tv_data)": "",
+        "Window.Property(info.year)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "",
+        "Window.Property(source_loading)": ""
+      },
+      "modal": false,
+      "visible": [
+        13002
+      ],
+      "stable": true
+    }
+  },
+  "diagnostic_present": false,
+  "work": "heavenly_delusion",
+  "operation": "inspect",
+  "attempt": 1,
+  "regression_attempt": false
+}

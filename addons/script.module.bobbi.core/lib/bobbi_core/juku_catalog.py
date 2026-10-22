@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from copy import deepcopy
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import sqlite3
@@ -255,6 +256,7 @@ class Cache:
             self.root.mkdir(parents=True, exist_ok=True)
         self.deadline = time.monotonic() + 3 if deadline is None else deadline
         self.cancelled = _cancelled(cancelled)
+        self.proof_check_done, self.denied_proofs = False, {}
         _guard(self.deadline, self.cancelled)
         path = self.root / 'catalog.sqlite3'
         self.db = sqlite3.connect(path.resolve().as_uri() + '?mode=ro' if readonly else str(path),
@@ -364,6 +366,19 @@ class Cache:
             raise ValueError('Juku selected catalogue reference withdrawn')
         row['_checked_at'], row['_checked_account'] = value['checked_at'], value['checked_account']
         return row
+
+    def invalidate_proof(self, row, media):
+        """CAS only this exact grant's old proof; retain the library and card."""
+        current = self.db.execute('SELECT payload FROM selections WHERE key=? AND media=?',
+                                  (row['key'], media)).fetchone()
+        original = {key: value for key, value in row.items()
+                    if key not in ('_checked_at', '_checked_account')}
+        if current is None or json.loads(current[0]) != original:
+            return  # A changed tuple is not the failed grant's old evidence.
+        with self.db:
+            self.db.execute('''UPDATE selections SET checked_at=0,checked_account=''
+                WHERE key=? AND media=? AND payload=? AND checked_at=? AND checked_account=?''',
+                (row['key'], media, current[0], row['_checked_at'], row['_checked_account']))
 
     def replace_library(self, code, version, rows):
         payloads = [_encode(row) for row in rows]
@@ -522,20 +537,64 @@ def _bound(row, spec):
     return result
 
 
-def _account(client=None):
+def _account_scope(client=None, timeout=.2):
     try:
         if client is None:
             from bobbi_platform.runtime import call
-            scope = call('account_status', {}, timeout=.2)
+            scope = call('account_status', {}, timeout=timeout)
         else:
             scope = client.account_scope
         if (not isinstance(scope, dict) or scope.get('authenticated') is not True
                 or not isinstance(scope.get('account_id'), str) or not scope['account_id']
                 or type(scope.get('epoch')) is not int or scope['epoch'] < 0):
-            return ''
-        return hashlib.sha256(_encode([scope['account_id'], scope['epoch']]).encode()).hexdigest()
+            return None
+        return scope
     except (ImportError, OSError, ValueError, RuntimeError, AttributeError):
-        return ''
+        return None
+
+
+def _account(client=None):
+    scope = _account_scope(client)
+    return hashlib.sha256(_encode([scope['account_id'], scope['epoch']]).encode()).hexdigest() if scope else ''
+
+
+def _known_failures(cache, rows, spec, scope):
+    """One read-only bounded batch; absence/failure never revokes old success."""
+    from bobbi_core.share_failure import MAX_PROOFS, tuple_hash, proofs
+    if cache.proof_check_done or not scope:
+        return
+    candidates = []
+    for row in rows:
+        if row['_verified'] and len(candidates) < MAX_PROOFS:
+            old = cache.select(row['key'], spec['media_key'])
+            stamp = old['_checked_at']
+            if type(stamp) in (int, float) and math.isfinite(stamp) and stamp > 0:
+                candidates.append(dict(tuple_sha256=tuple_hash(dict(locator='am6bjuku://'+row['key'],
+                    guid='juku:'+row['key'], title=row['name'], size=row['size'], media=spec['media_key'])),
+                    checked_at=stamp))
+    if not candidates:
+        return
+    cache.proof_check_done = True
+    remaining = cache.deadline-time.monotonic()
+    if remaining <= 0 or cache.cancelled():
+        return
+    try:
+        from bobbi_platform.runtime import call
+        submitted = proofs(candidates)
+        result = call('share_known_failures', dict(account=scope, proofs=candidates), timeout=min(.2, remaining))
+        if (type(result) is not dict or set(result) != {'account', 'denied'}
+                or result['account'] != scope or type(result['denied']) is not list):
+            return
+        denied = proofs(result['denied']) if result['denied'] else {}
+        if any(key not in submitted or submitted[key] != stamp for key, stamp in denied.items()):
+            return
+        cache.denied_proofs = {key: (stamp, _account_fingerprint(scope)) for key, stamp in denied.items()}
+    except (ImportError, OSError, ValueError, RuntimeError, TypeError):
+        pass  # Unknown is not a negative proof and never deletes a candidate.
+
+
+def _account_fingerprint(scope):
+    return hashlib.sha256(_encode([scope['account_id'], scope['epoch']]).encode()).hexdigest()
 
 
 def verified(row):
@@ -555,11 +614,23 @@ def _finish(cache, candidates, spec):
     _guard(cache.deadline, cache.cancelled)
     rows = [bound for row in _unique(candidates) if (bound := _bound(row, spec)) is not None][:MAX_SOURCES]
     cache.remember(rows, spec)
-    account = _account()
+    remaining = cache.deadline-time.monotonic()
+    scope = _account_scope(timeout=min(.2, remaining)) if remaining > 0 else None
+    account = _account_fingerprint(scope) if scope else ''
     for row in rows:
         old = cache.select(row['key'], spec['media_key'])
         row['_verified'] = bool(account and old['_checked_account'] == account
+                                and type(old['_checked_at']) in (int, float)
+                                and math.isfinite(old['_checked_at'])
                                 and old['_checked_at'] > time.time()-DAY)
+    _known_failures(cache, rows, spec, scope)
+    from bobbi_core.share_failure import tuple_hash
+    for row in rows:
+        old = cache.select(row['key'], spec['media_key'])
+        key = tuple_hash(dict(locator='am6bjuku://'+row['key'], guid='juku:'+row['key'],
+            title=row['name'], size=row['size'], media=spec['media_key']))
+        if cache.denied_proofs.get(key) == (old['_checked_at'], old['_checked_account']):
+            row['_verified'] = False
     _guard(cache.deadline, cache.cancelled)
     return rows
 
@@ -689,7 +760,19 @@ def resolve(locator, guid, title, size, media, state=STATE, deadline=None, cance
     if client is None:
         from bobbi_catalog.api import Client
         client = Client()
-    url = client.resolve(row['share'], row, deadline)
+    from bobbi_catalog.api import ShareError
+    from bobbi_core.share_failure import PERMANENT
+    try:
+        url = client.resolve(row['share'], row, deadline)
+    except ShareError as error:
+        if error.code in PERMANENT and row['_checked_account'] == _account(client):
+            error.checked_proof = dict(checked_at=row['_checked_at'], checked_account=row['_checked_account'])
+            try:
+                with _cache(state, deadline, cancelled) as cache:
+                    cache.invalidate_proof(row, media)
+            except (OSError, sqlite3.Error, juku_api.JukuError):
+                error.invalidation_failed = True
+        raise
     _guard(deadline, cancelled)
     try:
         with _cache(state, deadline, cancelled) as cache:

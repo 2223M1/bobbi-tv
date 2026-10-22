@@ -1,0 +1,131 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "heavenly_delusion",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Tengoku Daimakyo",
+        "tmdb_id": 208891,
+        "kind": "tv",
+        "year": 2023,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 208891,
+          "name": "Tengoku Daimakyo",
+          "original_name": "天国大魔境",
+          "original_language": "ja",
+          "first_air_date": "2023-04-01"
+        },
+        "route": "system-direct",
+        "checked_at": 1792624656.6630013
+      },
+      "prior_request": "fe504b6c7f654b318e028160435fdcfa",
+      "started": 39903.973780768,
+      "home": {
+        "generation": 18,
+        "intent": 0,
+        "retired_generation": 18,
+        "observed_at": 39904.5665897
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 39904.567191491,
+      "picker": {
+        "window": 13001,
+        "generation": 20,
+        "intent": 0,
+        "tmdb_id": 208891,
+        "kind": "tv"
+      },
+      "picker_observed_at": 39909.128966093,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[Flugel] Heavenly Delusion S01 (BD Remux 1080p AVC FLAC) [Multi Audio] | Tengoku Daimakyou",
+        "Container(1000).ListItem.Property(peers)": "59",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "59",
+        "Container(1000).ListItem.Property(size)": "64.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "916a94f8a117b6d0affc43138234d220c5ba095f013c84a33f28ac1f55b96ac2",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 39946.835586692,
+      "request_id": "66b5f52cdd2c40c7bb13f8705c62268c",
+      "selection_identity": "bt:edc729b678556a6bdc09660a15bc45c9177605ae"
+    },
+    "sample": {
+      "wall": 40044.168900858,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": "cancelled",
+      "prior_failure": null,
+      "labels": {
+        "Container(1000).ListItem.Label": "[Flugel] Heavenly Delusion S01 (BD Remux 1080p AVC FLAC) [Multi Audio] | Tengoku Daimakyou",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "27",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "1 个来源查询失败或超时",
+        "Window.Property(source_count)": "27"
+      },
+      "window": {
+        "currentwindow": {
+          "id": 13001,
+          "label": "立即关闭硬盘"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 40044.194090707,
+        "read_completed": 40044.19432254,
+        "raw": "No vdec.\n",
+        "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+        "channels": [],
+        "identity_known": false,
+        "primary_channel": null
+      },
+      "decoder_counters": {},
+      "decoder_counter_source": null,
+      "observation_times": {
+        "sample_started": 40044.154088873,
+        "decoder_started": 40044.194090707,
+        "decoder_completed": 40044.19432254,
+        "sample_completed": 40044.194734039
+      }
+    },
+    "gui": {
+      "window": 13001,
+      "generation": 28,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 208891}",
+        "Window.Property(info.media_type)": "tv",
+        "Window.Property(info.mode)": "tv",
+        "Window.Property(info.query)": "Tengoku Daimakyo",
+        "Window.Property(info.tv_data)": "{'season': 1, 'episode': 1}",
+        "Window.Property(info.year)": "None",
+        "Window.Property(playback_error)": "1 个来源查询失败或超时",
+        "Window.Property(source_count)": "27",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001
+      ],
+      "stable": true
+    }
+  },
+  "diagnostic_present": false,
+  "work": "heavenly_delusion",
+  "operation": "inspect",
+  "attempt": 1,
+  "regression_attempt": false
+}

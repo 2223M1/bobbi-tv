@@ -1,0 +1,337 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "the_conversation",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "The Conversation",
+        "tmdb_id": 592,
+        "kind": "movie",
+        "year": 1974
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 592,
+          "title": "The Conversation",
+          "original_title": "The Conversation",
+          "original_language": "en",
+          "release_date": "1974-04-12"
+        },
+        "route": "system-direct",
+        "checked_at": 1792617137.6581
+      },
+      "prior_request": "75df622a31304e3aacdf236270cfc637",
+      "started": 32384.968895571,
+      "home": {
+        "generation": 44,
+        "intent": 0,
+        "retired_generation": 44,
+        "observed_at": 32385.529094598
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 32385.529708012,
+      "picker": {
+        "window": 13001,
+        "generation": 45,
+        "intent": 0,
+        "tmdb_id": 592,
+        "kind": "movie"
+      },
+      "picker_observed_at": 32387.857238275
+    },
+    "samples": [
+      {
+        "wall": 32385.767793823,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 32385.803209404,
+          "read_completed": 32385.803650902,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 32385.753415958,
+          "decoder_started": 32385.803209404,
+          "decoder_completed": 32385.803650902,
+          "sample_completed": 32385.80465419
+        }
+      },
+      {
+        "wall": 32387.871499515,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 32387.89010574,
+          "read_completed": 32387.890386989,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 32387.857734481,
+          "decoder_started": 32387.89010574,
+          "decoder_completed": 32387.890386989,
+          "sample_completed": 32387.890474947
+        }
+      },
+      {
+        "wall": 32390.046713044,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 32390.06226828,
+          "read_completed": 32390.062792153,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 32389.994524731,
+          "decoder_started": 32390.06226828,
+          "decoder_completed": 32390.062792153,
+          "sample_completed": 32390.062961486
+        }
+      },
+      {
+        "wall": 32392.188463412,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[窃听大阴谋].The.Conversation.1974.Bluray.720p.x264.AC3-CMCT.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "19",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "19"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 32392.211718828,
+          "read_completed": 32392.211945244,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 32392.162405463,
+          "decoder_started": 32392.211718828,
+          "decoder_completed": 32392.211945244,
+          "sample_completed": 32392.21206441
+        }
+      },
+      {
+        "wall": 32394.422139127,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[窃听大阴谋].The.Conversation.1974.Bluray.720p.x264.AC3-CMCT.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "19",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "19"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 32394.44502817,
+          "read_completed": 32394.445256252,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 32394.367251656,
+          "decoder_started": 32394.44502817,
+          "decoder_completed": 32394.445256252,
+          "sample_completed": 32394.44532671
+        }
+      },
+      {
+        "wall": 32396.545779287,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[窃听大阴谋].The.Conversation.1974.Bluray.720p.x264.AC3-CMCT.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "19",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "19"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 32396.581579451,
+          "read_completed": 32396.582026991,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 32396.531195798,
+          "decoder_started": 32396.581579451,
+          "decoder_completed": 32396.582026991,
+          "sample_completed": 32396.582222865
+        }
+      },
+      {
+        "wall": 32398.71540421,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[窃听大阴谋].The.Conversation.1974.Bluray.720p.x264.AC3-CMCT.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "24",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "24"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 32398.734804432,
+          "read_completed": 32398.735199306,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 32398.693333622,
+          "decoder_started": 32398.734804432,
+          "decoder_completed": 32398.735199306,
+          "sample_completed": 32398.735331514
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "the_conversation",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

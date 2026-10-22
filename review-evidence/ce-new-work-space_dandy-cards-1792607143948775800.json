@@ -1,0 +1,88 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "space_dandy",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "[AnimeRG] Space Dandy (Complete Season 01) 01-13 [DUAL-AUDIO] [1080p] [BD] [Batch] [x265] [pseudo]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "3.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "a1f38198b1931ef48f872cdac020fad2e6d9cab8f47746e05ea7870acd18ee65",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[HorribleSubs] Space Dandy - 01 [720p].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "632 MB",
+        "Container(1000).ListItem.Property(source_key)": "1a40771c70c9a1af1d0fd9ccd315e5cb633c0075982de7acec00c5720ef64207",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Commie] Space Dandy - 01 [422BCC7F].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "741 MB",
+        "Container(1000).ListItem.Property(source_key)": "a68b1a5059929607bd1636970fb6b649015aa8377861c7e6190446ab0f5f7672",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Commie] Space Dandy - 01v0 [B000B135].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "208 MB",
+        "Container(1000).ListItem.Property(source_key)": "07778cdce1ae99055e76b46ce4a2f6a2accd9f24dadf33fb32481a07b8f22d08",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[hchcsen] Space Dandy (2014) - Season 1 (S01E01-E26) (BD 1080p HEVC x265 Opus 2.0) [Dual-Audio] | Space☆Dandy",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "27.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "eeb268d16a169541f0d89614fa0a5d36aaeee5ac85ee1766ff61ae7f8bc92d5c",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[NoobSubs] Space Dandy Season 1 (720p Blu-ray 8bit AAC MP4)",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "5.57 GB",
+        "Container(1000).ListItem.Property(source_key)": "d2edbb23ecca76ddf3282e2c83d3413fe57a9cbbb5b1f815a2ef95ebe103a716",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[F-D] Space Dandy Season 1 & 2 [480P][Dual-Audio]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.94 GB",
+        "Container(1000).ListItem.Property(source_key)": "d64fc9bac0e6daf275690236f92aa19df057cf654279dcb2175b63948ccee502",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[deanzel] Space Dandy - Season 1 [BD 1080p Hi10p Dual Audio FLAC-AC3]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "17 GB",
+        "Container(1000).ListItem.Property(source_key)": "1710cbc233dbf45628a6f99f22eaf1669f23c4596adac32ed2cef34a8d8f140a",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 8,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "space_dandy",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

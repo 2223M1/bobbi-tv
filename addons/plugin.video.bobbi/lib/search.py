@@ -506,7 +506,7 @@ def _cinema_requires_catalog_admission(source):
 
 
 def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=None, release_episode=None, fallback_query=None, anime=False, anime_range_context=None):
-    from bobbi_core.candidate_titles import matches
+    from bobbi_core.candidate_titles import matches, _legacy_matches
     from bobbi_core.search_completion import replace_rows
     # Missing catalog evidence is unknown, not a negative work match. The
     # original request remains a lexical screen only; never publish it as a
@@ -514,9 +514,15 @@ def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=Non
     candidate_aliases = aliases or ([fallback_query] if isinstance(fallback_query, str) else [])
     title_basis = 'catalog_aliases' if aliases else ('request_query_unverified' if candidate_aliases else 'unavailable')
     from lib.utils.general.anime_identity import animation_release_conflict
+    from bobbi_core.episode_scope import release_scope
     screened = [source for source in results or [] if not (
         anime and aliases and _cinema_requires_catalog_admission(source)
         and animation_release_conflict(getattr(source, 'title', ''), aliases))]
+    if mode == 'tv' and aliases and type(release_season) is int:
+        # Every provider receives the same negative work/season/type check
+        # when ID-checked aliases exist. Unknown cards remain unverified.
+        screened = [source for source in screened if release_scope(
+            getattr(source, 'title', ''), aliases, release_season) != 'conflict']
     from bobbi_core.anime_range_candidates import eligible as range_eligible
     range_rows = [source for source in screened if anime and mode == 'tv'
                   and _cinema_requires_catalog_admission(source)
@@ -526,7 +532,10 @@ def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=Non
     kept = [source for source in screened
             if not _cinema_requires_catalog_admission(source)
             or source in range_rows
-            or matches(getattr(source, 'title', ''), candidate_aliases, mode, release_season=release_season)]
+            or matches(getattr(source, 'title', ''), candidate_aliases, mode, release_season=release_season)
+            or (mode == 'tv' and aliases and type(release_season) is int
+                and release_scope(getattr(source, 'title', ''), aliases, release_season) == 'unknown'
+                and _legacy_matches(getattr(source, 'title', ''), aliases, mode, release_season))]
     if mode == 'tv' and release_season is not None and release_episode is not None:
         from lib.utils.general.processors import PreProcessBuilder
         scoped = [row for row in kept if _cinema_requires_catalog_admission(row)]

@@ -132,6 +132,42 @@ def probe(binary, size, read, cancelled=lambda: False):
             _LANE.release()
 
 
+def qualification_probe(binary, size, read, cancelled=lambda: False):
+    """Ordinary large-attachment headers, else original demux with ONE budget.
+
+    Unsupported grammar alone permits fallback. IO/cancellation/time/byte/request
+    failure never starts another attempt or receives another lane or quota.
+    """
+    from bobbi_core.matroska_qualification import inspect_headers, UnsupportedLayout
+    if not _LANE.acquire(blocking=False):
+        raise ProbeError('PROBE_ALREADY_RUNNING')
+    transferred, budget = [], None
+    try:
+        budget = RangeBudget(size,read,cancelled)
+        if size<=BYTE_BUDGET:
+            # Preserve original IO for files within the complete byte quota.
+            # Prefix rereads could otherwise exceed the ledger's per-file size
+            # bound even when the original whole-file probe succeeds.
+            return _probe(binary,size,read,cancelled,transferred,budget=budget)
+        try:
+            result = inspect_headers(budget,BYTE_BUDGET-ANALYSIS_BYTES)
+        except UnsupportedLayout:
+            budget.guard()
+            return _probe(binary,size,read,cancelled,transferred,budget=budget)
+        budget.guard()
+        return dict(result,read_bytes=budget.count,probe_sha256=budget.digest.hexdigest(),
+                    requests=budget.requests,seconds=round(time.monotonic()-budget.started,3),
+                    state='HEADER_PROBED_NOT_IDENTITY_OR_PLAYBACK_PROOF')
+    except ProbeError as error:
+        if budget is not None:
+            error.metrics = dict(read_bytes=budget.count,requests=budget.requests,
+                seconds=round(time.monotonic()-budget.started,3),probe_sha256=budget.digest.hexdigest())
+        raise
+    finally:
+        if not transferred:
+            _LANE.release()
+
+
 def probe_command(binary, port, token):
     # Container headers/attachments and tail seeks consume the same fixed
     # network budget as stream analysis. Spending 8 MiB analysing packets can
@@ -163,8 +199,8 @@ def detail_probe(binary, size, read, cancelled, command_factory, result_parser):
             _LANE.release()
 
 
-def _probe(binary, size, read, cancelled, transferred, command_factory=None, result_parser=None):
-    budget = RangeBudget(size, read, cancelled)
+def _probe(binary, size, read, cancelled, transferred, command_factory=None, result_parser=None, budget=None):
+    budget = budget if budget is not None else RangeBudget(size, read, cancelled)
     token = '/' + secrets.token_hex(24)
 
     class Handler(BaseHTTPRequestHandler):

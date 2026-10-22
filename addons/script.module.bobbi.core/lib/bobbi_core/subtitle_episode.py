@@ -1,5 +1,6 @@
 """Subtitle-only unseasoned episode evidence; never grants video continuation."""
 from dataclasses import dataclass
+from functools import lru_cache
 import re
 
 from .filename_semantics import parse_filename
@@ -25,14 +26,30 @@ def from_details(data, identifier):
     return SingleSeason(identifier, seasons[0]['episode_count'])
 
 
+@lru_cache(maxsize=128)
+def _title_patterns(titles):
+    from .episode_scope import _consume_aliases
+    patterns = []
+    for title in sorted(titles, key=len, reverse=True):
+        # Reuse only the catalogue title-consumption rule, not video AUTO scope.
+        # A base alias leaves Season/OVA qualifiers in a longer alias visible.
+        remainder, _ = _consume_aliases(title, titles)
+        if re.search(r'[^\W_]', remainder, re.UNICODE):
+            continue
+        words = re.findall(r'[^\W_]+', title, re.UNICODE)
+        if words:
+            patterns.append(re.compile(r'(?<![^\W_])' + r'[\W_]+'.join(map(re.escape, words))
+                                       + r'(?![^\W_])', re.I))
+    return tuple(patterns)
+
+
 def declarations(text, title):
     """Subtitle-only, title-aware season/special evidence, never video authority."""
-    words = re.findall(r'[^\W_]+', title, re.UNICODE)
-    if words:
+    titles = (title,) if isinstance(title, str) else tuple(title)
+    for pattern in _title_patterns(titles):
         # Exempt the canonical title once, not every occurrence. A title such
         # as "第二季" can be followed by a distinct, contradictory season tag.
-        text = re.sub(r'(?<![^\W_])' + r'[\W_]+'.join(map(re.escape, words))
-                      + r'(?![^\W_])', ' ', text, count=1, flags=re.I)
+        text = pattern.sub(' ', text, count=1)
     seasons = {int(s) for s in re.findall(r'(?i)(?<![a-z0-9])s(\d{1,3})(?=e\d|[^a-z0-9]|$)', text)}
     seasons.update(int(s) for s in re.findall(r'(?i)\bseason[ ._-]+(\d{1,3})\b', text))
     seasons.update(int(s) for s in re.findall(r'(?i)\b(\d{1,3})(?:st|nd|rd|th)[ ._-]+season\b', text))
@@ -51,13 +68,15 @@ def declarations(text, title):
             seasons.add(total + current)
     if re.search(r'(?i)(?<![a-z0-9])(?:ova|oad|specials?|sp)(?![a-z0-9])|番外篇?|特别篇|特別篇|特典', text):
         seasons.add(0)
+    if re.search(r'(?i)\b(?:final|last)[ ._-]+season\b|最终季|最終季', text):
+        seasons.add(-1)  # A symbolic season is not an independently mapped number.
     return seasons
 
 
-def matches(filename, context, declared_seasons):
+def matches(filename, context, declared_seasons, titles=None):
     parsed = parse_filename(filename)
     target = (context['season'], context['episode'])
-    seasons = set(declared_seasons) | declarations(filename, context['title'])
+    seasons = set(declared_seasons) | declarations(filename, titles or context['title'])
     if seasons and seasons != {target[0]}:
         return False
     asian = tuple(re.finditer(r'第\s*(\d{1,4})\s*[话話集回]', filename))

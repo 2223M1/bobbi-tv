@@ -1,0 +1,12 @@
+{
+  "result": {
+    "mode": "block",
+    "before": "progressive",
+    "native_sha256": "632758f5d1ca5494e9b049446d3908bead70589b4d18640bb5d06e830a2b57eb",
+    "configured": "block",
+    "account_scope_unchanged": true,
+    "restarted": true
+  },
+  "exit_code": 0,
+  "diagnostic_present": false
+}

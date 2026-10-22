@@ -6,7 +6,7 @@ No cloud writes, full-file cache, alternate edition, cookies to CDN or player ca
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
-from threading import BoundedSemaphore, Condition, Event, Lock, Thread
+from threading import BoundedSemaphore, Condition, Event, Lock, Thread, local
 from collections import deque
 import hashlib
 import json
@@ -20,12 +20,15 @@ from dataclasses import dataclass
 import math
 
 STARTUP_SEGMENT_BYTES = 8 * 1024**2
+DIAGNOSTIC_STARTUP_SEGMENT_BYTES = 1024**2
 MAX_SEGMENT_BYTES = 64 * 1024**2
 DELIVERY_CHUNK_BYTES = 128 * 1024
+DIAGNOSTIC_BATCH_SECONDS = .002
 DELIVERY_POLL_SECONDS = 1
 FETCH_CHUNK_BYTES = 32 * 1024
 PROGRESSIVE_QUEUE_BYTES = 8 * 1024**2
 BINDING_IDENTITY = ('locator', 'guid', 'title', 'size')
+NEGATIVE_GRANT_SECONDS = 30
 OBSERVATION_LIMIT = 48
 OBSERVATION_WAIT_MS = 25
 OBSERVATION_REASONS = frozenset((
@@ -39,17 +42,26 @@ OBSERVATION_NUMBERS = frozenset((
     'http', 'gate', 'start', 'end', 'monotonic_us', 'offset', 'delivered',
     'status', 'first_block_bytes', 'block_end', 'wait_ms', 'wait_begin_us',
     'wait_end_us', 'upstream_start', 'bytes', 'remaining', 'retry', 'fetch_ms',
-    'write_ms', 'wall_ms', 'suppressed', 'len', 'requested', 'queue_peak', 'queue_limit', 'api_code'))
+    'write_ms', 'wall_ms', 'suppressed', 'len', 'requested', 'queue_peak', 'queue_limit', 'api_code',
+    'queue_puts', 'queue_gets', 'send_calls', 'grant_us', 'connect_us', 'read_wait_us',
+    'queue_room_us', 'queue_put_us', 'queue_get_us', 'socket_send_us', 'retry_window', 'upstream_accepted',
+    'batch_budget_us', 'producer_cpu_us', 'consumer_cpu_us',
+    'producer_cancel_calls', 'consumer_cancel_calls', 'producer_cancel_us', 'consumer_cancel_us',
+    'read_zero', 'read_eof', 'read_le4k', 'read_le32k', 'read_le128k', 'read_gt128k',
+    'get_zero', 'get_eof', 'get_le4k', 'get_le32k', 'get_le128k', 'get_gt128k'))
 OBSERVATION_HASHES = {'run': 16, 'request': 16, 'transport': 64, 'file': 64}
 OBSERVATION_ENUMS = {
     'exception': frozenset(('ShareError','AccountError','ValueError','TypeError','KeyError',
                             'OSError','TimeoutError','HTTPError','other')),
     'phase': frozenset(('begin', 'response', 'gate_wait', 'upstream_status',
-                       'yield', 'retry', 'fetch_end', 'write_end', 'end')),
+                       'yield', 'retry', 'fetch_end', 'write_end', 'end', 'window')),
     'stage': frozenset(('range', 'gate', 'fetch', 'grant', 'connect',
                        'response_check', 'body', 'headers', 'write')),
     'cancel': frozenset(('none', 'account_revoked', 'service_stop',
-                        'socket_error', 'socket_probe_error')),
+                        'socket_error', 'socket_probe_error', 'diagnostic_expired')),
+    'timing_scope': frozenset(('diagnostic_cumulative',)),
+    'diagnostic_mode': frozenset(('open_range', 'open_range_microbatch', 'open_range_bound_guard',
+                                 'block_startup_1m')),
     'method': frozenset(('GET', 'HEAD')),
     'role': frozenset(('unknown',)),
     'outcome': frozenset(('incomplete', 'rejected', 'head_complete',
@@ -102,7 +114,7 @@ def observation_fields(row):
         value = row.get(key)
         if type(value) is str and value in allowed:
             safe[key] = value
-    for key in ('started', 'initial', 'complete'):
+    for key in ('started', 'initial', 'complete', 'producer_complete', 'thread_cpu_supported'):
         if type(row.get(key)) is bool:
             safe[key] = row[key]
     return safe
@@ -183,18 +195,23 @@ class ReadGate:
 
 class ByteQueue:
     """One HTTP read's bounded prefix; never a whole-file or cross-read cache."""
-    def __init__(self, limit=PROGRESSIVE_QUEUE_BYTES):
+    def __init__(self, limit=PROGRESSIVE_QUEUE_BYTES, microbatch=False):
         if type(limit) is not int or not FETCH_CHUNK_BYTES <= limit <= PROGRESSIVE_QUEUE_BYTES:
             raise ValueError('SHARE_QUEUE_BUDGET')
+        if type(microbatch) is not bool:
+            raise ValueError('SHARE_DIAGNOSTIC_INVALID')
+        self.microbatch = microbatch
         self.limit, self.peak, self.bytes = limit, 0, 0
         self.chunks, self.condition = deque(), Condition()
         self.stopped, self.finished, self.error = False, False, None
+        self.puts = self.gets = 0  # Successful queued fragments / returned batches, not delivered bytes.
 
     def put(self, chunk):
         with self.condition:
             if self.stopped or self.bytes + len(chunk) > self.limit:
                 return False  # Caller closes upstream BEFORE waiting for room.
             self.chunks.append(chunk)
+            self.puts += 1
             self.bytes += len(chunk)
             self.peak = max(self.peak, self.bytes)
             self.condition.notify_all()
@@ -218,9 +235,44 @@ class ByteQueue:
                 self.condition.wait(.05)
             if self.stopped or cancelled():
                 return None
+            if self.microbatch:
+                # Only an explicit diagnostic may collect later fragments.
+                # Start once from the first available fragment of this batch;
+                # arrivals/spurious wakes never move the deadline. First output,
+                # full batches and producer EOF/error never wait for collection.
+                until = time.monotonic() + DIAGNOSTIC_BATCH_SECONDS
+                while (self.gets and self.chunks and self.chunks[0]
+                       and self.bytes < DELIVERY_CHUNK_BYTES and not self.finished):
+                    remaining = until - time.monotonic()
+                    if remaining <= 0:
+                        break
+                    self.condition.wait(remaining)
+                    if self.stopped or cancelled():
+                        return None
+                if self.error is not None:
+                    raise self.error
             if self.chunks:
-                chunk = self.chunks.popleft()
-                self.bytes -= len(chunk)
+                # Coalesce ONLY the prefix already queued under this lock.
+                # Ordinary/control mode never waits to fill a batch; the
+                # diagnostic's bounded wait above is over. A chunk retains its exact
+                # suffix; accepted and delivered accounting stay separate.
+                parts, length = [], 0
+                while self.chunks and length < DELIVERY_CHUNK_BYTES:
+                    chunk = self.chunks[0]
+                    if not chunk:
+                        if not parts:
+                            parts.append(self.chunks.popleft())
+                        break  # Preserve an empty injected prefix without an unbounded zero-byte scan.
+                    take = min(len(chunk), DELIVERY_CHUNK_BYTES - length)
+                    if take == len(chunk):
+                        parts.append(self.chunks.popleft())
+                    else:
+                        parts.append(chunk[:take])
+                        self.chunks[0] = chunk[take:]
+                    length += take
+                chunk = parts[0] if len(parts) == 1 else b''.join(parts)
+                self.bytes -= length
+                self.gets += 1
                 self.condition.notify_all()
                 return chunk
             if self.error is not None:
@@ -274,6 +326,91 @@ def checked(body):
     return dict(body)
 
 
+def checked_diagnostic(value):
+    """Explicit maintainer registration only; never a saved/user preference."""
+    if (type(value) is not dict or set(value) != {'mode', 'seconds'}
+            or value['mode'] not in ('open_range', 'open_range_microbatch', 'open_range_bound_guard',
+                                    'block_startup_1m') or type(value['seconds']) is not int
+            or not 1 <= value['seconds'] <= 60):
+        raise ValueError('SHARE_DIAGNOSTIC_INVALID')
+    return dict(value)
+
+
+class RetryWindow:
+    """64 MiB accepted-byte budgets, independent of connections and gate yields."""
+    def __init__(self, start):
+        self.start, self.index = start, 0
+        self.failures = self.contention = 0
+
+    def advance(self, offset):
+        index = (offset - self.start) // MAX_SEGMENT_BYTES
+        if index > self.index:
+            self.index = index
+            self.failures = self.contention = 0
+            return True
+        return False
+
+
+class DiagnosticMetrics:
+    """Per-thread diagnostic counters, emitted only at the existing final events.
+
+    CPU is each worker's own thread time, including instrumentation overhead.
+    Cancel wall time overlaps queue/read/socket wall time; those totals must not
+    be added. Buckets count returned prefixes, not HTTP requests or delivered bytes.
+    """
+    BUCKETS = ('zero', 'eof', 'le4k', 'le32k', 'le128k', 'gt128k')
+
+    def __init__(self):
+        self.thread = local()
+        self.cpu_clock = getattr(time, 'thread_time_ns', None)
+        self.rows = {role: dict(cancel_calls=0, cancel_us=0, cpu_start=None, cpu_us=None,
+                               complete=False, **{kind + '_' + bucket: 0 for bucket in self.BUCKETS})
+                     for role, kind in (('producer', 'read'), ('consumer', 'get'))}
+
+    def cpu(self):
+        try:
+            return self.cpu_clock() if callable(self.cpu_clock) else None
+        except (OSError, RuntimeError):
+            return None  # An optional CPU clock cannot change transport policy.
+
+    def begin(self, role):
+        self.thread.row = self.rows[role]
+        self.thread.row['cpu_start'] = self.cpu()
+
+    def end(self):
+        row, now = self.thread.row, self.cpu()
+        if now is not None and row['cpu_start'] is not None:
+            row['cpu_us'] = max(0, (now - row['cpu_start']) // 1000)
+        row['complete'] = True
+
+    def cancel(self, check):
+        row, began = self.thread.row, time.monotonic()
+        try:
+            return check()
+        finally:
+            row['cancel_calls'] += 1
+            row['cancel_us'] += max(0, int((time.monotonic() - began) * 1000000))
+
+    def size(self, kind, value):
+        if not isinstance(value, (bytes, bytearray, memoryview)):
+            bucket = 'eof'
+        else:
+            length = len(value)
+            bucket = ('zero' if length == 0 else 'le4k' if length <= 4096 else
+                      'le32k' if length <= 32768 else 'le128k' if length <= 131072 else 'gt128k')
+        self.thread.row[kind + '_' + bucket] += 1
+
+    def snapshot(self):
+        result = dict(producer_complete=self.rows['producer']['complete'],
+                      thread_cpu_supported=all(row['cpu_start'] is not None for row in self.rows.values()))
+        for role, row in self.rows.items():
+            result.update({key: value for key, value in row.items() if key.startswith(('read_', 'get_'))})
+            for key in ('cancel_calls', 'cancel_us', 'cpu_us'):
+                if row[key] is not None:
+                    result[role + '_' + key] = row[key]
+        return result
+
+
 @dataclass(frozen=True)
 class ResolvedResource:
     """Optional resolver-owned expiry; never guessed from signed URL parameters."""
@@ -298,9 +435,17 @@ def upstream_chunks(response):
 
 
 class Binding:
-    def __init__(self, body, resolve, validate_url, account=None, scope=None):
+    def __init__(self, body, resolve, validate_url, account=None, scope=None, diagnostic=None):
         self.body, self.resolve, self.validate_url = body, resolve, validate_url
         self.account, self.scope = account, dict(scope) if scope else None
+        self.diagnostic = checked_diagnostic(diagnostic) if diagnostic is not None else None
+        self.diagnostic_deadline = time.monotonic() + diagnostic['seconds'] if diagnostic is not None else None
+        self._account_current_guard = None
+        if self.diagnostic is not None and self.diagnostic['mode'] == 'open_range_bound_guard':
+            factory = getattr(account, 'current_guard', None)
+            if not callable(factory):
+                raise ValueError('SHARE_DIAGNOSTIC_INVALID')
+            self._account_current_guard = factory(self.scope)
         self.revoked = Event()
         self.connections, self.connection_lock = set(), Lock()
         self.token = uuid4().hex
@@ -310,6 +455,8 @@ class Binding:
                                ensure_ascii=True, separators=(',', ':')).encode('ascii')
         self.physical_file_hash = hashlib.sha256(canonical).hexdigest()
         self.lock = Lock()
+        # Read-only diagnostics must not wait for the grant's network lock.
+        self.outcome_lock, self.outcome = Lock(), None
         self.io_lock = ReadGate()
         self.address = None
         self.expires_at = None
@@ -318,7 +465,13 @@ class Binding:
         self.active = 0
 
     def cancelled(self):
-        return self.revoked.is_set() or (self.account is not None and not self.account.is_current(self.scope))
+        return (self.diagnostic_expired() or self.revoked.is_set()
+                or (self.account is not None and not (
+                    self._account_current_guard() if getattr(self, '_account_current_guard', None) is not None
+                    else self.account.is_current(self.scope))))
+
+    def diagnostic_expired(self):
+        return self.diagnostic_deadline is not None and time.monotonic() >= self.diagnostic_deadline
 
     def revoke(self):
         self.revoked.set()
@@ -339,12 +492,29 @@ class Binding:
                     and (self.expires_at is None or time.time() + 15 < self.expires_at)):
                 return self.address
             now = time.monotonic()
+            from bobbi_core.share_failure import PERMANENT, failure_error, failure_value
+            previous = self.grant_outcome()
+            if (previous and previous['state'] == 'failed'
+                    and previous['failure']['code'] in PERMANENT and now < previous['retry_after']):
+                raise failure_error(previous['failure'])
             self.renewals = [t for t in self.renewals if now - t < 300]
             if len(self.renewals) >= 4:
                 raise ValueError('SHARE_REFRESH_BUDGET')
             self.renewals.append(now)
-            address = (self.resolve(self.body, self.scope) if self.account is not None
-                       else self.resolve(self.body))
+            attempt = dict(started_at=time.time(), started=now, state='pending')
+            self._publish_outcome(attempt)
+            try:
+                address = (self.resolve(self.body, self.scope) if self.account is not None
+                           else self.resolve(self.body))
+            except Exception as error:
+                try:
+                    failure = failure_value(error)
+                except ImportError:
+                    failure = None  # The base transport has no catalog dependency.
+                if failure is not None and not self.cancelled():
+                    self._publish_outcome(dict(attempt, state='failed', failure=failure,
+                        retry_after=time.monotonic() + NEGATIVE_GRANT_SECONDS))
+                raise
             expiry = None
             if isinstance(address, ResolvedResource):
                 expiry, address = address.expires_at, address.url
@@ -367,7 +537,27 @@ class Binding:
             else:
                 self.address = address
             self.expires_at = expiry
+            self._publish_outcome(dict(attempt, state='ready'))
             return address
+
+    def _publish_outcome(self, value):
+        from bobbi_core.share_failure import PERMANENT
+        def publish():
+            with self.outcome_lock:
+                if not self.revoked.is_set() and not self.diagnostic_expired():
+                    if value['state'] == 'failed' and value['failure']['code'] in PERMANENT:
+                        # A rejected/expired earlier address must not bypass
+                        # this binding's negative window on the next GET.
+                        self.address = self.expires_at = None
+                    self.outcome = value
+        if self.account is not None:
+            self.account.run_if_current(self.scope, publish)
+        else:
+            publish()
+
+    def grant_outcome(self):
+        with self.outcome_lock:
+            return self.outcome  # Replaced as a whole, never mutated after publication.
 
 
 class LimitedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -442,7 +632,59 @@ class ShareStream:
             return self.account.run_if_current(account, lambda: self._register(body, account))
         return self._register(body, None)
 
-    def _register(self, body, account):
+    def failure_record(self, scope, selected, transport_hash):
+        """Exact current Binding only; no resolution, registration, or IO gate."""
+        from bobbi_core.share_failure import TUPLE_FIELDS
+        with self.lock:
+            entries = tuple(self.records.values())
+        matches = [entry for entry in entries if entry.scope == scope
+            and entry.transport_hash == transport_hash
+            and all(entry.body[key] == selected[key] for key in TUPLE_FIELDS)]
+        if len(matches) != 1 or matches[0].cancelled():
+            return None
+        entry = matches[0]
+        outcome = entry.grant_outcome()
+        if not outcome or outcome['state'] != 'failed':
+            return None
+        return entry, outcome
+
+    def denied_proofs(self, scope, submitted):
+        """Known exact failures only. Missing/evicted bindings are not failures."""
+        from bobbi_core.share_failure import PERMANENT, tuple_hash
+        account_hash = hashlib.sha256(json.dumps([scope['account_id'], scope['epoch']],
+            ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+        with self.lock:
+            entries = tuple(self.records.values())
+        latest = {}
+        for entry in entries:
+            if entry.scope != scope or entry.cancelled():
+                continue
+            key, outcome = tuple_hash(entry.body), entry.grant_outcome()
+            if key not in submitted or not outcome:
+                continue
+            if key not in latest or outcome['started'] > latest[key][0][1]['started']:
+                latest[key] = [(entry, outcome)]
+            elif outcome['started'] == latest[key][0][1]['started']:
+                latest[key].append((entry, outcome))
+        denied = []
+        for key, matches in latest.items():
+            if len(matches) != 1:
+                continue  # Clock ties cannot establish which attempt won.
+            entry, outcome = matches[0]
+            if (outcome['state'] == 'failed' and outcome['failure']['code'] in PERMANENT
+                    and outcome['failure'].get('checked_proof') ==
+                        dict(checked_at=submitted[key], checked_account=account_hash)
+                    and entry.grant_outcome() is outcome and not entry.cancelled()):
+                denied.append(key)
+        return sorted(denied)
+
+    def register_diagnostic(self, body, account, diagnostic):
+        body, diagnostic = checked(body), checked_diagnostic(diagnostic)
+        if self.account is not None:
+            return self.account.run_if_current(account, lambda: self._register(body, account, diagnostic))
+        return self._register(body, None, diagnostic)
+
+    def _register(self, body, account, diagnostic=None):
         with self.lock:
             if self.stopping.is_set():
                 raise ValueError('SHARE_STOPPED')
@@ -452,7 +694,8 @@ class ShareStream:
                     del self.records[key]
             entry = self.records.get(body['request_id'])
             if entry is not None:
-                if entry.body != body or entry.scope != account or entry.cancelled():
+                if (entry.body != body or entry.scope != account or entry.diagnostic != diagnostic
+                        or entry.cancelled()):
                     raise ValueError('SHARE_REQUEST_RETARGETED')
             else:
                 if len(self.records) >= 32:
@@ -464,7 +707,7 @@ class ShareStream:
                         raise ValueError('SHARE_BINDINGS_FULL')
                     del self.records[min(idle)[1]]
                 self.validate(body)  # Exact local catalogue binding, no network IO here.
-                entry = Binding(body, self.resolve, self.validate_url, self.account, account)
+                entry = Binding(body, self.resolve, self.validate_url, self.account, account, diagnostic)
                 # A new playback reservation of the same physical file shares
                 # the upstream gate, even while an old reservation winds down.
                 identity = BINDING_IDENTITY
@@ -503,7 +746,7 @@ class ShareStream:
             if entry is not None:
                 # No manager lock while holding records: register/revoke acquire
                 # account -> records. The revoked flag is the local fast gate.
-                if entry.revoked.is_set():
+                if entry.revoked.is_set() or entry.diagnostic_expired():
                     return None
                 entry.active += 1
                 entry.touched = time.monotonic()
@@ -568,6 +811,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def cancelled(self):
         entry = getattr(self, 'entry', None)
+        if entry is not None and entry.diagnostic_expired():
+            self.cancel_reason = 'diagnostic_expired'
+            return True
         if entry is not None and entry.cancelled():
             self.cancel_reason = 'account_revoked'
             return True
@@ -647,6 +893,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         self.entry = entry
         self.observation_state = owner.observation(entry)
+        diagnostic = getattr(entry, 'diagnostic', None)
+        if diagnostic is not None:
+            self.observation_state.update(diagnostic_mode=diagnostic['mode'],
+                batch_budget_us=2000 if diagnostic['mode'] == 'open_range_microbatch' else 0)
         self.observation_count = self.observation_suppressed = 0
         self.observation_offset = self.observation_delivered = 0
         self.observation_stage = 'range'
@@ -673,13 +923,23 @@ class Handler(BaseHTTPRequestHandler):
                 self.response_headers(status, start, end, size)
                 outcome = 'head_complete'
                 return
-            if getattr(owner, 'progressive', False):
+            small_block = diagnostic is not None and diagnostic['mode'] == 'block_startup_1m'
+            if not small_block and (getattr(owner, 'progressive', False) or diagnostic is not None):
                 complete = self.serve_progressive(entry, start, end, status)
                 started = getattr(self, 'progressive_started', False)
                 outcome = 'complete' if complete else 'cancelled'
                 reason = 'range_complete' if complete else 'delivery_incomplete'
+                if not complete:
+                    # No response_headers() ran when cancellation won before
+                    # the first prefix. Do not wait for another HTTP request
+                    # on this unanswered connection after the producer drains.
+                    self.close_connection = True
                 return
             offset = start
+            # This explicit, short-lived diagnostic changes only the block
+            # startup floor. It never selects progressive/open Range, changes
+            # the owner's default, or shares a warm-up across HTTP reads.
+            startup_bytes = DIAGNOSTIC_STARTUP_SEGMENT_BYTES if small_block else STARTUP_SEGMENT_BYTES
             window = time.monotonic()
             fetched = wait_ms = fetch_ms = write_ms = recovered = 0
             with owner.session() as session:
@@ -689,7 +949,7 @@ class Handler(BaseHTTPRequestHandler):
                     # 64 MiB fetch can drain a cold player/seek buffer even when
                     # sustained CDN throughput exceeds the media bitrate. Reach
                     # the unchanged cap after warm-up; no prefetch or new worker.
-                    length = min(owner.segment_bytes, max(STARTUP_SEGMENT_BYTES, offset - start))
+                    length = min(owner.segment_bytes, max(startup_bytes, offset - start))
                     upper = min(end, offset + length - 1)
                     self.observation_offset = offset
                     self.observation_stage = 'gate'
@@ -795,7 +1055,7 @@ class Handler(BaseHTTPRequestHandler):
                          wait_ms=observation_wait_ms, fetch_ms=observation_fetch_ms,
                          write_ms=observation_write_ms,
                          wall_ms=int((time.monotonic() - observation_began) * 1000),
-                         suppressed=self.observation_suppressed)
+                         suppressed=self.observation_suppressed, **getattr(self, 'progressive_counts', {}))
 
     def serve_progressive(self, entry, start, end, status):
         """Read and deliver concurrently, retaining the SAME grant/gate/retry path.
@@ -808,17 +1068,30 @@ class Handler(BaseHTTPRequestHandler):
         owner = self.server.owner
         if not owner.producer_slots.acquire(blocking=False):
             raise OSError('SHARE_READ_UNAVAILABLE')
-        pipe = ByteQueue(owner.queue_bytes)
+        pipe = ByteQueue(owner.queue_bytes, microbatch=entry.diagnostic is not None
+                         and entry.diagnostic['mode'] == 'open_range_microbatch')
         self.progressive_started = False
+        self.progressive_send_calls = 0
+        diagnostic = entry.diagnostic is not None
+        self.diagnostic_timings = ({key: 0 for key in ('grant_us','connect_us','read_wait_us',
+            'queue_room_us','queue_put_us','queue_get_us','socket_send_us')} if diagnostic else None)
+        self.diagnostic_metrics = DiagnosticMetrics() if diagnostic else None
+        if diagnostic:
+            self.diagnostic_metrics.begin('consumer')
+        retry_window = RetryWindow(start) if diagnostic else None
         original_cancelled = self.cancelled
-        self.cancelled = lambda: pipe.stopped or original_cancelled()
+        queued_cancelled = lambda: pipe.stopped or original_cancelled()
+        self.cancelled = ((lambda: self.diagnostic_metrics.cancel(queued_cancelled))
+                          if diagnostic else queued_cancelled)
 
         def produce():
+            if diagnostic:
+                self.diagnostic_metrics.begin('producer')
             received = start
             try:
                 with owner.session() as session:
                     while received <= end and not self.cancelled():
-                        if not pipe.room(self.cancelled):
+                        if not self.diagnostic_call('queue_room_us', pipe.room, self.cancelled):
                             break
                         waiting = time.monotonic()
                         if not entry.io_lock.acquire(self.cancelled, initial=received == start):
@@ -826,11 +1099,16 @@ class Handler(BaseHTTPRequestHandler):
                         self.observation_holds_gate = True
                         self.observation_offset = received
                         reading = time.monotonic()
-                        upper = min(end, received + min(owner.segment_bytes,
-                            max(STARTUP_SEGMENT_BYTES, received - start)) - 1)
+                        # Prefix delivery does not wait for this whole range.
+                        # Use the existing cap from the first request, avoiding
+                        # the block path's forced early reconnects. Queue/gate
+                        # pressure still closes and resumes the exact suffix.
+                        upper = end if diagnostic else min(end, received + owner.segment_bytes - 1)
                         count = 0
                         try:
-                            count, _ = self.read_block(session, entry, received, upper, 0, consume=pipe.put)
+                            count, _ = self.read_block(session, entry, received, upper, 0,
+                                consume=lambda chunk: self.diagnostic_call('queue_put_us', pipe.put, chunk),
+                                retry_window=retry_window)
                         finally:
                             entry.io_lock.release()
                             self.observation_holds_gate = False
@@ -847,6 +1125,8 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as error:
                 pipe.finish(error)
             finally:
+                if diagnostic:
+                    self.diagnostic_metrics.end()
                 owner.producer_slots.release()
                 with owner.lock:
                     owner.producers.discard(worker)
@@ -865,7 +1145,7 @@ class Handler(BaseHTTPRequestHandler):
             raise
         try:
             while not self.cancelled():
-                block = pipe.get(self.cancelled)
+                block = self.diagnostic_call('queue_get_us', pipe.get, self.cancelled)
                 if block is None:
                     break
                 if not self.progressive_started:
@@ -885,9 +1165,15 @@ class Handler(BaseHTTPRequestHandler):
             # transport retains its independent producer slot even if joining
             # times out: new requests cannot create unbounded orphan workers.
             worker.join(15)
+            self.progressive_counts = dict(queue_puts=pipe.puts, queue_gets=pipe.gets,
+                                           send_calls=self.progressive_send_calls)
+            if self.diagnostic_timings is not None:
+                self.diagnostic_metrics.end()
+                self.progressive_counts.update(self.diagnostic_timings, timing_scope='diagnostic_cumulative')
+                self.progressive_counts.update(self.diagnostic_metrics.snapshot())
             self.observe('write_end', len=self.observation_delivered, requested=end-start+1,
                          queue_peak=pipe.peak, queue_limit=pipe.limit,
-                         complete=self.observation_delivered == end-start+1)
+                         complete=self.observation_delivered == end-start+1, **self.progressive_counts)
 
     def write_block(self, block):
         # sendall's timeout is for the WHOLE block, not a no-progress timeout.
@@ -901,7 +1187,10 @@ class Handler(BaseHTTPRequestHandler):
         try:
             while position < len(view) and not self.cancelled():
                 try:
-                    sent = self.connection.send(view[position:position + DELIVERY_CHUNK_BYTES])
+                    if hasattr(self, 'progressive_send_calls'):
+                        self.progressive_send_calls += 1  # Attempts, including timeout/partial send.
+                    sent = self.diagnostic_call('socket_send_us', self.connection.send,
+                                                view[position:position + DELIVERY_CHUNK_BYTES])
                 except TimeoutError:
                     continue  # Backpressure, not evidence that the player stopped.
                 except OSError:
@@ -915,14 +1204,33 @@ class Handler(BaseHTTPRequestHandler):
         finally:
             view.release()
 
-    def read_block(self, session, entry, start, end, failures, consume=None):
+    def diagnostic_call(self, key, function, *args, **kwargs):
+        timings = getattr(self, 'diagnostic_timings', None)
+        if timings is None:
+            return function(*args, **kwargs)
+        began = time.monotonic()
+        try:
+            result = function(*args, **kwargs)
+            metrics = getattr(self, 'diagnostic_metrics', None)
+            if metrics is not None and key in ('read_wait_us', 'queue_get_us'):
+                metrics.size('read' if key == 'read_wait_us' else 'get', result)
+            return result
+        finally:
+            timings[key] += max(0, int((time.monotonic() - began) * 1000000))
+
+    def read_block(self, session, entry, start, end, failures, consume=None, retry_window=None):
         owner, data = self.server.owner, bytearray()
+        if retry_window is not None and consume is None:
+            raise ValueError('SHARE_DIAGNOSTIC_INVALID')  # Never accumulate an extended range in memory.
         accepted = 0
         contention_retries = 0
         while start + accepted <= end and not self.cancelled():
             offset = start + accepted
+            if retry_window is not None:
+                retry_window.advance(offset)
+                failures, contention_retries = retry_window.failures, retry_window.contention
             self.observation_stage = 'grant'
-            address = entry.grant()
+            address = self.diagnostic_call('grant_us', entry.grant)
             base, _, options = address.partition('|')
             ua = parse_qs(options)['User-Agent'][0]
             rejected = False
@@ -930,8 +1238,9 @@ class Handler(BaseHTTPRequestHandler):
             possible_close_race = False
             try:
                 self.observation_stage = 'connect'
-                with session.get(base, headers={'User-Agent': ua,
-                    'Range': 'bytes={}-{}'.format(offset, end), 'Accept-Encoding': 'identity',
+                range_end = '' if retry_window is not None and end == entry.body['size'] - 1 else str(end)
+                with self.diagnostic_call('connect_us', session.get, base, headers={'User-Agent': ua,
+                    'Range': 'bytes={}-{}'.format(offset, range_end), 'Accept-Encoding': 'identity',
                     'Connection': 'close'}, stream=True, allow_redirects=False, timeout=(3.05, 10)) as response:
                     self.observation_stage = 'response_check'
                     if response.status_code != 206:
@@ -948,7 +1257,11 @@ class Handler(BaseHTTPRequestHandler):
                             raise ValueError('SHARE_RANGE_IDENTITY')
                         self.observation_stage = 'body'
                         chunks = iter(upstream_chunks(response))
-                        for chunk in chunks:
+                        exhausted = object()
+                        while True:
+                            chunk = self.diagnostic_call('read_wait_us', next, chunks, exhausted)
+                            if chunk is exhausted:
+                                break
                             if self.cancelled():
                                 raise OSError('SHARE_STOPPED')
                             if not chunk:
@@ -959,7 +1272,7 @@ class Handler(BaseHTTPRequestHandler):
                                 # Retain the last prefix until the declared body
                                 # actually ends; an oversized chunked response
                                 # cannot look complete to the downstream player.
-                                if next(chunks, b''):
+                                if self.diagnostic_call('read_wait_us', next, chunks, b''):
                                     raise ValueError('SHARE_RANGE_OVERFLOW')
                             if consume is not None:
                                 if not consume(chunk):
@@ -968,6 +1281,10 @@ class Handler(BaseHTTPRequestHandler):
                             else:
                                 data.extend(chunk)
                             accepted += len(chunk)
+                            if retry_window is not None and retry_window.advance(start + accepted):
+                                failures, contention_retries = retry_window.failures, retry_window.contention
+                                self.observe('window', retry_window=retry_window.index, upstream_accepted=start+accepted,
+                                    timing_scope='diagnostic_cumulative', **(self.diagnostic_timings or {}))
                             if accepted and accepted < end-start+1 and entry.io_lock.contended():
                                 # Keep the sequential 64 MiB request when it is
                                 # alone. A queued seek/scanner gets the next
@@ -992,6 +1309,8 @@ class Handler(BaseHTTPRequestHandler):
                     if possible_close_race and contention_retries < 3:
                         delay = .05 * (2 ** contention_retries)
                         contention_retries += 1
+                        if retry_window is not None:
+                            retry_window.contention = contention_retries
                         if owner.stopping.wait(delay) or self.cancelled():
                             raise OSError('SHARE_STOPPED')
                         owner.report('READ_CONTENTION_RETRY')
@@ -999,11 +1318,13 @@ class Handler(BaseHTTPRequestHandler):
                                      upstream_start=offset, block_end=end)
                         continue
                     failures += 1
+                    if retry_window is not None:
+                        retry_window.failures = failures
                     if failures > 3:
                         raise ValueError('SHARE_READ_REJECTED')
                     if owner.stopping.wait(.25):
                         raise OSError('SHARE_STOPPED')
-                    entry.grant(rejected=address)
+                    self.diagnostic_call('grant_us', entry.grant, rejected=address)
                     owner.report('ADDRESS_RENEWED')
                     self.observe('retry', reason='address_renewed', retry=failures,
                                  upstream_start=offset, block_end=end)
@@ -1013,6 +1334,8 @@ class Handler(BaseHTTPRequestHandler):
                 if self.cancelled():
                     raise OSError('SHARE_STOPPED') from None
                 failures += 1
+                if retry_window is not None:
+                    retry_window.failures = failures
                 if failures > 3 or owner.stopping.wait(.25):
                     raise OSError('SHARE_READ_UNAVAILABLE') from None
                 owner.report('READ_RESUMED')

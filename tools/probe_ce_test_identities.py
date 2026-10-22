@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--transport-source',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--suite',choices=('ce2011','ce2012','ce2015','ce2021'),default='ce2011')
+    parser.add_argument('--suite',choices=('ce2011','ce2012','ce2015','ce2021','ce2035','ce2038','ce2039','ce2041','ce2041_fresh','ce2043_fresh'),default='ce2011')
     args=parser.parse_args()
     if args.output.exists(): raise FileExistsError('Keep earlier identity evidence')
     queries=([('movie','12 Angry Men',1957),('tv','The Tatami Galaxy',2010)] if args.suite=='ce2011'
@@ -36,5 +36,17 @@ if __name__ == '__main__':
         queries=[('movie','Amelie',2001),('tv','Barakamon',2014)]
     if args.suite=='ce2021':
         queries=[('tv','Ping Pong the Animation',2014)]
+    if args.suite=='ce2035':
+        queries=[('movie',"The Man Who Wasn't There",2001),('tv','Space Dandy',2014)]
+    if args.suite=='ce2038':
+        queries=[('movie','The Conversation',1974),('tv','Death Parade',2015)]
+    if args.suite=='ce2039':
+        queries=[('tv',"Frieren: Beyond Journey's End",2023)]
+    if args.suite=='ce2041':
+        queries=[('tv','Attack on Titan',2013)]
+    if args.suite=='ce2041_fresh':
+        queries=[('movie','Nightcrawler',2014),('tv','Heavenly Delusion',2023)]
+    if args.suite=='ce2043_fresh':
+        queries=[('movie','Moon',2009),('tv','Made in Abyss',2017)]
     transport.REMOTE='QUERIES='+repr(queries)+'\n'+transport.REMOTE
     transport.run(args.transport_source,args.output)

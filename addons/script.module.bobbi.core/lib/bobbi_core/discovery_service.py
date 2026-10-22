@@ -4,6 +4,7 @@ from types import SimpleNamespace
 
 from bobbi_core.discovery_queue import DiscoveryQueue
 from bobbi_core.next_discovery import discover
+from bobbi_core.source_intent import NEXT_OFFSETS
 
 
 class NextDiscovery:
@@ -16,13 +17,17 @@ class NextDiscovery:
         self.may_discover = may_discover
 
     def after_intent(self, targets, admitted):
-        # Same-pack current+next already has an exact target; no search needed.
-        if len(targets) != 1 or len(admitted) != 1:
+        if not targets or len(targets) != len(admitted):
             return None
         request, _ = targets[0]
         if not request['media_id'].startswith('tmdb:tv:') or request['purpose'] not in ('current', 'manual'):
             return None
-        return self.jobs.schedule(admitted[0]['task_id'], request['media_id'], request['version_key'])
+        # Same-pack proof may cover either or both future positions. Missing
+        # positions retain the real current anchor; a found next never recurses.
+        prefix, episode = request['media_id'].rsplit(':e', 1)
+        present = {item['media_id'] for item, _ in targets}
+        return [self.jobs.schedule(admitted[0]['task_id'], request['media_id'], request['version_key'], offset)
+                for offset in NEXT_OFFSETS if '{}:e{}'.format(prefix, int(episode) + offset) not in present]
 
     def claim(self): return self.jobs.claim()
 

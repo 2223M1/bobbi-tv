@@ -106,6 +106,19 @@ class SourceListSession:
                 self.confirmed = None
                 self.revision += 1
 
+    def invalidate_share(self, epoch, source):
+        """Downgrade only the captured exact card; do not remove any candidate."""
+        key = self.key(source)
+        with self.lock:
+            retained = self.entries.get(key)
+            fields = ('url', 'guid', 'title', 'size', 'indexer', 'type')
+            if (epoch != self.epoch or self.cancelled or self.confirmed != key or retained is None
+                    or any(getattr(retained, name, None) != getattr(source, name, None) for name in fields)):
+                return False
+            retained.verifiedShareFile = False
+            self.revision += 1
+            return True
+
     def cancel(self):
         with self.lock:
             self.cancelled = True

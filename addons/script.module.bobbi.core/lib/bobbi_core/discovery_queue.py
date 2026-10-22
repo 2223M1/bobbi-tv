@@ -15,7 +15,7 @@ from uuid import uuid4
 
 from bobbi_core.ledger import encode
 from bobbi_core.preparation import checked_request
-from bobbi_core.source_intent import checked_body
+from bobbi_core.source_intent import checked_body, checked_target_offset
 
 EXTENSION = 'extension:next-discovery:schema'
 TABLE = 'next_discovery_jobs'
@@ -72,7 +72,8 @@ class DiscoveryQueue:
             # queue and are never reset by this recovery.
             self.db.execute("UPDATE next_discovery_jobs SET state='waiting',nonce='',next_poll=? WHERE state='running'", (self.now(),))
 
-    def schedule(self, task, media_id, version_key):
+    def schedule(self, task, media_id, version_key, target_offset=1):
+        target_offset = checked_target_offset(target_offset)
         source = self.preparation.status(task)
         if source['state'] in ('failed', 'suppressed'):
             raise ValueError('Ineligible current source task')
@@ -93,12 +94,12 @@ class DiscoveryQueue:
             selected=dict(source_info_hash=request['source_info_hash'], torrent_file_id=file['id'],
                           torrent_path=file['path'], torrent_file_bytes=file['length']))
         checked_body(anchor)
-        next_media = 'tmdb:tv:{}:s{}:e{}'.format(match[1], match[2], int(match[3]) + 1)
+        next_media = 'tmdb:tv:{}:s{}:e{}'.format(match[1], match[2], int(match[3]) + target_offset)
         key = hashlib.sha256(encode([source['account'], source['destination'], next_media, version_key]).encode()).hexdigest()
-        payload = dict(task=task, anchor=anchor, selection=selection)
+        payload = dict(task=task, anchor=anchor, selection=selection, target_offset=target_offset)
         encoded = encode(payload)
         with self.ledger.transaction():
-            old = self.db.execute('SELECT id FROM next_discovery_jobs WHERE id=?', (key,)).fetchone()
+            old = self.db.execute('SELECT id,payload,state,result,updated FROM next_discovery_jobs WHERE id=?', (key,)).fetchone()
             if not old:
                 if self.db.execute('SELECT COUNT(*) FROM next_discovery_jobs').fetchone()[0] >= MAX_JOBS:
                     raise ValueError('Discovery history capacity reached; preserve evidence')
@@ -106,6 +107,33 @@ class DiscoveryQueue:
                     VALUES(?,?,?,?,?,?,'waiting',?,?)''',
                     (key, source['account'], source['destination'], next_media, version_key, encoded, self.now(), self.now()))
                 self.ledger._audit('next_discovery_scheduled', None, {'job': key, 'task': task, 'media_id': next_media})
+            elif old['state'] in ('waiting', 'running', 'cancelled'):
+                previous = json.loads(old['payload'])['anchor']
+                same_anchor = (previous['selected'] == anchor['selected'] and
+                               all(previous['media'][k] == anchor['media'][k]
+                                   for k in ('tmdb_id', 'kind', 'season', 'episode')))
+                if same_anchor:
+                    return key
+                if old['state'] == 'cancelled':
+                    reason = json.loads(old['result']).get('reason')
+                    # Older jobs retained the preceding defer result. Only the
+                    # exact cancellation audit at this state boundary can
+                    # recover their cause; an unexplained cancel stays closed.
+                    cancelled_for_anchor = reason == 'CURRENT_SOURCE_INELIGIBLE' or self.db.execute(
+                        "SELECT 1 FROM audit WHERE action='next_discovery_cancelled' AND at>=? AND detail=? LIMIT 1",
+                        (old['updated'], encode({'job': key, 'reason': 'CURRENT_SOURCE_INELIGIBLE'}))).fetchone()
+                    existing = self.db.execute('''SELECT 1 FROM preparation_targets p JOIN tasks t ON t.id=p.task
+                        WHERE t.account=? AND t.destination=? AND p.media_id=? AND p.version_key=?
+                        AND t.state NOT IN ('failed','suppressed') LIMIT 1''',
+                        (source['account'], source['destination'], next_media, version_key)).fetchone()
+                    if not cancelled_for_anchor or existing:
+                        return key
+                # A newly admitted current episode advances the same bounded
+                # job, not a second search/transfer. Revoke any old IO nonce;
+                # its late result cannot publish against this new anchor.
+                self.db.execute("UPDATE next_discovery_jobs SET payload=?,state='waiting',nonce='',result='{}',next_poll=?,updated=? WHERE id=?",
+                                (encoded, self.now(), self.now(), key))
+                self.ledger._audit('next_discovery_reanchored', None, {'job': key, 'task': task, 'media_id': next_media})
         return key
 
     def get(self, key):
@@ -124,7 +152,8 @@ class DiscoveryQueue:
                 payload = json.loads(row['payload'])
                 current = self.preparation.status(payload['task'])
                 if current['state'] in ('suppressed', 'failed'):
-                    self.db.execute("UPDATE next_discovery_jobs SET state='cancelled',updated=? WHERE id=?", (self.now(), row['id']))
+                    self.db.execute("UPDATE next_discovery_jobs SET state='cancelled',nonce='',result=?,updated=? WHERE id=?",
+                                    (encode({'reason': 'CURRENT_SOURCE_INELIGIBLE'}), self.now(), row['id']))
                     self.ledger._audit('next_discovery_cancelled', None, {'job': row['id'], 'reason': 'CURRENT_SOURCE_INELIGIBLE'})
                     continue
                 # A concurrently prepared next target closes the gap, even if
@@ -161,10 +190,15 @@ class DiscoveryQueue:
         if row['state'] != 'running' or row['nonce'] != nonce:
             return None
         checked_request(request)
+        offset = checked_target_offset(row['payload'].get('target_offset', 1))
+        anchor = row['payload']['anchor']
+        media = anchor['media']
+        expected = 'tmdb:tv:{}:s{}:e{}'.format(media['tmdb_id'], media['season'], media['episode'] + offset)
+        if row['media_id'] != expected:
+            raise ValueError('Discovery target no longer matches its current-source anchor')
         same_version = request['version_key'] == row['version_key']
-        if not same_version:
+        if not same_version and offset == 1:
             from bobbi_core.episode_revision import compatible_pair
-            anchor = row['payload']['anchor']
             same_version = compatible_pair(PurePosixPath(anchor['selected']['torrent_path']).name,
                 PurePosixPath(selection['file']['path']).name, anchor['media']['season'],
                 anchor['media']['episode'], row['version_key'], request['version_key'])

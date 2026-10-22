@@ -1,0 +1,130 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "samurai_champloo",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Samurai Champloo",
+        "tmdb_id": 1063,
+        "kind": "tv",
+        "year": 2004,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 1063,
+          "name": "Samurai Champloo",
+          "original_name": "サムライチャンプルー",
+          "original_language": "ja",
+          "first_air_date": "2004-05-20"
+        },
+        "route": "system-direct",
+        "checked_at": 1792613609.1604214
+      },
+      "prior_request": "c273480d78724c9180a0cf6cf62896d1",
+      "started": 28856.47121407,
+      "home": {
+        "generation": 22,
+        "intent": 0,
+        "retired_generation": 22,
+        "observed_at": 28857.085009998
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 28857.085702395,
+      "picker": {
+        "window": 13001,
+        "generation": 23,
+        "intent": 0,
+        "tmdb_id": 1063,
+        "kind": "tv"
+      },
+      "picker_observed_at": 28868.80369428,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Samurai Champloo S01E01 Tempestuous Temperaments 1080p TrueHD 5 1 AVC HYBRI",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.53 GB",
+        "Container(1000).ListItem.Property(source_key)": "c00a01ba76087092f85a8fca91d63e80e39044f2fd3ed16dd46560076bdb295f",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 28962.924598205,
+      "request_id": "805b314e443a48eaaa5acf5d75ba74c4",
+      "selection_identity": "bt:9425e936367b8bee5fb2365b6492e9ee1e1e9b0d"
+    },
+    "sample": {
+      "wall": 29003.421198958,
+      "phase": null,
+      "native": {},
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 29003.447645462,
+        "read_completed": 29003.44787045,
+        "raw": "No vdec.\n",
+        "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+        "channels": [],
+        "identity_known": false,
+        "primary_channel": null
+      },
+      "decoder_counters": {},
+      "decoder_counter_source": null,
+      "observation_times": {
+        "sample_started": 29003.393087541,
+        "decoder_started": 29003.447645462,
+        "decoder_completed": 29003.44787045,
+        "sample_completed": 29003.448302136
+      }
+    },
+    "gui": {
+      "window": 10138,
+      "generation": 26,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "",
+        "Window.Property(info.media_type)": "",
+        "Window.Property(info.mode)": "",
+        "Window.Property(info.query)": "",
+        "Window.Property(info.tv_data)": "",
+        "Window.Property(info.year)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "",
+        "Window.Property(source_loading)": ""
+      },
+      "modal": false,
+      "visible": [
+        13002
+      ],
+      "stable": true
+    }
+  },
+  "diagnostic_present": false,
+  "work": "samurai_champloo",
+  "operation": "inspect",
+  "attempt": 3,
+  "regression_attempt": true
+}

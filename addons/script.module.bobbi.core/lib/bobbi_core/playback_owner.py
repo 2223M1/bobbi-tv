@@ -34,12 +34,37 @@ class PlaybackOwner:
         return (boot_id == self.boot_id and epoch == self.epoch and self.desired is not None
                 and self.desired['request_id'] == request_id and not self.desired['cancelled'])
 
-    def select(self, boot_id, expected_epoch, request_id, file_identity):
+    def select(self, boot_id, expected_epoch, request_id, file_identity, retry_from=None):
         if (not isinstance(request_id, str) or not re.fullmatch('[0-9a-f]{32}', request_id)
                 or not isinstance(file_identity, str) or not file_identity or len(file_identity) > 1024):
             raise ValueError('Bounded request and exact source identity required')
         if boot_id != self.boot_id:
             raise StaleIntent('Service restarted; old UI intent has no authority')
+        if retry_from is not None:
+            # Automatic same-file selection is not a fresh human choice. The
+            # caller's last snapshot can precede an already queued Stop, which
+            # does not increment owner.epoch. Check the original closed request
+            # inside this admission, before mutating either owner or native.
+            if (not isinstance(retry_from, dict)
+                    or set(retry_from) != {'request_id', 'selection_identity', 'category'}
+                    or not isinstance(retry_from['request_id'], str)
+                    or not re.fullmatch('[0-9a-f]{32}', retry_from['request_id'])
+                    or not isinstance(retry_from['selection_identity'], str)
+                    or not re.fullmatch('bt:[0-9a-f]{40}', retry_from['selection_identity'])
+                    or not isinstance(retry_from['category'], str)
+                    or retry_from['category'] not in {'prepared_ready', 'buffer_timeout', 'preload_error'}
+                    or request_id == retry_from['request_id']
+                    or not re.fullmatch('prepared:[0-9a-f]{64}', file_identity)):
+                raise ValueError('Exact closed-request retry guard required')
+            desired = self.desired
+            if (expected_epoch != self.epoch or not desired
+                    or desired['request_id'] != retry_from['request_id']
+                    or desired['selection_identity'] != retry_from['selection_identity']
+                    or desired['resolver_failure'] != dict(request_id=retry_from['request_id'],
+                                                           category=retry_from['category'])
+                    or desired['start_claimed'] or desired['observed_once'] or self.observed is not None
+                    or (retry_from['category'] == 'prepared_ready' and desired['cancelled'])):
+                raise StaleIntent('Closed request changed before automatic retry admission')
         if self.desired and self.desired['request_id'] == request_id:
             if self.desired['selection_identity'] != file_identity:
                 raise ValueError('Request identity cannot change its selected file')
@@ -148,11 +173,12 @@ class PlaybackOwner:
                    'cancelled', 'aborted', 'torrserver_error', 'preload_error',
                    'selected_file_missing', 'invalid_request', 'invalid_binding',
                    'target_unresolved', 'superseded', 'source_identity_mismatch',
-                   'torrent_download_failed', 'torrent_download_timeout'}
+                   'torrent_download_failed', 'torrent_download_timeout', 'prepared_ready'}
         if not isinstance(category, str) or category not in allowed:
             raise ValueError('Known bounded resolver failure required')
         if (not self._current(boot_id, epoch, request_id) or self.desired['resolver_failure']
                 or self.desired['observed_once']
+                or (category == 'prepared_ready' and (self.desired['start_claimed'] or self.observed is not None))
                 or (self.observed and self.observed['request_id'] == request_id)):
             return False
         self.desired['resolver_failure'] = dict(request_id=request_id, category=category)

@@ -94,7 +94,10 @@ def prepare_fonts(data, context, cancelled=lambda: False):
     raise RuntimeError('本次播放已取消，未应用迟到的字体结果')
 
 
-def resolve_entry(data, snapshot, entry, cancelled=lambda: False):
+def resolve_entry(data, snapshot, entry, cancelled=lambda: False, budget=3.0, pending_on_timeout=False,
+                  return_verification=False, verification_id=None):
+    if type(budget) not in (int, float) or not 0 < budget <= 3:
+        raise ValueError('Bounded prepared verification budget required')
     from bobbi_core.preparation import MEDIA
     from bobbi_core.video_context import migrate_entry
     migrate_entry(entry)
@@ -105,16 +108,20 @@ def resolve_entry(data, snapshot, entry, cancelled=lambda: False):
     if not MEDIA.fullmatch(media_id):
         return None
     account = capture_account(data)
-    verification = uuid4().hex
+    if verification_id is not None:
+        import re
+        if not isinstance(verification_id, str) or not re.fullmatch('[0-9a-f]{32}', verification_id):
+            raise ValueError('Bounded prepared verification identity required')
+    verification = verification_id if verification_id is not None else uuid4().hex
     body = dict(request_id=data['request_id'], verification_id=verification, resource_id=entry['key'], generation=snapshot['generation'],
                 account=snapshot['account'], source_info_hash=entry['prepared_source_info_hash'], media_id=media_id)
     if 'prepared_qualification' in entry:
         body['qualification'] = entry['prepared_qualification']
-    deadline = time.monotonic() + 3
+    deadline = time.monotonic() + budget
     while time.monotonic() < deadline and not cancelled():
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            return None
+            break
         try:
             # The server keys this read-only verification by the same nonce.
             # A lost reply must not create another job or bypass fresh identity
@@ -131,10 +138,14 @@ def resolve_entry(data, snapshot, entry, cancelled=lambda: False):
                 expected['qualification'] = body['qualification']
             if 'video_context' in entry:
                 expected['video_context'] = entry['video_context']
-            return entry if all(result.get(key) == value for key, value in expected.items()) and not cancelled() else None
+            if not all(result.get(key) == value for key, value in expected.items()) or cancelled():
+                return None
+            return {'entry': entry, 'verification': dict(body)} if return_verification else entry
         if result.get('state') != 'pending':
             return None
         time.sleep(min(0.1, max(0, deadline - time.monotonic())))
+    if pending_on_timeout and not cancelled() and time.monotonic() >= deadline:
+        raise TimeoutError('Prepared verification is still pending, not unavailable')
     return None
 
 

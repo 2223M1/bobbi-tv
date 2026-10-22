@@ -1,0 +1,43 @@
+{
+  "timestamp": 1792624798.4094746,
+  "request": "66b5f52cdd2c40c7bb13f8705c62268c",
+  "source_log": "kodi.log",
+  "lines": [
+    "2026-10-22 07:18:19.828 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-HANDOFF] selected source resolution started 66b5f52c",
+    "2026-10-22 07:18:19.973 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-EPISODE-BINDING] {\"schema\":1,\"phase\":\"producer\",\"request\":\"66b5f52cdd2c40c7bb13f8705c62268c\",\"binding_present\":true,\"binding_kind\":\"hash\",\"catalog_status\":\"available\",\"catalog_locales\":[\"en-US\",\"en-US\"],\"catalog_lookups\":2,\"catalog_alias_count\":16}",
+    "2026-10-22 07:18:19.975 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-HANDOFF] selected source resolved; constructing player",
+    "2026-10-22 07:18:20.138 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PREPARE-CONTEXT] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"is_torrent\": true, \"info_hash\": \"edc729b678556a6bdc09660a15bc45c9177605ae\", \"mode\": \"tv\", \"ids_present\": true, \"title_present\": true, \"release_present\": true}",
+    "2026-10-22 07:18:20.172 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"SESSION_ACTIVATED\", \"monotonic\": 39947.483241}",
+    "2026-10-22 07:18:20.224 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"LIST_ITEM_READY\", \"monotonic\": 39947.534787}",
+    "2026-10-22 07:18:20.224 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"VOLUME_GATE_BEGIN\", \"monotonic\": 39947.535079}",
+    "2026-10-22 07:18:20.228 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"VOLUME_GATE_END\", \"monotonic\": 39947.538876}",
+    "2026-10-22 07:18:20.228 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"PRE_AV_TRACKING_BEGIN\", \"monotonic\": 39947.539072}",
+    "2026-10-22 07:18:20.229 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"PRE_AV_TRACKING_END\", \"monotonic\": 39947.539771}",
+    "2026-10-22 07:18:20.229 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"PRE_AV_SUBTITLES_BEGIN\", \"monotonic\": 39947.539914}",
+    "2026-10-22 07:18:20.229 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"PRE_AV_SUBTITLES_END\", \"monotonic\": 39947.539978}",
+    "2026-10-22 07:18:20.250 T:2074     info <general>: [###JACKTOOKLOG###] [CINEMA-PHASE] {\"request\": \"66b5f52cdd2c40c7bb13f8705c62268c\", \"phase\": \"PLAY_ISSUED\", \"monotonic\": 39947.561146}",
+    "2026-10-22 07:19:24.745 T:2688  warning <general>: [BOBBI-TORRENT] reason=TORRENT_CANCELLED detail={\"elapsed_ms\":63846,\"metadata_polls\":5,\"request_id\":\"66b5f52cdd2c40c7bb13f8705c62268c\",\"stage\":\"selector\",\"stage_ms\":{\"add\":201,\"backend\":128,\"download\":99,\"metadata\":2788,\"selector\":60629}}"
+  ],
+  "diagnostic_scope": null,
+  "share_observations": [],
+  "crashes": [
+    "kodi_crashlog_20261021200923.log",
+    "kodi_crashlog_20261019200619.log",
+    "kodi_crashlog_20261021200109.log",
+    "kodi_crashlog_20261012135249.log",
+    "kodi_crashlog_20261021201204.log",
+    "kodi_crashlog_20261020222956.log",
+    "kodi_crashlog_20261021200648.log",
+    "kodi_crashlog_20261011230638.log"
+  ],
+  "truncation": {
+    "original_counts": {
+      "lines": 14,
+      "share_observations": 0
+    },
+    "dropped": {
+      "lines": 0,
+      "share_observations": 0
+    }
+  }
+}

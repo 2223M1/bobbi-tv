@@ -40,16 +40,23 @@ def discover_candidate(context, deadline, cancelled, provider, share_provider=No
     context = dict(context)
     context.pop('_movie_years', None)
     context.pop('_subtitle_single_season', None)
-    if context.get('mode') == 'series':
-        from lib.clients.tmdb.subtitle_scope import cached_scope
-        scope = cached_scope(context.get('tmdb'))
-        if scope is not None:
-            context['_subtitle_single_season'] = scope
-    if context.get('mode') == 'movie':
-        from lib.clients.tmdb.movie_years import cached_movie_years
-        evidence = cached_movie_years(context.get('tmdb'))
-        if evidence is not None:
-            context.update(year=evidence.primary_year, _movie_years=evidence)
+    context.pop('_subtitle_titles', None)
+    try:
+        if context.get('mode') == 'series':
+            from lib.clients.tmdb.subtitle_scope import cached_identity
+            evidence = cached_identity(context.get('tmdb'))
+            if evidence is not None:
+                context.update(_subtitle_titles=evidence['titles'], _subtitle_single_season=evidence['scope'])
+        if context.get('mode') == 'movie':
+            from lib.clients.tmdb.movie_years import cached_movie_identity
+            from bobbi_core.subtitle_candidates import titles_from_catalog
+            catalog = cached_movie_identity(context.get('tmdb'))
+            if catalog is not None:
+                evidence = catalog['evidence']
+                context.update(year=evidence.primary_year, _movie_years=evidence,
+                               _subtitle_titles=titles_from_catalog('movie', catalog))
+    except (ImportError, OSError, ValueError, TypeError, AttributeError):
+        pass  # Optional local cache never fetches TMDb or holds up playback.
     candidate = None
     if context.get('_share') and share_provider is not None:
         try:
@@ -69,7 +76,21 @@ def discover_candidate(context, deadline, cancelled, provider, share_provider=No
                 from bobbi_core.subtitle_candidates import public_failure_reason
                 provider.note('inspect', public_failure_reason(error))
     if candidate is None:
-        candidate = provider.candidates(context, deadline, cancelled)
+        try:
+            candidate = provider.candidates(context, deadline, cancelled)
+        finally:
+            # One bounded observation path for native and standard discovery.
+            # Hashes/counts only: no titles, response bodies, URLs or credentials.
+            try:
+                import json
+                import xbmc
+                for observation in getattr(provider, 'search_observations', ())[-9:]:
+                    xbmc.log('[AM6B subtitle-query] ' + json.dumps(observation, sort_keys=True), xbmc.LOGINFO)
+                traversal = getattr(provider, 'traversal', {})
+                if traversal:
+                    xbmc.log('[AM6B subtitle-traversal] ' + json.dumps(traversal, sort_keys=True), xbmc.LOGINFO)
+            except (ImportError, AttributeError, TypeError, ValueError):
+                pass
     return candidate
 
 

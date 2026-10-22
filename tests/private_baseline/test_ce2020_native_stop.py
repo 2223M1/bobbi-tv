@@ -17,8 +17,10 @@ def test_native_owner_and_auxiliary_monitor_exit_without_kodi_disable(tmp_path, 
     path=Path(__file__).resolve().parents[2]/'addons/plugin.video.bobbi/lib/services/background_service.py'
     spec=importlib.util.spec_from_file_location('ce2020_native_service', path)
     module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-    calls=[]
-    control=SimpleNamespace(authority=SimpleNamespace(dispatch=lambda body: {'boot_id': 'native'}),
+    calls, account_bindings = [], []
+    account_changed = lambda: None
+    control=SimpleNamespace(authority=SimpleNamespace(dispatch=lambda body: {'boot_id': 'native'},
+        configure_accounts=lambda accounts:account_bindings.append(accounts), account_changed=account_changed),
         native=SimpleNamespace(subtitle_fallback=SimpleNamespace()), tick=lambda:None, close=lambda:calls.append('control_drained'))
     monkeypatch.setitem(sys.modules,'lib.services.playback_control',SimpleNamespace(PlaybackControlServer=lambda **kw:control))
     server=Host(tmp_path); server.start(); server.can_quiesce=lambda:True
@@ -41,6 +43,8 @@ def test_native_owner_and_auxiliary_monitor_exit_without_kodi_disable(tmp_path, 
     worker=Thread(target=service); worker.start()
     try:
         assert entered.wait(1)
+        assert account_bindings == [server.accounts]
+        assert server.owner_account_changed is account_changed
         assert runtime.call('quiesce',{'protocol':1}) == {'accepted':True}
         worker.join(3)
         assert not worker.is_alive() and not errors and done.is_set()

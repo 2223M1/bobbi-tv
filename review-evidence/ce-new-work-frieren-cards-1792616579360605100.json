@@ -1,0 +1,96 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "frieren",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "[Nekomoe kissaten&VCB-Studio] Sousou no Frieren [01][Ma10p_1080p][x265_flac_aac].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.56 GB",
+        "Container(1000).ListItem.Property(source_key)": "92fef267b8cdb8004f8b3dc782a3588f8d5cbc506ea83eeea2e30b759124191e",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[7³ACG] 葬送的芙莉莲/Sousou no Frieren S01 | 01-28+SPx11 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "48.5 GB",
+        "Container(1000).ListItem.Property(source_key)": "e2762595be41ffea7f5102502afd4868858cbf3d5054ecf3270429d30348a90e",
+        "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[7³ACG] 葬送的芙莉莲/Sousou no Frieren S01 | 29-38+SPx11 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "13.5 GB",
+        "Container(1000).ListItem.Property(source_key)": "d67cac00878fc3d700cb920824e5af6647d4bccb710a596e2446ab44317974e8",
+        "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Sousou.no.Frieren.S01E01.2023.2160p.B-Global.WEB-DL.x264.AAC-yiiha.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.99 GB",
+        "Container(1000).ListItem.Property(source_key)": "7f5feca4724f441dee1ee3bfc8374206c37b16d7f597f4eb34a35535f9381b6a",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Sousou.no.Frieren.S01E01.2023.2160p.WEB-DL.x264.AAC-ZeroTV.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.99 GB",
+        "Container(1000).ListItem.Property(source_key)": "32b35aa41a2ba347be8574fcd3d3dafd2f2a5eeec4ec207adcaa30e8ebc6d2d2",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Sousou.no.Frieren.S01E01.2023.2160p.WEB-DL.x264.AAC-ZeroTV.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.99 GB",
+        "Container(1000).ListItem.Property(source_key)": "0ddaba428ac99c4ad743c6f20192d7b85e6975860f922f12df709e55ed512baa",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "葬送的芙莉莲.Sousou no Frieren.2023.S01E01.(BDRip 1920x1080 x264 FLAC)[ReinForce].mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "2.82 GB",
+        "Container(1000).ListItem.Property(source_key)": "01569cd703915435b8f2997827e6baa68d052cefdf52dcfec6f26fb28e2af2df",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[anime4life.] Frieren - Beyond Journey's End Season 1 BD_1080p Dolby TrueHD Dual Audio",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "38 GB",
+        "Container(1000).ListItem.Property(source_key)": "1dc820a5b5610c655f9775ba0e6488efd2597fed2a2b532c27375735646b1cb4",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Frieren: Beyond Journey's End (Sousou no Frieren) - S01 (YT WEB-DL 720p VP9 Opus) (Muse/Telesuccess Filipino English dub)",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "3.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "f42910b0a8308ff09d503ab1d0605bb0c2380f84d510e163f84d054618b76881",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 9,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "frieren",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

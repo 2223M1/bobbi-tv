@@ -2,8 +2,8 @@
 
 This pure adapter neither fetches nor submits. The service supplies the frozen
 verified current source and freshly fetched candidate metadata/catalog. Exactly
-one next target is returned to the existing durable preparation queue; no E+2
-recursion, quality-first substitution or cloud-ready flag is manufactured.
+one anchored window target is returned to the existing durable preparation
+queue; no recursion, quality-first substitution or cloud-ready flag is manufactured.
 """
 from copy import deepcopy
 import hashlib
@@ -12,7 +12,7 @@ from pathlib import PurePosixPath
 
 from bobbi_core.catalog_identity import prove_work, release_context, release_binding
 from bobbi_core.release_identity import bound_family
-from bobbi_core.source_intent import checked_body, verified_intents, mapped_family, VIDEO_SUFFIXES
+from bobbi_core.source_intent import checked_body, checked_target_offset, verified_intents, mapped_family, VIDEO_SUFFIXES
 from bobbi_core.episode_identity import bind_selected_episode
 
 
@@ -31,7 +31,8 @@ def verified_anchor(anchor, selection, catalog):
     return media, original_family, proof
 
 
-def verified_next(anchor, selection, metadata, account, destination, selector, catalog):
+def verified_next(anchor, selection, metadata, account, destination, selector, catalog, target_offset=1):
+    target_offset = checked_target_offset(target_offset)
     media, original_family, _ = verified_anchor(anchor, selection, catalog)
     source = metadata.get('hash', '')
     if not isinstance(source, str) or len(source) != 40 or set(source) - set('0123456789abcdef'):
@@ -47,7 +48,7 @@ def verified_next(anchor, selection, metadata, account, destination, selector, c
             raise ValueError('Malformed candidate entry')
         if PurePosixPath(item['path']).suffix.lower() in VIDEO_SUFFIXES:
             videos.append({key: item[key] for key in ('id', 'path', 'length')})
-    season, episode = media['season'], media['episode'] + 1
+    season, episode = media['season'], media['episode'] + target_offset
     next_media = dict(media, episode=episode)
     pair = release_context(next_media, catalog)
     current_pair = release_context(media, catalog)
@@ -66,8 +67,8 @@ def verified_next(anchor, selection, metadata, account, destination, selector, c
     targets = verified_intents(request_body, metadata, account, destination, selector, catalog, include_next=False)
     from bobbi_core.episode_revision import compatible_pair
     original_key = hashlib.sha256(original_family.encode()).hexdigest()
-    if len(targets) != 1 or (targets[0][0]['version_key'] != original_key and not compatible_pair(
+    if len(targets) != 1 or (targets[0][0]['version_key'] != original_key and not (target_offset == 1 and compatible_pair(
             PurePosixPath(anchor['selected']['torrent_path']).name, PurePosixPath(chosen['path']).name,
-            media['season'], media['episode'], original_key, targets[0][0]['version_key'])):
+            media['season'], media['episode'], original_key, targets[0][0]['version_key']))):
         raise ValueError('Candidate is not the selected release family')
     return targets[0]

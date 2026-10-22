@@ -159,6 +159,8 @@ class StandardSession:
             job, self.worker, self.job = self.job, None, None
             if row is job['owner'] and self.current_request(row['request_id']):
                 row['next_data'] = job.get('result')
+                if job.get('final'):
+                    row['next_final_checked'] = True
                 row['retry_at'] = self.clock() + (5, 15, 30, 30, 30)[min(row['attempts'] - 1, 4)]
         if not row or not self.current_request(row['request_id']):
             return
@@ -170,13 +172,17 @@ class StandardSession:
                     and row['duration'] - row['position'] <= 120
                     and row.get('attempts', 0) < 5 and self.clock() >= row.get('retry_at', 0))
         final_scan = row['state'] == 'ended' and not row.get('final_scan')
-        if (self.next_loader and self.worker is None and not row['next_data']
+        provisional = bool(row['next_data'] and row['next_data'].get('_next_transport') == 'bt')
+        needs_final = bool(row['next_data'] and row['next_data'].get('_next_recheck'))
+        if (self.next_loader and self.worker is None and (not row['next_data'] or provisional or (final_scan and needs_final))
                 and (near_end or final_scan)):
             row['attempts'] = row.get('attempts', 0) + 1
             if final_scan:
                 row['final_scan'] = True
             job = dict(request_id=row['request_id'], owner=row,
-                       data=deepcopy(row['data']), cancel=row['cancel'])
+                       data=deepcopy(row['data']), cancel=row['cancel'], final=final_scan)
+            if final_scan:
+                job['data']['_continuation_final'] = True
             self.job = job
             def cancelled():
                 return (job['cancel'].is_set() or not self.accounts.is_current(row['account'])
@@ -189,7 +195,7 @@ class StandardSession:
             self.worker = Thread(target=work, name='bobbi-standard-next', daemon=True)
             self.worker.start()
         if row['state'] == 'ended' and not playing and self.clock() - row['terminal'] >= .25:
-            if row['next_data']:
+            if row['next_data'] and (not row['next_data'].get('_next_recheck') or row.get('next_final_checked')):
                 data = row['next_data']
                 row['next_data'] = None
                 row['state'] = 'continued'  # Claim once before sending anything.

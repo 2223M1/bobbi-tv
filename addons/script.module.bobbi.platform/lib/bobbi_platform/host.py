@@ -32,6 +32,8 @@ class Host:
         self.preparation_root = None
         self.playing = True
         self.calls, self.revocations = Queue(maxsize=32), Queue(maxsize=32)
+        self.account_changes = Event()
+        self.owner_account_changed = None
         self.lock = Lock()
         self.engine_check = 0
         self.engine_worker, self.engine_lock = None, Lock()
@@ -60,6 +62,9 @@ class Host:
             self.report('IMAGE_SERVICE_UNAVAILABLE')
 
     def _account_changed(self, previous, current):
+        # Account callbacks may run on an HTTP worker. Playback and native
+        # barrier revocation stay on the existing serialized Kodi owner.
+        self.account_changes.set()  # Coalesced current-scope check cannot overflow.
         # This subscriber is registered before ShareStream's own revoke hook.
         # Collect only our unique old stream URLs, never a global player ID.
         streams = self.streams
@@ -103,8 +108,9 @@ class Host:
                         account=self.accounts, progressive=progressive)
             return self.streams
 
-    def bind_owner(self, dispatch):
+    def bind_owner(self, dispatch, account_changed=None):
         self.owner = dispatch  # Called on the native owner thread, never via IPC.
+        self.owner_account_changed = account_changed
 
     def bind_preparation(self, dispatch):
         self.preparation = dispatch  # An explicit capability, not a guessed endpoint.
@@ -167,6 +173,59 @@ class Host:
             expected = self.accounts.require_current(body['account'])
             payload = {key: value for key, value in body.items() if key != 'account'}
             return self._shares().register(payload, account=expected)
+        if action == 'share_failure':
+            import re
+            from bobbi_core.share_stream import checked
+            from bobbi_core.share_failure import TUPLE_FIELDS, tuple_hash
+            if (set(body) != {'account', 'owner', 'selected'} or type(body['owner']) is not dict
+                    or set(body['owner']) != {'boot_id', 'epoch', 'request_id', 'file_identity',
+                                              'native_instance', 'url_sha256'}
+                    or type(body['selected']) is not dict or set(body['selected']) != set(TUPLE_FIELDS)
+                    or type(body['owner']['url_sha256']) is not str
+                    or not re.fullmatch('[0-9a-f]{64}', body['owner']['url_sha256'])):
+                raise ValueError('SHARE_FAILURE_FIELDS')
+            selected = checked(dict(body['selected'], request_id='0'*32))
+            expected = self.accounts.require_current(body['account'])
+            streams = self.streams  # A diagnostic lookup never constructs a service.
+            record = streams.failure_record(expected, selected, body['owner']['url_sha256']) if streams else None
+            if record is None:
+                return {'matched': False}
+            entry, outcome = record
+            owner = {key: body['owner'][key] for key in ('boot_id', 'epoch', 'request_id', 'file_identity')}
+            fresh = self._owner_request(dict(owner, operation='startup_failure'))
+            if (type(fresh) is not dict or fresh.get('failed') is not True
+                    or fresh.get('receipt') != body['owner']):
+                return {'matched': False}
+            def publish_failure():
+                with entry.outcome_lock:
+                    if entry.outcome is not outcome or entry.revoked.is_set() or entry.diagnostic_expired():
+                        return {'matched': False}
+                    failure = {key: outcome['failure'][key]
+                               for key in ('code', 'http_status', 'api_code', 'invalidation_failed')}
+                    return dict(matched=True, account=expected, owner=dict(body['owner']),
+                                tuple_sha256=tuple_hash(selected), failure=failure)
+            return self.accounts.run_if_current(expected, publish_failure)
+        if action == 'share_known_failures':
+            from bobbi_core.share_failure import proofs
+            if set(body) != {'account', 'proofs'}:
+                raise ValueError('SHARE_PROOFS_INVALID')
+            submitted = proofs(body['proofs'])
+            expected = self.accounts.require_current(body['account'])
+            streams = self.streams
+            return self.accounts.run_if_current(expected,
+                lambda: dict(account=expected, denied=[dict(tuple_sha256=key, checked_at=submitted[key])
+                    for key in (streams.denied_proofs(expected, submitted) if streams else [])]))
+        if action == 'share_open_diagnostic':
+            # Explicit maintainer experiment; no preference, second daemon or
+            # change to an existing ordinary registration is permitted. Both
+            # open_range modes pass the same closed mode/duration validator.
+            from bobbi_core.share_stream import checked, checked_diagnostic
+            if set(body) != {'request_id','locator','guid','title','size','media','account','diagnostic'}:
+                raise ValueError('SHARE_DIAGNOSTIC_INVALID')
+            diagnostic = checked_diagnostic(body['diagnostic'])
+            payload = checked({key: value for key, value in body.items() if key not in ('account','diagnostic')})
+            expected = self.accounts.require_current(body['account'])
+            return self._shares().register_diagnostic(payload, expected, diagnostic)
         if action == 'share_subtitle_context' and 'account' in body:
             expected = self.accounts.require_current(body['account'])
             from bobbi_core.share_catalog import selected
@@ -196,6 +255,27 @@ class Host:
                 raise ValueError('SHARE_SEARCH_REPLY_LIMIT')
             return self.accounts.run_if_current(expected, lambda: result)
         if action in ('playback', 'standard_playback'):
+            if '_verified_transport' in body:
+                raise ValueError('PRIVATE_TRANSPORT_PROOF_REQUIRED')
+            if body.get('operation') == 'transport_capture':
+                # Re-read the SAME already completed verification, off the
+                # Kodi owner thread and before its short account-CAS commit.
+                # A client-supplied ready flag or cached title is never proof.
+                from bobbi_core.transport_handoff import VerifiedTransportTarget
+                if self.preparation is None or self.native_rpc is None:
+                    raise ValueError('TRANSPORT_PREPARATION_UNAVAILABLE')
+                scope = self.accounts.require_current(body.get('account_scope'))
+                verification = body.get('prepared_verification')
+                if (not isinstance(verification, dict)
+                        or verification.get('request_id') != body.get('request_id')):
+                    raise ValueError('TRANSPORT_VERIFICATION_REQUEST')
+                result = self.preparation.request('resolve', verification, scope)
+                if result.get('state') != 'ready':
+                    return dict(authorized=False, state='NOT_READY')
+                proof = VerifiedTransportTarget(result, verification, scope)
+                body = dict(body)
+                body.pop('prepared_verification')
+                body['_verified_transport'] = proof
             return self._owner_request(body)
         if action == 'preparation':
             from bobbi_core.capabilities import IPC_PROTOCOL
@@ -250,6 +330,16 @@ class Host:
     def tick(self):
         if self.stopping.is_set():
             return
+        # Revoke old scopes before accepting later opens/continuations. The
+        # authority also guards each scoped command under AccountManager CAS.
+        if self.account_changes.is_set() and self.owner_account_changed is not None:
+            self.account_changes.clear()
+            try:
+                if self.owner_account_changed() == 'pending':
+                    self.account_changes.set()
+            except (ValueError, OSError, RuntimeError):
+                self.account_changes.set()  # Retry revocation, never a playback open.
+                self.report('ACCOUNT_OWNER_REVOKE_UNAVAILABLE')
         for _ in range(8):
             try:
                 job = self.calls.get_nowait()

@@ -10,6 +10,8 @@ import re
 import socket
 import time
 
+from bobbi_core.source_intent import checked_target_offset
+
 STARTED = 'Window(10000).Property(bobbi_cinema_started)'
 SELECTED = 'Window(10000).Property(bobbi_cinema_selection)'
 OWNER = 'Window(10000).Property(bobbi_active_player_session)'
@@ -60,7 +62,8 @@ def admitted(job, replies):
                 or (episode['season'], episode['episode']) != (media['season'], media['episode'])
                 or source_hash is None
                 or source_hash != anchor['selected']['source_info_hash']): return False
-        expected = 'tmdb:tv:{}:s{}:e{}'.format(media['tmdb_id'], media['season'], media['episode'] + 1)
+        offset = checked_target_offset(job['payload'].get('target_offset', 1))
+        expected = 'tmdb:tv:{}:s{}:e{}'.format(media['tmdb_id'], media['season'], media['episode'] + offset)
         return job['media_id'] == expected
     except (ValueError, KeyError, TypeError, AttributeError):
         return False

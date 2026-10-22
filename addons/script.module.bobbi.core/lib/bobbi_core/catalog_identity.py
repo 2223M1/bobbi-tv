@@ -1,6 +1,7 @@
 """Conservative work identity from service-fetched catalog data, not UI labels."""
 import hashlib
 import json
+from datetime import date as calendar_date
 from pathlib import PurePosixPath
 import re
 import time
@@ -9,6 +10,31 @@ import unicodedata
 
 def normalized(title):
     return ' '.join(re.findall(r'[^\W_]+', unicodedata.normalize('NFKC', title).casefold()))
+
+
+def tv_season_years(details, tmdb_id):
+    """Read unambiguous season dates from this exact work's existing details."""
+    if (not isinstance(details, dict) or type(tmdb_id) is not int or tmdb_id <= 0
+            or type(details.get('id')) is not int or details['id'] != tmdb_id
+            or not isinstance(details.get('seasons'), list) or len(details['seasons']) > 100):
+        return {}
+    years, ambiguous = {}, set()
+    for row in details['seasons']:
+        if not isinstance(row, dict):
+            continue
+        season, dated = row.get('season_number'), row.get('air_date')
+        if type(season) is not int or not 1 <= season <= 100000 or not isinstance(dated, str):
+            continue
+        try:
+            if not re.fullmatch(r'[12][0-9]{3}-[0-9]{2}-[0-9]{2}', dated):
+                continue
+            year = calendar_date.fromisoformat(dated).year
+        except ValueError:
+            continue
+        if season in years and years[season] != year:
+            ambiguous.add(season)
+        years[season] = year
+    return {season: year for season, year in years.items() if season not in ambiguous}
 
 
 def release_title(path, kind):
@@ -55,7 +81,21 @@ def prove_work(media, path, catalog):
             or not isinstance(catalog.get('aliases'), list) or not catalog['aliases']
             or not catalog.get('response_sha256') or type(catalog.get('year')) is not int):
         raise ValueError('Service-fetched catalog identity required')
-    actual, year = release_title(path, media['kind'])
+    identity_path = path
+    if media['kind'] == 'movie':
+        # A library-manager IMDb annotation is packaging only when this same
+        # service-fetched catalogue confirms it. Never erase arbitrary braces,
+        # unknown IDs or title/edition text; the original file tuple is intact.
+        name = PurePosixPath(path).name
+        annotation = re.compile(r'(?i)(?<!\w)\{imdb-(tt[0-9]{7,10})\}(?!\w)')
+        found = annotation.findall(name)
+        if found:
+            expected = catalog.get('imdb_id')
+            if (not isinstance(expected, str) or not re.fullmatch(r'tt[0-9]{7,10}', expected)
+                    or any(identifier.lower() != expected for identifier in found)):
+                raise ValueError('Movie file external identity differs from the catalogue')
+            identity_path = annotation.sub(' ', name)
+    actual, year = release_title(identity_path, media['kind'])
     aliases = {normalized(name) for name in catalog['aliases'] if isinstance(name, str)}
     if actual not in aliases and media['kind'] == 'tv':
         pair = release_context(media, catalog)
@@ -74,6 +114,11 @@ def prove_work(media, path, catalog):
         raise ValueError('Actual torrent work title is not a complete trusted catalog alias')
     from bobbi_core.movie_years import accepted_years
     years = accepted_years(catalog.get('_movie_years'), media['tmdb_id'], catalog['year']) if media['kind'] == 'movie' else (catalog['year'],)
+    if media['kind'] == 'tv':
+        season_years = catalog.get('season_years')
+        season_year = season_years.get(media.get('season')) if isinstance(season_years, dict) else None
+        if type(season_year) is int and 1000 <= season_year <= 2999:
+            years = tuple(set(years) | {season_year})
     if year is not None and year not in years:
         raise ValueError('Release year identifies a different work')
     if catalog.get('ambiguous') and year is None:
@@ -166,9 +211,13 @@ class Catalog:
         if kind == 'movie':
             from bobbi_core.movie_years import from_details
             result['_movie_years'] = from_details(value, identifier)
+            imdb_id = value.get('imdb_id')
+            if isinstance(imdb_id, str) and re.fullmatch(r'tt[0-9]{7,10}', imdb_id):
+                result['imdb_id'] = imdb_id
         if kind == 'tv':
             result['release_seasons'] = [row['season_number'] for row in value.get('seasons', [])
                 if isinstance(row, dict) and type(row.get('season_number')) is int and row['season_number'] > 0]
+            result['season_years'] = tv_season_years(value, identifier)
         if kind == 'tv' and media.get('anime') and value.get('number_of_seasons') == 1:
             from bobbi_core.episode_order import validate_group
             listing, listing_digest = self._get('tv/{}/episode_groups'.format(identifier), {'language': 'en-US'})

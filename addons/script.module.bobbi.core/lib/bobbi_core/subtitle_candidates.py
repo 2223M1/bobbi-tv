@@ -4,6 +4,7 @@ No cloud submissions, video downloads, Kodi calls or video-quality changes.
 Only the native playback owner may apply the exported immutable text file.
 """
 import hashlib
+from dataclasses import dataclass
 import json
 import os
 from pathlib import Path
@@ -12,6 +13,7 @@ import sqlite3
 import stat
 import tempfile
 import time
+import unicodedata
 from urllib.parse import urlencode
 
 MAX_BYTES = 8 * 1024 * 1024
@@ -49,6 +51,7 @@ _STOP_REASONS = frozenset({
     'SUBTITLE_ACCOUNT_CHANGED',
     'ASSRT_QUOTA_STATE_INVALID', 'ASSRT_RATE_LIMIT', 'ASSRT_TOKEN_NOT_CONFIGURED',
     'ASSRT_RESPONSE_INVALID', 'MATCHED_SUBTITLE_UNAVAILABLE', 'NO_MATCHED_CHINESE_TEXT',
+    'ASSRT_API_20900', 'ASSRT_API_30002',
 # Preserve any bounded HTTP error status, including nonstandard provider/CDN
 # responses. This records evidence only; it does not widen candidate retries.
 } | {'ASSRT_HTTP_' + str(code) for code in range(400, 600)})
@@ -71,6 +74,96 @@ def public_failure_reason(error):
 
 def normalized(text):
     return ' '.join(re.findall(r'[^\W_]+', str(text).casefold(), re.UNICODE))
+
+
+def _bounded_titles(values):
+    names, seen, size = [], set(), 0
+    for value in values[:256] if isinstance(values, (tuple, list)) else ():
+        if not isinstance(value, str) or any(unicodedata.category(c).startswith('C') for c in value):
+            continue
+        name = unicodedata.normalize('NFKC', value).strip()
+        key = normalized(name)
+        if not 2 <= len(name) <= 128 or not key or '://' in name or key in seen:
+            continue
+        length = len(name.encode('utf-8'))
+        if len(names) >= 16 or size + length > 2048:
+            break
+        names.append(name)
+        seen.add(key)
+        size += length
+    return tuple(names)
+
+
+@dataclass(frozen=True)
+class SubtitleTitles:
+    """Local cache-produced work names; never deserialize this from IPC."""
+    kind: str
+    tmdb_id: int
+    titles: tuple
+
+    def __post_init__(self):
+        if (self.kind not in ('movie', 'tv') or type(self.tmdb_id) is not int or self.tmdb_id <= 0
+                or type(self.titles) is not tuple or not self.titles
+                or _bounded_titles(self.titles) != self.titles):
+            raise ValueError('Bounded local subtitle title evidence required')
+
+
+def titles_from_catalog(kind, catalog):
+    """Adapt an already ID-checked cache result, not arbitrary playback data."""
+    if not isinstance(catalog, dict):
+        return None
+    names = _bounded_titles(catalog.get('aliases'))
+    try:
+        return SubtitleTitles(kind, catalog.get('tmdb_id'), names)
+    except ValueError:
+        return None
+
+
+def accepted_titles(context):
+    evidence = context.get('_subtitle_titles')
+    names = [context['title']]
+    if (type(evidence) is SubtitleTitles and type(context.get('tmdb')) is int
+            and evidence.tmdb_id == context['tmdb']
+            and evidence.kind == ('tv' if context['mode'] == 'series' else 'movie')):
+        names.extend(evidence.titles)
+    unique = {}
+    for name in names:
+        unique.setdefault(normalized(name), name)
+    return tuple(unique.values())
+
+
+def query_titles(context):
+    names = accepted_titles(context)
+    selected = [names[0]]
+    remaining = names[1:]
+    for pattern in (r'[\u3400-\u9fff]', r'^[\x20-\x7e]*[A-Za-z][\x20-\x7e]*$'):
+        selected.extend(next(([name] for name in remaining
+            if name not in selected and re.search(pattern, name)), []))
+    for name in remaining:
+        if len(selected) >= 3:
+            break
+        if name not in selected:
+            selected.append(name)
+    return tuple(selected[:3])
+
+
+def query_plan(context):
+    if context['mode'] == 'movie':
+        from bobbi_core.movie_years import accepted_years
+        years = accepted_years(context.get('_movie_years'), context.get('tmdb'), context['year'])
+        suffixes = [' ' + str(year) for year in dict.fromkeys((context['year'],) + tuple(years))]
+    else:
+        suffixes = [' S{:02}E{:02}'.format(context['season'], context['episode']),
+                    ' S{:02}'.format(context['season']), '']
+    plan, seen = [], set()
+    for slot, title in enumerate(query_titles(context)):
+        for index, suffix in enumerate(suffixes):
+            query = title + suffix
+            key = normalized(query)
+            if key not in seen and len(plan) < 9:
+                plan.append((query, slot, index == len(suffixes) - 1))
+                seen.add(key)
+    return tuple(plan)
 
 
 def identity(context):
@@ -105,8 +198,9 @@ def rank(row, context, allow_season_pack=False, allow_incomplete=False):
     if any(len(part) > 4096 for part in parts) or len(text) > 8192 or EXCLUDE.search(text):
         return None
     words = normalized(text)
-    wanted = normalized(context['title'])
-    if not re.search(r'(?:^| )' + re.escape(wanted) + r'(?: |$)', words):
+    titles = accepted_titles(context)
+    if not any(re.search(r'(?:^| )' + re.escape(normalized(title)) + r'(?: |$)', words)
+               for title in titles):
         return None
     if context['mode'] == 'movie':
         from bobbi_core.movie_identity import declared_years
@@ -114,20 +208,20 @@ def rank(row, context, allow_season_pack=False, allow_incomplete=False):
         # The same bounded title-aware parser guards movie files and subtitles.
         # Inspect each metadata field separately: title digits are not release
         # years, while an additional explicit conflicting year still rejects.
-        years = set().union(*(declared_years(part, [context['title']]) for part in parts))
+        years = set().union(*(declared_years(part, titles) for part in parts))
         allowed = set(accepted_years(context.get('_movie_years'), context.get('tmdb'), context['year']))
         if (not years or not years <= allowed) and not (allow_incomplete and not years):
             return None
     else:
         from bobbi_core.subtitle_episode import matches as subtitle_episode_matches, declarations
         episodes = episode_tags(text)
-        seasons = set().union(*(declarations(part, context['title']) for part in parts))
+        seasons = set().union(*(declarations(part, titles) for part in parts))
         if seasons and seasons != {context['season']}:
             return None
         if episodes and episodes != {(context['season'], context['episode'])}:
             return None
         filename = row.get('filename')
-        file_matches = bool(filename and subtitle_episode_matches(str(filename), context, seasons))
+        file_matches = bool(filename and subtitle_episode_matches(str(filename), context, seasons, titles))
         if not episodes and not (file_matches or (allow_season_pack and seasons == {context['season']})
                                  or (allow_incomplete and not seasons)):
             return None
@@ -258,6 +352,7 @@ class AssrtCandidates:
         self.directory.mkdir(parents=True, mode=0o700, exist_ok=True)
         self.token_file, self.clock, self.wall = Path(token_file), clock, wall
         self.events = []
+        self.search_observations, self.traversal = [], {}
         self.transport = transport
         self.accounts, self.preparation_root, self.local_scope = accounts, preparation_root, None
         if accounts is not None:
@@ -306,7 +401,8 @@ class AssrtCandidates:
         if stage == 'download':
             retryable.add('ASSRT_HTTP_403')  # Expired individual file, not API auth.
         if stage == 'detail':
-            retryable.add('ASSRT_RESPONSE_INVALID')
+            retryable.update(('ASSRT_RESPONSE_INVALID', 'ASSRT_API_20900'))
+            # 20900 means this subtitle is absent, not that later IDs are absent.
         if isinstance(error, LookupStopped) and reason not in retryable:
             raise error  # Auth, quota, cancellation/deadline are never retried.
 
@@ -466,6 +562,7 @@ class AssrtCandidates:
         return choices if self.local_current() else []
 
     def candidates(self, context, deadline, cancelled, root=ROOT):
+        self.search_observations, self.traversal = [], {}
         self.guard(deadline, cancelled)
         key = identity(context)
         # Reuse subtitles from previous readable releases of this exact work.
@@ -528,8 +625,10 @@ class AssrtCandidates:
         saved = self.load(search_file, {})
         if (isinstance(saved, dict) and type(saved.get('time')) in (int, float)
                 and 0 <= self.wall() - saved['time'] < 86400 and isinstance(saved.get('rows'), list)):
+            self._search_source = 'cache'
             rows = saved.get('rows', [])
         else:
+            self._search_source = 'live'
             rows = self.api('search', {'q': query, 'cnt': 15, 'filelist': 1}, deadline, cancelled)
             # Search metadata contains no authentication token or download URL.
             clean = [{k: row.get(k) for k in ('id', 'native_name', 'videoname', 'lang', 'subtype')} for row in rows if isinstance(row, dict)]
@@ -538,28 +637,44 @@ class AssrtCandidates:
         return rows
 
     def remote_candidates(self, context, deadline, cancelled, root, key, catalog, local):
-        if context['mode'] == 'movie':
-            from bobbi_core.movie_years import accepted_years
-            years = accepted_years(context.get('_movie_years'), context.get('tmdb'), context['year'])
-            queries = [context['title'] + ' ' + str(year) for year in
-                       dict.fromkeys((context['year'],) + tuple(years))]
-        else:
-            queries = [context['title'] + ' S{:02}E{:02}'.format(context['season'], context['episode']),
-                       context['title'] + ' S{:02}'.format(context['season']), context['title']]
+        self.search_observations = []
+        self.traversal = dict(unique_ids=0, detail_attempts=0, file_attempts=0,
+                              detail_rejected=0, file_rejected=0)
+        alias_fallback = len(query_titles(context)) > 1
         rows = []
         seen = set()
-        for query in queries:
+        search_error = None
+        for query, slot, last in query_plan(context):
             try:
                 found = self.search(query, deadline, cancelled)
+                self.guard(deadline, cancelled)
             except (OSError, ValueError, LookupStopped) as error:
                 self.note('search', str(error) if isinstance(error, LookupStopped) else type(error).__name__)
+                self.guard(deadline, cancelled)
+                if (isinstance(error, LookupStopped) and str(error) == 'ASSRT_API_30002'
+                        and any(str(row.get('subtype', '')).casefold() not in ('vobsub', 'pgs', 'sup')
+                                and rank(row, context, allow_season_pack=True, allow_incomplete=True) is not None
+                                for row in rows)):
+                    # Search is unavailable; stop querying, but inspect already
+                    # admitted IDs within the existing detail/time budget.
+                    search_error = error
+                    break
                 raise
             for row in found:
                 if isinstance(row, dict) and str(row.get('id')).isdigit() and str(row['id']) not in seen:
                     rows.append(row)
                     seen.add(str(row['id']))
+            admitted = sum(str(row.get('subtype', '')).casefold() not in ('vobsub', 'pgs', 'sup')
+                and rank(row, context, allow_season_pack=True, allow_incomplete=True) is not None
+                for row in rows)
+            self.search_observations.append(dict(query_sha256=hashlib.sha256(query.encode()).hexdigest(),
+                title_slot=slot, source=getattr(self, '_search_source', 'unknown'), rows=len(found), admitted=admitted))
+            self.traversal['unique_ids'] = len(seen)
             # Broaden only when the more precise query has no qualified entry.
-            if any(rank(row, context, allow_season_pack=True) is not None for row in rows):
+            # With no new title evidence, preserve the original stopping rule.
+            if any((not alias_fallback or str(row.get('subtype', '')).casefold() not in ('vobsub', 'pgs', 'sup'))
+                   and rank(row, context, allow_season_pack=True, allow_incomplete=last) is not None
+                   for row in rows):
                 break
         ranked = [(rank(row, context, allow_season_pack=True, allow_incomplete=True), row) for row in rows
                   if str(row.get('subtype', '')).casefold() not in ('vobsub', 'pgs', 'sup')]
@@ -567,6 +682,10 @@ class AssrtCandidates:
         # Share inspected additions with the caller: a later optional timeout
         # must not discard the first valid cold-cache download either.
         choices, additions = local, []
+        # Only failures of admitted candidates in THIS traversal determine its
+        # terminal state. Diagnostic notes (including an absent torrent sidecar)
+        # and events retained from older lookups are not matched candidates.
+        candidate_failed = False
         for _, row in ranked[:6]:
             self.guard(deadline, cancelled)
             # Keep a validated fallback instead of spending its last seconds on
@@ -577,15 +696,19 @@ class AssrtCandidates:
             if not str(ident).isdigit():
                 continue
             try:
+                self.traversal['detail_attempts'] += 1
                 details = self.api('detail', {'id': ident}, deadline, cancelled)
             except (OSError, ValueError, LookupStopped) as error:
                 self.candidate_failure('detail', error, ident, deadline, cancelled)
+                self.traversal['detail_rejected'] += 1
+                candidate_failed = True
                 continue
             for detail in details[:1]:
                 if not isinstance(detail, dict):
                     continue
                 source = dict(row, **{k: v for k, v in detail.items() if k in ('native_name', 'title', 'videoname', 'lang')})
                 if rank(source, context, allow_season_pack=True, allow_incomplete=True) is None:
+                    self.traversal['detail_rejected'] += 1
                     continue
                 files = detail.get('filelist')
                 # The provider also returns an exact empty object for a single
@@ -594,6 +717,7 @@ class AssrtCandidates:
                     files = []
                 if not isinstance(files, list) or len(files) > 512:
                     self.note('detail', 'ASSRT_FILELIST_INVALID', ident)
+                    candidate_failed = True
                     continue
                 # Assrt single-file details may leave filelist empty and expose
                 # filename/url at the top level. Feed that documented shape
@@ -607,7 +731,9 @@ class AssrtCandidates:
                          and not EXCLUDE.search(str(f.get('f', '')))]
                 # Filter the entire bounded package before choosing the first
                 # two alternatives; S03E03 need not be in the first two entries.
-                files = [f for f in files if rank(dict(source, filename=str(f['f'])), context) is not None]
+                eligible = [f for f in files if rank(dict(source, filename=str(f['f'])), context) is not None]
+                self.traversal['file_rejected'] += len(files) - len(eligible)
+                files = eligible
                 files.sort(key=lambda f: rank(dict(source, filename=str(f['f'])), context), reverse=True)
                 for f in files[:2]:
                     self.guard(deadline, cancelled)
@@ -623,14 +749,19 @@ class AssrtCandidates:
                         target = 'https://' + target[7:]
                     try:
                         extension = Path(f['f']).suffix.casefold()
+                        self.traversal['file_attempts'] += 1
                         raw = self.read(target, deadline, cancelled)
                     except (ValueError, OSError, LookupStopped) as error:
                         self.candidate_failure('download', error, ident, deadline, cancelled)
+                        self.traversal['file_rejected'] += 1
+                        candidate_failed = True
                         continue
                     try:
                         raw, bilingual = inspect_text(raw, extension, context['duration'])
                     except (ValueError, OSError, LookupError) as error:
                         self.candidate_failure('inspect', error, ident, deadline, cancelled)
+                        self.traversal['file_rejected'] += 1
+                        candidate_failed = True
                         continue
                     self.guard(deadline, cancelled)
                     file = publish(raw, extension, root)
@@ -650,4 +781,6 @@ class AssrtCandidates:
             if additions:
                 self.save('candidates.json', (catalog + additions)[-128:])
             return max(choices, key=lambda r: candidate_rank(r, context))
-        raise LookupStopped('MATCHED_SUBTITLE_UNAVAILABLE' if self.events else 'NO_MATCHED_CHINESE_TEXT')
+        if search_error is not None:
+            raise search_error  # Unavailable search must not become "no results".
+        raise LookupStopped('MATCHED_SUBTITLE_UNAVAILABLE' if candidate_failed else 'NO_MATCHED_CHINESE_TEXT')

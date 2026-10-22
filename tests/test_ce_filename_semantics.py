@@ -93,13 +93,19 @@ def test_real_current_file_preparation_and_next_not_just_exact_selector():
     catalog = dict(provider='tmdb', id=68272, kind='tv', aliases=['Flip Flappers'],
                    year=2016, response_sha256='c'*64, ambiguous=False)
     targets = verified_intents(body, metadata, 'test-account', '/test', select_exact_file, catalog)
-    assert len(targets) == 2
-    assert [target[1]['file']['id'] for target in targets] == [3, 6]
-    assert [target[0]['purpose'] for target in targets] == ['current', 'next']
-    assert targets[0][0]['version_key'] == targets[1][0]['version_key']
-    assert targets[0][0]['version_key'] == hashlib.sha256(
-        bound_family(files[2]['path'].rsplit('/', 1)[1], 1, 1).encode()).hexdigest()
+    assert len(targets) == 3
+    assert [target[1]['file']['id'] for target in targets] == [3, 6, 9]
+    assert [target[0]['purpose'] for target in targets] == ['current', 'next', 'next']
+    assert [target[0]['media_id'] for target in targets] == [
+        'tmdb:tv:68272:s1:e1', 'tmdb:tv:68272:s1:e2', 'tmdb:tv:68272:s1:e3']
+    expected_version = hashlib.sha256(bound_family(files[2]['path'].rsplit('/', 1)[1], 1, 1).encode()).hexdigest()
+    for episode, target in enumerate(targets, 1):
+        assert target[0]['version_key'] == expected_version
+        assert target[0]['version_key'] == hashlib.sha256(
+            bound_family(target[1]['file']['path'].rsplit('/', 1)[1], 1, episode).encode()).hexdigest()
     # A later wrong-work file cannot block preparing the exact current file.
     altered = deepcopy(metadata)
     altered['file_stats'][5]['path'] = altered['file_stats'][5]['path'].replace('Flip Flappers -', 'Other Show -')
-    assert len(verified_intents(body, altered, 'test-account', '/test', select_exact_file, catalog)) == 1
+    retained = verified_intents(body, altered, 'test-account', '/test', select_exact_file, catalog)
+    assert [target[1]['file']['id'] for target in retained] == [3, 9]
+    assert [target[0]['media_id'] for target in retained] == ['tmdb:tv:68272:s1:e1', 'tmdb:tv:68272:s1:e3']

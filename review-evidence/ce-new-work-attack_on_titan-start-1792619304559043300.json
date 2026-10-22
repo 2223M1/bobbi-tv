@@ -1,0 +1,420 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "attack_on_titan",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Attack on Titan",
+        "tmdb_id": 1429,
+        "kind": "tv",
+        "year": 2013,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 1429,
+          "name": "Attack on Titan",
+          "original_name": "進撃の巨人",
+          "original_language": "ja",
+          "first_air_date": "2013-04-07"
+        },
+        "route": "system-direct",
+        "checked_at": 1792619283.9480784
+      },
+      "prior_request": "dce1175ef9144221af31c14c07a20e5e",
+      "started": 34531.258857373,
+      "home": {
+        "generation": 16,
+        "intent": 0,
+        "retired_generation": 16,
+        "observed_at": 34531.842816912
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 34531.843119995,
+      "picker": {
+        "window": 13001,
+        "generation": 18,
+        "intent": 0,
+        "tmdb_id": 1429,
+        "kind": "tv"
+      },
+      "picker_observed_at": 34534.170646081
+    },
+    "samples": [
+      {
+        "wall": 34532.077630509,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34532.106950459,
+          "read_completed": 34532.107188542,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34532.039723366,
+          "decoder_started": 34532.106950459,
+          "decoder_completed": 34532.107188542,
+          "sample_completed": 34532.107604291
+        }
+      },
+      {
+        "wall": 34534.208113725,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34534.221017161,
+          "read_completed": 34534.221261535,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34534.17122408,
+          "decoder_started": 34534.221017161,
+          "decoder_completed": 34534.221261535,
+          "sample_completed": 34534.22135566
+        }
+      },
+      {
+        "wall": 34536.536263262,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34536.559636972,
+          "read_completed": 34536.560175096,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34536.307769655,
+          "decoder_started": 34536.559636972,
+          "decoder_completed": 34536.560175096,
+          "sample_completed": 34536.560358679
+        }
+      },
+      {
+        "wall": 34538.961130835,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34538.971153776,
+          "read_completed": 34538.971416859,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34538.754896024,
+          "decoder_started": 34538.971153776,
+          "decoder_completed": 34538.971416859,
+          "sample_completed": 34538.971505984
+        }
+      },
+      {
+        "wall": 34541.170562775,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[动漫国字幕组&恶魔岛字幕组&豌豆字幕组&VCB-Studio] 进击的巨人 / Shingeki no Kyojin / Attack on Titan / 進撃の巨人 10-bit 1080p HEVC BDRip [S1-4 + OADs Reseed Fin]",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34541.18861491,
+          "read_completed": 34541.188917743,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34541.073950441,
+          "decoder_started": 34541.18861491,
+          "decoder_completed": 34541.188917743,
+          "sample_completed": 34541.189014701
+        }
+      },
+      {
+        "wall": 34543.606724359,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[动漫国字幕组&恶魔岛字幕组&豌豆字幕组&VCB-Studio] 进击的巨人 / Shingeki no Kyojin / Attack on Titan / 進撃の巨人 10-bit 1080p HEVC BDRip [S1-4 + OADs Reseed Fin]",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "8",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "10"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34543.645537958,
+          "read_completed": 34543.64578975,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34543.366279524,
+          "decoder_started": 34543.645537958,
+          "decoder_completed": 34543.64578975,
+          "sample_completed": 34543.645889374
+        }
+      },
+      {
+        "wall": 34545.977683967,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[动漫国字幕组&恶魔岛字幕组&豌豆字幕组&VCB-Studio] 进击的巨人 / Shingeki no Kyojin / Attack on Titan / 進撃の巨人 10-bit 1080p HEVC BDRip [S1-4 + OADs Reseed Fin]",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "10",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "23"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34546.012401365,
+          "read_completed": 34546.012833364,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34545.854917137,
+          "decoder_started": 34546.012401365,
+          "decoder_completed": 34546.012833364,
+          "sample_completed": 34546.01298228
+        }
+      },
+      {
+        "wall": 34548.261788928,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[动漫国字幕组&恶魔岛字幕组&豌豆字幕组&VCB-Studio] 进击的巨人 / Shingeki no Kyojin / Attack on Titan / 進撃の巨人 10-bit 1080p HEVC BDRip [S1-4 + OADs Reseed Fin]",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "23",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "23"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34548.357932095,
+          "read_completed": 34548.358158427,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34548.126492079,
+          "decoder_started": 34548.357932095,
+          "decoder_completed": 34548.358158427,
+          "sample_completed": 34548.358234927
+        }
+      },
+      {
+        "wall": 34550.497776967,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[动漫国字幕组&恶魔岛字幕组&豌豆字幕组&VCB-Studio] 进击的巨人 / Shingeki no Kyojin / Attack on Titan / 進撃の巨人 10-bit 1080p HEVC BDRip [S1-4 + OADs Reseed Fin]",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "23",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "23"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 34550.523640297,
+          "read_completed": 34550.524093047,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 34550.480304164,
+          "decoder_started": 34550.523640297,
+          "decoder_completed": 34550.524093047,
+          "sample_completed": 34550.524238255
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "attack_on_titan",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

@@ -14,6 +14,16 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'moon': {'title': 'Moon', 'tmdb_id': 17431, 'kind': 'movie', 'year': 2009},
+    'made_in_abyss': {'title': 'Made in Abyss', 'tmdb_id': 72636, 'kind': 'tv', 'year': 2017, 'season': 1, 'episode': 1, 'animation': True},
+    'nightcrawler': {'title': 'Nightcrawler', 'tmdb_id': 242582, 'kind': 'movie', 'year': 2014},
+    'heavenly_delusion': {'title': 'Tengoku Daimakyo', 'tmdb_id': 208891, 'kind': 'tv', 'year': 2023, 'season': 1, 'episode': 1, 'animation': True},
+    'attack_on_titan': {'title': 'Attack on Titan', 'tmdb_id': 1429, 'kind': 'tv', 'year': 2013, 'season': 1, 'episode': 1, 'animation': True},
+    'frieren': {'title': "Frieren: Beyond Journey's End", 'tmdb_id': 209867, 'kind': 'tv', 'year': 2023, 'season': 1, 'episode': 1, 'animation': True},
+    'the_conversation': {'title': 'The Conversation', 'tmdb_id': 592, 'kind': 'movie', 'year': 1974},
+    'death_parade': {'title': 'Death Parade', 'tmdb_id': 61901, 'kind': 'tv', 'year': 2015, 'season': 1, 'episode': 1, 'animation': True},
+    'man_who_wasnt_there': {'title': "The Man Who Wasn't There", 'tmdb_id': 10778, 'kind': 'movie', 'year': 2001},
+    'space_dandy': {'title': 'Space Dandy', 'tmdb_id': 60874, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1, 'animation': True},
     'baccano': {'title': 'Baccano!', 'tmdb_id': 34121, 'kind': 'tv', 'year': 2007, 'season': 1, 'episode': 1, 'animation': True},
     'gattaca': {'title': 'Gattaca', 'tmdb_id': 782, 'kind': 'movie', 'year': 1997},
     'samurai_champloo': {'title': 'Samurai Champloo', 'tmdb_id': 1063, 'kind': 'tv', 'year': 2004, 'season': 1, 'episode': 1, 'animation': True},
@@ -142,6 +152,30 @@ def unsupported_control_evidence(record, operation):
         native_instance=after['native_instance'], request_id=after['request_id'],
         observed_protocol=evidence,
         note='Unconditional player-id/settings RPC and UI actions are intentionally not substituted; no playback or font setting was changed.')
+
+
+def cancel_pending(record):
+    """One owned cancellation, followed by same-generation state confirmation.
+
+    Do not send global Back then cancel again: the UI can already have cancelled
+    or failed this request. A second false reply is not evidence it stayed live.
+    """
+    authority, _, row = state(record)
+    desired = authority.get('desired') or {}
+    assert record.get('request_id') and desired.get('request_id') == record['request_id'], 'USER_CHANGED_SELECTION'
+    assert row.get('phase') != 'AV_STARTED', 'USE_OWNED_STOP_FOR_ACTIVE_PLAYBACK'
+    context = {key: authority[key] for key in ('boot_id', 'epoch')}
+    context['request_id'] = record['request_id']
+    if desired.get('cancelled') is not True:
+        call(dict(context, operation='cancel'))
+        after = snapshot()
+    else:
+        after = authority
+    assert all(after.get(key) == context[key] for key in ('boot_id', 'epoch')), 'OWNER_CHANGED'
+    current = after.get('desired') or {}
+    assert current.get('request_id') == context['request_id'], 'USER_CHANGED_SELECTION'
+    assert current.get('cancelled') is True, 'CANCELLATION_NOT_CONFIRMED'
+    return True
 
 
 def seconds(moment):
@@ -300,8 +334,10 @@ def startup_signal_diagnostics(samples):
                              first_phase=first.get('phase'), last_phase=last.get('phase')))
         if not 0 < wall <= 2:
             continue  # Do not convert an unobserved interval into an observed run.
+        # Initial valid media PTS can be slightly negative. Caching/decoder
+        # observations remain real; do not trim their first half-second.
         if any(row.get('phase') != 'AV_STARTED' or not number(row.get('seconds'))
-               or row['seconds'] < 0 for row in (first, last)):
+               for row in (first, last)):
             continue
         identity = ('native_instance', 'request_id')
         bindings = [tuple((row.get('native') or {}).get(key) for key in identity) for row in (first, last)]
@@ -416,7 +452,9 @@ def startup_coverage(samples, health):
 
 
 PICKER_WINDOWS = (13001, 13002)
-RETIRING_WINDOWS = PICKER_WINDOWS + (12002,)
+# A generic Kodi confirmation dialog is not owned merely because its ID is
+# known. Its visible heading/choice needs separate attended confirmation.
+RETIRING_WINDOWS = PICKER_WINDOWS
 PICKER_LABELS = (
     'Window.Property(info.ids)', 'Window.Property(info.media_type)', 'Window.Property(info.mode)',
     'Window.Property(info.tv_data)', 'Window.Property(info.year)', 'Window.Property(info.query)',
@@ -428,7 +466,8 @@ def gui_observation():
     """Bracket labels/window reads with native generations; never trust a torn view."""
     before = rpc('Player.BobiState')
     window = rpc('GUI.GetProperties', {'properties': ['currentwindow']})['currentwindow']['id']
-    keys = ['System.HasModalDialog'] + ['Window.IsVisible({})'.format(i) for i in RETIRING_WINDOWS]
+    keys = ['System.HasModalDialog', 'System.ScreenSaverActive', 'System.DPMSActive'] + [
+        'Window.IsVisible({})'.format(i) for i in RETIRING_WINDOWS]
     visible = rpc('XBMC.GetInfoBooleans', {'booleans': keys})
     assert all(type(visible.get(key)) is bool for key in keys), 'WINDOW_RECEIPT_UNAVAILABLE'
     labels = rpc('XBMC.GetInfoLabels', {'labels': list(PICKER_LABELS)})
@@ -438,15 +477,17 @@ def gui_observation():
             and type(window) is int), 'GUI_RECEIPT_UNAVAILABLE'
     return dict(window=window, generation=generation, intent=intent, labels=labels,
         modal=visible.get('System.HasModalDialog') is True,
+        asleep=visible['System.ScreenSaverActive'] or visible['System.DPMSActive'],
         visible=[i for i in RETIRING_WINDOWS if visible.get('Window.IsVisible({})'.format(i)) is True],
         stable=(before.get('gui_generation') == generation and before.get('gui_user_intent') == intent))
 
 
 def assert_picker_idle(record):
     assert rpc('Player.GetActivePlayers') == [], 'UNEXPECTED_PLAYBACK'
-    desired = snapshot().get('desired') or {}
+    current = snapshot()
+    desired = current.get('desired') or {}
     assert desired.get('request_id') == record.get('prior_request'), 'USER_CHANGED_SELECTION'
-    assert not desired or desired.get('cancelled'), 'UNEXPECTED_SELECTION'
+    assert can_start_trial(current), 'UNEXPECTED_SELECTION'
 
 
 def prepare_home(record, timeout=8):
@@ -458,6 +499,10 @@ def prepare_home(record, timeout=8):
         initial = gui_observation()
     assert initial['stable'], 'UNSTABLE_GUI'
     assert_picker_idle(record)
+    # Kodi Input.Back can return OK after only waking the display. Do not
+    # mislabel that as a stuck source window, or send an automatic second Back
+    # that could dismiss a newly exposed unrelated confirmation dialog.
+    assert not initial.get('asleep'), 'DISPLAY_ASLEEP_ATTENDED_WAKE_REQUIRED'
     retiring = initial['window'] in RETIRING_WINDOWS or bool(initial['visible'])
     assert not initial['modal'] or initial['window'] in RETIRING_WINDOWS, 'UNOWNED_MODAL'
     if retiring:
@@ -613,11 +658,30 @@ def trial_metadata(test):
     return dict(verified=verified,route=result['route'],checked_at=time.time())
 
 
+def can_start_trial(initial):
+    desired = initial.get('desired') or {}
+    if not desired or desired.get('cancelled') is True:
+        return True
+    terminal = initial.get('terminal') or {}
+    # A completed, unconsumed natural EOF is not a pending user selection.
+    # Keep a different request/epoch, an unknown terminal, and reserved next
+    # episodes closed. The caller independently checks there is no player.
+    return bool(initial.get('observed') is None
+        and terminal.get('reason') == 'NATURAL_EOF' and terminal.get('consumed') is False
+        and terminal.get('av_started') is True and not terminal.get('error')
+        and desired.get('file_bound') is True and desired.get('start_claimed') is True
+        and terminal.get('request_id') == desired.get('request_id')
+        and terminal.get('epoch') == desired.get('epoch') == initial.get('epoch')
+        and bool(terminal.get('native_instance'))
+        and bool(desired.get('file_identity'))
+        and terminal.get('file_identity') == desired.get('file_identity'))
+
+
 if OP in ('start','requery'):
     assert rpc('Player.GetActivePlayers') == [], 'ACTIVE_PLAYER'
     initial = snapshot()
     desired = initial.get('desired') or {}
-    assert not desired or desired.get('cancelled'), 'ACTIVE_SELECTION'
+    assert can_start_trial(initial), 'ACTIVE_SELECTION'
     if OP=='start':assert not record_path.exists(), 'TRIAL_ALREADY_STARTED'
     else:assert record_path.exists() and not json.loads(record_path.read_text()).get('request_id'), 'OPEN_REQUEST_EXISTS'
     test = TESTS[NAME]
@@ -671,18 +735,14 @@ else:
     record=json.loads(record_path.read_text())
     assert record.get('test') == TESTS[NAME], 'TRIAL_MEDIA_MISMATCH'
     if OP=='cancel':
-        authority,native,row=state(record)
-        assert record.get('request_id') and (authority.get('desired') or {}).get('request_id')==record['request_id']
-        if rpc('GUI.GetProperties',{'properties':['currentwindow']})['currentwindow']['id']==10138:
-            rpc('Input.Back')
-        result=call(dict(operation='cancel',boot_id=authority['boot_id'],epoch=authority['epoch'],request_id=record['request_id']))
-        assert result.get('cancelled') is True
+        cancel_pending(record)
         print(json.dumps(dict(name=NAME,operation=OP,cancelled=True,request_id=record['request_id'])))
     elif OP in ('cards','select'):
         traversal_start = rewind_picker(record)
         labels=['Container(1000).ListItem.Label','Container(1000).ListItem.Property(source_site)',
                 'Container(1000).ListItem.Property(resolution)','Container(1000).ListItem.Property(size)',
                 'Container(1000).ListItem.Property(subtitle_badge)',
+                'Container(1000).ListItem.Property(seeders)','Container(1000).ListItem.Property(peers)',
                 'Container(1000).ListItem.Property(source_key)']
         cards=[]
         chosen=False

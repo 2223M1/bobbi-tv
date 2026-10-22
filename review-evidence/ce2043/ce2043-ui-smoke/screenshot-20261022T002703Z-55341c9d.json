@@ -1,0 +1,17 @@
+{
+  "mode": "screenshot",
+  "transaction": "preview-ce2043-smoke",
+  "window": "home",
+  "operations": [
+    {
+      "mode": "screenshot",
+      "exit_code": 1,
+      "result": {
+        "error": "RuntimeError",
+        "code": "INVALID_TRANSACTION"
+      },
+      "diagnostic_present": false
+    }
+  ],
+  "error": "INVALID_TRANSACTION"
+}

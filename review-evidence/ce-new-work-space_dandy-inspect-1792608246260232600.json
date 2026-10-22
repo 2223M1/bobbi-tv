@@ -1,0 +1,32 @@
+{
+  "exit_code": 1,
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "result": {
+    "error": "AssertionError",
+    "reason": "USER_CHANGED_SELECTION",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 4
+      },
+      {
+        "function": "<module>",
+        "line": 805
+      },
+      {
+        "function": "sample",
+        "line": 385
+      },
+      {
+        "function": "state",
+        "line": 109
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "space_dandy",
+  "operation": "inspect",
+  "attempt": 1,
+  "regression_attempt": false
+}

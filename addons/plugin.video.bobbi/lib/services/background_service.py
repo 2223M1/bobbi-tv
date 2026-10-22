@@ -274,7 +274,8 @@ class JacktookMOnitor(xbmc.Monitor):
         self._control = control
         if host is not None:
             host.playback = self
-            host.bind_owner(control.authority.dispatch)
+            control.authority.configure_accounts(host.accounts)
+            host.bind_owner(control.authority.dispatch, control.authority.account_changed)
             control.native.subtitle_fallback.share_provider = host.sidecar_candidate
             control.native.subtitle_fallback.accounts = host.accounts
         xbmc.log('[BOBI-OWNER-BOOT] playback socket bound; entering owner loop', xbmc.LOGINFO)

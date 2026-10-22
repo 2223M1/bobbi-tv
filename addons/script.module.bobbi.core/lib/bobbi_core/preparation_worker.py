@@ -7,8 +7,42 @@ Kodi imports and never treats provider acceptance as media qualification.
 from copy import deepcopy
 from dataclasses import dataclass
 import json
+import math
 import re
 from uuid import uuid4
+
+
+def next_qualification_target(db, task, payload):
+    """Read the next unbound target; the cursor is scheduling, not proof.
+
+    A missing/deleted/already-bound cursor still divides the canonical ordering.
+    New targets participate on the next round and a single target wraps to itself.
+    """
+    cursor = payload.get('_qualification_cursor') if isinstance(payload, dict) else None
+    if (type(cursor) is not list or len(cursor) != 2
+            or any(type(item) is not str or not 1 <= len(item) <= 256 for item in cursor)):
+        cursor = ['', '']
+    row = db.execute('''SELECT t.payload FROM preparation_targets t WHERE t.task=?
+        AND NOT EXISTS(SELECT 1 FROM prepared_bindings b WHERE b.task=t.task
+            AND b.media_id=t.media_id AND b.version_key=t.version_key)
+        ORDER BY CASE WHEN (t.media_id,t.version_key)>(?,?) THEN 0 ELSE 1 END,
+            t.media_id,t.version_key LIMIT 1''', (task, *cursor)).fetchone()
+    return json.loads(row[0]) if row else None
+
+
+def _probe_metrics(value):
+    """Allow only bounded numeric observations, never provider text/locators."""
+    if not isinstance(value, dict):
+        return {}
+    result = {}
+    for key, maximum in (('read_bytes', 16 * 1024 * 1024), ('requests', 33)):
+        number = value.get(key)
+        if type(number) is int and 0 <= number <= maximum:
+            result[key] = number
+    seconds = value.get('seconds')
+    if type(seconds) in (int, float) and 0 <= seconds <= 120 and math.isfinite(seconds):
+        result['seconds'] = round(seconds, 3)
+    return result
 
 
 @dataclass(frozen=True)
@@ -36,11 +70,19 @@ class PreparationWorker:
         value = {key: row[key] for key in ('account', 'destination', 'source_hash', 'reserved_bytes')}
         if kind == 'qualify':
             value['observation'] = row['payload']['provider_observation']
-            targets = self.queue.db.execute('''SELECT t.payload FROM preparation_targets t WHERE t.task=?
-                AND NOT EXISTS(SELECT 1 FROM prepared_bindings b WHERE b.task=t.task
-                    AND b.media_id=t.media_id AND b.version_key=t.version_key)
-                ORDER BY t.media_id,t.version_key LIMIT 1''', (row['id'],)).fetchall()
-            value['targets'] = [json.loads(target[0]) for target in targets]
+            from .ledger import encode
+            # Advance before IO in the existing owner's short transaction.
+            # Failure/None retains the original task backoff but cannot keep
+            # every other episode behind a permanently unreadable first file.
+            with self.queue.ledger.transaction():
+                current = self.queue.status(row['id'])
+                target = next_qualification_target(self.queue.db, row['id'], current['payload'])
+                value['targets'] = [target] if target else []
+                if target:
+                    payload = dict(current['payload'],
+                                   _qualification_cursor=[target['media_id'], target['version_key']])
+                    self.queue.db.execute('UPDATE tasks SET payload=? WHERE id=?',
+                                          (encode(payload), row['id']))
         self.pending = Action(uuid4().hex, kind, row['id'], json.dumps(value, sort_keys=True))
         return self.pending
 
@@ -105,6 +147,9 @@ class PreparationWorker:
             from bobbi_core.media_probe import ProbeError
             if isinstance(error, ProbeError) and re.fullmatch(r'[A-Z][A-Z0-9_]{0,63}', str(error)):
                 result['code'] = str(error)
+                metrics = _probe_metrics(getattr(error, 'metrics', None))
+                if metrics:
+                    result['probe'] = metrics
             return result
 
     def _defer(self, task, delay, event, detail=None):
@@ -131,6 +176,9 @@ class PreparationWorker:
                 value = result.get(key)
                 if isinstance(value, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,63}', value):
                     detail[key] = value
+            metrics = _probe_metrics(result.get('probe'))
+            if action.kind == 'qualify' and metrics:
+                detail['probe'] = metrics
             self._defer(action.task, 60, 'preparation_io_failed', detail)
             return True
         if action.kind == 'capacity':

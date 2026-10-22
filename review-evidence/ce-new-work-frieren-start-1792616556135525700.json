@@ -1,0 +1,340 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "frieren",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Frieren: Beyond Journey's End",
+        "tmdb_id": 209867,
+        "kind": "tv",
+        "year": 2023,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 209867,
+          "name": "Frieren: Beyond Journey's End",
+          "original_name": "葬送のフリーレン",
+          "original_language": "ja",
+          "first_air_date": "2023-09-29"
+        },
+        "route": "system-direct",
+        "checked_at": 1792616540.706663
+      },
+      "prior_request": "a3a95ea127b24b88b6ffa375c224c266",
+      "started": 31788.017460756,
+      "home": {
+        "generation": 20,
+        "intent": 0,
+        "retired_generation": 20,
+        "observed_at": 31788.584139785
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 31788.584982825,
+      "picker": {
+        "window": 13001,
+        "generation": 21,
+        "intent": 0,
+        "tmdb_id": 209867,
+        "kind": "tv"
+      },
+      "picker_observed_at": 31791.005973555
+    },
+    "samples": [
+      {
+        "wall": 31788.867542363,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 31788.891505309,
+          "read_completed": 31788.891710475,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 31788.847027325,
+          "decoder_started": 31788.891505309,
+          "decoder_completed": 31788.891710475,
+          "sample_completed": 31788.892161766
+        }
+      },
+      {
+        "wall": 31791.019230567,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "1"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 31791.033940451,
+          "read_completed": 31791.034147076,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 31791.00678472,
+          "decoder_started": 31791.033940451,
+          "decoder_completed": 31791.034147076,
+          "sample_completed": 31791.0342267
+        }
+      },
+      {
+        "wall": 31793.170949683,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Nekomoe kissaten&VCB-Studio] Sousou no Frieren [01][Ma10p_1080p][x265_flac_aac].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "1",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "1"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 31793.20103399,
+          "read_completed": 31793.201333031,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 31793.127775029,
+          "decoder_started": 31793.20103399,
+          "decoder_completed": 31793.201333031,
+          "sample_completed": 31793.201439323
+        }
+      },
+      {
+        "wall": 31795.54362209,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Nekomoe kissaten&VCB-Studio] Sousou no Frieren [01][Ma10p_1080p][x265_flac_aac].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "1",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "1"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 31795.56900645,
+          "read_completed": 31795.569411449,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 31795.399195496,
+          "decoder_started": 31795.56900645,
+          "decoder_completed": 31795.569411449,
+          "sample_completed": 31795.569546407
+        }
+      },
+      {
+        "wall": 31797.677530941,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Nekomoe kissaten&VCB-Studio] Sousou no Frieren [01][Ma10p_1080p][x265_flac_aac].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "3",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "3"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 31797.715124066,
+          "read_completed": 31797.715576065,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 31797.65052196,
+          "decoder_started": 31797.715124066,
+          "decoder_completed": 31797.715576065,
+          "sample_completed": 31797.715735398
+        }
+      },
+      {
+        "wall": 31799.881305339,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Nekomoe kissaten&VCB-Studio] Sousou no Frieren [01][Ma10p_1080p][x265_flac_aac].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "3",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "3"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 31799.917048717,
+          "read_completed": 31799.917542841,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 31799.827423377,
+          "decoder_started": 31799.917048717,
+          "decoder_completed": 31799.917542841,
+          "sample_completed": 31799.917688466
+        }
+      },
+      {
+        "wall": 31802.107019724,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[Nekomoe kissaten&VCB-Studio] Sousou no Frieren [01][Ma10p_1080p][x265_flac_aac].mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "9",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "9"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 31802.132801666,
+          "read_completed": 31802.133023249,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 31802.011298438,
+          "decoder_started": 31802.132801666,
+          "decoder_completed": 31802.133023249,
+          "sample_completed": 31802.13310179
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "frieren",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}
