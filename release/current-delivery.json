@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "updated_on": "2026-10-22",
+  "repository": "2223M1/bobbi-tv",
+  "source_visibility": "public",
+  "installer_distribution": "public_permitted_by_owner",
+  "stable_release": false,
+  "installed": {
+    "sequence": 2026102044,
+    "entry_version": "0.2.34",
+    "core_version": "0.1.29",
+    "plugin_version": "0.1.28",
+    "skin_version": "0.1.7",
+    "entry_sha256": "3101e9a427d44da3317086164de83c7d2e5b2d2ce7aee3a663dc765cdd55d458",
+    "artifact_availability": "local_complete_bundle_not_yet_uploaded_as_release",
+    "transaction": "903f2688bb8d45cdbdc108d36c2654e2",
+    "owned_files_matched": 1164,
+    "local_passed": 4739,
+    "local_skipped": 6,
+    "local_xfailed": 1,
+    "package_source": "review-evidence/ce2044/package-source.json"
+  },
+  "previous_baseline": {
+    "sequence": 2026102043,
+    "reviewed_commit": "24c1ec23915c690924388a7e6ca9fbee95826582",
+    "reviewed_tree": "fa94e168076d58d745cbcba9aa5e464e85fbf891",
+    "entry_version": "0.2.33",
+    "core_version": "0.1.29",
+    "plugin_version": "0.1.27",
+    "entry_sha256": "7f2b695729ae3cc18c45e0bcc071d32ab2a06cb40033d96f0bda65631327573c",
+    "artifact_availability": "maintainer_local_complete_bundle",
+    "ci_run": 39700107157,
+    "ci_conclusion": "failure",
+    "ci_failure": "maintainer_absolute_receipt_path",
+    "receipt": "review-evidence/ce2043/entry-audit.json"
+  },
+  "remediation": {
+    "state": "installed_ui_acceptance_passed_awaiting_new_ci",
+    "report": "docs/CE2044-REMEDIATION-20261022.md",
+    "current_ci": "https://github.com/2223M1/bobbi-tv/actions/workflows/verify.yml?query=branch%3Amain"
+  },
+  "deferred_acceptance": [
+    "complete_midplay_bt_to_115_capsule",
+    "current_generation_eof_continuation",
+    "online_subtitle_alias_recall_and_visible_bilingual_cue",
+    "long_duration_weak_bt_buffering"
+  ],
+  "historical_installer_directory": "review-packages/ce2024",
+  "historical_gate_file": "release/gates.json",
+  "excluded_from_distribution": ["account_state", "cookies", "device_backups", "signing_private_keys"]
+}

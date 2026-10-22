@@ -107,14 +107,17 @@ class PickleDatabase:
         )
 
     def _reload(self):
+        available = True
         try:
             self._database = _read(self._database_path)
         except Exception as error:
             # Unreadable history is not evidence that nothing was watched.
             # The original stays untouched; commit also fails closed.
             kodilog("History read unavailable; original preserved: " + type(error).__name__)
+            available = False
         for operation in self._pending:
             self._apply(self._database, operation)
+        return available
 
     @staticmethod
     def _apply(database, operation):
@@ -153,6 +156,12 @@ class PickleDatabase:
 
     def get_key(self, key: str):
         self._reload()
+        return copy.deepcopy(self._database.get(key))
+
+    def get_key_checked(self, key: str):
+        """Read the same snapshot without presenting unavailable data as empty."""
+        if not self._reload():
+            raise OSError('History unavailable')
         return copy.deepcopy(self._database.get(key))
 
     def commit(self):

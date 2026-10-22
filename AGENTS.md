@@ -1,9 +1,11 @@
 # bobbi TV
 
-Private distribution only (owner decision 2026-10-19). Do not create public
-releases or anonymous update endpoints. Owner confirmed document-only cleanup
+Owner decision 2026-10-22: source may remain public and installers may be freely
+distributed. This does not certify a stable release or authorize publishing
+credentials. Preserve existing licenses and credits; distribution permission
+does not confer new third-party rights. Owner confirmed document-only cleanup
 on 2026-10-21. Follow tools/delivery_policy.py; do not restore standalone notice
-documents as a build prerequisite. Private hosting does not confer rights.
+documents as a build prerequisite.
 Do not copy account state, device backups or signing secrets into installers.
 Curated resource catalogues are authorized; rebuild from whitelisted tables,
 never copy login state or unexamined database pages.
