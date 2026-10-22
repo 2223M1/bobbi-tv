@@ -26,8 +26,8 @@
       <scrolltime tween="cubic" easing="out">180</scrolltime>
       <onup>9701</onup>
       <onleft>noop</onleft>
-      <onright condition="Integer.IsGreater(Container(9130).NumItems,0)">9110</onright>
-      <onright condition="!Integer.IsGreater(Container(9130).NumItems,0)">9101</onright>
+      <onright condition="String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)">9110</onright>
+      <onright condition="!String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)">9101</onright>
       <itemlayout width="880" height="96">
         <control type="group"><left>0</left><top>4</top><include content="HubRow" /></control>
       </itemlayout>
@@ -81,7 +81,7 @@
       <orientation>vertical</orientation>
       <itemlayout width="1" height="1" />
       <focusedlayout width="1" height="1" />
-      <content target="videos" limit="1" browse="never">plugin://plugin.video.bobbi/?action=continue_watching_menu</content>
+      <content target="videos" limit="1" browse="never">plugin://plugin.video.bobbi/?action=continue_watching_menu&amp;resume_preview=true</content>
     </control>
     <control type="group">
       <left>1010</left><top>270</top>
@@ -94,7 +94,7 @@
         <label>[COLOR accent_text]接着看[/COLOR]</label>
         <font>Label24</font><textcolor>text</textcolor><aligny>center</aligny>
       </control>
-      <visible>Integer.IsGreater(Container(9130).NumItems,0)</visible>
+      <visible>String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)</visible>
       <!-- thumbnail -->
       <control type="image">
         <left>32</left><top>78</top><width>400</width><height>225</height>
@@ -152,24 +152,24 @@
       </control>
       <control type="label">
         <left>32</left><top>120</top><width>750</width><height>48</height>
-        <label>还没有在看的影片</label>
+        <label>$VAR[HubResumeStateTitle]</label>
         <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
       </control>
       <control type="label">
         <left>32</left><top>176</top><width>750</width><height>64</height>
-        <label>从首页片单选一部开始；未看完的影院影片会留在这里。</label>
+        <label>$VAR[HubResumeStateDescription]</label>
         <font>Body26</font><textcolor>text3</textcolor><aligny>center</aligny>
         <wrapmultiline>true</wrapmultiline>
       </control>
-      <visible>!Integer.IsGreater(Container(9130).NumItems,0)</visible>
+      <visible>!String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)</visible>
     </control>
 
     <control type="list" id="9101">
       <left>1010</left><top>642</top><width>814</width><height>360</height>
       <orientation>vertical</orientation>
       <scrolltime tween="cubic" easing="out">180</scrolltime>
-      <onup condition="Integer.IsGreater(Container(9130).NumItems,0)">9110</onup>
-      <onup condition="!Integer.IsGreater(Container(9130).NumItems,0)">9701</onup>
+      <onup condition="String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)">9110</onup>
+      <onup condition="!String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)">9701</onup>
       <onleft>9100</onleft>
       <onright>noop</onright>
       <itemlayout width="814" height="72">

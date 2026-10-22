@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="7" time="0.125" timestamp="2026-10-22T09:43:35.926354+08:00" hostname="Paimon"><testcase classname="tests.test_ce2044_resume_preview" name="test_preview_is_same_first_record_without_enriching_other_rows_or_next_page" time="0.006"><failure message="AssertionError: assert (0 == 1)&#10; +  where 0 = len([])&#10; +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}, {'cache': False}], views=[(('view.history',), {'content_type': 'videos'}), (('view.history',), {'content_type': 'videos'})], reads=0).rows">renderer = (&lt;function show_continue_watching at 0x000002383596A3E0&gt;, {'history': {'0': {'title': 'Work 0', 'mode': 'movie', 'ids'...}], views=[(('view.history',), {'content_type': 'videos'}), (('view.history',), {'content_type': 'videos'})], reads=0))
+
+    def test_preview_is_same_first_record_without_enriching_other_rows_or_next_page(renderer):
+        render,state,calls=renderer;state['history']=history();original=deepcopy(state['history'])
+        render({});home=calls.rows[0];assert len(calls.rows)==11
+        calls.rows.clear();calls.enriched.clear()
+        render({'resume_preview':'true','page':'99'})
+&gt;       assert len(calls.rows)==1 and len(calls.enriched)==1
+E       AssertionError: assert (0 == 1)
+E        +  where 0 = len([])
+E        +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}, {'cache': False}], views=[(('view.history',), {'content_type': 'videos'}), (('view.history',), {'content_type': 'videos'})], reads=0).rows
+
+tests\test_ce2044_resume_preview.py:80: AssertionError</failure></testcase><testcase classname="tests.test_ce2044_resume_preview" name="test_confirmed_empty_is_an_explicit_nonplayable_preview_status" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0).rows">renderer = (&lt;function show_continue_watching at 0x00000238359AB560&gt;, {'history': {}, 'failed': False}, namespace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0))
+
+    def test_confirmed_empty_is_an_explicit_nonplayable_preview_status(renderer):
+        render,state,calls=renderer
+        render({'resume_preview':'true'})
+&gt;       assert len(calls.rows)==1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0).rows
+
+tests\test_ce2044_resume_preview.py:91: AssertionError</failure></testcase><testcase classname="tests.test_ce2044_resume_preview" name="test_read_failure_is_not_claimed_as_empty_or_mutated[False]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0).rows">renderer = (&lt;function show_continue_watching at 0x0000023835A74C20&gt;, {'history': {'0': {'title': 'Work 0', 'mode': 'movie', 'ids'...pace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0))
+preview = False
+
+    @pytest.mark.parametrize('preview',[False,True])
+    def test_read_failure_is_not_claimed_as_empty_or_mutated(renderer,preview):
+        render,state,calls=renderer;state.update(history=history(),failed=True)
+        original=deepcopy(state['history'])
+        render({'resume_preview':'true'} if preview else {})
+&gt;       assert len(calls.rows)==1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0).rows
+
+tests\test_ce2044_resume_preview.py:104: AssertionError</failure></testcase><testcase classname="tests.test_ce2044_resume_preview" name="test_read_failure_is_not_claimed_as_empty_or_mutated[True]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = len([])&#10; +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0).rows">renderer = (&lt;function show_continue_watching at 0x0000023835A76340&gt;, {'history': {'0': {'title': 'Work 0', 'mode': 'movie', 'ids'...pace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0))
+preview = True
+
+    @pytest.mark.parametrize('preview',[False,True])
+    def test_read_failure_is_not_claimed_as_empty_or_mutated(renderer,preview):
+        render,state,calls=renderer;state.update(history=history(),failed=True)
+        original=deepcopy(state['history'])
+        render({'resume_preview':'true'} if preview else {})
+&gt;       assert len(calls.rows)==1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = len([])
+E        +    where [] = namespace(rows=[], enriched=[], ended=[{'cache': False}], views=[(('view.history',), {'content_type': 'videos'})], reads=0).rows
+
+tests\test_ce2044_resume_preview.py:104: AssertionError</failure></testcase><testcase classname="tests.test_ce2044_resume_preview" name="test_changed_snapshot_does_not_reuse_previous_preview" time="0.003"><failure message="IndexError: list index out of range">renderer = (&lt;function show_continue_watching at 0x00000238359ABA60&gt;, {'history': {}, 'failed': False}, namespace(rows=[], enriche...videos'}), (('view.history',), {'content_type': 'videos'}), (('view.history',), {'content_type': 'videos'})], reads=0))
+
+    def test_changed_snapshot_does_not_reuse_previous_preview(renderer):
+        render,state,calls=renderer;state['history']=history(2)
+        render({'resume_preview':'true'});assert calls.rows[0][1].label=='Work 1'
+        calls.rows.clear();state['history']['1']['completed']=True
+        render({'resume_preview':'true'});assert calls.rows[0][1].label=='Work 0'
+        calls.rows.clear();state['history']={}
+&gt;       render({'resume_preview':'true'});assert calls.rows[0][1].props['Bobi.Resume.State']=='empty'
+                                                 ^^^^^^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_ce2044_resume_preview.py:117: IndexError</failure></testcase><testcase classname="tests.test_ce2044_resume_preview" name="test_real_database_checked_read_distinguishes_corruption_and_preserves_file" time="0.005"><failure message="AttributeError: 'PickleDatabase' object has no attribute 'get_key_checked'">tmp_path = WindowsPath('C:/Users/theon/AppData/Local/Temp/pytest-of-2223M1/pytest-1602/test_real_database_checked_rea0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000002383597D160&gt;
+
+    def test_real_database_checked_read_distinguishes_corruption_and_preserves_file(tmp_path,monkeypatch):
+        vfs=ModuleType('xbmcvfs');vfs.translatePath=lambda _:str(tmp_path)
+        vfs.mkdirs=lambda _:None
+        log=ModuleType('lib.jacktook.utils');log.kodilog=lambda _:None
+        utils=ModuleType('lib.utils.kodi.utils');utils.ADDON_ID='plugin.video.bobbi'
+        for module in (vfs,log,utils):monkeypatch.setitem(sys.modules,module.__name__,module)
+        database=module_at('checked_history',PLUGIN/'lib/db/pickle_db.py').PickleDatabase()
+&gt;       assert database.get_key_checked('jt:lfh')=={}
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'PickleDatabase' object has no attribute 'get_key_checked'
+
+tests\test_ce2044_resume_preview.py:129: AttributeError</failure></testcase><testcase classname="tests.test_ce2044_resume_preview" name="test_skin_waits_for_item_bound_empty_state_and_preview_uses_shared_route" time="0.001"><failure message="AssertionError: assert ('action=continue_watching_menu' in 'plugin://plugin.video.bobbi/?action=continue_watching_menu' and 'resume_preview=true' in 'plugin://plugin.video.bobbi/?action=continue_watching_menu')">def test_skin_waits_for_item_bound_empty_state_and_preview_uses_shared_route():
+        root=ET.parse(SKIN/'Custom_1197_BobiPersonal.xml')
+        content=root.find(".//control[@id='9130']/content").text
+&gt;       assert 'action=continue_watching_menu' in content and 'resume_preview=true' in content
+E       AssertionError: assert ('action=continue_watching_menu' in 'plugin://plugin.video.bobbi/?action=continue_watching_menu' and 'resume_preview=true' in 'plugin://plugin.video.bobbi/?action=continue_watching_menu')
+
+tests\test_ce2044_resume_preview.py:141: AssertionError</failure></testcase></testsuite></testsuites>

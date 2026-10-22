@@ -49,6 +49,18 @@
     <value condition="String.IsEqual(Window(Home).Property(BobiRail),9810) + Integer.IsGreater(Container(9810).ListItem.PercentPlayed,0)">已看 $INFO[Container(9810).ListItem.PercentPlayed]%</value>
   </variable>
   <!-- 我的 hub: the newest resume item, read from the hidden 继续观看 list (container 9130) -->
+  <variable name="HubResumeStateTitle">
+    <value condition="Container(9130).IsUpdating">正在读取观看记录</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),empty)">还没有在看的影片</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),error)">暂时无法读取观看记录</value>
+    <value>正在读取观看记录</value>
+  </variable>
+  <variable name="HubResumeStateDescription">
+    <value condition="Container(9130).IsUpdating">正在与首页同步；你可以先使用左侧菜单。</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),empty)">从首页片单选一部开始；未看完的影院影片会留在这里。</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),error)">观看记录未被清除；请从左侧“继续观看”重试。</value>
+    <value>你可以从左侧“继续观看”查看或重试。</value>
+  </variable>
   <variable name="HubResumeArt">
     <value condition="!String.IsEmpty(Container(9130).ListItem.Art(thumb))">$INFO[Container(9130).ListItem.Art(thumb)]</value>
     <value condition="!String.IsEmpty(Container(9130).ListItem.Art(fanart))">$INFO[Container(9130).ListItem.Art(fanart)]</value>

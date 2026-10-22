@@ -97,6 +97,16 @@ def continue_action(params):
     run_search_entry(search)
 
 
+def _resume_status(state):
+    # The completion receipt travels with this provider result. No global
+    # window flag can be overwritten by a late Home/Personal request.
+    label = '还没有在看的影片' if state == 'empty' else '暂时无法读取观看记录'
+    item = make_list_item(label=label)
+    item.setProperty('Bobi.Resume.State', state)
+    item.setProperty('IsPlayable', 'false')
+    return ('', item, False)
+
+
 def show_continue_watching(params=None):
     if params is None:
         params = {}
@@ -104,18 +114,24 @@ def show_continue_watching(params=None):
     set_pluging_category(translation(90200))
     setContent(ADDON_HANDLE, "videos")
 
-    per_page = 10
-    page = int(params.get("page", 1))
+    preview = params.get('resume_preview') == 'true'
+    per_page = 1 if preview else 10
+    page = 1 if preview else int(params.get("page", 1))
 
-    history = PickleDatabase().get_key('jt:lfh')
-    filtered_items = history_rows(history.items(), parse_time)
+    try:
+        history = PickleDatabase().get_key_checked('jt:lfh')
+        filtered_items = history_rows(history.items(), parse_time)
+    except (OSError, ValueError, TypeError, AttributeError):
+        add_directory_items_batch([_resume_status('error')])
+        end_of_directory(cache=False)
+        return
 
     total = len(filtered_items)
     start = (page - 1) * per_page
     end = start + per_page
     items = filtered_items[start:end]
 
-    directory_items = []
+    directory_items = [_resume_status('empty')] if preview and not filtered_items else []
 
     for title, data, source_keys in items:
         # Display is a separate projection. Playback receives the original payload.
@@ -135,6 +151,7 @@ def show_continue_watching(params=None):
         # Keep progress as display data; the original payload retains seconds.
         list_item.setProperty("PercentPlayed", str(round(progress(data))))
         list_item.setProperty('Bobi.SourceKind', _source_kind(data))
+        list_item.setProperty('Bobi.Resume.State', 'ready')
 
         # This action may open the picker before any media is resolved.
         list_item.setProperty("IsPlayable", "false")
@@ -161,7 +178,7 @@ def show_continue_watching(params=None):
 
         directory_items.append((url, list_item, False))
 
-    if end < total:
+    if not preview and end < total:
         list_item = make_list_item(label="下一页")
         list_item.setProperty("Bobi.NextPage", "true")
         list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "nextpage.png")})
@@ -172,4 +189,5 @@ def show_continue_watching(params=None):
     add_directory_items_batch(directory_items)
 
     end_of_directory(cache=False)
-    apply_section_view("view.history", content_type="videos")
+    if not preview:
+        apply_section_view("view.history", content_type="videos")

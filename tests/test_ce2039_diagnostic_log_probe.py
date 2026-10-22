@@ -151,12 +151,56 @@ def test_diagnostic_without_any_exact_log_evidence_fails_instead_of_claiming_ses
         execute_remote(tmp_path,monkeypatch,['VideoPlayer unrelated'],scope=scope)
 
 
-def test_actual_ce2039_receipt_is_bound_and_read_only():
-    path=Path('D:/AM6B-Project/ce2029-results-20261021/ce2039-gattaca-open-range-result1.json')
+def test_sanitized_ce2039_receipt_projection_is_bound_and_read_only():
+    # A documented projection of the retained original, not a new device trial.
+    path=ROOT/'tests/fixtures/ce2039-diagnostic-receipt-projection.json'
     before=path.read_bytes();value=json.loads(before)
+    assert hashlib.sha256(before).hexdigest()=='8e4122f7f4726125c7a457e7ee51f8da06f0ac2db776d0a918aa8170e5ac49eb'
     scope=probe.diagnostic_scope(path,value['request_id'])
     assert scope['native_instance']==value['native_instance'] and scope['transport_sha256']==value['url_sha256']
+    assert scope['diagnostic_only'] is True and scope['product_proof'] is False
+    assert value['stop_state']=='unconfirmed'  # Preserve the historical field.
     assert path.read_bytes()==before
+
+
+@pytest.mark.parametrize('change',['request','owner','sample','transport','product'])
+def test_retained_projection_rejects_mismatched_binding(tmp_path,change):
+    value=json.loads((ROOT/'tests/fixtures/ce2039-diagnostic-receipt-projection.json').read_bytes())
+    request=value['request_id']
+    if change=='request':request='0'*32
+    elif change=='owner':value['owner_context']['request_id']='0'*32
+    elif change=='sample':value['samples'][-1]['native']['native_instance']='00000000-0000-0000-0000-000000000000'
+    elif change=='transport':value['url_sha256']='0'*64
+    elif change=='product':value['product_proof']=True
+    with pytest.raises(ValueError,match='DIAGNOSTIC_RECEIPT_INVALID'):
+        scope_for(tmp_path,value,request)
+
+
+def test_optional_historical_check_is_explicit_and_read_only(tmp_path,capsys):
+    import check_diagnostic_receipt as check
+    path=tmp_path/'receipt.json'
+    args=['--receipt',str(path),'--request',REQUEST]
+    assert check.main(args)==2
+    assert json.loads(capsys.readouterr().out)['state']=='not_run'
+    path.write_text(json.dumps(receipt()),encoding='utf-8');before=path.read_bytes()
+    assert check.main(args)==0
+    result=json.loads(capsys.readouterr().out)
+    assert result['unchanged'] is True and result['device_acceptance'] is False
+    assert path.read_bytes()==before
+    assert check.main(args[:-1]+['0'*32])==1
+    assert json.loads(capsys.readouterr().out)['state']=='invalid'
+
+
+def test_optional_historical_check_rejects_changes_during_validation(tmp_path,monkeypatch):
+    import check_diagnostic_receipt as check
+    path=tmp_path/'receipt.json';path.write_text(json.dumps(receipt()),encoding='utf-8')
+    validate=check.diagnostic_scope
+    def changed(*args):
+        result=validate(*args)
+        path.write_text('{}',encoding='utf-8')
+        return result
+    monkeypatch.setattr(check,'diagnostic_scope',changed)
+    assert check.check(path,REQUEST)['state']=='invalid'
 
 
 @pytest.mark.parametrize('failed',[False,True])

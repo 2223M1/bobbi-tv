@@ -60,7 +60,7 @@ def test_personal_page_direction_keys_reach_header_card_and_right_column():
     root = ET.parse(SKIN / 'Custom_1197_BobiPersonal.xml')
     node = lambda cid: root.find(".//control[@id='%s']" % cid)
     assert node(9100).findtext('onup') == '9701'
-    has = 'Integer.IsGreater(Container(9130).NumItems,0)'
+    has = 'String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)'
     for cid, direction, expected in ((9100, 'onright', ('9110','9101')),
                                      (9101, 'onup', ('9110','9701'))):
         assert [(n.get('condition'), n.text) for n in node(cid).findall(direction)] == [

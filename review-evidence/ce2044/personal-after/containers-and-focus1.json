@@ -1,0 +1,93 @@
+{
+  "mode": "idle_attended_rpc_navigation",
+  "samples": [
+    {
+      "seconds": 0,
+      "labels": {
+        "Container(9130).ListItem.Label": "夜行者",
+        "Container(9130).ListItem.Property(Bobi.Resume.State)": "ready",
+        "Container(9130).ListItem.Property(PercentPlayed)": "2",
+        "Container(9130).NumItems": "1"
+      },
+      "identity": {
+        "tmdb_id": 242582,
+        "mode": "movies",
+        "season": null,
+        "episode": null
+      },
+      "conditions": {
+        "Container(9130).IsUpdating": false,
+        "Control.HasFocus(9100)": true,
+        "Control.HasFocus(9110)": false
+      }
+    },
+    {
+      "seconds": 1,
+      "labels": {
+        "Container(9130).ListItem.Label": "夜行者",
+        "Container(9130).ListItem.Property(Bobi.Resume.State)": "ready",
+        "Container(9130).ListItem.Property(PercentPlayed)": "2",
+        "Container(9130).NumItems": "1"
+      },
+      "identity": {
+        "tmdb_id": 242582,
+        "mode": "movies",
+        "season": null,
+        "episode": null
+      },
+      "conditions": {
+        "Container(9130).IsUpdating": false,
+        "Control.HasFocus(9100)": true,
+        "Control.HasFocus(9110)": false
+      }
+    },
+    {
+      "seconds": 2,
+      "labels": {
+        "Container(9130).ListItem.Label": "夜行者",
+        "Container(9130).ListItem.Property(Bobi.Resume.State)": "ready",
+        "Container(9130).ListItem.Property(PercentPlayed)": "2",
+        "Container(9130).NumItems": "1"
+      },
+      "identity": {
+        "tmdb_id": 242582,
+        "mode": "movies",
+        "season": null,
+        "episode": null
+      },
+      "conditions": {
+        "Container(9130).IsUpdating": false,
+        "Control.HasFocus(9100)": true,
+        "Control.HasFocus(9110)": false
+      }
+    },
+    {
+      "seconds": 3,
+      "labels": {
+        "Container(9130).ListItem.Label": "夜行者",
+        "Container(9130).ListItem.Property(Bobi.Resume.State)": "ready",
+        "Container(9130).ListItem.Property(PercentPlayed)": "2",
+        "Container(9130).NumItems": "1"
+      },
+      "identity": {
+        "tmdb_id": 242582,
+        "mode": "movies",
+        "season": null,
+        "episode": null
+      },
+      "conditions": {
+        "Container(9130).IsUpdating": false,
+        "Control.HasFocus(9100)": true,
+        "Control.HasFocus(9110)": false
+      }
+    }
+  ],
+  "right": {
+    "Control.HasFocus(9110)": true
+  },
+  "left": {
+    "Control.HasFocus(9100)": true
+  },
+  "passed": true,
+  "history_written": false
+}

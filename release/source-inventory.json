@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "fd3dbdce1e63f4651d9e312734b7fcf44421b877631b5f24911d642f22b1399b",
+      "addon.xml": "d5cc9a9d395057f2cf1f3cf369899ed68769de4a3674c1baa333a77ea9d355eb",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "0e663d1c71de01063ab720be2467a19212975ad8f7edf0aa4c1ab3749f60cee5",
       "CHANGELOG.md": "bbaf386d6e9fe0a3faadc41bb3ef13fe862611ca35736567e68e2afa9a947c15",
@@ -235,7 +235,7 @@
       "lib/db/anime.py": "6f2011d60b86b26caca9b9669210c4fc31f561e2314eda01d05e086d0b39910f",
       "lib/db/cached.py": "2522949366ac214d795b51c99e2d737e86d003c3ae3cdbf888520e9d3664b1fe",
       "lib/db/deferred_history.py": "7e19fac630183ac483f682de341dd7896658fad03b150be7395dfda405a6ee30",
-      "lib/db/pickle_db.py": "58e7bb4eb2ac82da968611560a514339f8b09e68de6d19a640ff8a5072b361af",
+      "lib/db/pickle_db.py": "b2f6e507c161a7ce67eac4f0acb6bcd5cadb4335e7c0d739ede909fd3d6a842f",
       "lib/domain/torrent.py": "76eafd2d415ca42a0705e42893f322a264b4390fbb94dc27a3dcbe4fab3466f5",
       "lib/download_control_flags.py": "9f6d890e883c6dd412bd8ab0f81732798b2f59beb20a471da96863b8fe34620d",
       "lib/download_file_io.py": "c06f687db37ee95c6d043bb6323dce28795458d17800ed08ac2967e9722d910e",
@@ -343,7 +343,7 @@
       "lib/utils/torrent/torrserver_init.py": "b1f7d41cc3fb1c6fc6daf0bdc295dccf42de1babcf7728cb8b50041ed5746161",
       "lib/utils/torrent/torrserver_utils.py": "673540a0e8abef26c51523af68829c914b4d490cf242617b7853119540c0e6bb",
       "lib/utils/torrentio/utils.py": "1eff50c2ca4cad9c95aa4d7a6dd8012e2c802c9c805d0279c551af327659ca79",
-      "lib/utils/views/continue_watching.py": "1cf418ebcbe89c501fe5f63829e89528b07cf03d24aba7c301715f8215618dc1",
+      "lib/utils/views/continue_watching.py": "27db423f87c807ba012fa6857e73bdc5aa33c88a1159a2b35bbbcfbdd5d67911",
       "lib/utils/views/last_files.py": "e90907f3b8336dbc00af3e9e123dec63c1df5784f358c05fd316a39311ceb306",
       "lib/utils/views/last_titles.py": "78a3aa5e572e6839519b126f9cab07bb0c8cfedb0a2fe2439d36e8c34d3fabff",
       "lib/utils/views/library.py": "cf434206b0ffb6923445ea9f91d327eac3044535050bad593475077181729911",
@@ -607,7 +607,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "4863326fe8f35e552a0a7b91c1c82ea6d082be6aecdba0c8bfa96bb2d5ae7c90",
+      "addon.xml": "16706ee18df0f66a97ce1c8e8e786265a37d1bec41d3fe2313d26d7a2c6a1799",
       "default.py": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
     },
     "script.module.bobbi.catalog": {
@@ -807,7 +807,7 @@
       "1080p/Custom_1190_TMDB_Info.xml": "d8e757bbd5673cf909f6f1e4979c3de48154a21f29a088d04298bc895496a10e",
       "1080p/Custom_1195_AM6BStreamingHub.xml": "f841353cf6c244272d225dd15fd9d14afb244c2f708d34798495e78f8f06cc20",
       "1080p/Custom_1196_BobiSearch.xml": "c6d85a2b9f4e9fd9ae52dc59a99ca567c3dfb0fa0ed80f3494cfa4fb96269e31",
-      "1080p/Custom_1197_BobiPersonal.xml": "f2064b9391939d302ab1a7d1f1d1135aa79a509be7c1e17f3679a5c22f016466",
+      "1080p/Custom_1197_BobiPersonal.xml": "6278e1a2cee80f3a4e53cc9c593be3b8895004e4cff37afc43421162d1edd0ea",
       "1080p/Custom_1198_BobiAnime.xml": "cb46071695f087236dc3549fd2eed843473f117a4e01c5e76fb98832ee56d336",
       "1080p/custom_OptionsDialog.xml": "553d08abf579a4330fc5dc34d53a54e2f0e48023853aa316005738d3e8cda531",
       "1080p/custom_PlaySpeed.xml": "6e3471c9f57b7e023c9494475bce188dc08a601dd8ed13fb3702ad28c2d6ba3f",
@@ -857,7 +857,7 @@
       "1080p/Includes_BobiArctic.xml": "315a2806ab8608df6c16f5bf4400ae25be2a4cb2231ad79523caba1645402f5e",
       "1080p/Includes_Compatibility.xml": "8031922a9eb8f163a316dcefdeb181b4c9964e00eef1182e9585dcf0d488f5e1",
       "1080p/Includes_Dialogs.xml": "1b29d167106539ddf9b2e35a42e239e6f02b9c96e9e96ec1aaad2282faae63a1",
-      "1080p/Includes_Home.xml": "e70b733a55810fe17cac9f88af537c61429e4063536b136dff9cbbaacf5c85ef",
+      "1080p/Includes_Home.xml": "8a6071a4d13b5fc752a52ad53a7ac54a6cfe121b572c2209256ea96820db7b0a",
       "1080p/Includes_OSD.xml": "a77c7dd81c30e0691220f4ca142403f3fc4e28f0bddc839c2a369eb2785cc48f",
       "1080p/Includes_Paths.xml": "1897583baf944f98c36f0a874781f35d043f81e949ced5db7bb850313fb9ec89",
       "1080p/Includes_Titles.xml": "4ecfa6a06a3942aaa0a99e5c4783fee719f7324edb8ce2e44bdb9395b017454a",
@@ -920,7 +920,7 @@
       "1080p/ViewsPVRGuide.xml": "1e7858f9f4bef6cfa474081aa43fa972592282001f4520b9f744c0d7d94bc606",
       "1080p/ViewsVideoLibrary.xml": "e8d33204071bd876cbbb42d3c41f9995f1eca1c4660b5866e40b1e759a9ac5fa",
       "1080p/ViewsWeather.xml": "338efacb7fe0ac3ae56de273de465735a046f163b1f46315e419c66f71135e61",
-      "addon.xml": "e04cb629700024be6f2c2883c0c4072dfa73f4e132496764487ba50fed7c4439",
+      "addon.xml": "aaef7f2ad0c2d4fafee5e1a0dac143dd776a0b64676a33aa5f6db85d36b5f1be",
       "backgrounds/media-overlay.jpg": "c74612b7e5529cbbf0297e304ca70a6839dc986e8024b9e2f7d970b1ac5f192f",
       "backgrounds/settings.jpg": "5a4f0f4d1aead0eec5b2020091f5eeb8081796f6a6d82562487a41e41d34306c",
       "backgrounds/tv.jpg": "57a1216595dafb728cff8373a0d036369a6cfcba0d7c4da38c124aade6f28490",

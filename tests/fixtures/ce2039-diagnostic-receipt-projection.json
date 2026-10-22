@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "operation": "start",
+  "run_id": "3023901052d14f51bcf8692b3ee576ef",
+  "request_id": "0d481334e3634e1cba8b2f2edc18cb11",
+  "native_instance": "a7f7246e-124d-4195-90f5-58fc39da5573",
+  "tool_revision": 5,
+  "route": "sharestream-open-range",
+  "state": "completed",
+  "diagnostic_only": true,
+  "product_proof": false,
+  "retry_allowed": false,
+  "open_call_returned": true,
+  "url_sha256": "e993653defe6da0486a97c18c8376302cc670fe279866ab63b3df6bf3e519266",
+  "file_identity": "transport:939b30906b7f9f8490cf3509ded1d4fe28c4659e9ff707ebd8dfa6decef8042e|diagnostic:e9a940fb5b701bda0da6414a674899904a97445d271bce05808c9a31054c0b32|transport:e993653defe6da0486a97c18c8376302cc670fe279866ab63b3df6bf3e519266",
+  "transport_diagnostic": {
+    "mode": "open_range",
+    "seconds": 60
+  },
+  "owner_context": {
+    "boot_id": "dbbda0b388a84ba0b30d752014c27790",
+    "epoch": 1,
+    "request_id": "0d481334e3634e1cba8b2f2edc18cb11"
+  },
+  "samples": [
+    {
+      "phase": "OPEN",
+      "native": {
+        "phase": "OPEN",
+        "native_instance": "a7f7246e-124d-4195-90f5-58fc39da5573",
+        "request_id": "0d481334e3634e1cba8b2f2edc18cb11"
+      }
+    },
+    {
+      "phase": "AV_STARTED",
+      "native": {
+        "phase": "AV_STARTED",
+        "native_instance": "a7f7246e-124d-4195-90f5-58fc39da5573",
+        "request_id": "0d481334e3634e1cba8b2f2edc18cb11"
+      }
+    }
+  ],
+  "stop": {
+    "confirmed": true,
+    "reason": "STOP"
+  },
+  "stop_state": "unconfirmed"
+}
