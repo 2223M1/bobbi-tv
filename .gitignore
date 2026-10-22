@@ -15,6 +15,9 @@ local.properties
 !third_party/addons/script.module.certifi/lib/certifi/cacert.pem
 .private/
 staging/
+/test-results/
+/review-evidence/
+/review-packages/
 # Local runtime/account state is never part of a source handoff.
 /profile/
 /profiles/

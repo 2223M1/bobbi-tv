@@ -1,9 +1,0 @@
-{
-  "exit_code": 1,
-  "result": {
-    "state": "failed",
-    "error": "ValueError",
-    "receipt": "/storage/.local/share/bobbi-private-deploy/20261019-172841/deployment.json"
-  },
-  "diagnostic_present": false
-}

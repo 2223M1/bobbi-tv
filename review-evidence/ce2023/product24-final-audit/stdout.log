@@ -1,1 +1,0 @@
-{"sequence": 2026102024, "files": 1350, "controls": [{"control": "signature", "rejected": true, "reason": "Offline release signature rejected"}, {"control": "component", "rejected": true, "reason": "Offline component integrity failed"}], "output": "review-evidence\\ce2023\\product24-source-package.json"}

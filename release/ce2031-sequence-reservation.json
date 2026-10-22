@@ -1,7 +1,0 @@
-{
-  "schema": 1,
-  "candidate": 2026102031,
-  "supersedes_local_candidate": 2026102030,
-  "baseline": "bdad0c893ea7734d1f6329889004449d95b984a2",
-  "scope": "IME page binding and real-device legacy history clock repair; full acceptance pending; no public release"
-}

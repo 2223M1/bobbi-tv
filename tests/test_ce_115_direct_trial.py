@@ -108,7 +108,7 @@ def test_timeout_has_exclusive_unconfirmed_receipt_and_no_dispatch_retry(tmp_pat
 
 
 def test_baseline_is_actual_retained_attempt_three():
-    target = driver.target_from_baseline(ROOT / 'review-evidence/ce-new-work-gattaca-select-1792605068520797400.json')
+    target = driver.target_from_baseline(ROOT / 'tests/fixtures/playback/selection_initial.json')
     assert target['request_id'] == '0ed3043bc7424b159264ad87fe64504d'
     assert target['selection_identity'].endswith('939b30906b7f9f8490cf3509ded1d4fe28c4659e9ff707ebd8dfa6decef8042e')
 

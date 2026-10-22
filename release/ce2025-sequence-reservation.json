@@ -1,7 +1,0 @@
-{
-  "schema": 1,
-  "allocated": [2026102021, 2026102022, 2026102023, 2026102024],
-  "candidate": 2026102025,
-  "baseline": "c4e0baca6acefa58f031979bff71e7cd1028efdf",
-  "scope": "Local CE-only review remediation; no push, merge or publication authorized this round"
-}

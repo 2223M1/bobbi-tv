@@ -1,9 +1,0 @@
-{
-  "result": {
-    "mode": "status",
-    "before": "block",
-    "native_sha256": "8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b"
-  },
-  "exit_code": 0,
-  "diagnostic_present": false
-}

@@ -1,7 +1,0 @@
-{
-  "scope": "Package source-byte tampering detection only",
-  "returncode": 2,
-  "stdout": "",
-  "stderr": "ValueError: PACKAGE_HASH_MISMATCH:source/bobbi_platform/standard_session.py\n",
-  "accepted": false
-}

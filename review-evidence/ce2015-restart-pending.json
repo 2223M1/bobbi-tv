@@ -1,7 +1,0 @@
-{
-  "ActiveState": "active",
-  "SubState": "running",
-  "MainPID": "22857",
-  "TimeoutStopUSec": "30s",
-  "KillMode": "control-group"
-}

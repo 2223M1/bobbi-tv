@@ -1,7 +1,0 @@
-{
-  "schema": 1,
-  "allocated": [2026102021, 2026102022, 2026102023, 2026102024, 2026102025, 2026102026, 2026102027, 2026102028],
-  "candidate": 2026102029,
-  "baseline": "1f2d54140e96d23881b73b53a19b346fcd666949",
-  "scope": "Local non-UI self-audit; not deployed while Claude UI work continues; no push or publication"
-}

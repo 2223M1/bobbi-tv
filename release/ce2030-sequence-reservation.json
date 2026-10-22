@@ -1,7 +1,0 @@
-{
-  "schema": 1,
-  "candidate": 2026102030,
-  "supersedes_local_candidate": 2026102029,
-  "baseline": "1f2d54140e96d23881b73b53a19b346fcd666949",
-  "scope": "Claude UI integration and independently reviewed CE2029 remediation; device acceptance pending; no public release"
-}
