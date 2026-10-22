@@ -1,0 +1,136 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "station_agent",
+    "operation": "stop",
+    "stopped": true,
+    "before": {
+      "wall": 69902.235740627,
+      "phase": "AV_STARTED",
+      "native": {
+        "audio_intent": 0,
+        "file_identity": "bt:e1317fd62599094606d2efb69c65aed00fc06c0c|f45d4a3e6faefc2ffcb2359ed66547a9c84a88bfd7e3dbaaf6f67a25e2df9c25",
+        "handoff_protocol": 1,
+        "handoff_restored": null,
+        "monotonic_us": 69787141315,
+        "native_instance": "8ce8bcfb-88a4-4560-960d-13c53c11ac3b",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "923c808f0afe4647b09b7d702f3d3cea",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "5f2f72eba9c1c2fa7a16231edb102e603013d2c912f6af7605d1464cf27c814e",
+        "subtitle_intent": 0,
+        "url_sha256": "138d52e24eee5fb3ba3cedecdcd48db8508a2925373d2953ab27bc157b3ebbeb",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 36.269,
+      "duration": 5376.997,
+      "currentaudiostream": {
+        "bitrate": 640000,
+        "channels": 6,
+        "codec": "eac3",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "eng",
+        "name": "",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 1,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "",
+        "name": "5f2f72eba9c1c2fa7a16231edb102e60 （外挂）"
+      },
+      "currentvideostream": {
+        "codec": "h264",
+        "height": 1080,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": true,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 69902.297439599,
+        "read_completed": 69902.297680392,
+        "raw": "vdec channel 0 statistics:\n  device name : ammvdec_h264-00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 6\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 886\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+        "sha256": "9359c07401ee8d5d2e1b8983406f549dcd0a0f5417f29a21bc37c1d201afd850",
+        "channels": [
+          {
+            "channel": 0,
+            "device": "ammvdec_h264-00",
+            "counters": {
+              "frame width": 1920,
+              "frame height": 1080,
+              "frame count": 886,
+              "drop count": 0,
+              "fra err count": 0,
+              "hw err count": 0
+            }
+          }
+        ],
+        "identity_known": true,
+        "primary_channel": 0
+      },
+      "decoder_counters": {
+        "frame width": 1920,
+        "frame height": 1080,
+        "frame count": 886,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "decoder_counter_source": {
+        "channel": 0,
+        "device": "ammvdec_h264-00"
+      },
+      "observation_times": {
+        "sample_started": 69902.218642512,
+        "player_time_started": 69902.238091845,
+        "player_time_completed": 69902.24051548,
+        "caching_started": 69902.240537855,
+        "caching_completed": 69902.251763195,
+        "decoder_started": 69902.297439599,
+        "decoder_completed": 69902.297680392,
+        "sample_completed": 69902.298916605
+      }
+    },
+    "seconds": 0.75
+  },
+  "diagnostic_present": false,
+  "work": "station_agent",
+  "operation": "stop",
+  "attempt": 2,
+  "regression_attempt": true
+}

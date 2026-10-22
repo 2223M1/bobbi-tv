@@ -1,0 +1,16 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "station_agent",
+    "operation": "cancel",
+    "cancelled": true,
+    "request_id": "0f146016d2db4baf9e9bf1c5195a25cf"
+  },
+  "diagnostic_present": false,
+  "work": "station_agent",
+  "operation": "cancel",
+  "attempt": 1,
+  "regression_attempt": false
+}

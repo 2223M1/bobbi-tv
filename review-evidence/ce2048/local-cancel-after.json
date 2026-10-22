@@ -1,0 +1,35 @@
+{
+  "audit_commit": "1ce3ec9cb779be5fc3effcfe56d0422e3c5039fd",
+  "method": "Actual doModal/resolve_source/onAction/run/activation/play_video; IO doubles only",
+  "stage": "Back during first player activation snapshot; Back ownership reads all fail; activation retry recovers",
+  "real_kodi_media_backend_io": false,
+  "dispatches": [],
+  "operations": [
+    "snapshot",
+    "register_window",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot"
+  ],
+  "events": [
+    "show_loading_window",
+    "Back_during_player_activation_snapshot",
+    "back_ownership_snapshot_unavailable",
+    "back_ownership_snapshot_unavailable",
+    "back_ownership_snapshot_unavailable",
+    "close_loading_window",
+    "activation_snapshot_transient_failure",
+    "close_loading_window"
+  ],
+  "logs": [
+    "[CINEMA-HANDOFF] selected source resolution started aaaaaaaa",
+    "[CINEMA-HANDOFF] selected source resolved; constructing player",
+    "[CINEMA-HANDOFF] request=aaaaaaaa rejected=SELECTION_CHECK_CONNECTIONRESETERROR"
+  ],
+  "owner_cancelled": false,
+  "owner_current_request": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}

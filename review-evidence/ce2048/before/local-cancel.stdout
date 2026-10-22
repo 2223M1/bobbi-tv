@@ -1,0 +1,60 @@
+{
+  "audit_commit": "5d6a77d78a278984517f3e4af99c239054e9ba4a",
+  "method": "Actual doModal/resolve_source/onAction/run/activation/play_video; IO doubles only",
+  "stage": "Back during first player activation snapshot; Back ownership reads all fail; activation retry recovers",
+  "real_kodi_media_backend_io": false,
+  "dispatches": [
+    {
+      "success": true,
+      "local_cancel": true,
+      "user_cancelled": true,
+      "cancellation_property": null,
+      "active_session_property": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "target_is_bt_plugin": true
+    }
+  ],
+  "operations": [
+    "snapshot",
+    "register_window",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot",
+    "snapshot"
+  ],
+  "events": [
+    "show_loading_window",
+    "Back_during_player_activation_snapshot",
+    "back_ownership_snapshot_unavailable",
+    "back_ownership_snapshot_unavailable",
+    "back_ownership_snapshot_unavailable",
+    "close_loading_window",
+    "activation_snapshot_transient_failure",
+    "setResolvedUrl_success_IO_double",
+    "post_dispatch_monitor_double",
+    "close_loading_window"
+  ],
+  "logs": [
+    "[CINEMA-HANDOFF] selected source resolution started aaaaaaaa",
+    "[CINEMA-HANDOFF] selected source resolved; constructing player",
+    "[CINEMA-HANDOFF] request=aaaaaaaa rejected=SELECTION_CHECK_CONNECTIONRESETERROR",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"SESSION_ACTIVATED\", \"monotonic\": 359850.968}",
+    "[PLAYER] run() started: url_type=plugin, mode=movies, url_start=plugin://plugin.video.bobbi.torrent/play_magnet/?request_id=aaaaaaaaaaaaaaaaaaaa",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"LIST_ITEM_READY\", \"monotonic\": 359850.968}",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"VOLUME_GATE_BEGIN\", \"monotonic\": 359850.968}",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"VOLUME_GATE_END\", \"monotonic\": 359850.968}",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"PRE_AV_TRACKING_BEGIN\", \"monotonic\": 359850.968}",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"PRE_AV_TRACKING_END\", \"monotonic\": 359850.968}",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"PRE_AV_SUBTITLES_BEGIN\", \"monotonic\": 359850.968}",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"PRE_AV_SUBTITLES_END\", \"monotonic\": 359850.968}",
+    "[CINEMA-PHASE] {\"request\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"phase\": \"RESOLUTION_ISSUED\", \"monotonic\": 359850.968}",
+    "[PLAYER] play_video: calling setResolvedUrl only",
+    "[PLAYER] play_video: monitor() returned",
+    "[PLAYER] _drain_nextep_queue returned had_nextep=False",
+    "[PLAYER] run() completed"
+  ],
+  "owner_cancelled": false,
+  "owner_current_request": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}

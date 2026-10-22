@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "sequence": 2026102048,
+  "user_entry": "script.bobbi.start-CE2048.zip",
+  "kodi_addon_xml": "passed",
+  "embedded_complete_signature": "passed",
+  "same_generation_bootstrap": "passed",
+  "isolated_bootstrap_import": "passed",
+  "signed_entry_members": "passed",
+  "account_state_copied": false,
+  "scope": "actual ZIP and fresh interpreter; not clean-device installation certification"
+}

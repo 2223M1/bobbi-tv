@@ -1,0 +1,633 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "nichijou",
+    "operation": "wait",
+    "record": {
+      "test": {
+        "title": "Nichijou: My Ordinary Life",
+        "tmdb_id": 44684,
+        "kind": "tv",
+        "year": 2011,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 44684,
+          "name": "Nichijou: My Ordinary Life",
+          "original_name": "日常",
+          "original_language": "ja",
+          "first_air_date": "2011-04-03"
+        },
+        "route": "system-direct",
+        "checked_at": 1792654945.9715116
+      },
+      "prior_request": "774bf69f31f9437db3577c4bcae5a6fc",
+      "started": 70193.282305391,
+      "home": {
+        "generation": 40,
+        "intent": 1,
+        "retired_generation": 39,
+        "observed_at": 70194.066451312
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 70194.067139272,
+      "picker": {
+        "window": 13001,
+        "generation": 41,
+        "intent": 1,
+        "tmdb_id": 44684,
+        "kind": "tv"
+      },
+      "picker_observed_at": 70198.575069317,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[7³ACG] Nichijou 日常 S1+Sp [BDRip 1080p x265 OPUS]  (My Ordinary Life)",
+        "Container(1000).ListItem.Property(peers)": "4",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "2",
+        "Container(1000).ListItem.Property(size)": "18.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "c58dc2098344323739e2e5a20cf91c40a4dd62bf3ec52b00ce16ddc9f160d658",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 70282.827265042,
+      "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+      "selection_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0",
+      "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+      "first_av_observed_at": 70437.405980004,
+      "select_to_av_observed_seconds": 154.57871496200096
+    },
+    "samples": [
+      {
+        "wall": 70420.815541998,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70420.844123386,
+          "read_completed": 70420.844399419,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70420.766323775,
+          "decoder_started": 70420.844123386,
+          "decoder_completed": 70420.844399419,
+          "sample_completed": 70420.844821531
+        }
+      },
+      {
+        "wall": 70422.877188901,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70422.911911817,
+          "read_completed": 70422.912453842,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70422.844975201,
+          "decoder_started": 70422.911911817,
+          "decoder_completed": 70422.912453842,
+          "sample_completed": 70422.912638586
+        }
+      },
+      {
+        "wall": 70424.959010446,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70424.979812449,
+          "read_completed": 70424.980481679,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70424.912805284,
+          "decoder_started": 70424.979812449,
+          "decoder_completed": 70424.980481679,
+          "sample_completed": 70424.980638924
+        }
+      },
+      {
+        "wall": 70427.009093267,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70427.026119344,
+          "read_completed": 70427.026678702,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70426.980805941,
+          "decoder_started": 70427.026119344,
+          "decoder_completed": 70427.026678702,
+          "sample_completed": 70427.026844489
+        }
+      },
+      {
+        "wall": 70429.203133276,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70429.229634034,
+          "read_completed": 70429.230102103,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70429.027022941,
+          "decoder_started": 70429.229634034,
+          "decoder_completed": 70429.230102103,
+          "sample_completed": 70429.230292431
+        }
+      },
+      {
+        "wall": 70431.261205186,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70431.277317962,
+          "read_completed": 70431.277870238,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70431.230464382,
+          "decoder_started": 70431.277317962,
+          "decoder_completed": 70431.277870238,
+          "sample_completed": 70431.278059441
+        }
+      },
+      {
+        "wall": 70433.29768813,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70433.330121141,
+          "read_completed": 70433.330583961,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70433.278231741,
+          "decoder_started": 70433.330121141,
+          "decoder_completed": 70433.330583961,
+          "sample_completed": 70433.330766455
+        }
+      },
+      {
+        "wall": 70435.359942093,
+        "phase": "OPEN",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "OPEN",
+          "protocol": 1,
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 0,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10138,
+            "label": ""
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70435.381893622,
+          "read_completed": 70435.382126323,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70435.33098135,
+          "decoder_started": 70435.381893622,
+          "decoder_completed": 70435.382126323,
+          "sample_completed": 70435.382214362
+        }
+      },
+      {
+        "wall": 70437.406560779,
+        "phase": "AV_STARTED",
+        "native": {
+          "audio_intent": 0,
+          "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+          "handoff_protocol": 1,
+          "handoff_restored": null,
+          "monotonic_us": 70436242327,
+          "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+          "open_epoch": 4,
+          "paused": false,
+          "phase": "AV_STARTED",
+          "protocol": 1,
+          "reason": "",
+          "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+          "sequence": 2,
+          "subtitle_auto_intent": 0,
+          "subtitle_intent": 0,
+          "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+          "user_intent": 0
+        },
+        "cancelled": false,
+        "failure": null,
+        "prior_failure": null,
+        "seconds": 0.997,
+        "duration": 1423.097,
+        "currentaudiostream": {
+          "bitrate": 190300,
+          "channels": 2,
+          "codec": "opus",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 0,
+          "isdefault": true,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "chi",
+          "name": "chs[FLsnow]"
+        },
+        "currentvideostream": {
+          "codec": "hevc",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "speed": 1,
+        "subtitleenabled": true,
+        "caching": false,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 12005,
+            "label": "全屏视频"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70437.499526509,
+          "read_completed": 70437.500171199,
+          "raw": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 48\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "3e5ab70b0bdaa85b038cd320d9235fa8c45fc058a67331bd6163d86b673acc95",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "vdec.h265.00",
+              "counters": {
+                "frame width": 1920,
+                "frame height": 1080,
+                "frame count": 48,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "decoder_counters": {
+          "frame width": 1920,
+          "frame height": 1080,
+          "frame count": 48,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "vdec.h265.00"
+        },
+        "observation_times": {
+          "sample_started": 70437.382428393,
+          "player_time_started": 70437.412624187,
+          "player_time_completed": 70437.418990837,
+          "caching_started": 70437.419030044,
+          "caching_completed": 70437.455181374,
+          "decoder_started": 70437.499526509,
+          "decoder_completed": 70437.500171199,
+          "sample_completed": 70437.503458104
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "nichijou",
+  "operation": "wait",
+  "attempt": 2,
+  "regression_attempt": true
+}

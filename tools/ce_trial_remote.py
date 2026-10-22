@@ -15,7 +15,7 @@ BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
     'station_agent': {'title': 'The Station Agent', 'tmdb_id': 2056, 'kind': 'movie', 'year': 2003},
-    'nichijou': {'title': 'Nichijou', 'tmdb_id': 45215, 'kind': 'tv', 'year': 2011, 'season': 1, 'episode': 1, 'animation': True},
+    'nichijou': {'title': 'Nichijou: My Ordinary Life', 'tmdb_id': 44684, 'kind': 'tv', 'year': 2011, 'season': 1, 'episode': 1, 'animation': True},
     'paterson': {'title': 'Paterson', 'tmdb_id': 370755, 'kind': 'movie', 'year': 2016},
     'planetes': {'title': 'Planetes', 'tmdb_id': 34102, 'kind': 'tv', 'year': 2003, 'season': 1, 'episode': 1, 'animation': True},
     'moon': {'title': 'Moon', 'tmdb_id': 17431, 'kind': 'movie', 'year': 2009},
@@ -747,6 +747,9 @@ else:
                 'Container(1000).ListItem.Property(resolution)','Container(1000).ListItem.Property(size)',
                 'Container(1000).ListItem.Property(subtitle_badge)',
                 'Container(1000).ListItem.Property(seeders)','Container(1000).ListItem.Property(peers)',
+                'Container(1000).ListItem.Property(status_plain)',
+                'Container(1000).ListItem.Property(recommendation_status)',
+                'Container(1000).ListItem.Property(recommendation_reason)',
                 'Container(1000).ListItem.Property(source_key)']
         cards=[]
         chosen=False

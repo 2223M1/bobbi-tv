@@ -1,0 +1,3152 @@
+{
+  "exit_code": 2,
+  "transport_exit_code": 0,
+  "trial_exit_code": 2,
+  "result": {
+    "name": "nichijou",
+    "operation": "select",
+    "cards": [],
+    "selected": true,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 3,
+      "reset_action": "firstpage"
+    },
+    "samples": [
+      {
+        "wall": 70054.091673251,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70054.063473945,
+          "decoder_started": 70054.118211379,
+          "decoder_completed": 70054.118432942,
+          "sample_completed": 70054.11884082
+        },
+        "cancelled": null,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70054.118211379,
+          "read_completed": 70054.118432942,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70054.60162792,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70054.563625691,
+          "decoder_started": 70054.788764463,
+          "decoder_completed": 70054.789009232,
+          "sample_completed": 70054.78909764
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70054.788764463,
+          "read_completed": 70054.789009232,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70055.086007685,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70055.063725816,
+          "decoder_started": 70055.102662208,
+          "decoder_completed": 70055.103174576,
+          "sample_completed": 70055.103295357
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70055.102662208,
+          "read_completed": 70055.103174576,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70055.609331648,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70055.563820648,
+          "decoder_started": 70055.632248424,
+          "decoder_completed": 70055.632497775,
+          "sample_completed": 70055.632590767
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70055.632248424,
+          "read_completed": 70055.632497775,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70056.089667865,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70056.063941851,
+          "decoder_started": 70056.114040922,
+          "decoder_completed": 70056.114535167,
+          "sample_completed": 70056.11468632
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70056.114040922,
+          "read_completed": 70056.114535167,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70056.583980949,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70056.564081385,
+          "decoder_started": 70056.598665041,
+          "decoder_completed": 70056.598897811,
+          "sample_completed": 70056.598985136
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70056.598665041,
+          "read_completed": 70056.598897811,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70057.10129863,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70057.064177502,
+          "decoder_started": 70057.117534786,
+          "decoder_completed": 70057.118005409,
+          "sample_completed": 70057.118159311
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70057.117534786,
+          "read_completed": 70057.118005409,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70057.591276989,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70057.564307532,
+          "decoder_started": 70057.615219643,
+          "decoder_completed": 70057.615726846,
+          "sample_completed": 70057.615910537
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70057.615219643,
+          "read_completed": 70057.615726846,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70058.10087372,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70058.064445432,
+          "decoder_started": 70058.137001911,
+          "decoder_completed": 70058.13742533,
+          "sample_completed": 70058.13756515
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70058.137001911,
+          "read_completed": 70058.13742533,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70058.627517431,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70058.564572999,
+          "decoder_started": 70058.664715451,
+          "decoder_completed": 70058.665220321,
+          "sample_completed": 70058.665371973
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70058.664715451,
+          "read_completed": 70058.665220321,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70059.141199908,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70059.064673356,
+          "decoder_started": 70059.194927608,
+          "decoder_completed": 70059.195438061,
+          "sample_completed": 70059.195591922
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70059.194927608,
+          "read_completed": 70059.195438061,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70059.587511075,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70059.564820374,
+          "decoder_started": 70059.612613347,
+          "decoder_completed": 70059.612837326,
+          "sample_completed": 70059.612910819
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70059.612613347,
+          "read_completed": 70059.612837326,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70060.091882825,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70060.064962054,
+          "decoder_started": 70060.147678768,
+          "decoder_completed": 70060.148318959,
+          "sample_completed": 70060.148473404
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70060.147678768,
+          "read_completed": 70060.148318959,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70060.586527683,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70060.565099317,
+          "decoder_started": 70060.614806295,
+          "decoder_completed": 70060.61504544,
+          "sample_completed": 70060.615126099
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70060.614806295,
+          "read_completed": 70060.61504544,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70061.092159395,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70061.065216701,
+          "decoder_started": 70061.113903607,
+          "decoder_completed": 70061.114126587,
+          "sample_completed": 70061.114201038
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70061.113903607,
+          "read_completed": 70061.114126587,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70061.588707278,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70061.565332458,
+          "decoder_started": 70061.615399837,
+          "decoder_completed": 70061.615855253,
+          "sample_completed": 70061.615992407
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70061.615399837,
+          "read_completed": 70061.615855253,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70062.088841737,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70062.065454918,
+          "decoder_started": 70062.133591852,
+          "decoder_completed": 70062.134152592,
+          "sample_completed": 70062.134681544
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70062.133591852,
+          "read_completed": 70062.134152592,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70062.591890768,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70062.565601164,
+          "decoder_started": 70062.61492596,
+          "decoder_completed": 70062.615431497,
+          "sample_completed": 70062.615588441
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70062.61492596,
+          "read_completed": 70062.615431497,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70063.084635892,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70063.065761321,
+          "decoder_started": 70063.114880635,
+          "decoder_completed": 70063.115423627,
+          "sample_completed": 70063.115636275
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70063.114880635,
+          "read_completed": 70063.115423627,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70063.589101161,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70063.565877562,
+          "decoder_started": 70063.61468867,
+          "decoder_completed": 70063.615232037,
+          "sample_completed": 70063.615398564
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70063.61468867,
+          "read_completed": 70063.615232037,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70064.080704003,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70064.065997339,
+          "decoder_started": 70064.095912247,
+          "decoder_completed": 70064.096192638,
+          "sample_completed": 70064.096273714
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70064.095912247,
+          "read_completed": 70064.096192638,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70064.599444346,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70064.566126029,
+          "decoder_started": 70064.632910108,
+          "decoder_completed": 70064.633589047,
+          "sample_completed": 70064.633781029
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70064.632910108,
+          "read_completed": 70064.633589047,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70065.101305914,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70065.066273919,
+          "decoder_started": 70065.131699621,
+          "decoder_completed": 70065.132302483,
+          "sample_completed": 70065.132462969
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70065.131699621,
+          "read_completed": 70065.132302483,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70065.599674264,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70065.5663916,
+          "decoder_started": 70065.648429908,
+          "decoder_completed": 70065.648943236,
+          "sample_completed": 70065.64909064
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70065.648429908,
+          "read_completed": 70065.648943236,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70066.099250154,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70066.066534731,
+          "decoder_started": 70066.129917096,
+          "decoder_completed": 70066.130140284,
+          "sample_completed": 70066.130215569
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70066.129917096,
+          "read_completed": 70066.130140284,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70066.598668982,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70066.566656151,
+          "decoder_started": 70066.63217347,
+          "decoder_completed": 70066.632735794,
+          "sample_completed": 70066.632891947
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70066.63217347,
+          "read_completed": 70066.632735794,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70067.099188151,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70067.066774607,
+          "decoder_started": 70067.149385347,
+          "decoder_completed": 70067.149858221,
+          "sample_completed": 70067.150001291
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70067.149385347,
+          "read_completed": 70067.149858221,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70067.590663471,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70067.566892684,
+          "decoder_started": 70067.614530458,
+          "decoder_completed": 70067.614885967,
+          "sample_completed": 70067.61502558
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70067.614530458,
+          "read_completed": 70067.614885967,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70068.103991482,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70068.067018503,
+          "decoder_started": 70068.131008145,
+          "decoder_completed": 70068.131488852,
+          "sample_completed": 70068.131632006
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70068.131008145,
+          "read_completed": 70068.131488852,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70068.606825525,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70068.567136985,
+          "decoder_started": 70068.645994236,
+          "decoder_completed": 70068.646711006,
+          "sample_completed": 70068.64690078
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70068.645994236,
+          "read_completed": 70068.646711006,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70069.098432176,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70069.067262417,
+          "decoder_started": 70069.129616309,
+          "decoder_completed": 70069.130019314,
+          "sample_completed": 70069.130157177
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70069.129616309,
+          "read_completed": 70069.130019314,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70069.590390547,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70069.567382053,
+          "decoder_started": 70069.613056072,
+          "decoder_completed": 70069.613298509,
+          "sample_completed": 70069.613374961
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70069.613056072,
+          "read_completed": 70069.613298509,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70070.093901333,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70070.067503348,
+          "decoder_started": 70070.130327384,
+          "decoder_completed": 70070.130792134,
+          "sample_completed": 70070.130936204
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70070.130327384,
+          "read_completed": 70070.130792134,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70070.601430265,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70070.568083472,
+          "decoder_started": 70070.614664592,
+          "decoder_completed": 70070.615139175,
+          "sample_completed": 70070.615286578
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70070.614664592,
+          "read_completed": 70070.615139175,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70071.080453544,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70071.068192422,
+          "decoder_started": 70071.11549377,
+          "decoder_completed": 70071.115966936,
+          "sample_completed": 70071.116208665
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70071.11549377,
+          "read_completed": 70071.115966936,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70071.59474353,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70071.56831724,
+          "decoder_started": 70071.635257701,
+          "decoder_completed": 70071.635724326,
+          "sample_completed": 70071.635870105
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70071.635257701,
+          "read_completed": 70071.635724326,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70072.095436999,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70072.068434385,
+          "decoder_started": 70072.131106181,
+          "decoder_completed": 70072.131563723,
+          "sample_completed": 70072.131727167
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70072.131106181,
+          "read_completed": 70072.131563723,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70072.5956933,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70072.568560106,
+          "decoder_started": 70072.611769967,
+          "decoder_completed": 70072.61216035,
+          "sample_completed": 70072.612262216
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70072.611769967,
+          "read_completed": 70072.61216035,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70073.087541241,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70073.068679444,
+          "decoder_started": 70073.114527948,
+          "decoder_completed": 70073.115084941,
+          "sample_completed": 70073.115245094
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70073.114527948,
+          "read_completed": 70073.115084941,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70073.593090478,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70073.568799193,
+          "decoder_started": 70073.617629075,
+          "decoder_completed": 70073.618050079,
+          "sample_completed": 70073.618188401
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70073.617629075,
+          "read_completed": 70073.618050079,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70074.099915213,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70074.068921183,
+          "decoder_started": 70074.131696341,
+          "decoder_completed": 70074.132340785,
+          "sample_completed": 70074.13251552
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70074.131696341,
+          "read_completed": 70074.132340785,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70074.601977537,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70074.569044833,
+          "decoder_started": 70074.632711474,
+          "decoder_completed": 70074.632930164,
+          "sample_completed": 70074.63300649
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70074.632711474,
+          "read_completed": 70074.632930164,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70075.096141658,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70075.069160725,
+          "decoder_started": 70075.115190534,
+          "decoder_completed": 70075.115618038,
+          "sample_completed": 70075.115762484
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70075.115190534,
+          "read_completed": 70075.115618038,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70075.591577167,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70075.569292818,
+          "decoder_started": 70075.619231174,
+          "decoder_completed": 70075.619642388,
+          "sample_completed": 70075.619771419
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70075.619231174,
+          "read_completed": 70075.619642388,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70076.09198481,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70076.069399611,
+          "decoder_started": 70076.12964282,
+          "decoder_completed": 70076.129867259,
+          "sample_completed": 70076.129943919
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70076.12964282,
+          "read_completed": 70076.129867259,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70076.594419026,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70076.56952073,
+          "decoder_started": 70076.631615171,
+          "decoder_completed": 70076.63218183,
+          "sample_completed": 70076.632344233
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70076.631615171,
+          "read_completed": 70076.63218183,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70077.097837266,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70077.069634424,
+          "decoder_started": 70077.134278935,
+          "decoder_completed": 70077.134709314,
+          "sample_completed": 70077.134854218
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70077.134278935,
+          "read_completed": 70077.134709314,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70077.591739915,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70077.569754651,
+          "decoder_started": 70077.629937026,
+          "decoder_completed": 70077.630382487,
+          "sample_completed": 70077.630535224
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70077.629937026,
+          "read_completed": 70077.630382487,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70078.100622249,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70078.069883326,
+          "decoder_started": 70078.131677645,
+          "decoder_completed": 70078.131890626,
+          "sample_completed": 70078.131964412
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70078.131677645,
+          "read_completed": 70078.131890626,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70078.592659332,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70078.570107694,
+          "decoder_started": 70078.618351742,
+          "decoder_completed": 70078.618763331,
+          "sample_completed": 70078.61889232
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70078.618351742,
+          "read_completed": 70078.618763331,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70079.094406726,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70079.070237269,
+          "decoder_started": 70079.112951626,
+          "decoder_completed": 70079.113419503,
+          "sample_completed": 70079.113565198
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70079.112951626,
+          "read_completed": 70079.113419503,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70079.599275434,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70079.570362461,
+          "decoder_started": 70079.630955628,
+          "decoder_completed": 70079.631394715,
+          "sample_completed": 70079.631535245
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70079.630955628,
+          "read_completed": 70079.631394715,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70080.093503747,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70080.070485142,
+          "decoder_started": 70080.1311873,
+          "decoder_completed": 70080.131688715,
+          "sample_completed": 70080.131836827
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70080.1311873,
+          "read_completed": 70080.131688715,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70080.603277059,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70080.570615024,
+          "decoder_started": 70080.630693253,
+          "decoder_completed": 70080.631186752,
+          "sample_completed": 70080.631335989
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70080.630693253,
+          "read_completed": 70080.631186752,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70081.096291123,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70081.070719147,
+          "decoder_started": 70081.131964817,
+          "decoder_completed": 70081.132477232,
+          "sample_completed": 70081.132619595
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70081.131964817,
+          "read_completed": 70081.132477232,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70081.598032522,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70081.570849759,
+          "decoder_started": 70081.631443629,
+          "decoder_completed": 70081.632071533,
+          "sample_completed": 70081.632254476
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70081.631443629,
+          "read_completed": 70081.632071533,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70082.090371122,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70082.070966695,
+          "decoder_started": 70082.112093268,
+          "decoder_completed": 70082.112310333,
+          "sample_completed": 70082.112385076
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70082.112093268,
+          "read_completed": 70082.112310333,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70082.596159323,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70082.571071832,
+          "decoder_started": 70082.61296431,
+          "decoder_completed": 70082.613423979,
+          "sample_completed": 70082.61356855
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70082.61296431,
+          "read_completed": 70082.613423979,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70083.101219902,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70083.071217204,
+          "decoder_started": 70083.148105997,
+          "decoder_completed": 70083.148587956,
+          "sample_completed": 70083.148737485
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70083.148105997,
+          "read_completed": 70083.148587956,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70083.604997882,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70083.571368525,
+          "decoder_started": 70083.629863733,
+          "decoder_completed": 70083.630309987,
+          "sample_completed": 70083.630450391
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70083.629863733,
+          "read_completed": 70083.630309987,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70084.094151499,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70084.071520917,
+          "decoder_started": 70084.130247022,
+          "decoder_completed": 70084.130714441,
+          "sample_completed": 70084.130879718
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70084.130247022,
+          "read_completed": 70084.130714441,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70084.601324545,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70084.571622638,
+          "decoder_started": 70084.62798246,
+          "decoder_completed": 70084.628239897,
+          "sample_completed": 70084.628316932
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70084.62798246,
+          "read_completed": 70084.628239897,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70085.103202396,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70085.07174822,
+          "decoder_started": 70085.146582772,
+          "decoder_completed": 70085.147024693,
+          "sample_completed": 70085.147167973
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70085.146582772,
+          "read_completed": 70085.147024693,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70085.594958265,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70085.571893624,
+          "decoder_started": 70085.612193064,
+          "decoder_completed": 70085.612409754,
+          "sample_completed": 70085.612485165
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70085.612193064,
+          "read_completed": 70085.612409754,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70086.088521961,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70086.072042182,
+          "decoder_started": 70086.112282544,
+          "decoder_completed": 70086.112764462,
+          "sample_completed": 70086.112919282
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70086.112282544,
+          "read_completed": 70086.112764462,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70086.602328327,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70086.572135986,
+          "decoder_started": 70086.62835281,
+          "decoder_completed": 70086.628568209,
+          "sample_completed": 70086.628640995
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70086.62835281,
+          "read_completed": 70086.628568209,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70087.092888543,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70087.072273981,
+          "decoder_started": 70087.111282999,
+          "decoder_completed": 70087.111501648,
+          "sample_completed": 70087.11157635
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70087.111282999,
+          "read_completed": 70087.111501648,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70087.592475456,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70087.572398551,
+          "decoder_started": 70087.630655513,
+          "decoder_completed": 70087.631097101,
+          "sample_completed": 70087.631235715
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70087.630655513,
+          "read_completed": 70087.631097101,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70088.094980563,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70088.072559021,
+          "decoder_started": 70088.130209659,
+          "decoder_completed": 70088.130724908,
+          "sample_completed": 70088.130881103
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70088.130209659,
+          "read_completed": 70088.130724908,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70088.603279227,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70088.572719232,
+          "decoder_started": 70088.629604159,
+          "decoder_completed": 70088.630110325,
+          "sample_completed": 70088.630270145
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70088.629604159,
+          "read_completed": 70088.630110325,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70089.091969422,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70089.07284914,
+          "decoder_started": 70089.115028959,
+          "decoder_completed": 70089.115447049,
+          "sample_completed": 70089.115582912
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70089.115028959,
+          "read_completed": 70089.115447049,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70089.593854138,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70089.573001245,
+          "decoder_started": 70089.610576458,
+          "decoder_completed": 70089.610798231,
+          "sample_completed": 70089.610874933
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70089.610576458,
+          "read_completed": 70089.610798231,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70090.105806874,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70090.073140837,
+          "decoder_started": 70090.128402706,
+          "decoder_completed": 70090.128858251,
+          "sample_completed": 70090.129010405
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70090.128402706,
+          "read_completed": 70090.128858251,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70090.59513436,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70090.573261254,
+          "decoder_started": 70090.630569427,
+          "decoder_completed": 70090.631024806,
+          "sample_completed": 70090.631169419
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70090.630569427,
+          "read_completed": 70090.631024806,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70091.101665607,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70091.073397446,
+          "decoder_started": 70091.129214119,
+          "decoder_completed": 70091.129729159,
+          "sample_completed": 70091.129871606
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70091.129214119,
+          "read_completed": 70091.129729159,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70091.606550406,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70091.573584625,
+          "decoder_started": 70091.645440782,
+          "decoder_completed": 70091.645908118,
+          "sample_completed": 70091.646057023
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70091.645440782,
+          "read_completed": 70091.645908118,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70092.106324645,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70092.073790912,
+          "decoder_started": 70092.143987956,
+          "decoder_completed": 70092.144568199,
+          "sample_completed": 70092.144739352
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70092.143987956,
+          "read_completed": 70092.144568199,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70092.604935312,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70092.574001438,
+          "decoder_started": 70092.629504293,
+          "decoder_completed": 70092.629970838,
+          "sample_completed": 70092.630117826
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70092.629504293,
+          "read_completed": 70092.629970838,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70093.112115875,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70093.074204366,
+          "decoder_started": 70093.148358313,
+          "decoder_completed": 70093.148569462,
+          "sample_completed": 70093.148644581
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70093.148358313,
+          "read_completed": 70093.148569462,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 70093.601946695,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 70093.574348372,
+          "decoder_started": 70093.629502771,
+          "decoder_completed": 70093.630001105,
+          "sample_completed": 70093.630147343
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 70093.629502771,
+          "read_completed": 70093.630001105,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      }
+    ],
+    "record": {
+      "test": {
+        "title": "Nichijou: My Ordinary Life",
+        "tmdb_id": 44684,
+        "kind": "tv",
+        "year": 2011,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 44684,
+          "name": "Nichijou: My Ordinary Life",
+          "original_name": "日常",
+          "original_language": "ja",
+          "first_air_date": "2011-04-03"
+        },
+        "route": "system-direct",
+        "checked_at": 1792654658.286819
+      },
+      "prior_request": "923c808f0afe4647b09b7d702f3d3cea",
+      "started": 69905.597612847,
+      "home": {
+        "generation": 30,
+        "intent": 0,
+        "retired_generation": 30,
+        "observed_at": 69906.195233459
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 69906.195540961,
+      "picker": {
+        "window": 13001,
+        "generation": 31,
+        "intent": 0,
+        "tmdb_id": 44684,
+        "kind": "tv"
+      },
+      "picker_observed_at": 69917.799391924,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[7³ACG] 日常/Nichijou S01 | 01-26+SPx1 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "18.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "19204a8b1d32a823fb793787e9b127bf2aaf41b736a6a35b1a119e9b3c99a9ef",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 70054.042523499,
+      "request_id": "774bf69f31f9437db3577c4bcae5a6fc",
+      "selection_identity": "transport:954bd4c752eb3f48b0a51873fdfcab28fe6567dca2d604eb46690380aee7c6e6"
+    },
+    "trace_health": {
+      "no_observed_stall": true,
+      "max_observed_stall_seconds": 0.0,
+      "clock_discontinuities": 0,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "trace_signal_diagnostics": {
+      "caching_sample_runs": [],
+      "stationary_decoder_with_caching_runs": [],
+      "stationary_clock_with_decoder_progress_runs": [],
+      "observation_gap_events": [],
+      "clock_step_events": [],
+      "decoder_counter_reset_events": [],
+      "changes_legacy_result": false,
+      "decoder_channel_intervals": [
+        {
+          "first_index": 0,
+          "last_index": 1,
+          "channels": []
+        },
+        {
+          "first_index": 1,
+          "last_index": 2,
+          "channels": []
+        },
+        {
+          "first_index": 2,
+          "last_index": 3,
+          "channels": []
+        },
+        {
+          "first_index": 3,
+          "last_index": 4,
+          "channels": []
+        },
+        {
+          "first_index": 4,
+          "last_index": 5,
+          "channels": []
+        },
+        {
+          "first_index": 5,
+          "last_index": 6,
+          "channels": []
+        },
+        {
+          "first_index": 6,
+          "last_index": 7,
+          "channels": []
+        },
+        {
+          "first_index": 7,
+          "last_index": 8,
+          "channels": []
+        },
+        {
+          "first_index": 8,
+          "last_index": 9,
+          "channels": []
+        },
+        {
+          "first_index": 9,
+          "last_index": 10,
+          "channels": []
+        },
+        {
+          "first_index": 10,
+          "last_index": 11,
+          "channels": []
+        },
+        {
+          "first_index": 11,
+          "last_index": 12,
+          "channels": []
+        },
+        {
+          "first_index": 12,
+          "last_index": 13,
+          "channels": []
+        },
+        {
+          "first_index": 13,
+          "last_index": 14,
+          "channels": []
+        },
+        {
+          "first_index": 14,
+          "last_index": 15,
+          "channels": []
+        },
+        {
+          "first_index": 15,
+          "last_index": 16,
+          "channels": []
+        },
+        {
+          "first_index": 16,
+          "last_index": 17,
+          "channels": []
+        },
+        {
+          "first_index": 17,
+          "last_index": 18,
+          "channels": []
+        },
+        {
+          "first_index": 18,
+          "last_index": 19,
+          "channels": []
+        },
+        {
+          "first_index": 19,
+          "last_index": 20,
+          "channels": []
+        },
+        {
+          "first_index": 20,
+          "last_index": 21,
+          "channels": []
+        },
+        {
+          "first_index": 21,
+          "last_index": 22,
+          "channels": []
+        },
+        {
+          "first_index": 22,
+          "last_index": 23,
+          "channels": []
+        },
+        {
+          "first_index": 23,
+          "last_index": 24,
+          "channels": []
+        },
+        {
+          "first_index": 24,
+          "last_index": 25,
+          "channels": []
+        },
+        {
+          "first_index": 25,
+          "last_index": 26,
+          "channels": []
+        },
+        {
+          "first_index": 26,
+          "last_index": 27,
+          "channels": []
+        },
+        {
+          "first_index": 27,
+          "last_index": 28,
+          "channels": []
+        },
+        {
+          "first_index": 28,
+          "last_index": 29,
+          "channels": []
+        },
+        {
+          "first_index": 29,
+          "last_index": 30,
+          "channels": []
+        },
+        {
+          "first_index": 30,
+          "last_index": 31,
+          "channels": []
+        },
+        {
+          "first_index": 31,
+          "last_index": 32,
+          "channels": []
+        },
+        {
+          "first_index": 32,
+          "last_index": 33,
+          "channels": []
+        },
+        {
+          "first_index": 33,
+          "last_index": 34,
+          "channels": []
+        },
+        {
+          "first_index": 34,
+          "last_index": 35,
+          "channels": []
+        },
+        {
+          "first_index": 35,
+          "last_index": 36,
+          "channels": []
+        },
+        {
+          "first_index": 36,
+          "last_index": 37,
+          "channels": []
+        },
+        {
+          "first_index": 37,
+          "last_index": 38,
+          "channels": []
+        },
+        {
+          "first_index": 38,
+          "last_index": 39,
+          "channels": []
+        },
+        {
+          "first_index": 39,
+          "last_index": 40,
+          "channels": []
+        },
+        {
+          "first_index": 40,
+          "last_index": 41,
+          "channels": []
+        },
+        {
+          "first_index": 41,
+          "last_index": 42,
+          "channels": []
+        },
+        {
+          "first_index": 42,
+          "last_index": 43,
+          "channels": []
+        },
+        {
+          "first_index": 43,
+          "last_index": 44,
+          "channels": []
+        },
+        {
+          "first_index": 44,
+          "last_index": 45,
+          "channels": []
+        },
+        {
+          "first_index": 45,
+          "last_index": 46,
+          "channels": []
+        },
+        {
+          "first_index": 46,
+          "last_index": 47,
+          "channels": []
+        },
+        {
+          "first_index": 47,
+          "last_index": 48,
+          "channels": []
+        },
+        {
+          "first_index": 48,
+          "last_index": 49,
+          "channels": []
+        },
+        {
+          "first_index": 49,
+          "last_index": 50,
+          "channels": []
+        },
+        {
+          "first_index": 50,
+          "last_index": 51,
+          "channels": []
+        },
+        {
+          "first_index": 51,
+          "last_index": 52,
+          "channels": []
+        },
+        {
+          "first_index": 52,
+          "last_index": 53,
+          "channels": []
+        },
+        {
+          "first_index": 53,
+          "last_index": 54,
+          "channels": []
+        },
+        {
+          "first_index": 54,
+          "last_index": 55,
+          "channels": []
+        },
+        {
+          "first_index": 55,
+          "last_index": 56,
+          "channels": []
+        },
+        {
+          "first_index": 56,
+          "last_index": 57,
+          "channels": []
+        },
+        {
+          "first_index": 57,
+          "last_index": 58,
+          "channels": []
+        },
+        {
+          "first_index": 58,
+          "last_index": 59,
+          "channels": []
+        },
+        {
+          "first_index": 59,
+          "last_index": 60,
+          "channels": []
+        },
+        {
+          "first_index": 60,
+          "last_index": 61,
+          "channels": []
+        },
+        {
+          "first_index": 61,
+          "last_index": 62,
+          "channels": []
+        },
+        {
+          "first_index": 62,
+          "last_index": 63,
+          "channels": []
+        },
+        {
+          "first_index": 63,
+          "last_index": 64,
+          "channels": []
+        },
+        {
+          "first_index": 64,
+          "last_index": 65,
+          "channels": []
+        },
+        {
+          "first_index": 65,
+          "last_index": 66,
+          "channels": []
+        },
+        {
+          "first_index": 66,
+          "last_index": 67,
+          "channels": []
+        },
+        {
+          "first_index": 67,
+          "last_index": 68,
+          "channels": []
+        },
+        {
+          "first_index": 68,
+          "last_index": 69,
+          "channels": []
+        },
+        {
+          "first_index": 69,
+          "last_index": 70,
+          "channels": []
+        },
+        {
+          "first_index": 70,
+          "last_index": 71,
+          "channels": []
+        },
+        {
+          "first_index": 71,
+          "last_index": 72,
+          "channels": []
+        },
+        {
+          "first_index": 72,
+          "last_index": 73,
+          "channels": []
+        },
+        {
+          "first_index": 73,
+          "last_index": 74,
+          "channels": []
+        },
+        {
+          "first_index": 74,
+          "last_index": 75,
+          "channels": []
+        },
+        {
+          "first_index": 75,
+          "last_index": 76,
+          "channels": []
+        },
+        {
+          "first_index": 76,
+          "last_index": 77,
+          "channels": []
+        },
+        {
+          "first_index": 77,
+          "last_index": 78,
+          "channels": []
+        },
+        {
+          "first_index": 78,
+          "last_index": 79,
+          "channels": []
+        }
+      ],
+      "render_continuity_proven": false,
+      "exact_transition_times_proven": false
+    },
+    "trace_coverage": {
+      "legacy_health": {
+        "no_observed_stall": true,
+        "max_observed_stall_seconds": 0.0,
+        "clock_discontinuities": 0,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "av_sample_count": 0,
+      "positive_av_sample_count": 0,
+      "positive_adjacent_interval_count": 0,
+      "longest_contiguous_positive_av_span_seconds": 0.0,
+      "whole_startup_or_render_continuity_proven": false,
+      "status": "not_covered",
+      "reason": "NO_AV_STARTED_WITHIN_CAPTURE",
+      "passed": null
+    },
+    "trace_passed": false
+  },
+  "diagnostic_present": false,
+  "work": "nichijou",
+  "operation": "select",
+  "attempt": 1,
+  "regression_attempt": false
+}

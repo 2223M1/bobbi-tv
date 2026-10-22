@@ -1,0 +1,84 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "station_agent",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "The Station Agent (2003) (1080p WEB-DL x265 10bit AAC 5.1 afm72) ...",
+        "Container(1000).ListItem.Property(peers)": "52",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "46",
+        "Container(1000).ListItem.Property(size)": "3.13 GB",
+        "Container(1000).ListItem.Property(source_key)": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "The.Station.Agent.2003.1080p.WEB-DL.H264-kAk [PublicHD]",
+        "Container(1000).ListItem.Property(peers)": "99",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "89",
+        "Container(1000).ListItem.Property(size)": "3.35 GB",
+        "Container(1000).ListItem.Property(source_key)": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "The Station Agent (2003) 1080p WEBRip x264 -YTS",
+        "Container(1000).ListItem.Property(peers)": "127",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "100",
+        "Container(1000).ListItem.Property(size)": "1.42 GB",
+        "Container(1000).ListItem.Property(source_key)": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "The Station Agent 2003 1080p AMZN WEBRip DDP5 1 x264-NTb",
+        "Container(1000).ListItem.Property(peers)": "13",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "10",
+        "Container(1000).ListItem.Property(size)": "8.68 GB",
+        "Container(1000).ListItem.Property(source_key)": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "The Station Agent (2003) 1080p ita eng MIRCrew",
+        "Container(1000).ListItem.Property(peers)": "39",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "34",
+        "Container(1000).ListItem.Property(size)": "1.97 GB",
+        "Container(1000).ListItem.Property(source_key)": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "The.Station.Agent.2003.XviD.AC3.2CD-WAF",
+        "Container(1000).ListItem.Property(peers)": "3",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "3",
+        "Container(1000).ListItem.Property(size)": "1.37 GB",
+        "Container(1000).ListItem.Property(source_key)": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 6,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "station_agent",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

@@ -1,0 +1,270 @@
+{
+  "exit_code": 0,
+  "diagnostic_present": false,
+  "result": {
+    "before": {
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "native": {
+        "native_instance": "8ce8bcfb-88a4-4560-960d-13c53c11ac3b",
+        "request_id": "923c808f0afe4647b09b7d702f3d3cea",
+        "phase": "AV_STARTED",
+        "subtitle_intent": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_visible": null,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "5f2f72eba9c1c2fa7a16231edb102e603013d2c912f6af7605d1464cf27c814e",
+        "sequence": 2,
+        "user_intent": 0
+      },
+      "player": {
+        "currentaudiostream": {
+          "bitrate": 640000,
+          "channels": 6,
+          "codec": "eac3",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "eng",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 1,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "5f2f72eba9c1c2fa7a16231edb102e60 （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "percentage": 0.6745215058326721,
+        "speed": 1,
+        "subtitleenabled": true,
+        "subtitles": [
+          {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 1,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "5f2f72eba9c1c2fa7a16231edb102e60 （外挂）"
+          }
+        ],
+        "time": {
+          "hours": 0,
+          "milliseconds": 269,
+          "minutes": 0,
+          "seconds": 36
+        },
+        "totaltime": {
+          "hours": 1,
+          "milliseconds": 997,
+          "minutes": 29,
+          "seconds": 36
+        }
+      }
+    },
+    "settings": {
+      "subtitles.marginvertical": 7.5,
+      "subtitles.align": {
+        "unavailable": true
+      },
+      "subtitles.overridefonts": false,
+      "subtitles.overridestyles": 0,
+      "subtitles.overrideass": false,
+      "subtitles.fontsize": 32,
+      "subtitles.fontname": "DEFAULT",
+      "subtitles.colorpick": "FFBDBDBD",
+      "subtitles.pgsverticalmode": 5,
+      "subtitles.pgsverticaloffset": 1,
+      "videoscreen.screenmode": "0192001080060.00000pstd",
+      "videoplayer.adjustrefreshrate": 2,
+      "videoplayer.usedisplayasclock": {
+        "unavailable": true
+      }
+    },
+    "labels": {
+      "Player.Subtitle": "",
+      "Player.SubtitleDelay": "0.000 s",
+      "Player.SubtitleOffset": "",
+      "Skin.CurrentTheme": "SKINDEFAULT",
+      "System.ScreenHeight": "1080",
+      "System.ScreenResolution": "1920x1080 @ 23.98 Hz - 全屏",
+      "System.ScreenWidth": "1920",
+      "VideoPlayer.Title": "The Station Agent",
+      "VideoPlayer.VideoAspect": "1.78"
+    },
+    "gui": {
+      "currentcontrol": {
+        "label": ""
+      },
+      "currentwindow": {
+        "id": 12005,
+        "label": "全屏视频"
+      },
+      "skin": {
+        "id": "skin.bobbi.cinema",
+        "name": "bobbi TV"
+      }
+    },
+    "saved_calibrations": [
+      "<resolution>\n            <description>720x480 @ 60.00 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>720</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>720x480 @ 59.94 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>720</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>720x576 @ 50.00 - Full Screen</description>\n            <subtitles>555</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>720</right>\n                <bottom>576</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x720 @ 60.00 - Full Screen</description>\n            <subtitles>694</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>720</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x720 @ 59.94 - Full Screen</description>\n            <subtitles>694</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>720</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 60.00i - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 59.94i - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 60.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 59.94 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 120.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x720 @ 50.00 - Full Screen</description>\n            <subtitles>694</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>720</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 50.00i - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 30.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 29.97 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 50.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 25.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 24.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1920x1080 @ 23.98 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 30.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 29.97 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 25.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 24.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 23.98 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>4096x2160 @ 24.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>4096x2160 @ 23.98 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 50.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 60.00 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>3840x2160 @ 59.94 - Full Screen</description>\n            <subtitles>1042</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1920</right>\n                <bottom>1080</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>640x480 @ 60.00 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>640</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>640x480 @ 59.94 - Full Screen</description>\n            <subtitles>463</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>640</right>\n                <bottom>480</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>800x600 @ 60.00 - Full Screen</description>\n            <subtitles>579</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>800</right>\n                <bottom>600</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>800x600 @ 59.94 - Full Screen</description>\n            <subtitles>579</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>800</right>\n                <bottom>600</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1024x768 @ 60.00 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1024</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1024x768 @ 59.94 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1024</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x1024 @ 60.00 - Full Screen</description>\n            <subtitles>988</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>1024</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1280x1024 @ 59.94 - Full Screen</description>\n            <subtitles>988</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1280</right>\n                <bottom>1024</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1360x768 @ 60.00 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1360</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n        ",
+      "<resolution>\n            <description>1360x768 @ 59.94 - Full Screen</description>\n            <subtitles>741</subtitles>\n            <pixelratio>1.000000</pixelratio>\n            <overscan>\n                <left>0</left>\n                <top>0</top>\n                <right>1360</right>\n                <bottom>768</bottom>\n            </overscan>\n        </resolution>\n    "
+    ],
+    "saved_position_settings": {
+      "subtitles.pgsverticalmode": "5",
+      "subtitles.pgsverticaloffset": "1",
+      "subtitles.pgsmanualactiveaspect": "auto"
+    },
+    "position_definitions": [
+      "<setting id=\"subtitles.pgsverticalmode\" type=\"integer\" label=\"65100\" help=\"65101\">\n          <level>2</level>\n          <default>0</default>\n          <constraints>\n            <minimum>0</minimum>\n            <maximum>5</maximum>\n            <options>\n              <option label=\"65102\">0</option>\n              <option label=\"65103\">1</option>\n              <option label=\"65104\">2</option>\n              <option label=\"65105\">3</option>\n              <option label=\"65106\">4</option>\n              <option label=\"65107\">5</option>\n            </options>\n          </constraints>\n          <control type=\"list\" format=\"string\" />\n        </setting>\n        ",
+      "<setting id=\"subtitles.pgsverticaloffset\" type=\"integer\" parent=\"subtitles.pgsverticalmode\" label=\"65108\" help=\"65109\">\n          <level>2</level>\n          <default>0</default>\n          <constraints>\n            <minimum>-60</minimum>\n            <step>1</step>\n            <maximum>60</maximum>\n          </constraints>\n          <dependencies>\n            <dependency type=\"visible\" setting=\"subtitles.pgsverticalmode\" operator=\"is\">5</dependency>\n          </dependencies>\n          <control type=\"spinner\" format=\"integer\" />\n        </setting>\n        ",
+      "<setting id=\"subtitles.pgsmanualactiveaspect\" type=\"string\" parent=\"subtitles.pgsverticalmode\" label=\"65110\" help=\"65111\">\n          <level>2</level>\n          <default>auto</default>\n          <constraints>\n            <options>\n              <option label=\"65112\">auto</option>\n              <option label=\"65113\">16:9</option>\n              <option label=\"65114\">1.85:1</option>\n              <option label=\"65115\">2.20:1</option>\n              <option label=\"65116\">2.35:1</option>\n              <option label=\"65117\">2.39:1</option>\n            </options>\n          </constraints>\n          <dependencies>\n            <dependency type=\"visible\">\n              <or>\n                <condition setting=\"subtitles.pgsverticalmode\" operator=\"is\">1</condition>\n                <condition setting=\"subtitles.pgsverticalmode\" operator=\"is\">2</condition>\n              </or>\n            </dependency>\n          </dependencies>\n          <control type=\"list\" format=\"string\" />\n        </setting>\n        "
+    ],
+    "after": {
+      "players": [
+        {
+          "playerid": 1,
+          "playertype": "internal",
+          "type": "video"
+        }
+      ],
+      "native": {
+        "native_instance": "8ce8bcfb-88a4-4560-960d-13c53c11ac3b",
+        "request_id": "923c808f0afe4647b09b7d702f3d3cea",
+        "phase": "AV_STARTED",
+        "subtitle_intent": 0,
+        "subtitle_auto_intent": 0,
+        "subtitle_visible": null,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "5f2f72eba9c1c2fa7a16231edb102e603013d2c912f6af7605d1464cf27c814e",
+        "sequence": 2,
+        "user_intent": 0
+      },
+      "player": {
+        "currentaudiostream": {
+          "bitrate": 640000,
+          "channels": 6,
+          "codec": "eac3",
+          "index": 0,
+          "isdefault": true,
+          "isimpaired": false,
+          "isoriginal": false,
+          "language": "eng",
+          "name": "",
+          "samplerate": 0
+        },
+        "currentsubtitle": {
+          "index": 1,
+          "isdefault": false,
+          "isforced": false,
+          "isimpaired": false,
+          "language": "",
+          "name": "5f2f72eba9c1c2fa7a16231edb102e60 （外挂）"
+        },
+        "currentvideostream": {
+          "codec": "h264",
+          "height": 1080,
+          "index": 0,
+          "language": "",
+          "name": "",
+          "width": 1920
+        },
+        "percentage": 0.6745215058326721,
+        "speed": 1,
+        "subtitleenabled": true,
+        "subtitles": [
+          {
+            "index": 0,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "eng",
+            "name": ""
+          },
+          {
+            "index": 1,
+            "isdefault": false,
+            "isforced": false,
+            "isimpaired": false,
+            "language": "",
+            "name": "5f2f72eba9c1c2fa7a16231edb102e60 （外挂）"
+          }
+        ],
+        "time": {
+          "hours": 0,
+          "milliseconds": 269,
+          "minutes": 0,
+          "seconds": 36
+        },
+        "totaltime": {
+          "hours": 1,
+          "milliseconds": 997,
+          "minutes": 29,
+          "seconds": 36
+        }
+      }
+    },
+    "image": "/storage/.kodi/temp/bobbi-subtitle-layout/1792654605118660900.png",
+    "scope": "Displayed Kodi GUI/subtitle plane; hardware video plane not captured",
+    "local_image": "review-evidence\\ce2048\\subtitles\\layout-1792654605118660900.png"
+  }
+}

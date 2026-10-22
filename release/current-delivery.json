@@ -6,20 +6,22 @@
   "installer_distribution": "public_permitted_by_owner",
   "stable_release": false,
   "installed": {
-    "sequence": 2026102047,
-    "entry_version": "0.2.36",
-    "core_version": "0.1.30",
-    "plugin_version": "0.1.29",
-    "torrent_version": "0.1.9",
+    "sequence": 2026102049,
+    "entry_version": "0.2.37",
+    "core_version": "0.1.31",
+    "plugin_version": "0.1.30",
+    "torrent_version": "0.1.10",
     "skin_version": "0.1.7",
-    "transaction": "a4900858146d43c5be05c16cafa644d5",
-    "artifact_availability": "local_only_not_published",
-    "base_commit": "f6c9bd4e25199516451b128c7662f8ae54fedd66",
-    "entry_sha256": "463b301067390e73176f058ea96bf0cf3b775f7ea66e63f1babe79ebf011d026",
-    "local_passed": 4824,
-    "local_skipped": 6,
+    "transaction": "fedfb750dc754d7bb2cdabcb6500c2a7",
+    "phase": "complete",
+    "host_pending": null,
+    "product_commit": "81482d32fd25c04ca6ebb73ef5636f5e35414a3e",
+    "product_tree": "e127c75423fc598f3b98a5efd1719d8154b83ecd",
+    "entry_sha256": "bcd8470f2450f5c563455221809c0d837f46654e78f2b46ccb0905ba03c75dde",
+    "local_passed": 4844,
+    "local_skipped": 8,
     "local_xfailed": 1,
-    "evidence_origin": "maintainer collected real device, not independent device review"
+    "evidence_origin": "maintainer collected device and tests, not independent playback certification"
   },
   "previous_baseline": {
     "sequence": 2026102043,
@@ -36,19 +38,31 @@
     "receipt": "review-evidence/ce2043/entry-audit.json"
   },
   "remediation": {
-    "state": "installed_scoped_fixes_tested_open_findings_retained",
-    "report": "docs/CE2047-REMEDIATION-20261022.md",
-    "current_ci": "not_run_no_push_authorized_this_round",
-    "deferred": [
-      "rollback_previous_file_vector_check_pending_user_scope",
-      "outer_entry_exact_member_check_pending_user_scope"
-    ]
+    "state": "scoped_fixes_and_real_rollback_verified_open_playback_findings_retained",
+    "report": "docs/CE2049-REVIEW-DELIVERY-20261022.md",
+    "evidence": "review-evidence/ce2048",
+    "current_ci": "read_actual_delivery_commit_run_at_GitHub_actions",
+    "fixed": [
+      "local_cancel_before_dispatch",
+      "interrupt_slow_control_http",
+      "account_scoped_share_failure_overlay",
+      "previous_program_vector_preflight",
+      "signed_outer_entry_member_binding"
+    ],
+    "rollback_rehearsal_sequence": 2026102048,
+    "rollback_transaction": "4afdb620bd4946529858293787ab90e3",
+    "bad_backup_test": "rejected_before_live_or_journal_change",
+    "normal_rollback": "restored_exact_recorded_previous_program_vector",
+    "skin_confirmation": "Kodi keep-skin dialog requires confirmation; final candidate confirmed by maintainer"
   },
   "deferred_acceptance": [
+    "station_agent_NTb_buffers_at_36_seconds_no_ready_115_candidate",
     "complete_midplay_bt_to_115_capsule",
     "current_generation_eof_continuation",
     "online_subtitle_alias_recall_and_visible_bilingual_cue",
-    "long_duration_weak_bt_buffering"
+    "long_duration_weak_bt_buffering",
+    "clean_install_and_other_CE_hardware",
+    "legacy_pixel_test_INCONCLUSIVE_retained"
   ],
   "historical_installer_directory": "review-packages/ce2024",
   "historical_gate_file": "release/gates.json",
@@ -74,6 +88,16 @@
     "package_source": "review-evidence/ce2044/package-source.json"
   },
   "published": {
+    "sequence": 2026102049,
+    "tag": "ce2049-reviewed-20261022",
+    "url": "https://github.com/2223M1/bobbi-tv/releases/tag/ce2049-reviewed-20261022",
+    "prerelease": true,
+    "artifact": "script.bobbi.start-CE2049.zip",
+    "bytes": 95976371,
+    "product_commit": "81482d32fd25c04ca6ebb73ef5636f5e35414a3e",
+    "delivery_status": "verify_live_GitHub_release_metadata"
+  },
+  "previous_published": {
     "sequence": 2026102045,
     "tag": "ce2045-main-f6c9bd4",
     "product_commit": "f6c9bd4e25199516451b128c7662f8ae54fedd66",
@@ -99,6 +123,7 @@
         "digest": "93bc69456e8f5581297141a63dafc1a5b04355f52c1a31960368773451f10499"
       }
     ],
-    "evidence_origin": "release metadata in 2026-10-22 independent review; not a new CI run"
+    "evidence_origin": "release metadata in 2026-10-22 independent review; not a new CI run",
+    "preserved": true
   }
 }

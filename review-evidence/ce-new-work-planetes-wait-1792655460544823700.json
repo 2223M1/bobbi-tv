@@ -1,0 +1,115 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "planetes",
+    "operation": "wait",
+    "record": {
+      "test": {
+        "title": "Planetes",
+        "tmdb_id": 34102,
+        "kind": "tv",
+        "year": 2003,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 34102,
+          "name": "Planetes",
+          "original_name": "プラネテス",
+          "original_language": "ja",
+          "first_air_date": "2003-10-04"
+        },
+        "route": "system-direct",
+        "checked_at": 1792655386.62159
+      },
+      "prior_request": "51740a712bbb4db8b2ce2a8451e03756",
+      "started": 70633.932370698,
+      "home": {
+        "generation": 56,
+        "intent": 1,
+        "retired_generation": 56,
+        "observed_at": 70634.520366876
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 70634.520659288,
+      "picker": {
+        "window": 13001,
+        "generation": 57,
+        "intent": 1,
+        "tmdb_id": 34102,
+        "kind": "tv"
+      },
+      "picker_observed_at": 70639.016066509,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Planetes.2003.S01E01.1080p.BDRip.x265.FLAC-CoolFansSub.mkv",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(recommendation_reason)": "1080p · 蓝光",
+        "Container(1000).ListItem.Property(recommendation_status)": "推荐",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "1.78 GB",
+        "Container(1000).ListItem.Property(source_key)": "c04661468ccc9e37880b2f5b24a62d1542ff92d4b97d2a92e555b5ecb6e40aa8",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(status_plain)": "待验证片源",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 70706.37492897,
+      "request_id": "7f114f3376074749be116d1109fd8702",
+      "selection_identity": "transport:4d2c5999e66dd4e02fc14066aafc4d10789afdbc40ef4a24d7dde35125f6e880"
+    },
+    "samples": [
+      {
+        "wall": 70707.656270753,
+        "phase": null,
+        "native": {},
+        "cancelled": true,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "Planetes.2003.S01E01.1080p.BDRip.x265.FLAC-CoolFansSub.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "4",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "4"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 70707.68293914,
+          "read_completed": 70707.683466548,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 70707.609238415,
+          "decoder_started": 70707.68293914,
+          "decoder_completed": 70707.683466548,
+          "sample_completed": 70707.683937498
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "planetes",
+  "operation": "wait",
+  "attempt": 10,
+  "regression_attempt": true
+}

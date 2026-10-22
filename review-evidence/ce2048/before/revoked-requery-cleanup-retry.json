@@ -1,0 +1,90 @@
+{
+  "source_sha": "5d6a77d78a278984517f3e4af99c239054e9ba4a",
+  "mode": "offline production functions + temporary SQLite + fake remote API",
+  "real_network": false,
+  "real_account": false,
+  "runtime_stub": "account_status returns the fixture scope; share_known_failures returns an empty denied list",
+  "limitation": "Not a full host or Kodi UI integration test; no attribution of Planetes to a specific catalogue provider",
+  "observations": [
+    {
+      "provider": "qqdocs",
+      "initial_cards": 1,
+      "failure": {
+        "code": "share_revoked",
+        "api_code": 4100010
+      },
+      "requery_cards": 1,
+      "exact_same_card_returned": true,
+      "upstream_search_calls": 1,
+      "additional_upstream_search_calls": 0,
+      "retained_success_cache_rows": 1,
+      "maximum_success_ttl_remaining_seconds": 21599.99,
+      "requery_card_fields": [
+        "guid",
+        "indexer",
+        "size",
+        "subindexer",
+        "title",
+        "type",
+        "url"
+      ],
+      "failure_state_present": false
+    },
+    {
+      "provider": "juku",
+      "previously_verified": false,
+      "initial_cards": 1,
+      "initial_verified": false,
+      "failure": {
+        "code": "share_revoked",
+        "api_code": 4100010,
+        "had_checked_proof": false
+      },
+      "requery_cards": 1,
+      "same_card_returned": true,
+      "requery_verified": false,
+      "additional_upstream_search_calls": 0,
+      "requery_ipc_actions": [
+        "account_status"
+      ],
+      "persisted_checked_at": 0.0,
+      "failure_state_present": false,
+      "requery_card_fields": [
+        "guid",
+        "indexer",
+        "size",
+        "title",
+        "type",
+        "url"
+      ]
+    },
+    {
+      "provider": "juku",
+      "previously_verified": true,
+      "initial_cards": 1,
+      "initial_verified": true,
+      "failure": {
+        "code": "share_revoked",
+        "api_code": 4100010,
+        "had_checked_proof": true
+      },
+      "requery_cards": 1,
+      "same_card_returned": true,
+      "requery_verified": false,
+      "additional_upstream_search_calls": 0,
+      "requery_ipc_actions": [
+        "account_status"
+      ],
+      "persisted_checked_at": 0.0,
+      "failure_state_present": false,
+      "requery_card_fields": [
+        "guid",
+        "indexer",
+        "size",
+        "title",
+        "type",
+        "url"
+      ]
+    }
+  ]
+}
