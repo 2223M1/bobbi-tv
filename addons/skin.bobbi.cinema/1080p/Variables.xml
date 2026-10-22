@@ -41,7 +41,7 @@
     <value>$INFO[ListItem.Art(thumb)]</value>
   </variable>
 
-  <!-- Chinese title preferred; Jacktook publishes AM6B.Title.zh/en/original -->
+  <!-- Chinese title preferred; the cinema publishes AM6B.Title.zh/en/original -->
   <variable name="TitleZH">
     <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.zh))">$INFO[ListItem.Property(AM6B.Title.zh)]</value>
     <value condition="!String.IsEmpty(ListItem.Title)">$INFO[ListItem.Title]</value>
@@ -53,7 +53,7 @@
     <value condition="!String.IsEmpty(ListItem.OriginalTitle) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Title)">$INFO[ListItem.OriginalTitle]</value>
   </variable>
 
-  <!-- source picker quality badge (read from Jacktook's source list) -->
+  <!-- source picker quality badge (read from the cinema's source list) -->
   <variable name="BobiQualityBadge">
     <value condition="String.IsEqual(ListItem.Property(quality_plain),n/a) | String.IsEqual(ListItem.Property(quality_plain),N/A) | String.IsEmpty(ListItem.Property(quality_plain))">未知</value>
     <value condition="String.Contains(ListItem.Property(quality_plain),2160) | String.IsEqual(ListItem.Property(quality_plain),4k)">4K</value>

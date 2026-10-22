@@ -1,4 +1,4 @@
-"""Recovered Juku 0.80 protocol + local SQLite; no daemon or cloud requests."""
+"""Subtitle compatibility fixtures + local SQLite; no daemon or cloud requests."""
 from contextlib import closing
 from pathlib import Path
 import sys
@@ -19,7 +19,7 @@ def row(url='https://115.com/s/sabcdef#sub_fid=11%2C22', main=False):
 
 
 def test_arm64_and_amd64_exact_length_literals_agree():
-    root = ROOT / 'docs/research/juku-subtitle-protocol'
+    root = ROOT / 'tests/fixtures/catalog-subtitle-protocol'
     for architecture, pattern, comma in (
         ('arm64', '00a1eaa4-51.bin', '00c0a5f0-1.bin'),
         ('amd64', '00f475cf-51.bin', '011331d8-1.bin'),

@@ -71,7 +71,7 @@
       </control>
     </control>
     <include content="KeyHint">
-      <param name="label">皮肤版本 $INFO[System.AddonVersion(skin.bobbi.cinema)]   ·   Kodi $INFO[System.BuildVersionShort]</param>
+      <param name="label">皮肤版本 $INFO[System.AddonVersion(skin.bobbi.cinema)]   ·   播放器 $INFO[System.BuildVersionShort]</param>
       <param name="y">1032</param>
     </include>
   </controls>

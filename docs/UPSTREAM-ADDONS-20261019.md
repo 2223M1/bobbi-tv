@@ -174,22 +174,6 @@ TorrServer 引擎。原版 README 也明确要求外部 TorrServer。
 [1908 发布检查点](PRIVATE-RELEASE-20261019.md)。未完成官方依赖版本更新往返、真实换号
 或全部播放验收，不宣称“恢复原版即全部解决”。
 
-## 群文件与 Juku 结论复用
-
-前轮研究位于 `D:/AM6B-Project/AM6B-review-ui-anirss-20261018/ui-redesign/docs/`
-的 `JUKU-080-WEB-REVIEW-20261019.md`、`JUKU-INTEGRATION-AND-SIMPLIFICATION-20261019.md`、
-`MAINTENANCE-AND-NATIVE-REVIEW-20261019.md`、`JUKU-SUBTITLE-SOURCES-20261019.md`，
-以及该工作区 `docs/SUBTITLE-PLUGIN-INTEGRATION-20261018.md`。
-
-- TinyPPI 修改皮肤 Font.xml 并 ReloadSkin，不是 ASS 字体修复的替代品。
-- CD2 Preheat 默认高频轮询及取消逻辑与已有预加载职责重叠。
-- VFS Stream Fast 涉及 ARM32/ARM64 ABI，并全局影响 HTTP，不只是影片读取。
-- ChineseSub 可借鉴来源整合，但取消选择等行为和原生手动字幕保护需先适配。
-- quit、systemtools、部分收藏 / Emby 工具有全局 Stop、数据库或目录清理副作用，
-  不适合为缩短代码直接交出全局所有权；Aurora 有专用硬件前提。
-- Juku 0.80 的目录服务可由隔离适配器接入；完整插件还拥有账号、后台和播放队列。
-  安装作者原版作另一个前端不等于其队列已满足波比同版续播要求，不能无验证接管。
-
 ## 本轮菜单改动
 
 设置的“更新与恢复”分为原版依赖、已装插件、波比定制组件签名包说明。

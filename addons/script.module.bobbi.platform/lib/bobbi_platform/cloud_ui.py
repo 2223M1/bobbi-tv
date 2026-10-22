@@ -8,7 +8,7 @@ from .runtime import call
 
 
 def _refresh_account_view():
-    # Juku's account route refreshes the current directory after committing a
+    # The account route refreshes the current directory after committing a
     # login/logout. This is not a skin reload or a playback stop/restart.
     import xbmc
     try:

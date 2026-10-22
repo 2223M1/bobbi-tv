@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addons><addon id="plugin.video.bobbi" name="bobbi Cinema · 移植预览" version="0.1.0" provider-name="bobbi TV / Sam-Max and contributors">
+<addons><addon id="plugin.video.bobbi" name="bobbi Cinema · 移植预览" version="0.1.0" provider-name="bobbi TV">
   <requires>
     <import addon="script.module.bobbi.core" version="0.1.0" />
     <import addon="script.module.bobbi.mdsub" version="0.1.0" />
@@ -16,9 +16,6 @@
   <extension point="xbmc.addon.metadata">
     
     <reuselanguageinvoker>false</reuselanguageinvoker>
-    <summary lang="en">jacktook</summary>
-    <description lang="en">Kodi addon for torrent streaming</description>
-    <license>GPL-3.0; see LICENSE and THIRD-PARTY notices</license>
     <source>https://github.com/2223M1/bobbi-tv</source>
     <assets>
       <icon>icon.png</icon>
@@ -26,7 +23,9 @@
       <screenshot>resources/screenshots/home.png</screenshot>
       <screenshot>resources/screenshots/tv.png</screenshot>
     </assets>
- </extension>
+ <summary lang="en">bobbi TV cinema</summary>
+    <description lang="en">Browse films and series, select a source and play.</description>
+    </extension>
 </addon><addon id="plugin.video.bobbi.library" version="0.1.0" name="bobbi 我的片库" provider-name="bobbi TV contributors">
     <requires>
         <import addon="xbmc.python" version="3.0.1" />
@@ -35,10 +34,8 @@
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py"><provides>video</provides></extension>
     <extension point="xbmc.addon.metadata">
-        <summary lang="zh_CN">接入自己的网盘、NAS 和直链片库</summary>
-        <description lang="zh_CN">多来源、手动选片、只读浏览。复用 Kodi 的 SMB/NFS/WebDAV 文件能力。不绑定作者账号、不修改媒体文件。</description>
         <license>GPL-3.0-or-later</license><platform>all</platform>
-    </extension>
+    <summary lang="zh_CN">接入自己的网盘、NAS 和直链片库</summary><description lang="zh_CN">多来源、手动选片、只读浏览。支持 SMB/NFS/WebDAV 文件浏览。不绑定作者账号、不修改媒体文件。</description></extension>
 </addon><addon id="repository.bobbi" version="0.1.0" name="bobbi TV · 波比影院" provider-name="bobbi TV contributors">
   <extension point="xbmc.addon.repository" name="bobbi TV">
     <dir minversion="21.0.0">
@@ -49,11 +46,9 @@
     </dir>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">CoreELEC 与 Android 共用影院组件仓库</summary>
-    <description lang="zh_CN">从本仓库安装“bobbi 开始使用”，自动获取整套影院组件。公开测试版；建议只通知更新，停止播放后手动安装。</description>
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
-  </extension>
+  <summary lang="zh_CN">旧在线仓库已停用</summary><description lang="zh_CN">个人离线分发；只导入同代签名整包，不匿名连接 GitHub 或逐个自动更新影院组件。</description></extension>
 </addon><addon id="script.bobbi.setup" version="0.1.0" name="bobbi 首次设置" provider-name="bobbi TV contributors">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />
@@ -61,11 +56,9 @@
   </requires>
   <extension point="xbmc.python.script" library="default.py"><provides>executable</provides></extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">连接自己的网盘、NAS 与本机后台</summary>
-    <description lang="zh_CN">个人115扫码、NAS/WebDAV/片库管理、Android短码配对、CoreELEC固定后台安装与影院切换。不迁移私人系统或改动音画参数。公开测试版，实机能力需验收。</description>
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
-  </extension>
+  <summary lang="zh_CN">连接自己的网盘、NAS 与本机后台</summary><description lang="zh_CN">个人115扫码、NAS/WebDAV/片库管理、专用影视资料、CoreELEC可选后台与影院切换。私人候选，不改音画参数；实机能力按随包验收记录标注。</description></extension>
 </addon><addon id="script.bobbi.start" version="0.1.0" name="bobbi 开始使用" provider-name="bobbi TV contributors">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />
@@ -74,11 +67,9 @@
   </requires>
   <extension point="xbmc.python.script" library="default.py"><provides>executable</provides></extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">安装整套波比影院，跟着提示连接自己的媒体</summary>
-    <description lang="zh_CN">自动安装影院、皮肤、片库与设置向导。不刷机，不覆盖个人账号，不改变音画设置。Android 需另装本机助手以使用 BT；网盘和 NAS 可直接使用。公开测试版，实机能力以发行说明为准。</description>
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
-  </extension>
+  <summary lang="zh_CN">安装整套波比影院，跟着提示连接自己的媒体</summary><description lang="zh_CN">CE 单一离线入口：校验完整签名包、自动安装必要依赖并进入影院设置。不刷机、不复制账号、不改音画参数。原版依赖由Kodi及作者仓库管理；程序回退不覆盖观看数据。</description></extension>
 </addon><addon id="script.module.bobbi.catalog" name="AM6B 115资源目录" version="0.1.0" provider-name="AM6B">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
@@ -87,10 +78,8 @@
   </requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">腾讯目录与经核验补充分享的统一115资源目录</summary>
-    <description lang="zh_CN">保留原始表格出处，按作品、年份和季集校验实际文件。后台有限查询，点击时解析临时地址，不转存、不创建云任务。未核实的字幕不标为已验证。可独立关闭和更新目录。</description>
     <license>MIT</license><platform>all</platform>
-  </extension>
+  <summary lang="zh_CN">腾讯目录与经核验补充分享的统一115资源目录</summary><description lang="zh_CN">保留原始表格出处，按作品、年份和季集校验实际文件。后台有限查询，点击时解析临时地址，不转存、不创建云任务。未核实的字幕不标为已验证。可独立关闭和更新目录。</description></extension>
 </addon><addon id="script.module.bobbi.core" name="AM6B Shared Core" version="0.1.0" provider-name="AM6B local adaptation">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />
@@ -98,30 +87,23 @@
   </requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">AM6B 资源身份、云任务、字幕字体与播放归属共享核心</summary>
-    <summary lang="en_GB">Shared AM6B resource identity and preparation policies</summary>
-    <description lang="en_GB">Extracted existing policies with one implementation and unchanged persistent identity semantics. No service auto-start, skin or playback entry point.</description>
     <license>GPL-3.0; see LICENSE and THIRD-PARTY notices</license>
     <platform>all</platform>
-  </extension>
+  <summary lang="zh_CN">AM6B 资源身份、云任务、字幕字体与播放归属共享核心</summary><summary lang="en_GB">Shared AM6B resource identity and preparation policies</summary><description lang="en_GB">Extracted existing policies with one implementation and unchanged persistent identity semantics. No service auto-start, skin or playback entry point.</description></extension>
 </addon><addon id="script.module.bobbi.mdsub" name="AM6B 漫迪片库" version="0.1.0" provider-name="AM6B">
   <requires><import addon="xbmc.python" version="3.0.0" /></requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">将漫迪公开片库加入现有影院选源</summary>
-    <description lang="zh_CN">按 TMDb 作品身份、季集和版本匹配。仅添加可选直连来源，不自动换源，不转存、不创建云任务。目录快照可独立更新；字幕组和画质以原始文件名为准，实际字幕需播放验收。</description>
     <license>MIT</license><platform>all</platform>
-  </extension>
+  <summary lang="zh_CN">将漫迪公开片库加入现有影院选源</summary><description lang="zh_CN">按 TMDb 作品身份、季集和版本匹配。仅添加可选直连来源，不自动换源，不转存、不创建云任务。目录快照可独立更新；字幕组和画质以原始文件名为准，实际字幕需播放验收。</description></extension>
 </addon><addon id="script.module.bobbi.platform" version="0.1.0" name="bobbi Platform" provider-name="bobbi TV contributors">
   <requires><import addon="xbmc.python" version="3.0.1" /></requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">独立平台配置、能力探测与发行校验</summary>
-    <description lang="zh_CN">不修改系统、音画参数、私人插件或原生播放器。完整影院移植尚在实施中。</description>
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
-  </extension>
-</addon><addon id="skin.bobbi.cinema" version="0.1.0" name="bobbi TV" provider-name="AM6B / Minsk / Confluence contributors">
+  <summary lang="zh_CN">独立平台配置、能力探测与发行校验</summary><description lang="zh_CN">不修改系统、音画参数、私人插件或原生播放器。完整影院移植尚在实施中。</description></extension>
+</addon><addon id="skin.bobbi.cinema" version="0.1.0" name="bobbi TV" provider-name="bobbi TV">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0" />
 		<import addon="script.skinvariables" version="2.2.2" />
@@ -132,19 +114,16 @@
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<platform>all</platform>
-		<license>GPL-2.0; CC-BY-NC-SA-4.0 artwork; HarmonyOS Sans Fonts License; other bundled font licenses (see ASSET-PROVENANCE.md)</license>
-		<forum>https://forum.kodi.tv/forumdisplay.php?fid=125</forum>
 		<assets>
 			<icon>resources/icon.png</icon>
 			<fanart>resources/fanart.jpg</fanart>
 			</assets>
-		<news>Independent Minsk-derived Cinema skin. F9 playback controls retained; legacy Minsk remains separately installable.</news>
-		<summary lang="zh_CN">波比TV：基于 Minsk 的独立家庭影院皮肤，简洁导航、大海报和中文优先。</summary>
-		<summary lang="zh_TW">波比TV：基於 Minsk 的獨立家庭影院面板。</summary>
-		<description lang="zh_CN">波比TV 基于 Minsk 重设计，保留现有播放控制和实用功能。界面使用 HarmonyOS Sans 中文字体与分层字重，统一深色流媒体视觉，优先流畅遥控操作。HarmonyOS Sans Copyright 2021 Huawei Device Co., Ltd.</description>
-		<description lang="zh_TW">本皮肤由CE交流群-明斯克基于Confluence皮肤深度优化打造，在保持流畅运行的前提下融合了多款流行皮肤的精华功能，并加入多项创新设计，致力于为CE爱好者提供极致的视觉体验与操作便利。
-主要功能集成了地平线风格海报墙，三行八列海报展示，光盘入盒滚动动画(可设置关闭)，剧集列表，播放页面可选剧集(书签)，播放页面加载剧情详情页和演员列表详情页，快捷选择字幕和音轨以及各种美化，更多细节欢迎各位喜爱KODI和CE的朋友深入体验。</description>
-	<description lang="en_GB">bobbi TV uses unmodified HarmonyOS Sans fonts and Font Awesome Free 6.7.2. Copyright 2021-2025 Huawei Device Co., Ltd. Inherited code and artwork retain their respective licenses; see ASSET-PROVENANCE.md. This is a review candidate.</description></extension>
+		<news>Private new-UI candidate. Original fonts, icon glyphs and eight interface sounds restored; legacy updater and remote scripts remain disabled.</news>
+		<summary lang="zh_CN">波比TV：独立家庭影院皮肤，简洁导航、大海报和中文优先。</summary>
+		<summary lang="zh_TW">波比TV：獨立家庭影院面板。</summary>
+		<description lang="zh_CN">波比TV 家庭影院：浏览海报、查看影片详情、手动选择片源，使用字幕、音轨和剧集播放控制。</description>
+		<description lang="zh_TW">波比TV 家庭影院面板，在流暢執行的前提下提供直觀的海報瀏覽、劇集選擇、影片詳情與播放控制。</description>
+	<description lang="en_GB">TV cinema interface for browsing posters, choosing sources and controlling playback, subtitles and audio tracks.</description></extension>
 </addon><addon id="script.module.infotagger" name="InfoTagger" provider-name="jurialmunkey" version="0.1.0">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />

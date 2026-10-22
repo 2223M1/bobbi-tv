@@ -1,7 +1,6 @@
-# Kodi Media Center language file
-# Addon Name: Jacktook
+# Television interface language file
+# Addon Name: bobbi TV
 # Addon id: plugin.video.bobbi
-# Addon Provider: Sam-Max
 #
 msgid ""
 msgstr ""
@@ -232,8 +231,8 @@ msgid "Cache cleared"
 msgstr "Cache limpiada"
 
 msgctxt "#30249"
-msgid "Addon Jacktook Burst not found - (script.bobbi.burst)"
-msgstr "Addon Jacktook Burst no encontrado - (script.bobbi.burst)"
+msgid "Addon bobbi TV Burst not found - (script.bobbi.burst)"
+msgstr "Addon bobbi TV Burst no encontrado - (script.bobbi.burst)"
 
 msgctxt "#30250"
 msgid "Addon Torrest not found - (plugin.video.torrest)"
@@ -264,8 +263,8 @@ msgid "Do you want to install Torrest?"
 msgstr "¿Quieres instalar Torrest?"
 
 msgctxt "#30257"
-msgid "Do you want to install Jacktook Burst?"
-msgstr "¿Quieres instalar Jacktook Burst?"
+msgid "Do you want to install bobbi TV Burst?"
+msgstr "¿Quieres instalar bobbi TV Burst?"
 
 msgctxt "#30258"
 msgid "Invalid host for %s. Use http:// or https://"
@@ -708,8 +707,8 @@ msgid "Manifest Url"
 msgstr "URL del manifiesto"
 
 msgctxt "#30780"
-msgid "Jacktook Burst Configuration"
-msgstr "Configuración de Jacktook Burst"
+msgid "bobbi TV Burst Configuration"
+msgstr "Configuración de bobbi TV Burst"
 
 msgctxt "#30781"
 msgid "Burst Configuration"
@@ -880,8 +879,8 @@ msgid "Trakt Sync Interval (minutes)"
 msgstr "Intervalo de sincronizacion de Trakt (minutos)"
 
 msgctxt "#30915"
-msgid "How often Jacktook checks Trakt for remote activity changes while Kodi is running."
-msgstr "Con que frecuencia Jacktook comprueba cambios remotos de actividad en Trakt mientras Kodi esta en ejecucion."
+msgid "How often bobbi TV checks Trakt for remote activity changes while Kodi is running."
+msgstr "Con que frecuencia bobbi TV comprueba cambios remotos de actividad en Trakt mientras Kodi esta en ejecucion."
 
 msgctxt "#30916"
 msgid "Account Info"
@@ -912,8 +911,8 @@ msgid "Enable or disable Trakt scrobbling and resume playback from the last trac
 msgstr "Activar o desactivar el scrobbling de Trakt y reanudar la reproduccion desde la ultima posicion registrada."
 
 msgctxt "#30937"
-msgid "Clear cached Trakt data and force Jacktook to fetch fresh Trakt results the next time you open a Trakt view."
-msgstr "Borrar los datos en cache de Trakt y forzar a Jacktook a obtener resultados nuevos la proxima vez que abras una vista de Trakt."
+msgid "Clear cached Trakt data and force bobbi TV to fetch fresh Trakt results the next time you open a Trakt view."
+msgstr "Borrar los datos en cache de Trakt y forzar a bobbi TV a obtener resultados nuevos la proxima vez que abras una vista de Trakt."
 
 msgctxt "#40000"
 msgid "Arabic (United Arab Emirates)"
@@ -1619,9 +1618,7 @@ msgctxt "#90017"
 msgid "History"
 msgstr "Historial"
 
-msgctxt "#90018"
-msgid "Donate"
-msgstr "Donar"
+
 
 msgctxt "#90019"
 msgid "Recently Watched Files"
@@ -1635,13 +1632,9 @@ msgctxt "#90021"
 msgid "TV Calendar"
 msgstr "Calendario de TV"
 
-msgctxt "#90022"
-msgid "Jacktook is free and built with care in spare time. If you enjoy the addon, consider supporting its development. Donations are optional and help keep updates coming."
-msgstr "Jacktook es gratis y está hecho con cariño en tiempo libre. Si disfrutas el addon, considera apoyar su desarrollo. Las donaciones son opcionales y ayudan a mantener las actualizaciones."
 
-msgctxt "#90023"
-msgid "Support Jacktook"
-msgstr "Apoya a Jacktook"
+
+
 
 msgctxt "#90024"
 msgid "Trending Recent"
@@ -2288,7 +2281,7 @@ msgid "Bypass Stremio Addons Native Sorting"
 msgstr "Omitir Filtros de Addons para Ordenado Nativo"
 
 msgctxt "#90212"
-msgid "If enabled, addons specified won't have their results re-ordered or filtered by Jacktook's native quality and size thresholds."
+msgid "If enabled, addons specified won't have their results re-ordered or filtered by bobbi TV's native quality and size thresholds."
 msgstr "Si se habilita, los addons especificados en BYPASS_FILTER_ADDONS no verán sus resultados re-ordenados ni filtrados por los umbrales de tamaño y calidad nativos de Jacktook."
 
 msgctxt "#90213"
@@ -2296,7 +2289,7 @@ msgid "Select Bypassed Addons"
 msgstr "Seleccionar Addons para Omitir Filtros"
 
 msgctxt "#90214"
-msgid "Select which Stremio addons bypass Jacktook's native size and quality filtering."
+msgid "Select which Stremio addons bypass bobbi TV's native size and quality filtering."
 msgstr "Selecciona qué addons de Stremio omitirán el filtrado nativo de tamaño y calidad de Jacktook."
 
 msgctxt "#90215"
@@ -3641,8 +3634,8 @@ msgid "Getting results from providers..."
 msgstr "Obteniendo resultados de los proveedores..."
 
 msgctxt "#90661"
-msgid "Jacktook [COLOR FFFF6B00]%s[/COLOR]"
-msgstr "Jacktook [COLOR FFFF6B00]%s[/COLOR]"
+msgid "bobbi TV [COLOR FFFF6B00]%s[/COLOR]"
+msgstr "bobbi TV [COLOR FFFF6B00]%s[/COLOR]"
 
 msgctxt "#90662"
 msgid "Downloads Viewer"
@@ -3965,12 +3958,12 @@ msgid "Startup"
 msgstr "Inicio"
 
 msgctxt "#90784"
-msgid "Auto-start Jacktook on Kodi boot"
-msgstr "Iniciar Jacktook automáticamente al arrancar Kodi"
+msgid "Auto-start bobbi TV on Kodi boot"
+msgstr "Iniciar bobbi TV automáticamente al arrancar Kodi"
 
 msgctxt "#90785"
-msgid "Automatically open Jacktook when Kodi starts"
-msgstr "Abrir Jacktook automáticamente cuando Kodi se inicia"
+msgid "Automatically open bobbi TV when Kodi starts"
+msgstr "Abrir bobbi TV automáticamente cuando Kodi se inicia"
 
 msgctxt "#90786"
 msgid "Widgets"
@@ -4088,21 +4081,13 @@ msgctxt "#90814"
 msgid "Choose original languages to hide from TMDB listings"
 msgstr "Elige los idiomas originales que quieres ocultar de los listados de TMDB"
 
-msgctxt "#90815"
-msgid "Support Jacktook"
-msgstr "Apoya a Jacktook"
 
-msgctxt "#90816"
-msgid "Support Jacktook development with an optional Ko-fi donation."
-msgstr "Apoya el desarrollo de Jacktook con una donación opcional en Ko-fi."
 
-msgctxt "#90817"
-msgid "Scan the QR code or open this link:"
-msgstr "Escanea el código QR o abre este enlace:"
 
-msgctxt "#90818"
-msgid "Jacktook was updated with new improvements. Donations are optional, but they help keep development active. Would you like to see the support link?"
-msgstr "Jacktook se actualizó con nuevas mejoras. Las donaciones son opcionales, pero ayudan a mantener el desarrollo activo. ¿Quieres ver el enlace de apoyo?"
+
+
+
+
 
 msgctxt "#90300"
 msgid "External Scraper"
@@ -4540,8 +4525,8 @@ msgid "Connect Nuvio with QR Code"
 msgstr "Conectar Nuvio con código QR"
 
 msgctxt "#91004"
-msgid "Push your Jacktook movie and TV episode watch progress to Nuvio when playback stops."
-msgstr "Envía el progreso de visualización de películas y episodios de TV de Jacktook a Nuvio al detener la reproducción."
+msgid "Push your bobbi TV movie and TV episode watch progress to Nuvio when playback stops."
+msgstr "Envía el progreso de visualización de películas y episodios de TV de bobbi TV a Nuvio al detener la reproducción."
 
 msgctxt "#91006"
 msgid "Scan the QR code with a signed-in Nuvio device, then select the profile that receives watch-progress updates."
@@ -4553,7 +4538,7 @@ msgstr "Cerrar sesión en Nuvio"
 
 msgctxt "#91008"
 msgid "Remove the saved Nuvio session and selected profile from Jacktook."
-msgstr "Elimina de Jacktook la sesión guardada de Nuvio y el perfil seleccionado."
+msgstr "Elimina de bobbi TV la sesión guardada de Nuvio y el perfil seleccionado."
 
 msgctxt "#91009"
 msgid "Nuvio connection cancelled."

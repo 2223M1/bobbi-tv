@@ -25,7 +25,6 @@ from lib.clients.youtube_resolver import (
 )
 from lib.db.cached import RuntimeCache, cache
 from lib.gui.custom_dialogs import (
-    CustomDialog,
     download_dialog_mock,
     resume_dialog_mock,
     run_next_mock,
@@ -333,12 +332,6 @@ def settings_menu(params):
         build_list_item(translation(90743), "settings.png"),
         isFolder=True,
     )
-    addDirectoryItem(
-        ADDON_HANDLE,
-        build_url("donate"),
-        build_list_item(translation(90815), "donate.png"),
-        isFolder=False,
-    )
     end_of_directory(cache=False)
     apply_section_view("view.main")
 
@@ -393,7 +386,6 @@ def reset_views(params):
 
 
 def root_menu():
-    maybe_show_donation_prompt()
     set_pluging_category(translation(90069))
     condition_results = _menu_condition_signature(root_menu_items)
     render_menu(
@@ -403,18 +395,6 @@ def root_menu():
         condition_results=condition_results,
     )
     apply_section_view("view.main")
-
-
-def maybe_show_donation_prompt():
-    if not ADDON_VERSION:
-        return
-
-    if get_setting("donation_prompt_last_version") == ADDON_VERSION:
-        return
-
-    set_setting("donation_prompt_last_version", ADDON_VERSION)
-    if xbmcgui.Dialog().yesno(translation(90023), translation(90818)):
-        donate({})
 
 
 def animation_menu(params):
@@ -1444,24 +1424,6 @@ def addon_update(params):
 
 def show_changelog(params):
     dialog_text(translation(90577), file=CHANGELOG_PATH)
-
-
-def donate(params):
-    from lib.utils.debrid.qrcode_utils import make_qrcode
-
-    donation_url = "https://ko-fi.com/sammax09"
-    qr_code = make_qrcode(donation_url)
-
-    dialog = CustomDialog(
-        "customdialog.xml",
-        ADDON_PATH,
-        heading=translation(90023),
-        text=translation(90022),
-        call_to_action=translation(90817),
-        url=f"[COLOR snow]{donation_url}[/COLOR]",
-        qrcode=qr_code,
-    )
-    dialog.doModal()
 
 
 def settings(params):

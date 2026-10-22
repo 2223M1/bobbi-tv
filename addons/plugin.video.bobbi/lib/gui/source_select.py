@@ -124,7 +124,8 @@ def _has_chinese_candidate(source):
 def _provider_display_name(value):
     """Translate presentation only, never rewrite the provider or resolver type."""
     plain = _plain_source_label(value)
-    return {'Torrent': 'BT种子', 'Direct': '直连资源', 'Debrid': '离线服务'}.get(plain, plain)
+    translated = {'Torrent': 'BT种子', 'Direct': '直连资源', 'Debrid': '离线服务'}.get(plain, plain)
+    return source_site_label(translated, 'Direct')
 
 
 def _get_source_indexer_label(source: TorrentStream, aliases: Dict) -> str:
@@ -863,9 +864,10 @@ class SourceSelect(BaseWindow):
             else:
                 provider_name = source.debridType or source.type
             indexer_label = _get_source_indexer_label(source, aliases)
+            display_indexer = source_site_label(indexer_label, source.type)
             menu_item.setProperty("type", get_provider_color(provider_name))
-            menu_item.setProperty("indexer", get_random_color(indexer_label))
-            menu_item.setProperty("source_site", source_site_label(indexer_label, source.type))
+            menu_item.setProperty("indexer", get_random_color(display_indexer or indexer_label))
+            menu_item.setProperty("source_site", display_indexer)
             menu_item.setProperty("guid", source.guid)
             menu_item.setProperty("infoHash", source.infoHash)
             menu_item.setProperty("size", bytes_to_human_readable(int(source.size)))

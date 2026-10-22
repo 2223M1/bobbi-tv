@@ -27,7 +27,6 @@ SHA-256 为 `4c48464fc15850ac87f94f564ae8b84a446cb130103d87540086a904127379bb`�
 该代《Flip Flappers》回归未确认 AV_STARTED，《东京教父》仍出现启动异常并保留
 `trace_passed=false`。用户随后要求停止测试并恢复旧系统；没有以继续重播补齐验收。
 最终顺序为旧 F9 原生回退，再恢复旧入口/定制 JackTorr/准备 owner；不是回退到 1907。
-完整候选和待审问题见 [Web 交接](WEB-REVIEW-HANDOFF-20261019.md)。
 
 ## 1908 历史检查点文件与真实哈希
 

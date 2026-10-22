@@ -376,7 +376,7 @@
       <midtexture colordiffuse="accent">am6b/white.png</midtexture>
     </control>
     <control type="label" id="52">
-      <description>Kodi Build Version</description>
+      <description>Player Build Version</description>
       <shadowcolor>black</shadowcolor>
       <left>502</left>
       <top>938</top>
@@ -388,7 +388,7 @@
       <scrollspeed>30</scrollspeed>
     </control>
     <control type="label" id="53">
-      <description>Kodi Build Date</description>
+      <description>Player Build Date</description>
       <shadowcolor>black</shadowcolor>
       <left>502</left>
       <top>972</top>

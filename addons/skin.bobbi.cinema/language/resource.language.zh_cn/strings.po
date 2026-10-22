@@ -1,10 +1,9 @@
-# Kodi Media Center language file
-# Addon Name: Confluence
-# Addon id: skin.confluence
-# Addon Provider: Jezz_X, Team Kodi
+# Television interface language file
+# Addon Name: bobbi TV
+# Addon id: skin.bobbi.cinema
 msgid ""
 msgstr ""
-"Project-Id-Version: KODI Main\n"
+"Project-Id-Version: bobbi TV\n"
 "Report-Msgid-Bugs-To: https://github.com/xbmc/xbmc/issues/\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: 2024-04-13 13:48+0000\n"
@@ -18,12 +17,12 @@ msgstr ""
 "X-Generator: Weblate 5.4.3\n"
 
 msgctxt "Addon Summary"
-msgid "Confluence skin by Jezz_X."
-msgstr "Jezz_X 开发的 Confluence 皮肤。"
+msgid "TV cinema interface"
+msgstr "电视影院界面"
 
 msgctxt "Addon Description"
-msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
-msgstr "Confluence 集合了许多流行皮肤的创意，力求把这些优点融合到一个皮肤中，使得首次[CR]使用 Kodi 的用户能更容易上手。"
+msgid "Browse posters, choose a source and control playback."
+msgstr "浏览海报、选择片源并控制播放。"
 
 msgctxt "#14076"
 msgid "Add to favourites"

@@ -1,7 +1,6 @@
-# Kodi Media Center language file
-# Addon Name: Jacktook
+# Television interface language file
+# Addon Name: bobbi TV
 # Addon id: plugin.video.bobbi
-# Addon Provider: Sam-Max
 #
 msgid ""
 msgstr ""
@@ -232,8 +231,8 @@ msgid "Cache cleared"
 msgstr "Cache șters"
 
 msgctxt "#30249"
-msgid "Addon Jacktook Burst not found - (script.bobbi.burst)"
-msgstr "Nu s-a găsit add-on-ul Jacktook Burst - (script.bobbi.burst)"
+msgid "Addon bobbi TV Burst not found - (script.bobbi.burst)"
+msgstr "Nu s-a găsit add-on-ul bobbi TV Burst - (script.bobbi.burst)"
 
 msgctxt "#30250"
 msgid "Addon Torrest not found - (plugin.video.torrest)"
@@ -264,8 +263,8 @@ msgid "Do you want to install Torrest?"
 msgstr "Vrei să instalezi Torrest?"
 
 msgctxt "#30257"
-msgid "Do you want to install Jacktook Burst?"
-msgstr "Vrei să instalezi Jacktook Burst?"
+msgid "Do you want to install bobbi TV Burst?"
+msgstr "Vrei să instalezi bobbi TV Burst?"
 
 msgctxt "#30258"
 msgid "Invalid host for %s. Use http:// or https://"
@@ -708,8 +707,8 @@ msgid "Manifest Url"
 msgstr "URL manifest"
 
 msgctxt "#30780"
-msgid "Jacktook Burst Configuration"
-msgstr "Configurează Jacktook Burst"
+msgid "bobbi TV Burst Configuration"
+msgstr "Configurează bobbi TV Burst"
 
 msgctxt "#30781"
 msgid "Burst Configuration"
@@ -880,8 +879,8 @@ msgid "Trakt Sync Interval (minutes)"
 msgstr "Interval sincronizare Trakt (minute)"
 
 msgctxt "#30915"
-msgid "How often Jacktook checks Trakt for remote activity changes while Kodi is running."
-msgstr "Cât de des verifică Jacktook Trakt pentru modificări de activitate de la distanță în timp ce Kodi rulează."
+msgid "How often bobbi TV checks Trakt for remote activity changes while Kodi is running."
+msgstr "Cât de des verifică bobbi TV Trakt pentru modificări de activitate de la distanță în timp ce Kodi rulează."
 
 msgctxt "#30916"
 msgid "Account Info"
@@ -912,7 +911,7 @@ msgid "Enable or disable Trakt scrobbling and resume playback from the last trac
 msgstr "Activează sau dezactivează scrobbling-ul Trakt și reluarea de la ultima poziție."
 
 msgctxt "#30937"
-msgid "Clear cached Trakt data and force Jacktook to fetch fresh Trakt results the next time you open a Trakt view."
+msgid "Clear cached Trakt data and force bobbi TV to fetch fresh Trakt results the next time you open a Trakt view."
 msgstr "Șterge datele Trakt din cache și forțează actualizarea la următoarea deschidere."
 
 msgctxt "#40000"
@@ -1619,9 +1618,7 @@ msgctxt "#90017"
 msgid "History"
 msgstr "Istoric"
 
-msgctxt "#90018"
-msgid "Donate"
-msgstr "Donează"
+
 
 msgctxt "#90019"
 msgid "Recently Watched Files"
@@ -1636,13 +1633,9 @@ msgid "TV Calendar"
 msgstr "Calendar TV"
 
 
-msgctxt "#90022"
-msgid "Jacktook is free and built with care in spare time. If you enjoy the addon, consider supporting its development. Donations are optional and help keep updates coming."
-msgstr "Jacktook este gratuit și construit cu grijă în timpul liber. Dacă îți place addonul, ia în considerare susținerea dezvoltării. Donațiile sunt opționale și ajută la menținerea actualizărilor."
 
-msgctxt "#90023"
-msgid "Support Jacktook"
-msgstr "Susține Jacktook"
+
+
 
 msgctxt "#90024"
 msgid "Trending Recent"
@@ -2304,7 +2297,7 @@ msgid "Select Bypassed Addons"
 msgstr "Selectează add-on-uri excluse"
 
 msgctxt "#90214"
-msgid "Select which Stremio addons bypass Jacktook's native size and quality filtering."
+msgid "Select which Stremio addons bypass bobbi TV's native size and quality filtering."
 msgstr "Alege ce add-on-uri Stremio ocolesc filtrarea de mărime și calitate a Jacktook."
 
 msgctxt "#90215"
@@ -3924,8 +3917,8 @@ msgid "Getting results from providers..."
 msgstr "Se obțin rezultate de la provideri..."
 
 msgctxt "#90661"
-msgid "Jacktook [COLOR FFFF6B00]%s[/COLOR]"
-msgstr "Jacktook [COLOR FFFF6B00]%s[/COLOR]"
+msgid "bobbi TV [COLOR FFFF6B00]%s[/COLOR]"
+msgstr "bobbi TV [COLOR FFFF6B00]%s[/COLOR]"
 
 msgctxt "#90662"
 msgid "Downloads Viewer"
@@ -4308,12 +4301,12 @@ msgid "Startup"
 msgstr "Pornire"
 
 msgctxt "#90784"
-msgid "Auto-start Jacktook on Kodi boot"
-msgstr "Pornire automată Jacktook la boot-ul Kodi"
+msgid "Auto-start bobbi TV on Kodi boot"
+msgstr "Pornire automată bobbi TV la boot-ul Kodi"
 
 msgctxt "#90785"
-msgid "Automatically open Jacktook when Kodi starts"
-msgstr "Deschide automat Jacktook când Kodi pornește"
+msgid "Automatically open bobbi TV when Kodi starts"
+msgstr "Deschide automat bobbi TV când Kodi pornește"
 
 msgctxt "#90786"
 msgid "Widgets"
@@ -4431,21 +4424,13 @@ msgctxt "#90814"
 msgid "Choose original languages to hide from TMDB listings"
 msgstr "Alege limbile originale de ascuns din listele TMDB"
 
-msgctxt "#90815"
-msgid "Support Jacktook"
-msgstr "Susține Jacktook"
 
-msgctxt "#90816"
-msgid "Support Jacktook development with an optional Ko-fi donation."
-msgstr "Susține dezvoltarea Jacktook cu o donație opțională pe Ko-fi."
 
-msgctxt "#90817"
-msgid "Scan the QR code or open this link:"
-msgstr "Scanează codul QR sau deschide acest link:"
 
-msgctxt "#90818"
-msgid "Jacktook was updated with new improvements. Donations are optional, but they help keep development active. Would you like to see the support link?"
-msgstr "Jacktook a fost actualizat cu îmbunătățiri noi. Donațiile sunt opționale, dar ajută la menținerea dezvoltării active. Vrei să vezi linkul de susținere?"
+
+
+
+
 
 msgctxt "#90819"
 msgid "Rename Stremio add-on"
@@ -4547,8 +4532,8 @@ msgid "Connect Nuvio with QR Code"
 msgstr "Conectează Nuvio cu cod QR"
 
 msgctxt "#91004"
-msgid "Push your Jacktook movie and TV episode watch progress to Nuvio when playback stops."
-msgstr "Trimite progresul de vizionare pentru filmele și episoadele TV din Jacktook către Nuvio când redarea se oprește."
+msgid "Push your bobbi TV movie and TV episode watch progress to Nuvio when playback stops."
+msgstr "Trimite progresul de vizionare pentru filmele și episoadele TV din bobbi TV către Nuvio când redarea se oprește."
 
 msgctxt "#91006"
 msgid "Scan the QR code with a signed-in Nuvio device, then select the profile that receives watch-progress updates."
@@ -4560,7 +4545,7 @@ msgstr "Deconectare din Nuvio"
 
 msgctxt "#91008"
 msgid "Remove the saved Nuvio session and selected profile from Jacktook."
-msgstr "Elimină din Jacktook sesiunea Nuvio salvată și profilul selectat."
+msgstr "Elimină din bobbi TV sesiunea Nuvio salvată și profilul selectat."
 
 msgctxt "#91009"
 msgid "Nuvio connection cancelled."

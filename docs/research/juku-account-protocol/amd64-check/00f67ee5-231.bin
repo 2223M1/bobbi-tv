@@ -1,7 +1,0 @@
-
-	SELECT info_hash, url_key, url, title, vod_title, vod_id, file_id, pick_code, 
-	       file_name, file_size, is_dir, sub_files_json, status, updated_at
-	FROM offline_tasks
-	WHERE info_hash = ? OR url_key = ? OR url = ?
-	LIMIT 1
-	

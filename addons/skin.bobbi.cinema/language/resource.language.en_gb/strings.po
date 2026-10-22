@@ -1,10 +1,9 @@
-# Kodi Media Center language file
-# Addon Name: Confluence
-# Addon id: skin.confluence
-# Addon Provider: Jezz_X, Team Kodi
+# Television interface language file
+# Addon Name: bobbi TV
+# Addon id: skin.bobbi.cinema
 msgid ""
 msgstr ""
-"Project-Id-Version: KODI Main\n"
+"Project-Id-Version: bobbi TV\n"
 "Report-Msgid-Bugs-To: https://github.com/xbmc/xbmc/issues/\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -17,11 +16,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "Addon Summary"
-msgid "Confluence skin by Jezz_X."
+msgid "TV cinema interface"
 msgstr ""
 
 msgctxt "Addon Description"
-msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgid "Browse posters, choose a source and control playback."
 msgstr ""
 
 msgctxt "#31000"
