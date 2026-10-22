@@ -755,7 +755,9 @@ else:
                 'Container(1000).ListItem.Property(source_key)']
         cards=[]
         chosen=False
-        for _ in range(60 if OP=='select' else 20):
+        # The product can display 100 cards. A maintenance probe must not
+        # mistake an exact target after item 60 for a missing source.
+        for _ in range(min(100, traversal_start['item_count']) if OP=='select' else 20):
             require_picker(record)
             card=rpc('XBMC.GetInfoLabels',{'labels':labels})
             if (OP=='select' and card[labels[0]]==TITLE and card[labels[1]]==SITE

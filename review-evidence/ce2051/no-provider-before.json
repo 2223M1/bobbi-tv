@@ -1,0 +1,9 @@
+{
+  "revision": "08b2387",
+  "source_sha256": "72b3d573ea30d9d31c211ae535fa4a852228769d4a24a276a9faa7f9bf81544a",
+  "current_failure": "share_revoked",
+  "recommended": false,
+  "retained": true,
+  "expected": "clear old account presentation even without any later provider rows",
+  "passed": false
+}

@@ -6,19 +6,19 @@
   "installer_distribution": "public_permitted_by_owner",
   "stable_release": false,
   "installed": {
-    "sequence": 2026102050,
-    "entry_version": "0.2.38",
-    "core_version": "0.1.32",
-    "plugin_version": "0.1.31",
+    "sequence": 2026102051,
+    "entry_version": "0.2.39",
+    "core_version": "0.1.33",
+    "plugin_version": "0.1.32",
     "torrent_version": "0.1.11",
     "skin_version": "0.1.7",
-    "transaction": "cea32f2add614c23aa5240359d9628b6",
+    "transaction": "82d3a7380b3949f88bf776dfb9c9fc3e",
     "phase": "complete",
     "host_pending": null,
-    "product_commit": "3cdb62db7ba5432699b96da79f4dbb108b22dff8",
-    "product_tree": "26a39e4352f5ede579333410420af447438a2acb",
-    "entry_sha256": "148199ec8a859ee26c53693f601b21ac8881385ab2d8ff2e7970b4ed0968183b",
-    "local_passed": 4854,
+    "product_commit": "99f88df7a51d7b23ab03f1471316e2c1826d361e",
+    "product_tree": "c9db8316651a85983e179b6dcab39b8568598fc7",
+    "entry_sha256": "52911cc64d6aaead925f1c75857c070ea538904b062f15d983dc1d3c977af040",
+    "local_passed": 4856,
     "local_skipped": 8,
     "local_xfailed": 1,
     "evidence_origin": "maintainer collected device and tests, not independent playback certification"
@@ -39,12 +39,13 @@
   },
   "remediation": {
     "state": "three_review_counterexamples_fixed_device_upgrade_complete_playback_limits_retained",
-    "report": "docs/CE2050-REVIEW-DELIVERY-20261022.md",
-    "evidence": "review-evidence/ce2050",
+    "report": "docs/CE2051-REVIEW-DELIVERY-20261022.md",
+    "evidence": "review-evidence/ce2051",
     "current_ci": "read_actual_delivery_commit_run_at_GitHub_actions",
     "fixed": [
       "optional_catalog_write_does_not_mask_remote_outcome",
       "inflight_account_overlay_ordering_and_explicit_clear",
+      "account_change_without_new_provider_rows",
       "shared_connect_budget_with_cancellable_unconnected_socket",
       "local_cancel_before_dispatch",
       "interrupt_slow_control_http",
@@ -59,6 +60,7 @@
     "skin_confirmation": "Kodi keep-skin dialog requires confirmation; final candidate confirmed by maintainer"
   },
   "deferred_acceptance": [
+    "paprika_final_query_nonvideo_publisher_name_false_matches_exact_prior_card_not_found",
     "station_agent_NTb_prior_36_second_buffering_open_current_same_source_preload_timeout_low_supply",
     "straight_story_startup_clock_stationary_decoder_progressing_not_full_startup_pass",
     "complete_midplay_bt_to_115_capsule",
@@ -92,13 +94,13 @@
     "package_source": "review-evidence/ce2044/package-source.json"
   },
   "published": {
-    "sequence": 2026102050,
-    "tag": "ce2050-reviewed-20261022",
-    "url": "https://github.com/2223M1/bobbi-tv/releases/tag/ce2050-reviewed-20261022",
+    "sequence": 2026102051,
+    "tag": "ce2051-reviewed-20261022",
+    "url": "https://github.com/2223M1/bobbi-tv/releases/tag/ce2051-reviewed-20261022",
     "prerelease": true,
-    "artifact": "script.bobbi.start-CE2050.zip",
-    "bytes": 95978315,
-    "product_commit": "3cdb62db7ba5432699b96da79f4dbb108b22dff8",
+    "artifact": "script.bobbi.start-CE2051.zip",
+    "bytes": 95978597,
+    "product_commit": "99f88df7a51d7b23ab03f1471316e2c1826d361e",
     "delivery_status": "verify_live_GitHub_release_metadata"
   },
   "previous_published": {
