@@ -64,3 +64,4 @@ class TorrentStream:
     requiresCatalogEpisodeProof: bool = False
     # Account-scoped catalog failure; presentation/recommendation only.
     shareFailure: str = ''
+    shareState: Dict[str, Any] = field(default_factory=dict)

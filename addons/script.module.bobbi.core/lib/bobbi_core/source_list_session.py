@@ -8,6 +8,7 @@ from hashlib import sha256
 import json
 from threading import RLock
 from uuid import uuid4
+import time
 
 from bobbi_core.playback_request import source_identity
 
@@ -29,6 +30,7 @@ class SourceListSession:
         self.focus_position = 0
         self.confirmed = None
         self.metadata = {}
+        self.share_scope = None
 
     def key(self, source):
         metadata = getattr(source, 'stremioMetadata', {}) or {}
@@ -44,6 +46,7 @@ class SourceListSession:
                                  ensure_ascii=False).encode('utf-8')).hexdigest()
 
     def publish(self, epoch, provider, sources=(), state='COMPLETE', error='', completion=None):
+        from bobbi_core.share_failure import valid_card_state
         if state not in self.TERMINAL | {'PENDING', 'RUNNING'}:
             raise ValueError('Explicit provider lifecycle required')
         if completion is not None:
@@ -61,7 +64,10 @@ class SourceListSession:
                 copies, state, error = [], 'FAILED', 'CANDIDATE_CAPACITY_EXCEEDED'
             for key, source in copies:
                 retained = self.entries.setdefault(key, source)
-                if getattr(source, 'shareFailure', '') in ('share_revoked', 'identity_changed'):
+                share_state = getattr(source, 'shareState', {})
+                if valid_card_state(share_state):
+                    self._merge_share_state(retained, source, share_state)
+                elif not getattr(retained, 'shareState', {}) and getattr(source, 'shareFailure', '') in ('share_revoked', 'identity_changed'):
                     retained.shareFailure = source.shareFailure
                     retained.verifiedShareFile = False
                 if getattr(source, 'requiresCatalogEpisodeProof', False):
@@ -76,6 +82,29 @@ class SourceListSession:
                 self.providers[provider]['completion'] = previous_completion
             self.revision += 1
             return True
+
+    def _merge_share_state(self, retained, source, state):
+        # Host epochs are monotonic across account switches and logout. Never
+        # let a late provider's old account or old empty observation win.
+        scope = (state['epoch'], state['account'])
+        if self.share_scope and scope != self.share_scope and scope[0] <= self.share_scope[0]:
+            if retained is source:
+                retained.shareFailure, retained.shareState = '', {}
+                retained.verifiedShareFile = False
+            return
+        if self.share_scope != scope:
+            self.share_scope = scope
+            for item in self.entries.values():
+                old = getattr(item, 'shareState', {})
+                if old and (old.get('epoch'), old.get('account')) != scope:
+                    item.shareFailure, item.shareState = '', {}
+                    item.verifiedShareFile = False
+        old = getattr(retained, 'shareState', {})
+        if old and retained is not source and (old['tuple'] != state['tuple'] or old['observed'] >= state['observed']):
+            return
+        retained.shareState = deepcopy(state)
+        retained.shareFailure = state['code']
+        retained.verifiedShareFile = bool(not state['code'] and getattr(source, 'verifiedShareFile', False))
 
     def focus(self, key, position):
         with self.lock:
@@ -121,6 +150,8 @@ class SourceListSession:
             retained.verifiedShareFile = False
             if code in ('share_revoked', 'identity_changed'):
                 retained.shareFailure = code
+                if getattr(retained, 'shareState', {}):
+                    retained.shareState = dict(retained.shareState, observed=time.perf_counter_ns(), code=code)
             self.revision += 1
             return True
 

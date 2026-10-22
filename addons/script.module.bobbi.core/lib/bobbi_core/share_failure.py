@@ -11,17 +11,18 @@ TUPLE_FIELDS = ('locator', 'guid', 'title', 'size', 'media')
 MAX_PROOFS = 128
 
 
-def account_scope(client=None):
+def account_scope(client=None, include_signed_out=False, timeout=.2):
     if client is not None:
         scope = getattr(client, 'account_scope', None)
     else:
         try:
             from bobbi_platform.runtime import call
-            scope = call('account_status', {}, timeout=.2)
+            scope = call('account_status', {}, timeout=timeout)
         except (ImportError, OSError, ValueError, RuntimeError):
             return None
-    if (type(scope) is dict and scope.get('authenticated') is True
-            and type(scope.get('account_id')) is str and scope['account_id']
+    if (type(scope) is dict
+            and (scope.get('authenticated') is True and type(scope.get('account_id')) is str and scope['account_id']
+                 or include_signed_out and scope.get('authenticated') is False and scope.get('account_id') == '')
             and type(scope.get('epoch')) is int and scope['epoch'] >= 0):
         return scope
     return None
@@ -61,6 +62,33 @@ def known_result(db, selected, scope):
         return row[0] if row and row[0] in PERMANENT else ''
     except sqlite3.OperationalError:
         return ''  # Legacy database or optional metadata busy, not a new failure.
+
+
+def card_state(db, selected, scope):
+    """Ordered display observation, not a playback grant or a stored account.
+
+    An observed empty value can clear an older failure. Unavailable reads have
+    no authority to clear anything; late observations cannot undo newer ones.
+    """
+    if not scope:
+        return {}
+    observed = time.perf_counter_ns()
+    try:
+        exists = db.execute("SELECT 1 FROM sqlite_master WHERE name='share_outcomes' AND type='table'").fetchone()
+        row = db.execute('SELECT code FROM share_outcomes WHERE account=? AND tuple_key=? AND expires>?',
+            (_scope_key(scope), tuple_hash(selected), time.time())).fetchone() if exists else None
+    except sqlite3.Error:
+        return {}
+    return dict(account=_scope_key(scope), epoch=scope['epoch'], tuple=tuple_hash(selected),
+                observed=observed, code=row[0] if row and row[0] in PERMANENT else '')
+
+
+def valid_card_state(value):
+    return (type(value) is dict and set(value) == {'account', 'epoch', 'tuple', 'observed', 'code'}
+        and all(type(value[key]) is str and re.fullmatch('[0-9a-f]{64}', value[key]) for key in ('account', 'tuple'))
+        and type(value['epoch']) is int and value['epoch'] >= 0
+        and type(value['observed']) in (int, float) and math.isfinite(value['observed']) and value['observed'] > 0
+        and type(value['code']) is str and value['code'] in PERMANENT | {''})
 
 
 def card_tuple(card, media):
