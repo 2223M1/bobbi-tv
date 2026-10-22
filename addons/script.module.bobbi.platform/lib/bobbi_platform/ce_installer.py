@@ -5,10 +5,12 @@ only stages signed Bobbi code, with a launch gate until the complete vector is
 verified. It is intentionally not the exit-only native UpdateEngine lifecycle.
 """
 from contextlib import nullcontext
+import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import uuid
 
 from .offline_updates import SignedBundle, load_trust
@@ -20,6 +22,39 @@ MANAGED = OWNED_COMPONENTS - {ENTRY}
 # A verified file vector may boot while its idempotent Kodi operations are
 # pending. This is deliberately different from a completed transaction.
 RUNNABLE = ('activation_pending', 'restore_pending', 'complete', 'restored')
+
+
+def program_tree(path):
+    """Bounded receipt of code bytes, paths and modes, not account data.
+
+    Generated CPython bytecode is not a program source. Still inspect its
+    entry types: symlinks/special files are never silently ignored.
+    """
+    path = _safe_path(path)
+    if not path.is_dir():
+        raise UpdateError('PREVIOUS_PROGRAM_INCOMPLETE')
+    digest, count, total = hashlib.sha256(), 0, 0
+    for root, dirs, files in os.walk(path, followlinks=False):
+        for name in sorted(dirs + files):
+            item = Path(root) / name
+            info = item.lstat()
+            if not (stat.S_ISDIR(info.st_mode) or stat.S_ISREG(info.st_mode)):
+                raise UpdateError('PREVIOUS_PROGRAM_SPECIAL_FILE')
+            relative = item.relative_to(path)
+            count += 1
+            total += info.st_size if stat.S_ISREG(info.st_mode) else 0
+            if count > 100000 or total > 4 * 1024**3:
+                raise UpdateError('PREVIOUS_PROGRAM_LIMIT')
+            if '__pycache__' in relative.parts and (item.is_dir() or item.suffix == '.pyc'):
+                continue
+            digest.update(json.dumps([relative.as_posix(), stat.S_IMODE(info.st_mode),
+                'dir' if item.is_dir() else info.st_size], separators=(',', ':')).encode())
+            if item.is_file():
+                with item.open('rb') as stream:
+                    for block in iter(lambda: stream.read(1024*1024), b''):
+                        digest.update(block)
+        dirs.sort()
+    return digest.hexdigest()
 
 
 class PlaybackActive(UpdateError):
@@ -74,6 +109,7 @@ class Installer:
         return value
 
     def _restore(self, state):
+        self._restore_preflight(state)
         tx = _safe_path(self.work / state['tx'])
         abandoned = tx / 'abandoned'
         abandoned.mkdir(exist_ok=True)
@@ -89,6 +125,9 @@ class Installer:
                 os.replace(old, live)
             elif not row['had_old'] and not staged.exists() and live.exists():
                 os.replace(live, abandoned / (name + '-' + uuid.uuid4().hex))
+        self._restore_preflight(state)
+        if any(not row['had_old'] and (self.addons / row['id']).exists() for row in state['items']):
+            raise UpdateError('PREVIOUS_PROGRAM_INCOMPLETE')
         # All original paths are back before opening the boot gate. A crash
         # or RPC failure from here on resumes host state, never repeats moves.
         # CE2009's restored service only understands complete/restored. Expose
@@ -98,6 +137,23 @@ class Installer:
         state.update(phase='restored', host_pending='restore')
         self._write(state)
         self._finish_restore(state)
+
+    def _restore_preflight(self, state):
+        # Complete-vector check BEFORE quiesce or any move. On re-entry, a
+        # missing backup is acceptable only when live is already the exact old
+        # vector (including the process-loss gap immediately after a move).
+        for row in state['items']:
+            backup = _safe_path(self.work / state['tx'] / 'backup' / row['id'])
+            if not row['had_old']:
+                if backup.exists():
+                    raise UpdateError('PREVIOUS_PROGRAM_INCOMPLETE')
+                continue
+            receipt = row.get('old_tree')
+            if not isinstance(receipt, str) or len(receipt) != 64:
+                raise UpdateError('PREVIOUS_PROGRAM_RECEIPT_REQUIRED')
+            source = backup if backup.exists() else self.addons / row['id']
+            if program_tree(source) != receipt:
+                raise UpdateError('PREVIOUS_PROGRAM_INCOMPLETE')
 
     def _finish_restore(self, state):
         if state['phase'] == 'restore_pending':  # Intermediate CE2010 journal.
@@ -148,6 +204,7 @@ class Installer:
                 elif state['phase'] == 'restore_pending' or state.get('host_pending') == 'restore':
                     self._finish_restore(state)
                 else:
+                    self._restore_preflight(state)
                     self.host.quiesce()
                     state['phase'] = 'restoring'
                     self._write(state)
@@ -161,6 +218,7 @@ class Installer:
             if not state or state['phase'] not in ('complete', 'activation_pending'):
                 raise UpdateError('NO_PREVIOUS_PROGRAM_GENERATION')
             self._check_idle()
+            self._restore_preflight(state)
             previous = dict(state)
             state['phase'] = 'restoring'
             self._write(state)
@@ -202,6 +260,9 @@ class Installer:
                 # dependency installs even if the cinema transaction is rolled back.
                 self.host.dependencies(stage)
                 items = [dict(id=name, had_old=(self.addons / name).exists()) for name in sorted(MANAGED)]
+                for item in items:
+                    if item['had_old']:
+                        item['old_tree'] = program_tree(self.addons / item['id'])
                 state = dict(schema=1, phase='staged', tx=txid, items=items,
                     sequence=manifest['sequence'], high_watermark=watermark, previous_skin=self.host.skin(),
                     enabled=self.host.enabled(), versions={r['id']: r['version'] for r in manifest['components']
@@ -215,6 +276,7 @@ class Installer:
                 try:
                     self.host.quiesce()
                     quiesced = True
+                    self._restore_preflight(state)
                     state['phase'] = 'switching'
                     self._write(state)
                     for row in items:

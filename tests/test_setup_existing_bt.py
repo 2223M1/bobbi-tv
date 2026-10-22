@@ -71,6 +71,7 @@ def test_existing_cinema_backend_uses_real_validation_and_only_get_echo(adapter,
     assert not list(adapter.path.parent.glob('*pairing*'))
     assert '_bobbi_setup_existing_torrent' not in sys.modules
     assert '_bobbi_setup_existing_torrent.backend' not in sys.modules
+    assert '_bobbi_setup_existing_torrent.http_io' not in sys.modules
 
 
 @pytest.mark.parametrize('failure', ['offline', 'unsupported', 'unauthorized'])

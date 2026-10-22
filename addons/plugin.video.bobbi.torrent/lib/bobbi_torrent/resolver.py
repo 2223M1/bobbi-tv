@@ -304,13 +304,12 @@ class Resolver:
             choice = choose(candidates)
         finally:
             done.set()
-            # A status call has 2 s connect/read caps plus bounded owner reads.
-            worker.join(6)
+            # Request-local socket shutdown interrupts even trickling headers
+            # or bodies. No worker may outlive Back, confirmation or an error.
+            worker.join()
         self.owner.active()  # Cancel/replacement wins over old HTTP diagnostics.
         if choice is None:
             return None
-        if worker.is_alive():
-            raise BackendError('TORRENT_CONTROL_UNAVAILABLE', diagnostic={'substage': 'manual_wait'})
         if errors:
             raise errors[0]
         return choice

@@ -114,6 +114,9 @@ class JacktookPLayer(xbmc.Player):
         self._monitor_wake = Event()
 
     def _activate_playback_session(self):
+        cancel = getattr(self, '_cinema_cancel', None)
+        if cancel is not None and cancel.is_set():
+            return False
         request_id = self.data.get("request_id", "")
         self.playback_session_id = (request_id if self.data.get("selection_policy") == "exact"
                                    and isinstance(request_id, str)
@@ -125,8 +128,12 @@ class JacktookPLayer(xbmc.Player):
             from lib.cinema.playback_request import context, data_identity, read_snapshot, SelectionChanged
             try:
                 snapshot = read_snapshot()
+                if cancel is not None and cancel.is_set():
+                    return False
                 if self.data.get('_parent_request_id'):
                     parent = context(snapshot, self.data['_parent_request_id'], self.data.get('_selection_context'))
+                    if cancel is not None and cancel.is_set():
+                        return False
                     snapshot = call(dict(parent, operation='reserve_child',
                         token=self.data.get('_continuation_token'), child_request_id=self.playback_session_id,
                         selection_identity=data_identity(self.data),
@@ -139,12 +146,16 @@ class JacktookPLayer(xbmc.Player):
                 self._was_superseded = True
                 return False
             except (OSError, ValueError, RuntimeError, KeyError) as error:
+                if cancel is not None and cancel.is_set():
+                    return False
                 # Only snapshot reads may retry. A lost reserve_child reply is
                 # unknown, never permission to issue a second reservation/open.
                 kodilog('[CINEMA-NEXT] SESSION_CONTROL_UNAVAILABLE ' + type(error).__name__, level=xbmc.LOGWARNING)
                 self._preav_control_error = '播放控制暂时不可用，请返回选源重试。'
                 notification(self._preav_control_error, time=5000)
                 return False
+        if cancel is not None and cancel.is_set():
+            return False
         if exact:
             # Compatibility labels only. The service above, not these strings,
             # has already accepted this exact request or one-use continuation.
@@ -226,6 +237,8 @@ class JacktookPLayer(xbmc.Player):
             self.url = data['url'] = attach_context(self.url, data)
         if self._activate_playback_session() is False:
             return
+        if self._cinema_cancel.is_set():
+            return
         self._cinema_phase('SESSION_ACTIVATED')
         # Subtitle presentation belongs to the resident AV receipt observer.
         # PRE_AV failure/cancellation must not create an owner with no observer.
@@ -285,7 +298,7 @@ class JacktookPLayer(xbmc.Player):
         except Exception as e:
             self.run_error(e)
 
-        if self._was_superseded:
+        if self._was_superseded or self._cinema_cancel.is_set():
             kodilog("[PLAYER] run() superseded; skipping PlayNext queue drain")
             return
 
@@ -359,6 +372,8 @@ class JacktookPLayer(xbmc.Player):
         return True
 
     def play_video(self, list_item):
+        if self._cinema_cancel.is_set():
+            return
         close_busy_dialog()
 
         self._cinema_phase('VOLUME_GATE_BEGIN')
@@ -435,19 +450,28 @@ class JacktookPLayer(xbmc.Player):
                             attach(list_item, original_audio_hint, self._owner_context, self.url, time())
                     except Exception:
                         pass  # Never fail an accepted video open for an audio hint.
+            # Back is a local terminal intent even if its IPC cancellation
+            # could not be delivered. Neither BT plugin dispatch nor direct
+            # play may cross this final boundary after optional pre-AV IO.
+            if self._cinema_cancel.is_set():
+                return
             if self.data.get("direct_playback_handoff"):
                 # The original plugin resolution has already completed. Start
                 # the queued external-plugin URL explicitly instead of trying
                 # to resolve a stale addon handle.
                 kodilog("[PLAYER] play_video: calling Player.play for internal PlayNext handoff")
-                self._resolution_answered = True
                 self._cinema_phase('PLAY_ISSUED')
+                if self._cinema_cancel.is_set():
+                    return
+                self._resolution_answered = True
                 self.play(self.url, list_item)
             else:
                 # Normal plugin entry point: answer Kodi's pending resolution.
                 # Calling Player.play() here as well would open the stream twice.
-                self._resolution_answered = True
                 self._cinema_phase('RESOLUTION_ISSUED')
+                if self._cinema_cancel.is_set():
+                    return
+                self._resolution_answered = True
                 setResolvedUrl(ADDON_HANDLE, True, list_item)
                 kodilog("[PLAYER] play_video: calling setResolvedUrl only", level=xbmc.LOGINFO)
             self.monitor()

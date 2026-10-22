@@ -6,6 +6,7 @@ import time
 from urllib.parse import quote, urlencode, urlsplit
 
 from . import ADDON_ID
+from .http_io import RequestIO
 
 CONFIG_NAME = 'backend.json'
 SUPPORTED_VERSIONS = ('MatriX.144.1', 'MatriX.147')
@@ -132,6 +133,14 @@ class Backend:
         self.session.close()
 
     def request(self, method, path, deadline, active, body=None, files=None, preload=False):
+        def check():
+            active()
+            if self.clock() >= deadline:
+                raise BackendError('TORRENT_CONTROL_DEADLINE')
+        with RequestIO(self.session, check):
+            return self._request(method, path, deadline, active, body, files, preload)
+
+    def _request(self, method, path, deadline, active, body=None, files=None, preload=False):
         import requests
         from urllib3.exceptions import ReadTimeoutError
         active()

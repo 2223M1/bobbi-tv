@@ -29,6 +29,14 @@ def audit(path):
             bundle.write_bytes(entry.read('script.bobbi.start/resources/complete.bobbi-update.zip'))
             with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
                 manifest = signed.check_all()
+                component = next(row for row in manifest['components'] if row['id'] == 'script.bobbi.start')
+                with zipfile.ZipFile(BytesIO(signed.read(component['file'], component['size']))) as source:
+                    expected = set(source.namelist())
+                    for filename in expected:
+                        assert entry.read(filename) == source.read(filename), 'Entry differs: ' + filename
+                expected.add('script.bobbi.start/resources/complete.bobbi-update.zip')
+                expected.update('script.bobbi.start/bootstrap/bobbi_platform/' + name for name in BOOTSTRAP)
+                assert set(names) == expected, 'Outer entry member set differs from signed generation'
                 platform = next(row for row in manifest['components'] if row['id'] == 'script.module.bobbi.platform')
                 with zipfile.ZipFile(BytesIO(signed.read(platform['file'], platform['size']))) as source:
                     for filename in BOOTSTRAP:
@@ -51,7 +59,7 @@ def audit(path):
             # Signature, same-generation code and isolated import stay required.
     return dict(schema=1, sequence=manifest['sequence'], user_entry=Path(path).name,
         kodi_addon_xml='passed', embedded_complete_signature='passed', same_generation_bootstrap='passed',
-        isolated_bootstrap_import='passed', account_state_copied=False,
+        isolated_bootstrap_import='passed', signed_entry_members='passed', account_state_copied=False,
         scope='actual ZIP and fresh interpreter; not clean-device installation certification')
 
 

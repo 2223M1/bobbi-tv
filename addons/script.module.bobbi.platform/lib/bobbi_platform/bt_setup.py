@@ -26,9 +26,10 @@ def _backend_module():
     package = root/'lib/bobbi_torrent'
     namespace = '_bobbi_setup_existing_torrent'
     missing = object()
-    previous = {name: sys.modules.get(name, missing) for name in (namespace, namespace+'.backend')}
+    previous = {name: sys.modules.get(name, missing) for name in
+                (namespace, namespace+'.backend', namespace+'.http_io')}
     try:
-        # Only __init__ (the addon ID) and backend are loaded. Do not run the
+        # Only the addon ID, backend and its inert IO guard are loaded. Do not run the
         # plugin entry, resolver, player owner or an engine installer.
         spec = importlib.util.spec_from_file_location(namespace, package/'__init__.py',
                                                      submodule_search_locations=[str(package)])
