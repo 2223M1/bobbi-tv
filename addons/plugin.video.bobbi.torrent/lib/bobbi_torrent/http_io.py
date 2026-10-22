@@ -7,6 +7,7 @@ socket. TLS verification, Requests parsing and the ordinary read caps remain.
 import errno
 import select
 import socket
+import ssl
 import time
 from threading import Event, Lock, Thread
 
@@ -52,6 +53,7 @@ class RequestIO:
         from urllib3.exceptions import ConnectTimeoutError, NameResolutionError, NewConnectionError
         from urllib3.util.connection import allowed_gai_family
         deadline = time.monotonic() + connection.timeout
+        connection._control_connect_deadline = deadline
         host, port = connection._dns_host, connection.port
         try:
             addresses = socket.getaddrinfo(host, port, allowed_gai_family(), socket.SOCK_STREAM)
@@ -89,7 +91,10 @@ class RequestIO:
                 if result:
                     raise OSError(result, 'Connection failed')
                 self.check()
-                sock.settimeout(connection.timeout)
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise socket.timeout('Connection budget exhausted')
+                sock.settimeout(remaining)
                 return sock
             except OSError as caught:
                 error = caught
@@ -117,7 +122,55 @@ class RequestIO:
         class HTTP(Connection, HTTPConnection):
             pass
         class HTTPS(Connection, HTTPSConnection):
-            pass
+            def connect(self):
+                from urllib3.util.ssl_ import create_urllib3_context, resolve_ssl_version, resolve_cert_reqs
+                context = self.ssl_context
+                if context is None:
+                    context = create_urllib3_context(ssl_version=resolve_ssl_version(self.ssl_version),
+                        ssl_minimum_version=self.ssl_minimum_version, ssl_maximum_version=self.ssl_maximum_version,
+                        cert_reqs=resolve_cert_reqs(self.cert_reqs))
+                    if not self.ca_certs and not self.ca_cert_dir and not self.ca_cert_data:
+                        context.load_default_certs()
+                self.ssl_context = TLSContext(context, self)
+                try:
+                    super().connect()
+                finally:
+                    self.ssl_context = context
+        class TLSContext:
+            # A per-connection facade, not a global patch or mutation of the
+            # context's wrap method. urllib3 still configures trust, ALPN, client
+            # certificates and verifies hostname/fingerprint in its usual path.
+            def __init__(self, context, connection):
+                object.__setattr__(self, '_context', context)
+                object.__setattr__(self, '_connection', connection)
+            def __getattr__(self, name):
+                return getattr(self._context, name)
+            def __setattr__(self, name, value):
+                setattr(self._context, name, value)
+            def wrap_socket(self, sock, **kwargs):
+                kwargs['do_handshake_on_connect'] = False
+                secured = guard.track(self._context.wrap_socket(sock, **kwargs))
+                try:
+                    secured.setblocking(False)
+                    while True:
+                        guard.check()
+                        remaining = self._connection._control_connect_deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise socket.timeout('Connection budget exhausted')
+                        try:
+                            secured.do_handshake()
+                            break
+                        except ssl.SSLWantReadError:
+                            read, write = [secured], []
+                        except ssl.SSLWantWriteError:
+                            read, write = [], [secured]
+                        select.select(read, write, [], min(.05, remaining))
+                    guard.check()
+                    secured.settimeout(max(.001, self._connection._control_connect_deadline - time.monotonic()))
+                    return secured
+                except BaseException:
+                    secured.close()
+                    raise
         class HTTPPool(HTTPConnectionPool):
             ConnectionCls = HTTP
         class HTTPSPool(HTTPSConnectionPool):

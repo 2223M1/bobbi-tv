@@ -342,7 +342,8 @@ class SourceSelect(BaseWindow):
             failure = getattr(resolver, 'share_failure', None)
             if (isinstance(failure, dict) and failure.get('code') in {'share_revoked', 'identity_changed'}
                     and getattr(self, 'source_session', None)):
-                self.source_session.invalidate_share(self.source_session.epoch, source, failure['code'])
+                self.source_session.invalidate_share(self.source_session.epoch, source, failure['code'],
+                                                     state=failure.get('share_state'))
             self._resolution_answered = self._resolution_answered or getattr(resolver, "resolution_answered", False)
             if (not self.resolved and not resolver.user_cancelled
                     and resolver.startup_failure_category in {'buffer_timeout', 'preload_error', 'prepared_ready'}

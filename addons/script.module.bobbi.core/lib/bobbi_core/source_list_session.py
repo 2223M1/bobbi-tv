@@ -139,8 +139,9 @@ class SourceListSession:
                 self.confirmed = None
                 self.revision += 1
 
-    def invalidate_share(self, epoch, source, code=''):
+    def invalidate_share(self, epoch, source, code='', state=None):
         """Downgrade only the captured exact card; do not remove any candidate."""
+        from bobbi_core.share_failure import valid_card_state, tuple_hash
         key = self.key(source)
         with self.lock:
             retained = self.entries.get(key)
@@ -150,9 +151,30 @@ class SourceListSession:
                 return False
             retained.verifiedShareFile = False
             if code in ('share_revoked', 'identity_changed'):
-                retained.shareFailure = code
-                if getattr(retained, 'shareState', {}):
+                if valid_card_state(state):
+                    media = json.loads(self.media)
+                    media_id = media.get('media_key')
+                    if not media_id and isinstance(media.get('ids'), dict):
+                        from bobbi_catalog.identity import media_key
+                        media_id = media_key(media['ids'].get('tmdb_id'), media.get('mode'),
+                                             media.get('season'), media.get('episode'))
+                    selected = dict(locator=source.url, guid=source.guid, title=source.title,
+                                    size=source.size, media=media_id or '')
+                    old = getattr(retained, 'shareState', {})
+                    expected = old.get('tuple') or tuple_hash(selected)
+                    if state['tuple'] != expected or state['code'] != code:
+                        return False
+                    self._merge_share_state(retained, source, state)
+                elif state is not None:
+                    return False
+                elif (getattr(retained, 'shareState', {}) and self.share_scope ==
+                      (retained.shareState['epoch'], retained.shareState['account'])):
+                    # Legacy callers may downgrade an already scoped capture;
+                    # never invent an account for an unscoped error string.
+                    retained.shareFailure = code
                     retained.shareState = dict(retained.shareState, observed=time.perf_counter_ns(), code=code)
+                else:
+                    return False
             self.revision += 1
             return True
 
@@ -169,9 +191,12 @@ class SourceListSession:
             self.revision += 1
 
     def snapshot(self, full=False):
+        from bobbi_core.search_trace import observe
         with self.lock:
             # Rank the complete bounded set before the display cap.
             ranked = self.rank(list(self.entries.values()))
+            observe('session_pool', list(self.entries.values()))
+            observe('ranked', ranked)
             recommended = next((self.key(source) for source in ranked
                 if not getattr(source, 'shareFailure', '')), None)
             cap = self.capacity if full else self.limit
@@ -182,6 +207,7 @@ class SourceListSession:
                 visible = [source for source in visible if self.key(source) != self.focus_key]
                 visible.insert(min(self.focus_position, len(visible)), focused)
                 visible = visible[:cap]
+            observe('visible', visible)
             return deepcopy(dict(epoch=self.epoch, revision=self.revision, cancelled=self.cancelled,
                 providers=self.providers, metadata=self.metadata, recommended_key=recommended,
                 superseded_count=len(self.entries) - len(ranked),
@@ -199,7 +225,7 @@ class SourceListSession:
         # query, a new worker, or resetting cards. Unknown IPC is not a failure.
         with self.lock:
             now = time.monotonic()
-            if (not self.share_scope or self.cancelled or self.confirmed
+            if (not self.entries or self.cancelled or self.confirmed
                     or now - self.share_scope_polled < 1):
                 return
             self.share_scope_polled = now
@@ -209,7 +235,7 @@ class SourceListSession:
             return
         scope = (current['epoch'], _scope_key(current))
         with self.lock:
-            if self.cancelled or self.confirmed or scope[0] <= self.share_scope[0]:
+            if self.cancelled or self.confirmed or (self.share_scope and scope[0] <= self.share_scope[0]):
                 return
             self.share_scope = scope
             for item in self.entries.values():

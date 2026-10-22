@@ -789,7 +789,7 @@ def resolve(locator, guid, title, size, media, state=STATE, deadline=None, cance
             with cache.db:
                 cache.db.execute('UPDATE selections SET checked_at=?,checked_account=? WHERE key=? AND media=?',
                                  (time.time(), _account(client), row['key'], media))
-    except (OSError, sqlite3.Error):
+    except (OSError, sqlite3.Error, juku_api.JukuError):
         # Evidence only affects BT-card suppression. A busy metadata writer
         # cannot revoke the already verified official 115 download response.
         pass

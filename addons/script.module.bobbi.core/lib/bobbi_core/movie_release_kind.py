@@ -47,6 +47,15 @@ def conflict(title, aliases):
     """
     if not isinstance(title, str) or not title or len(title) > 2048 or not aliases:
         return ''
+    # Explicit bracketed format/category evidence, not words occurring in a
+    # film title. Missing category remains unknown. A '+' in an uploader name
+    # must not turn a manga-only row into a mixed movie collection.
+    from bobbi_core.candidate_titles import normalized
+    trusted = {normalized(alias) for alias in aliases if isinstance(alias, str)}
+    for tag in re.findall(r'\[([^\[\]]+)\]|【([^【】]+)】', unicodedata.normalize('NFKC', title).casefold()):
+        label = next(part for part in tag if part)
+        if normalized(label) not in trusted and re.fullmatch(r'\s*(?:manga|comics?|e[ -]?books?|漫画|漫畫)(?:[ _-]+(?:[a-z]{2,3}|digital|pdf|epub|cbz|cbr))*\s*', label):
+            return 'non_video'
     text = _outside_aliases(title, aliases)
     text = re.sub(r'\([^()\r\n]{1,160}[?？]\)', ' ', text)
     # Explicit mixed contents are not an extras-only or TV-only assertion.

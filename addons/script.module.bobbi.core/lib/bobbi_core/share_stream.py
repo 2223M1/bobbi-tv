@@ -492,7 +492,7 @@ class Binding:
                     and (self.expires_at is None or time.time() + 15 < self.expires_at)):
                 return self.address
             now = time.monotonic()
-            from bobbi_core.share_failure import PERMANENT, failure_error, failure_value
+            from bobbi_core.share_failure import PERMANENT, failure_error, failure_value, resolution_state
             previous = self.grant_outcome()
             if (previous and previous['state'] == 'failed'
                     and previous['failure']['code'] in PERMANENT and now < previous['retry_after']):
@@ -502,6 +502,7 @@ class Binding:
                 raise ValueError('SHARE_REFRESH_BUDGET')
             self.renewals.append(now)
             attempt = dict(started_at=time.time(), started=now, state='pending')
+            observed = time.perf_counter_ns()
             self._publish_outcome(attempt)
             try:
                 address = (self.resolve(self.body, self.scope) if self.account is not None
@@ -509,6 +510,11 @@ class Binding:
             except Exception as error:
                 try:
                     failure = failure_value(error)
+                    if failure is not None and failure['code'] in PERMANENT:
+                        state = resolution_state(self.body, self.scope, failure['code'], observed)
+                        if state:
+                            error.share_state = state
+                            failure['share_state'] = state
                 except ImportError:
                     failure = None  # The base transport has no catalog dependency.
                 if failure is not None and not self.cancelled():

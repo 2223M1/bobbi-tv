@@ -506,6 +506,8 @@ def _cinema_requires_catalog_admission(source):
 
 
 def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=None, release_episode=None, fallback_query=None, anime=False, anime_range_context=None):
+    from bobbi_core.search_trace import observe
+    observe('catalog_input', results or [])
     from bobbi_core.candidate_titles import matches, _legacy_matches
     from bobbi_core.search_completion import replace_rows
     # Missing catalog evidence is unknown, not a negative work match. The
@@ -545,6 +547,7 @@ def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=Non
     rejected = len(results or []) - len(kept)
     if rejected or title_basis == 'request_query_unverified':
         kodilog('Cinema catalog candidate screening: rejected={}, kept={}; title_basis={}; labels are not readiness'.format(rejected, len(kept), title_basis), level=xbmc.LOGINFO)
+    observe('catalog_kept', kept)
     return replace_rows(results, kept)
 
 
@@ -2139,6 +2142,9 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         language=title_language_mode, jackgram_only=bool(jackgram_only)),
         lambda rows: rank_sources(_filter_tv_completed_candidates(
             _filter_movie_year_candidates(rows, movie_catalog[0]), tv_completed[0], ids, tv_data), context), limit)
+    from bobbi_platform.paths import profile
+    from bobbi_core.search_trace import configure, observe
+    configure(profile('script.module.bobbi.core'), session.epoch)
     if catalog_sources:
         session.publish(session.epoch, 'local-entry', catalog_sources)
     if preferred:
@@ -2171,9 +2177,11 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
                 release_episode=int(target.get('episode', 0)) or None if mode == 'tv' else None,
                 fallback_query=query, anime=16 in (context.get('genre_ids') or []),
                 anime_range_context=context.get('anime_range_context'))
-        return catalog_rows + _prepare_stremio_results(_process_search_results(rows, mode, tv_data.get('name', ''),
+        processed = catalog_rows + _prepare_stremio_results(_process_search_results(rows, mode, tv_data.get('name', ''),
             episode, season, scoped_addon_url, query, media_type, rescrape,
             suppress_debrid_dialog=True, suppress_busy_dialog=True, recommendation_context=context))
+        observe('processed', processed)
+        return processed
 
     def setup(manager):
         reconcile_source_selection(cache_backend=cache, settings_getter=get_setting,

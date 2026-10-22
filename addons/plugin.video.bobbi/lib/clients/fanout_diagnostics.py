@@ -322,6 +322,8 @@ class FanoutReceipt:
             row.update(parse='running', parse_started_ms=self._elapsed())
 
     def parse_end(self, index, parsed=None, exception=False):
+        from bobbi_core.search_trace import observe as trace_rows
+        trace_rows('rss_parsed', parsed or [])
         row = self._parse_rows.get(index)
         if row is not None:
             row.update(parse_ended_ms=self._elapsed(),

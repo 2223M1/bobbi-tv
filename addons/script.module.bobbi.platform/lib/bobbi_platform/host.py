@@ -202,6 +202,8 @@ class Host:
                         return {'matched': False}
                     failure = {key: outcome['failure'][key]
                                for key in ('code', 'http_status', 'api_code', 'invalidation_failed')}
+                    if 'share_state' in outcome['failure']:
+                        failure['share_state'] = dict(outcome['failure']['share_state'])
                     return dict(matched=True, account=expected, owner=dict(body['owner']),
                                 tuple_sha256=tuple_hash(selected), failure=failure)
             return self.accounts.run_if_current(expected, publish_failure)

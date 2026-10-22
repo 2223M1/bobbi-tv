@@ -91,6 +91,17 @@ def valid_card_state(value):
         and type(value['code']) is str and value['code'] in PERMANENT | {''})
 
 
+def resolution_state(selected, scope, code, observed):
+    """Display-only receipt from the resolver's frozen account, never live IPC."""
+    if (type(scope) is not dict or scope.get('authenticated') is not True
+            or type(scope.get('account_id')) is not str or not scope['account_id']
+            or type(scope.get('epoch')) is not int or scope['epoch'] < 0
+            or code not in PERMANENT):
+        return {}
+    return dict(account=_scope_key(scope), epoch=scope['epoch'], tuple=tuple_hash(selected),
+                observed=observed, code=code)
+
+
 def card_tuple(card, media):
     return dict(locator=card['url'], guid=card['guid'], title=card['title'], size=card['size'], media=media)
 
@@ -115,6 +126,9 @@ def failure_value(error):
             and proof['checked_at'] > 0 and type(proof['checked_account']) is str
             and re.fullmatch('[0-9a-f]{64}', proof['checked_account'])):
         value['checked_proof'] = dict(proof)
+    state = getattr(error, 'share_state', None)
+    if valid_card_state(state) and state['code'] == value['code']:
+        value['share_state'] = dict(state)
     return value
 
 
@@ -124,6 +138,8 @@ def failure_error(value):
     error.invalidation_failed = value['invalidation_failed']
     if 'checked_proof' in value:
         error.checked_proof = dict(value['checked_proof'])
+    if valid_card_state(value.get('share_state')):
+        error.share_state = dict(value['share_state'])
     return error
 
 
@@ -195,12 +211,20 @@ def read_failure(source, item, receipt):
                 or result['owner'] != receipt or result['tuple_sha256'] != tuple_hash(selected)):
             return None
         value = result['failure']
-        if (type(value) is not dict or set(value) != {'code', 'http_status', 'api_code', 'invalidation_failed'}
+        if (type(value) is not dict or set(value) not in (
+                {'code', 'http_status', 'api_code', 'invalidation_failed'},
+                {'code', 'http_status', 'api_code', 'invalidation_failed', 'share_state'})
                 or type(value['code']) is not str or value['code'] not in ShareError.CODES
                 or type(value['invalidation_failed']) is not bool
                 or (value['http_status'] is not None and (type(value['http_status']) is not int or not 100 <= value['http_status'] <= 599))
                 or (value['api_code'] is not None and (type(value['api_code']) is not int or not 0 <= value['api_code'] <= 9999999999))):
             return None
+        if 'share_state' in value:
+            state = value['share_state']
+            if (not valid_card_state(state) or state['tuple'] != tuple_hash(selected)
+                    or state['account'] != _scope_key(item['_account'])
+                    or state['epoch'] != item['_account']['epoch'] or state['code'] != value['code']):
+                return None
         return value
     except (AttributeError, ImportError, OSError, RuntimeError, ValueError, TypeError, KeyError):
         return None
