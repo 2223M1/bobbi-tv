@@ -33,6 +33,7 @@ def parity(tmp_path, monkeypatch):
     session.lease = Lease(accounts, scope)
     session.readiness = AccountReadiness('fixture', clock=lambda: clock[0])
     session.intake = Intake(ledger)
+    session.next_work = 0
     intent = dict(request_id='a' * 32, purpose='current',
         media=dict(tmdb_id=1, kind='movie', season=0, episode=0, anime=False,
                    title='Fixture', release_title='Fixture.2025'),

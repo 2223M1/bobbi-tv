@@ -214,8 +214,16 @@ class Ledger:
         if not self.db.in_transaction:
             raise RuntimeError('Qualification requires an owner transaction')
         required = {"file_id", "bytes", "version_key", "source_binding", "read_bytes", "probe_sha256", "duration", "video_codec"}
-        if set(evidence) not in (required, required | {'media_profile'}):
+        method_fields={'probe_method','probe_coverage'}
+        if set(evidence) not in (required, required | {'media_profile'}, required | method_fields,
+                                 required | method_fields | {'media_profile'}):
             raise ValueError("Complete bounded media qualification required")
+        if method_fields <= set(evidence):
+            method,coverage=evidence['probe_method'],evidence['probe_coverage']
+            if (type(method) is not str or type(coverage) is not str or (method,coverage) not in
+                    {('ffprobe','bounded_demux'),('matroska_container_header','prefix_to_first_cluster')}
+                    or (method=='matroska_container_header' and 'media_profile' in evidence)):
+                raise ValueError('Recognized bounded probe method and coverage required')
         if 'media_profile' in evidence:
             from bobbi_core.release_media_profile import checked_profile
             profile = checked_profile(evidence['media_profile'])

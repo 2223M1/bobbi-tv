@@ -14,6 +14,7 @@ from bobbi_core.release_identity import bound_family
 from bobbi_core.candidate_titles import matches as matches_catalog_title
 from bobbi_core.catalog_identity import release_context, release_binding
 from bobbi_core.episode_identity import bind_selected_episode, load_mappings
+from bobbi_core.source_intent import checked_target_offset
 
 BUDGET = 16.0  # One search <=8 s, remaining metadata lane <=8 s per call.
 MAX_PROBES = 3
@@ -70,11 +71,12 @@ def discover(job, catalog, searcher, metadata_provider, selector, cancelled=lamb
         return dict(state='UNAVAILABLE', reason=reason, evidence=evidence)
     if cancelled(): return unavailable('CANCELLED')
     anchor, selection = job['payload']['anchor'], job['payload']['selection']
+    target_offset = checked_target_offset(job['payload'].get('target_offset', 1))
     media, family, proof = verified_anchor(anchor, selection, catalog)
-    next_media = 'tmdb:tv:{}:s{}:e{}'.format(media['tmdb_id'], media['season'], media['episode'] + 1)
+    next_media = 'tmdb:tv:{}:s{}:e{}'.format(media['tmdb_id'], media['season'], media['episode'] + target_offset)
     if job['media_id'] != next_media or job['version_key'] != hashlib.sha256(family.encode()).hexdigest():
         raise ValueError('Discovery job no longer matches its current-source anchor')
-    season, episode = media['season'], media['episode'] + 1
+    season, episode = media['season'], media['episode'] + target_offset
     next_context = dict(media, episode=episode)
     current_pair = release_context(media, catalog)
     try:
@@ -148,7 +150,7 @@ def discover(job, catalog, searcher, metadata_provider, selector, cancelled=lamb
             continue
         try:
             request, selection = verified_next(anchor, job['payload']['selection'], metadata,
-                job['account'], job['destination'], selector, catalog)
+                job['account'], job['destination'], selector, catalog, target_offset=target_offset)
         except (ValueError, KeyError, TypeError):
             row['state'] = 'FILE_OR_RELEASE_PROOF_REJECTED'
             continue

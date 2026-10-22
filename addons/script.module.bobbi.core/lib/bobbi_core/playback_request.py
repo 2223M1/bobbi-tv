@@ -34,9 +34,11 @@ def context(snapshot, request_id):
     return dict(boot_id=snapshot['boot_id'], epoch=snapshot['epoch'], request_id=request_id)
 
 
-def select(snapshot, request_id, identity):
+def select(snapshot, request_id, identity, account_scope=None, retry_from=None):
     return call(dict(operation='select', boot_id=snapshot['boot_id'], epoch=snapshot['epoch'],
-                     request_id=request_id, selection_identity=identity))
+                     request_id=request_id, selection_identity=identity,
+                     **({'account_scope': account_scope} if account_scope is not None else {}),
+                     **({'retry_from': retry_from} if retry_from is not None else {})))
 
 
 def data_identity(data):
@@ -168,13 +170,16 @@ def validate_torrent_resolution(request_id, resolution, info_hash):
     return selected
 
 
-def startup_failure(owner_context):
+def startup_failure(owner_context, account_scope=None):
     """Observe one failed native open without granting cancelled control rights."""
     if not isinstance(owner_context, dict) or not all(owner_context.get(key) is not None
             for key in ('boot_id', 'epoch', 'request_id', 'file_identity')):
         return None
-    result = call(dict(operation='startup_failure', **{key: owner_context[key]
-        for key in ('boot_id', 'epoch', 'request_id', 'file_identity')}))
+    query = dict(operation='startup_failure', **{key: owner_context[key]
+        for key in ('boot_id', 'epoch', 'request_id', 'file_identity')})
+    if account_scope is not None:
+        query['account_scope'] = account_scope
+    result = call(query)
     if not isinstance(result, dict):
         return None
     receipt = result.get('receipt')

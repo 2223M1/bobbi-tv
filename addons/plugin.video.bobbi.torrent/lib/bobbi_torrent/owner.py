@@ -1,6 +1,7 @@
 """Use the one current bobbi owner; properties convey cancellation, never rights."""
 import hashlib
 import json
+import math
 import re
 
 from .backend import BackendError, MAX_DIAGNOSTIC_NUMBER
@@ -20,6 +21,21 @@ class Owner:
         self.request_id, self.protocol = request_id, protocol
         self.window, self.monitor = window, monitor
         self.failure_attempted = False
+        self.ready_probe = None
+
+    def prepared_source_ready(self, request, info_hash, file, deadline):
+        if 'ready_context' not in request:
+            return False
+        self.active()
+        try:
+            from bobbi_core.prepared_retry import ReadyProbe, decode_context
+            if self.ready_probe is None:
+                self.ready_probe = ReadyProbe(decode_context(request['ready_context'], self.request_id))
+            ready = self.ready_probe.poll(info_hash, file, self.cancelled, deadline)
+        except (OSError, RuntimeError, ValueError, KeyError, TypeError):
+            ready = False  # Optional lookup failure leaves ordinary buffering intact.
+        self.active()  # Cancellation or a new selection always wins the poll.
+        return ready
 
     def cancelled(self):
         return (self.monitor.abortRequested()
@@ -40,7 +56,16 @@ class Owner:
             raise BackendError('TORRENT_OWNER_UNAVAILABLE', 'superseded') from None
 
     def wait(self, seconds):
-        if self.monitor.waitForAbort(seconds):
+        try:
+            finite = type(seconds) in (int, float) and math.isfinite(seconds)
+        except OverflowError:
+            finite = False
+        if not finite:
+            raise BackendError('TORRENT_WAIT_INVALID', 'invalid_request')
+        # Kodi treats zero/negative timeouts as an unbounded wait. A deadline
+        # can expire between the resolver's last check and this call; let the
+        # original loop report that timeout after checking current ownership.
+        if seconds > 0 and self.monitor.waitForAbort(seconds):
             raise BackendError('TORRENT_ABORTED', 'aborted')
         self.active()
 

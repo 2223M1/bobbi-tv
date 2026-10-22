@@ -1,4 +1,6 @@
 """A bounded exact selection pipeline; no fallback release and no player monitor."""
+import json
+from pathlib import PurePosixPath
 import re
 import time
 
@@ -15,6 +17,43 @@ VIDEO = (
     '.ogv', '.pva', '.qt', '.rcv', '.rec', '.rmvb', '.svq3', '.tp', '.trp',
     '.ts', '.ty', '.vc1', '.vdr', '.viv', '.vob', '.vp3', '.webm', '.wmv', '.xvid',
 )
+
+
+def checked_expected_file(raw):
+    """Read the service-proved next-file tuple, never a selector override.
+
+    Match video_context's selected-file schema and canonical path rules; this
+    adapter additionally requires its native positive, one-based file index.
+    """
+    from bobbi_core.video_context import digest
+
+    def unique_object(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError('Duplicate file tuple field')
+            value[key] = item
+        return value
+
+    try:
+        if not isinstance(raw, str) or not 0 < len(raw.encode('utf-8')) <= 8192:
+            raise ValueError('Bounded file tuple required')
+        value = json.loads(raw, object_pairs_hook=unique_object)
+        keys = {'source_info_hash', 'torrent_file_id', 'torrent_path', 'torrent_file_bytes'}
+        if not isinstance(value, dict) or set(value) != keys:
+            raise ValueError('Exact file tuple required')
+        digest(value['source_info_hash'], 40)
+        path = value['torrent_path']
+        if (type(value['torrent_file_id']) is not int or value['torrent_file_id'] <= 0
+                or type(value['torrent_file_bytes']) is not int or value['torrent_file_bytes'] <= 0
+                or not isinstance(path, str) or not 1 <= len(path) <= 4096
+                or '\\' in path or ':' in path or any(ord(char) < 32 for char in path)
+                or PurePosixPath(path).is_absolute()
+                or any(part in ('', '.', '..') for part in path.split('/'))):
+            raise ValueError('Invalid exact file tuple')
+        return value
+    except (ValueError, TypeError, UnicodeError, RecursionError):
+        raise BackendError('TORRENT_REQUEST_INVALID', 'invalid_request') from None
 
 
 def metadata_files(info):
@@ -49,6 +88,7 @@ def selected_file_unchanged(info, file):
 def select_file(info, request, info_hash, resolution, protocol):
     from bobbi_core.episode_identity import resolve_episode_binding, check_transport_episode_file
     from bobbi_core.torrent_selection import select_exact_file, ExactSelectionError
+    expected = checked_expected_file(request['expected_file']) if 'expected_file' in request else None
     try:
         metadata = metadata_files(info) or []
     except BackendError as error:
@@ -65,14 +105,37 @@ def select_file(info, request, info_hash, resolution, protocol):
     selection = protocol.validate_torrent_resolution(request['request_id'], resolution, info_hash)
     title = ' '.join(str(info.get(k) or '')[:4096] for k in ('name', 'title'))
     title += ' ' + request.get('release_title', '')
+    releases = [str(info.get(k) or '')[:4096] for k in ('name', 'title')]
+    releases.append(request.get('release_title', ''))
     diagnostic['stage'] = 'binding'
     try:
         checked = resolve_episode_binding(binding, request['request_id'], selection,
             info_hash, season, episode)
         diagnostic['stage'] = 'selector'
-        file = select_exact_file(files, season, episode, title, info_hash, checked)
+        # Bonus/other-season branches in a covering pack cannot compete with
+        # the regular target. The same scope check is repeated on the winner.
+        try:
+            file = select_exact_file(files, season, episode, title, info_hash, checked)
+        except ExactSelectionError as selection_error:
+            import json
+            envelope = json.loads(binding) if binding else {}
+            if (selection_error.category == 'target_unresolved' and (season or episode)
+                    and isinstance(envelope, dict) and envelope.get('version') in (1, 2)):
+                scoped = []
+                for candidate in files:
+                    try:
+                        check_transport_episode_file(binding, candidate['path'], releases, require_work=False)
+                        scoped.append(candidate)
+                    except ValueError:
+                        pass
+                if not scoped or scoped == files:
+                    raise selection_error
+                file = select_exact_file(scoped, season, episode, title, info_hash, checked)
+            else:
+                raise
         diagnostic['stage'] = 'filename_identity'
-        check_transport_episode_file(binding, file['path'])
+        if season or episode:
+            check_transport_episode_file(binding, file['path'], releases)
     except ExactSelectionError as error:
         raise BackendError('TORRENT_EXACT_FILE_UNRESOLVED', error.category, diagnostic) from None
     except (ValueError, UnicodeError):
@@ -82,6 +145,9 @@ def select_file(info, request, info_hash, resolution, protocol):
             raise BackendError('TORRENT_EPISODE_FILE_IDENTITY_UNRESOLVED',
                                'target_unresolved', diagnostic) from None
         raise BackendError('TORRENT_EPISODE_BINDING_INVALID', 'invalid_binding', diagnostic) from None
+    if expected is not None and expected != dict(source_info_hash=info_hash,
+            torrent_file_id=file['id'], torrent_path=file['path'], torrent_file_bytes=file['length']):
+        raise BackendError('TORRENT_EXPECTED_FILE_MISMATCH', 'selected_file_missing', diagnostic)
     if not (season or episode):
         from bobbi_core.movie_identity import load_binding, binding_status, file_identity_status
         raw = request.get('movie_binding', '')
@@ -107,7 +173,7 @@ def manual_candidates(info, request, info_hash, resolution, protocol):
     """
     from bobbi_core.episode_identity import resolve_episode_binding
     from bobbi_core.torrent_selection import load_episode_binding, movie_candidates
-    from bobbi_core.torrent_episode_matching import _season_contexts
+    from bobbi_core.torrent_episode_matching import _path_season_contexts, _release_season_contexts
     from bobbi_core.filename_semantics import parse_filename
     from bobbi_core.movie_identity import load_binding, binding_status
     selection = protocol.validate_torrent_resolution(request['request_id'], resolution, info_hash)
@@ -126,10 +192,10 @@ def manual_candidates(info, request, info_hash, resolution, protocol):
                                           selection, info_hash, season, episode)
         binding = load_episode_binding(checked, info_hash, season, episode)
         import json
-        from bobbi_core.catalog_identity import normalized, release_title
+        from bobbi_core.episode_identity import check_transport_episode_file
         transport = json.loads(request['episode_binding']) if request.get('episode_binding') else {}
         season, episode = int(season), int(episode)
-        if not 0 < season <= 100000 or not 0 < episode <= 100000:
+        if not 0 <= season <= 100000 or not 0 < episode <= 100000:
             return []
         allowed = {episode}
         if binding:
@@ -137,17 +203,18 @@ def manual_candidates(info, request, info_hash, resolution, protocol):
         candidates = []
         for file in files:
             parsed = parse_filename(file['path'])
-            if isinstance(transport, dict) and transport.get('version') == 1:
+            if isinstance(transport, dict) and transport.get('version') in (1, 2):
                 try:
-                    name, year = release_title(re.split(r'[/\\]', file['path'])[-1], 'tv')
+                    check_transport_episode_file(request['episode_binding'], file['path'],
+                        [request.get('release_title', ''), str(info.get('name') or '')[:4096],
+                         str(info.get('title') or '')[:4096]], require_work=False)
                 except ValueError:
-                    name, year = '', None  # Unnamed file requires the human choice.
-                if (name and name not in {'video', 'episode', 'main', '正片'}
-                        and name not in {normalized(alias) for alias in transport['catalog_aliases']}):
                     continue
-                if year is not None and year != transport['catalog_year']:
-                    continue
-            if _season_contexts(file['path']) - {season}:
+            release_contexts = set()
+            for title in (request.get('release_title', ''), str(info.get('name') or '')[:4096],
+                          str(info.get('title') or '')[:4096]):
+                release_contexts.update(_release_season_contexts(title, season))
+            if (_path_season_contexts(file['path'], season) | release_contexts) - {season}:
                 continue
             if parsed.strong:
                 pairs = parsed.episode_pairs()
@@ -195,6 +262,7 @@ class Resolver:
 
     def _resolve(self, request):
         from bobbi_core.torrent_startup import DOWNLOAD_SECONDS, CONTROL_SECONDS
+        expected = checked_expected_file(request['expected_file']) if 'expected_file' in request else None
         owner, backend = self.owner, self.backend
         owner.active()
         backend.ready(owner.active)  # Fail before fetching a torrent or submitting an add.
@@ -214,6 +282,8 @@ class Resolver:
             raise BackendError('TORRENT_DOWNLOAD_TIMEOUT', 'torrent_download_timeout') from None
         except Exception:
             raise BackendError('TORRENT_DOWNLOAD_FAILED', 'torrent_download_failed') from None
+        if expected is not None and info_hash != expected['source_info_hash']:
+            raise BackendError('TORRENT_EXPECTED_FILE_MISMATCH', 'source_identity_mismatch')
         owner.active()
         try:
             resolution = owner.protocol.resolve_torrent(owner.request_id, locator, info_hash, info_hash)
@@ -231,7 +301,14 @@ class Resolver:
             if self.clock() >= deadline:
                 raise BackendError('TORRENT_METADATA_TIMEOUT', 'metadata_timeout')
             self.metadata_polls += 1
-            info = backend.status(info_hash, deadline, owner.active)
+            try:
+                info = backend.status(info_hash, deadline, owner.active)
+            except BackendError as error:
+                owner.active()
+                if (error.code in ('TORRENT_CONTROL_DEADLINE', 'TORRENT_HTTP_TIMEOUT')
+                        and self.clock() >= deadline):
+                    raise BackendError('TORRENT_METADATA_TIMEOUT', 'metadata_timeout') from None
+                raise
             if metadata_files(info):
                 break
             owner.wait(min(.5, max(0, deadline - self.clock())))
@@ -244,7 +321,7 @@ class Resolver:
             file = select_file(info, request, info_hash, resolution, owner.protocol)
         except BackendError as error:
             choose = getattr(owner, 'choose_file', None)
-            if error.category != 'target_unresolved' or choose is None:
+            if expected is not None or error.category != 'target_unresolved' or choose is None:
                 raise
             candidates = manual_candidates(info, request, info_hash, resolution, owner.protocol)
             if not candidates:
@@ -266,18 +343,41 @@ class Resolver:
         owner.progress('buffering')
         self.phase('buffering')
         deadline = self.clock() + backend.config['buffering_seconds']
+        def prefer_ready():
+            callback = getattr(owner, 'prepared_source_ready', None)
+            if (evidence == 'AUTO_VERIFIED_FILE' and callback
+                    and callback(request, info_hash, file, deadline)):
+                raise BackendError('TORRENT_PREPARED_READY', 'prepared_ready')
+        prefer_ready()
         backend.preload(info_hash, file['id'], deadline, owner.active)
         extended = False
+        poll_timeouts = 0
         for _ in range(1202):
             owner.active()
+            prefer_ready()
             if self.clock() >= deadline:
                 if not extended and self.wait_more():
                     extended = True
                     owner.active()
                     deadline = self.clock() + backend.config['buffering_seconds']
+                    poll_timeouts = 0
                 else:
                     raise BackendError('TORRENT_BUFFER_TIMEOUT', 'buffer_timeout')
-            info = backend.status(info_hash, deadline, owner.active)
+            try:
+                info = backend.status(info_hash, deadline, owner.active)
+            except BackendError as error:
+                owner.active()  # Cancellation/new selection always wins.
+                if (error.code in ('TORRENT_CONTROL_DEADLINE', 'TORRENT_HTTP_TIMEOUT')
+                        and self.clock() >= deadline):
+                    # A read started inside the budget can finish outside it.
+                    # Re-enter the same stage timeout/one manual-extension path,
+                    # never mislabel this as an engine failure or preload twice.
+                    continue
+                if error.code == 'TORRENT_HTTP_TIMEOUT' and poll_timeouts < 1:
+                    poll_timeouts += 1
+                    owner.wait(min(.5, max(0, deadline - self.clock())))
+                    continue  # One read-only status retry within the same budget.
+                raise
             selected_file_unchanged(info, file)
             done, total = info.get('preloaded_bytes', 0), info.get('preload_size', 0)
             # Both supported MatriX versions publish the configured preload

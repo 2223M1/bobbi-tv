@@ -167,7 +167,7 @@ def test_prepared_pack_keeps_season_context_across_multiple_advances(intake, mon
     queue = PreparationQueue(intake.ledger)
     accepted = [dict(queue.request(r, s), media_id=r['media_id'], version_key=r['version_key']) for r, s in targets]
     assert intake.finish(value['request_id'], {'tasks': accepted}, True)
-    assert [r['media_id'] for r, _ in targets] == ['tmdb:tv:1:s1:e2', 'tmdb:tv:1:s1:e3']
+    assert [r['media_id'] for r, _ in targets] == ['tmdb:tv:1:s1:e2', 'tmdb:tv:1:s1:e3', 'tmdb:tv:1:s1:e4']
     next_message = ready(targets[1], accepted[1], 'f' * 32)
     intake.accept_advance(next_message)
     next_value = intake.take()
@@ -202,4 +202,3 @@ def test_season_context_cannot_be_borrowed_from_unrelated_intent(intake, monkeyp
     assert value['media']['release_title'] != original['media']['release_title']
     with pytest.raises(ValueError):
         verified_intents(value, metadata, 'account', '/115open/inbox', selector, catalog)
-

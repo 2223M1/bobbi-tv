@@ -76,12 +76,21 @@ def _release_season_contexts(torrent_title, season):
 
 
 def _has_matching_season_context(path, torrent_title, season):
-    path_contexts = _season_contexts(path)
+    path_contexts = _path_season_contexts(path, season)
     title_contexts = _release_season_contexts(torrent_title, season)
     contexts = path_contexts | title_contexts
     if not contexts or season not in contexts:
         return False
     return path_contexts.issubset({season}) and title_contexts.issubset({season})
+
+
+def _path_season_contexts(path, season):
+    """A covering parent pack is not the selected file's season branch."""
+    parts = re.split(r'[/\\]', path)
+    contexts = _season_contexts(parts[-1])
+    for parent in parts[:-1]:
+        contexts.update(_release_season_contexts(parent, season))
+    return contexts
 
 
 def _has_episode_only_match(path, torrent_title, season, episode):
@@ -111,7 +120,7 @@ def match_episode_file(candidate_files, season, episode, torrent_title=""):
         path = candidate.get("path", "") if isinstance(candidate, dict) else ""
         if not isinstance(path, str):
             continue
-        contexts = _season_contexts(path) | _release_season_contexts(torrent_title, season)
+        contexts = _path_season_contexts(path, season) | _release_season_contexts(torrent_title, season)
         if contexts - {season}:
             continue
         strong_tokens = bool(parse_filename(path).strong)

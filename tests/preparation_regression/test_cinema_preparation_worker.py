@@ -188,3 +188,141 @@ def test_bare_queue_record_without_fresh_selection_cannot_submit(state):
     assert not p.submissions
 
 
+def test_probe_failure_keeps_only_bounded_numeric_metrics(state):
+    import json
+    from bobbi_core.media_probe import ProbeError
+    w, q, p, clock, task = state
+    execute(w, 'capacity')
+    execute(w, 'submit')
+    p.rows = [dict(info_hash='a' * 40, status=2, file_id='root', parent_id='parent')]
+    clock[0] += 5
+    execute(w, 'poll')
+    clock[0] += 15
+    def failed(*_):
+        error = ProbeError('BYTE_BUDGET')
+        error.metrics = dict(read_bytes=16777216, requests=2, seconds=2.123456,
+                             url='https://private/SECRET', raw='SECRET', probe_sha256='f' * 64)
+        raise error
+    w.qualifier = failed
+    metrics = dict(read_bytes=16777216, requests=2, seconds=2.123)
+    assert execute(w, 'qualify')['probe'] == metrics
+    detail = json.loads(q.db.execute("SELECT detail FROM audit WHERE action='preparation_io_failed' ORDER BY seq DESC LIMIT 1").fetchone()[0])
+    assert detail == dict(task=task, kind='qualify', error='ProbeError', code='BYTE_BUDGET', probe=metrics)
+    assert q.generation() == 0
+
+
+@pytest.mark.parametrize('metrics', [None, 'SECRET',
+    dict(read_bytes=True, requests=False, seconds=float('nan')),
+    dict(read_bytes=-1, requests=34, seconds=float('inf')),
+    dict(read_bytes=16777217, requests='2', seconds=-1),
+    dict(seconds=10**1000), dict(seconds=-(10**1000))])
+def test_probe_metrics_reject_malformed_observations(metrics):
+    from bobbi_core.preparation_worker import _probe_metrics
+    assert _probe_metrics(metrics) == {}
+
+
+@pytest.mark.parametrize('unavailable', ['error', 'none'])
+def test_unreadable_first_target_does_not_starve_other_pack_episodes_after_restart(state, unavailable):
+    import json
+    from bobbi_core.media_probe import ProbeError
+    w, q, p, clock, task = state
+    original = json.loads(q.db.execute('SELECT payload FROM preparation_targets WHERE task=?', (task,)).fetchone()[0])
+    for episode in (2, 3):
+        selected = dict(original, media_id='tmdb:tv:123:s1:e%d' % episode)
+        q.request({k: v for k, v in selected.items() if k != '_selection'},
+                  selection=selected['_selection'])
+    execute(w, 'capacity')
+    execute(w, 'submit')
+    p.rows = [dict(info_hash='a' * 40, status=2, file_id='root', parent_id='parent')]
+    clock[0] += 5
+    execute(w, 'poll')
+    clock[0] += 15
+    attempts = []
+    def failed(provider, request):
+        attempts.append(request['targets'][0]['media_id'])
+        if unavailable == 'error':
+            raise ProbeError('BYTE_BUDGET')
+        return None
+    for _ in range(4):
+        # Each owner restart must preserve fairness, not revive a permanently
+        # failing first item ahead of every remaining episode.
+        w = PreparationWorker(q, p, failed)
+        execute(w, 'qualify')
+        assert w.next_action() is None
+        clock[0] += 60
+    assert attempts == ['tmdb:tv:123:s1:e%d' % n for n in (1, 2, 3, 1)]
+    assert q.generation() == 0
+    assert len(p.submissions) == 1
+
+
+@pytest.mark.parametrize('cursor', [None, [], {}, ['x'], ['x', 'y', 'z'],
+                                  ['', 'v'], ['x' * 257, 'v'], [True, 'v']])
+def test_invalid_qualification_cursor_is_not_authority(state, cursor):
+    import json
+    from bobbi_core.preparation_worker import next_qualification_target
+    _, q, _, _, task = state
+    original = json.loads(q.db.execute('SELECT payload FROM preparation_targets WHERE task=?', (task,)).fetchone()[0])
+    assert next_qualification_target(q.db, task, {'_qualification_cursor': cursor}) == original
+
+
+def test_round_robin_wrap_and_insert_use_canonical_unbound_order_only(state):
+    import json
+    from bobbi_core.preparation_worker import next_qualification_target
+    _, q, _, _, task = state
+    original = json.loads(q.db.execute('SELECT payload FROM preparation_targets WHERE task=?', (task,)).fetchone()[0])
+    def add(n):
+        item = dict(original, media_id='tmdb:tv:123:s1:e%d' % n)
+        q.request({k: v for k, v in item.items() if k != '_selection'}, selection=item['_selection'])
+    def next_id(media):
+        return next_qualification_target(q.db, task,
+            {'_qualification_cursor': [media, original['version_key']]})['media_id']
+    add(3)
+    assert next_id(original['media_id']).endswith(':e3')
+    add(2)
+    assert next_id(original['media_id']).endswith(':e2')
+    q.db.execute('DELETE FROM preparation_targets WHERE task=? AND media_id=?', (task, original['media_id']))
+    assert next_id(original['media_id']).endswith(':e2')
+    assert next_id('tmdb:tv:123:s1:e9').endswith(':e2')
+    assert next_id('tmdb:tv:123:s1:e2').endswith(':e3')
+
+
+def test_bad_first_episode_does_not_prevent_real_ledger_publication_of_second(state):
+    import json
+    from bobbi_core.media_probe import ProbeError
+    w, q, p, clock, task = state
+    first = json.loads(q.db.execute('SELECT payload FROM preparation_targets WHERE task=?', (task,)).fetchone()[0])
+    second = dict(first, media_id='tmdb:tv:123:s1:e2')
+    selection = dict(first['_selection'], file=dict(id=8, path='e2.mkv', length=1000))
+    q.request({k: v for k, v in second.items() if k != '_selection'}, selection=selection)
+    execute(w, 'capacity')
+    execute(w, 'submit')
+    p.rows = [dict(info_hash='a' * 40, status=2, file_id='root', parent_id='parent')]
+    clock[0] += 5
+    execute(w, 'poll')
+    clock[0] += 15
+    def qualify(provider, request):
+        target = request['targets'][0]
+        if target['media_id'] == first['media_id']:
+            raise ProbeError('BYTE_BUDGET')
+        assert target['_selection']['file'] == selection['file']
+        file = dict(provider='115', account='a', file_id='cloud-e2',
+                    cloud_path='/115open/波比TV/e2.mkv', bytes=1000, kind='video',
+                    media_id=target['media_id'], version_key=target['version_key'])
+        return dict(file=file,
+            qualification=dict(file_id='cloud-e2', bytes=1000, version_key=target['version_key'],
+                source_binding=True, duration=1400, video_codec='hevc',
+                read_bytes=500, probe_sha256='f' * 64),
+            mapping=dict(source_info_hash='a' * 40, cloud_root_id='root', cloud_file_id='cloud-e2',
+                cloud_path=file['cloud_path'], torrent_path='e2.mkv', torrent_file_id=8, bytes=1000))
+    w.qualifier = qualify
+    assert execute(w, 'qualify')['ok'] is False
+    assert q.generation() == 0
+    clock[0] += 60
+    assert execute(w, 'qualify')['ok'] is True
+    assert q.generation() == 1
+    assert q.resolve('a', second['media_id'], second['version_key'])['file_id'] == 'cloud-e2'
+    assert q.resolve('a', first['media_id'], first['version_key']) is None
+    action = w.next_action()
+    assert action.request['targets'][0]['media_id'] == first['media_id']
+    assert len(p.submissions) == 1
+    assert q.status(task)['payload']['provider_observation']['state'] == 'finished'

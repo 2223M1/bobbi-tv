@@ -1,0 +1,129 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "the_conversation",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "The Conversation",
+        "tmdb_id": 592,
+        "kind": "movie",
+        "year": 1974
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 592,
+          "title": "The Conversation",
+          "original_title": "The Conversation",
+          "original_language": "en",
+          "release_date": "1974-04-12"
+        },
+        "route": "system-direct",
+        "checked_at": 1792617137.6581
+      },
+      "prior_request": "75df622a31304e3aacdf236270cfc637",
+      "started": 32384.968895571,
+      "home": {
+        "generation": 44,
+        "intent": 0,
+        "retired_generation": 44,
+        "observed_at": 32385.529094598
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 32385.529708012,
+      "picker": {
+        "window": 13001,
+        "generation": 45,
+        "intent": 0,
+        "tmdb_id": 592,
+        "kind": "movie"
+      },
+      "picker_observed_at": 32387.857238275,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "The.Conversation.1974.2160p.GBR.UHD.BluRay.REMUX.HEVC.DV.HDR.DTS-HD.MA.5.1-HDHIVE.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "70.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "c3177cccf1cd01a68917a06d872ec133c996eb65e6f94593c705465a76ca7894",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 32464.622561891,
+      "request_id": "3ba3b950423547549dcca9a9cfccf67a",
+      "selection_identity": "transport:e4117f055205fa759a02c3ea689ad001140a3550c1a916b64c0db20a3748ceff",
+      "native_instance": "4f75e456-7027-4755-ae3d-70481fd9fec1"
+    },
+    "sample": {
+      "wall": 32514.984945772,
+      "phase": null,
+      "native": {},
+      "cancelled": true,
+      "failure": null,
+      "prior_failure": null,
+      "labels": {
+        "Container(1000).ListItem.Label": "The.Conversation.1974.2160p.GBR.UHD.BluRay.REMUX.HEVC.DV.HDR.DTS-HD.MA.5.1-HDHIVE.mkv",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).NumItems": "24",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "1 个来源查询失败或超时",
+        "Window.Property(source_count)": "24"
+      },
+      "window": {
+        "currentwindow": {
+          "id": 13001,
+          "label": "立即关闭硬盘"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 32515.012448512,
+        "read_completed": 32515.012683845,
+        "raw": "No vdec.\n",
+        "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+        "channels": [],
+        "identity_known": false,
+        "primary_channel": null
+      },
+      "decoder_counters": {},
+      "decoder_counter_source": null,
+      "observation_times": {
+        "sample_started": 32514.965997127,
+        "decoder_started": 32515.012448512,
+        "decoder_completed": 32515.012683845,
+        "sample_completed": 32515.013086927
+      }
+    },
+    "gui": {
+      "window": 13001,
+      "generation": 51,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "{'tmdb_id': 592}",
+        "Window.Property(info.media_type)": "movie",
+        "Window.Property(info.mode)": "movies",
+        "Window.Property(info.query)": "The Conversation",
+        "Window.Property(info.tv_data)": "{}",
+        "Window.Property(info.year)": "1974",
+        "Window.Property(playback_error)": "1 个来源查询失败或超时",
+        "Window.Property(source_count)": "24",
+        "Window.Property(source_loading)": "false"
+      },
+      "modal": false,
+      "visible": [
+        13001,
+        12002
+      ],
+      "stable": true
+    }
+  },
+  "diagnostic_present": false,
+  "work": "the_conversation",
+  "operation": "inspect",
+  "attempt": 1,
+  "regression_attempt": false
+}

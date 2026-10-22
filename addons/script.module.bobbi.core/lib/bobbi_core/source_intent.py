@@ -14,6 +14,14 @@ from bobbi_core.release_identity import bound_family
 from bobbi_core.episode_identity import bind_selected_episode
 
 VIDEO_SUFFIXES = {'.mkv', '.mp4', '.m4v', '.avi', '.ts', '.m2ts', '.mov', '.webm'}
+NEXT_OFFSETS = (1, 2)
+
+
+def checked_target_offset(value):
+    """A service-derived window position, never recursive next discovery."""
+    if type(value) is not int or value not in NEXT_OFFSETS:
+        raise ValueError('Following target must be within the current two-episode window')
+    return value
 
 
 def mapped_family(media, path, catalog):
@@ -124,36 +132,37 @@ def verified_intents(body, metadata, account, destination, selector, catalog, in
         raise ValueError('Release version unavailable')
     version = hashlib.sha256(release_family.encode('utf-8')).hexdigest()
     targets = [(media['episode'], current, body['purpose'])]
-    if is_tv and include_next:
-        try:
-            following = choose(media['episode'] + 1)
-            next_media = dict(media, episode=media['episode'] + 1)
-            from bobbi_core.release_names import specifications
-            following_family = mapped_family(next_media, following['path'], catalog) if following else ''
-            same_family = release_family == following_family
-            if following and not same_family:
-                from bobbi_core.episode_revision import compatible_pair
-                same_family = compatible_pair(PurePosixPath(current['path']).name,
-                    PurePosixPath(following['path']).name, media['season'], media['episode'], version,
-                    hashlib.sha256(following_family.encode()).hexdigest())
-            audio_candidate = False
-            if following and not same_family:
-                from bobbi_core.release_identity import audio_capsule_candidate
-                if PurePosixPath(current['path']).parent == PurePosixPath(following['path']).parent:
-                    try:
-                        audio_candidate = (mapped_family(media, audio_capsule_candidate(PurePosixPath(current['path']).name), catalog)
-                            == mapped_family(next_media, audio_capsule_candidate(PurePosixPath(following['path']).name), catalog))
-                    except ValueError:
-                        pass
-            if (following and (same_family or audio_candidate)
-                    and specifications(current['path']) == specifications(following['path'])):
-                prove_work(next_media, following['path'], catalog)
-                targets.append((media['episode'] + 1, following, 'next'))
-        except ValueError:
-            # The exact current file was already independently proved. An
-            # ambiguous/foreign E+1 must not cancel preparation of that file;
-            # it remains absent from the result and cannot be published ready.
-            pass
+    if is_tv and include_next and body['purpose'] in ('current', 'manual'):
+        for offset in NEXT_OFFSETS:
+            try:
+                following = choose(media['episode'] + offset)
+                next_media = dict(media, episode=media['episode'] + offset)
+                from bobbi_core.release_names import specifications
+                following_family = mapped_family(next_media, following['path'], catalog) if following else ''
+                same_family = release_family == following_family
+                if following and not same_family and offset == 1:
+                    from bobbi_core.episode_revision import compatible_pair
+                    same_family = compatible_pair(PurePosixPath(current['path']).name,
+                        PurePosixPath(following['path']).name, media['season'], media['episode'], version,
+                        hashlib.sha256(following_family.encode()).hexdigest())
+                audio_candidate = False
+                if following and not same_family:
+                    from bobbi_core.release_identity import audio_capsule_candidate
+                    if PurePosixPath(current['path']).parent == PurePosixPath(following['path']).parent:
+                        try:
+                            audio_candidate = (mapped_family(media, audio_capsule_candidate(PurePosixPath(current['path']).name), catalog)
+                                == mapped_family(next_media, audio_capsule_candidate(PurePosixPath(following['path']).name), catalog))
+                        except ValueError:
+                            pass
+                if (following and (same_family or audio_candidate)
+                        and specifications(current['path']) == specifications(following['path'])):
+                    prove_work(next_media, following['path'], catalog)
+                    targets.append((media['episode'] + offset, following, 'next'))
+            except ValueError:
+                # Every position is proved against the actual current source.
+                # A gap/conflict cannot cancel the other targets or authorize
+                # skipping an episode. Only a new current intent moves this window.
+                pass
     result = []
     for episode, item, purpose in targets:
         # Each variant retains its OWN exact key. Preparing an additional-track

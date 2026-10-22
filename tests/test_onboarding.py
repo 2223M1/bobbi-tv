@@ -36,7 +36,7 @@ def test_library_status_counts_saved_sources_without_claiming_online():
 
 
 @pytest.fixture
-def setup_ui(monkeypatch):
+def setup_ui(monkeypatch, tmp_path):
     state = SimpleNamespace(choice=3, selected='selected.json', raw=None, called=[], dialogs=[],
                             error=None, closed=False, android=True, builtins=[], playing=False,
                             selections=[])
@@ -46,7 +46,8 @@ def setup_ui(monkeypatch):
     stream = SimpleNamespace(readBytes=lambda size: state.raw[:size], close=lambda: setattr(state, 'closed', True))
     monkeypatch.setitem(sys.modules, 'xbmc', xbmc)
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace())
-    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(File=lambda _: stream))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(File=lambda _: stream,
+        translatePath=lambda value: str(tmp_path/'profile'/value.rsplit('/', 1)[-1])))
     spec = importlib.util.spec_from_file_location('_bobbi_setup_test', ROOT / 'addons/script.bobbi.setup/default.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

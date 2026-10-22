@@ -88,23 +88,14 @@ def find_sources(ids, mode, season, episode, year, aliases, release_order,
 def resolve_source(source, item):
     if not enabled():
         raise RuntimeError('Juku 目录已关闭，请选择其他来源')
-    from bobbi_catalog.api import ShareError
     from bobbi_catalog.identity import media_key
     from bobbi_catalog.stream import resolve
     tv = item.get('tv_data') or {}
     key = media_key((item.get('ids') or {}).get('tmdb_id'), item.get('mode'),
                     tv.get('season'), tv.get('episode'))
-    try:
-        # Registers only the stable selected tuple. The resident ShareStream
-        # obtains/renews the actual URL using the user's own 115 authorization.
-        return resolve(source.url, source.guid, source.title, source.size, key, account=item.get('_account'))
-    except ShareError as error:
-        messages = {'login_required': '115 登录已失效，请重新授权自己的网盘账号',
-                    'share_unavailable': '这个分享已失效，请选择其他来源',
-                    'share_revoked': '这个分享已被取消，请选择其他来源',
-                    'identity_changed': '分享文件已变化，请刷新片源',
-                    'refresh_required': '请刷新片源后重新选择文件'}
-        raise RuntimeError(messages.get(error.code, '115 分享暂时无法解析，请重试或选择其他来源')) from None
+    # Registration only; preserve typed errors for the owning resolver UI.
+    # The resident stream obtains the URL using the user's own authorization.
+    return resolve(source.url, source.guid, source.title, source.size, key, account=item.get('_account'))
 
 
 def next_source(current, identity, cancelled, deadline):

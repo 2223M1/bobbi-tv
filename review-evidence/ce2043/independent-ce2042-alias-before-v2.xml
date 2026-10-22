@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="11" time="0.240" timestamp="2026-10-22T08:11:09.190762+08:00" hostname="Paimon"><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_richer_title_cache_cannot_override_fresher_multiseason_numbering[False]" time="0.007"><failure message="assert SingleSeason(tmdb=208891, episodes=13) is None">cache_reader = namespace(module=&lt;module 'lib.clients.tmdb.subtitle_scope' from 'D:\\AM6B-Project\\bobbi-tv-ce2029-selfaudit-20261021\...tive_titles': None}, 'tv_aliases_requested': False}}, save=&lt;function cache_reader.&lt;locals&gt;.save at 0x000002E0D39465C0&gt;)
+same_time = False
+
+    @pytest.mark.parametrize('same_time',[False,True])
+    def test_richer_title_cache_cannot_override_fresher_multiseason_numbering(cache_reader,same_time):
+        cache_reader.save(208891,fetched=999990,detail=tv_detail())
+        multi=tv_detail(alternative_titles=None,number_of_seasons=2,
+                        seasons=[dict(season_number=1,episode_count=13),dict(season_number=2,episode_count=12)])
+        cache_reader.save('208891',fetched=999990 if same_time else 999999,detail=multi)
+        evidence=cache_reader.module.cached_identity(208891)
+        assert evidence is not None  # Valid title aliases can remain useful.
+&gt;       assert evidence['scope'] is None
+E       assert SingleSeason(tmdb=208891, episodes=13) is None
+
+..\ce2029-results-20261021\test_independent_ce2042_subtitle_alias.py:22: AssertionError</failure></testcase><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_richer_title_cache_cannot_override_fresher_multiseason_numbering[True]" time="0.002"><failure message="assert SingleSeason(tmdb=208891, episodes=13) is None">cache_reader = namespace(module=&lt;module 'lib.clients.tmdb.subtitle_scope' from 'D:\\AM6B-Project\\bobbi-tv-ce2029-selfaudit-20261021\...tive_titles': None}, 'tv_aliases_requested': False}}, save=&lt;function cache_reader.&lt;locals&gt;.save at 0x000002E0D3985760&gt;)
+same_time = True
+
+    @pytest.mark.parametrize('same_time',[False,True])
+    def test_richer_title_cache_cannot_override_fresher_multiseason_numbering(cache_reader,same_time):
+        cache_reader.save(208891,fetched=999990,detail=tv_detail())
+        multi=tv_detail(alternative_titles=None,number_of_seasons=2,
+                        seasons=[dict(season_number=1,episode_count=13),dict(season_number=2,episode_count=12)])
+        cache_reader.save('208891',fetched=999990 if same_time else 999999,detail=multi)
+        evidence=cache_reader.module.cached_identity(208891)
+        assert evidence is not None  # Valid title aliases can remain useful.
+&gt;       assert evidence['scope'] is None
+E       assert SingleSeason(tmdb=208891, episodes=13) is None
+
+..\ce2029-results-20261021\test_independent_ce2042_subtitle_alias.py:22: AssertionError</failure></testcase><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_bad_timestamp_never_escapes_optional_cached_identity[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]" time="0.002"><failure message="OverflowError: int too large to convert to float">cache_reader = namespace(module=&lt;module 'lib.clients.tmdb.subtitle_scope' from 'D:\\AM6B-Project\\bobbi-tv-ce2029-selfaudit-20261021\...venly Delusion'}]}}, 'tv_aliases_requested': False}}, save=&lt;function cache_reader.&lt;locals&gt;.save at 0x000002E0D3986020&gt;)
+stamp = 100000000000000000...0000000000000000000
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000002E0D2E9F0E0&gt;
+
+    @pytest.mark.parametrize('stamp',[10**400,-10**400,float('nan'),float('inf'),float('-inf'),True,'999999'])
+    def test_bad_timestamp_never_escapes_optional_cached_identity(cache_reader,stamp,monkeypatch):
+        monkeypatch.setattr(cache_reader.module.time,'time',lambda:1000000.0)
+        cache_reader.save(208891,fetched=stamp)
+&gt;       assert cache_reader.module.cached_identity(208891) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..\ce2029-results-20261021\test_independent_ce2042_subtitle_alias.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+identifier = 208891
+
+    def cached_identity(identifier):
+        if type(identifier) is not int or identifier &lt;= 0:
+            return None
+        try:
+            from bobbi_core.subtitle_episode import from_details
+            from bobbi_core.episode_identity import catalog_identity
+            from bobbi_core.subtitle_candidates import titles_from_catalog
+            from lib.api.tmdbv3api.as_obj import AsObj
+            from lib.api.tmdbv3api.tmdb import TMDb
+            from lib.clients.tmdb.detail_cache import STALE, valid
+            from lib.db.cached import cache
+            records=[]
+            for key_id in (identifier,str(identifier)):
+                key='am6b_details283|'+json.dumps(['tv_details',{'id':key_id},TMDb().language],sort_keys=True)
+                saved=cache.get(key=key)
+                if not isinstance(saved,dict) or type(saved.get('fetched')) not in (int,float):
+                    continue
+&gt;               if not 0 &lt;= time.time()-saved['fetched'] &lt;= STALE:
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               OverflowError: int too large to convert to float
+
+addons\plugin.video.bobbi\lib\clients\tmdb\subtitle_scope.py:23: OverflowError</failure></testcase><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_bad_timestamp_never_escapes_optional_cached_identity[-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]" time="0.002"><failure message="OverflowError: int too large to convert to float">cache_reader = namespace(module=&lt;module 'lib.clients.tmdb.subtitle_scope' from 'D:\\AM6B-Project\\bobbi-tv-ce2029-selfaudit-20261021\...venly Delusion'}]}}, 'tv_aliases_requested': False}}, save=&lt;function cache_reader.&lt;locals&gt;.save at 0x000002E0D3986D40&gt;)
+stamp = -10000000000000000...0000000000000000000
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000002E0D2E9EB70&gt;
+
+    @pytest.mark.parametrize('stamp',[10**400,-10**400,float('nan'),float('inf'),float('-inf'),True,'999999'])
+    def test_bad_timestamp_never_escapes_optional_cached_identity(cache_reader,stamp,monkeypatch):
+        monkeypatch.setattr(cache_reader.module.time,'time',lambda:1000000.0)
+        cache_reader.save(208891,fetched=stamp)
+&gt;       assert cache_reader.module.cached_identity(208891) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..\ce2029-results-20261021\test_independent_ce2042_subtitle_alias.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+identifier = 208891
+
+    def cached_identity(identifier):
+        if type(identifier) is not int or identifier &lt;= 0:
+            return None
+        try:
+            from bobbi_core.subtitle_episode import from_details
+            from bobbi_core.episode_identity import catalog_identity
+            from bobbi_core.subtitle_candidates import titles_from_catalog
+            from lib.api.tmdbv3api.as_obj import AsObj
+            from lib.api.tmdbv3api.tmdb import TMDb
+            from lib.clients.tmdb.detail_cache import STALE, valid
+            from lib.db.cached import cache
+            records=[]
+            for key_id in (identifier,str(identifier)):
+                key='am6b_details283|'+json.dumps(['tv_details',{'id':key_id},TMDb().language],sort_keys=True)
+                saved=cache.get(key=key)
+                if not isinstance(saved,dict) or type(saved.get('fetched')) not in (int,float):
+                    continue
+&gt;               if not 0 &lt;= time.time()-saved['fetched'] &lt;= STALE:
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               OverflowError: int too large to convert to float
+
+addons\plugin.video.bobbi\lib\clients\tmdb\subtitle_scope.py:23: OverflowError</failure></testcase><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_bad_timestamp_never_escapes_optional_cached_identity[nan]" time="0.002" /><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_bad_timestamp_never_escapes_optional_cached_identity[inf]" time="0.002" /><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_bad_timestamp_never_escapes_optional_cached_identity[-inf]" time="0.002" /><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_bad_timestamp_never_escapes_optional_cached_identity[True]" time="0.002" /><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_bad_timestamp_never_escapes_optional_cached_identity[999999]" time="0.002" /><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_duplicate_alias_ids_across_precise_queries_do_not_redetail" time="0.038" /><testcase classname="ce2029-results-20261021.test_independent_ce2042_subtitle_alias" name="test_fullwidth_alias_normalization_does_not_drop_episode_conflict" time="0.000" /></testsuite></testsuites>

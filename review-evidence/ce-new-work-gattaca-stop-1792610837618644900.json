@@ -1,0 +1,134 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "gattaca",
+    "operation": "stop",
+    "stopped": true,
+    "before": {
+      "wall": 26082.729204885,
+      "phase": "AV_STARTED",
+      "native": {
+        "audio_intent": 0,
+        "file_identity": "transport:939b30906b7f9f8490cf3509ded1d4fe28c4659e9ff707ebd8dfa6decef8042e|transport:9e2fdcd24bb81a8a6999b0295a872cb44c416b783abf91574483c350b9ef5261",
+        "handoff_protocol": 1,
+        "handoff_restored": null,
+        "monotonic_us": 25946008693,
+        "native_instance": "6eaf2ff2-6efd-4a10-ab2f-f88eafcdb7fc",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "f75fbd03970e4840b607a21d3dce66f2",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "9e2fdcd24bb81a8a6999b0295a872cb44c416b783abf91574483c350b9ef5261",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 128.387,
+      "duration": 6389.44,
+      "currentaudiostream": {
+        "bitrate": 0,
+        "channels": 8,
+        "codec": "truehd_atmos",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "eng",
+        "name": "TrueHD 7.1 Atmos",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 6,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": "Chinese-PGS"
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 2160,
+        "index": 0,
+        "language": "eng",
+        "name": "",
+        "width": 3840
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 26082.818882603,
+        "read_completed": 26082.819336343,
+        "raw": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 3100\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+        "sha256": "ff9df6264c21271e48918cef25b35f19ef7c9ce009a9e624cf82ae659ce85b53",
+        "channels": [
+          {
+            "channel": 0,
+            "device": "vdec.h265.00",
+            "counters": {
+              "frame width": 3840,
+              "frame height": 2160,
+              "frame count": 3100,
+              "drop count": 0,
+              "fra err count": 0,
+              "hw err count": 0
+            }
+          }
+        ],
+        "identity_known": true,
+        "primary_channel": 0
+      },
+      "decoder_counters": {
+        "frame width": 3840,
+        "frame height": 2160,
+        "frame count": 3100,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "decoder_counter_source": {
+        "channel": 0,
+        "device": "vdec.h265.00"
+      },
+      "observation_times": {
+        "sample_started": 26082.719227356,
+        "player_time_started": 26082.732297691,
+        "player_time_completed": 26082.735223501,
+        "caching_started": 26082.735246834,
+        "caching_completed": 26082.771434156,
+        "decoder_started": 26082.818882603,
+        "decoder_completed": 26082.819336343,
+        "sample_completed": 26082.821169719
+      }
+    },
+    "seconds": 1.08
+  },
+  "diagnostic_present": false,
+  "work": "gattaca",
+  "operation": "stop",
+  "attempt": 5,
+  "regression_attempt": true
+}

@@ -25,6 +25,8 @@ def receipt(value):
         return None
     if any(type(value.get(key)) is not int or value[key] < 0 for key in ('sequence', 'user_intent')):
         return None
+    if 'audio_intent' in value and (type(value['audio_intent']) is not int or value['audio_intent'] < 0):
+        return None
     if type(value.get('paused')) is not bool:
         return None
     return deepcopy(value)
@@ -46,8 +48,9 @@ def _same_typed_value(left, right):
 def subtitle_snapshot_follows(current, previous):
     """Presentation-only live snapshot order, not an event/control admission.
 
-    Native BobiUserIntent/BobiSubtitleIntent and successful automatic file
-    application update these four fields without BobiEvent/sequence. Everything
+    Native user/subtitle/audio intent and successful automatic file application
+    update live fields without BobiEvent/sequence. The audio counter is optional
+    for older F9 players, but cannot appear/disappear within one instance. Everything
     else at the same event sequence must remain byte-for-byte equivalent as
     structured data. ReceiptHistory deliberately keeps its immutable events.
     """
@@ -72,9 +75,11 @@ def subtitle_snapshot_follows(current, previous):
             or any(type(previous.get(key)) is not int or previous[key] < 0
                    for key in ('subtitle_intent', 'subtitle_auto_intent'))
             or current['subtitle_auto_intent'] != previous['subtitle_auto_intent']
+            or ('audio_intent' in current) != ('audio_intent' in previous)
+            or ('audio_intent' in current and current['audio_intent'] < previous['audio_intent'])
             or any(current[key] < previous[key] for key in ('user_intent', 'subtitle_intent'))):
         return False
-    live = {'user_intent', 'subtitle_intent', 'subtitle_file_applied', 'subtitle_file_sha256'}
+    live = {'user_intent', 'subtitle_intent', 'audio_intent', 'subtitle_file_applied', 'subtitle_file_sha256'}
     if (current['sequence'] == previous['sequence']
             and not _same_typed_value(
                 {key: value for key, value in current.items() if key not in live},

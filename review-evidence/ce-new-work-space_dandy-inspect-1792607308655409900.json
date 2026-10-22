@@ -1,0 +1,208 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "space_dandy",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Space Dandy",
+        "tmdb_id": 60874,
+        "kind": "tv",
+        "year": 2014,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 60874,
+          "name": "Space Dandy",
+          "original_name": "スペース☆ダンディ",
+          "original_language": "ja",
+          "first_air_date": "2014-01-04"
+        },
+        "route": "system-direct",
+        "checked_at": 1792607059.8783975
+      },
+      "prior_request": "b0b696b0e47d48f5a029d847ecfd8a12",
+      "started": 22307.189192522,
+      "home": {
+        "generation": 55,
+        "intent": 0,
+        "retired_generation": 55,
+        "observed_at": 22307.790031104
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 22307.790641197,
+      "picker": {
+        "window": 13001,
+        "generation": 56,
+        "intent": 0,
+        "tmdb_id": 60874,
+        "kind": "tv"
+      },
+      "picker_observed_at": 22321.477536045,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[hchcsen] Space Dandy (2014) - Season 1 (S01E01-E26) (BD 1080p HEVC x265 Opus 2.0) [Dual-Audio] | Space☆Dandy",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "27.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "eeb268d16a169541f0d89614fa0a5d36aaeee5ac85ee1766ff61ae7f8bc92d5c",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 22424.606044017,
+      "request_id": "5d237515036f45c9a283a84dcda8022c",
+      "selection_identity": "bt:ea3ad84ae0ae2c340d835eb8a88709318fe24ef6",
+      "native_instance": "b8fe4150-5637-4898-9c50-9fa76b93b5e5",
+      "first_av_observed_at": 22554.946969426,
+      "select_to_av_observed_seconds": 130.3409254090002
+    },
+    "sample": {
+      "wall": 22554.948105351,
+      "phase": "AV_STARTED",
+      "native": {
+        "audio_intent": 0,
+        "file_identity": "bt:ea3ad84ae0ae2c340d835eb8a88709318fe24ef6|89e5b1df906bf74e8bd37da95bcf2e8008af5a8745f1c1bc6e5dde0530474d8a",
+        "handoff_protocol": 1,
+        "handoff_restored": null,
+        "monotonic_us": 22485584292,
+        "native_instance": "b8fe4150-5637-4898-9c50-9fa76b93b5e5",
+        "open_epoch": 5,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "5d237515036f45c9a283a84dcda8022c",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "dd124382973e71e12aa5508e6ff159f22df6f5b3fb4f174eb2b9df8848546ce1",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 34.199,
+      "duration": 1452.127,
+      "currentaudiostream": {
+        "bitrate": 123098,
+        "channels": 2,
+        "codec": "opus",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "jpn",
+        "name": "",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 0,
+        "isdefault": true,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "eng",
+        "name": "Full "
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1080,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": false,
+      "caching": true,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "已匹配字幕候选但未能加载 · 可手动选择",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 22555.028492406,
+        "read_completed": 22555.028725491,
+        "raw": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 841\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+        "sha256": "0737cf097ccd0fa889e6effd63d32cf98acf13929b9786bfae07421b09d982dc",
+        "channels": [
+          {
+            "channel": 0,
+            "device": "vdec.h265.00",
+            "counters": {
+              "frame width": 1920,
+              "frame height": 1080,
+              "frame count": 841,
+              "drop count": 0,
+              "fra err count": 0,
+              "hw err count": 0
+            }
+          }
+        ],
+        "identity_known": true,
+        "primary_channel": 0
+      },
+      "decoder_counters": {
+        "frame width": 1920,
+        "frame height": 1080,
+        "frame count": 841,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "decoder_counter_source": {
+        "channel": 0,
+        "device": "vdec.h265.00"
+      },
+      "observation_times": {
+        "sample_started": 22554.927534282,
+        "player_time_started": 22554.950442952,
+        "player_time_completed": 22554.957397712,
+        "caching_started": 22554.957418379,
+        "caching_completed": 22554.978636953,
+        "decoder_started": 22555.028492406,
+        "decoder_completed": 22555.028725491,
+        "sample_completed": 22555.029945167
+      }
+    },
+    "gui": {
+      "window": 12005,
+      "generation": 65,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "",
+        "Window.Property(info.media_type)": "",
+        "Window.Property(info.mode)": "",
+        "Window.Property(info.query)": "",
+        "Window.Property(info.tv_data)": "",
+        "Window.Property(info.year)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "",
+        "Window.Property(source_loading)": ""
+      },
+      "modal": false,
+      "visible": [],
+      "stable": true
+    }
+  },
+  "diagnostic_present": false,
+  "work": "space_dandy",
+  "operation": "inspect",
+  "attempt": 1,
+  "regression_attempt": false
+}

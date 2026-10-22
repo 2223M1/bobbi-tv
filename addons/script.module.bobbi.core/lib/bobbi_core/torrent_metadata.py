@@ -14,6 +14,15 @@ from urllib.parse import urlsplit
 from bobbi_core.metadata_cache import BACKEND, LIMIT, normalized
 
 
+class MetadataUnavailable(ValueError):
+    """Fixed diagnostics only; never retain response bodies or locators."""
+    def __init__(self, status):
+        super().__init__('Registered torrent/backend unavailable')
+        self.reason = ('torrent_missing' if status == 404 else
+                       'torrent_authentication' if status in (401, 403) else
+                       'torrent_backend' if 500 <= status < 600 else 'torrent_http_status')
+
+
 def registered_metadata(session, endpoint, info_hash, cancelled=lambda: False,
                         clock=time.monotonic, sleep=time.sleep, budget=8.0):
     parsed = urlsplit(endpoint)
@@ -37,7 +46,7 @@ def registered_metadata(session, endpoint, info_hash, cancelled=lambda: False,
     def read(response, limit):
         nonlocal total
         if response.status_code != 200:
-            raise ValueError('Registered torrent/backend unavailable')
+            raise MetadataUnavailable(response.status_code)
         raw = bytearray()
         for chunk in response.iter_content(16384):
             remaining()

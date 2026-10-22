@@ -538,6 +538,13 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
     except (ImportError, OSError, ValueError, RuntimeError):
         raise RuntimeError('尚未配置可用的本机 BT 后台；未启动旧插件或更换片源。') from None
 
+    expected_file_param = ''
+    if '_bt_next_selected' in (data or {}):
+        from bobbi_torrent.resolver import checked_expected_file
+        serialized = json.dumps(data['_bt_next_selected'], ensure_ascii=False, separators=(',', ':'))
+        checked_expected_file(serialized)
+        expected_file_param = '&expected_file=' + quote(serialized)
+
     movie_binding = _jacktorr_movie_binding(data or {})
     _save_jacktorr_playback_metadata(magnet, data or {})
     poster = (data or {}).get("poster") or ""
@@ -588,17 +595,25 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
             catalog = _jacktorr_cached_tv_identity((data or {}).get('ids'), episode_diagnostic, require_anime=True)
             binding = bind_catalog_range_episode((data or {}).get('ids'), tv_data, request_id,
                 snapshot['desired']['selection_identity'], magnet or url, (data or {}).get('info_hash'), catalog=catalog)
-        elif (not binding and (not (data or {}).get('info_hash')
-                or _jacktorr_base32_transport_hash((data or {}).get('info_hash'), magnet or url))
-                and (data or {}).get('mode') == 'tv'):
+        elif (data or {}).get('mode') == 'tv':
             from lib.cinema.playback_request import owned_state
-            from lib.utils.player.episode_identity import bind_transport_episode
+            from lib.utils.player.episode_identity import (bind_transport_episode,
+                bind_selected_episode, bind_catalog_episode)
             snapshot = owned_state(request_id)
             selection_identity = snapshot['desired']['selection_identity']
             catalog = _jacktorr_cached_tv_identity((data or {}).get('ids'), episode_diagnostic)
-            binding = bind_transport_episode((data or {}).get('ids'), tv_data, request_id,
-                selection_identity, magnet or url,
-                catalog=catalog)
+            if selection_identity.startswith('bt:'):
+                numbering = binding if isinstance(binding, dict) and 'version' not in binding else None
+                if numbering is None:
+                    numbering = bind_selected_episode((data or {}).get('ids'), tv_data, (data or {}).get('info_hash'))
+                binding = bind_catalog_episode((data or {}).get('ids'), tv_data, request_id,
+                    selection_identity, (data or {}).get('info_hash'), catalog, numbering) or binding
+            elif not binding:
+                binding = bind_transport_episode((data or {}).get('ids'), tv_data, request_id,
+                    selection_identity, magnet or url, catalog=catalog)
+                if binding is None:
+                    binding = bind_catalog_episode((data or {}).get('ids'), tv_data, request_id,
+                        selection_identity, '', catalog)
         if isinstance(binding, dict):
             serialized = json.dumps(binding, ensure_ascii=False, separators=(",", ":"))
             if len(serialized.encode("utf-8")) <= 2048:
@@ -610,6 +625,7 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
             _log_jacktorr_episode_binding(request_id, binding_present, binding, episode_diagnostic)
         if movie_binding:
             exact_params += '&movie_binding=' + quote(movie_binding)
+    exact_params += expected_file_param
     if magnet:
         _url = f"plugin://plugin.video.bobbi.torrent/play_magnet?magnet={quote(magnet)}{poster_param}{title_param}{description_param}{category_param}{season_episode_param}{release_param}{exact_params}"
     elif url:

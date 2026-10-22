@@ -45,19 +45,12 @@ def find_sources(ids, mode, season, episode, year, aliases, release_order, deadl
 def resolve_source(source, item):
     if not enabled():
         raise RuntimeError('115 目录已关闭，请选择其他来源')
-    from bobbi_catalog.api import ShareError
-    try:
-        from bobbi_catalog.stream import resolve
-        from bobbi_catalog.identity import media_key
-        tv = item.get('tv_data') or {}
-        key = media_key((item.get('ids') or {}).get('tmdb_id'), item.get('mode'), tv.get('season'), tv.get('episode'))
-        url = resolve(source.url, source.guid, source.title, source.size, key, account=item.get('_account'))
-    except ShareError as error:
-        messages = {'login_required': '115 分享登录已失效，请在影院设置重新扫码',
-                    'share_unavailable': '这个分享已失效或访问码已变化，请选其他来源',
-                    'identity_changed': '分享文件已变化，请刷新片源',
-                    'refresh_required': '请刷新片源后重新选择 115 目录文件'}
-        raise RuntimeError(messages.get(error.code, '115 目录暂时无法解析，请重试或选择其他来源')) from None
+    from bobbi_catalog.stream import resolve
+    from bobbi_catalog.identity import media_key
+    tv = item.get('tv_data') or {}
+    key = media_key((item.get('ids') or {}).get('tmdb_id'), item.get('mode'), tv.get('season'), tv.get('episode'))
+    # Preserve typed errors; localization belongs to the current resolver UI.
+    url = resolve(source.url, source.guid, source.title, source.size, key, account=item.get('_account'))
     # Hash-only evidence can be compared to the native selected-file receipt.
     # Never persist the signed address in provider/search/quick-play caches.
     try:

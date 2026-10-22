@@ -107,6 +107,23 @@ class AccountManager:
         with self.lock:
             return expected == self._scope
 
+    def current_guard(self, expected):
+        """Capture validated scope, not a cached authorization decision.
+
+        The private copy cannot be retargeted by mutating the caller's dictionary.
+        Every invocation still compares the complete authoritative scope under
+        the same generation lock; listener failures cannot keep an old guard live.
+        """
+        expected = validate_snapshot(expected)
+        with self.lock:
+            if expected != self._scope:
+                raise AccountError('ACCOUNT_CHANGED')
+
+        def current():
+            with self.lock:
+                return expected == self._scope
+        return current
+
     def require_current(self, expected, authenticated=True):
         expected = validate_snapshot(expected, authenticated=authenticated)
         with self.lock:

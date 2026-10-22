@@ -133,6 +133,7 @@ class Backend:
 
     def request(self, method, path, deadline, active, body=None, files=None, preload=False):
         import requests
+        from urllib3.exceptions import ReadTimeoutError
         active()
         remaining = deadline - self.clock()
         if remaining <= 0:
@@ -160,13 +161,18 @@ class Backend:
                         raise BackendError('TORRENT_RESPONSE_LIMIT')
                     chunks.append(chunk)
                 raw = b''.join(chunks)
-        except requests.exceptions.ReadTimeout:
+        except requests.exceptions.RequestException as error:
             active()
-            if preload:
-                # The server can still be preloading. Poll; never submit again.
-                return None
-            raise BackendError('TORRENT_HTTP_TIMEOUT') from None
-        except requests.exceptions.RequestException:
+            # requests wraps an urllib3 body-read timeout as ConnectionError.
+            # Inspect its typed cause, never exception text or every reset.
+            timed_out = (isinstance(error, requests.exceptions.ReadTimeout)
+                or (isinstance(error, requests.exceptions.ConnectionError)
+                    and len(error.args) == 1 and isinstance(error.args[0], ReadTimeoutError)))
+            if timed_out:
+                if preload:
+                    # The server can still be preloading. Poll; never resubmit.
+                    return None
+                raise BackendError('TORRENT_HTTP_TIMEOUT') from None
             raise BackendError('TORRENT_HTTP_UNAVAILABLE') from None
         active()
         if self.clock() >= deadline:

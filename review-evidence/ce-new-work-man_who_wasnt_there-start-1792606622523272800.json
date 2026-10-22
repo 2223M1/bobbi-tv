@@ -1,0 +1,296 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "man_who_wasnt_there",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "The Man Who Wasn't There",
+        "tmdb_id": 10778,
+        "kind": "movie",
+        "year": 2001
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 10778,
+          "title": "The Man Who Wasn't There",
+          "original_title": "The Man Who Wasn't There",
+          "original_language": "en",
+          "release_date": "2001-10-26"
+        },
+        "route": "system-direct",
+        "checked_at": 1792606610.1123714
+      },
+      "prior_request": "2a73297274994d4abda844a7e7fe9ee9",
+      "started": 21857.423154269,
+      "home": {
+        "generation": 36,
+        "intent": 0,
+        "retired_generation": 36,
+        "observed_at": 21857.975941186
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 21857.976671494,
+      "picker": {
+        "window": 13001,
+        "generation": 38,
+        "intent": 0,
+        "tmdb_id": 10778,
+        "kind": "movie"
+      },
+      "picker_observed_at": 21860.250106304
+    },
+    "samples": [
+      {
+        "wall": 21858.174331257,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21858.201461379,
+          "read_completed": 21858.201701148,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 21858.152799707,
+          "decoder_started": 21858.201461379,
+          "decoder_completed": 21858.201701148,
+          "sample_completed": 21858.202114598
+        }
+      },
+      {
+        "wall": 21860.26433718,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21860.283484154,
+          "read_completed": 21860.283753008,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 21860.250721936,
+          "decoder_started": 21860.283484154,
+          "decoder_completed": 21860.283753008,
+          "sample_completed": 21860.283850224
+        }
+      },
+      {
+        "wall": 21862.390348975,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21862.420619469,
+          "read_completed": 21862.420842778,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 21862.353141814,
+          "decoder_started": 21862.420619469,
+          "decoder_completed": 21862.420842778,
+          "sample_completed": 21862.420926034
+        }
+      },
+      {
+        "wall": 21864.504343065,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "The.Man.Who.Wasn_t.There.2001.缺席的人.双语字幕.HR-HDTV.AC3.1024x556.x264-人人影视制作.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "1",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "1"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21864.539529506,
+          "read_completed": 21864.539950164,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 21864.487395708,
+          "decoder_started": 21864.539529506,
+          "decoder_completed": 21864.539950164,
+          "sample_completed": 21864.540211309
+        }
+      },
+      {
+        "wall": 21866.649347773,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "The.Man.Who.Wasn_t.There.2001.缺席的人.双语字幕.HR-HDTV.AC3.1024x556.x264-人人影视制作.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "6",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "6"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21866.669976196,
+          "read_completed": 21866.670224048,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 21866.623158171,
+          "decoder_started": 21866.669976196,
+          "decoder_completed": 21866.670224048,
+          "sample_completed": 21866.670314097
+        }
+      },
+      {
+        "wall": 21868.869660817,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "The.Man.Who.Wasn_t.There.2001.缺席的人.双语字幕.HR-HDTV.AC3.1024x556.x264-人人影视制作.mkv",
+          "Container(1000).ListItem.Property(source_site)": "115 网盘",
+          "Container(1000).NumItems": "14",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "14"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21868.894527094,
+          "read_completed": 21868.894735318,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 21868.840337199,
+          "decoder_started": 21868.894527094,
+          "decoder_completed": 21868.894735318,
+          "sample_completed": 21868.894816991
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "man_who_wasnt_there",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

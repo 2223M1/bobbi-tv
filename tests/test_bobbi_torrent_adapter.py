@@ -32,9 +32,16 @@ def config(**changes):
         metadata_seconds=2, buffering_seconds=2), **changes)
 
 
-def request(**changes):
-    return dict(dict(action='play_magnet', selection_policy='exact', request_id=RID,
+def request(catalog=True, **changes):
+    value = dict(dict(action='play_magnet', selection_policy='exact', request_id=RID,
         magnet=MAGNET, season='1', episode='1', title='Series', release_title='Series S01'), **changes)
+    if catalog and 'episode_binding' not in changes:
+        from episode_request_fixture import produced_request
+        produced = produced_request(value['request_id'], HASH, value['season'], value['episode'],
+            value['release_title'], locator=value.get('url') if value['action'] == 'play_url' else value['magnet'],
+            action=value['action'])
+        value['episode_binding'] = produced['episode_binding']
+    return value
 
 
 def status(file=None, ready=True):
@@ -219,6 +226,71 @@ def test_buffer_user_extension_does_not_resubmit_or_switch_file():
     assert len([row for row in session.calls if '/stream?' in row[1]]) == 1
 
 
+@pytest.mark.parametrize('continue_waiting', [False, True])
+def test_buffer_status_crossing_deadline_keeps_stage_and_manual_extension(continue_waiting):
+    clock, prompts = Clock(), []
+    class SlowStatus(Response):
+        def iter_content(self, chunk_size):
+            clock.now += 2.1
+            yield self.raw
+    owner = FakeOwner(clock)
+    owner.wait_for_buffer = lambda detail: prompts.append(detail) or continue_waiting
+    session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}),
+        Response(status()), Response(b''), SlowStatus(status(ready=False)), Response(status())])
+    resolver = Resolver(Backend(config(), session, clock), owner, Session([]), clock)
+    if continue_waiting:
+        assert resolver.resolve(request())['file'] == FILE
+    else:
+        with pytest.raises(BackendError) as error:
+            resolver.resolve(request())
+        assert error.value.category == 'buffer_timeout'
+        assert error.value.code == 'TORRENT_BUFFER_TIMEOUT'
+    assert len(prompts) == 1
+    assert sum(row[2].get('json', {}).get('action') == 'add' for row in session.calls) == 1
+    assert sum('/stream?' in row[1] for row in session.calls) == 1
+
+
+@pytest.mark.parametrize('body_timeout', [False, True])
+def test_one_transient_readonly_buffer_poll_timeout_can_recover_without_resubmit(body_timeout):
+    from urllib3.exceptions import ReadTimeoutError
+    timeout = (requests.exceptions.ConnectionError(ReadTimeoutError(None, '/torrents', 'body stalled'))
+               if body_timeout else requests.exceptions.ReadTimeout())
+    clock, owner = Clock(), None
+    owner = FakeOwner(clock)
+    session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}),
+        Response(status()), Response(b''), timeout, Response(status())])
+    assert Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(request())['file'] == FILE
+    assert sum('/stream?' in row[1] for row in session.calls) == 1
+    assert clock.now <= 2
+
+
+def test_readonly_buffer_poll_retry_is_not_unbounded():
+    clock = Clock()
+    owner = FakeOwner(clock)
+    session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}),
+        Response(status()), Response(b''), requests.exceptions.ReadTimeout(),
+        requests.exceptions.ReadTimeout(), Response(status())])
+    with pytest.raises(BackendError, match='TORRENT_HTTP_TIMEOUT'):
+        Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(request())
+    assert len(session.calls) == 6
+
+
+def test_metadata_status_crossing_deadline_reports_metadata_timeout():
+    clock = Clock()
+    class SlowMetadata(Response):
+        def iter_content(self, chunk_size):
+            clock.now += 2.1
+            yield self.raw
+    owner = FakeOwner(clock)
+    session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}),
+                       SlowMetadata(dict(hash=HASH, file_stats=[]))])
+    backend = Backend(config(), session, clock)
+    with pytest.raises(BackendError) as error:
+        Resolver(backend, owner, Session([]), clock).resolve(request())
+    assert error.value.category == 'metadata_timeout'
+    assert not backend.preload_attempted
+
+
 def test_no_config_or_service_is_not_a_source_retry():
     clock = Clock()
     owner = FakeOwner(clock)
@@ -247,14 +319,16 @@ def test_ready_complete_exact_episode_pipeline():
 
 
 def test_http_torrent_hash_resolution_without_provider_infohash(monkeypatch):
+    from bobbi_core.playback_request import digest
     clock = Clock()
-    owner = FakeOwner(clock, selected='transport:' + 'f' * 64)
+    locator = 'https://example.test/chosen.torrent'
+    owner = FakeOwner(clock, selected='transport:' + digest(locator))
     session = Session([Response(b'MatriX.144.1'), Response({'hash': HASH}),
                        Response(status()), Response(b''), Response(status())])
     monkeypatch.setattr('bobbi_torrent.resolver.resolve_http',
         lambda *args: (b'd4:infod4:name1:aee', HASH, ''))
     result = Resolver(Backend(config(), session, clock), owner, Session([]), clock).resolve(
-        request(action='play_url', url='https://example.test/chosen.torrent'))
+        request(action='play_url', url=locator))
     assert result['info_hash'] == HASH
     assert session.calls[1][1].endswith('/torrent/upload')
     assert not session.calls[1][2].get('json')
@@ -474,7 +548,7 @@ def test_transport_catalog_binding_selects_correct_anime_episode():
     file = dict(FILE, path='[SweetSub&LoliHouse] Flip Flappers - 01 [BDRip 1080p HEVC].mkv')
     p = SimpleNamespace(validate_torrent_resolution=lambda *args: identity)
     q = request(episode_binding=json.dumps(binding, ensure_ascii=False), release_title='Flip Flappers S01')
-    assert select_file(status(file), q, HASH, {}, p) == file
+    assert select_file(dict(status(file), name='Flip Flappers S01'), q, HASH, {}, p) == file
 
 
 @pytest.mark.parametrize('cancel_call', [2, 3, 4, 5])

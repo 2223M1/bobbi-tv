@@ -24,7 +24,7 @@ _RANGE = re.compile(
 _PIXEL_FORMAT = r'yuv(?:420|422|444)p(?:(?:9|10|12|14|16)(?:le|be)?)?'
 _TECH = re.compile(
     r'(?i)(?:(?:2160|1080|720|576|480)[pi]|[48]k|\d{3,4}x\d{3,4}|'
-    r'web(?:-?dl|rip)?|blu-?ray|bd(?:rip)?|h\.?26[45]|x26[45]|'
+    r'web(?:-?dl|rip)?|blu-?ray|bd(?:rip|remux)?|remux|h\.?26[45]|x26[45]|'
     r'(?:hevc|avc)(?:-(?:(?:8|10|12)bits?|' + _PIXEL_FORMAT + r'))?|'
     + _PIXEL_FORMAT + r'|av1|aac|flac|opus|ac3|eac3|'
     r'dts|truehd|mp3|pcm|[1-8]\.[01]|(?:8|10|12)-?bits?|ma10p|hi10p|'

@@ -92,6 +92,18 @@ elif MODE=='stage':
 elif MODE=='open':
  if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
  builtin('RunScript(script.bobbi.start)')
+elif MODE=='wait-install':
+ until=time.monotonic()+25
+ while True:
+  observed=view()
+  installation=observed.get('installation',{})
+  complete=(installation.get('sequence')==EXPECTED_SEQUENCE and installation.get('phase')=='complete'
+    and not installation.get('host_pending'))
+  if complete or time.monotonic()>=until:break
+  time.sleep(.5)
+ observed['installation_complete']=complete
+ observed['expected_sequence']=EXPECTED_SEQUENCE
+ print(json.dumps(observed));raise SystemExit(0)
 elif MODE=='choose':
  current=view()
  if current['players'] or current['gui']['currentwindow']['id']!=EXPECTED_WINDOW:raise RuntimeError('UI_CHANGED')
@@ -108,7 +120,11 @@ elif MODE=='choose':
   if focused['gui']['currentcontrol']['label']!=CHOICE_LABEL:raise RuntimeError('LIST_CHOICE_NOT_CONFIRMED')
  else:
   focused=view()
-  if focused['gui']['currentcontrol']['label']!=focused['labels'].get('Control.GetLabel(%d)'%CONTROL):raise RuntimeError('FOCUS_NOT_CONFIRMED')
+  if (not CHOICE_LABEL or focused['gui']['currentcontrol']['label']!=CHOICE_LABEL
+      or focused['labels'].get('Control.GetLabel(%d)'%CONTROL)!=CHOICE_LABEL):raise RuntimeError('FOCUS_NOT_CONFIRMED')
+ if (focused['players'] or focused['gui']['currentwindow']['id']!=EXPECTED_WINDOW
+     or not any(EXPECTED_LABEL in str(value) for value in focused['labels'].values())):
+  raise RuntimeError('DIALOG_CHANGED_BEFORE_SELECT')
  rpc('Input.Select')
 elif MODE=='back':
  if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
@@ -124,23 +140,29 @@ elif MODE=='restart-idle':
    if time.monotonic()>=until:raise
    time.sleep(.5)
 time.sleep(.3)
-print(json.dumps(view()))
+result=view()
+if MODE=='choose':
+ result['input_receipt']=dict(state='action_acknowledged',installation_completion_proved=False,
+  window=EXPECTED_WINDOW,heading=EXPECTED_LABEL,control=CONTROL,index=INDEX,choice=CHOICE_LABEL)
+print(json.dumps(result))
 '''
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True)
-    p.add_argument('--mode',choices=('stage','open','view','choose','back','restart-idle','diagnose','native-stack','trace-on','trace-read','stop-smoke'),required=True)
+    p.add_argument('--mode',choices=('stage','open','view','choose','wait-install','back','restart-idle','diagnose','native-stack','trace-on','trace-read','stop-smoke'),required=True)
     p.add_argument('--smoke-run')
     p.add_argument('--run-id',required=True);p.add_argument('--entry',type=Path)
     p.add_argument('--window',type=int);p.add_argument('--label');p.add_argument('--control',type=int);p.add_argument('--index',type=int);p.add_argument('--choice-label')
+    p.add_argument('--expect-sequence',type=int)
     a=p.parse_args()
     if not re.fullmatch('[0-9]{8}-[0-9]{6}',a.run_id):p.error('Exact timestamp required')
     if a.mode=='stage':
         from audit_ce_entry import audit
         audit(a.entry)
     if a.mode=='choose' and (a.window is None or not a.label or a.control is None):p.error('Observed dialog identity required')
-    if a.mode=='choose' and a.index is not None and not a.choice_label:p.error('Observed choice label required')
+    if a.mode=='choose' and not a.choice_label:p.error('Observed choice label required')
+    if a.mode=='wait-install' and (a.expect_sequence is None or a.expect_sequence<1):p.error('Expected installation sequence required')
     sys.path.insert(0,str(a.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('entry_wire',a.transport_source/'ui-redesign/tools/device_transport.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
     run='/storage/.kodi/temp/bobbi-ce-entry-'+a.run_id
@@ -150,7 +172,7 @@ def main():
             with c.open_sftp() as s:
                 s.mkdir(run,mode=0o700);s.put(str(a.entry),run+'/entry.zip')
         values=dict(RUN=run,MODE=a.mode,EXPECTED=hashlib.sha256(a.entry.read_bytes()).hexdigest() if a.entry else None,
-                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index,CHOICE_LABEL=a.choice_label,SMOKE_RUN=a.smoke_run)
+                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index,CHOICE_LABEL=a.choice_label,SMOKE_RUN=a.smoke_run,EXPECTED_SEQUENCE=a.expect_sequence)
         code='\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'
         code+='import traceback\ntry:\n'+textwrap.indent(REMOTE,' ')+'\n'
         code+='except Exception as e:\n print(json.dumps(dict(error_type=type(e).__name__,error_code=str(e) if re.fullmatch("[A-Z_0-9]{1,80}",str(e)) else None,frames=[dict(file=pathlib.Path(f.filename).name,line=f.lineno,function=f.name) for f in traceback.extract_tb(e.__traceback__)])))\n'
@@ -167,7 +189,8 @@ def main():
     display=dict(result)
     if 'stack' in display:display['stack_bytes']=len(display.pop('stack') or '')
     print(json.dumps(dict(evidence=str(out),result=display),ensure_ascii=False))
-    return int(bool(rc or diag or result.get('error_type') or result.get('transport_error')))
+    if rc or diag or result.get('error_type') or result.get('transport_error'):return 1
+    return 2 if a.mode=='wait-install' and result.get('installation_complete') is not True else 0
 
 
 if __name__=='__main__':raise SystemExit(main())

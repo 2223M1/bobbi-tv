@@ -26,6 +26,11 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
     helper_labels = {
         'ready': '已连接（还需实播检验）',
         'not_paired': '尚未连接', 'invalid': '需要重新配对', 'offline': '需要启动或重试',
+        'adapter_ready': '现有后台已连接（还需实播检验）',
+        'adapter_offline': '已有接入 · 连接待检查',
+        'adapter_invalid': '已有配置 · 需要检查',
+        'adapter_unavailable': '已有配置 · 接入组件待检查',
+        'adapter_configured': '已有接入 · 尚未完成检查',
     }
     library_label = ('需要检查' if library_count is None else
                      '已保存 %d 个来源' % library_count if library_count else
@@ -51,4 +56,4 @@ def summary(capabilities):
                 '请检查 Kodi 是否正常运行后重试。没有修改账号或音画设置。')
     return ('Kodi 标准播放接口检查通过。\n'
             '这不代表影片、HDR、音频直通或自动续播已经验收。\n'
-            '下一步可连接本机助手，或直接选择自己的视频测试。')
+            '下一步可检查可选 BT 后台，或直接选择自己的视频测试。')

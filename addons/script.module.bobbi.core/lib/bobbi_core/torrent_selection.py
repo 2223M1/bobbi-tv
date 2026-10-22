@@ -13,6 +13,7 @@ from .torrent_episode_matching import (
     _has_strong_match,
     _normalize_number,
     _season_contexts,
+    _path_season_contexts,
     _release_season_contexts,
     match_episode_file,
 )
@@ -145,7 +146,7 @@ def _bound_episode_match(files, season, episode, absolute_episode, torrent_title
     matches = []
     for candidate in files:
         path = candidate["path"]
-        contexts = _season_contexts(path) | _release_season_contexts(torrent_title, season)
+        contexts = _path_season_contexts(path, season) | _release_season_contexts(torrent_title, season)
         # A trusted first-season identity has no offset ambiguity. Later
         # continuous numbering still needs an explicit season on the release
         # or file; a covering multi-season pack alone cannot establish it.
@@ -199,4 +200,3 @@ def select_exact_file(candidate_files, season="", episode="", torrent_title="", 
     if chosen is None:
         raise ExactSelectionError("target_unresolved")
     return chosen
-

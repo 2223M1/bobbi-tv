@@ -1,0 +1,114 @@
+{
+  "mode": "readonly_runtime_contract",
+  "timestamp": 1792628763.6079588,
+  "binary_sha256": "ba03279546193a8a5e6299b257e1321833dbf5b7b3ecc087ba67ed7dd2eb1991",
+  "native_control": {
+    "params": [
+      {
+        "maxLength": 36,
+        "minLength": 36,
+        "name": "native_instance",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "minimum": 0,
+        "name": "user_intent",
+        "required": true,
+        "type": "integer"
+      },
+      {
+        "minimum": 0,
+        "name": "expected_sequence",
+        "required": true,
+        "type": "integer"
+      },
+      {
+        "minimum": 0,
+        "name": "selection_epoch",
+        "required": true,
+        "type": "integer"
+      },
+      {
+        "default": "",
+        "maxLength": 32,
+        "name": "window_token",
+        "type": "string"
+      },
+      {
+        "maxLength": 32,
+        "minLength": 32,
+        "name": "command_id",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "enums": [
+          "stop",
+          "pause",
+          "resume",
+          "handoff_capture",
+          "handoff_stop"
+        ],
+        "name": "action",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "default": "",
+        "maxLength": 32,
+        "name": "request_id",
+        "type": "string"
+      },
+      {
+        "default": 0,
+        "minimum": 0,
+        "name": "expected_subtitle_intent",
+        "type": "integer"
+      },
+      {
+        "default": 0,
+        "minimum": 0,
+        "name": "expected_audio_intent",
+        "type": "integer"
+      },
+      {
+        "default": "",
+        "maxLength": 32,
+        "name": "child_request_id",
+        "type": "string"
+      },
+      {
+        "default": "",
+        "maxLength": 36,
+        "name": "handoff_token",
+        "type": "string"
+      }
+    ],
+    "returns": {
+      "type": "object"
+    },
+    "type": "method"
+  },
+  "actions": [
+    "stop",
+    "pause",
+    "resume",
+    "handoff_capture",
+    "handoff_stop"
+  ],
+  "players": [],
+  "gui": {
+    "currentcontrol": {
+      "label": "夜行者"
+    },
+    "currentwindow": {
+      "id": 10000,
+      "label": "主界面"
+    }
+  },
+  "native_state_available": true,
+  "full_handoff_tested": false,
+  "candidate_running": true,
+  "handoff_schema_registered": false
+}

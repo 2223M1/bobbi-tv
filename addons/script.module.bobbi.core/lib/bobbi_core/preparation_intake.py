@@ -37,10 +37,16 @@ class Intake:
         return self.status(identifier)
 
     def status(self, identifier):
-        row = self.db.execute('SELECT state,result FROM preparation_intents WHERE id=?', (identifier,)).fetchone()
+        row = self.db.execute('SELECT state,result,payload FROM preparation_intents WHERE id=?', (identifier,)).fetchone()
         if row is None:
             raise KeyError(identifier)
-        return dict(request_id=identifier, state=row[0], result=json.loads(row[1]))
+        result = json.loads(row[1])
+        if row[0] == 'accepted':
+            from .next_source import project
+            proof = project(self.db, json.loads(row[2]), result)
+            if proof is not None:
+                result['source_proof'] = proof
+        return dict(request_id=identifier, state=row[0], result=result)
 
     def accept_advance(self, message):
         """Reconstruct current selection from ledger proof, not client paths."""

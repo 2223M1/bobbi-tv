@@ -6,7 +6,7 @@ from urllib.parse import parse_qsl, urlsplit
 
 from .backend import Backend, BackendError, load_config
 from .owner import Owner
-from .resolver import Resolver
+from .resolver import Resolver, checked_expected_file
 
 
 def failure_log(error, request_id=''):
@@ -56,7 +56,7 @@ def parse_request(argv):
         raise BackendError('TORRENT_REQUEST_INVALID', 'invalid_request')
     fields = {'magnet', 'url', 'title', 'description', 'poster', 'category',
               'season', 'episode', 'release_title', 'selection_policy', 'request_id',
-              'episode_binding', 'movie_binding', 'original_audio_hint'}
+              'episode_binding', 'movie_binding', 'original_audio_hint', 'expected_file', 'ready_context'}
     if (set(request) - fields or request.get('selection_policy') != 'exact'
             or not re.fullmatch('[0-9a-f]{32}', request.get('request_id', ''))):
         raise BackendError('TORRENT_REQUEST_INVALID', 'invalid_request')
@@ -70,9 +70,17 @@ def parse_request(argv):
     for key in ('episode_binding', 'movie_binding'):
         if len(request.get(key, '').encode('utf-8')) > 2048:
             raise BackendError('TORRENT_REQUEST_INVALID', 'invalid_request')
-    for key in fields - {'magnet', 'url'}:
+    for key in fields - {'magnet', 'url', 'expected_file'}:
         if len(request.get(key, '')) > 4096:
             raise BackendError('TORRENT_REQUEST_INVALID', 'invalid_request')
+    if 'expected_file' in request:
+        checked_expected_file(request['expected_file'])
+    if 'ready_context' in request:
+        try:
+            from bobbi_core.prepared_retry import decode_context
+            decode_context(request['ready_context'], request['request_id'])
+        except (ValueError, RuntimeError, TypeError):
+            raise BackendError('TORRENT_REQUEST_INVALID', 'invalid_request') from None
     request['action'] = action
     return request
 
@@ -104,10 +112,15 @@ def execute(request, owner, backend, download_session, list_item, resolve_url,
         return True
     except Exception as error:
         category = error.category if isinstance(error, BackendError) else 'playback_failed'
-        owner.failure(category)
+        if category != 'prepared_ready':
+            owner.failure(category)
         if not answered:
             answered = True
             resolve_url(False, list_item())
+            if category == 'prepared_ready':
+                # No receipt if Kodi's answer throws or has an unknown outcome.
+                # main publishes only after both owned IO sessions have closed.
+                owner.prepared_ready_answered = True
         raise
 
 
@@ -136,9 +149,14 @@ def main(argv=None):
                 xbmcplugin.setResolvedUrl(int(argv[1]), False, xbmcgui.ListItem())
             except Exception:
                 pass
-        xbmc.log(failure_log(error, owner.request_id if owner is not None else ''), xbmc.LOGWARNING)
+        level = xbmc.LOGINFO if isinstance(error, BackendError) and error.category == 'prepared_ready' else xbmc.LOGWARNING
+        xbmc.log(failure_log(error, owner.request_id if owner is not None else ''), level)
     finally:
-        if backend is not None:
-            backend.close()
-        if session is not None:
-            session.close()
+        try:
+            if backend is not None:
+                backend.close()
+        finally:
+            if session is not None:
+                session.close()
+        if owner is not None and getattr(owner, 'prepared_ready_answered', False):
+            owner.failure('prepared_ready')

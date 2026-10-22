@@ -43,13 +43,24 @@ def resolve_torrent(source, still_selected, information=None, force_picker=False
         if information and not force_picker:
             from bobbi_core.torrent_selection import select_exact_file, ExactSelectionError
             from bobbi_core.episode_identity import (bind_selected_episode,
-                resolve_episode_binding, check_transport_episode_file)
+                bind_catalog_episode, resolve_episode_binding, check_transport_episode_file)
             tv = information.get('tv_data') or {}
             try:
                 import json
                 if not tv and information.get('mode') not in ('movies', 'movie'):
                     raise ValueError('CATALOG_MEDIA_IDENTITY_REQUIRED')
                 raw_binding = information.get('episode_binding') or ''
+                if tv:
+                    from lib.utils.player.utils import _jacktorr_cached_tv_identity
+                    catalog = _jacktorr_cached_tv_identity(information.get('ids'))
+                    numbering = json.loads(raw_binding) if isinstance(raw_binding, str) and raw_binding else raw_binding
+                    if not numbering or 'version' not in numbering:
+                        numbering = numbering or bind_selected_episode(information.get('ids'), tv, expected)
+                        proof = bind_catalog_episode(information.get('ids'), tv, information['request_id'],
+                            'bt:' + expected, expected, catalog, numbering or None)
+                        raw_binding = json.dumps(proof) if proof else raw_binding
+                    if isinstance(raw_binding, dict):
+                        raw_binding = json.dumps(raw_binding)
                 if raw_binding:
                     binding = resolve_episode_binding(raw_binding, information['request_id'],
                         'bt:' + expected, expected, tv.get('season', ''), tv.get('episode', ''))
@@ -58,10 +69,22 @@ def resolve_torrent(source, still_selected, information=None, force_picker=False
                     binding = json.dumps(proof) if proof else ''
                 if information.get('require_catalog_episode_binding') and not raw_binding:
                     raise ValueError('CATALOG_EPISODE_PROOF_REQUIRED')
-                matched = select_exact_file([dict(id=f.id, path=f.path, length=f.size) for f in files],
+                candidates = [dict(id=f.id, path=f.path, length=f.size) for f in files]
+                if tv and raw_binding:
+                    scoped = []
+                    for candidate in candidates:
+                        try:
+                            check_transport_episode_file(raw_binding, candidate['path'],
+                                [getattr(source, 'title', '')], require_work=False)
+                            scoped.append(candidate)
+                        except ValueError:
+                            pass
+                    candidates = scoped
+                matched = select_exact_file(candidates,
                     tv.get('season', ''), tv.get('episode', ''), getattr(source, 'title', ''),
                     expected, binding)
-                check_transport_episode_file(raw_binding, matched['path'])
+                if tv:
+                    check_transport_episode_file(raw_binding, matched['path'], [getattr(source, 'title', '')])
                 if not tv:
                     from lib.clients.tmdb.movie_years import cached_movie_identity
                     from bobbi_core.movie_identity import make_binding, binding_status, file_identity_status

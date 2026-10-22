@@ -1,0 +1,205 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "gattaca",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Gattaca",
+        "tmdb_id": 782,
+        "kind": "movie",
+        "year": 1997
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 782,
+          "title": "Gattaca",
+          "original_title": "Gattaca",
+          "original_language": "en",
+          "release_date": "1997-07-09"
+        },
+        "route": "system-direct",
+        "checked_at": 1792610654.214915
+      },
+      "prior_request": null,
+      "started": 25901.525693912,
+      "home": {
+        "generation": 11,
+        "intent": 0,
+        "retired_generation": 11,
+        "observed_at": 25902.019507606
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 25902.020200205,
+      "picker": {
+        "window": 13001,
+        "generation": 12,
+        "intent": 0,
+        "tmdb_id": 782,
+        "kind": "movie"
+      },
+      "picker_observed_at": 25906.520685115,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.TrueHD.7.1.Atmos-FGT.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "51.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "b85f6de99c83a549d4238d9313809bc33ad232ad4175948db82c05a9595393b6",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 25935.815292829,
+      "request_id": "f75fbd03970e4840b607a21d3dce66f2",
+      "selection_identity": "transport:939b30906b7f9f8490cf3509ded1d4fe28c4659e9ff707ebd8dfa6decef8042e",
+      "native_instance": "6eaf2ff2-6efd-4a10-ab2f-f88eafcdb7fc",
+      "first_av_observed_at": 25946.429369704,
+      "select_to_av_observed_seconds": 10.614076875001047
+    },
+    "sample": {
+      "wall": 25999.670531162,
+      "phase": "AV_STARTED",
+      "native": {
+        "audio_intent": 0,
+        "file_identity": "transport:939b30906b7f9f8490cf3509ded1d4fe28c4659e9ff707ebd8dfa6decef8042e|transport:9e2fdcd24bb81a8a6999b0295a872cb44c416b783abf91574483c350b9ef5261",
+        "handoff_protocol": 1,
+        "handoff_restored": null,
+        "monotonic_us": 25946008693,
+        "native_instance": "6eaf2ff2-6efd-4a10-ab2f-f88eafcdb7fc",
+        "open_epoch": 1,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "f75fbd03970e4840b607a21d3dce66f2",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "9e2fdcd24bb81a8a6999b0295a872cb44c416b783abf91574483c350b9ef5261",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 45.387,
+      "duration": 6389.44,
+      "currentaudiostream": {
+        "bitrate": 0,
+        "channels": 8,
+        "codec": "truehd_atmos",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "eng",
+        "name": "TrueHD 7.1 Atmos",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 6,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": "Chinese-PGS"
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 2160,
+        "index": 0,
+        "language": "eng",
+        "name": "",
+        "width": 3840
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 25999.73890483,
+        "read_completed": 25999.739165448,
+        "raw": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 1108\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+        "sha256": "81bb30a88baf4d8c397469bdc0df4d265deaf98ae08d0a09a45b7720145c4389",
+        "channels": [
+          {
+            "channel": 0,
+            "device": "vdec.h265.00",
+            "counters": {
+              "frame width": 3840,
+              "frame height": 2160,
+              "frame count": 1108,
+              "drop count": 0,
+              "fra err count": 0,
+              "hw err count": 0
+            }
+          }
+        ],
+        "identity_known": true,
+        "primary_channel": 0
+      },
+      "decoder_counters": {
+        "frame width": 3840,
+        "frame height": 2160,
+        "frame count": 1108,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "decoder_counter_source": {
+        "channel": 0,
+        "device": "vdec.h265.00"
+      },
+      "observation_times": {
+        "sample_started": 25999.654238494,
+        "player_time_started": 25999.673716698,
+        "player_time_completed": 25999.677217767,
+        "caching_started": 25999.677254141,
+        "caching_completed": 25999.69376647,
+        "decoder_started": 25999.73890483,
+        "decoder_completed": 25999.739165448,
+        "sample_completed": 25999.740496786
+      }
+    },
+    "gui": {
+      "window": 12005,
+      "generation": 19,
+      "intent": 0,
+      "labels": {
+        "Window.Property(info.ids)": "",
+        "Window.Property(info.media_type)": "",
+        "Window.Property(info.mode)": "",
+        "Window.Property(info.query)": "",
+        "Window.Property(info.tv_data)": "",
+        "Window.Property(info.year)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "",
+        "Window.Property(source_loading)": ""
+      },
+      "modal": false,
+      "visible": [],
+      "stable": true
+    }
+  },
+  "diagnostic_present": false,
+  "work": "gattaca",
+  "operation": "inspect",
+  "attempt": 5,
+  "regression_attempt": true
+}

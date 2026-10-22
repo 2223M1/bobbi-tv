@@ -21,7 +21,7 @@ class DiscoveryGate:
             self._pending = (self._revision, self._sequence)
             return self._pending
 
-    def finish(self, token, found, now, publish):
+    def finish(self, token, found, now, publish, provisional=False):
         """Publish only the still-current generation while holding the gate."""
         with self._lock:
             if self._pending != token:
@@ -30,7 +30,7 @@ class DiscoveryGate:
             if token[0] != self._revision:
                 return False
             self._attempts += 1
-            self._ready = bool(found)
+            self._ready = bool(found) and not provisional
             self._due = now + min(30.0, 2.0 ** min(self._attempts, 5))
             publish()
             return True

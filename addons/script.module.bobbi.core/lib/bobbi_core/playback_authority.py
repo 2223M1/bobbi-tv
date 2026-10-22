@@ -82,6 +82,65 @@ class PlaybackAuthority:
         self.fullscreen_attempt = None
         self.subtitle_status_receipt = None
         self.dismissed_startup_failure = None
+        self.accounts = None
+        self.selection_account = None
+        self.native_handoff = None
+        self.transport_attempt = None
+        self.transport_child = None
+        self.account_revocation = None
+
+    def configure_accounts(self, accounts):
+        """One existing AccountManager, never a parallel credential owner."""
+        self._serial()
+        self.accounts = accounts
+
+    def account_changed(self, previous=None, current=None):
+        """Serialized revocation; never stop a newly selected/external player."""
+        self._serial()
+        grant = self.continuation
+        selection_changed = (self.accounts is not None and self.selection_account is not None
+                             and not self.accounts.is_current(self.selection_account))
+        grant_scope = grant.get('account_scope') if grant else None
+        if (self.account_revocation is None and not selection_changed
+                and not (self.accounts is not None and grant_scope is not None
+                         and not self.accounts.is_current(grant_scope))):
+            return False
+        row = self.refresh()
+        owner = self.owner
+        desired = owner.desired
+        if self.account_revocation is None and desired:
+            self.account_revocation = dict(request_id=desired['request_id'], epoch=self.reservation_epoch,
+                stop_child=selection_changed, next_stop=0.0, stop_attempts=0,
+                native_instance=(row['native_instance'] if row and row['request_id'] == desired['request_id']
+                                 and row['url_sha256'] == self.bound_url else None),
+                url_sha256=self.bound_url)
+        pending = self.account_revocation
+        if not desired or not pending or pending['request_id'] != desired['request_id']:
+            self.account_revocation = None
+            return False
+        self.continuation = None
+        request = desired['request_id']
+        owner.cancel(owner.boot_id, owner.epoch, request)
+        if self.native_epoch == pending['epoch']:
+            result = self.native.intent({'expected_epoch': self.native_epoch, 'request_id': ''})
+            if isinstance(result, dict) and result.get('reserved') is True:
+                self.native_epoch = result['selection_epoch']
+            else:
+                raise NativeObservationUnavailable('Account revocation barrier unconfirmed')
+        # Also runs after an applied intent whose reply was lost: epoch change
+        # alone is not evidence that the old cloud player actually stopped.
+        # Every attempt rereads this exact instance/request/transport. This is
+        # a conditional stop retry, NOT command-id idempotence (old F9 has none).
+        if (pending['stop_child'] and row and row['phase'] != 'TERMINAL'
+                and row['native_instance'] == pending['native_instance']
+                and row['request_id'] == request and row['url_sha256'] == pending['url_sha256']):
+            if monotonic() >= pending['next_stop']:
+                pending['stop_attempts'] += 1
+                pending['next_stop'] = monotonic() + min(2.0, .5 * pending['stop_attempts'])
+                self._control(row, 'stop')
+            return 'pending'
+        self.account_revocation = None
+        return True
 
     def _handoff_note(self, request_id, stage, reason, attempt):
         report = getattr(self.native, 'handoff_diagnostic', None)
@@ -184,8 +243,15 @@ class PlaybackAuthority:
                     and self.continuation['native_instance'] == terminal['native_instance']
                     and self.continuation['native_user_intent'] == row['user_intent']
                     and terminal['reason'] == 'STOP')
+                transport = self.continuation
+                explicit_transport = bool(transport and transport['kind'] == 'transport'
+                    and transport.get('stop_command_id') and transport['request_id'] == terminal['request_id']
+                    and transport['native_instance'] == terminal['native_instance']
+                    and transport['native_user_intent'] == row['user_intent'] and terminal['reason'] == 'STOP')
+                if transport and transport['kind'] == 'transport' and terminal['reason'] != 'STOP':
+                    self.continuation = None  # EOF wins; never replay the ended file.
                 if (owner.desired and terminal['request_id'] == owner.desired['request_id']
-                        and terminal['reason'] != 'NATURAL_EOF' and not explicit_next):
+                        and terminal['reason'] != 'NATURAL_EOF' and not explicit_next and not explicit_transport):
                     owner.cancel(owner.boot_id, owner.epoch, terminal['request_id'])
             return True
         desired = owner.desired
@@ -218,6 +284,7 @@ class PlaybackAuthority:
         if type(response.get('selection_epoch')) is not int or response['selection_epoch'] < 0:
             raise RuntimeError('原生开播请求屏障不可用')
         self.native_epoch = response['selection_epoch']
+        self.native_handoff = response.get('handoff')
         self.gui_state = {key: response.get(key) for key in
                           ('gui_generation', 'gui_user_intent', 'fullscreen_instance')}
         if (self.reservation_epoch is not None and self.native_epoch != self.reservation_epoch
@@ -296,6 +363,31 @@ class PlaybackAuthority:
         return isinstance(result, dict) and result.get('queued') is True
 
     def dispatch(self, message):
+        """Account CAS covers admission and its local native command together."""
+        self._serial()
+        if not isinstance(message, dict):
+            raise ValueError('Object command required')
+        scope = message.get('account_scope')
+        if message.get('operation') in ('reserve_child', 'transport_status', 'transport_stop') and self.continuation:
+            required = self.continuation.get('account_scope')
+            if required is not None:
+                if scope != required:
+                    raise RuntimeError('CONTINUATION_ACCOUNT_CHANGED')
+                scope = required
+        desired = self.owner.desired
+        if (self.selection_account is not None and desired
+                and message.get('request_id') == desired['request_id']
+                and message.get('operation') != 'select'):
+            if scope is not None and scope != self.selection_account:
+                raise RuntimeError('PLAYBACK_ACCOUNT_CHANGED')
+            scope = self.selection_account
+        if scope is not None:
+            if self.accounts is None:
+                raise RuntimeError('PLAYBACK_ACCOUNT_OWNER_UNAVAILABLE')
+            return self.accounts.run_if_current(scope, lambda: self._dispatch(message))
+        return self._dispatch(message)
+
+    def _dispatch(self, message):
         self._serial()
         if not isinstance(message, dict):
             raise ValueError('Object command required')
@@ -341,7 +433,8 @@ class PlaybackAuthority:
                     or (row is not None and row != native)):
                 return {'failed': False}
             return dict(failed=True, receipt=dict(boot_id=args[0], epoch=args[1], request_id=args[2],
-                file_identity=terminal['file_identity'], native_instance=terminal['native_instance']))
+                file_identity=terminal['file_identity'], native_instance=terminal['native_instance'],
+                url_sha256=self.bound_url))
         if operation == 'font_preflight_guard':
             if set(message) != {'operation', 'boot_id', 'epoch', 'request_id', 'file_identity'}:
                 raise ValueError('Exact font preflight ownership required')
@@ -355,7 +448,10 @@ class PlaybackAuthority:
             return {'allowed': allowed}
         if operation == 'select':
             old = owner.snapshot()
-            result = owner.select(*args, message.get('selection_identity'))
+            if 'retry_from' in message and (not isinstance(message['retry_from'], dict)
+                                          or message.get('account_scope') is None):
+                raise ValueError('Exact automatic retry guard required')
+            result = owner.select(*args, message.get('selection_identity'), retry_from=message.get('retry_from'))
             if owner.epoch != old['epoch']:
                 reserved = self.native.intent({'expected_epoch': self.native_epoch, 'request_id': args[2]})
                 if not isinstance(reserved, dict) or reserved.get('reserved') is not True:
@@ -363,6 +459,10 @@ class PlaybackAuthority:
                     raise RuntimeError('Native selection changed; stale intent rejected')
                 self.reservation_epoch = reserved['selection_epoch']
                 self.selection_gui_intent = self.gui_state['gui_user_intent']
+                self.selection_account = deepcopy(message.get('account_scope'))
+                self.transport_child = None
+                self.transport_attempt = None
+                self.account_revocation = None
                 self.continuation = None
                 self.reserved_continuation = False
                 self.subtitle_pending = None
@@ -376,6 +476,9 @@ class PlaybackAuthority:
                     owner.observe_external(row['native_instance'], row['file_identity'] or row['url_sha256'])
             return result
         if operation == 'bind_file':
+            if self.transport_child and (message.get('file_identity') != self.transport_child['file_identity']
+                    or args[2] != self.transport_child['child_request_id']):
+                return {'bound': False}
             url_hash = message.get('url_sha256')
             if not isinstance(url_hash, str) or not SHA.fullmatch(url_hash):
                 raise ValueError('Actual resolved transport digest required, not media hash')
@@ -491,8 +594,20 @@ class PlaybackAuthority:
             self._handoff_note(args[2], 'WINDOW_CLOSE', 'OWNED_LOADING_VISIBLE', 0)
             return {'tracked': True}
         if operation == 'close_window':
-            closed = owner.close_window(*args, message.get('token'))
             pending = self.loading_close
+            # A removed token alone proves nothing. Only this retained tracked
+            # close receipt can acknowledge a lost reply, while the exact
+            # request/native instance and original GUI intent remain current.
+            if (pending and pending['released'] and pending['args'] == args
+                    and pending['token'] == message.get('token')
+                    and row and row['phase'] == 'AV_STARTED'
+                    and row['native_instance'] == pending['instance']
+                    and owner.owns_instance(*args, pending['instance'])
+                    and row['user_intent'] == pending['native_intent']
+                    and self.native_epoch == self.reservation_epoch
+                    and self.gui_state['gui_user_intent'] == self.selection_gui_intent):
+                return {'closed': True}
+            closed = owner.close_window(*args, message.get('token'))
             if closed and pending and pending['args'] == args and pending['token'] == message.get('token'):
                 pending['released'] = True
                 window = self._loading_window(pending['dialog_id'], pending['token'])
@@ -505,6 +620,9 @@ class PlaybackAuthority:
             self._publish_subtitle_status(args, instance, result,
                                           message.get('subtitle_final_attempt') is True)
             return result
+        if operation in ('transport_capture', 'transport_status', 'transport_stop'):
+            from .transport_handoff import dispatch
+            return dispatch(self, message, row, args)
         if operation in ('authorize_next', 'manual_next'):
             identity = message.get('selection_identity')
             if not isinstance(identity, str) or not identity or len(identity) > 1024:
@@ -528,12 +646,24 @@ class PlaybackAuthority:
                 native_instance=instance, selection_identity=identity,
                 native_user_intent=row['user_intent'] if row else None,
                 gui_user_intent=self.gui_state.get('gui_user_intent'),
-                kind='natural' if operation == 'authorize_next' else 'manual')
+                kind='natural' if operation == 'authorize_next' else 'manual',
+                account_scope=deepcopy(message.get('account_scope')))
             return {'authorized': True, 'token': self.continuation['token']}
         if operation == 'reserve_child':
             row = self._continuation_receipt(row)
             grant, terminal = self.continuation, owner.terminal
-            allowed_reasons = {'NATURAL_EOF'} if grant and grant['kind'] == 'natural' else {'STOP', 'NATURAL_EOF'}
+            transport = grant and grant['kind'] == 'transport'
+            allowed_reasons = ({'STOP'} if transport else
+                               {'NATURAL_EOF'} if grant and grant['kind'] == 'natural' else {'STOP', 'NATURAL_EOF'})
+            capsule = None
+            if transport:
+                from .transport_handoff import checked_receipt, matches_grant
+                capsule = checked_receipt(self.native_handoff)
+                if (not matches_grant(capsule, grant) or capsule['phase'] != 'STOPPED'
+                        or not capsule['restorable'] or not 0 <= monotonic() - grant['started'] <= 30
+                        or capsule['command_id'] != grant.get('stop_command_id')
+                        or message.get('child_request_id') != grant['child_request_id']):
+                    raise RuntimeError('Transport recovery requires its exact stopped capsule')
             if (not owner._current(*args) or not grant or not terminal
                     or grant['request_id'] != args[2] or grant['token'] != message.get('token')
                     or grant['selection_identity'] != message.get('selection_identity')
@@ -544,8 +674,12 @@ class PlaybackAuthority:
                     or terminal['reason'] not in allowed_reasons or owner.observed is not None):
                 raise RuntimeError('Continuation has no matching terminal and one-use grant')
             result = self.dispatch(dict(operation='select', boot_id=args[0], epoch=args[1],
-                request_id=message.get('child_request_id'), selection_identity=grant['selection_identity']))
+                request_id=message.get('child_request_id'), selection_identity=grant['selection_identity'],
+                account_scope=grant.get('account_scope')))
             self.reserved_continuation = True
+            if transport:
+                self.transport_child = dict(child_request_id=grant['child_request_id'],
+                    file_identity=grant['file_identity'], capsule=capsule['token'], position_ms=capsule['position_ms'])
             return result
         if operation == 'consume_next':
             return {'consumed': owner.consume_next(*args, instance)}

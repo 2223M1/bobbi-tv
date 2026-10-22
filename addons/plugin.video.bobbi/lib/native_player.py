@@ -69,7 +69,8 @@ video_fullscreen_check = "Window.IsActive(fullscreenvideo)"
 class JacktookPLayer(xbmc.Player):
     _nextep_queue: list = []
 
-    def __init__(self, on_started=None, on_error=None, cancel_event=None, on_progress=None, on_handoff=None):
+    def __init__(self, on_started=None, on_error=None, cancel_event=None, on_progress=None,
+                 on_handoff=None, on_presentation_deferred=None):
         xbmc.Player.__init__(self)
         self.url = None
         self.playback_percent = 0.0
@@ -88,6 +89,7 @@ class JacktookPLayer(xbmc.Player):
         self.on_error = on_error
         self.on_progress = on_progress
         self.on_handoff = on_handoff
+        self.on_presentation_deferred = on_presentation_deferred
         self._handoff_confirmed = False
         self._provided_cancel_event = cancel_event
         self._start_notified = False
@@ -127,7 +129,8 @@ class JacktookPLayer(xbmc.Player):
                     parent = context(snapshot, self.data['_parent_request_id'])
                     snapshot = call(dict(parent, operation='reserve_child',
                         token=self.data.get('_continuation_token'), child_request_id=self.playback_session_id,
-                        selection_identity=data_identity(self.data)))
+                        selection_identity=data_identity(self.data),
+                        **({'account_scope': self.data.get('_account')} if self.data.get('_next_recheck') else {})))
                 self._owner_context = context(snapshot, self.playback_session_id)
             except (OSError, ValueError, RuntimeError, KeyError) as error:
                 kodilog('[CINEMA-NEXT] SESSION_RESERVATION_REJECTED ' + type(error).__name__, level=xbmc.LOGWARNING)
@@ -209,6 +212,8 @@ class JacktookPLayer(xbmc.Player):
                 # Cloud side work may be unavailable; independent BT/public
                 # HTTP playback still owns its ordinary native session.
                 kodilog('[CINEMA-PREPARE] ACCOUNT_CAPTURE_UNAVAILABLE', level=xbmc.LOGWARNING)
+            from bobbi_core.prepared_retry import attach_context
+            self.url = data['url'] = attach_context(self.url, data)
         if self._activate_playback_session() is False:
             return
         self._cinema_phase('SESSION_ACTIVATED')
@@ -347,21 +352,23 @@ class JacktookPLayer(xbmc.Player):
         close_busy_dialog()
 
         self._cinema_phase('VOLUME_GATE_BEGIN')
-        if not self._check_volume():
+        if not getattr(self, '_transport_recovery_child', False) and not self._check_volume():
             self.cancel_playback()
             return
         self._cinema_phase('VOLUME_GATE_END')
 
         try:
             self._cinema_phase('PRE_AV_TRACKING_BEGIN')
-            self._handle_trakt_scrobble(list_item)
-            self._handle_simkl_scrobble()
+            if not getattr(self, '_transport_recovery_child', False):
+                self._handle_trakt_scrobble(list_item)
+                self._handle_simkl_scrobble()
             self._cinema_phase('PRE_AV_TRACKING_END')
             self._cinema_phase('PRE_AV_SUBTITLES_BEGIN')
-            self.handle_subtitles(list_item)
+            if not getattr(self, '_transport_recovery_child', False):
+                self.handle_subtitles(list_item)
             self._cinema_phase('PRE_AV_SUBTITLES_END')
             original_audio_hint = None
-            if self.data.get('selection_policy') == 'exact':
+            if self.data.get('selection_policy') == 'exact' and not getattr(self, '_transport_recovery_child', False):
                 try:
                     from time import time
                     from lib.clients.tmdb.original_audio import cached_hint
@@ -378,7 +385,12 @@ class JacktookPLayer(xbmc.Player):
             # One-shot position for this work; never persist it or carry it to
             # the next episode's playback payload.
             resume_percent = progress({'progress': self.data.pop('_bobi_resume_percent', None)})
-            if getattr(self, '_bobi_start_over', False):
+            handoff = getattr(self, '_transport_handoff', None)
+            if handoff:
+                list_item.setProperty('StartPercent', '0')
+                list_item.getVideoInfoTag().setResumePoint(0, 0)
+                list_item.setProperty('bobitv.handoff_token', handoff['capsule'])
+            elif getattr(self, '_bobi_start_over', False):
                 list_item.setProperty('StartOffset', '0')
                 list_item.setProperty('StartPercent', '0')
                 list_item.getVideoInfoTag().setResumePoint(0, 0)
@@ -390,7 +402,7 @@ class JacktookPLayer(xbmc.Player):
                 if not self.url.startswith('plugin://plugin.video.bobbi.torrent/'):
                     from lib.cinema.playback_request import owned_state, bind_and_claim, digest
                     selected = owned_state(self.playback_session_id)['desired']['selection_identity']
-                    identity = selected + '|transport:' + digest(self.url)
+                    identity = handoff['file_identity'] if handoff else selected + '|transport:' + digest(self.url)
                     self._cinema_phase('BIND_AND_CLAIM_BEGIN')
                     self._owner_context = bind_and_claim(
                         self.playback_session_id, identity, self.url, self._cinema_cancel.is_set,
@@ -398,17 +410,19 @@ class JacktookPLayer(xbmc.Player):
                     self._cinema_phase('BIND_AND_CLAIM_END')
                     # Only the already cached, exact ASS font working set is
                     # installed here. Extraction/download stays on the idle lane.
-                    from lib.cinema.preparation_client import prepare_fonts
-                    self._cinema_phase('FONT_PREFLIGHT_BEGIN')
-                    font_result = prepare_fonts(self.data, self._owner_context, self._cinema_cancel.is_set)
-                    self._cinema_phase('FONT_PREFLIGHT_END')
-                    kodilog('[CINEMA-FONTS] request={} state={} reason={}'.format(
-                        self.playback_session_id, font_result.get('state'), font_result.get('reason', '')))
+                    if not getattr(self, '_transport_recovery_child', False):
+                        from lib.cinema.preparation_client import prepare_fonts
+                        self._cinema_phase('FONT_PREFLIGHT_BEGIN')
+                        font_result = prepare_fonts(self.data, self._owner_context, self._cinema_cancel.is_set)
+                        self._cinema_phase('FONT_PREFLIGHT_END')
+                        kodilog('[CINEMA-FONTS] request={} state={} reason={}'.format(
+                            self.playback_session_id, font_result.get('state'), font_result.get('reason', '')))
                     list_item.setProperty('bobitv.file_identity', identity)
                     try:
                         from time import time
                         from bobbi_core.original_audio import attach
-                        attach(list_item, original_audio_hint, self._owner_context, self.url, time())
+                        if not getattr(self, '_transport_recovery_child', False):
+                            attach(list_item, original_audio_hint, self._owner_context, self.url, time())
                     except Exception:
                         pass  # Never fail an accepted video open for an audio hint.
             if self.data.get("direct_playback_handoff"):
@@ -466,11 +480,12 @@ class JacktookPLayer(xbmc.Player):
         if self._is_trakt_tracking_excluded():
             return
         if is_trakt_auth() and get_setting("trakt_scrobbling_enabled") and self.data.get("ids"):
-            try:
-                last_position = TraktAPI().scrobble.trakt_get_last_tracked_position(self.data)
-            except Exception as e:
-                self._log_trakt_playback_failure("resume lookup", e)
-                last_position = 0
+            last_position = 0
+            if not getattr(self, '_transport_recovery_child', False):
+                try:
+                    last_position = TraktAPI().scrobble.trakt_get_last_tracked_position(self.data)
+                except Exception as e:
+                    self._log_trakt_playback_failure("resume lookup", e)
             if last_position > 0 and not getattr(self, '_bobi_start_over', False):
                 list_item.setProperty("StartPercent", str(last_position))
                 self.playback_started_properly = True
@@ -614,6 +629,26 @@ class JacktookPLayer(xbmc.Player):
                                         and terminal.get('end') is False)
             except (OSError, RuntimeError, ValueError, TypeError):
                 pass
+            if getattr(self, '_startup_failure_category', None) == 'prepared_ready':
+                # The child already answered its handle and closed both IO
+                # sessions. Its resolver_failure blocks any late BT claim;
+                # this is not a user cancellation or a native terminal.
+                aborted = self.kodi_monitor.abortRequested()
+                user_cancelled = bool(cancelled and cancelled.is_set()) or (
+                    get_property('bobbi_cinema_cancel') == self.playback_session_id)
+                if not aborted and not user_cancelled:
+                    kodilog('[PLAYER] same-file 115 ready; BT resolver closed', level=xbmc.LOGINFO)
+                    if self.on_error:
+                        self.on_error()  # Retire only this request's loading UI.
+                    # A Back/Stop/abort delivered while retiring the UI wins.
+                    aborted = self.kodi_monitor.abortRequested()
+                    user_cancelled = bool(cancelled and cancelled.is_set()) or (
+                        get_property('bobbi_cinema_cancel') == self.playback_session_id)
+                    if not aborted and not user_cancelled:
+                        return False
+                self._startup_failure_category = 'aborted' if aborted else 'cancelled'
+                self._startup_failed_for_reselect = False
+                failed = True
             if failed or self.kodi_monitor.abortRequested() or monotonic() >= deadline:
                 if not failed and monotonic() >= deadline:
                     self._startup_failure_category = 'startup_timeout'
@@ -664,7 +699,8 @@ class JacktookPLayer(xbmc.Player):
             query['file_identity'] = identity
         # A read/terminal race still has to pass the service's precise ERROR,
         # native-instance and pre-AV receipt checks. Never assign query to self.
-        return startup_failure(query)
+        scope = getattr(self, 'data', {}).get('_account')
+        return startup_failure(query, account_scope=scope) if scope is not None else startup_failure(query)
 
     def _matches_requested_playback(self):
         """Do not confuse another video with the selected request's stream."""
@@ -694,6 +730,7 @@ class JacktookPLayer(xbmc.Player):
         try:
             if not self._wait_for_video_start():
                 return
+            self._media_started = True
             self._cinema_phase('TARGET_VIDEO_OBSERVED')
             kodilog("[PLAYER] monitor: video started playing, entering main loop")
 
@@ -702,6 +739,11 @@ class JacktookPLayer(xbmc.Player):
             started = self.handle_playback_start()
             if self.data.get('selection_policy') == 'exact' and started is False:
                 return
+            if getattr(self, '_transport_recovery_child', False):
+                self.update_playback_progress()
+                self._handle_trakt_scrobble(self.list_item)
+                self._handle_simkl_scrobble()
+                self._transport_handoff = None
             self._record_started_history()
             self.start_cinema_preparation()
 
@@ -743,6 +785,11 @@ class JacktookPLayer(xbmc.Player):
                     if state == 'TERMINAL':
                         break  # Same-instance EOF may clear observed after isPlayingVideo.
                     if state == 'UNKNOWN':
+                        recovery = getattr(self, '_transport_recovery', None)
+                        if recovery and recovery.state == 'STOPPING':
+                            unknown_deadline = recovery.deadline
+                        elif recovery:
+                            recovery.reset_watch()
                         if unknown_deadline is None:
                             unknown_deadline = observed_at + TERMINAL_RECONCILIATION_SECONDS
                         remaining = unknown_deadline - monotonic()
@@ -761,7 +808,15 @@ class JacktookPLayer(xbmc.Player):
                     self._was_superseded = True
                     kodilog("[PLAYER] monitor superseded by a newer playback session")
                     return
+                if (getattr(self, '_media_started', False)
+                        and not getattr(self, '_presentation_finished', False)):
+                    self.handle_playback_start()
                 self.update_playback_progress()
+                self.check_cinema_transport_recovery()
+                recovery = getattr(self, '_transport_recovery', None)
+                if recovery and recovery.state in ('CAPTURING', 'STOPPING', 'STOPPED'):
+                    self._wait_monitor_tick()
+                    continue  # Do not race captured presentation with auto-subtitle/seek work.
                 if self.check_cinema_stall():
                     break
                 self._apply_simkl_resume()
@@ -792,10 +847,14 @@ class JacktookPLayer(xbmc.Player):
             # absolute transition window; do not turn 3 seconds into 3+3.
             remaining = (TERMINAL_RECONCILIATION_SECONDS if unknown_deadline is None
                          else min(TERMINAL_RECONCILIATION_SECONDS, unknown_deadline - monotonic()))
-            if remaining > 0:
+            transition_deadline = monotonic() + max(0, remaining)
+            recovered = self.queue_cinema_transport_end(max(0, remaining))
+            remaining = min(TERMINAL_RECONCILIATION_SECONDS, transition_deadline - monotonic())
+            if not recovered and remaining > 0:
                 self.wait_cinema_terminal(budget_seconds=remaining)
             self._cinema_phase('TERMINAL_RECONCILIATION_END')
-            self.queue_cinema_natural_end()
+            if not recovered:
+                self.queue_cinema_natural_end()
             self._cinema_phase('STOP_BOOKKEEPING_BEGIN')
             self.handle_playback_stop()
             self._cinema_phase('STOP_BOOKKEEPING_END')
@@ -806,7 +865,18 @@ class JacktookPLayer(xbmc.Player):
             kodilog('[PLAYER] monitor failed: ' + type(error).__name__, level=xbmc.LOGERROR)
             self.kill_dialog()
         finally:
-            if hasattr(self, '_cinema_cancel'):
+            recovery = getattr(self, '_transport_recovery', None)
+            if recovery:
+                recovery.close()
+            if getattr(self, '_startup_failure_category', None) == 'prepared_ready':
+                aborted = self.kodi_monitor.abortRequested()
+                if (aborted or self._cinema_cancel.is_set()
+                        or get_property('bobbi_cinema_cancel') == self.playback_session_id):
+                    self._startup_failure_category = 'aborted' if aborted else 'cancelled'
+                    self._startup_failed_for_reselect = False
+                    self.cancel_playback()
+            if (hasattr(self, '_cinema_cancel')
+                    and getattr(self, '_startup_failure_category', None) != 'prepared_ready'):
                 self._cinema_cancel.set()
             if not observation_timed_out and self._owns_playback_session():
                 kodilog("[PLAYER] monitor: owner cleanup for playback session")
@@ -818,6 +888,8 @@ class JacktookPLayer(xbmc.Player):
         kodilog("[PLAYER] monitor: exiting")
 
     def handle_subtitles(self, list_item):
+        if getattr(self, '_transport_recovery_child', False):
+            return  # Native capsule restores Off/external tracks before AV.
         exact = self.data.get('selection_policy') == 'exact'
         if exact:
             # Ordinary owned playback uses the preparation ledger and native
@@ -884,6 +956,8 @@ class JacktookPLayer(xbmc.Player):
         """
         Handles subtitle activation and selection logic after playback starts.
         """
+        if getattr(self, '_transport_recovery_child', False):
+            return
         if self.data.get('selection_policy') == 'exact':
             self.check_cinema_subtitles()
             return  # Prepared sidecars also need instance-scoped native selection.
@@ -928,6 +1002,8 @@ class JacktookPLayer(xbmc.Player):
 
     def check_cinema_subtitles(self):
         """Bounded startup discovery; foreign streams do not finish the search."""
+        if getattr(self, '_transport_recovery_child', False):
+            return
         exact = self.data.get('selection_policy') == 'exact'
         if exact and not subtitle_automation_enabled():
             return
@@ -1027,7 +1103,7 @@ class JacktookPLayer(xbmc.Player):
         """
         Handles automatic audio stream selection based on user settings.
         """
-        if self.data.get('selection_policy') == 'exact':
+        if getattr(self, '_transport_recovery_child', False) or self.data.get('selection_policy') == 'exact':
             # Native original-audio preference is request/file-bound and one-shot.
             # A delayed global setAudioStream could override it or a user's choice.
             return
@@ -1053,62 +1129,151 @@ class JacktookPLayer(xbmc.Player):
         self.stop()
 
     def handle_playback_start(self):
+        began = monotonic()
         session = self.playback_session_id
         cancel_event = getattr(self, '_cinema_cancel', None)
-        try:
-            if getattr(self, "_start_notified", False):
-                return getattr(self, '_handoff_confirmed', False) if self.data.get('selection_policy') == 'exact' else True
-            if (not self._owns_playback_session()
-                    or not self.isPlayingVideo() or not self._matches_requested_playback()):
-                return False
-            cancelled = getattr(self, "_cinema_cancel", None)
-            if cancelled is not None and cancelled.is_set():
-                return False
-            self._start_notified = True
-            if self.data.get("selection_policy") == "exact":
-                set_property("bobbi_cinema_started", json_dumps({
-                    "request_id": self.playback_session_id,
-                    "url_sha256": hashlib.sha256(self.getPlayingFile().split("|", 1)[0].encode("utf-8")).hexdigest(),
-                    "ids": self.data.get("ids", {}), "tv_data": self.data.get("tv_data", {}),
-                    "source_info_hash": self.data.get("info_hash") or self.data.get("prepared_source_info_hash", ""),
-                }))
-            requested = None
-            if self.data.get('selection_policy') == 'exact':
-                self._record_cinema_handoff('REQUESTED')
-            if self.on_started:
-                requested = self.on_started()
-            if self.data.get('selection_policy') == 'exact':
-                if requested is not False:
-                    from lib.cinema.playback_request import call, context, owned_state
-                    state = owned_state(session)
+        exact = self.data.get('selection_policy') == 'exact'
+        stage = 'MEDIA_OBSERVATION'
+        def note(reason):
+            marker = (stage, reason)
+            if getattr(self, '_presentation_note', None) != marker:
+                self._presentation_note = marker
+                kodilog('[CINEMA-HANDOFF] request={} stage={} result={}'.format(
+                    session[:8], stage, reason), level=xbmc.LOGINFO)
+        def deferred(reason):
+            self._presentation_finished = True
+            note(reason)
+            callback = getattr(self, 'on_presentation_deferred', None)
+            if callback:
+                try:
+                    callback()  # Only retires this resolver object, never player control.
+                except Exception:
+                    note('OWNED_WINDOW_RETIREMENT_UNAVAILABLE')
+            try:
+                remaining = getattr(self, '_presentation_deadline', began) - monotonic()
+                current = False
+                if (remaining > 0 and self.playback_session_id == session and self._cinema_cancel is cancel_event
+                        and not cancel_event.is_set()):
+                    from lib.cinema.playback_request import call, context
+                    state = call({'operation': 'snapshot'}, timeout=min(.3, remaining))
                     args = context(state, session)
-                    requested = call(dict(args, operation='request_fullscreen',
-                        native_instance=state['observed']['native_instance'])).get('queued') is True
-                if requested is not False and self._confirm_cinema_fullscreen(session, cancel_event):
+                    current = (monotonic() < self._presentation_deadline
+                        and all(args.get(k) == (getattr(self, '_owner_context', None) or {}).get(k)
+                                for k in ('boot_id', 'epoch', 'request_id')))
+            except Exception:
+                current = False
+            if current:
+                self._record_cinema_handoff('DEFERRED')
+                # A status hint, not a control or terminal receipt. The ordinary
+                # player controls remain available to return to the playing video.
+                set_property('bobbi_cinema_presentation_status', '视频正在播放，可通过播放控制返回视频')
+                try:
+                    from lib.utils.kodi.utils import notification
+                    notification('视频正在播放，可通过播放控制返回视频', heading='波比TV', time=4000)
+                except Exception:
+                    pass  # A non-blocking hint cannot become media failure.
+            return True
+        try:
+            if (self.playback_session_id != session or self._cinema_cancel is not cancel_event
+                    or (cancel_event is not None and cancel_event.is_set())):
+                return False
+            if not getattr(self, '_media_started', False):
+                if (not self._owns_playback_session() or not self.isPlayingVideo()
+                        or not self._matches_requested_playback()):
+                    return False
+                self._media_started = True
+            if not getattr(self, '_start_notified', False):
+                self._start_notified = True
+                # Only presentation recovery gets this total local budget. No
+                # resolver/network/startup timeout is extended or restarted.
+                self._presentation_deadline = began + 3.0
+                self._presentation_attempts = 0
+                self._presentation_next_at = 0.0
+                if exact:
+                    set_property("bobbi_cinema_started", json_dumps({
+                        "request_id": session,
+                        "url_sha256": hashlib.sha256(self.getPlayingFile().split("|", 1)[0].encode("utf-8")).hexdigest(),
+                        "ids": self.data.get("ids", {}), "tv_data": self.data.get("tv_data", {}),
+                        "source_info_hash": self.data.get("info_hash") or self.data.get("prepared_source_info_hash", ""),
+                    }))
+            elif not exact:
+                return True
+            if exact:
+                if getattr(self, '_handoff_confirmed', False) or getattr(self, '_presentation_finished', False):
+                    return True
+                if (monotonic() >= self._presentation_deadline or self._presentation_attempts >= 4):
+                    return deferred('BUDGET_EXHAUSTED')
+                if monotonic() < self._presentation_next_at:
+                    return True
+                self._presentation_attempts += 1
+                self._presentation_next_at = monotonic() + .05
+                self._record_cinema_handoff('REQUESTED')
+            stage = 'LOADING_RETIREMENT'
+            if not getattr(self, '_presentation_loading_retired', False):
+                ready = (self.on_started(deadline=self._presentation_deadline) if exact else self.on_started()) if self.on_started else True
+                if ready is False:
+                    if exact and monotonic() >= self._presentation_deadline:
+                        return deferred('BUDGET_EXHAUSTED')
+                    note('PENDING')
+                    return True  # Keep media monitoring and the same callback/token alive.
+                self._presentation_loading_retired = True
+            if exact:
+                from lib.cinema.playback_request import call, context
+                stage = 'OWNER_READ'
+                remaining = self._presentation_deadline - monotonic()
+                if remaining <= 0:
+                    return deferred('BUDGET_EXHAUSTED')
+                state = call({'operation': 'snapshot'}, timeout=min(.3, remaining))
+                args = context(state, session)
+                original = getattr(self, '_owner_context', None)
+                observed = state.get('observed') or {}
+                instance = observed.get('native_instance')
+                if (not original or any(args.get(k) != original.get(k) for k in ('boot_id', 'epoch', 'request_id'))
+                        or observed.get('request_id') != session or not observed.get('av_started')
+                        or not instance or (getattr(self, '_native_instance', None) not in (None, instance))):
+                    return deferred('OWNER_CHANGED')
+                self._native_instance = instance
+                if monotonic() >= self._presentation_deadline:
+                    return deferred('BUDGET_EXHAUSTED')
+                # A lost request ACK is UNKNOWN. Observe the original admitted
+                # request; never submit it again as a new fullscreen command.
+                stage = 'FULLSCREEN_ADMISSION'
+                if not (state.get('desired') or {}).get('fullscreen_requested'):
+                    remaining = self._presentation_deadline - monotonic()
+                    if remaining <= 0:
+                        return deferred('BUDGET_EXHAUSTED')
+                    requested = call(dict(args, operation='request_fullscreen', native_instance=instance),
+                                     timeout=min(.3, remaining))
+                    if requested.get('queued') is not True:
+                        return deferred('REJECTED')
+                    note('QUEUED')
+                else:
+                    note('ALREADY_ADMITTED')
+                stage = 'FULLSCREEN_RECEIPT'
+                confirmed = self._confirm_cinema_fullscreen(session, cancel_event)
+                if confirmed is True:
                     self._handoff_confirmed = True
+                    self._presentation_finished = True
                     self._record_cinema_handoff('CONFIRMED')
+                    set_property('bobbi_cinema_presentation_status', '')
                     callback = getattr(self, 'on_handoff', None)
                     if callback:
                         callback()
                     kodilog('[CINEMA-HANDOFF] target video and fullscreen confirmed '
                             + self.playback_session_id[:8], level=xbmc.LOGINFO)
                     return True
-                if (self.playback_session_id == session and self._cinema_cancel is cancel_event
-                        and self._owns_playback_session() and not self._cinema_cancel.is_set()):
-                    self._record_cinema_handoff('FAILED')
-                    kodilog('[CINEMA-HANDOFF303] request={} stage=FAIL reason=fullscreen_denied'.format(
-                        session[:8]), level=xbmc.LOGWARNING)
-                    set_property('bobbi_cinema_terminal', json_dumps({
-                        'session': self.playback_session_id, 'end': False, 'category': 'fullscreen_denied'}))
-                    self.cancel_playback()
-                return False
+                if confirmed is False:
+                    return deferred('NOT_CONFIRMED')
+                note('UNAVAILABLE')
+                return True
             return True
-        except Exception as e:
-            kodilog(f"Error in handle_playback_start: {e}")
-            if (self.data.get('selection_policy') == 'exact' and self.playback_session_id == session
-                    and self._cinema_cancel is cancel_event and self._owns_playback_session()
-                    and not self._cinema_cancel.is_set()):
-                self.cancel_playback()
+        except OSError:
+            note('UNAVAILABLE')
+            return bool(getattr(self, '_media_started', False))
+        except Exception:
+            note('REJECTED')
+            if exact and getattr(self, '_media_started', False):
+                return deferred('REJECTED')
             return False
 
     def _record_cinema_handoff(self, phase):
@@ -1120,22 +1285,38 @@ class JacktookPLayer(xbmc.Player):
     def _confirm_cinema_fullscreen(self, session, cancel_event):
         """Observe one requested transition; never reactivate after user returns."""
         ticks = int(HANDOFF_CONFIRMATION_TIMEOUT_SECONDS * 1000 / HANDOFF_CONFIRMATION_POLL_MS)
-        deadline = monotonic() + HANDOFF_CONFIRMATION_TIMEOUT_SECONDS
+        deadline = min(monotonic() + HANDOFF_CONFIRMATION_TIMEOUT_SECONDS,
+                       getattr(self, '_presentation_deadline', monotonic() + HANDOFF_CONFIRMATION_TIMEOUT_SECONDS))
         for tick in range(ticks + 1):
             if (self.playback_session_id != session or self._cinema_cancel is not cancel_event
-                    or self._cinema_cancel.is_set() or not self._owns_playback_session()
-                    or not self.isPlayingVideo() or not self._matches_requested_playback()):
+                    or self._cinema_cancel.is_set() or not self.isPlayingVideo()):
                 return False
-            from lib.cinema.playback_request import call, context, owned_state
-            state = owned_state(session)
-            confirmed = call(dict(context(state, session), operation='confirm_fullscreen',
-                                  native_instance=state['observed']['native_instance'])).get('confirmed')
+            from lib.cinema.playback_request import call, context
+            try:
+                remaining = deadline - monotonic()
+                if remaining <= 0:
+                    return False
+                state = call({'operation': 'snapshot'}, timeout=min(.3, remaining))
+                args = context(state, session)
+                observed = state.get('observed') or {}
+                original = getattr(self, '_owner_context', None)
+                if (not original or any(args.get(k) != original.get(k) for k in ('boot_id', 'epoch', 'request_id'))
+                        or observed.get('native_instance') != getattr(self, '_native_instance', None)
+                        or observed.get('request_id') != session or not observed.get('av_started')):
+                    return False
+                remaining = deadline - monotonic()
+                if remaining <= 0:
+                    return False
+                confirmed = call(dict(args, operation='confirm_fullscreen',
+                                      native_instance=self._native_instance), timeout=min(.3, remaining)).get('confirmed')
+            except OSError:
+                return None  # The same admitted command remains observable next tick.
             if confirmed is True:
                 return True
             if monotonic() >= deadline:
                 return False
             if tick < ticks:
-                sleep(HANDOFF_CONFIRMATION_POLL_MS)
+                sleep(min(HANDOFF_CONFIRMATION_POLL_MS, max(1, int((deadline - monotonic()) * 1000))))
         return False
 
     def update_playback_progress(self):
@@ -1377,11 +1558,14 @@ class JacktookPLayer(xbmc.Player):
             # Explicit next uses the same preselected release; never silently
             # falls back to the old independent search/quality preference.
             if getattr(self, '_cinema_next_data', None) and self._owns_playback_session():
-                prepared = dict(self._cinema_next_data)
+                prepared = self._cinema_fresh_next()
+                if not prepared or not self._owns_playback_session() or self._cinema_cancel.is_set():
+                    return
                 if self.data.get('selection_policy') == 'exact':
                     from lib.cinema.playback_request import call, data_identity
                     grant = call(dict(self._owner_context, operation='manual_next',
-                        native_instance=self._native_instance, selection_identity=data_identity(prepared)))
+                        native_instance=self._native_instance, selection_identity=data_identity(prepared),
+                        **({'account_scope': prepared.get('_account')} if prepared.get('_next_recheck') else {})))
                     if not grant.get('authorized'):
                         return
                     prepared.update(_parent_request_id=self.playback_session_id,
@@ -1594,6 +1778,17 @@ class JacktookPLayer(xbmc.Player):
         return result
 
     def handle_playback_stop(self):
+        if getattr(self, '_transport_parent_queued', False):
+            # This is one logical viewing session across two transports. A
+            # delayed remote pause from the old player could overwrite the
+            # child's new start, and must not spend the capsule's open budget.
+            self.data.update(terminal_reason='STOP', completed=False)
+            if not self._is_trakt_tracking_excluded():
+                from lib.db.deferred_history import defer_watched_file
+                saved = deepcopy(self.data)
+                if not defer_watched_file(saved):
+                    set_watched_file(saved)
+            return
         kodilog("[PLAYER] handle_playback_stop entered")
         if self.data.get('selection_policy') == 'exact':
             self.data['terminal_reason'] = getattr(self, '_terminal_reason', 'UNKNOWN')
@@ -1642,6 +1837,7 @@ class JacktookPLayer(xbmc.Player):
 
     def offer_terminal_actions(self):
         if (self.data.get('selection_policy') != 'exact'
+                or getattr(self, '_transport_parent_queued', False)
                 or getattr(self, '_cinema_natural_queued', False)
                 or getattr(self, '_terminal_reason', 'UNKNOWN') not in ('ERROR', 'UNKNOWN', 'NATURAL_EOF')):
             return
@@ -1690,7 +1886,7 @@ class JacktookPLayer(xbmc.Player):
             kodilog(f"[NUVIO] playback sync failed; continuing playback ({type(error).__name__})")
 
     def _apply_nuvio_resume(self):
-        if getattr(self, '_bobi_start_over', False):
+        if getattr(self, '_bobi_start_over', False) or getattr(self, '_transport_recovery_child', False):
             return
         if getattr(self, "_nuvio_resume_applied", False):
             return
@@ -1709,7 +1905,7 @@ class JacktookPLayer(xbmc.Player):
             kodilog(f"[NUVIO] resume seek failed; continuing playback ({type(error).__name__})")
 
     def _apply_simkl_resume(self):
-        if getattr(self, '_bobi_start_over', False):
+        if getattr(self, '_bobi_start_over', False) or getattr(self, '_transport_recovery_child', False):
             return
         if getattr(self, "_simkl_resume_applied", False):
             return
@@ -1754,7 +1950,7 @@ class JacktookPLayer(xbmc.Player):
             kodilog(f"[SIMKL] playback deletion failed; preserving resume ({type(error).__name__})")
 
     def _apply_trakt_resume(self):
-        if getattr(self, '_bobi_start_over', False):
+        if getattr(self, '_bobi_start_over', False) or getattr(self, '_transport_recovery_child', False):
             return
         if getattr(self, "_trakt_resume_applied", False):
             return
@@ -1884,6 +2080,13 @@ class JacktookPLayer(xbmc.Player):
     def set_constants(self, data):
         self._cinema_natural_queued = False
         data = dict(data)
+        from lib.utils.player.transport_recovery import checked_handoff
+        handoff = data.pop('_transport_handoff', None)
+        self._transport_handoff = checked_handoff(handoff, data) if handoff is not None else None
+        self._transport_recovery_child = self._transport_handoff is not None
+        self._transport_recovery = self._transport_source_context = None
+        self._transport_diagnostics = None
+        self._transport_parent_queued = False
         if data.get("selection_policy") == "exact" and not self.on_started:
             # History/cache entries retain the release identity, not authority
             # to reuse an old request. Internal continuations also get a fresh
@@ -1915,6 +2118,10 @@ class JacktookPLayer(xbmc.Player):
         self._cinema_cancel = getattr(self, "_provided_cancel_event", None) or Event()
         self._start_notified = False
         self._handoff_confirmed = False
+        self._media_started = False
+        self._presentation_finished = False
+        self._presentation_loading_retired = False
+        self._presentation_note = None
         self._resolution_answered = False
         self._cinema_end = False
         self._cinema_progress_watchdog = None
@@ -2195,6 +2402,9 @@ class JacktookPLayer(xbmc.Player):
             session = self.playback_session_id
             cancel_event = self._cinema_cancel
             data = deepcopy(self.data)
+            intent = getattr(self, '_cinema_prepare_intent', None)
+            if isinstance(intent, dict) and intent.get('request_id') == session and intent.get('selected'):
+                data['_bt_current_selected'] = deepcopy(intent['selected'])
             def current_session():
                 return (self.playback_session_id == session
                         and self._cinema_cancel is cancel_event
@@ -2220,8 +2430,13 @@ class JacktookPLayer(xbmc.Player):
                                     data['prepared_version_key'] = next(iter(versions))
                                     self.data['prepared_version_key'] = data['prepared_version_key']
                                     self._cinema_prepare_ticket = None
-                        index = load_index()
-                        prepared = next_cloud_data(data, index) if not data.get('direct_source') else None
+                        from lib.utils.player.bt_continuity import applies, choose_next, prepared_snapshot
+                        if applies(data):
+                            index = prepared_snapshot()
+                            prepared = choose_next(data, index, lambda: not current_session())
+                        else:
+                            index = load_index()
+                            prepared = next_cloud_data(data, index) if not data.get('direct_source') else None
                         if not prepared and current_session():
                             from lib.utils.player.direct_continuity import next_direct_data
                             prepared, reason = next_direct_data(data, index, lambda: not current_session())
@@ -2256,7 +2471,8 @@ class JacktookPLayer(xbmc.Player):
                                     notification(message, heading='波比TV', time=5000)
                                 elif prepared and (prepared.get('direct_source') or {}).get('provider') == 'mdsub':
                                     set_property('AM6B.NextPreparationState', '同版本下一集已在 115 验证就绪')
-                    gate.finish(token, bool(prepared), monotonic(), publish)
+                    gate.finish(token, bool(prepared), monotonic(), publish,
+                                provisional=bool(prepared and prepared.get('_next_transport') == 'bt'))
             try:
                 Thread(target=prepare, daemon=True).start()
             except RuntimeError:
@@ -2308,7 +2524,30 @@ class JacktookPLayer(xbmc.Player):
             gate = self._cinema_discovery = DiscoveryGate()
         return gate.wake(generation)
 
+    def _cinema_fresh_next(self):
+        """Final bounded ready-cloud check before the one-use next reservation."""
+        from lib.utils.player.bt_continuity import applies, choose_next, prepared_snapshot
+        if not applies(self.data):
+            return dict(self._cinema_next_data) if self._cinema_next_data else None
+        session, cancel = self.playback_session_id, self._cinema_cancel
+        def cancelled():
+            return (cancel.is_set() or self._cinema_cancel is not cancel
+                    or self.playback_session_id != session or not self._owns_playback_session())
+        data = deepcopy(self.data)
+        intent = getattr(self, '_cinema_prepare_intent', None)
+        if isinstance(intent, dict) and intent.get('request_id') == session and intent.get('selected'):
+            data['_bt_current_selected'] = deepcopy(intent['selected'])
+        try:
+            return choose_next(data, prepared_snapshot(), cancelled, fresh=True)
+        except (OSError, ValueError, KeyError, TypeError, RuntimeError):
+            return None
+
     def queue_cinema_natural_end(self):
+        if (not self.data.get('cinema_continuity') or not getattr(self, '_cinema_end', False)
+                or getattr(self, '_cinema_natural_queued', False) or not self._owns_playback_session()
+                or self._cinema_cancel.is_set()):
+            return
+        self._cinema_next_data = self._cinema_fresh_next()
         if (self.data.get('cinema_continuity') and getattr(self, '_cinema_end', False)
                 and self._owns_playback_session() and not self._cinema_cancel.is_set()
                 and not self._cinema_next_data):
@@ -2328,7 +2567,8 @@ class JacktookPLayer(xbmc.Player):
             from lib.cinema.playback_request import call, context, data_identity
             try:
                 grant = call(dict(self._owner_context, operation='authorize_next',
-                    native_instance=self._native_instance, selection_identity=data_identity(prepared)))
+                    native_instance=self._native_instance, selection_identity=data_identity(prepared),
+                    **({'account_scope': prepared.get('_account')} if prepared.get('_next_recheck') else {})))
                 if not grant.get('authorized'):
                     return
                 # Consume the short-lived native EOF receipt now. History IO
@@ -2338,7 +2578,8 @@ class JacktookPLayer(xbmc.Player):
                     child = uuid4().hex
                 reserved = call(dict(self._owner_context, operation='reserve_child',
                     token=grant['token'], child_request_id=child,
-                    selection_identity=data_identity(prepared)))
+                    selection_identity=data_identity(prepared),
+                    **({'account_scope': prepared.get('_account')} if prepared.get('_next_recheck') else {})))
                 context(reserved, child)
                 prepared['request_id'] = prepared['_ui_reserved_request'] = child
                 prepared.pop('_parent_request_id', None)
@@ -2350,6 +2591,93 @@ class JacktookPLayer(xbmc.Player):
         self._cinema_natural_queued = True
         self._cinema_next_data = None
         kodilog('[CINEMA-NEXT] NATURAL_EOF_SAME_VERSION_HANDOFF', level=xbmc.LOGINFO)
+
+    def _transport_note(self, event, state=None, error=None, elapsed_ms=None):
+        try:
+            diagnostic = getattr(self, '_transport_diagnostics', None)
+            if diagnostic is None:
+                from lib.utils.player.transport_recovery import Diagnostics
+                diagnostic = self._transport_diagnostics = Diagnostics(lambda row: kodilog(
+                    '[CINEMA-TRANSPORT-DIAG] ' + json_dumps(row), level=xbmc.LOGINFO),
+                    request_id=getattr(self, 'playback_session_id', ''))
+            diagnostic(event, state=state, error=error, elapsed_ms=elapsed_ms)
+        except Exception:
+            pass  # Diagnostics cannot prevent or authorize a player action.
+
+    def check_cinema_transport_recovery(self):
+        if self.data.get('selection_policy') != 'exact':
+            self._transport_note('ENTRY_POLICY')
+            return
+        if not self.data.get('is_torrent'):
+            self._transport_note('ENTRY_NOT_BT')
+            return
+        if self.data.get('prepared_resource_id'):
+            self._transport_note('ENTRY_PREPARED')
+            return
+        if not getattr(self, '_native_instance', None):
+            self._transport_note('ENTRY_NO_INSTANCE')
+            return
+        if self._cinema_cancel.is_set():
+            self._transport_note('ENTRY_CANCELLED')
+            return
+        self._transport_note('ENTRY_ACTIVE')
+        from lib.utils.player.transport_recovery import Recovery, exact_context
+        from lib.cinema.playback_request import call
+        buffering = get_visibility('Player.Caching')
+        recovery = getattr(self, '_transport_recovery', None)
+        if recovery is None:
+            if not buffering:
+                self._transport_note('ENTRY_NOT_BUFFERING')
+                return
+            recovery = self._transport_recovery = Recovery(diagnostic=self._transport_note)
+        context = getattr(self, '_transport_source_context', None)
+        if context is None:
+            try:
+                snapshot = call({'operation': 'snapshot'})
+                if any(snapshot.get(key) != self._owner_context.get(key) for key in ('boot_id', 'epoch')):
+                    self._transport_note('CONTEXT_OWNER_CHANGED')
+                    recovery.abandon()
+                    return
+                context = exact_context(self.data, getattr(self, '_cinema_prepare_intent', None),
+                                        snapshot, self._native_instance)
+                self._transport_source_context = context
+                self._transport_note('CONTEXT_READY' if context is not None else 'CONTEXT_REJECTED')
+            except (OSError, ValueError, TypeError, RuntimeError) as error:
+                self._transport_note('CONTEXT_ERROR', error=error)
+                recovery.reset_watch()
+                return
+        else:
+            self._transport_note('CONTEXT_CACHED')
+        recovery.tick(monotonic(), self.current_time, buffering,
+            get_visibility('Player.Paused') or get_visibility('Player.Seeking'), context, call)
+
+    def queue_cinema_transport_end(self, budget_seconds):
+        recovery = getattr(self, '_transport_recovery', None)
+        if (not recovery or not recovery.stop_sent or recovery.state in ('REJECTED', 'CONSUMED')
+                or self._cinema_cancel.is_set() or not 0 < budget_seconds <= TERMINAL_RECONCILIATION_SECONDS):
+            return False
+        from lib.cinema.playback_request import call
+        deadline = monotonic() + budget_seconds
+        for _ in range(int(budget_seconds * 20) + 1):
+            if self._cinema_cancel.is_set() or monotonic() >= deadline:
+                return False
+            recovery.poll(monotonic(), call, allow_stop=False)
+            if recovery.state == 'STOPPED':
+                prepared = recovery.reserve(call)
+                if prepared is None:
+                    return False
+                self._terminal_reason = 'STOP'
+                self._cinema_end = False
+                self._cinema_next_data = None
+                self.data['completed'] = False
+                self._transport_parent_queued = True
+                JacktookPLayer._nextep_queue.append({'data': prepared})
+                kodilog('[CINEMA-TRANSPORT] SAME_FILE_115_CHILD_RESERVED', level=xbmc.LOGINFO)
+                return True
+            if recovery.state == 'REJECTED':
+                return False
+            sleep(min(50, max(1, int((deadline - monotonic()) * 1000))))
+        return False
 
     def check_cinema_stall(self):
         # Only the owned direct player after AVStart. A stalled network read is

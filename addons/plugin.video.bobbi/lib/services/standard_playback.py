@@ -107,18 +107,26 @@ def next_data(current, cancelled):
         return None
     from lib.utils.player.direct_continuity import next_direct_data
     from lib.utils.player.continuity import next_cloud_data
+    from lib.utils.player.bt_continuity import applies, choose_next, resolve_standard
     try:
         from lib.clients.bobi_library import load_prepared_index
         index = load_prepared_index()
     except (OSError, ValueError, RuntimeError):
         index = {'titles': []}
-    data = next_cloud_data(current, index)
+    data = (choose_next(current, index, cancelled, fresh=bool(current.get('_continuation_final')), fresh_budget=3.0)
+            if applies(current) else next_cloud_data(current, index))
     if data is None:
         data, _ = next_direct_data(current, index, cancelled)
     if not data or cancelled():
         return None
     data.update(request_id=uuid4().hex, selection_policy='exact',
                 _account=deepcopy(current['_account']), direct_playback_handoff=True)
+    if data.get('_next_transport') == 'bt':
+        # Keep a proved tuple provisional while the current episode plays.
+        # Open the BT transport only after EOF's final cloud-first recheck.
+        return resolve_standard(data, cancelled) if current.get('_continuation_final') else data
+    if data.get('_next_cloud_verified'):
+        return data if not cancelled() else None
     return resolve_selected(data, cancelled)
 
 
@@ -193,6 +201,10 @@ class StandardPlayback:
     def next_with_subtitle(self, current, cancelled):
         guard = lambda: cancelled() or not self.host.accounts.is_current(current['_account'])
         data = next_data(current, guard)
+        if current.get('_continuation_final') or (data and data.get('_next_transport') == 'bt'):
+            # Ready media owns the remaining EOF budget. The existing subtitle
+            # worker can discover an optional candidate after this handoff.
+            return data if not guard() else None
         if data and not guard() and not data.get('subtitles_path'):
             # Optional IO cannot spend the media handoff's entire remaining
             # lease. Leave one second for publication/submission and keep the

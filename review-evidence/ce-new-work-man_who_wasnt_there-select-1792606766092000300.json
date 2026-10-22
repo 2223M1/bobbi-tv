@@ -1,0 +1,5393 @@
+{
+  "exit_code": 1,
+  "transport_exit_code": 0,
+  "trial_exit_code": 1,
+  "result": {
+    "name": "man_who_wasnt_there",
+    "operation": "select",
+    "cards": [],
+    "selected": true,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 14,
+      "reset_action": "firstpage"
+    },
+    "samples": [
+      {
+        "wall": 21972.479701203,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 21972.45914264,
+          "decoder_started": 21972.512715034,
+          "decoder_completed": 21972.513182975,
+          "sample_completed": 21972.514112107
+        },
+        "cancelled": null,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21972.512715034,
+          "read_completed": 21972.513182975,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 21972.982463362,
+        "phase": null,
+        "observation_times": {
+          "sample_started": 21972.959262496,
+          "decoder_started": 21973.106558028,
+          "decoder_completed": 21973.106823584,
+          "sample_completed": 21973.10691138
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21973.106558028,
+          "read_completed": 21973.106823584,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": null,
+          "request_id": null,
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": null,
+          "user_intent": null,
+          "sequence": null
+        }
+      },
+      {
+        "wall": 21973.493441245,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21973.45937599,
+          "decoder_started": 21973.514855806,
+          "decoder_completed": 21973.515360415,
+          "sample_completed": 21973.515524424
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21973.514855806,
+          "read_completed": 21973.515360415,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21973.979730251,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21973.959519501,
+          "decoder_started": 21974.011988662,
+          "decoder_completed": 21974.012561275,
+          "sample_completed": 21974.012711199
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21974.011988662,
+          "read_completed": 21974.012561275,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21974.49950557,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21974.459648108,
+          "decoder_started": 21974.531033646,
+          "decoder_completed": 21974.53124249,
+          "sample_completed": 21974.531321911
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21974.531033646,
+          "read_completed": 21974.53124249,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21974.984469956,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21974.959739187,
+          "decoder_started": 21975.012512645,
+          "decoder_completed": 21975.012730115,
+          "sample_completed": 21975.012804744
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21975.012512645,
+          "read_completed": 21975.012730115,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21975.484373367,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21975.459868406,
+          "decoder_started": 21975.5208729,
+          "decoder_completed": 21975.521361633,
+          "sample_completed": 21975.521518225
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21975.5208729,
+          "read_completed": 21975.521361633,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21975.997516435,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21975.960071479,
+          "decoder_started": 21976.029474944,
+          "decoder_completed": 21976.02989159,
+          "sample_completed": 21976.030072266
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21976.029474944,
+          "read_completed": 21976.02989159,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21976.494252878,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21976.460115806,
+          "decoder_started": 21976.512245211,
+          "decoder_completed": 21976.512740736,
+          "sample_completed": 21976.512900328
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21976.512245211,
+          "read_completed": 21976.512740736,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21977.006997828,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21976.960228404,
+          "decoder_started": 21977.030517151,
+          "decoder_completed": 21977.030741912,
+          "sample_completed": 21977.030813582
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21977.030517151,
+          "read_completed": 21977.030741912,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21977.49332873,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21977.460329597,
+          "decoder_started": 21977.51417633,
+          "decoder_completed": 21977.514646104,
+          "sample_completed": 21977.514787152
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21977.51417633,
+          "read_completed": 21977.514646104,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21977.989347567,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21977.96049077,
+          "decoder_started": 21978.0144488,
+          "decoder_completed": 21978.014660644,
+          "sample_completed": 21978.014733481
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21978.0144488,
+          "read_completed": 21978.014660644,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21978.50112046,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21978.460607412,
+          "decoder_started": 21978.530894465,
+          "decoder_completed": 21978.531383157,
+          "sample_completed": 21978.531536373
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21978.530894465,
+          "read_completed": 21978.531383157,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21979.006028612,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21978.960738864,
+          "decoder_started": 21979.029555343,
+          "decoder_completed": 21979.030004199,
+          "sample_completed": 21979.030137414
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21979.029555343,
+          "read_completed": 21979.030004199,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21979.499246595,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21979.460869579,
+          "decoder_started": 21979.511526672,
+          "decoder_completed": 21979.511931567,
+          "sample_completed": 21979.512111826
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21979.511526672,
+          "read_completed": 21979.511931567,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21980.008253024,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21979.960996561,
+          "decoder_started": 21980.031306352,
+          "decoder_completed": 21980.031543447,
+          "sample_completed": 21980.031621618
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21980.031306352,
+          "read_completed": 21980.031543447,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21980.532864115,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21980.46113839,
+          "decoder_started": 21980.564248106,
+          "decoder_completed": 21980.56446245,
+          "sample_completed": 21980.564532829
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21980.564248106,
+          "read_completed": 21980.56446245,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21980.994904258,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21980.961264028,
+          "decoder_started": 21981.011953197,
+          "decoder_completed": 21981.012230044,
+          "sample_completed": 21981.012312757
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21981.011953197,
+          "read_completed": 21981.012230044,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21981.5489571,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21981.461389472,
+          "decoder_started": 21981.581991335,
+          "decoder_completed": 21981.582374187,
+          "sample_completed": 21981.582498152
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21981.581991335,
+          "read_completed": 21981.582374187,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21982.042476356,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21981.9615141,
+          "decoder_started": 21982.08111312,
+          "decoder_completed": 21982.081584477,
+          "sample_completed": 21982.081734193
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21982.08111312,
+          "read_completed": 21982.081584477,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21982.527257551,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21982.461649325,
+          "decoder_started": 21982.583641068,
+          "decoder_completed": 21982.584121842,
+          "sample_completed": 21982.584262682
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21982.583641068,
+          "read_completed": 21982.584121842,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21983.016194029,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21982.961764651,
+          "decoder_started": 21983.048852822,
+          "decoder_completed": 21983.049294302,
+          "sample_completed": 21983.049422184
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21983.048852822,
+          "read_completed": 21983.049294302,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21983.591397626,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21983.461874116,
+          "decoder_started": 21983.631497033,
+          "decoder_completed": 21983.63217565,
+          "sample_completed": 21983.632357034
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21983.631497033,
+          "read_completed": 21983.63217565,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21984.045792633,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21983.962028393,
+          "decoder_started": 21984.079266836,
+          "decoder_completed": 21984.079453886,
+          "sample_completed": 21984.079520848
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21984.079266836,
+          "read_completed": 21984.079453886,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21984.566380002,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21984.462123556,
+          "decoder_started": 21984.601318146,
+          "decoder_completed": 21984.60176321,
+          "sample_completed": 21984.60191455
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21984.601318146,
+          "read_completed": 21984.60176321,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21985.01862186,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21984.962327035,
+          "decoder_started": 21985.046597493,
+          "decoder_completed": 21985.046835088,
+          "sample_completed": 21985.046907008
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21985.046597493,
+          "read_completed": 21985.046835088,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21985.500710867,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21985.462440774,
+          "decoder_started": 21985.545744668,
+          "decoder_completed": 21985.54612027,
+          "sample_completed": 21985.546240609
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21985.545744668,
+          "read_completed": 21985.54612027,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21986.006879214,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21985.962601742,
+          "decoder_started": 21986.028668037,
+          "decoder_completed": 21986.028945051,
+          "sample_completed": 21986.029033722
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "decoder": {
+          "schema": 2,
+          "read_started": 21986.028668037,
+          "read_completed": 21986.028945051,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 0
+        }
+      },
+      {
+        "wall": 21986.480125118,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21986.462694179,
+          "decoder_started": 21986.974116483,
+          "decoder_completed": 21986.974359662,
+          "sample_completed": 21986.976163
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 16,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21986.974116483,
+          "read_completed": 21986.974359662,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 16\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "d73794738acfc134d9522105cbef57f0c3d772fe66e042b5cbf6548d73001ba0",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 16,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 1
+        }
+      },
+      {
+        "wall": 21987.063011971,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21986.976285757,
+          "decoder_started": 21987.147766754,
+          "decoder_completed": 21987.147985307,
+          "sample_completed": 21987.148168733
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 16,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21987.147766754,
+          "read_completed": 21987.147985307,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 16\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "d73794738acfc134d9522105cbef57f0c3d772fe66e042b5cbf6548d73001ba0",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 16,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 1
+        }
+      },
+      {
+        "wall": 21987.51442846,
+        "phase": "OPEN",
+        "observation_times": {
+          "sample_started": 21987.476429394,
+          "decoder_started": 21987.607199746,
+          "decoder_completed": 21987.607443924,
+          "sample_completed": 21987.607587223
+        },
+        "cancelled": false,
+        "failure": null,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 16,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21987.607199746,
+          "read_completed": 21987.607443924,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 16\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "d73794738acfc134d9522105cbef57f0c3d772fe66e042b5cbf6548d73001ba0",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 16,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 1
+        }
+      },
+      {
+        "wall": 21988.231254546,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21987.97653151,
+          "player_time_started": 21988.237835701,
+          "player_time_completed": 21988.242190997,
+          "caching_started": 21988.242216082,
+          "caching_completed": 21988.264143154,
+          "decoder_started": 21988.319668701,
+          "decoder_completed": 21988.320235145,
+          "sample_completed": 21988.320580245
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 27,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21988.319668701,
+          "read_completed": 21988.320235145,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 27\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "cca194184573ea3bf974d8303524e631cfe0eaea5739e508427cb94906d41944",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 27,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21988.528073184,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21988.47667914,
+          "player_time_started": 21988.542688396,
+          "player_time_completed": 21988.548426551,
+          "caching_started": 21988.54844851,
+          "caching_completed": 21988.58012647,
+          "decoder_started": 21988.629248571,
+          "decoder_completed": 21988.629480374,
+          "sample_completed": 21988.629622464
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 34,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21988.629248571,
+          "read_completed": 21988.629480374,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 34\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "892397d4e16222d950ec05d23ebef3a59efffa80c93f2588a6d6825281f6c8b8",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 34,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21989.212111376,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21988.976820624,
+          "player_time_started": 21989.218339596,
+          "player_time_completed": 21989.224258343,
+          "caching_started": 21989.22428026,
+          "caching_completed": 21989.268385533,
+          "decoder_started": 21989.322533336,
+          "decoder_completed": 21989.322999984,
+          "sample_completed": 21989.323307832
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 51,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21989.322533336,
+          "read_completed": 21989.322999984,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 51\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "e7d8a92fc6e99863febac7e2484222db4cc9f50bcedf5cef471ab8f41ab2c1e3",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 51,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21989.579064243,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21989.476955538,
+          "player_time_started": 21989.584302955,
+          "player_time_completed": 21989.58862329,
+          "caching_started": 21989.5886625,
+          "caching_completed": 21989.639709352,
+          "decoder_started": 21989.692668922,
+          "decoder_completed": 21989.69317203,
+          "sample_completed": 21989.69350738
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 60,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21989.692668922,
+          "read_completed": 21989.69317203,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 60\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "031b1f7f13e9cbf0bac97263f327d9de22d3975e6a9f3e75705a8c9a75d91ad7",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 60,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21990.008121563,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21989.977066556,
+          "player_time_started": 21990.015121528,
+          "player_time_completed": 21990.022277417,
+          "caching_started": 21990.022319294,
+          "caching_completed": 21990.061670203,
+          "decoder_started": 21990.101887488,
+          "decoder_completed": 21990.102292341,
+          "sample_completed": 21990.102454849
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 70,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21990.101887488,
+          "read_completed": 21990.102292341,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 70\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "77e3dcf5427f6f20aa1fb1f6625e8b1a6ba3bceb97bd4007fa2b41f85b4b5e2a",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 70,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21990.527770908,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21990.477200421,
+          "player_time_started": 21990.532154078,
+          "player_time_completed": 21990.53488396,
+          "caching_started": 21990.534903544,
+          "caching_completed": 21990.5565723,
+          "decoder_started": 21990.607243333,
+          "decoder_completed": 21990.607783026,
+          "sample_completed": 21990.608154586
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 82,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21990.607243333,
+          "read_completed": 21990.607783026,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 82\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "badc300eae41ef79e4c0df214052372b6047c135a466779401c76fb66c251239",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 82,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21991.085627127,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21990.977327183,
+          "player_time_started": 21991.088335508,
+          "player_time_completed": 21991.090887632,
+          "caching_started": 21991.090906799,
+          "caching_completed": 21991.101207131,
+          "decoder_started": 21991.146013547,
+          "decoder_completed": 21991.146234099,
+          "sample_completed": 21991.146382315
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 98,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21991.146013547,
+          "read_completed": 21991.146234099,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 98\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "cdbdfed05de4fb12810b300e5bb4e504ef9a8335140ef1c183a160cfcbff45f1",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 98,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21991.557216466,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21991.477457291,
+          "player_time_started": 21991.56279311,
+          "player_time_completed": 21991.565684874,
+          "caching_started": 21991.565704917,
+          "caching_completed": 21991.600848151,
+          "decoder_started": 21991.64720055,
+          "decoder_completed": 21991.647431186,
+          "sample_completed": 21991.64757586
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 107,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21991.64720055,
+          "read_completed": 21991.647431186,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 107\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "7470afcb4f0d8966d838db1e8baedcc30c947b99c1c35c3b9fe386648e31e7ee",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 107,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21992.026770957,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21991.977549003,
+          "player_time_started": 21992.031149085,
+          "player_time_completed": 21992.034366281,
+          "caching_started": 21992.034385324,
+          "caching_completed": 21992.062409757,
+          "decoder_started": 21992.106453587,
+          "decoder_completed": 21992.106864565,
+          "sample_completed": 21992.107197039
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 113,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21992.106453587,
+          "read_completed": 21992.106864565,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 113\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "46c174ddf1dd58d98ef343757af46be9ee5a63e0db851138f150fc6995fee836",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 113,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21992.548388039,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21992.477690355,
+          "player_time_started": 21992.55427878,
+          "player_time_completed": 21992.568550965,
+          "caching_started": 21992.568573175,
+          "caching_completed": 21992.600346408,
+          "decoder_started": 21992.648776023,
+          "decoder_completed": 21992.649203044,
+          "sample_completed": 21992.649495224
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 113,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21992.648776023,
+          "read_completed": 21992.649203044,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 113\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "46c174ddf1dd58d98ef343757af46be9ee5a63e0db851138f150fc6995fee836",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 113,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21993.00811085,
+        "phase": "AV_STARTED",
+        "seconds": -0.038,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21992.97782923,
+          "player_time_started": 21993.017710185,
+          "player_time_completed": 21993.020599241,
+          "caching_started": 21993.020617075,
+          "caching_completed": 21993.058992083,
+          "decoder_started": 21993.108307158,
+          "decoder_completed": 21993.108735345,
+          "sample_completed": 21993.109030234
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 113,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21993.108307158,
+          "read_completed": 21993.108735345,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 113\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "46c174ddf1dd58d98ef343757af46be9ee5a63e0db851138f150fc6995fee836",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 113,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21993.511374506,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21993.47802762,
+          "player_time_started": 21993.517422587,
+          "player_time_completed": 21993.525515974,
+          "caching_started": 21993.525567935,
+          "caching_completed": 21993.561637992,
+          "decoder_started": 21993.608255638,
+          "decoder_completed": 21993.608490566,
+          "sample_completed": 21993.608638614
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 137,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21993.608255638,
+          "read_completed": 21993.608490566,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 137\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "967b2c2da98166a54d8668e61402a60f006bc344519cbeeb87af7fab51792937",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 137,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21994.01113019,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21993.978160864,
+          "player_time_started": 21994.01853046,
+          "player_time_completed": 21994.027164873,
+          "caching_started": 21994.027202333,
+          "caching_completed": 21994.060429588,
+          "decoder_started": 21994.110298722,
+          "decoder_completed": 21994.110535025,
+          "sample_completed": 21994.110674324
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 153,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21994.110298722,
+          "read_completed": 21994.110535025,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 153\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "e23677fffe259fb0f1a1d08120251ef9d00094207342541dcc1c712eddd222c5",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 153,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21994.505795763,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21994.47829237,
+          "player_time_started": 21994.513274953,
+          "player_time_completed": 21994.521071574,
+          "caching_started": 21994.521093117,
+          "caching_completed": 21994.560895596,
+          "decoder_started": 21994.609029097,
+          "decoder_completed": 21994.609248149,
+          "sample_completed": 21994.609391406
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 153,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21994.609029097,
+          "read_completed": 21994.609248149,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 153\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "e23677fffe259fb0f1a1d08120251ef9d00094207342541dcc1c712eddd222c5",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 153,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21994.992249808,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21994.978387564,
+          "player_time_started": 21994.995439293,
+          "player_time_completed": 21994.998448645,
+          "caching_started": 21994.998468062,
+          "caching_completed": 21995.0186749,
+          "decoder_started": 21995.065556508,
+          "decoder_completed": 21995.065970652,
+          "sample_completed": 21995.066257124
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 153,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21995.065556508,
+          "read_completed": 21995.065970652,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 153\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "e23677fffe259fb0f1a1d08120251ef9d00094207342541dcc1c712eddd222c5",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 153,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21995.498796777,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21995.478516773,
+          "player_time_started": 21995.501347815,
+          "player_time_completed": 21995.504161532,
+          "caching_started": 21995.5041837,
+          "caching_completed": 21995.520141749,
+          "decoder_started": 21995.56443335,
+          "decoder_completed": 21995.564693613,
+          "sample_completed": 21995.564864871
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 153,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21995.56443335,
+          "read_completed": 21995.564693613,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 153\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "e23677fffe259fb0f1a1d08120251ef9d00094207342541dcc1c712eddd222c5",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 153,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21996.004359477,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21995.978716843,
+          "player_time_started": 21996.006940849,
+          "player_time_completed": 21996.01016046,
+          "caching_started": 21996.010182336,
+          "caching_completed": 21996.021174775,
+          "decoder_started": 21996.07487849,
+          "decoder_completed": 21996.075334678,
+          "sample_completed": 21996.075709863
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 153,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21996.07487849,
+          "read_completed": 21996.075334678,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 153\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "e23677fffe259fb0f1a1d08120251ef9d00094207342541dcc1c712eddd222c5",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 153,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21996.504526679,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21996.478848048,
+          "player_time_started": 21996.511095822,
+          "player_time_completed": 21996.518351499,
+          "caching_started": 21996.518385625,
+          "caching_completed": 21996.563498217,
+          "decoder_started": 21996.607491296,
+          "decoder_completed": 21996.607837771,
+          "sample_completed": 21996.608061323
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 165,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21996.607491296,
+          "read_completed": 21996.607837771,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 165\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "b99a032f3349960191856154cf139af53889ba757a9b9baffa4e69875d7d0779",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 165,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21997.003949874,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21996.978991985,
+          "player_time_started": 21997.010330509,
+          "player_time_completed": 21997.017223293,
+          "caching_started": 21997.017258919,
+          "caching_completed": 21997.063506023,
+          "decoder_started": 21997.10826268,
+          "decoder_completed": 21997.108592946,
+          "sample_completed": 21997.108793914
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 177,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21997.10826268,
+          "read_completed": 21997.108592946,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 177\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "339bcabf1a0a8a5a18b76f727eeb0b5b667a7f82766e5ba21654477057a0aef3",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 177,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21997.495516416,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21997.47908085,
+          "player_time_started": 21997.497822691,
+          "player_time_completed": 21997.500547653,
+          "caching_started": 21997.50056807,
+          "caching_completed": 21997.521945869,
+          "decoder_started": 21997.574441967,
+          "decoder_completed": 21997.574867403,
+          "sample_completed": 21997.575156042
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 187,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21997.574441967,
+          "read_completed": 21997.574867403,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 187\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "58015e59aa588b25f7c24031969067fe2d78e8b98757469a4ed8a562be2f75f7",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 187,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21998.016348281,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21997.979852771,
+          "player_time_started": 21998.021087421,
+          "player_time_completed": 21998.025052525,
+          "caching_started": 21998.025077359,
+          "caching_completed": 21998.068263977,
+          "decoder_started": 21998.119883075,
+          "decoder_completed": 21998.120435559,
+          "sample_completed": 21998.120731823
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 200,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21998.119883075,
+          "read_completed": 21998.120435559,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 200\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "3b5de2e37a9874eceac1a8511643893f563574a8021932540a2d12d0ae3ca7fe",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 200,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21998.513041726,
+        "phase": "AV_STARTED",
+        "seconds": 5.508,
+        "speed": 1,
+        "caching": true,
+        "observation_times": {
+          "sample_started": 21998.48036215,
+          "player_time_started": 21998.519756082,
+          "player_time_completed": 21998.527322437,
+          "caching_started": 21998.527367023,
+          "caching_completed": 21998.564750402,
+          "decoder_started": 21998.610003984,
+          "decoder_completed": 21998.610313374,
+          "sample_completed": 21998.610493715
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 212,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21998.610003984,
+          "read_completed": 21998.610313374,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 212\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "5055f8cc23b7fff7529e70e11948bd56d1f04998d8e9f4ec935d079c22c13d00",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 212,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21999.004399492,
+        "phase": "AV_STARTED",
+        "seconds": 8.3,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21998.980827928,
+          "player_time_started": 21999.011136308,
+          "player_time_completed": 21999.017819247,
+          "caching_started": 21999.017854957,
+          "caching_completed": 21999.026233683,
+          "decoder_started": 21999.074983346,
+          "decoder_completed": 21999.075402324,
+          "sample_completed": 21999.075695755
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 223,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21999.074983346,
+          "read_completed": 21999.075402324,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 223\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "12301d53c0a43e1a846ba5ec5e3f323b113889a6db172e36691b14bca11902af",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 223,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 21999.490196051,
+        "phase": "AV_STARTED",
+        "seconds": 8.925,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21999.480934951,
+          "player_time_started": 21999.492746462,
+          "player_time_completed": 21999.495674932,
+          "caching_started": 21999.495694599,
+          "caching_completed": 21999.523928544,
+          "decoder_started": 21999.569178368,
+          "decoder_completed": 21999.569425588,
+          "sample_completed": 21999.569608347
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 235,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 21999.569178368,
+          "read_completed": 21999.569425588,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 235\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "8724bdadf3c90aedc8f823e1010278235d63168385e68cb4a1158d8272239a75",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 235,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22000.004788734,
+        "phase": "AV_STARTED",
+        "seconds": 9.301,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 21999.981056417,
+          "player_time_started": 22000.007179638,
+          "player_time_completed": 22000.00993735,
+          "caching_started": 22000.009958393,
+          "caching_completed": 22000.027515172,
+          "decoder_started": 22000.075910226,
+          "decoder_completed": 22000.076182531,
+          "sample_completed": 22000.076327954
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 247,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22000.075910226,
+          "read_completed": 22000.076182531,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 247\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "a58bf16803265ef0fcd096a8f12c4b064557ee2922105bcab7e8228f2e30abfd",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 247,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22000.495964751,
+        "phase": "AV_STARTED",
+        "seconds": 9.926,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22000.481146685,
+          "player_time_started": 22000.498338403,
+          "player_time_completed": 22000.500904397,
+          "caching_started": 22000.500924607,
+          "caching_completed": 22000.529575566,
+          "decoder_started": 22000.579730569,
+          "decoder_completed": 22000.580238426,
+          "sample_completed": 22000.580539357
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 259,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22000.579730569,
+          "read_completed": 22000.580238426,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 259\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "374f898f8c127eff979823b0268d84470d20ca83317fa4bd3802ec757deb3eb5",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 259,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22001.01380808,
+        "phase": "AV_STARTED",
+        "seconds": 10.343,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22000.981290732,
+          "player_time_started": 22001.023064095,
+          "player_time_completed": 22001.030223595,
+          "caching_started": 22001.03026293,
+          "caching_completed": 22001.070965659,
+          "decoder_started": 22001.117401447,
+          "decoder_completed": 22001.117831301,
+          "sample_completed": 22001.118125814
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 272,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22001.117401447,
+          "read_completed": 22001.117831301,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 272\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "c52d7be06b6670219077af9d0e4541d58460aa7a5dc2b2cc8c10532efd6fb531",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 272,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22001.492409885,
+        "phase": "AV_STARTED",
+        "seconds": 10.969,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22001.48139704,
+          "player_time_started": 22001.494905875,
+          "player_time_completed": 22001.497927932,
+          "caching_started": 22001.4979481,
+          "caching_completed": 22001.530078591,
+          "decoder_started": 22001.578896398,
+          "decoder_completed": 22001.579486009,
+          "sample_completed": 22001.579955864
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 283,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22001.578896398,
+          "read_completed": 22001.579486009,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 283\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "b735d5f087aee2f5df0c4d61cacbe6f50529bfee2f95433a361b36c7cb29f32b",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 283,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22002.009853856,
+        "phase": "AV_STARTED",
+        "seconds": 11.386,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22001.981555001,
+          "player_time_started": 22002.016338407,
+          "player_time_completed": 22002.022505026,
+          "caching_started": 22002.02254332,
+          "caching_completed": 22002.071181827,
+          "decoder_started": 22002.119273309,
+          "decoder_completed": 22002.119717829,
+          "sample_completed": 22002.120071304
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 296,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22002.119273309,
+          "read_completed": 22002.119717829,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 296\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "d72a9a7c38cef9524f3839a6670a83b400754453d6b3edec95bc9ad8d04d7efb",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 296,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22002.507835266,
+        "phase": "AV_STARTED",
+        "seconds": 11.761,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22002.481712975,
+          "player_time_started": 22002.513241016,
+          "player_time_completed": 22002.517007399,
+          "caching_started": 22002.517044609,
+          "caching_completed": 22002.530780202,
+          "decoder_started": 22002.5819244,
+          "decoder_completed": 22002.582422256,
+          "sample_completed": 22002.582747521
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 307,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22002.5819244,
+          "read_completed": 22002.582422256,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 307\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "cad04e5ca05c8d2ea603f1fedc9f78604f692cd78b5b8abd7f3c6a64ef7894dd",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 307,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22002.999113397,
+        "phase": "AV_STARTED",
+        "seconds": 12.387,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22002.981840682,
+          "player_time_started": 22003.001958945,
+          "player_time_completed": 22003.005210512,
+          "caching_started": 22003.005229597,
+          "caching_completed": 22003.028470713,
+          "decoder_started": 22003.080335486,
+          "decoder_completed": 22003.080863844,
+          "sample_completed": 22003.081286613
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 319,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22003.080335486,
+          "read_completed": 22003.080863844,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 319\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "64d6df643b43b66fadc4faf0d4ccbb2ba5dfa2c78720a38dbbec6fb3e6159396",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 319,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22003.495993215,
+        "phase": "AV_STARTED",
+        "seconds": 12.804,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22003.481947359,
+          "player_time_started": 22003.498574292,
+          "player_time_completed": 22003.502333423,
+          "caching_started": 22003.502353716,
+          "caching_completed": 22003.531856908,
+          "decoder_started": 22003.573138768,
+          "decoder_completed": 22003.573434074,
+          "sample_completed": 22003.57359979
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 331,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22003.573138768,
+          "read_completed": 22003.573434074,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 331\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "ff8c70a764f341b7902b32006491dd7fe40210912df48fc709142d78d078a611",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 331,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22003.996606983,
+        "phase": "AV_STARTED",
+        "seconds": 13.43,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22003.982044854,
+          "player_time_started": 22003.998996385,
+          "player_time_completed": 22004.002207241,
+          "caching_started": 22004.002230451,
+          "caching_completed": 22004.028695086,
+          "decoder_started": 22004.073668783,
+          "decoder_completed": 22004.073964963,
+          "sample_completed": 22004.074128179
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 343,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22004.073668783,
+          "read_completed": 22004.073964963,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 343\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "072b198933f9de00f859107377fcbc553f6adff0708ee00a3702e1e7690e1b5f",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 343,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22004.510842679,
+        "phase": "AV_STARTED",
+        "seconds": 13.805,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22004.48216678,
+          "player_time_started": 22004.51713901,
+          "player_time_completed": 22004.522356291,
+          "caching_started": 22004.522377,
+          "caching_completed": 22004.530323365,
+          "decoder_started": 22004.577662871,
+          "decoder_completed": 22004.577929716,
+          "sample_completed": 22004.57808014
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 355,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22004.577662871,
+          "read_completed": 22004.577929716,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 355\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "b92d43c1511fb020ba957e1f6a938425a93151583a6ac78960bc6cc3dcd6afac",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 355,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22005.014440624,
+        "phase": "AV_STARTED",
+        "seconds": 14.431,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22004.982306775,
+          "player_time_started": 22005.020615575,
+          "player_time_completed": 22005.024663219,
+          "caching_started": 22005.024697679,
+          "caching_completed": 22005.034746348,
+          "decoder_started": 22005.077713403,
+          "decoder_completed": 22005.078055961,
+          "sample_completed": 22005.078264512
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 367,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22005.077713403,
+          "read_completed": 22005.078055961,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 367\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "95229db561941d699532186cbfe811f7bec9fbf719ef9758e95407ed5af7c3ca",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 367,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22005.515536796,
+        "phase": "AV_STARTED",
+        "seconds": 14.848,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22005.482426824,
+          "player_time_started": 22005.521302309,
+          "player_time_completed": 22005.527469008,
+          "caching_started": 22005.52750351,
+          "caching_completed": 22005.581735323,
+          "decoder_started": 22005.622706654,
+          "decoder_completed": 22005.62316805,
+          "sample_completed": 22005.623461314
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 380,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22005.622706654,
+          "read_completed": 22005.62316805,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 380\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "62dd3a69b4c8ffa6982ed97bb0184d1fa0938489ca360e4ad641462151eb10b8",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 380,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22006.008489794,
+        "phase": "AV_STARTED",
+        "seconds": 15.473,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22005.982558275,
+          "player_time_started": 22006.019352249,
+          "player_time_completed": 22006.023998253,
+          "caching_started": 22006.02405613,
+          "caching_completed": 22006.030756895,
+          "decoder_started": 22006.076476194,
+          "decoder_completed": 22006.076777833,
+          "sample_completed": 22006.076945965
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 391,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22006.076476194,
+          "read_completed": 22006.076777833,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 391\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "b8f70e81bb957cd61c4e0bcbab031c9911c8fb867696e7c771018552fcc98567",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 391,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22006.512140747,
+        "phase": "AV_STARTED",
+        "seconds": 15.849,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22006.482677655,
+          "player_time_started": 22006.518131062,
+          "player_time_completed": 22006.524506185,
+          "caching_started": 22006.524547104,
+          "caching_completed": 22006.535076417,
+          "decoder_started": 22006.582512369,
+          "decoder_completed": 22006.583049602,
+          "sample_completed": 22006.583362616
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 403,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22006.582512369,
+          "read_completed": 22006.583049602,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 403\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "98fe97df6172fee9f16c7c16d0f00833fb4050313a831831765abf6c67b83420",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 403,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22007.018250385,
+        "phase": "AV_STARTED",
+        "seconds": 16.474,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22006.982805604,
+          "player_time_started": 22007.023232779,
+          "player_time_completed": 22007.026433091,
+          "caching_started": 22007.026452759,
+          "caching_completed": 22007.031927592,
+          "decoder_started": 22007.082812618,
+          "decoder_completed": 22007.083269847,
+          "sample_completed": 22007.083557735
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 415,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22007.082812618,
+          "read_completed": 22007.083269847,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 415\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "0be85efe4dd710ed558ac5b3a102a364c18ef29f31db95c01c897143ec202524",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 415,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22007.522892755,
+        "phase": "AV_STARTED",
+        "seconds": 16.891,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22007.482926399,
+          "player_time_started": 22007.528810524,
+          "player_time_completed": 22007.540437968,
+          "caching_started": 22007.540476136,
+          "caching_completed": 22007.575538644,
+          "decoder_started": 22007.618936947,
+          "decoder_completed": 22007.619249836,
+          "sample_completed": 22007.619418802
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 428,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22007.618936947,
+          "read_completed": 22007.619249836,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 428\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "d2dc43118d0f02e8e3f0245ea698176d717e41fe14d462c8b43edb3054d3e549",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 428,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22008.01035617,
+        "phase": "AV_STARTED",
+        "seconds": 17.309,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22007.983050181,
+          "player_time_started": 22008.017467368,
+          "player_time_completed": 22008.023072539,
+          "caching_started": 22008.02309429,
+          "caching_completed": 22008.032929278,
+          "decoder_started": 22008.083056011,
+          "decoder_completed": 22008.083531782,
+          "sample_completed": 22008.083895466
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 439,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22008.083056011,
+          "read_completed": 22008.083531782,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 439\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "745c9c5b37721f0035568ca44766fb268c041ca813fa3349a2e4be35527739cb",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 439,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22008.505056465,
+        "phase": "AV_STARTED",
+        "seconds": 17.934,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22008.483176767,
+          "player_time_started": 22008.511551425,
+          "player_time_completed": 22008.519334319,
+          "caching_started": 22008.519369904,
+          "caching_completed": 22008.537520933,
+          "decoder_started": 22008.582814439,
+          "decoder_completed": 22008.583505387,
+          "sample_completed": 22008.583947032
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 451,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22008.582814439,
+          "read_completed": 22008.583505387,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 451\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "589c00ea1bb739f0273c6278c27242cf08e08372a5ba4f2e31d597e7c1ae4e09",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 451,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22009.013361949,
+        "phase": "AV_STARTED",
+        "seconds": 18.31,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22008.98330459,
+          "player_time_started": 22009.019875868,
+          "player_time_completed": 22009.026402038,
+          "caching_started": 22009.026422331,
+          "caching_completed": 22009.034050843,
+          "decoder_started": 22009.07896929,
+          "decoder_completed": 22009.079252845,
+          "sample_completed": 22009.079406352
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 463,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22009.07896929,
+          "read_completed": 22009.079252845,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 463\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "a5a7113ec2e5d8e3fdf17590f339e34fda33c20e26bf4eca45ded1d712e1c8bc",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 463,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22009.515154063,
+        "phase": "AV_STARTED",
+        "seconds": 18.935,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22009.483425592,
+          "player_time_started": 22009.521352509,
+          "player_time_completed": 22009.52929145,
+          "caching_started": 22009.529310326,
+          "caching_completed": 22009.534466392,
+          "decoder_started": 22009.585189885,
+          "decoder_completed": 22009.585634988,
+          "sample_completed": 22009.585933585
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 475,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22009.585189885,
+          "read_completed": 22009.585634988,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 475\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "b45ccd7b457d7cd123f000311e213469d02636a534b15506c69548afdc504f13",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 475,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22010.015659277,
+        "phase": "AV_STARTED",
+        "seconds": 19.352,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22009.983556373,
+          "player_time_started": 22010.020947057,
+          "player_time_completed": 22010.023500964,
+          "caching_started": 22010.023521548,
+          "caching_completed": 22010.035772225,
+          "decoder_started": 22010.084240784,
+          "decoder_completed": 22010.084721639,
+          "sample_completed": 22010.085013318
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 487,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22010.084240784,
+          "read_completed": 22010.084721639,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 487\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "4f2e7087220ae4e3c54eab34091c32e32fb2c4faf3114191952922fa8f22d708",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 487,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22010.510127854,
+        "phase": "AV_STARTED",
+        "seconds": 19.978,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22010.483706168,
+          "player_time_started": 22010.520585073,
+          "player_time_completed": 22010.525147528,
+          "caching_started": 22010.525167362,
+          "caching_completed": 22010.535420197,
+          "decoder_started": 22010.587281817,
+          "decoder_completed": 22010.587773714,
+          "sample_completed": 22010.588128938
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 499,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22010.587281817,
+          "read_completed": 22010.587773714,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 499\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "57705484d9da03d8a42dacc73f4063b7c460d7a60ee8cb617378ec98b4ecc7b5",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 499,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22011.011811995,
+        "phase": "AV_STARTED",
+        "seconds": 20.353,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22010.983826823,
+          "player_time_started": 22011.018651386,
+          "player_time_completed": 22011.023245259,
+          "caching_started": 22011.02326651,
+          "caching_completed": 22011.036259343,
+          "decoder_started": 22011.085131495,
+          "decoder_completed": 22011.08565756,
+          "sample_completed": 22011.085951865
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 511,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22011.085131495,
+          "read_completed": 22011.08565756,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 511\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "d1731500dbe18d12ddc200282997be9133d260c79339e69e79cc180a75ff0368",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 511,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22011.5087481,
+        "phase": "AV_STARTED",
+        "seconds": 20.979,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22011.483969034,
+          "player_time_started": 22011.515295185,
+          "player_time_completed": 22011.525280256,
+          "caching_started": 22011.525301091,
+          "caching_completed": 22011.539656232,
+          "decoder_started": 22011.590035069,
+          "decoder_completed": 22011.590644887,
+          "sample_completed": 22011.591192704
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 523,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22011.590035069,
+          "read_completed": 22011.590644887,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 523\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "c94eec10df6606346cfa9319ccc4159e1e7360a6b79308b57137688ac5eda7b0",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 523,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      },
+      {
+        "wall": 22012.011279488,
+        "phase": "AV_STARTED",
+        "seconds": 21.396,
+        "speed": 1,
+        "caching": false,
+        "observation_times": {
+          "sample_started": 22011.984117149,
+          "player_time_started": 22012.017965996,
+          "player_time_completed": 22012.022891924,
+          "caching_started": 22012.022913509,
+          "caching_completed": 22012.039025937,
+          "decoder_started": 22012.083645308,
+          "decoder_completed": 22012.083893152,
+          "sample_completed": 22012.084084994
+        },
+        "cancelled": false,
+        "failure": null,
+        "subtitleenabled": true,
+        "decoder_counters": {
+          "frame width": 3840,
+          "frame height": 2160,
+          "frame count": 535,
+          "drop count": 0,
+          "fra err count": 0,
+          "hw err count": 0
+        },
+        "decoder_counter_source": {
+          "channel": 0,
+          "device": "dvbldec"
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 22012.083645308,
+          "read_completed": 22012.083893152,
+          "raw": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 16777208 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 535\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+          "sha256": "3cb3fb7afe8b7f77702bfa0899dba1e81178fcb388cf36c2c7e55c32eb7dff0c",
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "counters": {
+                "frame width": 3840,
+                "frame height": 2160,
+                "frame count": 535,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ],
+          "identity_known": true,
+          "primary_channel": 0
+        },
+        "native": {
+          "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+          "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+          "subtitle_file_applied": null,
+          "subtitle_file_sha256": null,
+          "subtitle_intent": 0,
+          "user_intent": 0,
+          "sequence": 2
+        }
+      }
+    ],
+    "record": {
+      "test": {
+        "title": "The Man Who Wasn't There",
+        "tmdb_id": 10778,
+        "kind": "movie",
+        "year": 2001
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 10778,
+          "title": "The Man Who Wasn't There",
+          "original_title": "The Man Who Wasn't There",
+          "original_language": "en",
+          "release_date": "2001-10-26"
+        },
+        "route": "system-direct",
+        "checked_at": 1792606610.1123714
+      },
+      "prior_request": "2a73297274994d4abda844a7e7fe9ee9",
+      "started": 21857.423154269,
+      "home": {
+        "generation": 36,
+        "intent": 0,
+        "retired_generation": 36,
+        "observed_at": 21857.975941186
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 21857.976671494,
+      "picker": {
+        "window": 13001,
+        "generation": 38,
+        "intent": 0,
+        "tmdb_id": 10778,
+        "kind": "movie"
+      },
+      "picker_observed_at": 21860.250106304,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "缺席的人.美版 DIY简繁中字.The.Man.Who.Wasnt.There.2001.2160p.UHD.Blu-ray.Remux.DV.HDR.HEVC.DTS-HD.MA.5.1-CiNEPHiLES.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "76.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "af0a117eaed014af8b5aa60ff2a15ea4ac8eb40c1d0d59cb68f317e7b6849e3c",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 21972.454875627,
+      "request_id": "b0b696b0e47d48f5a029d847ecfd8a12",
+      "selection_identity": "transport:e4cc718d669f9061063aa4e1d62fb0c4c63d7638a789bf9ad80839bdc7aeb5f5",
+      "native_instance": "53634951-0802-4bbe-ad1f-47e3cb78a9ca",
+      "first_av_observed_at": 21988.230197494,
+      "select_to_av_observed_seconds": 15.77532186699682
+    },
+    "trace_health": {
+      "no_observed_stall": false,
+      "max_observed_stall_seconds": 5.001667219999945,
+      "clock_discontinuities": 1,
+      "observation_gaps": 0,
+      "stall_threshold_seconds": 1
+    },
+    "trace_signal_diagnostics": {
+      "caching_sample_runs": [
+        {
+          "first_index": 42,
+          "last_index": 52,
+          "first_wall": 21993.511374506,
+          "last_wall": 21998.513041726,
+          "wall_seconds": 5.001667219999945
+        }
+      ],
+      "stationary_decoder_with_caching_runs": [
+        {
+          "first_index": 43,
+          "last_index": 47,
+          "first_wall": 21994.01113019,
+          "last_wall": 21996.004359477,
+          "wall_seconds": 1.9932292869998491
+        }
+      ],
+      "stationary_clock_with_decoder_progress_runs": [
+        {
+          "first_index": 31,
+          "last_index": 39,
+          "first_wall": 21988.231254546,
+          "last_wall": 21992.026770957,
+          "wall_seconds": 3.795516410998971
+        }
+      ],
+      "observation_gap_events": [],
+      "clock_step_events": [
+        {
+          "first_index": 41,
+          "last_index": 42,
+          "wall_seconds": 0.5032636559990351,
+          "media_seconds": 5.546,
+          "direction": "forward",
+          "decoder_advanced": true,
+          "meaning": "CLOCK_STEP_NOT_SEEK_PROOF"
+        },
+        {
+          "first_index": 52,
+          "last_index": 53,
+          "wall_seconds": 0.4913577660008741,
+          "media_seconds": 2.7920000000000007,
+          "direction": "forward",
+          "decoder_advanced": true,
+          "meaning": "CLOCK_STEP_NOT_SEEK_PROOF"
+        }
+      ],
+      "decoder_counter_reset_events": [],
+      "changes_legacy_result": false,
+      "decoder_channel_intervals": [
+        {
+          "first_index": 0,
+          "last_index": 1,
+          "channels": []
+        },
+        {
+          "first_index": 1,
+          "last_index": 2,
+          "channels": []
+        },
+        {
+          "first_index": 2,
+          "last_index": 3,
+          "channels": []
+        },
+        {
+          "first_index": 3,
+          "last_index": 4,
+          "channels": []
+        },
+        {
+          "first_index": 4,
+          "last_index": 5,
+          "channels": []
+        },
+        {
+          "first_index": 5,
+          "last_index": 6,
+          "channels": []
+        },
+        {
+          "first_index": 6,
+          "last_index": 7,
+          "channels": []
+        },
+        {
+          "first_index": 7,
+          "last_index": 8,
+          "channels": []
+        },
+        {
+          "first_index": 8,
+          "last_index": 9,
+          "channels": []
+        },
+        {
+          "first_index": 9,
+          "last_index": 10,
+          "channels": []
+        },
+        {
+          "first_index": 10,
+          "last_index": 11,
+          "channels": []
+        },
+        {
+          "first_index": 11,
+          "last_index": 12,
+          "channels": []
+        },
+        {
+          "first_index": 12,
+          "last_index": 13,
+          "channels": []
+        },
+        {
+          "first_index": 13,
+          "last_index": 14,
+          "channels": []
+        },
+        {
+          "first_index": 14,
+          "last_index": 15,
+          "channels": []
+        },
+        {
+          "first_index": 15,
+          "last_index": 16,
+          "channels": []
+        },
+        {
+          "first_index": 16,
+          "last_index": 17,
+          "channels": []
+        },
+        {
+          "first_index": 17,
+          "last_index": 18,
+          "channels": []
+        },
+        {
+          "first_index": 18,
+          "last_index": 19,
+          "channels": []
+        },
+        {
+          "first_index": 19,
+          "last_index": 20,
+          "channels": []
+        },
+        {
+          "first_index": 20,
+          "last_index": 21,
+          "channels": []
+        },
+        {
+          "first_index": 21,
+          "last_index": 22,
+          "channels": []
+        },
+        {
+          "first_index": 22,
+          "last_index": 23,
+          "channels": []
+        },
+        {
+          "first_index": 23,
+          "last_index": 24,
+          "channels": []
+        },
+        {
+          "first_index": 24,
+          "last_index": 25,
+          "channels": []
+        },
+        {
+          "first_index": 25,
+          "last_index": 26,
+          "channels": []
+        },
+        {
+          "first_index": 26,
+          "last_index": 27,
+          "channels": []
+        },
+        {
+          "first_index": 27,
+          "last_index": 28,
+          "channels": []
+        },
+        {
+          "first_index": 28,
+          "last_index": 29,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 29,
+          "last_index": 30,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 30,
+          "last_index": 31,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 11,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 31,
+          "last_index": 32,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 7,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 32,
+          "last_index": 33,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 17,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 33,
+          "last_index": 34,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 9,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 34,
+          "last_index": 35,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 10,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 35,
+          "last_index": 36,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 36,
+          "last_index": 37,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 16,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 37,
+          "last_index": 38,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 9,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 38,
+          "last_index": 39,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 6,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 39,
+          "last_index": 40,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 40,
+          "last_index": 41,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 41,
+          "last_index": 42,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 24,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 42,
+          "last_index": 43,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 16,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 43,
+          "last_index": 44,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 44,
+          "last_index": 45,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 45,
+          "last_index": 46,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 46,
+          "last_index": 47,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 0,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 47,
+          "last_index": 48,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 48,
+          "last_index": 49,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 49,
+          "last_index": 50,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 10,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 50,
+          "last_index": 51,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 13,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 51,
+          "last_index": 52,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 52,
+          "last_index": 53,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 11,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 53,
+          "last_index": 54,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 54,
+          "last_index": 55,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 55,
+          "last_index": 56,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 56,
+          "last_index": 57,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 13,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 57,
+          "last_index": 58,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 11,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 58,
+          "last_index": 59,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 13,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 59,
+          "last_index": 60,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 11,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 60,
+          "last_index": 61,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 61,
+          "last_index": 62,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 62,
+          "last_index": 63,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 63,
+          "last_index": 64,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 64,
+          "last_index": 65,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 65,
+          "last_index": 66,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 13,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 66,
+          "last_index": 67,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 11,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 67,
+          "last_index": 68,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 68,
+          "last_index": 69,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 69,
+          "last_index": 70,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 13,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 70,
+          "last_index": 71,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 11,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 71,
+          "last_index": 72,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 72,
+          "last_index": 73,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 73,
+          "last_index": 74,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 74,
+          "last_index": 75,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 75,
+          "last_index": 76,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 76,
+          "last_index": 77,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 77,
+          "last_index": 78,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        },
+        {
+          "first_index": 78,
+          "last_index": 79,
+          "channels": [
+            {
+              "channel": 0,
+              "device": "dvbldec",
+              "reset": false,
+              "delta": {
+                "frame count": 12,
+                "drop count": 0,
+                "fra err count": 0,
+                "hw err count": 0
+              }
+            }
+          ]
+        }
+      ],
+      "render_continuity_proven": false,
+      "exact_transition_times_proven": false
+    },
+    "trace_coverage": {
+      "legacy_health": {
+        "no_observed_stall": false,
+        "max_observed_stall_seconds": 5.001667219999945,
+        "clock_discontinuities": 1,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "av_sample_count": 49,
+      "positive_av_sample_count": 38,
+      "positive_adjacent_interval_count": 37,
+      "longest_contiguous_positive_av_span_seconds": 18.49990498199986,
+      "whole_startup_or_render_continuity_proven": false,
+      "status": "observed_anomaly",
+      "reason": "ORIGINAL_HEALTH_FAILURE_PRESERVED",
+      "passed": false
+    },
+    "trace_passed": false
+  },
+  "diagnostic_present": false,
+  "work": "man_who_wasnt_there",
+  "operation": "select",
+  "attempt": 1,
+  "regression_attempt": false
+}

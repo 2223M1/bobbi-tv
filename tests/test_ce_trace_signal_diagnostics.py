@@ -56,6 +56,15 @@ def test_clock_catchups_keep_signal_steps_but_do_not_claim_a_seek():
     assert result['decoder_counter_reset_events'] == []
 
 
+def test_negative_initial_pts_does_not_hide_a_caching_observation():
+    ns = functions('startup_signal_diagnostics')
+    result = ns['startup_signal_diagnostics']([
+        row(0, -.039, 72, True), row(.5, .001, 72, True), row(1, .001, 72, True)])
+    assert result['caching_sample_runs'][0]['wall_seconds'] == 1
+    assert result['stationary_decoder_with_caching_runs'][0]['wall_seconds'] == 1
+    assert result['changes_legacy_result'] is False
+
+
 def test_open_phase_sampling_gap_is_recorded_without_claiming_a_playback_freeze():
     ns = functions('startup_signal_diagnostics')
     result = ns['startup_signal_diagnostics']([row(0, -1, 0, phase='OPEN'),

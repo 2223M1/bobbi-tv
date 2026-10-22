@@ -1,0 +1,184 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "gattaca",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.TrueHD.7.1.Atmos-FGT.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "51.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "b85f6de99c83a549d4238d9313809bc33ad232ad4175948db82c05a9595393b6",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.PROPER.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.TrueHD.7.1.Atmos-FGT.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "51.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "731b705e03ad8e913526fc45f721a2a9a7a11c137645fe3279e4eeade6b9507c",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.UHD.BluRay.x265.10bit.HDR.DTS-HD.MA.TrueHD.7.1.Atmos-SWTYBLZ.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "30.5 GB",
+        "Container(1000).ListItem.Property(source_key)": "f2b477ac0896434d7c2de6fdb7e022dd3369af59fa020cee5b1435c3fbe59676",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.UHD.BluRay.2160p.2Audio.TrueHD.Atmos.7.1.x265.10bit.HDR-BeiTai.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "26.8 GB",
+        "Container(1000).ListItem.Property(source_key)": "4715c8789eae1e50136a9bd4b27e10520acd79aa7e0fe47e5df56230dd8d4e4b",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.BluRay.1080p.2Audio.TrueHD.5.1.x265.10bit-BeiTai.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "10.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "cafdfec2569a4182051348cb6615d6a35b7f367615ffc33b9ba18a3d153ca3e9",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.千钧一发.国英音轨.双语字幕.HR-HDTV.1024X576.X264-人人影视制作.mkv",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "2.18 GB",
+        "Container(1000).ListItem.Property(source_key)": "8b40bf7598d21c0d1a3f33f8d2f5920b4b50db05657b13c00925e67c88637abf",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.TrueHD.7.1.Atmos- ...",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "51.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "3e01afd20acfabdce21c6b3a8167d12ebd4ba13403e889f305d077482b262aeb",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.Hybrid.2160p.UHD.BluRay.REMUX.HDR10Plus.HEVC.TrueHD.7.1.Atmos-WiLDC",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "46.5 GB",
+        "Container(1000).ListItem.Property(source_key)": "000de0b97f6c1e9acab71ab5fa8d311122d58e4e13f28ac0148aaba6afbe1893",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.UHD.BluRay.x265.10bit.HDR.DTS-HD.MA.TrueHD.7. ...",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "30.7 GB",
+        "Container(1000).ListItem.Property(source_key)": "bdc249b2709bdbd353a13c48ea28ccbc3e132860e4101762aada160466f07957",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.BluRay.x265.10bit.SDR.DTS-HD.MA.TrueHD.7.1.At ...",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "41.9 GB",
+        "Container(1000).ListItem.Property(source_key)": "b8a5d12efe7fbc9af2bc3546ff7a20006de4b95b9abb6bc83f576ff14743a860",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.BluRay.HEVC.TrueHD.7.1.Atmos-ESiR",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "53.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "65de82096859220785c44451885b91855f17e6021a9fa10da25f3328833fa1bc",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca (1997) 2160p BRRip 5.1 10Bit x265 -YTS",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.96 GB",
+        "Container(1000).ListItem.Property(source_key)": "2e93b043c5ed1bfce6f0fdaf904c70422488966a08d56e4b1fcb63169df49cbd",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.1080p.BluRay.REMUX.AVC.TrueHD.5.1-FGT",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "26.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "d2f496e7250ac67c51ccc02bd8160008a156d52295ef12418ca6cdd0b26e4445",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Гаттака / Gattaca [1997, США, фантастика, мелодрама, драма, детектив, BDRemux 1080p]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "23.8 GB",
+        "Container(1000).ListItem.Property(source_key)": "ce2b09945281acccf3634a23568a5dd75ed32e22acf1191fa65efc88dc6c69c1",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca 1997 UHD BluRay 1080p DD Atmos 5 1 DoVi HDR10  x265-SM737",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "4.78 GB",
+        "Container(1000).ListItem.Property(source_key)": "3ce4cedbe34086fd13311fb0e6c0cf34af8a818a28d21750f4bcc2ddb07fb21e",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca 1997 1080p BluRay DDP 5 1 10bit H 265-iVy",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.85 GB",
+        "Container(1000).ListItem.Property(source_key)": "6cc7ef031285632a49c6f8a0cea1e27df6abf241498549c4c9f9468d75e9d636",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca 1997 1080p Bluray x265 HEVC 10bit AAC 5.1 LION [UTR]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "1.84 GB",
+        "Container(1000).ListItem.Property(source_key)": "66e219f9aab99d5f4f3100006593a76b12e6fde47f25aaad2184b829decc6c4b",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Гаттака / Gattaca [1997, США, фантастика, мелодрама, драма, детектив, BDRip 1080p] Dub + MVO + 2x AVO + Original Eng + Sub Rus, Eng",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "12.2 GB",
+        "Container(1000).ListItem.Property(source_key)": "aa817a2ae5d70475ef1a544e54395398b1b3b48c6cc8ce9b94498d49bda2b251",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca 1997 V2 BluRay 1080p TrueHD5.1 x264-DreamHD",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "11.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "e402e08ea9e6ec7debb6432a8082d449367ef8e9751367bd1639149d127cd0d7",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "Gattaca.1997.1080p.BluRay.H264.AAC-LAMA[TGx]",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(size)": "2.03 GB",
+        "Container(1000).ListItem.Property(source_key)": "3166315ac4b5e4e04d696f64e292df3e78666a2fd348d17abd2d84f1dc5c7b5a",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 65,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "gattaca",
+  "operation": "cards",
+  "attempt": 2,
+  "regression_attempt": true
+}

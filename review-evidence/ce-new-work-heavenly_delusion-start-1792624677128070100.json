@@ -1,0 +1,419 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "heavenly_delusion",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Tengoku Daimakyo",
+        "tmdb_id": 208891,
+        "kind": "tv",
+        "year": 2023,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 208891,
+          "name": "Tengoku Daimakyo",
+          "original_name": "天国大魔境",
+          "original_language": "ja",
+          "first_air_date": "2023-04-01"
+        },
+        "route": "system-direct",
+        "checked_at": 1792624656.6630013
+      },
+      "prior_request": "fe504b6c7f654b318e028160435fdcfa",
+      "started": 39903.973780768,
+      "home": {
+        "generation": 18,
+        "intent": 0,
+        "retired_generation": 18,
+        "observed_at": 39904.5665897
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 39904.567191491,
+      "picker": {
+        "window": 13001,
+        "generation": 20,
+        "intent": 0,
+        "tmdb_id": 208891,
+        "kind": "tv"
+      },
+      "picker_observed_at": 39909.128966093
+    },
+    "samples": [
+      {
+        "wall": 39904.775698473,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39904.789622835,
+          "read_completed": 39904.789896502,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39904.756406365,
+          "decoder_started": 39904.789622835,
+          "decoder_completed": 39904.789896502,
+          "sample_completed": 39904.790360085
+        }
+      },
+      {
+        "wall": 39906.899545791,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39906.925481518,
+          "read_completed": 39906.925715601,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39906.872567274,
+          "decoder_started": 39906.925481518,
+          "decoder_completed": 39906.925715601,
+          "sample_completed": 39906.925795851
+        }
+      },
+      {
+        "wall": 39909.162463313,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39909.194526701,
+          "read_completed": 39909.194743576,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39909.129956717,
+          "decoder_started": 39909.194526701,
+          "decoder_completed": 39909.194743576,
+          "sample_completed": 39909.194827159
+        }
+      },
+      {
+        "wall": 39911.590101971,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39911.626632105,
+          "read_completed": 39911.626860313,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39911.420094666,
+          "decoder_started": 39911.626632105,
+          "decoder_completed": 39911.626860313,
+          "sample_completed": 39911.626933063
+        }
+      },
+      {
+        "wall": 39913.872963752,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "3"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39913.892516568,
+          "read_completed": 39913.89308715,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39913.741189829,
+          "decoder_started": 39913.892516568,
+          "decoder_completed": 39913.89308715,
+          "sample_completed": 39913.893244109
+        }
+      },
+      {
+        "wall": 39916.223317173,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[7³ACG] 天国大魔境/Tengoku daimakyou S01 | 01-13 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "3",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "24"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39916.237326994,
+          "read_completed": 39916.237796452,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39916.121548765,
+          "decoder_started": 39916.237326994,
+          "decoder_completed": 39916.237796452,
+          "sample_completed": 39916.238002618
+        }
+      },
+      {
+        "wall": 39918.51873447,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[7³ACG] 天国大魔境/Tengoku daimakyou S01 | 01-13 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "3",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "24"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39918.536571328,
+          "read_completed": 39918.53680212,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39918.404776948,
+          "decoder_started": 39918.536571328,
+          "decoder_completed": 39918.53680212,
+          "sample_completed": 39918.536883162
+        }
+      },
+      {
+        "wall": 39920.718239847,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[7³ACG] 天国大魔境/Tengoku daimakyou S01 | 01-13 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "27",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "27"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39920.792772654,
+          "read_completed": 39920.793180445,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39920.678351925,
+          "decoder_started": 39920.792772654,
+          "decoder_completed": 39920.793180445,
+          "sample_completed": 39920.793318487
+        }
+      },
+      {
+        "wall": 39922.920084548,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[7³ACG] 天国大魔境/Tengoku daimakyou S01 | 01-13 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+          "Container(1000).ListItem.Property(source_site)": "AnimeGarden",
+          "Container(1000).NumItems": "27",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "27"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 39922.948947355,
+          "read_completed": 39922.949341563,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 39922.90396973,
+          "decoder_started": 39922.948947355,
+          "decoder_completed": 39922.949341563,
+          "sample_completed": 39922.949542647
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "heavenly_delusion",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

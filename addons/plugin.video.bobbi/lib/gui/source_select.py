@@ -290,6 +290,7 @@ class SourceSelect(BaseWindow):
             from lib.portable import manual_modal
             return manual_modal(self, lambda: super(SourceSelect, self).doModal())
         prepared_retry = None
+        prepared_retry_cancelled = None
         while True:
             from lib.cinema.playback_ipc import call
             try:
@@ -302,11 +303,14 @@ class SourceSelect(BaseWindow):
             self._selection_locked = False
             if prepared_retry is not None:
                 from lib.cinema.prepared_retry import unchanged
-                cloud_source, prior_snapshot = prepared_retry
+                cloud_source, prior_snapshot, retry_account = prepared_retry
                 prepared_retry = None
-                if not unchanged(prior_snapshot, self._control_snapshot):
+                retry_cancelled = prepared_retry_cancelled
+                prepared_retry_cancelled = None
+                if ((retry_cancelled and retry_cancelled())
+                        or not unchanged(prior_snapshot, self._control_snapshot)):
                     return False  # A new selection/restart wins over a late retry.
-                self._resolve_item(cloud_source)
+                self._resolve_item(cloud_source, retry_account=retry_account, retry_cancelled=retry_cancelled)
             elif getattr(self, 'source_session', None) is None:
                 super().doModal()
             else:
@@ -328,14 +332,23 @@ class SourceSelect(BaseWindow):
             )
             self.resolved = resolver.doModal(False)
             self.last_error = getattr(resolver, "error_message", "")
+            failure = getattr(resolver, 'share_failure', None)
+            if (isinstance(failure, dict) and failure.get('code') in {'share_revoked', 'identity_changed'}
+                    and getattr(self, 'source_session', None)):
+                self.source_session.invalidate_share(self.source_session.epoch, source)
             self._resolution_answered = self._resolution_answered or getattr(resolver, "resolution_answered", False)
             if (not self.resolved and not resolver.user_cancelled
-                    and resolver.startup_failure_category in {'buffer_timeout', 'preload_error'}
+                    and resolver.startup_failure_category in {'buffer_timeout', 'preload_error', 'prepared_ready'}
                     and isinstance(resolver.playback_info, dict)):
                 from lib.cinema.prepared_retry import ready_source
+                def retry_cancelled(pending=resolver, request_id=self.item_information.get('request_id')):
+                    return (pending.user_cancelled or xbmc.Monitor().abortRequested()
+                        or (pending.startup_failure_category == 'prepared_ready' and
+                            (pending.cancel_event.is_set() or get_property('bobbi_cinema_cancel') == request_id)))
                 prepared_retry = ready_source(resolver.playback_info, resolver.startup_failure_category,
-                    resolver.preparation_intent, lambda: resolver.user_cancelled or xbmc.Monitor().abortRequested())
+                    resolver.preparation_intent, retry_cancelled)
                 if prepared_retry:
+                    prepared_retry_cancelled = retry_cancelled
                     kodilog('[CINEMA-PREPARE] SAME_FILE_CLOUD_RETRY request='
                             + self.item_information['request_id'])
             del resolver
@@ -1152,6 +1165,8 @@ class SourceSelect(BaseWindow):
         pack_select: bool = False,
         is_subtitle_download=False,
         local_subtitle_path: Optional[str] = None,
+        retry_account=None,
+        retry_cancelled=None,
     ) -> None:
         if not getattr(self, "_native_owner", False):
             from lib.portable import queue_selected
@@ -1163,12 +1178,26 @@ class SourceSelect(BaseWindow):
             self.last_error = ""
             # A binding belongs to one selected release, not the reusable list.
             self.item_information.pop("episode_binding", None)
+            self.item_information.pop('_account', None)
             self.item_information["request_id"] = uuid4().hex
             self.item_information["selection_policy"] = "exact"
             from lib.cinema.playback_request import select, source_identity
             try:
-                select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source))
-            except (AttributeError, OSError, ValueError, RuntimeError):
+                if retry_cancelled is not None and retry_cancelled():
+                    self._selection_locked = False
+                    return
+                if retry_account is None:
+                    select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source))
+                else:
+                    from bobbi_platform.account_manager import validate_snapshot
+                    retry_account = validate_snapshot(retry_account, authenticated=True)
+                    prior = self._control_snapshot['desired']
+                    retry_from = dict(request_id=prior['request_id'], selection_identity=prior['selection_identity'],
+                                      category=prior['resolver_failure']['category'])
+                    select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source),
+                           account_scope=retry_account, retry_from=retry_from)
+                    self.item_information['_account'] = retry_account
+            except (AttributeError, KeyError, OSError, TypeError, ValueError, RuntimeError):
                 self._selection_locked = False
                 self.last_error = '片源选择已变化或播放控制不可用，请重试'
                 self.setProperty('playback_error', self.last_error)

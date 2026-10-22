@@ -19,7 +19,9 @@ PAYLOAD = bytes(range(256)) * (4 * 1024 * 1024 // 256)
 
 
 @contextmanager
-def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024):
+def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024,
+             payload=PAYLOAD, segment_bytes=stream.MAX_SEGMENT_BYTES,
+             body_pause=None, diagnostic=None, range_headers=None, header_pause=None):
     calls, events, resolves = [], [], []
     lock = Lock()
     active, peak = [0], [0]
@@ -28,30 +30,43 @@ def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024):
         def log_message(self, *args):
             pass
         def do_GET(self):
-            start, end = map(int, self.headers['Range'][6:].split('-'))
+            first_text, last_text = self.headers['Range'][6:].split('-')
+            start, end = int(first_text), int(last_text) if last_text else len(payload)-1
+            if range_headers is not None:
+                range_headers.append(self.headers['Range'])
             with lock:
                 first = not calls
                 calls.append((start, end))
             if mode == 'expired' and first:
                 self.send_error(403)
                 return
+            if first and header_pause is not None:
+                header_pause[0].set()
+                if not header_pause[1].wait(8):
+                    return
             self.send_response(206)
             self.send_header('Content-Range', 'bytes {}-{}/{}'.format(
-                start + (1 if mode == 'wrong_range' else 0), end, len(PAYLOAD)))
+                start + (1 if mode == 'wrong_range' else 0), end, len(payload)))
             if mode in ('chunked', 'overflow'):
                 self.send_header('Transfer-Encoding', 'chunked')
             else:
-                self.send_header('Content-Length', str(end-start+1))
+                self.send_header('Content-Length', str(end-start+1 + (mode == 'wrong_length')))
+            if mode == 'encoding':
+                self.send_header('Content-Encoding', 'gzip')
             self.send_header('Connection', 'close')
             self.end_headers()
             try:
                 step = 1 if mode == 'trickle' else 16384
                 for offset in range(start, end+1, step):
+                    if first and body_pause is not None and offset-start >= body_pause[0]:
+                        body_pause[1].set()
+                        if not body_pause[2].wait(8):
+                            return
                     if mode == 'short_once' and first and offset-start >= 128*1024:
                         return  # Header promised more; connection actually closes.
                     if delay:
                         time.sleep(delay)
-                    chunk = PAYLOAD[offset:min(end+1, offset+step)]
+                    chunk = payload[offset:min(end+1, offset+step)]
                     if mode in ('chunked', 'overflow'):
                         self.wfile.write(('%x\r\n' % len(chunk)).encode() + chunk + b'\r\n')
                     else:
@@ -90,9 +105,11 @@ def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024):
 
     service = stream.ShareStream(lambda _: None, resolve, lambda _: True,
         session_factory=Session, progressive=progressive, queue_bytes=queue_bytes,
-        observer=events.append)
-    ready = service.register(dict(request_id='a'*32, locator='am6bqqdocs://A1/123',
-        guid='qqdocs:fixture', title='Fixture.mkv', size=len(PAYLOAD), media='movie:1:0:0'))
+        segment_bytes=segment_bytes, observer=events.append)
+    body = dict(request_id='a'*32, locator='am6bqqdocs://A1/123',
+        guid='qqdocs:fixture', title='Fixture.mkv', size=len(payload), media='movie:1:0:0')
+    ready = (service.register_diagnostic(body, None, diagnostic) if diagnostic is not None
+             else service.register(body))
     url = urlsplit(ready['url'])
     def connect(value=None):
         connection = HTTPConnection(url.hostname, url.port, timeout=8)
@@ -101,6 +118,10 @@ def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024):
     try:
         yield service, connect, calls, events, resolves, peak
     finally:
+        if body_pause is not None:
+            body_pause[2].set()
+        if header_pause is not None:
+            header_pause[1].set()
         service.close()
         server.shutdown()
         server.server_close()

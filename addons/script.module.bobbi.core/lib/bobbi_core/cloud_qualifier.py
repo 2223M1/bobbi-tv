@@ -49,13 +49,26 @@ class CloudQualifier:
         qualification = dict(file_id=item['file_id'], bytes=item['bytes'], version_key=target['version_key'],
                              source_binding=True, duration=result['duration'], video_codec=video[0]['codec_name'],
                              read_bytes=result['read_bytes'], probe_sha256=result['probe_sha256'])
-        from bobbi_core.release_media_profile import media_profile
-        try:
-            qualification['media_profile'] = media_profile(result['streams'])
-        except ValueError:
-            # Ordinary playback qualification is unchanged. Missing facts must
-            # not grant the stronger permission to reconcile release variants.
-            pass
+        # Existing probe output has no pair. Explicit null/partial/unknown
+        # pairs are rejected, never mistaken for that legacy full-demux path.
+        if 'method' not in result and 'coverage' not in result:
+            method,coverage='ffprobe','bounded_demux'
+        else:
+            method,coverage=result.get('method'),result.get('coverage')
+        if (type(method) is not str or type(coverage) is not str or (method,coverage) not in
+                {('ffprobe','bounded_demux'),('matroska_container_header','prefix_to_first_cluster')}):
+            return None
+        qualification.update(probe_method=method,probe_coverage=coverage)
+        if method != 'matroska_container_header':
+            from bobbi_core.release_media_profile import media_profile
+            try:
+                qualification['media_profile'] = media_profile(result['streams'])
+            except ValueError:
+                # Ordinary playback qualification is unchanged. Missing facts must
+                # not grant the stronger permission to reconcile release variants.
+                pass
+        elif result.get('coverage') != 'prefix_to_first_cluster':
+            return None  # Unknown weaker methods cannot impersonate covered facts.
         mapping = dict(source_info_hash=request['source_hash'], cloud_root_id=observation['file_id'],
                        cloud_file_id=item['file_id'], cloud_path=item['path'], torrent_path=item['torrent_path'],
                        torrent_file_id=item['torrent_file_id'], bytes=item['bytes'])

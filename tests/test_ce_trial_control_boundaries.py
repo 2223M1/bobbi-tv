@@ -44,6 +44,35 @@ def test_previous_cancelled_source_is_not_new_picker_failure():
     assert status({'request_id':'old'}, old) == dict(cancelled=True, failure='buffer_timeout', prior_failure=None)
 
 
+@pytest.mark.parametrize('already_cancelled', [False, True])
+def test_owned_cancel_accepts_matching_state_without_second_global_back(already_cancelled):
+    namespace = control_function('cancel_pending')
+    before = dict(boot_id='boot', epoch=2, desired=dict(request_id='request', cancelled=already_cancelled))
+    after = copy.deepcopy(before)
+    after['desired']['cancelled'] = True
+    calls = []
+    namespace.update(state=lambda _: (before, {}, {}), snapshot=lambda: after,
+                     call=lambda value: calls.append(value) or {'cancelled': False})
+    assert namespace['cancel_pending']({'request_id':'request'}) is True
+    assert len(calls) == (0 if already_cancelled else 1)
+    if calls:
+        assert calls[0] == dict(operation='cancel', boot_id='boot', epoch=2, request_id='request')
+
+
+@pytest.mark.parametrize('changed', ['epoch','request','not_cancelled'])
+def test_owned_cancel_readback_cannot_claim_a_different_request(changed):
+    namespace = control_function('cancel_pending')
+    before = dict(boot_id='boot', epoch=2, desired=dict(request_id='request', cancelled=False))
+    after = copy.deepcopy(before)
+    after['desired']['cancelled'] = changed != 'not_cancelled'
+    if changed == 'epoch': after['epoch'] += 1
+    if changed == 'request': after['desired']['request_id'] = 'another'
+    namespace.update(state=lambda _: (before, {}, {}), snapshot=lambda: after,
+                     call=lambda _: {'cancelled': True})
+    with pytest.raises(AssertionError):
+        namespace['cancel_pending']({'request_id':'request'})
+
+
 @pytest.mark.parametrize('operation', ['seek', 'manual_off', 'font_switch'])
 def test_unsupported_controls_only_read_schema_and_never_claim_pass(operation):
     namespace = control_function()

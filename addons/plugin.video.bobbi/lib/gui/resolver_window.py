@@ -2,6 +2,7 @@ from datetime import timedelta
 from typing import Any, Dict, Optional, cast
 from threading import Event
 from uuid import uuid4
+from time import monotonic
 import json
 
 import xbmc
@@ -58,6 +59,8 @@ class ResolverWindow(BaseWindow):
         # Presentation hint on this window, never playback/cancellation authority.
         self.setProperty("BobiLoadingPresenter", "true")
         self.resolved = False
+        self.media_started = False
+        self.presentation_confirmed = False
         self.player = None
         self.cancel_event = Event()
         self.error_message = ""
@@ -150,62 +153,108 @@ class ResolverWindow(BaseWindow):
     def _owns_selection(self):
         if not self._modeless:
             return True
-        from lib.cinema.playback_request import owned_state
+        from lib.cinema.playback_request import call, context, owned_state
         try:
-            owned_state(self.item_information.get('request_id'))
+            deadline = getattr(self, '_handoff_read_deadline', None)
+            if deadline is None:
+                owned_state(self.item_information.get('request_id'))
+            else:
+                remaining = deadline - monotonic()
+                if remaining <= 0:
+                    return self._handoff_rejected('PRESENTATION_BUDGET_EXHAUSTED')
+                state = call({'operation': 'snapshot'}, timeout=min(.3, remaining))
+                context(state, self.item_information.get('request_id'))
+                if monotonic() >= deadline:
+                    return self._handoff_rejected('PRESENTATION_BUDGET_EXHAUSTED')
             return True
         except (OSError, RuntimeError, ValueError) as error:
             return self._handoff_rejected('SELECTION_CHECK_' + type(error).__name__.upper())
 
     def close_windows(self):
-        if self.previous_window:
-            self.previous_window.setProperty("instant_close", "true")
-            self.previous_window.close()
-        self.close()
+        try:
+            if self.previous_window:
+                self.previous_window.setProperty("instant_close", "true")
+                self.previous_window.close()
+        finally:
+            # The previous presenter may already have retired. Its exception
+            # must not prevent this resolver's own close from being submitted.
+            self.close()
+            self._loading_close_issued = True
 
-    def handle_playback_started(self):
+    def handle_playback_started(self, deadline=None):
+        def remaining():
+            return .3 if deadline is None else min(.3, deadline - monotonic())
+        def owned():
+            if remaining() <= 0:
+                return False
+            self._handoff_read_deadline = deadline
+            try:
+                result = self._owns_selection()
+                return result and remaining() > 0
+            finally:
+                self._handoff_read_deadline = None  # Back/Stop checks have their own budget.
+        def command(message):
+            budget = remaining()
+            if budget <= 0:
+                raise TimeoutError('PRESENTATION_BUDGET_EXHAUSTED')
+            from lib.cinema.playback_request import call
+            result = call(message, timeout=budget) if deadline is not None else call(message)
+            if remaining() <= 0:
+                raise TimeoutError('PRESENTATION_BUDGET_EXHAUSTED')
+            return result
         if self.cancel_event.is_set():
             return self._handoff_rejected('REQUEST_CANCELLED')
-        if self.resolved:
-            return self._handoff_rejected('HANDOFF_ALREADY_RESOLVED')
-        if not self._owns_selection():
+        # The caller already observed this request's AV_STARTED. Presentation
+        # IPC can be unknown without reopening a source that is already playing.
+        self.media_started = self.resolved = True
+        if getattr(self, '_loading_lease_released', False):
+            return True
+        if not owned():
             return self._handoff_rejected('SELECTION_NOT_OWNED')
         if not self._modeless:
-            self.resolved = True
+            self.close_windows()
+            return True
         elif self._window_context:
-            if not self._capture_loading_dialog():
-                return self._handoff_rejected(self._capture_reason)
-            # The resident adapter observes the actual token-bearing window
-            # before close() queues its asynchronous GUI teardown. A caller's
-            # visibility bool is never a fullscreen retry receipt.
-            from lib.cinema.playback_request import call
-            try:
-                tracked = call(dict(self._window_context, operation='begin_window_close',
-                                   token=self._window_token, dialog_id=self._dialog_id))
-                if tracked.get('tracked') is not True:
-                    return self._handoff_rejected('OWNED_LOADING_TRACK_REJECTED')
-            except (OSError, RuntimeError, ValueError) as error:
-                return self._handoff_rejected('LOADING_TRACK_' + type(error).__name__.upper())
+            if not getattr(self, '_loading_close_tracked', False):
+                if not self._capture_loading_dialog():
+                    return self._handoff_rejected(self._capture_reason)
+                # Track the actual token-bearing window before its asynchronous
+                # close. A lost track ACK can safely repeat this same receipt.
+                try:
+                    tracked = command(dict(self._window_context, operation='begin_window_close',
+                                           token=self._window_token, dialog_id=self._dialog_id))
+                    if tracked.get('tracked') is not True:
+                        return self._handoff_rejected('OWNED_LOADING_TRACK_REJECTED')
+                    self._loading_close_tracked = True
+                except (OSError, RuntimeError, ValueError) as error:
+                    return self._handoff_rejected('LOADING_TRACK_' + type(error).__name__.upper())
         else:
             # Do not release the loading lease or request fullscreen when the
             # visible window cannot be tied to this request's registered token.
             return self._handoff_rejected('LOADING_WINDOW_CONTEXT_MISSING')
-        self.close_windows()
+        if not getattr(self, '_loading_close_issued', False):
+            if remaining() <= 0:
+                return self._handoff_rejected('PRESENTATION_BUDGET_EXHAUSTED')
+            self._loading_close_attempted = True
+            self.close_windows()
+            self._loading_close_issued = True  # Returned only after the own close submission.
         if self._modeless:
             # close() queues GUI work. Give only our closing dialog a bounded
             # handoff window; never close a different modal dialog globally.
             for _ in range(20):
-                if not self._owns_selection() or self.cancel_event.is_set():
+                if not owned() or self.cancel_event.is_set():
                     return self._handoff_rejected('RETIREMENT_SELECTION_LOST')
                 if not self._dialog_id or not xbmc.getCondVisibility("Window.IsVisible({})".format(self._dialog_id)):
                     break
-                xbmc.sleep(25)
+                if remaining() <= 0:
+                    return self._handoff_rejected('PRESENTATION_BUDGET_EXHAUSTED')
+                xbmc.sleep(min(25, max(1, int(remaining() * 1000))))
             else:
                 return self._handoff_rejected('OWNED_LOADING_RETIREMENT_TIMEOUT')
-            from lib.cinema.playback_request import call
-            if not self._window_context or not call(dict(self._window_context,
+            if not self._window_context or not command(dict(self._window_context,
                     operation='close_window', token=self._window_token))['closed']:
                 return self._handoff_rejected('LOADING_LEASE_RELEASE_REJECTED')
+            self._loading_lease_released = True
             # The player requests the conditional native handoff after this
             # callback; no unscoped ActivateWindow is issued from a resolver.
         return True
@@ -216,22 +265,48 @@ class ResolverWindow(BaseWindow):
                 and self.player is not None and self.player._handoff_confirmed):
             # The player already observed fullscreen. A subsequent user Back
             # must not revoke that completed handoff or cause another activation.
+            self.presentation_confirmed = True
             self.resolved = True
 
+    def handle_presentation_deferred(self):
+        """Leave media running and retire only this token-bearing presenter.
+
+        This fallback gives no fullscreen rights and does not release a lease
+        without its authority receipt. A new/reused/ambiguous window is never
+        closed, nor is the previous window or any other modal.
+        """
+        if (not getattr(self, 'media_started', False) or not self._modeless
+                or getattr(self, '_loading_close_issued', False) or self.cancel_event.is_set()
+                or not self._window_context or not self._capture_loading_dialog()):
+            return False
+        self._loading_close_attempted = True
+        self.close()
+        self._loading_close_issued = True
+        return True
+
     def handle_playback_error(self):
-        if getattr(self, 'resolved', False):
+        if getattr(self, 'media_started', False) or getattr(self, 'resolved', False):
             # A completed handoff cannot become a new source-selection modal
             # because a later subtitle/tracking callback failed.
             kodilog('[CINEMA-HANDOFF] post-handoff error does not reopen selection', level=xbmc.LOGWARNING)
             return
-        if not self._owns_selection():
+        from bobbi_core.share_failure import presentation_receipt, read_failure, message, PERMANENT
+        if self.cancel_event.is_set() or getattr(self, 'user_cancelled', False):
+            self.close()
+            return
+        receipt = presentation_receipt(self.player, getattr(self, '_window_context', None),
+                                       self.item_information.get('request_id'))
+        if not self._owns_selection() and receipt is None:
             self.close()
             return
         self.resolved = False
         self.setProperty("resolving", "false")
         self.error_message = "该片源暂时无法播放，请选择其他片源或重试。"
         category = getattr(self.player, '_startup_failure_category', None)
-        if category in {'target_unresolved', 'invalid_binding', 'selected_file_missing', 'no_candidate'}:
+        if category == 'prepared_ready':
+            self.error_message = ''
+            self.setProperty('loading_stage', '同片源 115 已就绪，正在接续')
+        elif category in {'target_unresolved', 'invalid_binding', 'selected_file_missing', 'no_candidate'}:
             self.error_message = "无法确定该片源中的目标集，未自动选择其他文件。"
         elif category == 'metadata_timeout':
             self.error_message = "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。"
@@ -256,6 +331,21 @@ class ResolverWindow(BaseWindow):
                     self.error_message = '视频未能进入全屏，已停止本次播放，请重试。'
         except (ValueError, TypeError, AttributeError):
             pass
+        failure = read_failure(getattr(self, 'source', None), self.item_information, receipt)
+        # The diagnostic IPC may overlap a new selection/account intent. Read
+        # the presentation receipt again; it never restores control ownership.
+        still_current = (presentation_receipt(self.player, getattr(self, '_window_context', None),
+                         self.item_information.get('request_id')) == receipt
+                         if receipt is not None else self._owns_selection())
+        if not still_current or self.cancel_event.is_set() or getattr(self, 'user_cancelled', False):
+            self.error_message = ''
+            self.close()
+            return
+        if failure is not None:
+            self.error_message = message(failure['code'])
+            self.share_failure = failure
+            if failure['code'] in PERMANENT:
+                self.source.verifiedShareFile = False
         self.close()
 
     def update_progress(self):
@@ -307,19 +397,29 @@ class ResolverWindow(BaseWindow):
                 cancel_event=self.cancel_event,
                 on_progress=self.update_progress,
                 on_handoff=self.handle_handoff_confirmed,
+                on_presentation_deferred=self.handle_presentation_deferred,
             )
             self.player.run(data=self.playback_info)
         except Exception as e:
-            import traceback
-
-            kodilog(f"Error in resolver window: {e}")
-            kodilog(traceback.format_exc())
-            self.error_message = "片源解析失败，请重试或选择其他片源。"
-            if not self._modeless:
-                notification(str(e), time=5000)
-            if self.previous_window:
-                self.previous_window.setProperty("instant_close", "true")
-                self.previous_window.close()
+            from bobbi_catalog.api import ShareError
+            from bobbi_core.share_failure import failure_value, message, PERMANENT
+            # No arbitrary provider exception text or signed URL in logs/UI.
+            kodilog('Error in resolver window: ' + type(e).__name__)
+            if self.player is not None and getattr(self.player, '_startup_failure_receipt', None):
+                # A later callback exception cannot erase the exact native
+                # failure; the handler revalidates its presentation authority.
+                self.handle_playback_error()
+            else:
+                self.error_message = ''
+                if not self.cancel_event.is_set() and not getattr(self, 'user_cancelled', False) and self._owns_selection():
+                    self.error_message = "片源解析失败，请重试或选择其他片源。"
+                    if isinstance(e, ShareError):
+                        self.share_failure = failure_value(e)
+                        self.error_message = message(e.code)
+                        if e.code in PERMANENT:
+                            self.source.verifiedShareFile = False
+            if not self._modeless and self.error_message:
+                notification(self.error_message, time=5000)
             self.close()
         finally:
             # Player callbacks reference this window; release that cycle after run.
@@ -327,6 +427,18 @@ class ResolverWindow(BaseWindow):
                 self.resolution_answered = bool(self.player._resolution_answered)
                 self.startup_failure_category = getattr(self.player, '_startup_failure_category', None)
                 self.preparation_intent = getattr(self.player, '_cinema_prepare_intent', None)
+                if isinstance(self.playback_info, dict):
+                    self.playback_info['_account'] = getattr(self.player, 'data', {}).get('_account')
+                if (self.startup_failure_category == 'prepared_ready' and not self.preparation_intent
+                        and isinstance(self.playback_info, dict)):
+                    # Early-ready may finish before the parent's first 100 ms
+                    # preparation tick. This is a file hint, not playback proof.
+                    from lib.cinema.preparation_client import source_intent
+                    try:
+                        self.preparation_intent = source_intent(self.playback_info,
+                            json.loads(get_property('bobbi_cinema_preparation_target') or '{}'))
+                    except (ValueError, TypeError):
+                        pass
             self.player = None
 
     def resolve_single_source(self) -> None:

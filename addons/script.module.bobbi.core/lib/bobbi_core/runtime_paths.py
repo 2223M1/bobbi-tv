@@ -18,6 +18,12 @@ CE_F9_SHA256 = '8962740e718a7978acadbf2ae7ad55b0cd0742f6d0db162e9c1a1d8645ef834b
 # subtitle ABI; populate its immutable artifact hash after the native build.
 CE_F9_REVIEWED_PATCHES = frozenset((
     'd750a88c3dc041d17ea34d06e2b2ddadcf4db0f9fffdaaa727c8a6b7427f21d3',
+    # CE2035 same-file transport capsule; identical external-subtitle ABI.
+    '632758f5d1ca5494e9b049446d3908bead70589b4d18640bb5d06e830a2b57eb',
+    # CE2038 restores original audio and the matching player layout with the capsule.
+    '8bb2a99e2154432a4403ac55a81e3c253d7ab74f0e15369b85085f1a8bf4fd14',
+    # CE2043 registers the complete handoff RPC schema; other 8bb2 objects unchanged.
+    'ba03279546193a8a5e6299b257e1321833dbf5b7b3ecc087ba67ed7dd2eb1991',
 ))
 CONFIG = 'runtime-paths.json'
 

@@ -12,7 +12,20 @@ from bobbi_platform.torrserver import TorrServerClient, TorrServerError, Cancell
 from bobbi_platform.onboarding import steps, summary, engine_message
 
 
+def existing_backend_status():
+    from bobbi_platform.bt_setup import adapter_status
+    return adapter_status(xbmcvfs.translatePath, cancelled=xbmc.Monitor().abortRequested)
+
+
+def show_existing_backend(dialog, state):
+    from bobbi_platform.bt_setup import adapter_message
+    dialog.ok('现有 BT 后台', adapter_message(state))
+
+
 def helper_status(path):
+    existing = existing_backend_status()
+    if existing is not None:
+        return existing
     try:
         pairing = load_pairing(path)
         if pairing is None:
@@ -26,6 +39,10 @@ def helper_status(path):
 
 
 def pair_helper(dialog, path):
+    existing = existing_backend_status()
+    if existing is not None:
+        show_existing_backend(dialog, existing)
+        return
     choice = dialog.select('连接本机 bobbi 助手', [
         'Android：输入助手显示的六位配对码',
         '查看本机 BT 支持说明',
@@ -33,14 +50,29 @@ def pair_helper(dialog, path):
         '选择助手导出的 bobbi 配对文件',
         '重新检查连接',
     ])
+    if choice in (0, 2, 3):
+        # Another entry may have configured the cinema adapter while this
+        # selector was open. Do not create a second pairing or engine then.
+        existing = existing_backend_status()
+        if existing is not None:
+            show_existing_backend(dialog, existing)
+            return
     if choice == 0:
         from bobbi_platform.pair_code import exchange
         code = dialog.input('助手配对码（六位数字）', type=xbmcgui.INPUT_NUMERIC)
         if not code:
             return
+        existing = existing_backend_status()
+        if existing is not None:
+            show_existing_backend(dialog, existing)
+            return
         try:
             pairing = exchange(code)
             TorrServerClient(engine_document(pairing)).ready(cancelled=xbmc.Monitor().abortRequested)
+            existing = existing_backend_status()
+            if existing is not None:
+                show_existing_backend(dialog, existing)
+                return
             save_pairing(path, pairing)
             dialog.ok('已连接本机助手', '后续不用重复配对。打开助手启动后台后即可使用 BT 片源。')
         except (ValueError, OSError, TorrServerError):
@@ -60,6 +92,13 @@ def pair_helper(dialog, path):
         progress.create('安装本机后台', '正在下载固定版本并核对 SHA-256；可取消。')
         try:
             monitor = xbmc.Monitor()
+            # The confirmation/progress dialog may outlive the initial check.
+            # Recheck at the final effect, not only when entering this menu.
+            existing = existing_backend_status()
+            if existing is not None:
+                progress.close()
+                show_existing_backend(dialog, existing)
+                return
             install(cancelled=lambda: monitor.abortRequested() or progress.iscanceled(), progress=progress.update)
             progress.close()
             dialog.ok('后台已安装', '几秒后点“重新检查连接”。若服务尚未运行，下次打开 Kodi 将自动启动。')
@@ -71,6 +110,10 @@ def pair_helper(dialog, path):
         selected = dialog.browse(1, '选择 bobbi 配对文件（不用手填地址和密码）', 'files', mask='.json')
         if not selected:
             return
+        existing = existing_backend_status()
+        if existing is not None:
+            show_existing_backend(dialog, existing)
+            return
         stream = xbmcvfs.File(selected)
         try:
             raw = stream.readBytes(4097)
@@ -79,6 +122,10 @@ def pair_helper(dialog, path):
         try:
             pairing = from_export(bytes(raw))
             TorrServerClient(engine_document(pairing)).ready(cancelled=xbmc.Monitor().abortRequested)
+            existing = existing_backend_status()
+            if existing is not None:
+                show_existing_backend(dialog, existing)
+                return
             save_pairing(path, pairing)
         except Cancelled:
             return
@@ -93,6 +140,9 @@ def pair_helper(dialog, path):
                   '这一步没有开始播放，也未连接你的网盘账号。')
     elif choice == 4:
         state = helper_status(path)
+        if state.startswith('adapter_'):
+            show_existing_backend(dialog, state)
+            return
         dialog.ok('连接检查', '助手已连接，下一步可试播。' if state == 'ready'
                   else '尚未连接。请先在助手启动后台；若重新安装过助手，请重新导出并导入配对文件。')
 
