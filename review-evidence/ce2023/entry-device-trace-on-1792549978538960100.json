@@ -1,9 +1,0 @@
-{
-  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261021-104500",
-  "mode": "trace-on",
-  "transport_exit": 0,
-  "diagnostic_present": false,
-  "result": {
-    "trace": "/storage/.kodi/temp/bobbi-ce-entry-20261021-104500/entry-stack.txt"
-  }
-}

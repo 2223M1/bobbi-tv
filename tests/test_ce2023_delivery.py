@@ -124,6 +124,8 @@ def test_exact_input_clean_output_signed_and_truthful(key, tmp_path):
     assert result['original_sequence'] == 2026102021
     with zipfile.ZipFile(out/'ce2021-clean-2026102023.zip') as z:
         meta = json.loads(z.read('MANIFEST.json'))
+        assert z.read(pack.REPORT) == b'fixture report'
+    assert (out / Path(pack.REPORT).name).read_bytes() == b'fixture report'
     assert meta['original_payload_sha256'] == identity['payload_sha256']
     removals = json.loads((out/'REMOVAL-MANIFEST.json').read_text())['entries']
     assert len(removals) == 2 and all(len(r['sha256']) == 64 for r in removals)

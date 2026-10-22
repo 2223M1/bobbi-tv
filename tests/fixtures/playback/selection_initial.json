@@ -1,0 +1,24 @@
+{
+  "operation": "select",
+  "work": "gattaca",
+  "attempt": 3,
+  "regression_attempt": true,
+  "transport_exit_code": 0,
+  "result": {
+    "operation": "select",
+    "name": "gattaca",
+    "selected": true,
+    "record": {
+      "request_id": "0ed3043bc7424b159264ad87fe64504d",
+      "selection_identity": "transport:939b30906b7f9f8490cf3509ded1d4fe28c4659e9ff707ebd8dfa6decef8042e",
+      "test": {"title": "Gattaca", "tmdb_id": 782, "kind": "movie", "year": 1997},
+      "launch_mode": "ordinary_ui",
+      "ordinary_ui": true,
+      "picker_mode": true,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "Gattaca.1997.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.TrueHD.7.1.Atmos-FGT.mkv",
+        "Container(1000).ListItem.Property(source_key)": "b85f6de99c83a549d4238d9313809bc33ad232ad4175948db82c05a9595393b6"
+      }
+    }
+  }
+}

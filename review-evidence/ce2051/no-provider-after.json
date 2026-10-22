@@ -1,9 +1,0 @@
-{
-  "revision": "HEAD",
-  "source_sha256": "443b934d67d3783f5e612e902d9334a7512fff4e6ce3831015436980600a63e0",
-  "current_failure": "",
-  "recommended": true,
-  "retained": true,
-  "expected": "clear old account presentation even without any later provider rows",
-  "passed": true
-}

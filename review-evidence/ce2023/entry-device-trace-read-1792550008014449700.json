@@ -1,9 +1,0 @@
-{
-  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261021-104500",
-  "mode": "trace-read",
-  "transport_exit": 0,
-  "diagnostic_present": false,
-  "result": {
-    "stack": "Timeout (0:00:10)!\nThread 0xbc3fd180 (most recent call first):\n  File \"/storage/.kodi/temp/bobbi-ce-entry-20261021-104500/trace.py\", line 4 in <module>\n"
-  }
-}

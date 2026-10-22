@@ -89,7 +89,7 @@ def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
               for p in source.rglob('*') if p.is_file()}
     output = source
     import json
-    proof = json.loads((ROOT / 'release/private-assets.json').read_text(encoding='utf-8'))
+    proof = json.loads((ROOT / 'tests/fixtures/package/skin_assets.json').read_text(encoding='utf-8'))
     assert proof['source_commit'] == 'ff530e09c34c6285ccb05c1d4179140b097174fb'
     font_rows = [row for row in proof['files'] if row['target'].endswith('.ttf')]
     sound_rows = [row for row in proof['files'] if row['target'].endswith('.wav')]

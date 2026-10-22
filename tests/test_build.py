@@ -42,6 +42,6 @@ def test_kodi_sources_parse_with_python38_grammar():
 
 
 def test_incomplete_cinema_cannot_claim_stable():
-    gates = json.loads((ROOT / 'release/gates.json').read_text(encoding='utf-8'))
+    gates = json.loads((ROOT / 'tests/fixtures/package/incomplete_generation.json').read_text(encoding='utf-8'))
     assert gates['stable_release_allowed'] is False
     assert all(not value['clean_install'] for value in gates['profiles'].values())

@@ -243,7 +243,9 @@ def repackage(original, manifest, original_bundle, original_entry, private, trus
         entry_path.write_bytes(entry)
         with SignedBundle(bundle_path, trust, 'coreelec') as checked:
             checked.check_all()
-        report = (ROOT / REPORT).read_bytes()
+        # Keep the input package self-contained; a checkout's notes may describe
+        # a different generation and are not evidence about this signed input.
+        report = delivery.read(REPORT)
         replacements = {BUNDLE: bundle, ENTRY: entry, REPORT: report}
         outer = BytesIO()
         records = []

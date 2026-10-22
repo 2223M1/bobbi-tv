@@ -1,4 +1,4 @@
-name: Verify private sources
+name: Verify sources
 on:
   push:
     branches: [main, 'codex/**']
@@ -23,17 +23,17 @@ jobs:
       - run: python -m pip install -r requirements-test.txt
       # The inherited Kodi mock harness is intentionally a separate process.
       - name: Primary tests
-        run: python -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=review-evidence/ci-primary.xml
+        run: python -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=test-results/ci-primary.xml
       - name: Isolated inherited Kodi harness
         if: ${{ !cancelled() }}
-        run: python -m pytest -q -rs tests/private_baseline --junitxml=review-evidence/ci-baseline.xml
+        run: python -m pytest -q -rs tests/private_baseline --junitxml=test-results/ci-baseline.xml
       - name: Isolated preparation regression
         if: ${{ !cancelled() }}
-        run: python -m pytest -q -rs tests/preparation_regression --junitxml=review-evidence/ci-preparation.xml
+        run: python -m pytest -q -rs tests/preparation_regression --junitxml=test-results/ci-preparation.xml
       - name: Source-only component build (no application key or signing secrets)
         if: ${{ !cancelled() }}
         run: python tools/build_release.py --source-check --output dist/repository-check
-      - name: Verify a second private build is byte-identical
+      - name: Verify reproducible builds
         if: ${{ !cancelled() }}
         run: |
           python tools/build_release.py --source-check --output dist/repository-second
@@ -43,5 +43,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: verify-${{ github.event_name }}-${{ github.run_id }}
-          path: review-evidence/ci-*.xml
+          path: test-results/ci-*.xml
           if-no-files-found: warn

@@ -14,7 +14,7 @@ import ce_115_direct_trial as driver
 from test_ce_115_direct_trial import fixture as retained_fixture
 
 
-LATER_BASELINE = ROOT / 'review-evidence/ce-new-work-gattaca-select-1792613222684877200.json'
+LATER_BASELINE = ROOT / 'tests/fixtures/playback/selection_later.json'
 LATER_REQUEST = '9c83ef02df784463a97b03f7f4b2f946'
 
 

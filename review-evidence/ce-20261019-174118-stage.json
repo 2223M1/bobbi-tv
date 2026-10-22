@@ -1,9 +1,0 @@
-{
-  "exit_code": 0,
-  "result": {
-    "state": "staged",
-    "components": 21,
-    "system_unchanged": true
-  },
-  "diagnostic_present": false
-}

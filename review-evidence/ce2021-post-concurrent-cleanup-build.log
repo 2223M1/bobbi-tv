@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "D:\AM6B-Project\bobbi-tv-ce-pr1-20261020\tools\build_release.py", line 160, in <module>
-    manifest = build(args.output, source_check=args.source_check)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\AM6B-Project\bobbi-tv-ce-pr1-20261020\tools\build_release.py", line 110, in build
-    raise ValueError('Source inventory changed: ' + addon)
-ValueError: Source inventory changed: plugin.video.bobbi
