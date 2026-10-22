@@ -19,7 +19,7 @@ def choose_external_scraper():
     addons = _list_compatible_modules()
     if not addons:
         xbmcgui.Dialog().notification(
-            "Jacktook",
+            "bobbi TV",
             get_setting("external_scraper_no_modules_msg") or "No compatible modules found",
         )
         return
@@ -47,7 +47,7 @@ def choose_external_scraper():
             get_setting("external_scraper_incompatible_msg")
             or "The selected module is not compatible. Please choose a different one."
         )
-        xbmcgui.Dialog().ok("Jacktook", error_msg)
+        xbmcgui.Dialog().ok("bobbi TV", error_msg)
         # Let user try again
         choose_external_scraper()
         return
@@ -61,7 +61,7 @@ def choose_external_scraper():
         get_setting("external_scraper_success_msg")
         or f"Success!\n{module_name} set as External Scraper"
     )
-    xbmcgui.Dialog().ok("Jacktook", success_msg)
+    xbmcgui.Dialog().ok("bobbi TV", success_msg)
 
 
 def open_external_scraper_settings():
@@ -69,10 +69,10 @@ def open_external_scraper_settings():
     module_id = get_setting("external_scraper_module")
     kodilog(f"ExternalScraper: open settings requested, module={module_id}")
     if not module_id:
-        xbmcgui.Dialog().notification("Jacktook", "No external scraper selected")
+        xbmcgui.Dialog().notification("bobbi TV", "No external scraper selected")
         return
     try:
-        # When this action is launched from Jacktook's settings window, the
+        # When this action is launched from the settings window, the
         # current modal settings dialog can stay in front of (or block) the
         # external addon's settings window. Close it first, then open the
         # selected scraper settings.
@@ -82,7 +82,7 @@ def open_external_scraper_settings():
         xbmc.sleep(500)
     except Exception as exc:
         kodilog(f"ExternalScraper: Addon.OpenSettings failed: {exc}")
-        xbmcgui.Dialog().notification("Jacktook", f"Unable to open settings: {module_id}")
+        xbmcgui.Dialog().notification("bobbi TV", f"Unable to open settings: {module_id}")
 
 
 # ------------------------------------------------------------------

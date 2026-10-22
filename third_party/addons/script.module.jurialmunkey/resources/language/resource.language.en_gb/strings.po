@@ -1,7 +1,6 @@
 # XBMC Media Center language file
 # Addon Name: TheMovieDb Helper
 # Addon id: plugin.video.themoviedb.helper
-# Addon Provider: jurialmunkey
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC-Addons\n"

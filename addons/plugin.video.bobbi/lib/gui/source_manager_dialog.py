@@ -125,7 +125,7 @@ def _persist_selection(selected, cache_keys):
 def open_source_manager_dialog():
     items, cache_keys = _build_source_items()
     if not items:
-        xbmcgui.Dialog().notification("Jacktook", translation(90756))
+        xbmcgui.Dialog().notification("bobbi TV", translation(90756))
         return
 
     current_selection = _resolve_selection(cache_keys)

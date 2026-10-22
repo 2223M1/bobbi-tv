@@ -209,7 +209,7 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
 
         if (self.item_information.get('selection_policy') == 'exact' and is_torrent
                 and not source.infoHash and url.startswith(('http://', 'https://'))):
-            # Keep the selected locator intact. JackTorr follows its redirects,
+            # Keep the selected locator intact. Playback follows its redirects,
             # verifies the returned torrent, and binds that result to this choice.
             # Resolving here used to replace the URL with a redirect target and
             # download the same torrent twice, losing its selection identity.

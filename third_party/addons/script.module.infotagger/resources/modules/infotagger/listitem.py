@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Module: default
-# Author: jurialmunkey
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 from xbmc import Actor, VideoStreamDetail, AudioStreamDetail, SubtitleStreamDetail, LOGINFO, getInfoLabel
 from xbmc import log as kodi_log

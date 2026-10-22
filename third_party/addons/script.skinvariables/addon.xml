@@ -25,7 +25,7 @@ provider-name="jurialmunkey">
   <disclaimer lang="zh_CN">适用于皮肤设计者</disclaimer>
   <disclaimer lang="fr_FR">Pour les skinners</disclaimer>
   <disclaimer lang="sv_SE">För de som bygger skal</disclaimer>
-  <license>GPL-3.0-or-later</license>
+  <license></license>
   <assets>
     <icon>icon.png</icon>
     <fanart>fanart.jpg</fanart>

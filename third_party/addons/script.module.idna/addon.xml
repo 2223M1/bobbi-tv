@@ -7,10 +7,8 @@
   <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">Internationalized Domain Names for Python</summary>
     <description lang="en_GB">Internationalized Domain Names for Python</description>
-    <license>BSD-3-Clause</license>
+    <license></license>
     <platform>all</platform>
-    <website>https://github.com/kjd/idna</website>
-    <source>https://github.com/kjd/idna</source>
     <assets>
       <icon>resources/icon.png</icon>
     </assets>

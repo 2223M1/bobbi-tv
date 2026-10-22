@@ -1,5 +1,5 @@
 """
-Jacktook addon router — lazy-loading dispatcher.
+Addon router — lazy-loading dispatcher.
 
 Uses prefix-based routing with lazy imports to avoid loading all addon
 modules on every invocation. Only the modules needed for the current

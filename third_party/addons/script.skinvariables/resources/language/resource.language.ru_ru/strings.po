@@ -1,7 +1,6 @@
 # XBMC Media Center language file
 # Addon Name: Skin Variables
 # Addon id: script.skinvariables
-# Addon Provider: jurialmunkey
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"

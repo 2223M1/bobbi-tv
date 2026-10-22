@@ -153,7 +153,7 @@ def sdk_versions(sdk, lock):
 
 def engine_inputs(lock, downloaded):
     provenance = dict(version=lock['engine']['version'], commit=lock['engine']['commit'],
-                      source=lock['engine']['repository'], license='GPL-3.0', binaries={})
+                      source=lock['engine']['repository'], binaries={})
     for abi, item in lock['engine']['binaries'].items():
         source = downloaded['engine-' + abi]
         info = elf_info(source, item['elf_machine'])
@@ -167,7 +167,6 @@ def engine_inputs(lock, downloaded):
         provenance['binaries'][abi] = dict(sha256=item['sha256'], bytes=item['bytes'], **info)
     assets = ANDROID / 'app/src/main/assets'
     assets.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(downloaded['license'], assets / 'TorrServer-GPL-3.0.txt')
     (assets / 'engine-provenance.json').write_text(json.dumps(provenance, indent=2) + '\n')
     return provenance
 
@@ -179,7 +178,6 @@ def prepare(lock):
         raise ValueError('This pinned toolchain bootstrap currently targets Windows x64')
     jobs = {name: lock[name] for name in ('jdk', 'gradle', 'commandline')}
     jobs.update({'engine-' + abi: item for abi, item in lock['engine']['binaries'].items()})
-    jobs['license'] = lock['engine']['license']
     with ThreadPoolExecutor(max_workers=3) as pool:
         pending = {name: pool.submit(fetch, item) for name, item in jobs.items()}
         downloaded = {name: task.result() for name, task in pending.items()}

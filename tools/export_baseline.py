@@ -68,7 +68,7 @@ def extract(repo, target):
             if suffix in EXCLUDE_EXT or name in DATA_EXCLUDE:
                 reason = 'runtime/catalog/archive excluded'
             elif suffix in {'.ttf', '.otf', '.woff', '.woff2'} and PurePosixPath(name).name not in FONT_ALLOW:
-                reason = 'font license review or replacement required'
+                reason = 'font not in the reviewed set'
             elif name.startswith('resources/screenshots/') or name.startswith('resources/screenshot-'):
                 reason = 'private UI image not a public demonstration'
             if reason:

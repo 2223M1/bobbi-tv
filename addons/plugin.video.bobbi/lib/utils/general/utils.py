@@ -1599,7 +1599,7 @@ def debrid_dialog_update(type, total, dialog, lock):
 
         dialog.update(
             dialog_update.get("percent"),
-            f"Jacktook [COLOR FFFF6B00]Debrid-{type}[/COLOR]",
+            f"bobbi TV [COLOR FFFF6B00]Debrid-{type}[/COLOR]",
             f"Checking: {dialog_update.get('count')}/{total}",
         )
 

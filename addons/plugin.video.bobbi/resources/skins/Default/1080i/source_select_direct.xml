@@ -9,7 +9,7 @@
   right column = quality tabs + filter, then source rows.
   Row: quality badge | title (scrolls on focus) | tags line | size · seeds | recommendation.
   Focus = white row. Recommended source carries an accent "推荐" tag, not a colour wash.
-  Context menu key (long OK on many remotes) opens Jacktook's actions for the focused row.
+  Context menu key (long OK on many remotes) opens the actions for the focused row.
 -->
 <window type="dialog">
   <defaultcontrol always="true">1000</defaultcontrol>

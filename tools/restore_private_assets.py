@@ -33,10 +33,13 @@ def restore(repo):
                             sha256=hashlib.sha256(value).hexdigest()))
     for name in names:
         if name.startswith(SKIN + 'fonts/'):
-            put(name, 'addons/skin.bobbi.cinema/' + name[len(SKIN):])
+            relative = name[len(SKIN):]
+            if 'licen' in Path(relative).name.lower():
+                continue
+            put(name, 'addons/skin.bobbi.cinema/' + relative)
         elif name.startswith(SOUND):
             relative = name[len(SOUND):]
-            if relative not in {'addon.xml', 'LICENSE', 'README.md', 'resources/sounds.xml'} and not (
+            if relative not in {'addon.xml', 'resources/sounds.xml'} and not (
                 relative.startswith('resources/') and Path(relative).suffix.lower() == '.wav'):
                 continue
             raw = read(name)
@@ -63,7 +66,6 @@ def restore(repo):
     converted, _ = sanitize_xml(read(name), '1080p/Includes_Views.xml')
     put(name, 'addons/skin.bobbi.cinema/1080p/Includes_Views.xml', converted)
     report = dict(schema=1, source_commit=REV, distribution='private-personal', files=records,
-                  rights='Original notices retained; no blanket third-party redistribution grant asserted.',
                   excluded='Legacy auth, remote execution, firmware, updater and library-clearing scripts remain excluded.')
     (ROOT / 'release/private-assets.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(dict(restored=len(records), fonts=sum(r['target'].endswith('.ttf') for r in records),

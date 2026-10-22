@@ -100,7 +100,7 @@ def verified_intents(body, metadata, account, destination, selector, catalog, in
     is_tv = media['kind'] == 'tv'
     from bobbi_core.catalog_identity import release_context, release_binding
     current_pair = release_context(media, catalog) if is_tv else None
-    # Match JackTorr's exact playback input: TorrServer's display title may
+    # Match the exact playback input: TorrServer's display title may
     # contain only the catalog name, while the selected release carries the
     # season. Keep both so conflicting seasons still fail closed. This context
     # never replaces the real file tuple or independent catalog identity proof.

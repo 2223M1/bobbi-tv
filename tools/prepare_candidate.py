@@ -103,14 +103,14 @@ def transform(name, raw):
         xml.set('version', '0.1.0')
         if xml.get('id') == 'plugin.video.bobbi':
             xml.set('name', 'bobbi Cinema · 移植预览')
-            xml.set('provider-name', 'bobbi TV / Sam-Max and contributors')
+            xml.set('provider-name', 'bobbi TV')
             ET.SubElement(xml.find('requires'), 'import', addon='script.module.bobbi.platform', version='0.1.0')
             ET.SubElement(xml.find('requires'), 'import', addon='plugin.video.bobbi.library', version='0.1.0')
         for dependency in xml.findall('./requires/import'):
             if 'bobbi' in dependency.get('addon', ''):
                 dependency.set('version', '0.1.0')
         for license in xml.findall('./extension/license'):
-            license.text = 'GPL-3.0; see LICENSE and THIRD-PARTY notices'
+            license.text = ''
         text = ET.tostring(xml, encoding='unicode')
     return text.encode('utf-8')
 

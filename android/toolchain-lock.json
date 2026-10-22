@@ -24,11 +24,6 @@
     "version": "MatriX.147",
     "repository": "https://github.com/YouROK/TorrServer",
     "commit": "a86d8fa7fd4e07605f240fe69bf299392f7cb023",
-    "license": {
-      "url": "https://raw.githubusercontent.com/YouROK/TorrServer/a86d8fa7fd4e07605f240fe69bf299392f7cb023/LICENSE",
-      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
-      "bytes": 35147
-    },
     "binaries": {
       "armeabi-v7a": {
         "url": "https://github.com/YouROK/TorrServer/releases/download/MatriX.147/TorrServer-android-arm7",

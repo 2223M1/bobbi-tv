@@ -247,7 +247,7 @@ msgid "Addon Elementum not found - (plugin.video.elementum)"
 msgstr ""
 
 msgctxt "#30253"
-msgid "Addon Jacktorr not found - (plugin.video.jacktorr)"
+msgid "BT playback component is not installed (plugin.video.jacktorr)"
 msgstr ""
 
 msgctxt "#30254"
@@ -255,7 +255,7 @@ msgid "Do you want to install Elementum?"
 msgstr ""
 
 msgctxt "#30255"
-msgid "Do you want to install Jacktorr?"
+msgid "Do you want to install the BT playback component?"
 msgstr ""
 
 msgctxt "#30256"
@@ -387,7 +387,7 @@ msgid "Enable"
 msgstr ""
 
 msgctxt "#30714"
-msgid "Jacktorr"
+msgid "BT playback"
 msgstr ""
 
 msgctxt "#30715"
@@ -947,8 +947,8 @@ msgid "Reset Simkl Authorization"
 msgstr "Reset Simkl Authorization"
 
 msgctxt "#90978"
-msgid "Remove the saved Simkl access token from Jacktook."
-msgstr "Remove the saved Simkl access token from Jacktook."
+msgid "Remove the saved Simkl access token from bobbi TV."
+msgstr "Remove the saved Simkl access token from bobbi TV."
 
 msgctxt "#90979"
 msgid "Enable Simkl Scrobbling"
@@ -2417,7 +2417,7 @@ msgid "Downgrade"
 msgstr ""
 
 msgctxt "#90671"
-msgid "Install an older published version of Jacktook. The current version is backed up and restored automatically if the downgrade fails."
+msgid "Install an older published version of bobbi TV. The current version is backed up and restored automatically if the downgrade fails."
 msgstr ""
 
 msgctxt "#30932"
@@ -4748,8 +4748,8 @@ msgid "Sign Out of Nuvio"
 msgstr "Sign Out of Nuvio"
 
 msgctxt "#91008"
-msgid "Remove the saved Nuvio session and selected profile from Jacktook."
-msgstr "Remove the saved Nuvio session and selected profile from Jacktook."
+msgid "Remove the saved Nuvio session and selected profile from bobbi TV."
+msgstr "Remove the saved Nuvio session and selected profile from bobbi TV."
 
 msgctxt "#91009"
 msgid "Nuvio connection cancelled."

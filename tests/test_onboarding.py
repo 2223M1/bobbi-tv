@@ -123,7 +123,7 @@ def test_original_addon_menu_only_opens_native_browser(setup_ui, choice, target)
     assert setup_ui.builtins == ['ActivateWindow(addonbrowser,%s,return)' % target]
     assert setup_ui.called == []
     explanation = str(setup_ui.dialogs)
-    assert '原 ID' in explanation and '旧定制 JackTorr' in explanation
+    assert '原 ID' in explanation and '已安装的旧播放组件' in explanation
     assert '不能整体用原版覆盖' in explanation
 
 

@@ -72,7 +72,7 @@ def _episode_position(data):
 
 
 def build_payload(data):
-    """Build a Jellyfin-shaped watched payload from Jacktook playback data."""
+    """Build a Jellyfin-shaped watched payload from playback data."""
     ids = data.get("ids")
     if not isinstance(ids, dict):
         return None

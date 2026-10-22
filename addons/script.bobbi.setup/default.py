@@ -267,7 +267,7 @@ def show_updates(dialog):
     if choice in (0, 1):
         dialog.ok('打开 Kodi 原生插件管理',
                   '原版依赖保留原 ID，由 Kodi 按可用的原仓库管理；这里不自动检查或执行更新。\n'
-                  '波比定制组件不能整体用原版覆盖。旧定制 JackTorr 与原版也不是一回事，请勿直接替换。')
+                  '波比定制组件不能整体用原版覆盖。已安装的旧播放组件与原版也不是一回事，请勿直接替换。')
         # Playback can start while the selector or explanation is open.
         if xbmc.Player().isPlaying():
             dialog.ok('当前已经开始播放', '本次不打开插件更新操作页，影片保持播放。')

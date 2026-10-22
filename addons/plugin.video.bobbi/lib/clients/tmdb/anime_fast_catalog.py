@@ -710,7 +710,7 @@ def handle_am6b_open_item(params):
 
     First-screen cards never wait for an English request.  At click time the
     minimal TMDb detail request is performed in en-US with only external IDs
-    appended, then handed to the audited Jacktook movie/TV continuation
+    appended, then handed to the movie/TV continuation
     functions.  This preserves the old
     English source-search contract without adding work to directory rendering.
     """

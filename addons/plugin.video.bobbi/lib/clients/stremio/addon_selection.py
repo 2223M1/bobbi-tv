@@ -726,7 +726,7 @@ def stremio_bypass_addons_select(params=None):
 
 
 def stremio_subtitle_addons_select(params=None):
-    """Let the user pick which Stremio addons Jacktook queries for subtitles.
+    """Let the user pick which Stremio addons are queried for subtitles.
 
     Mirrors :func:`stremio_bypass_addons_select` but targets the
     ``subtitles`` resource (no id-prefix filter) and stores the result in the

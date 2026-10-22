@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Source filter: choose a value (Jacktook FilterWindow, picked by position). Right sheet over the picker.
+<!-- Source filter: choose a value (FilterWindow, picked by position). Right sheet over the picker.
      Ids: 2000 list (required), 2100 scrollbar, 1210 hint label. -->
 <window type="dialog">
   <defaultcontrol always="true">2000</defaultcontrol>

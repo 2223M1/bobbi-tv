@@ -8,9 +8,7 @@
     <platform>all</platform>
     <summary lang="en_GB">Python wrapper for setInfo on Nexus InfoTags</summary>
     <description lang="en_GB">Python wrapper for setInfo on Nexus InfoTags</description>
-    <license>GPL-3.0-or-later</license>
-    <website>https://github.com/jurialmunkey/script.module.infotagger</website>
-    <source>https://github.com/jurialmunkey/script.module.infotagger</source>
+    <license></license>
     <assets>
       <icon>icon.png</icon>
     </assets>

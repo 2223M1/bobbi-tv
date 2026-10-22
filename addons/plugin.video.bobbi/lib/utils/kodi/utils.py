@@ -372,7 +372,7 @@ _CINEMA_CONTEXT_LABELS = {
 
 
 def translation(id_value):
-    # Jacktook does not ship a Chinese catalog. Scope these verified context
+    # The catalog is not Chinese. Scope these verified context
     # captions to the Chinese Cinema skin; keep other locales/skins unchanged.
     if id_value in _CINEMA_CONTEXT_LABELS and xbmc.getSkinDir() == "skin.bobbi.cinema":
         return _CINEMA_CONTEXT_LABELS[id_value]

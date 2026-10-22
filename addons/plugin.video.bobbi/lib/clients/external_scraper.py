@@ -243,7 +243,7 @@ class ExternalScraperClient(BaseClient):
         provider_name: str,
         is_pack: bool = False,
     ) -> List[TorrentStream]:
-        """Map external provider result dicts to Jacktook TorrentStream."""
+        """Map external provider result dicts to TorrentStream."""
         mapped: List[TorrentStream] = []
 
         for item in results:

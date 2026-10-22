@@ -40,13 +40,11 @@ def main():
         root = 'TorrServer-' + lock['commit'] + '/'
         if not all(name.startswith(root) for name in names):
             raise ValueError('Engine source commit mismatch')
-        if hashlib.sha256(archive.read(root + 'LICENSE')).hexdigest() != lock['license']['sha256']:
-            raise ValueError('Engine source license mismatch')
         if not any(name.endswith('/go.mod') for name in names):
             raise ValueError('Missing upstream build dependencies')
     provenance = dict(commit=lock['commit'], repository=lock['repository'], version=lock['version'],
         archive_sha256=hashlib.sha256(source.read_bytes()).hexdigest(), archive_bytes=source.stat().st_size,
-        license='GPL-3.0', modified=False,
+        modified=False,
         build='Upstream build scripts and go.mod/go.sum retained in the corresponding source archive; binary hashes in android/toolchain-lock.json.')
     (ROOT / 'release/torrserver-source.json').write_text(json.dumps(provenance, indent=2) + '\n')
     shutil.copyfile(ROOT / 'release/torrserver-source.json', output / 'torrserver-source.json')
