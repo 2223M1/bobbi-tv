@@ -170,6 +170,65 @@ def navigate(run, window):
     raise RuntimeError('PREVIEW_WINDOW_NOT_REACHED')
 
 
+def framebuffer_patch(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb0'),
+                      box=(620, 220, 140, 70)):
+    """One measured GUI patch; invalid reads are evidence, never pixel hashes."""
+    result = dict(valid=False, reason='UNREADABLE', sha256=None, expected_bytes=None,
+                  actual_bytes=None, expected_patch_bytes=None, actual_patch_bytes=None,
+                  pan_before=None, pan_after=None)
+    try:
+        stride = int((root / 'stride').read_text())
+        width, virtual_height = map(int, (root / 'virtual_size').read_text().strip().split(','))
+        if int((root / 'bits_per_pixel').read_text()) != 32:
+            result['reason'] = 'UNSUPPORTED_FORMAT'
+            return result
+        x, y, w, h = box
+        if (not 0 < width * 4 <= stride <= 32768 or not 0 < virtual_height <= 16384
+                or min(x, y) < 0 or min(w, h) <= 0 or x + w > width or y + h > virtual_height):
+            result['reason'] = 'INVALID_GEOMETRY'
+            return result
+        result.update(expected_bytes=stride*h, expected_patch_bytes=w*h*4)
+        for _ in range(3):
+            pan_x, pan = map(int, (root / 'pan').read_text().strip().split(','))
+            result['pan_before'] = pan
+            if pan_x != 0 or not 0 <= pan <= virtual_height - y - h:
+                result['reason'] = 'INVALID_OFFSET'
+                return result
+            with device.open('rb', buffering=0) as stream:
+                stream.seek((pan+y)*stride)
+                raw = stream.read(stride*h)
+            result['actual_bytes'] = len(raw)
+            if len(raw) != stride*h:
+                result['reason'] = 'SHORT_READ'
+                return result
+            after_x, after = map(int, (root / 'pan').read_text().strip().split(','))
+            result['pan_after'] = after
+            if (pan_x, pan) != (after_x, after):
+                continue
+            patch = b''.join(raw[row*stride+x*4:row*stride+(x+w)*4] for row in range(h))
+            result['actual_patch_bytes'] = len(patch)
+            if len(patch) != w*h*4:
+                result['reason'] = 'SHORT_PATCH'
+                return result
+            result.update(valid=True, reason='OK', sha256=hashlib.sha256(patch).hexdigest())
+            return result
+        result['reason'] = 'MOVING'
+    except (OSError, ValueError, TypeError):
+        pass
+    return result
+
+
+def patch_stability(reference, samples, minimum=10):
+    valid = [s for s in samples if s.get('valid') is True and s.get('sha256')]
+    baseline = reference.get('sha256') if reference.get('valid') is True else None
+    changed = sum(s['sha256'] != baseline for s in valid) if baseline else 0
+    status = ('CHANGED' if changed else 'INCONCLUSIVE'
+              if not baseline or len(valid) < minimum or len(valid) != len(samples) else 'PASS')
+    return dict(status=status, samples=len(samples), valid_samples=len(valid),
+                invalid_samples=len(samples)-len(valid), changed_samples=changed,
+                minimum_samples=minimum, passed=status == 'PASS')
+
+
 def framebuffer_png(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb0'), height=1080):
     stride = int((root / 'stride').read_text())
     width, virtual_height = map(int, (root / 'virtual_size').read_text().strip().split(','))

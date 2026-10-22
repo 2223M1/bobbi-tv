@@ -1,0 +1,17 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261022-170000",
+  "mode": "choose",
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "result": {
+    "error_type": "RuntimeError",
+    "error_code": "UI_CHANGED",
+    "frames": [
+      {
+        "file": "<stdin>",
+        "line": 106,
+        "function": "<module>"
+      }
+    ]
+  }
+}

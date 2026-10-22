@@ -293,12 +293,18 @@ class SourceSelect(BaseWindow):
         prepared_retry = None
         prepared_retry_cancelled = None
         while True:
-            from lib.cinema.playback_ipc import call
+            from lib.cinema.playback_request import read_snapshot
             try:
-                self._control_snapshot = call({'operation': 'snapshot'})
+                self._control_snapshot = read_snapshot()
             except (OSError, ValueError, RuntimeError):
                 self.last_error = '播放控制服务尚未就绪，请稍后重试'
                 self.setProperty('playback_error', self.last_error)
+                # This dialog has not been shown yet; a property alone is invisible.
+                notification(self.last_error, time=5000)
+                if getattr(self, 'source_pump', None):
+                    self.source_pump.cancel()
+                if getattr(self, 'source_session', None):
+                    self.source_session.cancel()
                 return False
             self._pending_selection = None
             self._selection_locked = False
@@ -1183,22 +1189,23 @@ class SourceSelect(BaseWindow):
             self.item_information.pop('_account', None)
             self.item_information["request_id"] = uuid4().hex
             self.item_information["selection_policy"] = "exact"
-            from lib.cinema.playback_request import select, source_identity
+            from lib.cinema.playback_request import select, source_identity, context
             try:
                 if retry_cancelled is not None and retry_cancelled():
                     self._selection_locked = False
                     return
                 if retry_account is None:
-                    select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source))
+                    accepted = select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source))
                 else:
                     from bobbi_platform.account_manager import validate_snapshot
                     retry_account = validate_snapshot(retry_account, authenticated=True)
                     prior = self._control_snapshot['desired']
                     retry_from = dict(request_id=prior['request_id'], selection_identity=prior['selection_identity'],
                                       category=prior['resolver_failure']['category'])
-                    select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source),
+                    accepted = select(self._control_snapshot, self.item_information['request_id'], source_identity(selected_source),
                            account_scope=retry_account, retry_from=retry_from)
                     self.item_information['_account'] = retry_account
+                self.item_information['_selection_context'] = context(accepted, self.item_information['request_id'])
             except (AttributeError, KeyError, OSError, TypeError, ValueError, RuntimeError):
                 self._selection_locked = False
                 self.last_error = '片源选择已变化或播放控制不可用，请重试'

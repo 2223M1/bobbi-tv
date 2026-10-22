@@ -3,9 +3,12 @@ import json
 from pathlib import PurePosixPath
 import re
 import time
+from threading import Event, Thread
 
 from .backend import BackendError
 from .torrent_identity import magnet_hash, resolve_http
+
+FILE_CHOICE_STATUS_SECONDS = 5.0
 
 # Preserve upstream's ordinary single-file media/elementary-stream formats.
 # Disc images/indexes, playlists and scripts need a different resolver contract:
@@ -235,6 +238,7 @@ class Resolver:
 
     def resolve(self, request):
         self.stage = 'backend'
+        self.substage = None
         self.metadata_polls = 0
         self.started = self.stage_started = self.clock()
         self.stages, self.buffer_snapshot = {}, {}
@@ -244,6 +248,8 @@ class Resolver:
             # Fixed enums/counts only. Do not retain metadata, file paths,
             # transport URLs, backend credentials or exception messages.
             error.diagnostic.setdefault('stage', self.stage)
+            if self.substage is not None:
+                error.diagnostic.setdefault('substage', self.substage)
             error.diagnostic['metadata_polls'] = self.metadata_polls
             error.diagnostic.update(self.buffer_snapshot)
             error.diagnostic['elapsed_ms'] = int((self.clock()-self.started)*1000)
@@ -252,6 +258,7 @@ class Resolver:
             raise
 
     def phase(self, stage):
+        self.substage = None
         now = self.clock()
         self.stages[self.stage] = int((now-self.stage_started)*1000)
         self.stage, self.stage_started = stage, now
@@ -259,6 +266,54 @@ class Resolver:
     def wait_more(self):
         callback = getattr(self.owner, 'wait_for_buffer', None)
         return bool(callback and callback(dict(self.buffer_snapshot)))
+
+    def choose_with_status(self, choose, candidates, info_hash):
+        """Keep only this already-added torrent alive while the human chooses.
+
+        MatriX get renews its idle lease; the blocking Kodi dialog otherwise
+        outlasts that lease. No add, save, preload or media open is repeated.
+        The worker is joined before the mandatory post-choice identity read.
+        """
+        from bobbi_core.torrent_startup import FILE_CHOICE_SECONDS
+        done, errors = Event(), []
+        deadline = self.clock() + FILE_CHOICE_SECONDS
+        def refresh():
+            while not done.wait(FILE_CHOICE_STATUS_SECONDS):
+                try:
+                    def active():
+                        if done.is_set():
+                            raise BackendError('TORRENT_CANCELLED', 'cancelled')
+                        self.owner.active()
+                    active()
+                    if self.clock() >= deadline:
+                        return
+                    self.backend.status(info_hash, min(deadline, self.clock() + 2), active)
+                except BackendError as error:
+                    if not done.is_set():
+                        error.diagnostic.setdefault('substage', 'manual_wait')
+                        errors.append(error)
+                    return
+                except Exception:
+                    if not done.is_set():
+                        errors.append(BackendError('TORRENT_CONTROL_UNAVAILABLE',
+                            diagnostic={'substage': 'manual_wait'}))
+                    return
+        worker = Thread(target=refresh, name='bobbi-file-choice-status')
+        worker.start()
+        try:
+            choice = choose(candidates)
+        finally:
+            done.set()
+            # A status call has 2 s connect/read caps plus bounded owner reads.
+            worker.join(6)
+        self.owner.active()  # Cancel/replacement wins over old HTTP diagnostics.
+        if choice is None:
+            return None
+        if worker.is_alive():
+            raise BackendError('TORRENT_CONTROL_UNAVAILABLE', diagnostic={'substage': 'manual_wait'})
+        if errors:
+            raise errors[0]
+        return choice
 
     def _resolve(self, request):
         from bobbi_core.torrent_startup import DOWNLOAD_SECONDS, CONTROL_SECONDS
@@ -326,13 +381,14 @@ class Resolver:
             candidates = manual_candidates(info, request, info_hash, resolution, owner.protocol)
             if not candidates:
                 raise
-            file = choose(candidates)
+            file = self.choose_with_status(choose, candidates, info_hash)
             owner.active()
             if file is None:
                 raise BackendError('TORRENT_CANCELLED', 'cancelled') from None
             if file not in candidates:
                 raise BackendError('TORRENT_SELECTED_FILE_CHANGED', 'selected_file_missing') from None
             # Re-read after the human dialog, not just the old in-memory rows.
+            self.substage = 'manual_recheck'
             info = backend.status(info_hash, self.clock() + CONTROL_SECONDS, owner.active)
             selected_file_unchanged(info, file)
             if file not in manual_candidates(info, request, info_hash, resolution, owner.protocol):

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.712" timestamp="2026-10-22T13:26:04.868408+08:00" hostname="Paimon"><testcase classname="ce2046-results-20261022.baseline.test_rollback_missing" name="test_missing_backup_rejected_before_any_swap" time="0.618"><failure message="Failed: DID NOT RAISE UpdateError">..\ce2046-results-20261022\baseline\test_rollback_missing.py:23: in test_missing_backup_rejected_before_any_swap
+    with pytest.raises(UpdateError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE UpdateError</failure></testcase></testsuite></testsuites>

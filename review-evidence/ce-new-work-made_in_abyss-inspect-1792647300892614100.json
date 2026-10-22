@@ -1,0 +1,132 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "made_in_abyss",
+    "operation": "inspect",
+    "record": {
+      "test": {
+        "title": "Made in Abyss",
+        "tmdb_id": 72636,
+        "kind": "tv",
+        "year": 2017,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 72636,
+          "name": "Made in Abyss",
+          "original_name": "メイドインアビス",
+          "original_language": "ja",
+          "first_air_date": "2017-07-07"
+        },
+        "route": "system-direct",
+        "checked_at": 1792647190.1758919
+      },
+      "prior_request": null,
+      "started": 62437.486685139,
+      "home": {
+        "generation": 21,
+        "intent": 1,
+        "retired_generation": 20,
+        "observed_at": 62438.345045839
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 62438.345348213,
+      "picker": {
+        "window": 13001,
+        "generation": 22,
+        "intent": 1,
+        "tmdb_id": 72636,
+        "kind": "tv"
+      },
+      "picker_observed_at": 62440.700637273,
+      "selected_card": {
+        "Container(1000).ListItem.Label": "[7³ACG] 来自深渊/Meidoinabisu S01 | 01-13 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "10.4 GB",
+        "Container(1000).ListItem.Property(source_key)": "ca67ea4d5d4fa49fd60624f939617cbbd322b2e6d98c73f2d5353a815251a478",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      "selected_at": 62508.49971925,
+      "request_id": "3f020846a4fd4edfbcad8b78c83112a2",
+      "selection_identity": "transport:215f7487b1f203ab391d7d0f8165d9ba3a28cc134238f90d614e9b248940af3c"
+    },
+    "sample": {
+      "wall": 62548.014123951,
+      "phase": null,
+      "native": {},
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 10138,
+          "label": ""
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 62548.041698887,
+        "read_completed": 62548.041924677,
+        "raw": "No vdec.\n",
+        "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+        "channels": [],
+        "identity_known": false,
+        "primary_channel": null
+      },
+      "decoder_counters": {},
+      "decoder_counter_source": null,
+      "observation_times": {
+        "sample_started": 62547.997265474,
+        "decoder_started": 62548.041698887,
+        "decoder_completed": 62548.041924677,
+        "sample_completed": 62548.042320926
+      }
+    },
+    "gui": {
+      "window": 10138,
+      "generation": 27,
+      "intent": 1,
+      "labels": {
+        "Window.Property(info.ids)": "",
+        "Window.Property(info.media_type)": "",
+        "Window.Property(info.mode)": "",
+        "Window.Property(info.query)": "",
+        "Window.Property(info.tv_data)": "",
+        "Window.Property(info.year)": "",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": "",
+        "Window.Property(source_loading)": ""
+      },
+      "modal": false,
+      "asleep": false,
+      "visible": [
+        13002
+      ],
+      "stable": true
+    }
+  },
+  "diagnostic_present": false,
+  "work": "made_in_abyss",
+  "operation": "inspect",
+  "attempt": 4,
+  "regression_attempt": true
+}

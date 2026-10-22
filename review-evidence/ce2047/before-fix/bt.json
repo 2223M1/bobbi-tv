@@ -1,0 +1,310 @@
+{
+  "schema": 1,
+  "scope": "Synthetic HTTP IO; actual production Backend/Resolver/failure_log",
+  "not_real_device_reproduction": true,
+  "source": [
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/backend.py",
+      "sha256": "eeea3dff52c22c75dd551be0db3170332a834078d358a0eba6a99e3b88a7ba34"
+    },
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/resolver.py",
+      "sha256": "45fd74abdad56356443d7fb9817609f427e8fbc71381ed19e4055222252eb7a9"
+    },
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/entry.py",
+      "sha256": "560a0f7f4f9236d5b316d5d97a628b7a15e99d511a756b4d2137a22320f8cff5"
+    }
+  ],
+  "count": 6,
+  "passed": 6,
+  "results": [
+    {
+      "injected_post_confirmation_http_status": 200,
+      "outcome": "resolved",
+      "file_evidence": "USER_CONFIRMED_FILE",
+      "exact_file_unchanged": true,
+      "manual_dialog_calls": 1,
+      "preparation_seed_count": 0,
+      "phases": [
+        "download",
+        "metadata",
+        "buffering"
+      ],
+      "backend_calls": [
+        {
+          "method": "GET",
+          "path": "/echo",
+          "action": null
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "add"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        },
+        {
+          "method": "GET",
+          "path": "/stream",
+          "action": null
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "injected_post_confirmation_http_status": 401,
+      "outcome": "rejected",
+      "code": "TORRENT_HTTP_REJECTED",
+      "category": "torrserver_error",
+      "diagnostic": {
+        "stage": "selector",
+        "metadata_polls": 1,
+        "elapsed_ms": 0,
+        "stage_ms": {
+          "backend": 0,
+          "download": 0,
+          "add": 0,
+          "metadata": 0,
+          "selector": 0
+        }
+      },
+      "production_failure_log": "[BOBBI-TORRENT] reason=TORRENT_HTTP_REJECTED detail={\"elapsed_ms\":0,\"metadata_polls\":1,\"request_id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"stage\":\"selector\",\"stage_ms\":{\"add\":0,\"backend\":0,\"download\":0,\"metadata\":0,\"selector\":0}}",
+      "manual_dialog_calls": 1,
+      "preparation_seed_count": 0,
+      "phases": [
+        "download",
+        "metadata"
+      ],
+      "backend_calls": [
+        {
+          "method": "GET",
+          "path": "/echo",
+          "action": null
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "add"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "injected_post_confirmation_http_status": 403,
+      "outcome": "rejected",
+      "code": "TORRENT_HTTP_REJECTED",
+      "category": "torrserver_error",
+      "diagnostic": {
+        "stage": "selector",
+        "metadata_polls": 1,
+        "elapsed_ms": 0,
+        "stage_ms": {
+          "backend": 0,
+          "download": 0,
+          "add": 0,
+          "metadata": 0,
+          "selector": 0
+        }
+      },
+      "production_failure_log": "[BOBBI-TORRENT] reason=TORRENT_HTTP_REJECTED detail={\"elapsed_ms\":0,\"metadata_polls\":1,\"request_id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"stage\":\"selector\",\"stage_ms\":{\"add\":0,\"backend\":0,\"download\":0,\"metadata\":0,\"selector\":0}}",
+      "manual_dialog_calls": 1,
+      "preparation_seed_count": 0,
+      "phases": [
+        "download",
+        "metadata"
+      ],
+      "backend_calls": [
+        {
+          "method": "GET",
+          "path": "/echo",
+          "action": null
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "add"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "injected_post_confirmation_http_status": 404,
+      "outcome": "rejected",
+      "code": "TORRENT_HTTP_REJECTED",
+      "category": "torrserver_error",
+      "diagnostic": {
+        "stage": "selector",
+        "metadata_polls": 1,
+        "elapsed_ms": 0,
+        "stage_ms": {
+          "backend": 0,
+          "download": 0,
+          "add": 0,
+          "metadata": 0,
+          "selector": 0
+        }
+      },
+      "production_failure_log": "[BOBBI-TORRENT] reason=TORRENT_HTTP_REJECTED detail={\"elapsed_ms\":0,\"metadata_polls\":1,\"request_id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"stage\":\"selector\",\"stage_ms\":{\"add\":0,\"backend\":0,\"download\":0,\"metadata\":0,\"selector\":0}}",
+      "manual_dialog_calls": 1,
+      "preparation_seed_count": 0,
+      "phases": [
+        "download",
+        "metadata"
+      ],
+      "backend_calls": [
+        {
+          "method": "GET",
+          "path": "/echo",
+          "action": null
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "add"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "injected_post_confirmation_http_status": 409,
+      "outcome": "rejected",
+      "code": "TORRENT_HTTP_REJECTED",
+      "category": "torrserver_error",
+      "diagnostic": {
+        "stage": "selector",
+        "metadata_polls": 1,
+        "elapsed_ms": 0,
+        "stage_ms": {
+          "backend": 0,
+          "download": 0,
+          "add": 0,
+          "metadata": 0,
+          "selector": 0
+        }
+      },
+      "production_failure_log": "[BOBBI-TORRENT] reason=TORRENT_HTTP_REJECTED detail={\"elapsed_ms\":0,\"metadata_polls\":1,\"request_id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"stage\":\"selector\",\"stage_ms\":{\"add\":0,\"backend\":0,\"download\":0,\"metadata\":0,\"selector\":0}}",
+      "manual_dialog_calls": 1,
+      "preparation_seed_count": 0,
+      "phases": [
+        "download",
+        "metadata"
+      ],
+      "backend_calls": [
+        {
+          "method": "GET",
+          "path": "/echo",
+          "action": null
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "add"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "injected_post_confirmation_http_status": 500,
+      "outcome": "rejected",
+      "code": "TORRENT_HTTP_REJECTED",
+      "category": "torrserver_error",
+      "diagnostic": {
+        "stage": "selector",
+        "metadata_polls": 1,
+        "elapsed_ms": 0,
+        "stage_ms": {
+          "backend": 0,
+          "download": 0,
+          "add": 0,
+          "metadata": 0,
+          "selector": 0
+        }
+      },
+      "production_failure_log": "[BOBBI-TORRENT] reason=TORRENT_HTTP_REJECTED detail={\"elapsed_ms\":0,\"metadata_polls\":1,\"request_id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"stage\":\"selector\",\"stage_ms\":{\"add\":0,\"backend\":0,\"download\":0,\"metadata\":0,\"selector\":0}}",
+      "manual_dialog_calls": 1,
+      "preparation_seed_count": 0,
+      "phases": [
+        "download",
+        "metadata"
+      ],
+      "backend_calls": [
+        {
+          "method": "GET",
+          "path": "/echo",
+          "action": null
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "add"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        },
+        {
+          "method": "POST",
+          "path": "/torrents",
+          "action": "get"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "confirmed_diagnostic_observation": "Non-200 statuses have the same TORRENT_HTTP_REJECTED code; production diagnostics do not retain status, method, operation, or post-confirmation substage. The real failure HTTP status remains unknown."
+}

@@ -26,11 +26,18 @@ def source_identity(source):
     return 'transport:' + digest(url)
 
 
-def context(snapshot, request_id):
+class SelectionChanged(RuntimeError):
+    """A readable owner explicitly revoked this request, not an IPC failure."""
+
+
+def context(snapshot, request_id, original=None):
     desired = snapshot.get('desired') if isinstance(snapshot, dict) else None
     if (not isinstance(desired, dict) or desired.get('request_id') != request_id
             or desired.get('cancelled')):
-        raise RuntimeError('片源选择已经取消或被新的选择替代')
+        raise SelectionChanged('片源选择已经取消或被新的选择替代')
+    if original is not None and any(snapshot.get(key) != original.get(key)
+                                    for key in ('boot_id', 'epoch')):
+        raise SelectionChanged('播放控制已重启或片源选择已变化')
     return dict(boot_id=snapshot['boot_id'], epoch=snapshot['epoch'], request_id=request_id)
 
 
@@ -52,8 +59,9 @@ def reserve_ui_entry(data):
     if result.get('selection_policy') != 'exact':
         return result
     request_id = uuid4().hex
-    snapshot = call({'operation': 'snapshot'})
-    select(snapshot, request_id, data_identity(result))
+    snapshot = read_snapshot()
+    accepted = select(snapshot, request_id, data_identity(result))
+    result['_selection_context'] = context(accepted, request_id)
     result['request_id'] = result['_ui_reserved_request'] = request_id
     result.pop('_parent_request_id', None)
     result.pop('_continuation_token', None)
@@ -191,7 +199,7 @@ def startup_failure(owner_context, account_scope=None):
     return None
 
 
-def owned_state(request_id):
+def read_snapshot():
     # A local IPC read can time out briefly during native player teardown/open.
     # That is not proof of a different selection. Retry reads only, with fresh
     # authority each time; never retry/mint a playback command or trust a cache.
@@ -204,8 +212,13 @@ def owned_state(request_id):
                 raise
             time.sleep(min(0.05, max(0, deadline - time.monotonic())))
             continue
-        context(snapshot, request_id)  # Explicit cancel/replacement is immediate.
         return snapshot
+
+
+def owned_state(request_id, original=None):
+    snapshot = read_snapshot()
+    context(snapshot, request_id, original)  # Explicit cancel/replacement is immediate.
+    return snapshot
 
 
 def monitor_state(original, native_instance, timeout=.3):

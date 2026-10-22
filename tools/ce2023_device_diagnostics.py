@@ -2,6 +2,7 @@
 import argparse
 import importlib.util
 import json
+import re
 from pathlib import Path
 import sys
 
@@ -11,7 +12,7 @@ import json,pathlib,re,sys,time
 sys.dont_write_bytecode=True
 for addon in ('plugin.video.bobbi.torrent','script.module.bobbi.core','script.module.requests','script.module.urllib3','script.module.chardet','script.module.certifi','script.module.idna'):
  sys.path.insert(0,'/storage/.kodi/addons/'+addon+'/lib')
-from bobbi_torrent.backend import Backend,load_config
+from bobbi_torrent.backend import Backend,BackendError,load_config
 from bobbi_torrent.resolver import metadata_files
 out={'time':time.time(),'readonly':True}
 backend=Backend(load_config('/storage/.kodi/userdata/addon_data/plugin.video.bobbi.torrent/backend.json'))
@@ -27,6 +28,15 @@ try:
   fs=metadata_files(row)
   value['metadata_files']=len(fs) if fs is not None else None
   out['torrent_states'].append(value)
+ if TORRENT_HASH:
+  try:
+   row=backend.status(TORRENT_HASH,time.monotonic()+5,lambda:None)
+   out['selected_torrent']={k:row.get(k) for k in ('hash','stat','stat_string','loaded_size',
+    'preloaded_bytes','preload_size','download_speed','active_peers','total_peers')}
+   out['selected_torrent']['file_count']=len(metadata_files(row) or [])
+  except BackendError as e:
+   from bobbi_torrent.entry import failure_log
+   out['selected_torrent']={'error':e.code,'diagnostic':failure_log(e)}
 except Exception as e:out['backend_error']=getattr(e,'code',type(e).__name__)
 finally:backend.close()
 out['log_events']=[]
@@ -104,11 +114,12 @@ print(json.dumps(out))
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--subtitle-detail',action='store_true');p.add_argument('--metadata-id',type=int,choices=(60811,76013));a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--subtitle-detail',action='store_true');p.add_argument('--metadata-id',type=int,choices=(60811,76013));p.add_argument('--torrent-hash');a=p.parse_args()
+    if a.torrent_hash and not re.fullmatch('[0-9a-f]{40}', a.torrent_hash):p.error('Exact torrent hash required')
     sys.path.insert(0,str(a.transport_source/'ui-redesign/runtime/ssh-python'))
     s=importlib.util.spec_from_file_location('diag_wire',a.transport_source/'ui-redesign/tools/device_transport.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
     c,w=m.connect()
-    try:rc,result,diag=w.readonly(c,('SUBTITLE_DETAIL='+repr(a.subtitle_detail)+'\nMETADATA_ID='+repr(a.metadata_id)+'\n'+REMOTE).encode(),deadline_seconds=30)
+    try:rc,result,diag=w.readonly(c,('SUBTITLE_DETAIL='+repr(a.subtitle_detail)+'\nMETADATA_ID='+repr(a.metadata_id)+'\nTORRENT_HASH='+repr(a.torrent_hash)+'\n'+REMOTE).encode(),deadline_seconds=30)
     finally:c.close()
     a.output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps(dict(transport_exit=rc,diagnostic_present=bool(diag),result=result),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

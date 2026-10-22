@@ -1,0 +1,339 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "planetes",
+    "operation": "requery",
+    "record": {
+      "test": {
+        "title": "Planetes",
+        "tmdb_id": 34102,
+        "kind": "tv",
+        "year": 2003,
+        "season": 1,
+        "episode": 1,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 34102,
+          "name": "Planetes",
+          "original_name": "プラネテス",
+          "original_language": "ja",
+          "first_air_date": "2003-10-04"
+        },
+        "route": "system-direct",
+        "checked_at": 1792648577.3240495
+      },
+      "prior_request": "e7ae451f8a73490b9945fa253630c19c",
+      "started": 63824.634843112,
+      "home": {
+        "generation": 40,
+        "intent": 3,
+        "retired_generation": 40,
+        "observed_at": 63825.185679913
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 63825.186287496,
+      "picker": {
+        "window": 13001,
+        "generation": 41,
+        "intent": 3,
+        "tmdb_id": 34102,
+        "kind": "tv"
+      },
+      "picker_observed_at": 63829.84127552
+    },
+    "samples": [
+      {
+        "wall": 63825.47198019,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63825.501193679,
+          "read_completed": 63825.501575512,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63825.447663567,
+          "decoder_started": 63825.501193679,
+          "decoder_completed": 63825.501575512,
+          "sample_completed": 63825.502372302
+        }
+      },
+      {
+        "wall": 63827.744953429,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63827.773923085,
+          "read_completed": 63827.77416771,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63827.65682163,
+          "decoder_started": 63827.773923085,
+          "decoder_completed": 63827.77416771,
+          "sample_completed": 63827.774266126
+        }
+      },
+      {
+        "wall": 63829.885726482,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "3"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63829.906457944,
+          "read_completed": 63829.906922068,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63829.842272352,
+          "decoder_started": 63829.906457944,
+          "decoder_completed": 63829.906922068,
+          "sample_completed": 63829.907065776
+        }
+      },
+      {
+        "wall": 63832.187704193,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[a-S] Planetes (01-26) (1080p)",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "4",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "4"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63832.204723703,
+          "read_completed": 63832.205038536,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63832.1054693,
+          "decoder_started": 63832.204723703,
+          "decoder_completed": 63832.205038536,
+          "sample_completed": 63832.205134369
+        }
+      },
+      {
+        "wall": 63834.314285171,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[a-S] Planetes (01-26) (1080p)",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63834.338974001,
+          "read_completed": 63834.339201959,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63834.293143834,
+          "decoder_started": 63834.338974001,
+          "decoder_completed": 63834.339201959,
+          "sample_completed": 63834.339283792
+        }
+      },
+      {
+        "wall": 63837.040125635,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[a-S] Planetes (01-26) (1080p)",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63837.058633684,
+          "read_completed": 63837.059141642,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63837.019581672,
+          "decoder_started": 63837.058633684,
+          "decoder_completed": 63837.059141642,
+          "sample_completed": 63837.059305141
+        }
+      },
+      {
+        "wall": 63839.208990185,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[a-S] Planetes (01-26) (1080p)",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 63839.233216266,
+          "read_completed": 63839.233626223,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 63839.188939971,
+          "decoder_started": 63839.233216266,
+          "decoder_completed": 63839.233626223,
+          "sample_completed": 63839.233771431
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "planetes",
+  "operation": "requery",
+  "attempt": 2,
+  "regression_attempt": true
+}

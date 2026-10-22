@@ -108,6 +108,10 @@ elif MODE=='choose':
  current=view()
  if current['players'] or current['gui']['currentwindow']['id']!=EXPECTED_WINDOW:raise RuntimeError('UI_CHANGED')
  if not any(EXPECTED_LABEL in str(value) for value in current['labels'].values()):raise RuntimeError('UI_LABEL_CHANGED')
+ if DWELL_SECONDS:time.sleep(DWELL_SECONDS)
+ current=view()
+ if current['players'] or current['gui']['currentwindow']['id']!=EXPECTED_WINDOW:raise RuntimeError('UI_CHANGED_AFTER_DWELL')
+ if not any(EXPECTED_LABEL in str(value) for value in current['labels'].values()):raise RuntimeError('UI_LABEL_CHANGED_AFTER_DWELL')
  # Focus/index are chosen only from the immediately preceding real UI read.
  builtin('SetFocus(%d)'%CONTROL)
  time.sleep(.25)
@@ -143,7 +147,7 @@ time.sleep(.3)
 result=view()
 if MODE=='choose':
  result['input_receipt']=dict(state='action_acknowledged',installation_completion_proved=False,
-  window=EXPECTED_WINDOW,heading=EXPECTED_LABEL,control=CONTROL,index=INDEX,choice=CHOICE_LABEL)
+  window=EXPECTED_WINDOW,heading=EXPECTED_LABEL,control=CONTROL,index=INDEX,choice=CHOICE_LABEL,dwell_seconds=DWELL_SECONDS)
 print(json.dumps(result))
 '''
 
@@ -155,6 +159,7 @@ def main():
     p.add_argument('--run-id',required=True);p.add_argument('--entry',type=Path)
     p.add_argument('--window',type=int);p.add_argument('--label');p.add_argument('--control',type=int);p.add_argument('--index',type=int);p.add_argument('--choice-label')
     p.add_argument('--expect-sequence',type=int)
+    p.add_argument('--dwell-seconds',type=int,choices=range(0,41),default=0)
     a=p.parse_args()
     if not re.fullmatch('[0-9]{8}-[0-9]{6}',a.run_id):p.error('Exact timestamp required')
     if a.mode=='stage':
@@ -172,7 +177,7 @@ def main():
             with c.open_sftp() as s:
                 s.mkdir(run,mode=0o700);s.put(str(a.entry),run+'/entry.zip')
         values=dict(RUN=run,MODE=a.mode,EXPECTED=hashlib.sha256(a.entry.read_bytes()).hexdigest() if a.entry else None,
-                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index,CHOICE_LABEL=a.choice_label,SMOKE_RUN=a.smoke_run,EXPECTED_SEQUENCE=a.expect_sequence)
+                    EXPECTED_WINDOW=a.window,EXPECTED_LABEL=a.label,CONTROL=a.control,INDEX=a.index,CHOICE_LABEL=a.choice_label,SMOKE_RUN=a.smoke_run,EXPECTED_SEQUENCE=a.expect_sequence,DWELL_SECONDS=a.dwell_seconds)
         code='\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'
         code+='import traceback\ntry:\n'+textwrap.indent(REMOTE,' ')+'\n'
         code+='except Exception as e:\n print(json.dumps(dict(error_type=type(e).__name__,error_code=str(e) if re.fullmatch("[A-Z_0-9]{1,80}",str(e)) else None,frames=[dict(file=pathlib.Path(f.filename).name,line=f.lineno,function=f.name) for f in traceback.extract_tb(e.__traceback__)])))\n'

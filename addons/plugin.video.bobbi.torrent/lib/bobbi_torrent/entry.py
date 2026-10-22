@@ -24,6 +24,16 @@ def failure_log(error, request_id=''):
                      'binding', 'selector', 'filename_identity', 'movie_identity',
                      'buffering', 'final_selection'):
             detail['stage'] = stage
+        for key, allowed in (('operation', ('echo', 'add', 'upload', 'status', 'preload', 'other')),
+                             ('method', ('GET', 'POST')),
+                             ('substage', ('manual_recheck', 'manual_wait', 'add_reconcile'))):
+            value = diagnostic.get(key)
+            if isinstance(value, str) and value in allowed:
+                detail[key] = value
+        for key in ('http_status', 'initial_http_status'):
+            value = diagnostic.get(key)
+            if type(value) is int and 100 <= value <= 599:
+                detail[key] = value
         for key in ('file_count', 'candidate_count', 'metadata_polls'):
             value = diagnostic.get(key)
             if type(value) is int and 0 <= value <= 4096:
