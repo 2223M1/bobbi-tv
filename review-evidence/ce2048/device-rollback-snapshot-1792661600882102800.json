@@ -1,0 +1,37 @@
+{
+  "action": "snapshot",
+  "exit_code": 0,
+  "diagnostic_present": false,
+  "result": {
+    "action": "snapshot",
+    "phase": "complete",
+    "sequence": 2026102051,
+    "tx": "82d3a7380b3949f88bf776dfb9c9fc3e",
+    "host_pending": null,
+    "vector": {
+      "plugin.video.bobbi": "9bfdf07737030e5b3af488de6a61342f69c300f15c402b0a7499aa2c4ab87f7a",
+      "plugin.video.bobbi.library": "2a637082b4eafa14fc1ae74a64f6f865e202621383af90977e858d16dc7e18f7",
+      "plugin.video.bobbi.torrent": "a087d1a397958471289b29487401ce705e39c768c5c028741c00527f6fa40798",
+      "repository.bobbi": "9bf0af8dd21eb3218491240fec68038a796f4ef4de7f157e1e998d160fdded1c",
+      "resource.uisounds.bobbi-modern": "64402ae074cb900588ede2ea23e4a3b4aea775d4c94ac178ab05424b67d91eea",
+      "script.bobbi.opensubtitles": "3327a5d6bbbe920dc3ba1e51eab528b7ff8d8bf327e1e3a22a434024317ad4de",
+      "script.bobbi.setup": "79217bee08f6b2c7493952327762dab9e02884ba7be3ca0a5eb563ea51f09284",
+      "script.module.bobbi.catalog": "754b7c432685a103d40b94f1599661bf658073e548fa2c3dcbfef1c230c50069",
+      "script.module.bobbi.core": "c933f95a6512ad219034d2da4d00f85804ded2064bb39d2b6be795166df47e89",
+      "script.module.bobbi.mdsub": "f05b55868dedf654b35eb80059c549b07a74ebb2a70db0234788197762b420e2",
+      "script.module.bobbi.platform": "a1145d54f723f11276249ce67ecf7dc8ecf401ac0b506328d87ff1cff2f4c066",
+      "skin.bobbi.cinema": "2254fa687e2579aedc58e8ed8d9755fcb5ba1c885f101eae88f9cbfea4fdda10"
+    },
+    "skin": {
+      "value": "skin.bobbi.cinema"
+    },
+    "kodi": [
+      "NRestarts=0",
+      "ActiveState=active"
+    ],
+    "matches_previous_vector": false,
+    "torrent_processes": [
+      "3647 TorrServer-linu"
+    ]
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "version": "0.2.0-private.1",
+  "channel": "private-candidate",
+  "device_verified": false,
+  "components": [
+    {
+      "id": "plugin.video.bobbi",
+      "version": "0.1.32",
+      "file": "plugin.video.bobbi/plugin.video.bobbi-0.1.32.zip",
+      "sha256": "558f9a7467593b2eee3b76d4159cacc008689af592e1d84c94d62c60210d1a31",
+      "bytes": 3480965
+    },
+    {
+      "id": "plugin.video.bobbi.library",
+      "version": "0.1.2",
+      "file": "plugin.video.bobbi.library/plugin.video.bobbi.library-0.1.2.zip",
+      "sha256": "3dd4cd483e6766bbb44164c38f9a5389edc6f9620604af3b6dfd835a16910420",
+      "bytes": 3864
+    },
+    {
+      "id": "plugin.video.bobbi.torrent",
+      "version": "0.1.11",
+      "file": "plugin.video.bobbi.torrent/plugin.video.bobbi.torrent-0.1.11.zip",
+      "sha256": "97b0bd2b2122c62f5427f3985912c2cce3effa6ed0211c3217d5139f076d9ccf",
+      "bytes": 23630
+    },
+    {
+      "id": "repository.bobbi",
+      "version": "0.1.0",
+      "file": "repository.bobbi/repository.bobbi-0.1.0.zip",
+      "sha256": "c08bd88bc9a372f993f24f95c5c7b1ced1d208b1d8248ac0108f337e48668923",
+      "bytes": 1000
+    },
+    {
+      "id": "resource.uisounds.bobbi-modern",
+      "version": "2026.9.6.0",
+      "file": "resource.uisounds.bobbi-modern/resource.uisounds.bobbi-modern-2026.9.6.0.zip",
+      "sha256": "dbaa8ceb5fe75f24e43f87e1871c65d690d63ad13a364eef4f1f2276dbc2d3ee",
+      "bytes": 1016035
+    },
+    {
+      "id": "script.bobbi.opensubtitles",
+      "version": "0.1.1",
+      "file": "script.bobbi.opensubtitles/script.bobbi.opensubtitles-0.1.1.zip",
+      "sha256": "ac7cdc5c633bda5d9e100ff746c5b1e35f693defe02fb4bffe955b9323d7814d",
+      "bytes": 15292
+    },
+    {
+      "id": "script.bobbi.setup",
+      "version": "0.1.5",
+      "file": "script.bobbi.setup/script.bobbi.setup-0.1.5.zip",
+      "sha256": "fc8474a21922bbac01f82071eee94813882d98d31e6c8b336a2eb4241435dc13",
+      "bytes": 13526
+    },
+    {
+      "id": "script.bobbi.start",
+      "version": "0.2.39",
+      "file": "script.bobbi.start/script.bobbi.start-0.2.39.zip",
+      "sha256": "d2cfa150dff94d0194ab573a5e54cf0b6b31e68bf882a8beda133bd2fad16cab",
+      "bytes": 1225
+    },
+    {
+      "id": "script.module.bobbi.catalog",
+      "version": "0.1.4",
+      "file": "script.module.bobbi.catalog/script.module.bobbi.catalog-0.1.4.zip",
+      "sha256": "cb3135f2c250e0675f6139d0545e52869707dd467ae663e7f5584dc3f71f1bad",
+      "bytes": 18862431
+    },
+    {
+      "id": "script.module.bobbi.core",
+      "version": "0.1.33",
+      "file": "script.module.bobbi.core/script.module.bobbi.core-0.1.33.zip",
+      "sha256": "f22d01817af654206914aa00f2bf376308065bc4ccc52a110c4e633993b1599f",
+      "bytes": 399574
+    },
+    {
+      "id": "script.module.bobbi.mdsub",
+      "version": "0.1.0",
+      "file": "script.module.bobbi.mdsub/script.module.bobbi.mdsub-0.1.0.zip",
+      "sha256": "356fccbd385b23750f65522cafe40d1c47814ab1a297d219add28a475ed67d79",
+      "bytes": 138381
+    },
+    {
+      "id": "script.module.bobbi.platform",
+      "version": "0.1.28",
+      "file": "script.module.bobbi.platform/script.module.bobbi.platform-0.1.28.zip",
+      "sha256": "cc92d5457cfbad6647377e5a33b9813d88e140f378c2cafe3dd1c0c65c487b3e",
+      "bytes": 125033
+    },
+    {
+      "id": "skin.bobbi.cinema",
+      "version": "0.1.7",
+      "file": "skin.bobbi.cinema/skin.bobbi.cinema-0.1.7.zip",
+      "sha256": "6b385559c03d03f355561bef8221c70c5551330d28e67b16187f6639530b2de9",
+      "bytes": 70858031
+    },
+    {
+      "id": "script.module.certifi",
+      "version": "2023.5.7",
+      "file": "script.module.certifi/script.module.certifi-2023.5.7.zip",
+      "sha256": "080c24d6ffb9e78faf429a8d1d499b3a7607c85a65995a12a152297ff4d15d1d",
+      "bytes": 161751
+    },
+    {
+      "id": "script.module.chardet",
+      "version": "5.1.0",
+      "file": "script.module.chardet/script.module.chardet-5.1.0.zip",
+      "sha256": "37ed599a07aef38c68fd52dba35bdec37fdc3ba9c9bb37e2e4afd561287fd6f0",
+      "bytes": 187843
+    },
+    {
+      "id": "script.module.idna",
+      "version": "3.10.0",
+      "file": "script.module.idna/script.module.idna-3.10.0.zip",
+      "sha256": "462fbcb7ee723dd6d9f3a7c0df8507bcb3b858ef4dc7162b1c05c58ad83958ed",
+      "bytes": 68488
+    },
+    {
+      "id": "script.module.infotagger",
+      "version": "0.1.0",
+      "file": "script.module.infotagger/script.module.infotagger-0.1.0.zip",
+      "sha256": "180ada7843a8e6ed6b44c8976f26c17732910d3f7444d44773801564f2afd0bb",
+      "bytes": 23086
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "version": "0.2.35",
+      "file": "script.module.jurialmunkey/script.module.jurialmunkey-0.2.35.zip",
+      "sha256": "c6a5b5f948808a84f371ee961915215338219b651e4e9b6f616ac93d0aff0ee4",
+      "bytes": 55614
+    },
+    {
+      "id": "script.module.requests",
+      "version": "2.31.0",
+      "file": "script.module.requests/script.module.requests-2.31.0.zip",
+      "sha256": "7cf08ef9053ca4e6775a1c5ae9a11feec8c87d8ccd89f2b5ba37ec27196d0a49",
+      "bytes": 63691
+    },
+    {
+      "id": "script.module.routing",
+      "version": "0.2.3+matrix.1",
+      "file": "script.module.routing/script.module.routing-0.2.3+matrix.1.zip",
+      "sha256": "6254a470a8185dfce21ab24d6eed07284cd8f48608a78050fecabb6819d4ca81",
+      "bytes": 11279
+    },
+    {
+      "id": "script.module.urllib3",
+      "version": "2.2.3",
+      "file": "script.module.urllib3/script.module.urllib3-2.2.3.zip",
+      "sha256": "27b93b75c159ff48459cef812a128324409079d00907d418f23fa4152b74503b",
+      "bytes": 129391
+    },
+    {
+      "id": "script.skinvariables",
+      "version": "2.2.9",
+      "file": "script.skinvariables/script.skinvariables-2.2.9.zip",
+      "sha256": "465778c349a94ccd53a456461613bbe94711995f314b77e621b2063bf85b8a08",
+      "bytes": 223644
+    }
+  ]
+}

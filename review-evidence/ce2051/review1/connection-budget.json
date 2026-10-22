@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "observation": "connection-budget-observation.json",
+  "checks": {
+    "shared_total_budget": true,
+    "back_response": true,
+    "zero_workers_at_return": true,
+    "real_dns_and_connect": true
+  },
+  "observed_elapsed_seconds": 0.079,
+  "observed_seconds_after_back": 0.016,
+  "absolute_budget_seconds": 2,
+  "budget_tolerance_seconds": 0.4,
+  "max_back_seconds": 0.5,
+  "threshold_origin": "Reviewer proposed regression criteria, not a claim of device response certification"
+}
