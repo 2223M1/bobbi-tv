@@ -19,11 +19,7 @@
 
 **[前往 Releases 查看安装包与更新说明](https://github.com/2223M1/bobbi-tv/releases)**
 
-> 项目仍在测试阶段。当前 CE2043 完整安装包尚未公开上架，Releases 中的早期版本仅供历史查阅。
-
-安装时选择发行说明指定的 **CoreELEC 完整安装包**，文件名以 `script.bobbi.start-` 开头。保留 ZIP 格式，直接交给 Kodi 安装。GitHub 自动生成的 `Source code` 压缩包用于开发，不能直接安装。
-
-Windows 和 Android 暂未跟进当前版本，旧包不与当前 CoreELEC 版混用。
+安装时选择发行说明指定的 **CoreELEC 完整安装包**，文件名以 `script.bobbi.start-` 开头。保留 ZIP 格式，直接交给 Kodi 安装。
 
 ## 功能
 
@@ -71,10 +67,6 @@ Windows 和 Android 暂未跟进当前版本，旧包不与当前 CoreELEC 版�
 
 遇到问题，欢迎提交 [Issue](https://github.com/2223M1/bobbi-tv/issues)。请附上设备型号、CoreELEC / Kodi 版本、波比 TV 版本，以及复现步骤。播放问题请说明使用的是 115、BT 还是本地片库，并附上报错文字或截图。
 
-日志中请隐去账号凭据和私人链接。
-
 ## 致谢
 
 感谢波比梓狸伟大的构想与实现。
-
-各组件与素材沿用各自的许可说明。
