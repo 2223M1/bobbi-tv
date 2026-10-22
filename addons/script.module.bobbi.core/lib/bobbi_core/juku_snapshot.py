@@ -1,4 +1,4 @@
-"""Checkpointable, bounded reader for a completed Juku JSON snapshot.
+"""Checkpointable, bounded reader for a completed catalogue JSON snapshot.
 
 This resumes local validation, NOT HTTP downloads. A socket failure discards
 its partial file; no Range/ETag support is assumed. The envelope may place

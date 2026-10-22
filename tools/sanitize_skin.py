@@ -15,7 +15,6 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 IDS = {
     'skin.am6b.cinema': 'skin.bobbi.cinema',
-    'skin.confluence.minsk': 'skin.bobbi.cinema',
     'plugin.video.jacktook': 'plugin.video.bobbi',
     'script.am6b.opensubtitles': 'script.bobbi.subtitles',
     'script.module.am6b.core': 'script.module.bobbi.core',
@@ -62,6 +61,7 @@ ACTION_TAGS = {'onclick', 'altclick', 'onload', 'onunload', 'onfocus',
 
 def remap(text):
     """Only addon identifiers change; native Player.Bobi* names stay exact."""
+    text = re.sub(r'\bskin\.confluence\.[A-Za-z0-9_-]+\b', 'skin.bobbi.cinema', text)
     for old, new in IDS.items():
         text = text.replace(old, new)
     return text
@@ -254,9 +254,9 @@ def sanitize(source, output):
         payloads['licenses/UPSTREAM-ASSET-PROVENANCE.md'] = inherited.read_bytes()
     payloads['ASSET-PROVENANCE.md'] = (
         '# bobbi TV review-candidate assets\n\n'
-        'The layout is inherited from the Minsk/Confluence-derived AM6B Cinema '
+        'The layout is inherited from the reviewed AM6B Cinema '
         'skin. Existing author credits and license files are retained; no '
-        'blanket relicensing is asserted. Arctic Fuse-derived artwork remains '
+        'blanket relicensing is asserted. The referenced artwork remains '
         'CC BY-NC-SA 4.0 (noncommercial and share-alike), not GPL artwork.\n\n'
         'All active font roles now reference unmodified HarmonyOS Sans SC '
         'Regular, Medium or Bold. Copyright 2021-2025 Huawei Device Co., Ltd. '

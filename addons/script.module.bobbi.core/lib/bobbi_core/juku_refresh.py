@@ -1,4 +1,4 @@
-"""Idle-only Juku refresh: page discovery, download, staged import, atomic publish.
+"""Idle-only catalogue refresh: page discovery, download, staged import, atomic publish.
 
 Each call has the caller's absolute deadline and cancellation. There is one
 bounded incoming snapshot, not a second active catalogue or a download queue.

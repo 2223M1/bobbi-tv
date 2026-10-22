@@ -40,7 +40,7 @@
                 </setting>
             </group>
             <group id="search" label="90006">
-                    <setting id="juku_enabled" type="boolean" label="Juku 目录（115 分享）" help="检索作者授权的主站与共享目录；使用你自己的 115 账号播放，不自动转存。">
+                    <setting id="juku_enabled" type="boolean" label="共享目录（115 分享）" help="检索已接入的主站与共享目录；使用你自己的 115 账号播放，不自动转存。">
                         <default>true</default>
                         <control type="toggle" />
                     </setting>
@@ -75,12 +75,6 @@
                     </setting>
                     <setting id="show_changelog" type="action" label="30894" help="30895">
                         <data>RunPlugin(plugin://plugin.video.bobbi/?action=show_changelog)</data>
-                        <control type="button" format="action">
-                            <close>false</close>
-                        </control>
-                    </setting>
-                    <setting id="donate" type="action" label="90018" help="90816">
-                        <data>RunPlugin(plugin://plugin.video.bobbi/?action=donate)</data>
                         <control type="button" format="action">
                             <close>false</close>
                         </control>

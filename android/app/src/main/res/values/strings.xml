@@ -17,7 +17,7 @@
     <string name="foreground_explanation">由你手动启动，通知中可随时停止。不会开机自启、自动下载新引擎、启用无障碍或申请 root。切换到 Kodi 后保持运行；结束观看后请停止。</string>
     <string name="start_rejected">系统拒绝启动后台服务；请保持助手在前台后再试。</string>
     <string name="credentials_failed">无法读取配对凭据；本次操作没有导出信息，也没有变更引擎运行状态。</string>
-    <string name="notice">引擎：TorrServer MatriX.147，YouROK，GPL-3.0。固定来源与许可证随 APK 附带。当前仅 ARM32 / ARM64；不改画质、不转码。</string>
+    <string name="notice">当前支持 ARM32 / ARM64；播放所选片源，不改画质、不转码。</string>
     <string name="export_pairing">导出配对文件给 Kodi</string>
     <string name="pairing_warning">此配置包含本机引擎的控制凭据。仅导入同一设备上的 Kodi，请勿公开分享或选择云端目录。通过系统文件选择器选择保存位置；导入后请删除导出的副本。</string>
     <string name="document_unavailable">这台设备没有可用的系统文档选择器；请使用显示配对信息入口。</string>

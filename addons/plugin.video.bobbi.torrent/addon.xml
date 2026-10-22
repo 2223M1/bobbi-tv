@@ -9,7 +9,7 @@
   <extension point="xbmc.python.pluginsource" library="default.py"><provides>video</provides></extension>
   <extension point="xbmc.python.module" library="lib"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="zh_CN">只解析用户所选片源，复用已配置的本机 TorrServer</summary>
+    <summary lang="zh_CN">只解析用户所选片源，复用已配置的本机 BT 后台</summary>
     <description lang="zh_CN">可选后台；不启动服务、不管理种子、不更换片源、不改变音画质。</description>
     <platform>all</platform>
     <license>MIT upstream; GPL-3.0 bobbi adaptations; see LICENSE and THIRD-PARTY.md</license>

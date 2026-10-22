@@ -34,7 +34,7 @@
             <onclick>ReloadSkin()</onclick>
           </item>
           <item>
-            <label>退出 Kodi</label><label2 /><icon>bobi/icons/close.png</icon>
+            <label>退出播放器</label><label2 /><icon>bobi/icons/close.png</icon>
             <onclick>Quit()</onclick>
           </item>
           <item>

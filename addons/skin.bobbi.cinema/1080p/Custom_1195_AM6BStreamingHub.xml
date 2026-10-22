@@ -629,7 +629,7 @@
           </item>
           <item id="2">
             <label>电影记录[CR]FILM HISTORY</label>
-            <label2>Kodi 本地电影播放记录</label2>
+            <label2>本地电影播放记录</label2>
             <onclick>ActivateWindow(Videos,"special://skin/playlists/Movies_playback_history.xsp",return)</onclick>
           </item>
           <item id="3">
@@ -644,7 +644,7 @@
           </item>
           <item id="5">
             <label>剧集记录[CR]SERIES HISTORY</label>
-            <label2>Kodi 本地剧集播放记录</label2>
+            <label2>本地剧集播放记录</label2>
             <onclick>ActivateWindow(Videos,"special://skin/playlists/Tvshows_playback_history.xsp",return)</onclick>
           </item>
         </content>
@@ -743,17 +743,17 @@
         <content>
           <item id="1">
             <label>全局搜索[CR]GLOBAL SEARCH</label>
-            <label2>Kodi 全局搜索</label2>
+            <label2>播放器全局搜索</label2>
             <onclick>RunScript(script.globalsearch)</onclick>
           </item>
           <item id="2">
             <label>视频来源[CR]VIDEO SOURCES</label>
-            <label2>进入 Kodi 当前已安装的视频来源</label2>
+            <label2>进入播放器中已安装的视频来源</label2>
             <onclick>ActivateWindow(Videos,"addons://sources/video/",return)</onclick>
           </item>
           <item id="3">
             <label>云端来源[CR]CLOUD SOURCES</label>
-            <label2>进入 Jacktook 已配置的云端来源</label2>
+            <label2>进入已配置的云端来源</label2>
             <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=cloud&amp;",return)</onclick>
           </item>
           <item id="4">
@@ -768,7 +768,7 @@
           </item>
           <item id="6">
             <label>BT 候选[CR]BT SOURCES</label>
-            <label2>Jacktook 显式候选，不自动播放</label2>
+            <label2>查看候选片源，不自动播放</label2>
             <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=search_menu&amp;",return)</onclick>
           </item>
         </content>

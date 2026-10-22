@@ -1,6 +1,6 @@
-"""Authorised, catalogue-only Juku client; no daemon, pan account or player.
+"""Authorised catalogue-only client; no daemon, pan account or player.
 
-Protocol independently implemented from Juku 0.80 auth/proxy disassembly.
+Protocol independently implemented from version 0.80 auth/proxy disassembly.
 Each installation generates its OWN P-256 key. No bundled key or other app's
 session is imported. TLS verification and the remote's access checks stay on.
 """

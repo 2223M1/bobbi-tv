@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="skin.bobbi.cinema" version="0.1.7" name="bobbi TV" provider-name="AM6B / Minsk / Confluence contributors">
+<addon id="skin.bobbi.cinema" version="0.1.7" name="bobbi TV" provider-name="bobbi TV">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0" />
 		<import addon="script.skinvariables" version="2.2.2" />
@@ -10,17 +10,14 @@
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<platform>all</platform>
-		<license>Inherited code and assets retain original licenses; private personal restoration, see PRIVATE-ASSETS.md and font notices</license>
-		<forum>https://forum.kodi.tv/forumdisplay.php?fid=125</forum>
 		<assets>
 			<icon>resources/icon.png</icon>
 			<fanart>resources/fanart.jpg</fanart>
 			</assets>
 		<news>Private new-UI candidate. Original fonts, icon glyphs and eight interface sounds restored; legacy updater and remote scripts remain disabled.</news>
-		<summary lang="zh_CN">波比TV：基于 Minsk 的独立家庭影院皮肤，简洁导航、大海报和中文优先。</summary>
-		<summary lang="zh_TW">波比TV：基於 Minsk 的獨立家庭影院面板。</summary>
-		<description lang="zh_CN">波比TV 私人影院候选版：以现有新 UI 为基准，恢复原字体、图标字形和界面音效，保留播放控制。素材来源、原始许可和哈希见 PRIVATE-ASSETS.md 与发行清单；私有托管不表示取得新的再分发许可。</description>
-		<description lang="zh_TW">本皮肤由CE交流群-明斯克基于Confluence皮肤深度优化打造，在保持流畅运行的前提下融合了多款流行皮肤的精华功能，并加入多项创新设计，致力于为CE爱好者提供极致的视觉体验与操作便利。
-主要功能集成了地平线风格海报墙，三行八列海报展示，光盘入盒滚动动画(可设置关闭)，剧集列表，播放页面可选剧集(书签)，播放页面加载剧情详情页和演员列表详情页，快捷选择字幕和音轨以及各种美化，更多细节欢迎各位喜爱KODI和CE的朋友深入体验。</description>
-	<description lang="en_GB">Private personal new-UI candidate with restored original assets. Source, hashes and retained notices are recorded in PRIVATE-ASSETS.md and the release inventory. Not a public redistribution license grant.</description></extension>
+		<summary lang="zh_CN">波比TV：独立家庭影院皮肤，简洁导航、大海报和中文优先。</summary>
+		<summary lang="zh_TW">波比TV：獨立家庭影院面板。</summary>
+		<description lang="zh_CN">波比TV 家庭影院：浏览海报、查看影片详情、手动选择片源，使用字幕、音轨和剧集播放控制。</description>
+		<description lang="zh_TW">波比TV 家庭影院面板，在流暢執行的前提下提供直觀的海報瀏覽、劇集選擇、影片詳情與播放控制。</description>
+	<description lang="en_GB">TV cinema interface for browsing posters, choosing sources and controlling playback, subtitles and audio tracks.</description></extension>
 </addon>

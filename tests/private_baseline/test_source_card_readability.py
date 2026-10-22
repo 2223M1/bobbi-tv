@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import pytest
 from lib.cinema.subtitle_projection import source_card_label, source_label
 from lib.gui.source_select import _provider_display_name
+from lib.cinema.source_presentation import source_site_label
 
 
 @pytest.mark.parametrize('fonts,detail', [
@@ -27,3 +28,29 @@ def test_provider_presentation_preserves_real_service_names(raw, label):
 
 def test_unknown_subtitle_evidence_never_invents_badge():
     assert source_card_label(SimpleNamespace()) == ''
+
+
+@pytest.mark.parametrize('raw,kind,label', [
+    ('Juku · 115分享', 'Direct', '115 资源目录'),
+    ('Juku', 'Direct', '115 资源目录'),
+    ('AnimeGarden', 'Torrent', '动漫检索'),
+    ('Jacktook', 'Torrent', '影院来源'),
+    ('TorrServer', 'Torrent', '本机 BT 后台'),
+    ('Nyaa', 'Torrent', 'Nyaa'),
+])
+def test_display_labels_do_not_modify_source_identity(raw, kind, label):
+    source = SimpleNamespace(type=kind, indexer=raw, guid='juku:fixture',
+                             url='am6bjuku://' + '1' * 64)
+    before = vars(source).copy()
+    assert source_site_label(source.indexer, source.type) == label
+    assert source_site_label(source.indexer, source.type, filter_option=True) == label
+    assert vars(source) == before
+
+
+def test_shared_catalog_routing_still_recognizes_legacy_identity():
+    from lib.clients.juku_provider import is_source
+    source = SimpleNamespace(type='Direct', indexer='Juku · 115分享',
+                             guid='juku:fixture', url='am6bjuku://' + '1' * 64)
+    assert source_site_label(source.indexer, source.type) == '115 资源目录'
+    assert is_source(source)
+    assert _provider_display_name(source.indexer) == '115 资源目录'

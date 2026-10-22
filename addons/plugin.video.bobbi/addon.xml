@@ -1,4 +1,4 @@
-<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.28" provider-name="bobbi TV / Sam-Max and contributors">
+<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.28" provider-name="bobbi TV">
   <requires>
     <import addon="script.module.bobbi.core" version="0.1.27" />
     <import addon="script.module.bobbi.mdsub" version="0.1.0" />
@@ -16,9 +16,8 @@
   <extension point="xbmc.addon.metadata">
     
     <reuselanguageinvoker>false</reuselanguageinvoker>
-    <summary lang="en">jacktook</summary>
-    <description lang="en">Kodi addon for torrent streaming</description>
-    <license>GPL-3.0; see LICENSE and THIRD-PARTY notices</license>
+    <summary lang="en">bobbi TV cinema</summary>
+    <description lang="en">Browse films and series, select a source and play.</description>
     <source>https://github.com/2223M1/bobbi-tv</source>
     <assets>
       <icon>icon.png</icon>

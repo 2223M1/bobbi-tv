@@ -1,6 +1,6 @@
 <h1 align="center">波比 TV</h1>
 
-<p align="center">给电视大屏用的 Kodi 影院</p>
+<p align="center">给电视大屏用的家庭影院</p>
 
 <p align="center">
   <a href="https://github.com/2223M1/bobbi-tv/releases">下载与更新</a> ·

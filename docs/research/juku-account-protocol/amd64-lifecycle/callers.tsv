@@ -1,2 +1,0 @@
-00a03580	mv-daemon/provider.(*LifeSyncManager).oncePoll	00a03300	mv-daemon/provider.(*LifeSyncManager).pollLoop
-00a04900	mv-daemon/provider.(*LifeSyncManager).handleEventForDir	00a03580	mv-daemon/provider.(*LifeSyncManager).oncePoll

@@ -747,7 +747,7 @@ def _wait_for_container_content(content_type, timeout_ms=2000):
 
 def apply_section_view(view_key, content_type=""):
     if xbmc.getSkinDir() == "skin.bobbi.cinema":
-        # The independent skin owns a single adaptive native view. Old Minsk
+        # The independent skin owns a single adaptive native view. Legacy skin
         # view IDs are not portable. Headless widget/JSON-RPC requests must not
         # wait for a foreground container or change its focus/view.
         if xbmc.getCondVisibility("Window.IsActive(videos)"):

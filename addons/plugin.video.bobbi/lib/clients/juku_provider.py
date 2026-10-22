@@ -1,4 +1,4 @@
-"""Authorised Juku catalog adapter using the existing selected-share transport."""
+"""Authorised catalogue adapter using the existing selected-share transport."""
 import time
 from threading import Lock
 
@@ -87,7 +87,7 @@ def find_sources(ids, mode, season, episode, year, aliases, release_order,
 
 def resolve_source(source, item):
     if not enabled():
-        raise RuntimeError('Juku 目录已关闭，请选择其他来源')
+        raise RuntimeError('共享目录已关闭，请选择其他来源')
     from bobbi_catalog.identity import media_key
     from bobbi_catalog.stream import resolve
     tv = item.get('tv_data') or {}

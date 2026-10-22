@@ -99,11 +99,20 @@ def recommendation_label(recommended, caution, status):
 
 
 def source_site_label(label, source_type, filter_option=False):
-    """Hide the BT search engine's default name, not sites or release groups.
+    """Project user-facing labels without changing provider identities.
 
     Cards already say BT种子. Filters still need a selectable label; neither
     projection changes the source's indexer, provider, aliases or identity.
     """
-    if source_type == 'Torrent' and text(label).casefold() == 'jackett':
+    key = text(label).casefold()
+    if source_type == 'Direct' and key in {'juku', 'juku · 115分享'}:
+        return '115 资源目录'
+    if key == 'animegarden':
+        return '动漫检索'
+    if key == 'jacktook':
+        return '影院来源'
+    if key == 'torrserver':
+        return '本机 BT 后台'
+    if source_type == 'Torrent' and key == 'jackett':
         return 'BT种子' if filter_option else ''
     return label

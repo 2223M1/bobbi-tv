@@ -8,7 +8,7 @@
     <extension point="xbmc.python.pluginsource" library="default.py"><provides>video</provides></extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="zh_CN">接入自己的网盘、NAS 和直链片库</summary>
-        <description lang="zh_CN">多来源、手动选片、只读浏览。复用 Kodi 的 SMB/NFS/WebDAV 文件能力。不绑定作者账号、不修改媒体文件。</description>
+        <description lang="zh_CN">多来源、手动选片、只读浏览。支持 SMB/NFS/WebDAV 文件浏览。不绑定作者账号、不修改媒体文件。</description>
         <license>GPL-3.0-or-later</license><platform>all</platform>
     </extension>
 </addon>

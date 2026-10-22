@@ -1,6 +1,6 @@
-"""Juku catalogue metadata adapter, not a cloud account or playback service.
+"""Shared catalogue metadata adapter, not a cloud account or playback service.
 
-Only public/author-authorised catalogue reads use Juku credentials. Playback
+Only public/author-authorised catalogue reads use service credentials. Playback
 uses the local user's existing 115 share client, never another library owner's
 personal file ID. Shared snapshots refresh off the interactive search path.
 """
