@@ -727,7 +727,7 @@ class ShareStream:
                 self.records[body['request_id']] = entry
             entry.touched = now
             extension = body['title'].rsplit('.', 1)[-1].lower()
-            if extension not in ('mkv', 'mp4', 'm4v', 'avi', 'ts', 'm2ts', 'webm'):
+            if extension not in ('mkv', 'mp4', 'm4v', 'avi', 'ts', 'm2ts', 'webm', 'iso'):
                 extension = 'bin'
             url = 'http://127.0.0.1:{}/stream/{}/video.{}'.format(self.server.server_port, entry.token, extension)
             # The reservation request is not necessarily the playback request.

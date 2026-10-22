@@ -15,7 +15,7 @@ BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
     'paris_texas': {'title': 'Paris, Texas', 'tmdb_id': 655, 'kind': 'movie', 'year': 1984},
-    'millennium_actress': {'title': 'Millennium Actress', 'tmdb_id': 33320, 'kind': 'movie', 'year': 2001, 'animation': True},
+    'millennium_actress': {'title': 'Millennium Actress', 'tmdb_id': 33320, 'kind': 'movie', 'year': 2002, 'animation': True},
     'straight_story': {'title': 'The Straight Story', 'tmdb_id': 404, 'kind': 'movie', 'year': 1999},
     'paprika': {'title': 'Paprika', 'tmdb_id': 4977, 'kind': 'movie', 'year': 2006, 'animation': True},
     'station_agent': {'title': 'The Station Agent', 'tmdb_id': 2056, 'kind': 'movie', 'year': 2003},
