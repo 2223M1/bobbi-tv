@@ -227,8 +227,7 @@ def search(spec, deadline, cancelled, catalogue=CATALOG, cache_path=CACHE, clien
             return []
         guard(work_deadline, cancelled)
         api = client or Client()
-        from bobbi_core.share_failure import account_scope, known_result, card_tuple
-        scope = account_scope()
+        from bobbi_core.share_failure import account_scope, card_state, card_tuple
         cache = Cache(cache_path, deadline, cancelled)
         for route in planned:
             group_matched = False
@@ -273,9 +272,6 @@ def search(spec, deadline, cancelled, catalogue=CATALOG, cache_path=CACHE, clien
                         seen.add(unique)
                         item = dict(row, cell=share['cell'], origin=route['origin'])
                         entry = fields(item)
-                        failure = known_result(cache.db, card_tuple(entry, spec['media_key']), scope)
-                        if failure:
-                            entry['shareFailure'] = failure
                         selections.append((entry['guid'], spec['media_key'], item))
                         result.append(entry)
                     if group_matched or len(result) >= 16:
@@ -286,6 +282,12 @@ def search(spec, deadline, cancelled, catalogue=CATALOG, cache_path=CACHE, clien
                 break
         guard(deadline, cancelled)
         cache.persist(searches, selections)
+        # Resolve display scope at publication, not before slow network IO.
+        scope = account_scope(include_signed_out=True)
+        for entry in result:
+            state = card_state(cache.db, card_tuple(entry, spec['media_key']), scope)
+            if state:
+                entry.update(shareState=state, shareFailure=state['code'])
         guard(deadline, cancelled)
         published = len(result)
         return result
@@ -333,6 +335,11 @@ def resolve(locator, guid, title, size, media, catalogue=CATALOG, cache_path=CAC
             record_result(cache.db, identity, scope, started, code)
         except (OSError, sqlite3.Error):
             pass  # Metadata writes must never mask the typed playback result.
+        except ShareError as error:
+            # Only Cache's own optional budget is disposable. Remote errors
+            # and playback ownership checks live outside this local boundary.
+            if error.code != 'deadline':
+                raise
         finally:
             if cache is not None:
                 cache.close()

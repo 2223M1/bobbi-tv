@@ -537,20 +537,9 @@ def _bound(row, spec):
     return result
 
 
-def _account_scope(client=None, timeout=.2):
-    try:
-        if client is None:
-            from bobbi_platform.runtime import call
-            scope = call('account_status', {}, timeout=timeout)
-        else:
-            scope = client.account_scope
-        if (not isinstance(scope, dict) or scope.get('authenticated') is not True
-                or not isinstance(scope.get('account_id'), str) or not scope['account_id']
-                or type(scope.get('epoch')) is not int or scope['epoch'] < 0):
-            return None
-        return scope
-    except (ImportError, OSError, ValueError, RuntimeError, AttributeError):
-        return None
+def _account_scope(client=None, timeout=.2, include_signed_out=False):
+    from bobbi_core.share_failure import account_scope
+    return account_scope(client, timeout=timeout, include_signed_out=include_signed_out)
 
 
 def _account(client=None):
@@ -615,8 +604,9 @@ def _finish(cache, candidates, spec):
     rows = [bound for row in _unique(candidates) if (bound := _bound(row, spec)) is not None][:MAX_SOURCES]
     cache.remember(rows, spec)
     remaining = cache.deadline-time.monotonic()
-    scope = _account_scope(timeout=min(.2, remaining)) if remaining > 0 else None
-    account = _account_fingerprint(scope) if scope else ''
+    from bobbi_core.share_failure import card_state, card_tuple
+    scope = _account_scope(timeout=min(.2, remaining), include_signed_out=True) if remaining > 0 else None
+    account = _account_fingerprint(scope) if scope and scope['authenticated'] else ''
     for row in rows:
         old = cache.select(row['key'], spec['media_key'])
         row['_verified'] = bool(account and old['_checked_account'] == account
@@ -624,14 +614,15 @@ def _finish(cache, candidates, spec):
                                 and math.isfinite(old['_checked_at'])
                                 and old['_checked_at'] > time.time()-DAY)
     _known_failures(cache, rows, spec, scope)
-    from bobbi_core.share_failure import tuple_hash, known_result, card_tuple
+    from bobbi_core.share_failure import tuple_hash
     for row in rows:
         old = cache.select(row['key'], spec['media_key'])
         key = tuple_hash(dict(locator='am6bjuku://'+row['key'], guid='juku:'+row['key'],
             title=row['name'], size=row['size'], media=spec['media_key']))
         if cache.denied_proofs.get(key) == (old['_checked_at'], old['_checked_account']):
             row['_verified'] = False
-        row['_share_failure'] = known_result(cache.db, card_tuple(fields(row), spec['media_key']), scope)
+        row['_share_state'] = card_state(cache.db, card_tuple(fields(row), spec['media_key']), scope)
+        row['_share_failure'] = row['_share_state'].get('code', '')
         if row['_share_failure']:
             row['_verified'] = False
     _guard(cache.deadline, cache.cancelled)
@@ -743,6 +734,8 @@ def fields(row):
                 guid='juku:' + row['key'], url='am6bjuku://' + row['key'])
     if row.get('_share_failure'):
         result['shareFailure'] = row['_share_failure']
+    if row.get('_share_state'):
+        result['shareState'] = row['_share_state']
     return result
 
 
