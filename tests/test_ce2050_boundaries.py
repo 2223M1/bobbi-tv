@@ -113,6 +113,46 @@ def test_optional_state_read_failure_cannot_clear_observed_failure():
     assert not session.snapshot()['recommended_key']
 
 
+def test_account_switch_with_no_new_provider_rows_clears_only_old_overlay(monkeypatch):
+    scope = dict(account_id='fixture', epoch=1, authenticated=True)
+    with closing(sqlite3.connect(':memory:')) as db:
+        _, selected = card(db, scope)
+        failure.record_result(db, selected, scope, 10, 'share_revoked')
+        failed, _ = card(db, scope)
+    session = SourceListSession({}, lambda rows:rows)
+    session.publish(session.epoch, '115', [failed], 'RUNNING')
+    key = session.key(failed)
+    session.focus(key, 0)
+    calls = []
+    def current(**kwargs):
+        calls.append(kwargs)
+        return dict(account_id='other', epoch=2, authenticated=True)
+    monkeypatch.setattr(failure, 'account_scope', current)
+    assert not session.snapshot()['recommended_key']
+    before = session.revision
+    assert session.status()['revision'] > before  # no provider publication
+    assert session.snapshot()['recommended_key'] == key
+    assert session.focus_key == key and len(session.entries) == 1
+    session.publish(session.epoch, '115', [failed], 'TIMEOUT')
+    assert session.snapshot()['recommended_key'] == key
+    for _ in range(4): session.status()
+    assert len(calls) == 1  # one bounded lookup per second, not per UI frame
+
+
+def test_unavailable_account_status_does_not_clear_a_current_failure(monkeypatch):
+    scope = dict(account_id='fixture', epoch=1, authenticated=True)
+    with closing(sqlite3.connect(':memory:')) as db:
+        _, selected = card(db, scope)
+        failure.record_result(db, selected, scope, 10, 'share_revoked')
+        failed, _ = card(db, scope)
+    session = SourceListSession({}, lambda rows:rows)
+    session.publish(session.epoch, '115', [failed])
+    monkeypatch.setattr(failure, 'account_scope', lambda **kwargs:None)
+    before = session.revision
+    assert session.status()['revision'] == before
+    assert not session.snapshot()['recommended_key']
+
+
 def test_real_connect_deadline_ipv4_ipv6_tls_and_reuse():
     run = subprocess.run([sys.executable, '-X', 'utf8', str(ROOT/'tests/ce2050_connect_probe.py')],
         capture_output=True, text=True, encoding='utf-8', timeout=20)

@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "132e3a13618c3ee7458c4ff6876a00c9f6e11490b08b897f5c195ae164c092b2",
+      "addon.xml": "c74374d7d850c517e0acdc3f3bd80119184ae2f480d590656ac20e60035771dd",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
@@ -606,7 +606,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "b75517d631c256e2959635243a0cb7f4d245d9abdd42551603941f7a38ceec17",
+      "addon.xml": "10db65a2228d68fbbe875c4e62ff274cef3e68745cf61697fcb0375ac3c15e70",
       "default.py": "d49fc64b0a8afa05530e0f5d44075febe9dba591b2040a0d7f67c2d5e34b814e"
     },
     "script.module.bobbi.catalog": {
@@ -622,7 +622,7 @@
       "resources/settings.xml": "3ad0dd1185d7871b2a549838ebf41410853281797c75f4e2277d9e5fabe2c298"
     },
     "script.module.bobbi.core": {
-      "addon.xml": "051f972e56dc4e60c58f67094481b0b8301e4c0205b6a041c446e31103d03c4c",
+      "addon.xml": "60669d4fd51a403b1867c67249ac8b4fc18474941b277f4db3d79aba5f2607e9",
       "lib/bobbi_core/__init__.py": "f9e32762d2f4ce4acde5ff9c621551ce06932ebaecc5dc0bf8deeff25bf86a9e",
       "lib/bobbi_core/account_readiness.py": "d4a6ff03eb16191e3ed324c9a76adb91280818a234c9f6367e78bcc152cdbbe2",
       "lib/bobbi_core/anime_range_candidates.py": "4966fc9571a997836bf7d042563abf6747777376f8bca56a3634d28c3ee371a9",
@@ -711,7 +711,7 @@
       "lib/bobbi_core/share_stream.py": "94ab64ecf2fd48c6a298bf22742750673c066922e6a1dc10d9c5941a788620c5",
       "lib/bobbi_core/share_subtitles.py": "76a383f8aa7756069bbfe4f5002d4147d1cab0d4ec8372458cf93973f2f5141c",
       "lib/bobbi_core/source_intent.py": "99dbad990f2e2a2566d9146d2638a90960c7759781cc0078e2b02a472b0285fb",
-      "lib/bobbi_core/source_list_session.py": "72b3d573ea30d9d31c211ae535fa4a852228769d4a24a276a9faa7f9bf81544a",
+      "lib/bobbi_core/source_list_session.py": "443b934d67d3783f5e612e902d9334a7512fff4e6ce3831015436980600a63e0",
       "lib/bobbi_core/subtitle_binding.py": "a703da3527dbe224b75f90cb908360e2bdbddca2df869b827e3743458e4514bb",
       "lib/bobbi_core/subtitle_candidates.py": "dbc097e0ab396d62fe48405e0e394c8760d1e0514c33fe6b2bcafe73f5ed939b",
       "lib/bobbi_core/subtitle_cues.py": "f44e95ea3b7045846b8405ea957744c4ea6d8629c1efbaf73e59e4a4b904674e",
