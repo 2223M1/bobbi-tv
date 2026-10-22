@@ -19,7 +19,7 @@
 
 **[前往 Releases 查看安装包与更新说明](https://github.com/2223M1/bobbi-tv/releases)**
 
-当前审查候选：[CE2049 完整安装包（测试预发布）](https://github.com/2223M1/bobbi-tv/releases/tag/ce2049-reviewed-20261022)。不是稳定版；实播限制及回退记录见[本轮报告](docs/CE2049-REVIEW-DELIVERY-20261022.md)。
+当前审查候选：[CE2050 完整安装包（测试预发布）](https://github.com/2223M1/bobbi-tv/releases/tag/ce2050-reviewed-20261022)。不是稳定版；修复、实播限制及恢复说明见[本轮报告](docs/CE2050-REVIEW-DELIVERY-20261022.md)。
 
 安装时选择发行说明指定的 **CoreELEC 完整安装包**，文件名以 `script.bobbi.start-` 开头。保留 ZIP 格式，直接交给 Kodi 安装。
 

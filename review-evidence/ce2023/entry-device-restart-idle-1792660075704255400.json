@@ -1,0 +1,25 @@
+{
+  "run": "/storage/.kodi/temp/bobbi-ce-entry-20261022-171000",
+  "mode": "restart-idle",
+  "transport_exit": 0,
+  "diagnostic_present": false,
+  "result": {
+    "players": [],
+    "gui": {
+      "currentcontrol": {
+        "label": ""
+      },
+      "currentwindow": {
+        "id": 10000,
+        "label": "主界面"
+      }
+    },
+    "labels": null,
+    "installation": {
+      "sequence": 2026102050,
+      "high_watermark": 2026102050,
+      "phase": "complete",
+      "tx": "cea32f2add614c23aa5240359d9628b6"
+    }
+  }
+}

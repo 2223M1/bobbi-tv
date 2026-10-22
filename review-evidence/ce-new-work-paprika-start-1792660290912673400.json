@@ -1,0 +1,498 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "paprika",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "Paprika",
+        "tmdb_id": 4977,
+        "kind": "movie",
+        "year": 2006,
+        "animation": true
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 4977,
+          "title": "Paprika",
+          "original_title": "パプリカ",
+          "original_language": "ja",
+          "release_date": "2006-10-01"
+        },
+        "route": "system-direct",
+        "checked_at": 1792660267.2513843
+      },
+      "prior_request": "4afbbc455302424fa1673a1bb25e09ef",
+      "started": 75514.562176529,
+      "home": {
+        "generation": 24,
+        "intent": 0,
+        "retired_generation": 24,
+        "observed_at": 75515.201494914
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "explicit_start_over": true,
+      "launched_at": 75515.201783872,
+      "picker": {
+        "window": 13001,
+        "generation": 25,
+        "intent": 0,
+        "tmdb_id": 4977,
+        "kind": "movie"
+      },
+      "picker_observed_at": 75526.982775549
+    },
+    "samples": [
+      {
+        "wall": 75515.719636501,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75515.740570472,
+          "read_completed": 75515.740999347,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75515.687524961,
+          "decoder_started": 75515.740570472,
+          "decoder_completed": 75515.740999347,
+          "sample_completed": 75515.741845512
+        }
+      },
+      {
+        "wall": 75517.905820496,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75517.932212209,
+          "read_completed": 75517.932649792,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75517.87915795,
+          "decoder_started": 75517.932212209,
+          "decoder_completed": 75517.932649792,
+          "sample_completed": 75517.932800042
+        }
+      },
+      {
+        "wall": 75520.14854111,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75520.184865933,
+          "read_completed": 75520.18524385,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75520.101140635,
+          "decoder_started": 75520.184865933,
+          "decoder_completed": 75520.18524385,
+          "sample_completed": 75520.185380849
+        }
+      },
+      {
+        "wall": 75522.507498501,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75522.593940293,
+          "read_completed": 75522.594164751,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75522.472063844,
+          "decoder_started": 75522.593940293,
+          "decoder_completed": 75522.594164751,
+          "sample_completed": 75522.594250085
+        }
+      },
+      {
+        "wall": 75524.830492343,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75524.901988697,
+          "read_completed": 75524.90239628,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75524.776176923,
+          "decoder_started": 75524.901988697,
+          "decoder_completed": 75524.90239628,
+          "sample_completed": 75524.902538238
+        }
+      },
+      {
+        "wall": 75527.044920207,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75527.08251536,
+          "read_completed": 75527.082775776,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75526.983255798,
+          "decoder_started": 75527.08251536,
+          "decoder_completed": 75527.082775776,
+          "sample_completed": 75527.082874859
+        }
+      },
+      {
+        "wall": 75529.256579398,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75529.285911813,
+          "read_completed": 75529.286115187,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75529.214828211,
+          "decoder_started": 75529.285911813,
+          "decoder_completed": 75529.286115187,
+          "sample_completed": 75529.286190229
+        }
+      },
+      {
+        "wall": 75531.40678834,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[VCB-Studio] Paprika / パプリカ 10-bit 1080p HEVC BDRip [MOVIE]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "5",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "5"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75531.486181218,
+          "read_completed": 75531.486599759,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75531.383101835,
+          "decoder_started": 75531.486181218,
+          "decoder_completed": 75531.486599759,
+          "sample_completed": 75531.486746676
+        }
+      },
+      {
+        "wall": 75533.612179856,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[VCB-Studio] Paprika / パプリカ 10-bit 1080p HEVC BDRip [MOVIE]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "7",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "7"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75533.641442936,
+          "read_completed": 75533.641731893,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75533.583657859,
+          "decoder_started": 75533.641442936,
+          "decoder_completed": 75533.641731893,
+          "sample_completed": 75533.641816102
+        }
+      },
+      {
+        "wall": 75535.851291394,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[VCB-Studio] Paprika / パプリカ 10-bit 1080p HEVC BDRip [MOVIE]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "9",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "9"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75535.868059993,
+          "read_completed": 75535.868514867,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75535.812237706,
+          "decoder_started": 75535.868059993,
+          "decoder_completed": 75535.868514867,
+          "sample_completed": 75535.868644117
+        }
+      },
+      {
+        "wall": 75538.018622247,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "[VCB-Studio] Paprika / パプリカ 10-bit 1080p HEVC BDRip [MOVIE]",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "57",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "57"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 75538.044143956,
+          "read_completed": 75538.044537622,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 75537.999255944,
+          "decoder_started": 75538.044143956,
+          "decoder_completed": 75538.044537622,
+          "sample_completed": 75538.044659788
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "paprika",
+  "operation": "start",
+  "attempt": 1,
+  "regression_attempt": false
+}

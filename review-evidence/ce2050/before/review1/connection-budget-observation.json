@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "scope": "Actual vendored Requests and real localhost DNS/address enumeration plus saturated loopback accept queues",
+  "simulated_getaddrinfo": false,
+  "simulated_connect": false,
+  "real_device": false,
+  "requests": "2.31.0",
+  "urllib3": "2.2.3",
+  "configured_endpoint_host": "localhost",
+  "lookup_results": [
+    {
+      "family": 23,
+      "address": "::1"
+    },
+    {
+      "family": 2,
+      "address": "127.0.0.1"
+    }
+  ],
+  "request_budget_seconds": 2,
+  "elapsed_seconds": 4.047,
+  "seconds_after_back": 3.969,
+  "socket_track_calls": 0,
+  "workers_at_return": [],
+  "outcome": "back",
+  "source": [
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/http_io.py",
+      "sha256": "c49d3202deaa9bb4313617e7379f2043e53f3de6044ef891804bd958451d245b"
+    },
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/backend.py",
+      "sha256": "7e288b384ccc33ce458eb2dee69dc41465542d90d4d4bf1a353f4cbf96c6e229"
+    },
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/resolver.py",
+      "sha256": "b7b1bda08368e1361ed353c810da8e23806fdac70c7b1db08cbefe13bb5091d5"
+    },
+    {
+      "path": "third_party/addons/script.module.urllib3/lib/urllib3/util/connection.py",
+      "sha256": "d28efdfb935b45fa410f2a1e8463cb982039e38b024a25efc74985f71cb7186d"
+    }
+  ]
+}

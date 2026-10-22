@@ -1,0 +1,136 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "paprika",
+    "operation": "stop",
+    "stopped": true,
+    "before": {
+      "wall": 75838.144934495,
+      "phase": "AV_STARTED",
+      "native": {
+        "audio_intent": 0,
+        "file_identity": "bt:43689968ea4877c489939bd11ae17bf534bf0f62|381b6bf8067a8a7b4c1cabeb1984ad2e085f0e0c8898771d845f908a0c37798a",
+        "handoff_protocol": 1,
+        "handoff_restored": null,
+        "monotonic_us": 75718302176,
+        "native_instance": "73051dff-0aef-4a71-8ef3-9d59e2f777a3",
+        "open_epoch": 2,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "e7bbc6f34a1b44e8ba9ab66b977399d3",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_file_applied": true,
+        "subtitle_file_sha256": "56b41b3333a9dd8213ec7be69e3907633e7ed21601342fea4286edeab283715b",
+        "subtitle_intent": 0,
+        "url_sha256": "82396b1392844ceb3ef7977394cad7e8c75f8e09a436849be5ebf0b92fc99e29",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 119.692,
+      "duration": 5432.844,
+      "currentaudiostream": {
+        "bitrate": 0,
+        "channels": 6,
+        "codec": "flac",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "jpn",
+        "name": "",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 2,
+        "isdefault": false,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "",
+        "name": "56b41b3333a9dd8213ec7be69e390763 （外挂）"
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1080,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已加载",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 75838.211588394,
+        "read_completed": 75838.211960352,
+        "raw": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 2893\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+        "sha256": "6c50d4f81296a49589f657b9426e8a5d0efc44df10677acd62ebc3e5a2edeafe",
+        "channels": [
+          {
+            "channel": 0,
+            "device": "vdec.h265.00",
+            "counters": {
+              "frame width": 1920,
+              "frame height": 1080,
+              "frame count": 2893,
+              "drop count": 0,
+              "fra err count": 0,
+              "hw err count": 0
+            }
+          }
+        ],
+        "identity_known": true,
+        "primary_channel": 0
+      },
+      "decoder_counters": {
+        "frame width": 1920,
+        "frame height": 1080,
+        "frame count": 2893,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "decoder_counter_source": {
+        "channel": 0,
+        "device": "vdec.h265.00"
+      },
+      "observation_times": {
+        "sample_started": 75838.133212826,
+        "player_time_started": 75838.147472445,
+        "player_time_completed": 75838.150042853,
+        "caching_started": 75838.150061728,
+        "caching_completed": 75838.165296634,
+        "decoder_started": 75838.211588394,
+        "decoder_completed": 75838.211960352,
+        "sample_completed": 75838.213292389
+      }
+    },
+    "seconds": 0.26
+  },
+  "diagnostic_present": false,
+  "work": "paprika",
+  "operation": "stop",
+  "attempt": 1,
+  "regression_attempt": false
+}
