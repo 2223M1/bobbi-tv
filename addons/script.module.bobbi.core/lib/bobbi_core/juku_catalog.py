@@ -624,12 +624,15 @@ def _finish(cache, candidates, spec):
                                 and math.isfinite(old['_checked_at'])
                                 and old['_checked_at'] > time.time()-DAY)
     _known_failures(cache, rows, spec, scope)
-    from bobbi_core.share_failure import tuple_hash
+    from bobbi_core.share_failure import tuple_hash, known_result, card_tuple
     for row in rows:
         old = cache.select(row['key'], spec['media_key'])
         key = tuple_hash(dict(locator='am6bjuku://'+row['key'], guid='juku:'+row['key'],
             title=row['name'], size=row['size'], media=spec['media_key']))
         if cache.denied_proofs.get(key) == (old['_checked_at'], old['_checked_account']):
+            row['_verified'] = False
+        row['_share_failure'] = known_result(cache.db, card_tuple(fields(row), spec['media_key']), scope)
+        if row['_share_failure']:
             row['_verified'] = False
     _guard(cache.deadline, cache.cancelled)
     return rows
@@ -736,8 +739,11 @@ def search(spec, deadline, cancelled, state=STATE, client=None, diagnostic=None,
 
 
 def fields(row):
-    return dict(type='Direct', title=row['name'], size=row['size'], indexer=SITE,
+    result = dict(type='Direct', title=row['name'], size=row['size'], indexer=SITE,
                 guid='juku:' + row['key'], url='am6bjuku://' + row['key'])
+    if row.get('_share_failure'):
+        result['shareFailure'] = row['_share_failure']
+    return result
 
 
 def selected(locator, guid, title, size, media, state=STATE, deadline=None, cancelled=None):
@@ -761,10 +767,20 @@ def resolve(locator, guid, title, size, media, state=STATE, deadline=None, cance
         from bobbi_catalog.api import Client
         client = Client()
     from bobbi_catalog.api import ShareError
-    from bobbi_core.share_failure import PERMANENT
+    from bobbi_core.share_failure import PERMANENT, record_result, account_scope
+    scope, started = account_scope(client), time.time()
+    identity = dict(locator=locator, guid=guid, title=title, size=size, media=media)
+    def remember(code):
+        try:
+            with _cache(state, deadline, cancelled) as cache:
+                record_result(cache.db, identity, scope, started, code)
+        except (OSError, sqlite3.Error, juku_api.JukuError):
+            pass
     try:
         url = client.resolve(row['share'], row, deadline)
     except ShareError as error:
+        if error.code in PERMANENT:
+            remember(error.code)
         if error.code in PERMANENT and row['_checked_account'] == _account(client):
             error.checked_proof = dict(checked_at=row['_checked_at'], checked_account=row['_checked_account'])
             try:
@@ -774,6 +790,7 @@ def resolve(locator, guid, title, size, media, state=STATE, deadline=None, cance
                 error.invalidation_failed = True
         raise
     _guard(deadline, cancelled)
+    remember('')
     try:
         with _cache(state, deadline, cancelled) as cache:
             with cache.db:

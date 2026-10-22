@@ -61,6 +61,9 @@ class SourceListSession:
                 copies, state, error = [], 'FAILED', 'CANDIDATE_CAPACITY_EXCEEDED'
             for key, source in copies:
                 retained = self.entries.setdefault(key, source)
+                if getattr(source, 'shareFailure', '') in ('share_revoked', 'identity_changed'):
+                    retained.shareFailure = source.shareFailure
+                    retained.verifiedShareFile = False
                 if getattr(source, 'requiresCatalogEpisodeProof', False):
                     retained.requiresCatalogEpisodeProof = True
             previous_completion = self.providers.get(provider, {}).get('completion')
@@ -106,7 +109,7 @@ class SourceListSession:
                 self.confirmed = None
                 self.revision += 1
 
-    def invalidate_share(self, epoch, source):
+    def invalidate_share(self, epoch, source, code=''):
         """Downgrade only the captured exact card; do not remove any candidate."""
         key = self.key(source)
         with self.lock:
@@ -116,6 +119,8 @@ class SourceListSession:
                     or any(getattr(retained, name, None) != getattr(source, name, None) for name in fields)):
                 return False
             retained.verifiedShareFile = False
+            if code in ('share_revoked', 'identity_changed'):
+                retained.shareFailure = code
             self.revision += 1
             return True
 
@@ -135,7 +140,8 @@ class SourceListSession:
         with self.lock:
             # Rank the complete bounded set before the display cap.
             ranked = self.rank(list(self.entries.values()))
-            recommended = self.key(ranked[0]) if ranked else None
+            recommended = next((self.key(source) for source in ranked
+                if not getattr(source, 'shareFailure', '')), None)
             cap = self.capacity if full else self.limit
             visible = ranked[:cap]
             eligible_keys = {self.key(source) for source in ranked}

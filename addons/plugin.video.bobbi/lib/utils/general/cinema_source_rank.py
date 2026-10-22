@@ -186,6 +186,9 @@ def source_preference(source, context=None):
     # Unknown titles, unavailable torrents and codec risks remain demoted.
     key = (int(not risks), min(identity, 2), availability, group_score, resolution,
            subtitle_score, origin, dynamic_range, int(tenbit), chinese, min(seeders, 1000))
+    if getattr(source, 'shareFailure', '') in ('share_revoked', 'identity_changed'):
+        risks.append('分享已失效 · 可手动重试' if source.shareFailure == 'share_revoked' else '文件已变化 · 可手动重试')
+        key = (-1,) + key[1:]  # Failed shares cannot outrank ordinary candidates.
     parts = []
     if group:
         parts.append(group + " 优先")

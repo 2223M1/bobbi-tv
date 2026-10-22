@@ -62,3 +62,5 @@ class TorrentStream:
     # Restriction only: unscoped range cards require catalogue-bearing exact
     # playback proof. Never a pack/file/readiness or provider identity claim.
     requiresCatalogEpisodeProof: bool = False
+    # Account-scoped catalog failure; presentation/recommendation only.
+    shareFailure: str = ''

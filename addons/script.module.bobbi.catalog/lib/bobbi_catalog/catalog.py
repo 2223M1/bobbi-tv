@@ -227,6 +227,8 @@ def search(spec, deadline, cancelled, catalogue=CATALOG, cache_path=CACHE, clien
             return []
         guard(work_deadline, cancelled)
         api = client or Client()
+        from bobbi_core.share_failure import account_scope, known_result, card_tuple
+        scope = account_scope()
         cache = Cache(cache_path, deadline, cancelled)
         for route in planned:
             group_matched = False
@@ -271,6 +273,9 @@ def search(spec, deadline, cancelled, catalogue=CATALOG, cache_path=CACHE, clien
                         seen.add(unique)
                         item = dict(row, cell=share['cell'], origin=route['origin'])
                         entry = fields(item)
+                        failure = known_result(cache.db, card_tuple(entry, spec['media_key']), scope)
+                        if failure:
+                            entry['shareFailure'] = failure
                         selections.append((entry['guid'], spec['media_key'], item))
                         result.append(entry)
                     if group_matched or len(result) >= 16:
@@ -317,6 +322,26 @@ def selected(locator, guid, title, size, media, catalogue=CATALOG, cache_path=CA
 
 
 def resolve(locator, guid, title, size, media, catalogue=CATALOG, cache_path=CACHE, client=None):
-    share, row = selected(locator, guid, title, size, media, catalogue, cache_path)
+    from bobbi_core.share_failure import account_scope, record_result, PERMANENT
     api = client or Client()
-    return api.resolve(share, row, time.monotonic() + 8)
+    scope, started = account_scope(api), time.time()
+    identity = dict(locator=locator, guid=guid, title=title, size=size, media=media)
+    def remember(code):
+        cache = None
+        try:
+            cache = Cache(cache_path, time.monotonic()+.2)
+            record_result(cache.db, identity, scope, started, code)
+        except (OSError, sqlite3.Error):
+            pass  # Metadata writes must never mask the typed playback result.
+        finally:
+            if cache is not None:
+                cache.close()
+    try:
+        share, row = selected(locator, guid, title, size, media, catalogue, cache_path)
+        result = api.resolve(share, row, time.monotonic() + 8)
+    except ShareError as error:
+        if error.code in PERMANENT:
+            remember(error.code)
+        raise
+    remember('')
+    return result

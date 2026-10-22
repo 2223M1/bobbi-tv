@@ -342,7 +342,7 @@ class SourceSelect(BaseWindow):
             failure = getattr(resolver, 'share_failure', None)
             if (isinstance(failure, dict) and failure.get('code') in {'share_revoked', 'identity_changed'}
                     and getattr(self, 'source_session', None)):
-                self.source_session.invalidate_share(self.source_session.epoch, source)
+                self.source_session.invalidate_share(self.source_session.epoch, source, failure['code'])
             self._resolution_answered = self._resolution_answered or getattr(resolver, "resolution_answered", False)
             if (not self.resolved and not resolver.user_cancelled
                     and resolver.startup_failure_category in {'buffer_timeout', 'preload_error', 'prepared_ready'}
@@ -892,12 +892,15 @@ class SourceSelect(BaseWindow):
             menu_item.setProperty("status", get_source_status(source))
             status = _plain_source_label(get_source_status(source))
             status = {"Download": "待验证片源", "Cached": "服务标记已缓存", "Added": "已提交 · 待就绪"}.get(status, status)
+            if getattr(source, 'shareFailure', '') in ('share_revoked', 'identity_changed'):
+                status = '分享已失效 · 可手动重试' if source.shareFailure == 'share_revoked' else '文件已变化 · 可手动重试'
             menu_item.setProperty("status_plain", status)
             preference = source_preference(source, getattr(self, "item_information", {}))
             from lib.cinema.source_presentation import recommendation_label
             first_label = recommendation_label(True, preference['caution'], status)
             recommended = (self.source_session.key(source) == getattr(self, '_recommended_key', None)
                            if getattr(self, 'source_session', None) else position == 0)
+            recommended = recommended and not getattr(source, 'shareFailure', '')
             menu_item.setProperty("recommendation", first_label if recommended else "")
             menu_item.setProperty("recommendation_reason", preference["reason"])
             menu_item.setProperty("recommendation_status", recommendation_label(recommended, preference['caution'], status))

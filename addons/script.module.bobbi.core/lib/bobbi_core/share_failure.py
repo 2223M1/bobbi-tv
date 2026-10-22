@@ -3,10 +3,68 @@ import hashlib
 import json
 import math
 import re
+import time
+import sqlite3
 
 PERMANENT = frozenset(('share_revoked', 'identity_changed'))
 TUPLE_FIELDS = ('locator', 'guid', 'title', 'size', 'media')
 MAX_PROOFS = 128
+
+
+def account_scope(client=None):
+    if client is not None:
+        scope = getattr(client, 'account_scope', None)
+    else:
+        try:
+            from bobbi_platform.runtime import call
+            scope = call('account_status', {}, timeout=.2)
+        except (ImportError, OSError, ValueError, RuntimeError):
+            return None
+    if (type(scope) is dict and scope.get('authenticated') is True
+            and type(scope.get('account_id')) is str and scope['account_id']
+            and type(scope.get('epoch')) is int and scope['epoch'] >= 0):
+        return scope
+    return None
+
+
+def _scope_key(scope):
+    return hashlib.sha256(json.dumps([scope['account_id'], scope['epoch']],
+        separators=(',', ':'), ensure_ascii=True).encode()).hexdigest()
+
+
+def record_result(db, selected, scope, started, code=''):
+    """One bounded overlay in the existing catalog DB, never a playback gate.
+
+    Keep success ordering receipts too: an older in-flight failure may not
+    overwrite a newer successful explicit retry. No account credentials/URLs.
+    """
+    if not scope or code and code not in PERMANENT:
+        return
+    db.execute('CREATE TABLE IF NOT EXISTS share_outcomes ('
+        'account TEXT, tuple_key TEXT, started REAL, expires REAL, code TEXT, PRIMARY KEY(account,tuple_key))')
+    with db:
+        db.execute('DELETE FROM share_outcomes WHERE expires < ?', (time.time(),))
+        db.execute('INSERT INTO share_outcomes VALUES(?,?,?,?,?) ON CONFLICT(account,tuple_key) DO UPDATE SET '
+            'started=excluded.started, expires=excluded.expires, code=excluded.code '
+            'WHERE excluded.started > share_outcomes.started',
+            (_scope_key(scope), tuple_hash(selected), started, time.time()+21600, code))
+        db.execute('DELETE FROM share_outcomes WHERE rowid IN '
+            '(SELECT rowid FROM share_outcomes ORDER BY started DESC LIMIT -1 OFFSET 1024)')
+
+
+def known_result(db, selected, scope):
+    if not scope:
+        return ''
+    try:
+        row = db.execute('SELECT code FROM share_outcomes WHERE account=? AND tuple_key=? AND expires>?',
+            (_scope_key(scope), tuple_hash(selected), time.time())).fetchone()
+        return row[0] if row and row[0] in PERMANENT else ''
+    except sqlite3.OperationalError:
+        return ''  # Legacy database or optional metadata busy, not a new failure.
+
+
+def card_tuple(card, media):
+    return dict(locator=card['url'], guid=card['guid'], title=card['title'], size=card['size'], media=media)
 
 
 def tuple_hash(selected):

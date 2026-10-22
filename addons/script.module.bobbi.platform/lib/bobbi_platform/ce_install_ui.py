@@ -344,7 +344,10 @@ def main(payload=None):
             xbmc.executebuiltin('RunScript(script.bobbi.setup)')
     except (OSError, ValueError, RuntimeError) as error:
         xbmc.log('[bobbi-install] ' + type(error).__name__, xbmc.LOGERROR)
-        dialog.ok('安装未完成', '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。\n' + str(error))
+        if str(error) in ('PREVIOUS_PROGRAM_INCOMPLETE', 'PREVIOUS_PROGRAM_SPECIAL_FILE', 'PREVIOUS_PROGRAM_RECEIPT_REQUIRED'):
+            dialog.ok('暂不能回退', '旧程序备份不完整，或来自没有完整性记录的旧安装器。已拒绝不完整回退并保留现场，请保留备份并使用完整安装包恢复。')
+        else:
+            dialog.ok('安装未完成', '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。\n' + str(error))
     finally:
         close = getattr(host, 'close', None)
         if close:

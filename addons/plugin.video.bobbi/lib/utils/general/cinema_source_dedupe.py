@@ -82,6 +82,8 @@ def _is_raw_bt(source):
 
 
 def _is_115_copy(source, context):
+    if getattr(source, 'shareFailure', ''):
+        return False
     from lib.utils.general.cinema_source_rank import catalog_identity_matches
     if (getattr(source, 'type', '') != 'Direct' or not catalog_identity_matches(source, context)
             or not _positive_bytes(getattr(source, 'size', 0))):
