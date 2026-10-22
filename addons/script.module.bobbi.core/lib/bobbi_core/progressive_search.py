@@ -104,6 +104,8 @@ class ProgressiveSearch:
                 cached = self.result_cache.get(indexer_key, name) if self.result_cache is not None else None
                 call_options = dict(kwargs, publish=emit) if progressive else kwargs
                 result = fn(*args, **call_options) if cached is None else cached
+                from bobbi_core.search_trace import observe
+                observe('provider_return', result or [], 'network' if cached is None else 'cache')
                 if self.cancelled.is_set():
                     return
                 completion = result.completion if isinstance(result, SearchResults) else None

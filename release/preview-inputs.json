@@ -144,6 +144,7 @@
       "lib/bobbi_core/runtime_paths.py",
       "lib/bobbi_core/search_admission.py",
       "lib/bobbi_core/search_completion.py",
+      "lib/bobbi_core/search_trace.py",
       "lib/bobbi_core/share_catalog.py",
       "lib/bobbi_core/share_failure.py",
       "lib/bobbi_core/share_stream.py",

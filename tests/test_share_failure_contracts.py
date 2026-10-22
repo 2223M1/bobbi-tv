@@ -67,7 +67,7 @@ def resident(*entries):
 @pytest.mark.parametrize('category', ['share_revoked', 'identity_changed'])
 def test_permanent_negative_has_fixed_ttl_and_does_not_consume_renewals(monkeypatch, category):
     clock, calls = [100.0], []
-    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0))
+    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0, perf_counter_ns=lambda:int(clock[0]*10**9)))
     original = ShareError(category, http_status=403, api_code=4100010)
     def resolve(*args):
         calls.append(clock[0])
@@ -108,7 +108,7 @@ def test_transient_or_auth_failures_are_not_negative_cached(category):
 
 def test_later_success_replaces_failure_and_reuses_one_grant(monkeypatch):
     clock = [100.0]
-    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0))
+    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0, perf_counter_ns=lambda:int(clock[0]*10**9)))
     entry = failed_entry()
     failed = entry.grant_outcome()
     calls = []
@@ -122,7 +122,7 @@ def test_later_success_replaces_failure_and_reuses_one_grant(monkeypatch):
 @pytest.mark.parametrize('category', ['share_revoked', 'identity_changed'])
 def test_permanent_renewal_failure_cannot_return_old_cached_address(monkeypatch, category):
     clock, calls = [100.0], []
-    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0))
+    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0, perf_counter_ns=lambda:int(clock[0]*10**9)))
     entry = binding(lambda *args: ADDRESS)
     assert entry.grant() == ADDRESS
     def fail(*args):
@@ -240,7 +240,12 @@ def test_host_routes_failure_proof_through_existing_native_owner_queue(tmp_path)
     assert entry.body['request_id'] != message['owner']['request_id']
     assert replies == [dict(matched=True, account=message['account'], owner=message['owner'],
         tuple_sha256=tuple_hash(message['selected']), failure=dict(code='share_revoked',
-        http_status=None, api_code=4100010, invalidation_failed=False))]
+        http_status=None, api_code=4100010, invalidation_failed=False,
+        share_state=entry.grant_outcome()['failure']['share_state']))]
+    state = replies[0]['failure']['share_state']
+    from bobbi_core.share_failure import valid_card_state, _scope_key
+    assert valid_card_state(state) and state['tuple'] == tuple_hash(message['selected'])
+    assert state['epoch'] == message['account']['epoch'] and state['account'] == _scope_key(message['account'])
 
 
 @pytest.mark.parametrize('field,value', [('boot_id', '0' * 32), ('epoch', 5),
@@ -298,7 +303,7 @@ def test_known_negative_requires_exact_checked_proof_and_account(stamp, scope_ch
 def test_newer_success_or_pending_binding_suppresses_older_negative(
         monkeypatch, state, same_started, reversed_records):
     clock = [100.0]
-    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0))
+    monkeypatch.setattr(share_stream, 'time', SimpleNamespace(monotonic=lambda: clock[0], time=lambda: 1000.0, perf_counter_ns=lambda:int(clock[0]*10**9)))
     old = failed_entry(scope=SCOPE, stamp=2000.0)
     clock[0] = 100.0 if same_started else 101.0
     new = binding(lambda *args: ADDRESS, scope=SCOPE, request='d' * 32)
@@ -515,7 +520,9 @@ def test_batch_timeout_never_exceeds_remaining_search_budget_and_no_retry(tmp_pa
         cache.deadline = time.monotonic() + .05
         catalog._known_failures(cache, rows, SPEC, SCOPE)
         catalog._known_failures(cache, rows, SPEC, SCOPE)
-        assert len(calls) == 1 and 0 < calls[0] <= .05
+        # Binary addition/subtraction at a large monotonic uptime can round
+        # 50 ms upward by a few picoseconds; this is not a larger IO budget.
+        assert len(calls) == 1 and 0 < calls[0] <= .05 + 1e-9
 
 
 def test_account_switch_cannot_reuse_old_verification(tmp_path, monkeypatch):

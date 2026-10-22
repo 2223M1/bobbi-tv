@@ -232,6 +232,22 @@ def _legacy_matches(title, aliases, mode, release_season=None):
     if mode == 'tv':
         boundary += (r'|(?<!\w)(?:s\d+(?:[ ._-]*e\d+)?|\d+x\d+|season[ ._-]*\d+)(?!\w)'
                      r'|\s-\s*\d{1,3}(?:v\d+)?(?=$|[ ._\[(])|\[\d{1,3}(?:v\d+)?\]')
+    if mode in ('movie', 'movies'):
+        boundary += (r'|(?<!\w)(?:8|10|12)[ ._-]*bits?(?!\w)'
+                     r'|(?<!\w)(?:director[’\x27]?s?[ ._-]*cut|extended|theatrical|unrated|uncut)(?!\w)')
+        for text in texts:
+            # Only the title prefix (before release metadata) identifies the
+            # work. Fully consume multilingual aliases there; an uploader or
+            # appendix after another work/technical tail cannot rescue it.
+            for end in [match.start() for match in re.finditer(boundary, text, re.I)] + [len(text)]:
+                prefix = text[:end].strip(' ._-[]【】()')
+                if normalized(prefix).replace(' ', '') in trusted:
+                    return True  # Includes literal parentheses/numeric titles.
+                parts = [part.strip(' ._-') for part in re.split(r'[/|()\[\]【】]', prefix)
+                         if part.strip(' ._-')]
+                if 1 < len(parts) <= 4 and all(normalized(part).replace(' ', '') in trusted for part in parts):
+                    return True
+        return False
     for text in texts:
         for segment in re.split(r'[/|()]', text):
             # Numeric movie names such as 1917 are titles, not release years.
