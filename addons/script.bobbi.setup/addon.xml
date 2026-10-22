@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="script.bobbi.setup" version="0.1.5" name="bobbi 首次设置" provider-name="bobbi TV contributors">
+<addon id="script.bobbi.setup" version="0.1.6" name="bobbi 首次设置" provider-name="bobbi TV contributors">
   <requires>
     <import addon="xbmc.python" version="3.0.1"/>
     <import addon="script.module.bobbi.platform" version="0.1.0"/>
@@ -8,7 +8,7 @@
   <extension point="xbmc.python.script" library="default.py"><provides>executable</provides></extension>
   <extension point="xbmc.addon.metadata">
     <summary lang="zh_CN">连接自己的网盘、NAS 与本机后台</summary>
-    <description lang="zh_CN">个人115扫码、NAS/WebDAV/片库管理、专用影视资料、CoreELEC可选后台与影院切换。私人候选，不改音画参数；实机能力按随包验收记录标注。</description>
+    <description lang="zh_CN">个人115扫码、NAS/WebDAV/片库管理、影视资料、可选BT后台、影院切换与在线更新。不改音画参数，未登录也可使用本地与NAS片库。</description>
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
   </extension>

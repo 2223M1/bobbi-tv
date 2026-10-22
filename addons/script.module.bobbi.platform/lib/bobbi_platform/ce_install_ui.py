@@ -303,7 +303,47 @@ def choose_package(dialog, payload, first):
     return dialog.browse(1, '选择波比 CE 完整签名包', 'files', mask='.zip')
 
 
-def main(payload=None):
+def install_online(installer, host, dialog):
+    """A manual online action downloads first, then reuses the offline transaction."""
+    import xbmcgui
+    from .online_updates import latest, download, Cancelled
+    host.check_idle()
+    progress = xbmcgui.DialogProgress()
+    selected = None
+    try:
+        progress.create('波比 TV · 在线更新', '正在查询最新正式版本，可取消。')
+        cancelled = lambda: host.monitor.abortRequested() or progress.iscanceled()
+        offer = latest(cancelled)
+        state = installer._read() or {}
+        watermark = max(state.get('high_watermark', 0), state.get('sequence', 0))
+        progress.close()
+        if offer['sequence'] <= watermark:
+            dialog.ok('无需更新', '当前已安装此版本或更新的版本。需要恢复旧程序时，请使用回退入口。')
+            return False
+        if not dialog.yesno('安装 ' + offer['tag'].upper(),
+                '将下载约 %d MB 的完整程序包并更新整套影院。保留账号与观看记录，不自动切换皮肤；播放中不会安装。继续？'
+                % ((offer['size'] + 1024 * 1024 - 1) // (1024 * 1024))):
+            return False
+        host.check_idle()
+        progress.create('波比 TV · 在线更新', '正在下载完整程序包，可取消。')
+        selected = download(offer, installer.work / 'downloads', installer.trust,
+                            cancelled, lambda percent: progress.update(percent))
+        if cancelled():
+            return False
+        host.check_idle()  # Playback may have started during the download.
+        progress.close()
+        installer.apply(selected)
+        return True
+    except Cancelled:
+        return False
+    finally:
+        progress.close()
+        if selected is not None:
+            # Remove only this invocation's downloaded package, never backups.
+            selected.unlink(missing_ok=True)
+
+
+def main(payload=None, online=False):
     import xbmc
     import xbmcgui
     import xbmcvfs
@@ -316,10 +356,16 @@ def main(payload=None):
         if not recover_interactive(installer, dialog):
             return
         state = installer._read()
-        actions = ['进入影院设置 / 登录自己的115', '安装完整签名包',
-                   '回退上一次程序安装', '返回原 Kodi 界面']
+        actions = ['进入影院设置 / 登录自己的115', '安装本地完整包',
+                   '回退上一次程序安装', '返回原 Kodi 界面', '在线检查并安装最新正式版']
         first = state is None and not host.details('plugin.video.bobbi')
-        choice = 1 if first else dialog.select('波比 TV', actions)
+        choice = 4 if online or (first and not (payload and Path(payload).is_file())) else (
+            1 if first else dialog.select('波比 TV', actions))
+        if choice == 4:
+            if not install_online(installer, host, dialog):
+                return
+            dialog.ok('安装完成', '即将进入影院设置。账号和观看记录保持不变；更新后请重启 Kodi。')
+            choice = 0
         if choice == 1:
             selected = choose_package(dialog, payload, first)
             if not selected:
@@ -347,7 +393,14 @@ def main(payload=None):
         if str(error) in ('PREVIOUS_PROGRAM_INCOMPLETE', 'PREVIOUS_PROGRAM_SPECIAL_FILE', 'PREVIOUS_PROGRAM_RECEIPT_REQUIRED'):
             dialog.ok('暂不能回退', '旧程序备份不完整，或来自没有完整性记录的旧安装器。已拒绝不完整回退并保留现场，请保留备份并使用完整安装包恢复。')
         else:
-            dialog.ok('安装未完成', '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。\n' + str(error))
+            message = ('网络连接或下载未完成，可稍后重试，也可使用 Releases 中的完整离线包。'
+                       if isinstance(error, OSError) or str(error).startswith('ONLINE_') else
+                       '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。')
+            if str(error) == 'PLAYBACK_ACTIVE':
+                message = '请先停止播放再更新。当前影片与已安装程序保持不变。'
+            elif str(error) == 'INSTALLATION_SPACE_REQUIRED':
+                message = '可用空间不足，请释放空间后重试。未删除你的程序备份、账号或媒体。'
+            dialog.ok('安装未完成', message)
     finally:
         close = getattr(host, 'close', None)
         if close:

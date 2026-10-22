@@ -176,12 +176,14 @@ def main():
     p.add_argument('--run-id',required=True);p.add_argument('--entry',type=Path)
     p.add_argument('--window',type=int);p.add_argument('--label');p.add_argument('--control',type=int);p.add_argument('--index',type=int);p.add_argument('--choice-label')
     p.add_argument('--expect-sequence',type=int)
+    p.add_argument('--output-dir',type=Path,default=ROOT/'review-evidence/ce2023')
+    p.add_argument('--online-bundle',type=Path)
     p.add_argument('--dwell-seconds',type=int,choices=range(0,41),default=0)
     a=p.parse_args()
     if not re.fullmatch('[0-9]{8}-[0-9]{6}',a.run_id):p.error('Exact timestamp required')
     if a.mode=='stage':
         from audit_ce_entry import audit
-        audit(a.entry)
+        audit(a.entry,a.online_bundle)
     if a.mode=='choose' and (a.window is None or not a.label or a.control is None):p.error('Observed dialog identity required')
     if a.mode=='choose' and not a.choice_label:p.error('Observed choice label required')
     if a.mode=='wait-install' and (a.expect_sequence is None or a.expect_sequence<1):p.error('Expected installation sequence required')
@@ -206,7 +208,8 @@ def main():
         except Exception as exc:
             rc,result,diag=1,dict(transport_error=type(exc).__name__),False
     finally:c.close()
-    out=ROOT/'review-evidence/ce2023'/('entry-device-'+a.mode+'-'+str(time.time_ns())+'.json')
+    a.output_dir.mkdir(parents=True,exist_ok=True)
+    out=a.output_dir/('entry-device-'+a.mode+'-'+str(time.time_ns())+'.json')
     out.write_text(json.dumps(dict(run=run,mode=a.mode,transport_exit=rc,diagnostic_present=bool(diag),result=result),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     display=dict(result)
     if 'stack' in display:display['stack_bytes']=len(display.pop('stack') or '')

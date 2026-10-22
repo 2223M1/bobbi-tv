@@ -239,9 +239,9 @@ def main():
                 return  # Do not reopen setup over Kodi's native add-on browser.
         elif action == 'status':
             from bobbi_core.project_metadata import ATTRIBUTION
-            dialog.ok('波比 TV · 私人候选版', '新影院、个人 115 / NAS、手动选源、同版续播及中文字幕共用业务核心。\n'
+            dialog.ok('波比 TV', '个人 115 / NAS、手动选源、同版续播及中文字幕共用业务核心。\n'
                       'BT / CD2 云准备为可选能力，未配置时不会阻止启动。\n'
-                      '原生构建成功不代表每种设备都已实播验收；以随包验收记录为准。不会自动刷机。\n'
+                      '设备能力与已知问题见发行说明。不会自动刷机；未登录也可使用本地与 NAS 片库。\n'
                       + ATTRIBUTION)
         elif action == 'transport':
             from bobbi_platform.transport_preferences import load, save
@@ -255,14 +255,15 @@ def main():
 
 
 def show_updates(dialog):
-    """Open native management only; never start an update or refresh a repo."""
+    """Route user-requested maintenance; never update during playback."""
     if xbmc.Player().isPlaying():
         dialog.ok('请先停止播放', '播放中不打开插件更新操作页，也不会停止影片或执行更新。')
         return False
     choice = dialog.select('更新与恢复 · 原版与定制分开维护', [
         '原版依赖 · Kodi 依赖管理 / 更新',
         '已装插件 · Kodi 我的插件 / 原仓库更新',
-        '波比定制组件 · 安装签名包 / 回退程序',
+        '波比影院 · 本地完整包 / 回退程序',
+        '波比影院 · 在线检查并安装最新正式版',
     ])
     if choice in (0, 1):
         dialog.ok('打开 Kodi 原生插件管理',
@@ -280,6 +281,11 @@ def show_updates(dialog):
             return False
         xbmc.executebuiltin('RunScript(script.bobbi.start)')
         return True  # The installer asks before applying any signed package.
+    if choice == 3:
+        if xbmc.Player().isPlaying():
+            return False
+        xbmc.executebuiltin('RunScript(script.bobbi.start,online)')
+        return True
     return False
 
 

@@ -17,7 +17,8 @@ def test_steps_never_ask_for_box_model_or_claim_ready_cinema():
     assert len({key for key, _ in rows}) == len(rows)
     text = '\n'.join(label for _, label in rows)
     assert '机型' not in text and '选择型号' not in text
-    assert '还需实播' in text and '扫码登录' in text and '私人候选' in text
+    assert '还需实播' in text and '扫码登录' in text and '支持范围' in text
+    assert '私人候选' not in text
     assert '可跳过' in dict(steps({}))['library']
     assert '需要处理' in dict(steps({}))['check']
 
@@ -110,7 +111,7 @@ def test_full_android_cinema_never_launches_itself_as_legacy_helper(setup_ui, tm
 
 def test_update_label_distinguishes_original_addons_from_bobbi_bundle():
     label = dict(steps({}))['updates']
-    assert '原版插件管理' in label and '波比签名包' in label
+    assert '在线更新' in label and '本地安装' in label and '回退' in label
 
 
 @pytest.mark.parametrize('choice,target', [
@@ -139,7 +140,7 @@ def test_cancel_update_menu_does_nothing(setup_ui):
     assert setup_ui.builtins == [] and setup_ui.called == [] and setup_ui.dialogs == []
 
 
-@pytest.mark.parametrize('choice', [0, 1, 2])
+@pytest.mark.parametrize('choice', [0, 1, 2, 3])
 def test_playing_blocks_update_menu_without_stopping_video(setup_ui, choice):
     setup_ui.choice = choice
     setup_ui.playing = True

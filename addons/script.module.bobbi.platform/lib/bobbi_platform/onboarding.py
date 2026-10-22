@@ -45,8 +45,8 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
         ('catalog', '影视海报与搜索 · TMDb 来源 / 高级设置'),
         ('cinema', '进入波比影院 · 切换新皮肤'),
         ('transport', '115 播放传输 · 渐进交付 / 整块回退'),
-        ('updates', '更新与恢复 · 原版插件管理 / 波比签名包'),
-        ('status', '发行状态 · 私人候选与实机验收状态'),
+        ('updates', '更新与恢复 · 在线更新 / 本地安装 / 回退'),
+        ('status', '关于波比 TV · 支持范围'),
     ]
 
 

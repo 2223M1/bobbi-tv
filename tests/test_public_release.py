@@ -30,12 +30,12 @@ def test_public_inventory_is_exact():
         assert build_release.files(path) == recorded[addon], addon
 
 
-def test_retired_repository_has_no_anonymous_endpoint_and_packages_keep_hashes():
+def test_online_repository_has_real_feed_and_packages_keep_hashes():
     import hashlib
     root = ET.parse(ROOT / 'addons/repository.bobbi/addon.xml').getroot()
-    assert root.find("./extension[@point='xbmc.addon.repository']") is None
-    assert root.findtext('./extension/dir/datadir') is None
-    assert (ROOT / 'addons/repository.bobbi/default.py').is_file()
+    assert root.find("./extension[@point='xbmc.addon.repository']") is not None
+    assert root.findtext('./extension/dir/datadir') == 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/'
+    assert not (ROOT / 'addons/repository.bobbi/default.py').exists()
     repository = ROOT / 'repository'
     for path in repository.glob('*/*.zip'):
         assert path.with_suffix('.zip.sha256').read_text() == hashlib.sha256(path.read_bytes()).hexdigest()
