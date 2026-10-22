@@ -1,0 +1,32 @@
+[
+  {
+    "probe": "local-cancel",
+    "exit_code": 0,
+    "stdout_bytes": 3050,
+    "stderr_bytes": 0
+  },
+  {
+    "probe": "slow-body",
+    "exit_code": 0,
+    "stdout_bytes": 558,
+    "stderr_bytes": 0
+  },
+  {
+    "probe": "revoked-requery",
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "stderr_bytes": 1982
+  },
+  {
+    "probe": "rollback",
+    "exit_code": 1,
+    "stdout_bytes": 8452,
+    "stderr_bytes": 0
+  },
+  {
+    "probe": "outer-entry",
+    "exit_code": 1,
+    "stdout_bytes": 3216,
+    "stderr_bytes": 0
+  }
+]

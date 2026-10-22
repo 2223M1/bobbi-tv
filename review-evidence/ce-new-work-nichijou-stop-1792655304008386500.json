@@ -1,0 +1,134 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "nichijou",
+    "operation": "stop",
+    "stopped": true,
+    "before": {
+      "wall": 70548.711656182,
+      "phase": "AV_STARTED",
+      "native": {
+        "audio_intent": 0,
+        "file_identity": "bt:7928bdd88615e4c5d019aedb553ff2130afff5f0|a9d8623c97f1e56d26049c88144e9ffaea959e09161774089ca2ec6ae2cd621d",
+        "handoff_protocol": 1,
+        "handoff_restored": null,
+        "monotonic_us": 70436242327,
+        "native_instance": "0b110cd1-894f-49e1-b69a-6bc8d32b01fc",
+        "open_epoch": 4,
+        "paused": false,
+        "phase": "AV_STARTED",
+        "protocol": 1,
+        "reason": "",
+        "request_id": "51740a712bbb4db8b2ce2a8451e03756",
+        "sequence": 2,
+        "subtitle_auto_intent": 0,
+        "subtitle_intent": 0,
+        "url_sha256": "180ca7a4f48b1a2425fb87047ac126d8902748e8dccfa63f3d30a0d59d4d069c",
+        "user_intent": 0
+      },
+      "cancelled": false,
+      "failure": null,
+      "prior_failure": null,
+      "seconds": 112.4,
+      "duration": 1423.097,
+      "currentaudiostream": {
+        "bitrate": 190300,
+        "channels": 2,
+        "codec": "opus",
+        "index": 0,
+        "isdefault": true,
+        "isimpaired": false,
+        "isoriginal": false,
+        "language": "",
+        "name": "",
+        "samplerate": 0
+      },
+      "currentsubtitle": {
+        "index": 0,
+        "isdefault": true,
+        "isforced": false,
+        "isimpaired": false,
+        "language": "chi",
+        "name": "chs[FLsnow]"
+      },
+      "currentvideostream": {
+        "codec": "hevc",
+        "height": 1080,
+        "index": 0,
+        "language": "",
+        "name": "",
+        "width": 1920
+      },
+      "speed": 1,
+      "subtitleenabled": true,
+      "caching": false,
+      "labels": {
+        "Container(1000).ListItem.Label": "",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).NumItems": "",
+        "Window(10000).Property(AM6B.SubtitleState)": "中文字幕已启用",
+        "Window.Property(playback_error)": "",
+        "Window.Property(source_count)": ""
+      },
+      "window": {
+        "currentwindow": {
+          "id": 12005,
+          "label": "全屏视频"
+        }
+      },
+      "decoder": {
+        "schema": 2,
+        "read_started": 70548.770996982,
+        "read_completed": 70548.771256184,
+        "raw": "vdec channel 0 statistics:\n  device name : vdec.h265.00\n  frame width : 1920\n frame height : 1080\n   frame rate : 24 fps\n     bit rate : 0 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 0 KB\n  frame count : 2715\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 0 KB\nratio_control : 9000\n\n",
+        "sha256": "a5b8d0d8cb52bcbc49da012145803c63e6e23bfb359fda1b39f546cdcd459f8f",
+        "channels": [
+          {
+            "channel": 0,
+            "device": "vdec.h265.00",
+            "counters": {
+              "frame width": 1920,
+              "frame height": 1080,
+              "frame count": 2715,
+              "drop count": 0,
+              "fra err count": 0,
+              "hw err count": 0
+            }
+          }
+        ],
+        "identity_known": true,
+        "primary_channel": 0
+      },
+      "decoder_counters": {
+        "frame width": 1920,
+        "frame height": 1080,
+        "frame count": 2715,
+        "drop count": 0,
+        "fra err count": 0,
+        "hw err count": 0
+      },
+      "decoder_counter_source": {
+        "channel": 0,
+        "device": "vdec.h265.00"
+      },
+      "observation_times": {
+        "sample_started": 70548.698976006,
+        "player_time_started": 70548.714372954,
+        "player_time_completed": 70548.717247807,
+        "caching_started": 70548.717269223,
+        "caching_completed": 70548.728032316,
+        "decoder_started": 70548.770996982,
+        "decoder_completed": 70548.771256184,
+        "sample_completed": 70548.77254478
+      }
+    },
+    "seconds": 2.38
+  },
+  "diagnostic_present": false,
+  "work": "nichijou",
+  "operation": "stop",
+  "attempt": 2,
+  "regression_attempt": true
+}

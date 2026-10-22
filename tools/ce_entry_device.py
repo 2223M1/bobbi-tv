@@ -34,7 +34,24 @@ def view():
  if p.is_file():
   state=json.loads(p.read_text());out['installation']={k:state[k] for k in ('sequence','high_watermark','phase','host_pending','tx') if k in state}
  return out
-if MODE=='stop-smoke':
+if MODE=='restore-cinema-skin':
+ if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
+ if rpc('GUI.GetProperties',{'properties':['currentwindow']})['currentwindow']['id']!=10000:raise RuntimeError('HOME_REQUIRED')
+ before=rpc('Settings.GetSettingValue',{'setting':'lookandfeel.skin'})['value']
+ if before!='skin.bobbi.cinema':
+  rpc('Settings.SetSettingValue',{'setting':'lookandfeel.skin','value':'skin.bobbi.cinema'})
+  until=time.monotonic()+8
+  accepted=False
+  while time.monotonic()<until:
+   labels=rpc('XBMC.GetInfoLabels',{'labels':['Control.GetLabel(1)','Control.GetLabel(11)']})
+   active=rpc('XBMC.GetInfoBooleans',{'booleans':['Window.IsActive(10100)']})
+   if active.get('Window.IsActive(10100)') and labels['Control.GetLabel(1)'] in ('保持皮肤？','Keep skin?') and labels['Control.GetLabel(11)'] in ('是','Yes'):
+    builtin('SendClick(10100,11)');accepted=True;break
+   time.sleep(.1)
+  if not accepted:raise RuntimeError('SKIN_CONFIRMATION_NOT_OBSERVED')
+  time.sleep(2)
+ if rpc('Settings.GetSettingValue',{'setting':'lookandfeel.skin'})['value']!='skin.bobbi.cinema':raise RuntimeError('SKIN_NOT_RETAINED')
+elif MODE=='stop-smoke':
  if rpc('Player.GetActivePlayers'):raise RuntimeError('PLAYBACK_ACTIVE')
  if not re.fullmatch(r'bobbi-ui-smoke-[0-9]+',SMOKE_RUN or ''):raise RuntimeError('INVALID_SMOKE_RUN')
  builtin('StopScript(/storage/.kodi/temp/'+SMOKE_RUN+'/smoke.py)')
@@ -154,7 +171,7 @@ print(json.dumps(result))
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--transport-source',type=Path,required=True)
-    p.add_argument('--mode',choices=('stage','open','view','choose','wait-install','back','restart-idle','diagnose','native-stack','trace-on','trace-read','stop-smoke'),required=True)
+    p.add_argument('--mode',choices=('stage','open','view','choose','wait-install','back','restart-idle','restore-cinema-skin','diagnose','native-stack','trace-on','trace-read','stop-smoke'),required=True)
     p.add_argument('--smoke-run')
     p.add_argument('--run-id',required=True);p.add_argument('--entry',type=Path)
     p.add_argument('--window',type=int);p.add_argument('--label');p.add_argument('--control',type=int);p.add_argument('--index',type=int);p.add_argument('--choice-label')

@@ -1,0 +1,11 @@
+{
+  "action": "hold",
+  "exit_code": 0,
+  "diagnostic_present": false,
+  "result": {
+    "action": "hold",
+    "target_missing": true,
+    "file_recoverable": true,
+    "tx": "4afdb620bd4946529858293787ab90e3"
+  }
+}

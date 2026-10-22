@@ -1,0 +1,32 @@
+[
+  {
+    "choice": "back",
+    "outcome": "returned_none",
+    "elapsed_seconds": 6.156,
+    "status_requests": 1,
+    "operations": [
+      "get"
+    ],
+    "workers_alive_at_return": [
+      true
+    ],
+    "workers_alive_after_backend_close": [
+      true
+    ]
+  },
+  {
+    "choice": "confirm",
+    "outcome": "TORRENT_CONTROL_UNAVAILABLE",
+    "elapsed_seconds": 6.187,
+    "status_requests": 1,
+    "operations": [
+      "get"
+    ],
+    "workers_alive_at_return": [
+      true
+    ],
+    "workers_alive_after_backend_close": [
+      true
+    ]
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "nichijou",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "[7³ACG] 日常/Nichijou S01 | 01-26+SPx1 [简繁字幕] BDrip 1080p x265 OPUS 2.0",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "18.3 GB",
+        "Container(1000).ListItem.Property(source_key)": "19204a8b1d32a823fb793787e9b127bf2aaf41b736a6a35b1a119e9b3c99a9ef",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Anime Time] Nichijou (Season 01) [BD] [Dual Audio][1080p][HEVC 10bit x265][AAC][Eng Sub] Nichijou - My Ordinary Life",
+        "Container(1000).ListItem.Property(peers)": "71",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "62",
+        "Container(1000).ListItem.Property(size)": "12.6 GB",
+        "Container(1000).ListItem.Property(source_key)": "9fd17f4034b58e45a099aedb289b0f29668f71e72ffff9969ed3454c586cbe61",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Judas] Nichijou (My Ordinary Life) (Season 01 + OVA) [BD 1080p][HEVC x265 10bit][Dual-Audio][Eng-Subs] (Batch)",
+        "Container(1000).ListItem.Property(peers)": "62",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "58",
+        "Container(1000).ListItem.Property(size)": "13.1 GB",
+        "Container(1000).ListItem.Property(source_key)": "0c3fc8b13be679686110d1d2abc4e247ba8d7296596f2c8dd99d209e546060f8",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 3,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "nichijou",
+  "operation": "cards",
+  "attempt": 1,
+  "regression_attempt": false
+}

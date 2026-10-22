@@ -1,0 +1,76 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "planetes",
+    "operation": "cards",
+    "cards": [
+      {
+        "Container(1000).ListItem.Label": "Planetes.2003.S01E01.1080p.BDRip.x265.FLAC-CoolFansSub.mkv",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(recommendation_reason)": "1080p · 蓝光",
+        "Container(1000).ListItem.Property(recommendation_status)": "推荐",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "1.78 GB",
+        "Container(1000).ListItem.Property(source_key)": "c04661468ccc9e37880b2f5b24a62d1542ff92d4b97d2a92e555b5ecb6e40aa8",
+        "Container(1000).ListItem.Property(source_site)": "115 网盘",
+        "Container(1000).ListItem.Property(status_plain)": "待验证片源",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[-__-'] Planetes - 01 [BD 1080p AAC] [C424ABCF].mkv",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(recommendation_reason)": "1080p · 蓝光 · 无已知做种",
+        "Container(1000).ListItem.Property(recommendation_status)": "待验证",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "1.2 GB",
+        "Container(1000).ListItem.Property(source_key)": "1bd7709d4ce8e529af1e316c047454fdbb0b02686addf0500d28d83d9404803e",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(status_plain)": "待验证片源",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "[Deadmau- RAWS] プラネテス / PlanetES [S01] (2003-204) BDRip (Batch)",
+        "Container(1000).ListItem.Property(peers)": "",
+        "Container(1000).ListItem.Property(recommendation_reason)": "蓝光 · 无已知做种",
+        "Container(1000).ListItem.Property(recommendation_status)": "待验证",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "",
+        "Container(1000).ListItem.Property(size)": "8.9 GB",
+        "Container(1000).ListItem.Property(source_key)": "a2f7e172be8d09feae1ac71d07f6d2eb1d7d69489c7b029dccdaf11f72c904bc",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(status_plain)": "待验证片源",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      },
+      {
+        "Container(1000).ListItem.Label": "PlanetES s1e01-05 [DVDrip ITA JAP Ac3 SoftSub ITA] TNT Village",
+        "Container(1000).ListItem.Property(peers)": "4",
+        "Container(1000).ListItem.Property(recommendation_reason)": "信息不足",
+        "Container(1000).ListItem.Property(recommendation_status)": "待验证",
+        "Container(1000).ListItem.Property(resolution)": "",
+        "Container(1000).ListItem.Property(seeders)": "2",
+        "Container(1000).ListItem.Property(size)": "1.72 GB",
+        "Container(1000).ListItem.Property(source_key)": "616993d9dccaa183da9d7a2156714f368824e85b28c8ef17d0ec268500dcebe3",
+        "Container(1000).ListItem.Property(source_site)": "",
+        "Container(1000).ListItem.Property(status_plain)": "待验证片源",
+        "Container(1000).ListItem.Property(subtitle_badge)": ""
+      }
+    ],
+    "selected": false,
+    "picker_start": {
+      "current_item": 1,
+      "item_count": 4,
+      "reset_action": "firstpage"
+    },
+    "samples": [],
+    "record": null
+  },
+  "diagnostic_present": false,
+  "work": "planetes",
+  "operation": "cards",
+  "attempt": 10,
+  "regression_attempt": true
+}

@@ -12,7 +12,23 @@ import sys
 import time
 
 REMOTE = r'''
-import hashlib,json,os,pathlib,sys,urllib.request,subprocess,tempfile
+import hashlib,json,os,pathlib,sys,urllib.request,subprocess,tempfile,re
+if ACTION=='metadata':
+ import time
+ from urllib.parse import urlencode
+ sys.path.insert(0,'/storage/.kodi/addons/script.module.bobbi.core/lib')
+ from bobbi_core.project_metadata import tmdb_key
+ from bobbi_core.metadata_transport import fetch
+ value=fetch('https://api.themoviedb.org/3/search/tv?'+urlencode(dict(api_key=tmdb_key(),query='Nichijou',language='en-US')),time.monotonic()+12)
+ data=json.loads(value['body']) if value['status']==200 else {}
+ print(json.dumps(dict(status=value['status'],route=value['route'],results=[{k:row.get(k) for k in ('id','name','original_name','first_air_date')} for row in data.get('results',[])[:10]])));raise SystemExit(0)
+if ACTION=='health':
+ result=dict(systemd=subprocess.check_output(['systemctl','show','kodi','-p','ActiveState','-p','SubState','-p','NRestarts','-p','MainPID']).decode().splitlines(),
+  processes=[s.strip() for s in subprocess.check_output(['ps','-eo','pid,comm']).decode().splitlines() if 'kodi' in s.lower() or 'torrserver' in s.lower()])
+ p=pathlib.Path('/storage/.kodi/temp/kodi.log')
+ with p.open('rb') as f:f.seek(max(0,p.stat().st_size-200000));lines=f.read().decode('utf-8','replace').splitlines()
+ result['events']=[s[:600] for s in lines if re.search('CINEMA|PLAYER|TORRENT|SHUTDOWN|Error Type|Error Contents|Traceback|[Ff]atal|EXCEPTION',s) and not re.search('https?://|magnet:|Cookie|Authorization|token|password',s,re.I)][-45:]
+ print(json.dumps(result));raise SystemExit(0)
 root=pathlib.Path('/storage/.kodi/addons')
 sys.path.insert(0,str(root/'script.bobbi.start/bootstrap'))
 from bobbi_platform.ce_installer import program_tree,MANAGED
@@ -64,7 +80,7 @@ print(json.dumps(result))
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('action',choices=('hold','restore','snapshot','posix'))
+    p=argparse.ArgumentParser();p.add_argument('action',choices=('hold','restore','snapshot','posix','health','metadata'))
     p.add_argument('--transport-source',type=Path,required=True);a=p.parse_args()
     sys.path.insert(0,str(a.transport_source/'ui-redesign/runtime/ssh-python'))
     spec=importlib.util.spec_from_file_location('ce2048_wire',a.transport_source/'ui-redesign/tools/device_transport.py')

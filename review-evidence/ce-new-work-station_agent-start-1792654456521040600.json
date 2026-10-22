@@ -1,0 +1,256 @@
+{
+  "exit_code": 0,
+  "transport_exit_code": 0,
+  "trial_exit_code": 0,
+  "result": {
+    "name": "station_agent",
+    "operation": "start",
+    "record": {
+      "test": {
+        "title": "The Station Agent",
+        "tmdb_id": 2056,
+        "kind": "movie",
+        "year": 2003
+      },
+      "metadata_verification": {
+        "verified": {
+          "id": 2056,
+          "title": "The Station Agent",
+          "original_title": "The Station Agent",
+          "original_language": "en",
+          "release_date": "2003-12-05"
+        },
+        "route": "system-direct",
+        "checked_at": 1792654446.8918447
+      },
+      "prior_request": null,
+      "started": 69694.202639786,
+      "home": {
+        "generation": 16,
+        "intent": 0,
+        "retired_generation": 16,
+        "observed_at": 69694.801679687
+      },
+      "picker_mode": true,
+      "ordinary_ui": true,
+      "force_select": false,
+      "launch_mode": "ordinary_ui",
+      "launched_at": 69694.802278688,
+      "picker": {
+        "window": 13001,
+        "generation": 17,
+        "intent": 0,
+        "tmdb_id": 2056,
+        "kind": "movie"
+      },
+      "picker_observed_at": 69697.148554494
+    },
+    "samples": [
+      {
+        "wall": 69695.031265522,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": ""
+        },
+        "window": {
+          "currentwindow": {
+            "id": 10000,
+            "label": "主界面"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 69695.060739597,
+          "read_completed": 69695.061157056,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 69695.013982853,
+          "decoder_started": 69695.060739597,
+          "decoder_completed": 69695.061157056,
+          "sample_completed": 69695.061982267
+        }
+      },
+      {
+        "wall": 69697.16523162,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 69697.179211906,
+          "read_completed": 69697.179477907,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 69697.14903462,
+          "decoder_started": 69697.179211906,
+          "decoder_completed": 69697.179477907,
+          "sample_completed": 69697.179579657
+        }
+      },
+      {
+        "wall": 69699.268137026,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "0",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "0"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 69699.280472183,
+          "read_completed": 69699.280722933,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 69699.229100299,
+          "decoder_started": 69699.280472183,
+          "decoder_completed": 69699.280722933,
+          "sample_completed": 69699.280820142
+        }
+      },
+      {
+        "wall": 69701.452336241,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "The Station Agent (2003) (1080p WEB-DL x265 10bit AAC 5.1 afm72) ...",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "6",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "",
+          "Window.Property(source_count)": "6"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 69701.499600324,
+          "read_completed": 69701.5001612,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 69701.41576527,
+          "decoder_started": 69701.499600324,
+          "decoder_completed": 69701.5001612,
+          "sample_completed": 69701.500324826
+        }
+      },
+      {
+        "wall": 69703.606356933,
+        "phase": null,
+        "native": {},
+        "cancelled": null,
+        "failure": null,
+        "prior_failure": null,
+        "labels": {
+          "Container(1000).ListItem.Label": "The Station Agent (2003) (1080p WEB-DL x265 10bit AAC 5.1 afm72) ...",
+          "Container(1000).ListItem.Property(source_site)": "",
+          "Container(1000).NumItems": "6",
+          "Window(10000).Property(AM6B.SubtitleState)": "",
+          "Window.Property(playback_error)": "1 个来源查询失败或超时",
+          "Window.Property(source_count)": "6"
+        },
+        "window": {
+          "currentwindow": {
+            "id": 13001,
+            "label": "立即关闭硬盘"
+          }
+        },
+        "decoder": {
+          "schema": 2,
+          "read_started": 69703.644700868,
+          "read_completed": 69703.645113036,
+          "raw": "No vdec.\n",
+          "sha256": "c5dd36a3cea6f49e09aaf80cfed99887d2988fe7a4a87ea5c1ae42de13cb3ec7",
+          "channels": [],
+          "identity_known": false,
+          "primary_channel": null
+        },
+        "decoder_counters": {},
+        "decoder_counter_source": null,
+        "observation_times": {
+          "sample_started": 69703.590416182,
+          "decoder_started": 69703.644700868,
+          "decoder_completed": 69703.645113036,
+          "sample_completed": 69703.645254328
+        }
+      }
+    ]
+  },
+  "diagnostic_present": false,
+  "work": "station_agent",
+  "operation": "start",
+  "attempt": 2,
+  "regression_attempt": true
+}
