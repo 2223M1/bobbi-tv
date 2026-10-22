@@ -1,4 +1,4 @@
-"""Single offline CE entry. The build embeds the reviewed installer and payload."""
+"""One CE entry for online installation and complete offline packages."""
 from pathlib import Path
 import sys
 import xbmcaddon
@@ -10,4 +10,4 @@ if bootstrap.is_dir():
 else:
     sys.path.insert(0, str(Path(xbmcaddon.Addon('script.module.bobbi.platform').getAddonInfo('path')) / 'lib'))
 from bobbi_platform.ce_install_ui import main
-main(root / 'resources' / 'complete.bobbi-update.zip')
+main(root / 'resources' / 'complete.bobbi-update.zip', online='online' in sys.argv[1:])

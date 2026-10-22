@@ -13,7 +13,7 @@ from build_ce_entry import BOOTSTRAP, ROOT
 from bobbi_platform.offline_updates import SignedBundle, load_trust
 
 
-def audit(path):
+def audit(path, online_bundle=None):
     with tempfile.TemporaryDirectory(prefix='bobbi-entry-audit-') as name:
         temporary = Path(name)
         with zipfile.ZipFile(path) as entry:
@@ -26,7 +26,11 @@ def audit(path):
             requires = {n.get('addon') for n in addon.findall('./requires/import')}
             assert requires == {'xbmc.python', 'script.module.pycryptodome'}
             bundle = temporary / 'bundle.zip'
-            bundle.write_bytes(entry.read('script.bobbi.start/resources/complete.bobbi-update.zip'))
+            if online_bundle is None:
+                bundle.write_bytes(entry.read('script.bobbi.start/resources/complete.bobbi-update.zip'))
+            else:
+                assert 'script.bobbi.start/resources/complete.bobbi-update.zip' not in names
+                bundle = Path(online_bundle)
             with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
                 manifest = signed.check_all()
                 component = next(row for row in manifest['components'] if row['id'] == 'script.bobbi.start')
@@ -34,7 +38,8 @@ def audit(path):
                     expected = set(source.namelist())
                     for filename in expected:
                         assert entry.read(filename) == source.read(filename), 'Entry differs: ' + filename
-                expected.add('script.bobbi.start/resources/complete.bobbi-update.zip')
+                if online_bundle is None:
+                    expected.add('script.bobbi.start/resources/complete.bobbi-update.zip')
                 expected.update('script.bobbi.start/bootstrap/bobbi_platform/' + name for name in BOOTSTRAP)
                 assert set(names) == expected, 'Outer entry member set differs from signed generation'
                 platform = next(row for row in manifest['components'] if row['id'] == 'script.module.bobbi.platform')
@@ -51,6 +56,7 @@ def audit(path):
                 'from bobbi_platform.ce_installer import Installer;'
                 'from bobbi_platform.runtime import call;'
                 'from bobbi_platform.instance_lock import InstanceLock;'
+                'from bobbi_platform.online_updates import latest, download;'
                 'assert "bobbi_core" not in sys.modules')
             subprocess.run([sys.executable, '-I', '-B', '-c', script, str(temporary/'bootstrap')],
                            check=True, timeout=15, cwd=temporary)
@@ -58,7 +64,8 @@ def audit(path):
             # not. Neither presence nor absence is a runtime trust primitive.
             # Signature, same-generation code and isolated import stay required.
     return dict(schema=1, sequence=manifest['sequence'], user_entry=Path(path).name,
-        kodi_addon_xml='passed', embedded_complete_signature='passed', same_generation_bootstrap='passed',
+        kodi_addon_xml='passed', complete_signature='passed', embedded_complete_payload=online_bundle is None,
+        same_generation_bootstrap='passed',
         isolated_bootstrap_import='passed', signed_entry_members='passed', account_state_copied=False,
         scope='actual ZIP and fresh interpreter; not clean-device installation certification')
 
@@ -67,7 +74,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('entry', type=Path)
     parser.add_argument('--report', type=Path, required=True)
+    parser.add_argument('--online-bundle', type=Path, help='Verify a lightweight entry against its signed generation')
     args = parser.parse_args()
-    result = audit(args.entry)
+    result = audit(args.entry, args.online_bundle)
     args.report.write_text(json.dumps(result, indent=2)+'\n', encoding='utf-8')
     print(json.dumps(result, indent=2))

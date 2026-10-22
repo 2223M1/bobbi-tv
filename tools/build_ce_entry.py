@@ -18,10 +18,10 @@ from build_release import sources, files
 BOOTSTRAP = ('__init__.py', 'ce_installer.py', 'ce_install_ui.py', 'offline_updates.py',
              'updates.py', 'upstream_addons.py', 'signatures.py', 'release_trust.json',
              'paths.py', 'kodi.py', 'playback.py', 'capabilities.py',
-             'runtime.py', 'instance_lock.py')
+             'runtime.py', 'instance_lock.py', 'online_updates.py')
 
 
-def build(bundle, output):
+def build(bundle, output, online=False):
     inventory = json.loads((ROOT / 'release/source-inventory.json').read_text(encoding='utf-8'))['components']
     roots = sources()
     for name in ('script.bobbi.start', 'script.module.bobbi.platform'):
@@ -46,7 +46,8 @@ def build(bundle, output):
         raw = signed.archive.fp.read(MAX_BUNDLE + 1)
         if len(raw) > MAX_BUNDLE:
             raise ValueError('Complete bundle changed size')
-        payload['script.bobbi.start/resources/complete.bobbi-update.zip'] = raw
+        if not online:
+            payload['script.bobbi.start/resources/complete.bobbi-update.zip'] = raw
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output, 'x', compression=zipfile.ZIP_STORED) as target:
@@ -58,7 +59,7 @@ def build(bundle, output):
     result = dict(schema=1, sequence=manifest['sequence'], entry_id=entry['id'],
         version=entry['version'], file=output.name, bytes=output.stat().st_size,
         sha256=hashlib.sha256(output.read_bytes()).hexdigest(), native_hash_required=False,
-        complete_offline_payload=True, upstream_dependencies='signed originals if absent; existing Kodi/author channels preserved; crypto by Kodi',
+        complete_offline_payload=not online, upstream_dependencies='signed originals if absent; existing Kodi/author channels preserved; crypto by Kodi',
         actual_other_hardware_tested=False)
     output.with_suffix('.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
     return result
@@ -68,5 +69,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--bundle', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--online', action='store_true', help='Small repository entry; fetch the complete release on demand')
     args = parser.parse_args()
-    print(json.dumps(build(args.bundle, args.output), indent=2))
+    print(json.dumps(build(args.bundle, args.output, online=args.online), indent=2))

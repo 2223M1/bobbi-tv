@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="script.module.bobbi.platform" version="0.1.29" name="bobbi Platform" provider-name="bobbi TV contributors">
+<addon id="script.module.bobbi.platform" version="0.1.30" name="bobbi Platform" provider-name="bobbi TV contributors">
   <requires><import addon="xbmc.python" version="3.0.1"/></requires>
   <extension point="xbmc.python.module" library="lib"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="zh_CN">独立平台配置、能力探测与发行校验</summary>
-    <description lang="zh_CN">不修改系统、音画参数、私人插件或原生播放器。完整影院移植尚在实施中。</description>
+    <description lang="zh_CN">影院安装、更新、账号与宿主适配。不修改固件、音画参数或原生播放器。</description>
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
   </extension>
