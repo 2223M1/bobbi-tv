@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "suite": "blockers",
+  "source": "D:\\AM6B-Project\\bobbi-tv-ce2050-remediation-20261022",
+  "provenance": {
+    "kind": "git_checkout",
+    "head": "3cdb62db7ba5432699b96da79f4dbb108b22dff8",
+    "dirty": true
+  },
+  "source_binding": [
+    {
+      "path": "addons/script.module.bobbi.catalog/lib/bobbi_catalog/catalog.py",
+      "sha256": "d08fa839bc45d9bfc40480b5baae9f7f85e3282dd0890b5a8022fc43e7bf7501"
+    },
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/http_io.py",
+      "sha256": "c876664a4d0e370ec4fe15b3cbcde07422d888d339732b574acfc2243711a4e9"
+    },
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/backend.py",
+      "sha256": "7e288b384ccc33ce458eb2dee69dc41465542d90d4d4bf1a353f4cbf96c6e229"
+    },
+    {
+      "path": "addons/plugin.video.bobbi.torrent/lib/bobbi_torrent/resolver.py",
+      "sha256": "b7b1bda08368e1361ed353c810da8e23806fdac70c7b1db08cbefe13bb5091d5"
+    },
+    {
+      "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py",
+      "sha256": "6fd8f5e14751bb194369166f8f350718a680bfc26b6d824f273d7af787377efc"
+    },
+    {
+      "path": "addons/plugin.video.bobbi/lib/native_player.py",
+      "sha256": "5978613ee8093e9ea67c2fff3ec161f55fa6cdfd5920c3507f8c5c6f268280d7"
+    }
+  ],
+  "checks": [
+    {
+      "name": "R49-01",
+      "status": "PASS",
+      "returncode": 0,
+      "elapsed_seconds": 1.172,
+      "command": [
+        "D:\\AM6B-Project\\bobbi-tv-ce2023-closure-20261021\\.venv-closure\\Scripts\\python.exe",
+        "D:\\AM6B-Project\\ce2050-review-input-20261022\\review1\\BobbiTV-CE2049-Independent-Review-20261022\\share\\probe_optional_metadata_deadline.py",
+        "--source",
+        "D:\\AM6B-Project\\bobbi-tv-ce2050-remediation-20261022",
+        "--output",
+        "D:\\AM6B-Project\\ce2050-results-20261022\\after-final\\review1\\optional-metadata.json"
+      ],
+      "log": "R49-01.log"
+    },
+    {
+      "name": "R49-02",
+      "status": "PASS",
+      "returncode": 0,
+      "elapsed_seconds": 0.453,
+      "command": [
+        "D:\\AM6B-Project\\bobbi-tv-ce2023-closure-20261021\\.venv-closure\\Scripts\\python.exe",
+        "D:\\AM6B-Project\\ce2050-review-input-20261022\\review1\\BobbiTV-CE2049-Independent-Review-20261022\\playback\\assert_connection_budget.py",
+        "--repo",
+        "D:\\AM6B-Project\\bobbi-tv-ce2050-remediation-20261022",
+        "--output",
+        "D:\\AM6B-Project\\ce2050-results-20261022\\after-final\\review1\\connection-budget.json"
+      ],
+      "log": "R49-02.log"
+    }
+  ],
+  "passed_groups": 2,
+  "failed_groups": 0,
+  "note": "Individual historical probe labels are not candidate Git provenance; use this actual source binding and a clean candidate commit."
+}

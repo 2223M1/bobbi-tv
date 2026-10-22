@@ -1,0 +1,2 @@
+{"schema": 1, "status": "FAIL", "observation": "connection-budget-observation.json", "checks": {"shared_total_budget": false, "back_response": false, "zero_workers_at_return": true, "real_dns_and_connect": true}, "observed_elapsed_seconds": 4.047, "observed_seconds_after_back": 3.969, "absolute_budget_seconds": 2, "budget_tolerance_seconds": 0.4, "max_back_seconds": 0.5, "threshold_origin": "Reviewer proposed regression criteria, not a claim of device response certification"}
+
