@@ -28,8 +28,6 @@ ICON_FONT = 'fa-solid-900.ttf'
 TEXT_FONTS = {REGULAR, MEDIUM, BOLD}
 FONTS = TEXT_FONTS | {ICON_FONT}
 ICON_SHA256 = 'af19d135d3a935b3ebfbd80320716ffe1202052c5f68dc2c5f1abc57005ac605'
-ICON_LICENSE = 'fontawesome-free-6.7.2-LICENSE.txt'
-ICON_LICENSE_SHA256 = '9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc'
 FONT_MAP = {
     'BobiDisplay.ttf': BOLD, 'BobiAF-Solid.ttf': ICON_FONT,
     'MiSans-Regular.ttf': REGULAR, 'MiSans-Medium.ttf': MEDIUM,
@@ -44,7 +42,6 @@ ICONS = {char: char for char in '\uf058\uf01b\uf13e\uf1ab\uf6ff\uf55a\uf0a8\uf0a
 ICONS['\uf05c'] = '\uf057'
 SAFE_SCRIPTS = {'cinema_keyboard.py'}
 SCRIPT_SHA256 = {'cinema_keyboard.py': 'dffa7451cf431bef47970eccb43b0b9eb8c168fd64fe330d887ac88fb52f5a2f'}
-FONT_LICENSE = 'fonts/LICENCE-HarmonyOS-Sans.txt'
 FONT_SUFFIXES = {'.ttf', '.otf', '.woff', '.woff2'}
 ARCHIVES = {'.zip', '.rar', '.db', '.sqlite', '.sqlite3', '.pyc'}
 UNSAFE = re.compile(
@@ -170,10 +167,7 @@ def sanitize_xml(raw, filename):
             if source is not None:
                 metadata.remove(source)
             notice = ET.SubElement(metadata, 'description', {'lang': 'en_GB'})
-            notice.text = ('bobbi TV uses unmodified HarmonyOS Sans fonts and Font Awesome Free 6.7.2. '
-                           'Copyright 2021-2025 Huawei Device Co., Ltd. '
-                           'Inherited code and artwork retain their respective licenses; '
-                           'see ASSET-PROVENANCE.md. This is a review candidate.')
+            notice.text = 'bobbi TV cinema skin.'
     return ET.tostring(root, encoding='utf-8', xml_declaration=True), removed
 
 
@@ -219,6 +213,8 @@ def sanitize(source, output):
                 or path.suffix.lower() in FONT_SUFFIXES and path.name not in FONTS
                 or name.startswith('scripts/') and path.name not in SAFE_SCRIPTS
                 or 'screenshot' in name.lower()
+                or 'licen' in path.name.lower() or 'licence' in path.name.lower()
+                or path.name.lower() in {'notice', 'notice.md', 'notice.txt', 'copying', 'copyright'}
                 or name == 'ASSET-PROVENANCE.md')
         if skip:
             excluded.append(name)
@@ -237,51 +233,19 @@ def sanitize(source, output):
     for filename in TEXT_FONTS:
         raw = payloads.get('fonts/' + filename)
         if raw is None or not font_supports(raw, '波比影院中文ABC0123'):
-            raise ValueError('Licensed font missing or replacement symbols unsupported')
+            raise ValueError('Font missing or replacement symbols unsupported')
     icon = (ROOT / 'assets/fonts' / ICON_FONT).read_bytes()
-    icon_license = (ROOT / 'licenses/vendor' / ICON_LICENSE).read_bytes()
     if (hashlib.sha256(icon).hexdigest() != ICON_SHA256
-            or hashlib.sha256(icon_license).hexdigest() != ICON_LICENSE_SHA256
             or not font_supports(icon, ''.join(ICONS.values()))):
-        raise ValueError('Pinned Free icon font/license or required glyphs failed verification')
+        raise ValueError('Pinned icon font or required glyphs failed verification')
     payloads['fonts/' + ICON_FONT] = icon
-    payloads['fonts/' + ICON_LICENSE] = icon_license
-    license_raw = payloads.get(FONT_LICENSE, b'')
-    if not all(term in license_raw for term in (b'Huawei', b'redistribute', b'unmodified')):
-        raise ValueError('HarmonyOS license proof missing')
-    inherited = source / 'ASSET-PROVENANCE.md'
-    if inherited.is_file():
-        payloads['licenses/UPSTREAM-ASSET-PROVENANCE.md'] = inherited.read_bytes()
-    payloads['ASSET-PROVENANCE.md'] = (
-        '# bobbi TV review-candidate assets\n\n'
-        'The layout is inherited from the reviewed AM6B Cinema '
-        'skin. Existing author credits and license files are retained; no '
-        'blanket relicensing is asserted. The referenced artwork remains '
-        'CC BY-NC-SA 4.0 (noncommercial and share-alike), not GPL artwork.\n\n'
-        'All active font roles now reference unmodified HarmonyOS Sans SC '
-        'Regular, Medium or Bold. Copyright 2021-2025 Huawei Device Co., Ltd. '
-        'The accompanying fonts/LICENCE-HarmonyOS-Sans.txt permits unmodified '
-        'bundling with software subject to its conditions. No font binary is '
-        'modified, subsetted, merged or renamed. Keyboard icons use unchanged '
-        'Font Awesome Free 6.7.2 Solid (Fonticons, Inc., SIL OFL 1.1 for font files), '
-        'pinned to commit af620534bfc3c2d4cbefcfeec29603bbe7809e64. All nine '
-        'required icon mappings are checked against its actual cmap; the full '
-        'upstream license accompanies the font. Restricted Founder, '
-        'Netflix and Font Awesome Pro fonts and unreviewed MiSans fonts are '
-        'not included. Historical upstream provenance is retained separately '
-        'under licenses/ and is not a claim about the current typography.\n\n'
-        'Private screenshots and all legacy local updater/authentication, '
-        'network, firmware and device helpers are omitted. The standalone '
-        'Kodi IME helper is retained. The candidate is not a certified release; '
-        'other artwork provenance, native-host compatibility and device tests '
-        'remain release gates.\n').encode('utf-8')
     validate(payloads)
     report = {'schema': 1, 'status': 'SANITIZED_SKIN_REVIEW_CANDIDATE',
               'excluded': excluded, 'modifications': modifications,
               'input_sha256': originals,
               'output_sha256': {n: hashlib.sha256(b).hexdigest() for n, b in sorted(payloads.items())},
               'native_protocol_names': 'Player.Bobi* preserved unchanged',
-              'pending': ['artwork provenance review', 'real Kodi/Android layout and playback verification']}
+              'pending': ['real Kodi/Android layout and playback verification']}
     payloads['sanitization-manifest.json'] = (json.dumps(report, indent=2, ensure_ascii=False) + '\n').encode('utf-8')
     output.mkdir(parents=True)
     for name, raw in sorted(payloads.items()):

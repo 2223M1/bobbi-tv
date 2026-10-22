@@ -1,4 +1,4 @@
-"""Promote the pinned, licensed Segno QR renderer with its original notices."""
+"""Promote the pinned Segno QR renderer."""
 import hashlib
 import json
 from pathlib import Path
@@ -17,8 +17,7 @@ def promote():
             raise ValueError('QR source input differs from pinned baseline')
         target.mkdir(parents=True, exist_ok=True)
         (target / path.name).write_bytes(raw)
-    (target / 'LICENSE').write_bytes((ROOT / 'licenses/vendor/segno-1.6.6-LICENSE.txt').read_bytes())
-    print('Pinned Segno QR sources and BSD notice promoted.')
+    print('Pinned Segno QR sources promoted.')
 
 
 if __name__ == '__main__':

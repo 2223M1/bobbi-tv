@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Up-next card (Jacktook PlayNext). Bottom-right over the end credits.
+  Up-next card (PlayNext). Bottom-right over the end credits.
   Ids: 3001 play now (default), 3002 close, 3014 countdown progress.
   Reads next.* properties and timer_label.
 -->

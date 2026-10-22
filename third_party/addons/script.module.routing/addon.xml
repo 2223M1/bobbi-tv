@@ -7,10 +7,9 @@
     <extension point="xbmc.addon.metadata">
         <summary lang="en_GB">Routing module for plugins</summary>
         <description lang="en_GB">Library for building and parsing plugin URLs.</description>
-        <license>GPL-3.0</license>
+        <license></license>
         <platform>all</platform>
         <language>en_GB</language>
-        <source>https://github.com/tamland/kodi-plugin-routing</source>
         <assets>
             <icon>resources/icon.png</icon>
         </assets>

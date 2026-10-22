@@ -4,13 +4,6 @@
   "distribution": "private-personal",
   "files": [
     {
-      "source": "ui-redesign/backend/source/addons/resource.uisounds.am6b-modern/LICENSE",
-      "target": "addons/resource.uisounds.bobbi-modern/LICENSE",
-      "bytes": 87,
-      "source_sha256": "64741185bfb63f5a9c8fd1881cb8cdeb5db95ff5bcf2f2e76d7dd7bc20133c19",
-      "sha256": "64741185bfb63f5a9c8fd1881cb8cdeb5db95ff5bcf2f2e76d7dd7bc20133c19"
-    },
-    {
       "source": "ui-redesign/backend/source/addons/resource.uisounds.am6b-modern/addon.xml",
       "target": "addons/resource.uisounds.bobbi-modern/addon.xml",
       "bytes": 886,
@@ -116,41 +109,6 @@
       "sha256": "984cf609545acee8ef060780fb70fc3099b058c0553416331b6e863fdf7c26fa"
     },
     {
-      "source": "ui-redesign/source/addons/skin.am6b.cinema/fonts/LICENCE-HarmonyOS-Sans.txt",
-      "target": "addons/skin.bobbi.cinema/fonts/LICENCE-HarmonyOS-Sans.txt",
-      "bytes": 3352,
-      "source_sha256": "327e0147d4a3ca2d89e81abce45b210576b0f9fe2b29d900f64b58039f12a102",
-      "sha256": "327e0147d4a3ca2d89e81abce45b210576b0f9fe2b29d900f64b58039f12a102"
-    },
-    {
-      "source": "ui-redesign/source/addons/skin.am6b.cinema/fonts/LICENCE-Heebo.txt",
-      "target": "addons/skin.bobbi.cinema/fonts/LICENCE-Heebo.txt",
-      "bytes": 4346,
-      "source_sha256": "6d13374a47f3db882aad98f5788620d425e0b44a2d7221bb14fb185e8425ae2d",
-      "sha256": "6d13374a47f3db882aad98f5788620d425e0b44a2d7221bb14fb185e8425ae2d"
-    },
-    {
-      "source": "ui-redesign/source/addons/skin.am6b.cinema/fonts/LICENCE-Mardoto.txt",
-      "target": "addons/skin.bobbi.cinema/fonts/LICENCE-Mardoto.txt",
-      "bytes": 12044,
-      "source_sha256": "5bd41e468075ebba75da768007d24166f67d4e9626e173ce562ab4a95ac4a01c",
-      "sha256": "5bd41e468075ebba75da768007d24166f67d4e9626e173ce562ab4a95ac4a01c"
-    },
-    {
-      "source": "ui-redesign/source/addons/skin.am6b.cinema/fonts/LICENCE-OFL.txt",
-      "target": "addons/skin.bobbi.cinema/fonts/LICENCE-OFL.txt",
-      "bytes": 4395,
-      "source_sha256": "4bd805bb254c8b69c26addf1e100c745ec09e2737ec624b722bd509ea9ae240a",
-      "sha256": "4bd805bb254c8b69c26addf1e100c745ec09e2737ec624b722bd509ea9ae240a"
-    },
-    {
-      "source": "ui-redesign/source/addons/skin.am6b.cinema/fonts/LICENCE-Roboto.txt",
-      "target": "addons/skin.bobbi.cinema/fonts/LICENCE-Roboto.txt",
-      "bytes": 12044,
-      "source_sha256": "5bd41e468075ebba75da768007d24166f67d4e9626e173ce562ab4a95ac4a01c",
-      "sha256": "5bd41e468075ebba75da768007d24166f67d4e9626e173ce562ab4a95ac4a01c"
-    },
-    {
       "source": "ui-redesign/source/addons/skin.am6b.cinema/fonts/MiSans-Medium.ttf",
       "target": "addons/skin.bobbi.cinema/fonts/MiSans-Medium.ttf",
       "bytes": 8103840,
@@ -235,6 +193,5 @@
       "sha256": "a0e40874213c01847f2414a38c8d0948dc0723b690d1094930594522ea9e4726"
     }
   ],
-  "rights": "Original notices retained; no blanket third-party redistribution grant asserted.",
   "excluded": "Legacy auth, remote execution, firmware, updater and library-clearing scripts remain excluded."
 }

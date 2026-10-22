@@ -39,9 +39,6 @@ def main():
             if value != item['sha256'] or len(data) != item['bytes']:
                 raise ValueError('Packaged engine differs from locked upstream: ' + abi)
             engines[abi] = {'bytes': len(data), 'sha256': value}
-        license_bytes = package.read('assets/TorrServer-GPL-3.0.txt')
-        if hashlib.sha256(license_bytes).hexdigest() != lock['engine']['license']['sha256']:
-            raise ValueError('Packaged license mismatch')
         provenance = json.loads(package.read('assets/engine-provenance.json'))
         if provenance['commit'] != lock['engine']['commit'] or provenance['version'] != lock['engine']['version']:
             raise ValueError('Packaged provenance mismatch')

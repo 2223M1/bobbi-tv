@@ -525,7 +525,7 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
             or (data or {})['tv_data'].get('season') not in (1, '1')):
         raise TorrentException('This range requires a current exact TV request')
     kodilog(
-        f"Preparing Jacktorr URL with magnet={summarize_locator_for_log(magnet)!r}, url={summarize_locator_for_log(url)!r}, has_magnet={bool(magnet)}, has_url={bool(url)}",
+        f"Preparing torrent URL with magnet={summarize_locator_for_log(magnet)!r}, url={summarize_locator_for_log(url)!r}, has_magnet={bool(magnet)}, has_url={bool(url)}",
         level=LOGDEBUG,
     )
     if (data or {}).get('selection_policy') != 'exact':
@@ -631,8 +631,8 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
     elif url:
         _url = f"plugin://plugin.video.bobbi.torrent/play_url?url={quote(url)}{poster_param}{title_param}{description_param}{category_param}{season_episode_param}{release_param}{exact_params}"
     else:
-        kodilog("Jacktorr playback failed due to empty magnet and url", level=LOGDEBUG)
-        raise TorrentException("No magnet or url found for Jacktorr playback")
+        kodilog("Torrent playback failed due to empty magnet and url", level=LOGDEBUG)
+        raise TorrentException("No magnet or url found for torrent playback")
     return _url
 
 
@@ -671,10 +671,10 @@ def _save_jacktorr_playback_metadata(magnet: str, data: Dict[str, Any]) -> None:
             if magnet_hash and magnet_hash not in hash_candidates:
                 hash_candidates.append(magnet_hash)
         except Exception as exc:
-            kodilog(f"Failed to extract Jacktorr playback metadata hash from magnet: {exc}")
+            kodilog(f"Failed to extract torrent playback metadata hash from magnet: {exc}")
 
     if not hash_candidates:
-        kodilog("Jacktorr playback metadata not saved: no info_hash or magnet hash")
+        kodilog("Torrent playback metadata not saved: no info_hash or magnet hash")
         return
 
     try:
@@ -683,7 +683,7 @@ def _save_jacktorr_playback_metadata(magnet: str, data: Dict[str, Any]) -> None:
         for hash_candidate in hash_candidates:
             save_torrent_meta(hash_candidate, meta)
     except Exception as exc:
-        kodilog(f"Failed to save Jacktorr playback metadata: {exc}")
+        kodilog(f"Failed to save torrent playback metadata: {exc}")
 
 
 def get_torrest_url(magnet: str, url: str) -> Optional[str]:

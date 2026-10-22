@@ -55,8 +55,7 @@ class WidgetRefreshService:
     def condition_check(self, player):
         container_plugin = xbmc.getInfoLabel("Container.PluginName")
 
-        # No refrescar si estamos dentro de Jacktook
-        if "jacktook" in container_plugin:
+        if "jacktook" in container_plugin or container_plugin == "plugin.video.bobbi":
             return True
 
         # No refrescar si está reproduciendo vídeo

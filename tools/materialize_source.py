@@ -36,8 +36,7 @@ def promote():
             raise ValueError('Prepared candidate missing: ' + addon)
     for addon, source in sources.items():
         shutil.copytree(source, ROOT / 'addons' / addon)
-    # Both catalogue modules were created for the user's AM6B project and
-    # authorized for publication. Keep their declared MIT license separately.
+    # Both catalogue modules were created for the user's AM6B project.
     for addon in ('script.module.bobbi.catalog', 'script.module.bobbi.mdsub'):
         target = ROOT / 'addons' / addon
         source = ROOT / 'staging/baseline' / addon

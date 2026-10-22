@@ -1,4 +1,4 @@
-"""Fetch unchanged, pinned Font Awesome Free font and complete license."""
+"""Fetch the pinned icon font."""
 import base64
 import hashlib
 import json
@@ -10,8 +10,6 @@ COMMIT = 'af620534bfc3c2d4cbefcfeec29603bbe7809e64'  # Font Awesome Free 6.7.2
 INPUTS = {
     'webfonts/fa-solid-900.ttf': ('assets/fonts/fa-solid-900.ttf', 426112,
                                 'a0414182dca34041fdd585c0c4b4bd7a3a2753e2'),
-    'LICENSE.txt': ('licenses/vendor/fontawesome-free-6.7.2-LICENSE.txt', 7427,
-                    'e69c5e39a30ce8d112e012cac36289e77691a9b7'),
 }
 
 

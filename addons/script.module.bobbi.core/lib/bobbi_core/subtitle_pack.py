@@ -1,4 +1,4 @@
-"""Same-release sidecars selected through JackTorr's existing exact matcher.
+"""Same-release sidecars selected through the existing exact matcher.
 
 These are preparation-owner functions, not an IPC accepting caller-supplied
 readiness. The source metadata and actual fetched bytes remain separate proofs.

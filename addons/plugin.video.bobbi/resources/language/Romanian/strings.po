@@ -247,16 +247,16 @@ msgid "Addon Elementum not found - (plugin.video.elementum)"
 msgstr "Nu s-a găsit add-on-ul Elementum - (plugin.video.elementum)"
 
 msgctxt "#30253"
-msgid "Addon Jacktorr not found - (plugin.video.jacktorr)"
-msgstr "Nu s-a găsit add-on-ul Jacktorr - (plugin.video.jacktorr)"
+msgid "BT playback component is not installed (plugin.video.jacktorr)"
+msgstr "Componenta BT nu a fost găsită - (plugin.video.jacktorr)"
 
 msgctxt "#30254"
 msgid "Do you want to install Elementum?"
 msgstr "Vrei să instalezi Elementum?"
 
 msgctxt "#30255"
-msgid "Do you want to install Jacktorr?"
-msgstr "Vrei să instalezi Jacktorr?"
+msgid "Do you want to install the BT playback component?"
+msgstr "Vrei să instalezi componenta BT?"
 
 msgctxt "#30256"
 msgid "Do you want to install Torrest?"
@@ -387,8 +387,8 @@ msgid "Enable"
 msgstr "Activează"
 
 msgctxt "#30714"
-msgid "Jacktorr"
-msgstr "Jacktorr"
+msgid "BT playback"
+msgstr "BT"
 
 msgctxt "#30715"
 msgid "Torrest"
@@ -2289,8 +2289,8 @@ msgid "Bypass Stremio Addons Native Sorting"
 msgstr "Ocolește sortarea nativă a add-on-urilor Stremio"
 
 msgctxt "#90212"
-msgid "If enabled, addons specified won't have their results re-ordered or filtered by Jacktook's native quality and size thresholds."
-msgstr "Dacă este activat, rezultatele din add-on-urile specificate nu vor fi reordonate sau filtrate de pragurile native de calitate și mărime ale Jacktook."
+msgid "If enabled, addons specified won't have their results re-ordered or filtered by bobbi TV's quality and size thresholds."
+msgstr "Dacă este activat, rezultatele din add-on-urile specificate nu vor fi reordonate sau filtrate de pragurile de calitate și mărime ale bobbi TV."
 
 msgctxt "#90213"
 msgid "Select Bypassed Addons"
@@ -2298,15 +2298,15 @@ msgstr "Selectează add-on-uri excluse"
 
 msgctxt "#90214"
 msgid "Select which Stremio addons bypass bobbi TV's native size and quality filtering."
-msgstr "Alege ce add-on-uri Stremio ocolesc filtrarea de mărime și calitate a Jacktook."
+msgstr "Alege ce add-on-uri Stremio ocolesc filtrarea de mărime și calitate a bobbi TV."
 
 msgctxt "#90215"
 msgid "Downgrade"
 msgstr "Retrogradează"
 
 msgctxt "#90671"
-msgid "Install an older published version of Jacktook. The current version is backed up and restored automatically if the downgrade fails."
-msgstr "Instalează o versiune mai veche Jacktook. Versiunea curentă este salvată și restaurată automat dacă retrogradarea eșuează."
+msgid "Install an older published version of bobbi TV. The current version is backed up and restored automatically if the downgrade fails."
+msgstr "Instalează o versiune mai veche bobbi TV. Versiunea curentă este salvată și restaurată automat dacă retrogradarea eșuează."
 
 msgctxt "#30932"
 msgid "Update Action"
@@ -4544,7 +4544,7 @@ msgid "Sign Out of Nuvio"
 msgstr "Deconectare din Nuvio"
 
 msgctxt "#91008"
-msgid "Remove the saved Nuvio session and selected profile from Jacktook."
+msgid "Remove the saved Nuvio session and selected profile from bobbi TV."
 msgstr "Elimină din bobbi TV sesiunea Nuvio salvată și profilul selectat."
 
 msgctxt "#91009"

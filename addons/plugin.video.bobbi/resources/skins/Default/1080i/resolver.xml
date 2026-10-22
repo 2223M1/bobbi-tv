@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Resolving / buffering between source pick and playback (Jacktook ResolverWindow).
+  Resolving / buffering between source pick and playback (ResolverWindow).
   Must stay type="dialog": the playback service finds it through window properties.
   Reads: info.fanart, info.poster, info.display_title, info.season_episode, loading_stage.
-  Back cancels (Jacktook sets bobbi_cinema_cancel).
+  Back cancels (sets bobbi_cinema_cancel).
 -->
 <window type="dialog">
   <coordinates><left>0</left><top>0</top></coordinates>

@@ -247,16 +247,16 @@ msgid "Addon Elementum not found - (plugin.video.elementum)"
 msgstr "Аддон Elementum не найден - (plugin.video.elementum)"
 
 msgctxt "#30253"
-msgid "Addon Jacktorr not found - (plugin.video.jacktorr)"
-msgstr "Аддон Jacktorr не найден - (plugin.video.jacktorr)"
+msgid "BT playback component is not installed (plugin.video.jacktorr)"
+msgstr "Компонент BT не найден - (plugin.video.jacktorr)"
 
 msgctxt "#30254"
 msgid "Do you want to install Elementum?"
 msgstr "Вы хотите установить Elementum?"
 
 msgctxt "#30255"
-msgid "Do you want to install Jacktorr?"
-msgstr "Вы хотите установить Jacktorr?"
+msgid "Do you want to install the BT playback component?"
+msgstr "Установить компонент BT?"
 
 msgctxt "#30256"
 msgid "Do you want to install Torrest?"
@@ -387,8 +387,8 @@ msgid "Enable"
 msgstr "Включить"
 
 msgctxt "#30714"
-msgid "Jacktorr"
-msgstr "Jacktorr"
+msgid "BT playback"
+msgstr "BT"
 
 msgctxt "#30715"
 msgid "Torrest"
@@ -2282,7 +2282,7 @@ msgstr "Обход нативной сортировки аддонов Stremio"
 
 msgctxt "#90212"
 msgid "If enabled, addons specified won't have their results re-ordered or filtered by bobbi TV's native quality and size thresholds."
-msgstr "Если включено, результаты указанных аддонов не будут переупорядочиваться или фильтроваться нативными порогами качества и размера Jacktook."
+msgstr "Если включено, результаты указанных аддонов не будут переупорядочиваться или фильтроваться порогами качества и размера bobbi TV."
 
 msgctxt "#90213"
 msgid "Select Bypassed Addons"
@@ -2290,15 +2290,15 @@ msgstr "Выбрать аддоны для обхода"
 
 msgctxt "#90214"
 msgid "Select which Stremio addons bypass bobbi TV's native size and quality filtering."
-msgstr "Выберите, какие аддоны Stremio обходят нативную фильтрацию размера и качества Jacktook."
+msgstr "Выберите, какие аддоны Stremio обходят фильтрацию размера и качества bobbi TV."
 
 msgctxt "#90215"
 msgid "Downgrade"
 msgstr "Понижение версии"
 
 msgctxt "#90671"
-msgid "Install an older published version of Jacktook. The current version is backed up and restored automatically if the downgrade fails."
-msgstr "Install an older published version of Jacktook. The current version is backed up and restored automatically if the downgrade fails."
+msgid "Install an older published version of bobbi TV. The current version is backed up and restored automatically if the downgrade fails."
+msgstr "Install an older published version of bobbi TV. The current version is backed up and restored automatically if the downgrade fails."
 
 msgctxt "#30932"
 msgid "Update Action"
@@ -4532,7 +4532,7 @@ msgid "Sign Out of Nuvio"
 msgstr "Выйти из Nuvio"
 
 msgctxt "#91008"
-msgid "Remove the saved Nuvio session and selected profile from Jacktook."
+msgid "Remove the saved Nuvio session and selected profile from bobbi TV."
 msgstr "Удалить из bobbi TV сохранённый сеанс Nuvio и выбранный профиль."
 
 msgctxt "#91009"

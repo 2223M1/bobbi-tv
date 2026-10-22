@@ -283,7 +283,7 @@ class JacktookMOnitor(xbmc.Monitor):
             # Bind the authoritative owner before optional startup work. A slow
             # migration/provider/helper must not prevent the IPC loop starting.
             self._auxiliary_thread = Thread(target=self._start_auxiliary_services,
-                                            name='JacktookAuxiliaryStartup', daemon=True)
+                                            name='AuxiliaryStartup', daemon=True)
             self._auxiliary_thread.start()
             while not self.abortRequested() and (host is None or not host.stopping.is_set()):
                 if self._playback_event_overflow:
@@ -399,11 +399,11 @@ class JacktookMOnitor(xbmc.Monitor):
 
     def onScreensaverActivated(self):
         set_property_no_fallback(pause_services_prop, "true")
-        kodilog("PAUSING Jacktook Services Due to Device Sleep", level=xbmc.LOGINFO)
+        kodilog("PAUSING services due to device sleep", level=xbmc.LOGINFO)
 
     def onScreensaverDeactivated(self):
         clear_property(pause_services_prop)
-        kodilog("UNPAUSING Jacktook Services Due to Device Awake", level=xbmc.LOGINFO)
+        kodilog("UNPAUSING services due to device awake", level=xbmc.LOGINFO)
 
     def onSettingsChanged(self):
         clear_cached_settings()
@@ -431,12 +431,12 @@ class JacktookMOnitor(xbmc.Monitor):
         if method == "System.OnSleep":
             set_property_no_fallback(pause_services_prop, "true")
             kodilog(
-                "PAUSING Jacktook Services Due to Device Sleep",
+                "PAUSING services due to device sleep",
                 level=xbmc.LOGINFO,
             )
         elif method == "System.OnWake":
             clear_property(pause_services_prop)
             kodilog(
-                "UNPAUSING Jacktook Services Due to Device Awake",
+                "UNPAUSING services due to device awake",
                 level=xbmc.LOGINFO,
             )

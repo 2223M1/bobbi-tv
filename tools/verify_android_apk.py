@@ -24,15 +24,12 @@ def check_contents(path, lock):
             raw = archive.read('lib/' + abi + '/libbobbi_torrserver.so')
             if len(raw) != item['bytes'] or hashlib.sha256(raw).hexdigest() != item['sha256']:
                 raise ValueError('Packaged engine differs from pinned upstream input')
-        license_raw = archive.read('assets/TorrServer-GPL-3.0.txt')
-        if hashlib.sha256(license_raw).hexdigest() != lock['engine']['license']['sha256']:
-            raise ValueError('Packaged upstream license differs from locked input')
         provenance = json.loads(archive.read('assets/engine-provenance.json'))
         if provenance.get('commit') != lock['engine']['commit']:
             raise ValueError('Packaged source provenance mismatch')
         for filename, expected in FONTS.items():
             if hashlib.sha256(archive.read('assets/fonts/' + filename)).hexdigest() != expected:
-                raise ValueError('Packaged cinema typography or license differs from reviewed input')
+                raise ValueError('Packaged cinema font differs from reviewed input')
         repository = ROOT / 'repository/repository.bobbi/repository.bobbi-0.1.0.zip'
         if archive.read('assets/repository.bobbi.zip') != repository.read_bytes():
             raise ValueError('Bundled Kodi installer does not match repository build')

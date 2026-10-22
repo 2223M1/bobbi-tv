@@ -1,5 +1,5 @@
 {
-    "name": "Jacktook",
+    "name": "bobbi TV",
     "plugin": "plugin.video.bobbi",
     "priority": 200,
     "is_resolvable": "true",

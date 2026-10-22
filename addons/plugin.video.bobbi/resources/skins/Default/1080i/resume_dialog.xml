@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Resume prompt (Jacktook ResumeDialog). Python sets both button labels. -->
+<!-- Resume prompt (ResumeDialog). Python sets both button labels. -->
 <window>
   <defaultcontrol always="true">1002</defaultcontrol>
   <coordinates><left>0</left><top>0</top></coordinates>

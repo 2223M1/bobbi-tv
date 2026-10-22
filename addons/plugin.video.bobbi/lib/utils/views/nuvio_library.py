@@ -164,7 +164,7 @@ def show_nuvio_library(params):
         if not is_folder:
             # Movies are played from this view, so Kodi must treat the row as a
             # playback item. Without this the plugin is invoked as a plain
-            # action and setResolvedUrl (used by JacktookPLayer.play_video) is a
+            # action and setResolvedUrl (used by the player) is a
             # no-op, so selecting a source never starts playback. Series stay
             # folders: they open the season list instead.
             list_item.setProperty("IsPlayable", "true")

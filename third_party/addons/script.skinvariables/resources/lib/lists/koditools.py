@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Module: default
-# Author: jurialmunkey
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 from jurialmunkey.window import set_to_windowprop, clear_windowprops, get_property
 from jurialmunkey.litems import ContainerDirectory

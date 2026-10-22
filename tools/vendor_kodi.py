@@ -1,4 +1,4 @@
-"""Fetch pinned, unmodified skin dependencies with their source and notices."""
+"""Fetch pinned, unmodified skin dependencies."""
 from io import BytesIO
 import hashlib
 import json
@@ -39,14 +39,8 @@ def main():
                     raise ValueError('Existing vendored file changed: ' + addon + '/' + name)
                 target.write_bytes(payload)
                 files[name] = hashlib.sha256(payload).hexdigest()
-        if not any('licen' in name.lower() for name in files):
-            # addon.xml and source headers explicitly grant GPL-3.0-or-later.
-            # Supply the standard text; do not pretend upstream shipped it.
-            text = (ROOT / 'LICENSE').read_bytes()
-            (destination / 'LICENSE.bobbi-supplement').write_bytes(text)
-            files['LICENSE.bobbi-supplement'] = hashlib.sha256(text).hexdigest()
         if not (destination / 'addon.xml').exists():
-            raise ValueError('Upstream source/license incomplete')
+            raise ValueError('Upstream source incomplete')
         manifest[addon] = dict(repository='https://github.com/' + repo, commit=commit,
             archive_sha256=hashlib.sha256(raw).hexdigest(), files=files)
         print(addon, len(files), 'pinned files')

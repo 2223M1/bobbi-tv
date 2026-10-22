@@ -10,6 +10,6 @@
     <summary lang="zh_CN">手动查找中文字幕，确认后浏览加载；需自行配置 OpenSubtitles API Key。</summary>
     <summary lang="en_GB">Manual Chinese subtitle search and download using your own OpenSubtitles API key.</summary>
     <description lang="zh_CN">不常驻、不改片源和画质。通过实际原生播放身份保护手动字幕选择，下载后由你在浏览字幕中点选，不自动应用。需受支持的 bobbi 原生播放器；普通 Kodi 不伪造兼容。候选不代表同步验证，配额以来源网站为准。</description>
-    <license>GPL-2.0-or-later; see NOTICE.md</license><platform>all</platform>
+    <license></license><platform>all</platform>
   </extension>
 </addon>
