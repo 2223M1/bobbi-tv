@@ -31,6 +31,7 @@ class SourceListSession:
         self.confirmed = None
         self.metadata = {}
         self.share_scope = None
+        self.share_scope_polled = 0
 
     def key(self, source):
         metadata = getattr(source, 'stremioMetadata', {}) or {}
@@ -187,9 +188,36 @@ class SourceListSession:
                 entries=[(self.key(source), source) for source in visible]))
 
     def status(self):
+        self._refresh_share_scope()
         with self.lock:
             return deepcopy(dict(revision=self.revision, providers=self.providers,
                                  cancelled=self.cancelled, confirmed=self.confirmed))
+
+    def _refresh_share_scope(self):
+        # Account UI can change while every provider is stalled or has finished.
+        # The existing window status tick clears old presentation without a new
+        # query, a new worker, or resetting cards. Unknown IPC is not a failure.
+        with self.lock:
+            now = time.monotonic()
+            if (not self.share_scope or self.cancelled or self.confirmed
+                    or now - self.share_scope_polled < 1):
+                return
+            self.share_scope_polled = now
+        from bobbi_core.share_failure import account_scope, _scope_key
+        current = account_scope(include_signed_out=True, timeout=.1)
+        if current is None:
+            return
+        scope = (current['epoch'], _scope_key(current))
+        with self.lock:
+            if self.cancelled or self.confirmed or scope[0] <= self.share_scope[0]:
+                return
+            self.share_scope = scope
+            for item in self.entries.values():
+                state = getattr(item, 'shareState', {})
+                if state and (state['epoch'], state['account']) != scope:
+                    item.shareFailure, item.shareState = '', {}
+                    item.verifiedShareFile = False
+            self.revision += 1
 
     def set_metadata(self, metadata):
         with self.lock:
