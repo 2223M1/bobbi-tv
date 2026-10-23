@@ -2,6 +2,7 @@
 import hashlib
 from http.client import IncompleteRead
 from io import BytesIO
+from email.message import Message
 import json
 from pathlib import Path
 import sys
@@ -29,6 +30,9 @@ class Response(BytesIO):
         super().__init__(raw)
         self.status = status
         self.headers = headers if headers is not None else {'Content-Length': str(len(raw))}
+
+    def read1(self, size):
+        return self.read(size)
 
 
 @pytest.mark.parametrize('change', [dict(schema=True), dict(sequence=True), dict(size=True),
@@ -74,6 +78,24 @@ def test_release_cdn_redirect_is_bounded():
     for _ in range(online.MAX_REDIRECTS):
         assert redirect.redirect_request(request, None, 302, '', {}, url).full_url == url
     with pytest.raises(UpdateError): redirect.redirect_request(request, None, 302, '', {}, url)
+
+
+def test_allowed_redirect_closes_old_body_without_drain_and_returns_next_response():
+    redirect = online._Redirects()
+    request = Request(offer_for(b'x')['url'])
+    request.timeout = 5
+    response, next_response = Response(b'never-drain'), Response(b'ok')
+    headers = Message()
+    headers['Location'] = 'https://release-assets.githubusercontent.com/fixture?signature=fixture'
+    def follow(req, timeout):
+        assert response.closed and timeout == 5
+        assert req.full_url == headers['Location']
+        return next_response
+    # urllib's HTTPResponse.read on a closed fp returns b'', unlike BytesIO.
+    response.read = lambda *args: b'' if response.closed else pytest.fail('Redirect body drained')
+    redirect.parent = SimpleNamespace(open=follow)
+    assert redirect.http_error_302(request, response, 302, 'Found', headers) is next_response
+    assert not next_response.closed
 
 
 @pytest.mark.parametrize('headers,status,error', [

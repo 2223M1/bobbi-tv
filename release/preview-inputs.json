@@ -30,6 +30,7 @@
       "lib/bobbi_platform/native_engine.py",
       "lib/bobbi_platform/offline_updates.py",
       "lib/bobbi_platform/onboarding.py",
+      "lib/bobbi_platform/online_transport.py",
       "lib/bobbi_platform/online_updates.py",
       "lib/bobbi_platform/pair_code.py",
       "lib/bobbi_platform/pairing.py",

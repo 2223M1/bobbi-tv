@@ -1,5 +1,7 @@
 """Fetch a complete release; installation stays with the existing CE transaction."""
 import hashlib
+import json
+from contextvars import ContextVar
 from http.client import HTTPException
 import os
 from pathlib import Path
@@ -10,16 +12,70 @@ import tempfile
 import time
 import zipfile
 import zlib
-from urllib.request import HTTPRedirectHandler, HTTPSHandler, ProxyHandler, Request, build_opener
+from urllib.error import HTTPError, URLError
+from urllib.parse import parse_qsl, urlsplit
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from .offline_updates import MAX_BUNDLE, SignedBundle
+from .online_transport import CancellableHTTPSHandler
 from .updates import MAX_REDIRECTS, UpdateError, _json, _safe_path, allowed_release_redirect
 
-OFFER_URL = 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/current.json'
+MIRROR_ROOT = 'https://gitee.com/M12223/bobbi-tv-updates'
+MIRROR_FEED = MIRROR_ROOT + '/raw/master/repository/'
+OFFER_URL = MIRROR_FEED + 'current.json'
+FALLBACK_OFFER_URL = 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/current.json'
+TRANSFER_SECONDS = 600
+# Preserve the single-argument opener seam while keeping concurrent/nested
+# requests isolated. The callback runs only on the caller's thread.
+_ACTIVE = ContextVar('bobbi_online_active', default=lambda: None)
 
 
 class Cancelled(UpdateError):
     pass
+
+
+def release_url(tag, source='gitee'):
+    if not isinstance(tag, str) or not re.fullmatch(r'ce[1-9][0-9]{3,7}', tag):
+        raise UpdateError('ONLINE_OFFER_INVALID')
+    roots = {'gitee': MIRROR_ROOT, 'github': 'https://github.com/2223M1/bobbi-tv'}
+    if source not in roots:
+        raise UpdateError('ONLINE_OFFER_INVALID')
+    return roots[source] + '/releases/download/' + tag + '/BobbiTV-' + tag.upper() + '.bobbi-update.zip'
+
+
+def _allowed_redirect(value):
+    if allowed_release_redirect(value):
+        return True
+    if not isinstance(value, str) or len(value) > 8192 or any(ord(c) < 33 for c in value):
+        return False
+    try:
+        url = urlsplit(value)
+        if url.scheme != 'https' or url.fragment:
+            return False
+        if url.netloc == 'raw.giteeusercontent.com':
+            # Gitee signs anonymous raw redirects. These short-lived delivery
+            # parameters are not account credentials and never enter the feed.
+            query = parse_qsl(url.query, keep_blank_values=True, strict_parsing=True)
+            return (url.path == '/M12223/bobbi-tv-updates/raw/master/repository/current.json' and
+                    (not url.query or (len(query) == 2 and
+                     {key for key, _ in query} == {'metadata', 'signature'} and
+                     all(value for _, value in query))))
+        filename = r'BobbiTV-CE[1-9][0-9]{3,7}\.bobbi-update\.zip'
+        if url.netloc == 'gitee.com':
+            return not url.query and re.fullmatch(
+                r'/M12223/bobbi-tv-updates/attach_files/[1-9][0-9]*/download/' + filename, url.path) is not None
+        return (url.netloc == 'foruda.gitee.com' and
+                re.fullmatch(r'/attach_file/[1-9][0-9]*/' + filename, url.path, re.IGNORECASE) is not None)
+    except ValueError:
+        return False
+
+
+def _network_failure(error):
+    if isinstance(error, HTTPError):
+        return error.code in (403, 404, 408, 429, 500, 502, 503, 504)
+    if isinstance(getattr(error, 'reason', error), ssl.SSLError):
+        return False
+    return isinstance(error, (URLError, TimeoutError, ConnectionError))
 
 
 class _Redirects(HTTPRedirectHandler):
@@ -28,35 +84,62 @@ class _Redirects(HTTPRedirectHandler):
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         self.count += 1
-        if self.count > MAX_REDIRECTS or not allowed_release_redirect(newurl):
+        if self.count > MAX_REDIRECTS or not _allowed_redirect(newurl):
             raise UpdateError('ONLINE_REDIRECT_REJECTED')
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        # We never reuse the connection. Do not drain an unbounded redirect
+        # body before following a permitted URL.
+        if fp is not None:
+            fp.close()
+        return redirected
+
+    def http_error_302(self, req, fp, code, msg, headers):
+        try:
+            return super().http_error_302(req, fp, code, msg, headers)
+        finally:
+            fp.close()  # Includes rejected/malformed URLs and failed next hops.
+
+    http_error_301 = http_error_303 = http_error_307 = http_error_308 = http_error_302
 
 
 def _open(url):
     # No account cookies, private proxy or GitHub token belongs in this request.
-    opener = build_opener(ProxyHandler({}), HTTPSHandler(context=ssl.create_default_context()), _Redirects())
-    return opener.open(Request(url, headers={'User-Agent': 'BobbiTV-CE',
-                                            'Accept-Encoding': 'identity'}), timeout=5)
+    opener = build_opener(ProxyHandler({}),
+                          CancellableHTTPSHandler(_ACTIVE.get(), ssl.create_default_context()), _Redirects())
+    try:
+        return opener.open(Request(url, headers={'User-Agent': 'BobbiTV-CE',
+                                                'Accept-Encoding': 'identity'}), timeout=5)
+    except HTTPError as error:
+        error.close()  # HTTPError owns a response even though open() raised.
+        raise
 
 
-def _transfer(url, maximum, consume, cancelled, progress, expected=None):
+def _transfer(url, maximum, consume, cancelled, progress, expected=None, deadline=None):
     started = time.monotonic()
+    deadline = min(started + TRANSFER_SECONDS, deadline) if deadline is not None else started + TRANSFER_SECONDS
     def active():
         if cancelled():
             raise Cancelled('ONLINE_CANCELLED')
-        if time.monotonic() - started > 600:
+        if time.monotonic() >= deadline:
             raise UpdateError('ONLINE_TIMEOUT')
     active()
+    token = _ACTIVE.set(active)
     try:
         _receive(url, maximum, consume, progress, expected, active)
     except HTTPException:
+        active()
         raise UpdateError('ONLINE_RESPONSE_INVALID') from None
+    except Exception:
+        active()
+        raise
+    finally:
+        _ACTIVE.reset(token)
 
 
 def _receive(url, maximum, consume, progress, expected, active):
     received = 0
     with _open(url) as response:
+        active()
         if response.status != 200 or response.headers.get('Content-Encoding', 'identity') not in ('', 'identity'):
             raise UpdateError('ONLINE_RESPONSE_INVALID')
         length = response.headers.get('Content-Length')
@@ -66,7 +149,11 @@ def _receive(url, maximum, consume, progress, expected, active):
             length = int(length)
         while True:
             active()
-            block = response.read(min(128 * 1024, maximum - received + 1))
+            # read1 returns available bytes without waiting to fill a large
+            # block. The production transport additionally polls during idle,
+            # headers, chunk framing and TLS, not only between these blocks.
+            read = getattr(response, 'read1', response.read)
+            block = read(min(128 * 1024, maximum - received + 1))
             active()
             if not block:
                 break
@@ -88,32 +175,52 @@ def parse_offer(raw):
             or type(value['size']) is not int or not 0 < value['size'] <= MAX_BUNDLE
             or not isinstance(value['sha256'], str) or not re.fullmatch('[a-f0-9]{64}', value['sha256'])):
         raise UpdateError('ONLINE_OFFER_INVALID')
-    expected_url = ('https://github.com/2223M1/bobbi-tv/releases/download/' + value['tag']
-                    + '/BobbiTV-' + value['tag'].upper() + '.bobbi-update.zip')
-    if value['url'] != expected_url:
+    if value['url'] not in (release_url(value['tag']), release_url(value['tag'], 'github')):
         raise UpdateError('ONLINE_OFFER_INVALID')
     return value
 
 
 def latest(cancelled=lambda: False):
-    chunks = []
-    _transfer(OFFER_URL, 32768, chunks.append, cancelled, lambda _: None)
-    return parse_offer(b''.join(chunks))
+    deadline = time.monotonic() + TRANSFER_SECONDS
+    urls = tuple(dict.fromkeys((OFFER_URL, FALLBACK_OFFER_URL)))
+    for index, url in enumerate(urls):
+        chunks = []
+        try:
+            _transfer(url, 32768, chunks.append, cancelled, lambda _: None, deadline=deadline)
+            return parse_offer(b''.join(chunks))
+        except (URLError, TimeoutError, ConnectionError) as error:
+            if index == len(urls)-1 or not _network_failure(error):
+                raise
 
 
 def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: None):
+    offer = parse_offer(json.dumps(offer))
     work = _safe_path(work)
     work.mkdir(parents=True, exist_ok=True)
     if shutil.disk_usage(work).free < offer['size'] + 16 * 1024 * 1024:
         raise UpdateError('INSTALLATION_SPACE_REQUIRED')
     descriptor, name = tempfile.mkstemp(prefix='online-', suffix='.zip', dir=str(work))
-    path, digest = Path(name), hashlib.sha256()
+    path = Path(name)
+    deadline = time.monotonic() + TRANSFER_SECONDS
+    urls = tuple(dict.fromkeys((offer['url'], release_url(offer['tag']), release_url(offer['tag'], 'github'))))
     try:
         with os.fdopen(descriptor, 'wb') as output:
-            def consume(block):
-                output.write(block)
-                digest.update(block)
-            _transfer(offer['url'], offer['size'], consume, cancelled, progress, offer['size'])
+            for index, url in enumerate(urls):
+                # Restart at zero: copies must match this exact signed generation,
+                # never append bytes from another server to a partial response.
+                output.seek(0)
+                output.truncate()
+                digest = hashlib.sha256()
+                def consume(block):
+                    output.write(block)
+                    digest.update(block)
+                try:
+                    _transfer(url, offer['size'], consume, cancelled, progress, offer['size'], deadline)
+                    break
+                except (URLError, TimeoutError, ConnectionError) as error:
+                    if index == len(urls)-1 or not _network_failure(error):
+                        raise
+                    progress(0)
             output.flush()
             os.fsync(output.fileno())
         if digest.hexdigest() != offer['sha256']:

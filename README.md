@@ -3,7 +3,7 @@
 <p align="center">给电视大屏用的家庭影院</p>
 
 <p align="center">
-  <a href="https://github.com/2223M1/bobbi-tv/releases">下载与更新</a> ·
+  <a href="https://gitee.com/M12223/bobbi-tv-updates">国内下载与更新</a> ·
   <a href="#功能">功能</a> ·
   <a href="#安装">安装</a> ·
   <a href="https://github.com/2223M1/bobbi-tv/issues">问题反馈</a>
@@ -17,11 +17,11 @@
 
 ## 下载
 
-**[前往 Releases 查看安装包与更新说明](https://github.com/2223M1/bobbi-tv/releases)**
+**[国内下载与安装说明](https://gitee.com/M12223/bobbi-tv-updates) · [GitHub 备用下载](https://github.com/2223M1/bobbi-tv/releases)**
 
-当前正式版：[CE2054 安装与更新](https://github.com/2223M1/bobbi-tv/releases/tag/ce2054)。提供轻量在线入口和完整离线安装包。
+当前主线版本：[CE2057 安装与更新](https://gitee.com/M12223/bobbi-tv-updates/releases/tag/ce2057)。提供轻量在线入口和完整离线安装包，不需要 GitHub / Gitee 账号。
 
-在线安装先下载 [波比 TV 仓库 ZIP](https://github.com/2223M1/bobbi-tv/releases/download/ce2054/repository.bobbi-0.1.1.zip)。下载不畅时可选发行说明中的 **CoreELEC 完整安装包** `script.bobbi.start-CE2054.zip`。保留 ZIP 格式，直接交给 Kodi 安装。
+在线安装先下载 [波比 TV 仓库 ZIP](https://gitee.com/M12223/bobbi-tv-updates/raw/master/repository/repository.bobbi/repository.bobbi-0.1.2.zip)。也可直接下载 **CoreELEC 完整安装包** [script.bobbi.start-CE2057.zip](https://gitee.com/M12223/bobbi-tv-updates/releases/download/ce2057/script.bobbi.start-CE2057.zip)；保留 ZIP 格式，直接交给 Kodi 安装。[GitHub 同版附件](https://github.com/2223M1/bobbi-tv/releases/tag/ce2057)可作备用。
 
 ## 功能
 
@@ -47,7 +47,9 @@
 
 基础安装和使用不需要 SSH，也不用刷写系统。BT 播放是可选功能，需要在设置中配置相应的播放后台。
 
-仓库只分发安装入口；影院以完整版本一起更新，不分别自动替换播放组件。在线下载使用 GitHub 直连，尚无独立镜像，不保证所有国内网络均可访问。不要把 GitHub raw 目录当成可浏览的 Kodi 文件源。
+仓库只分发安装入口；影院以完整版本一起更新，不分别自动替换播放组件。新入口优先使用 Gitee 国内镜像，网络故障时有限尝试 GitHub 同版本包，不依赖私人代理或个人访问令牌。不要把 Gitee / GitHub raw 目录当成可浏览的 Kodi 文件源。
+
+已在 AM6B 上验证免登录、无代理下载、取消、完整更新和重启；不同运营商和设备的连通性仍可能不同。免费托管单附件上限 100M、总附件 1G，不承诺永久可用或断点续传。
 
 **离线安装：** 从 Releases 下载完整安装 ZIP，经「从 ZIP 文件安装」安装，打开「波比 TV · 开始使用」即可使用内附完整版本。原有已安装依赖不会被包内版本覆盖；首次缺少的 Kodi 原生依赖仍可能需要联网安装。
 
@@ -69,7 +71,9 @@
 
 停止播放后，在 **影院设置 → 更新与恢复 → 波比影院 · 在线检查并安装最新正式版** 中确认更新；也可从「波比 TV · 开始使用」进入同名菜单。网络失败或取消下载不会替换当前程序，播放中不会安装。
 
-首次从 CE2053 或更早版本恢复在线功能，请安装仓库及新版入口，或安装 CE2054 完整安装 ZIP。之后安装入口可由 Kodi 仓库更新，影院完整版本仍需手动确认。
+从 CE2054 或更早版本迁移国内通道，请先安装上述新版仓库和「开始使用」入口，或安装 CE2057 完整安装 ZIP。旧入口在能访问 GitHub 的网络下仍可检查同版更新；若 GitHub 连不上，需要手动下载一次新版入口。之后安装入口可由 Kodi 仓库更新，影院完整版本仍需手动确认。
+
+`script.bobbi.start-CE2057.zip` 是 Kodi 安装 ZIP；`BobbiTV-CE2057.bobbi-update.zip` 是供「开始使用 → 安装本地完整包」选择的更新包，不要把后者直接交给 Kodi「从 ZIP 文件安装」。
 
 完成更新或回退后重启 Kodi，再开始观影，避免继续使用旧的插件会话。切换皮肤时请确认 Kodi 的“保持皮肤？”提示，否则会自动恢复原皮肤。
 

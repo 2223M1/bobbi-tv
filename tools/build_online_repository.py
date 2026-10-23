@@ -11,15 +11,19 @@ import zipfile
 from build_ce_entry import build, ROOT
 from build_release import archive, files
 from bobbi_platform.offline_updates import SignedBundle, load_trust
+from bobbi_platform.online_updates import release_url
 
 
-def publish(bundle, output, tag):
+def publish(bundle, output, tag, source='gitee'):
     if not re.fullmatch(r'ce[1-9][0-9]{3,7}', tag):
         raise ValueError('Invalid release tag')
     output = Path(output)
     if output.exists():
         raise ValueError('Repository output must be new')
     bundle = Path(bundle)
+    url = release_url(tag, source)
+    if source == 'gitee' and bundle.stat().st_size > 100_000_000:
+        raise ValueError('Gitee attachment exceeds the free 100M limit')
     with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
         manifest = signed.check_all()
         rows = {row['id']: row for row in manifest['components']}
@@ -55,7 +59,7 @@ def publish(bundle, output, tag):
     (output / 'addons.xml.md5').write_text(hashlib.md5(raw).hexdigest(), encoding='ascii')
     offer = dict(schema=1, tag=tag, sequence=manifest['sequence'], size=bundle.stat().st_size,
         sha256=hashlib.sha256(bundle.read_bytes()).hexdigest(),
-        url='https://github.com/2223M1/bobbi-tv/releases/download/' + tag + '/BobbiTV-' + tag.upper() + '.bobbi-update.zip')
+        url=url)
     (output / 'current.json').write_bytes((json.dumps(offer, indent=2) + '\n').encode('utf-8'))
     repo = rows['repository.bobbi']
     # Optional landing page. Raw GitHub URLs do not serve a directory index.
@@ -72,5 +76,6 @@ if __name__ == '__main__':
     parser.add_argument('--bundle', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--tag', required=True)
+    parser.add_argument('--source', choices=('gitee', 'github'), default='gitee')
     args = parser.parse_args()
-    print(json.dumps(publish(args.bundle, args.output, args.tag), indent=2))
+    print(json.dumps(publish(args.bundle, args.output, args.tag, args.source), indent=2))

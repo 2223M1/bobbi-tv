@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="repository.bobbi" version="0.1.1" name="波比 TV · 安装与更新" provider-name="bobbi TV contributors">
+<addon id="repository.bobbi" version="0.1.2" name="波比 TV · 安装与更新" provider-name="bobbi TV contributors">
   <extension point="xbmc.addon.repository" name="波比 TV">
     <dir minversion="21.0.0">
-      <info compressed="false">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/addons.xml</info>
-      <checksum verify="sha256">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/addons.xml.sha256</checksum>
-      <datadir zip="true">https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/</datadir>
+      <info compressed="false">https://gitee.com/M12223/bobbi-tv-updates/raw/master/repository/addons.xml</info>
+      <checksum verify="sha256">https://gitee.com/M12223/bobbi-tv-updates/raw/master/repository/addons.xml.sha256</checksum>
+      <datadir zip="true">https://gitee.com/M12223/bobbi-tv-updates/raw/master/repository/</datadir>
       <hashes>sha256</hashes>
     </dir>
   </extension>
