@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "b40fda78e47ad28d578cae30e8c2f3dbb6dd89ecde3ff54f35245cb810c2a32d",
+      "addon.xml": "365b668ae426fc6dde911010df9f2bb975eadd5a683450f8b7bbdb0605612eb5",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
@@ -596,7 +596,7 @@
       "script.py": "e4e94a0c2a6b836aedf80192336cad7ac9a9735e4bb5b8e55804544bb231d362"
     },
     "script.bobbi.setup": {
-      "addon.xml": "542a63e4ba3226beb716d41f4782a91f1bc9914e4d5c798acf973edcd7cd28ba",
+      "addon.xml": "f396cca464d5366bf00213ae592cf57a6bd623e47a1cbdd4478929c42d786e3f",
       "default.py": "b2220474493d22e3085dead87a20b33de9601108d0a948b17d93f67ebd6502d9",
       "metadata_credits.py": "f3f7c3a9df0917f882584aaeed989efb0af91f752a6b2e72588fb91898b05491",
       "resources/skins/Default/1080i/tmdb-attribution.xml": "201029275ba9a212f0990485ce5a0e2c4f07e6f6766eb3d79f196cd5d5b2041e",
@@ -605,7 +605,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "51af19c2fa1e335dc2d7405f7540d5ec807bb00a05ad51bd294c9a81dc631220",
+      "addon.xml": "ae89d04f97cb80412cf83558d8b648d99f783dc28ba8abb987b256c3a4fb4336",
       "default.py": "c6c7f9b253a64c837e42713dcfa94f4ff48a0ffeee1f3eda66428839f51e6dd1"
     },
     "script.module.bobbi.catalog": {
@@ -850,7 +850,7 @@
       "1080p/DialogVideoManager.xml": "45d61b68e5d3cf730f0a1a76d3f0293dccaf1527631e2a2bc13d376d497bc84f",
       "1080p/DialogVolumeBar.xml": "17dc749fcbc59ea5c661dad42e93ee37ab797229c7f9821877b37962e637064f",
       "1080p/EventLog.xml": "a64ffb5c678a51d12972d18dc5adaa86de464f78e51977b0106a447a51c59be3",
-      "1080p/FileBrowser.xml": "01d06468ff7da19dd9b2c673ab61e702720d0e395cb1127ffb4e37402cf48d07",
+      "1080p/FileBrowser.xml": "93b336289d26a72e1b095c98c547255d10dbf41be7b80975cb78ab9e3cb205b1",
       "1080p/FileManager.xml": "e19159202a96c2c1c374e6e534d458f98813b43c1e72a73849b270aeba83aac7",
       "1080p/Font.xml": "a1a9ce4e85ff55cfedfec7c4e7c8bed58adc8cbbee9dfba1684890ab106d231d",
       "1080p/GameOSD.xml": "4cf6e0b61503c2eca4fb716e4fc4ac9fda701f6c5f93800782d3ad5b3c75865d",
@@ -910,7 +910,7 @@
       "1080p/SmartPlaylistRule.xml": "fed588f0fb9fa9ab1c7b4c2e1097707d8346c33e0243567b973bfb4d469843bb",
       "1080p/Startup.xml": "3b705c750c5e2c7d865a39bcf5780259803c6488148e3b372eddb695247c134e",
       "1080p/Timers.xml": "9ff400516f1d81abe276a49980e0d52d228b1c8feab0f52dfc3a49edf6219d0a",
-      "1080p/Variables.xml": "ca730675ff5329b47e33978f30517bb6ebaf65438b9094ca814ca00d2166c9e3",
+      "1080p/Variables.xml": "b219109a85eabdb13020a2df26f6d893b784bb52b1f2222c25b3720625361aed",
       "1080p/VideoFullScreen.xml": "84f878ed7fe4340dae574949a7b8c9f844742310138b2df587ee775627988697",
       "1080p/VideoOSD.xml": "69c5d5e9c3ae75e50bd59b3c34f8829d81d6243724360de619cffff021d52a17",
       "1080p/VideoOSDBookmarks.xml": "591e2a75fdaf537c4929f5263f58632a61fcd73ec3018c0d34e8caad900dba5c",
@@ -922,7 +922,7 @@
       "1080p/ViewsPVRGuide.xml": "1e7858f9f4bef6cfa474081aa43fa972592282001f4520b9f744c0d7d94bc606",
       "1080p/ViewsVideoLibrary.xml": "e8d33204071bd876cbbb42d3c41f9995f1eca1c4660b5866e40b1e759a9ac5fa",
       "1080p/ViewsWeather.xml": "338efacb7fe0ac3ae56de273de465735a046f163b1f46315e419c66f71135e61",
-      "addon.xml": "fa385abbf7af67249031c2c3312021f33c444d22086403686aed419623d46386",
+      "addon.xml": "2242bcb7f4b829b9994c7bfeb3e7fb1247cb83d8aa15087406c8cbc9c9a6face",
       "backgrounds/media-overlay.jpg": "c74612b7e5529cbbf0297e304ca70a6839dc986e8024b9e2f7d970b1ac5f192f",
       "backgrounds/settings.jpg": "5a4f0f4d1aead0eec5b2020091f5eeb8081796f6a6d82562487a41e41d34306c",
       "backgrounds/tv.jpg": "57a1216595dafb728cff8373a0d036369a6cfcba0d7c4da38c124aade6f28490",

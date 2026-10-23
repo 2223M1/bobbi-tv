@@ -211,7 +211,8 @@
               <font>font13</font>
               <align>left</align>
               <aligny>center</aligny>
-              <selectedcolor>green</selectedcolor>
+              <textcolor>$VAR[BobiFileBrowserFocusText]</textcolor>
+              <selectedcolor>$VAR[BobiFileBrowserFocusText]</selectedcolor>
               <info>ListItem.Label</info>
             </control>
           </focusedlayout>
@@ -288,7 +289,8 @@
               <font>font13</font>
               <align>left</align>
               <aligny>center</aligny>
-              <selectedcolor>green</selectedcolor>
+              <textcolor>$VAR[BobiFileBrowserFocusText]</textcolor>
+              <selectedcolor>$VAR[BobiFileBrowserFocusText]</selectedcolor>
               <info>ListItem.Label</info>
             </control>
           </focusedlayout>

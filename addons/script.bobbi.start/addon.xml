@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="script.bobbi.start" version="0.2.46" name="波比 TV · 开始使用" provider-name="bobbi TV contributors">
+<addon id="script.bobbi.start" version="0.2.47" name="波比 TV · 开始使用" provider-name="bobbi TV contributors">
   <requires>
     <import addon="xbmc.python" version="3.0.1"/>
     <import addon="script.module.pycryptodome" version="3.4.3"/>
