@@ -1,6 +1,7 @@
 """Domestic discovery and same-generation fallback never require user secrets."""
 import hashlib
 import json
+from pathlib import Path
 import ssl
 from urllib.error import URLError
 from urllib.request import Request
@@ -41,6 +42,7 @@ def test_discovery_cannot_nominate_other_projects_or_cdn_urls(url):
 
 @pytest.mark.parametrize('url', [
     'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json',
+    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture&signature=fixture',
     MIRROR + '/attach_files/123/download/BobbiTV-CE2054.bobbi-update.zip',
     'https://foruda.gitee.com/attach_file/123/BobbiTV-CE2054.bobbi-update.zip?signature=fixture',
     'https://foruda.gitee.com/attach_file/123/bobbitv-ce2055.bobbi-update.zip?token=fixture&ts=123&attname=fixture',
@@ -58,6 +60,10 @@ def test_domestic_redirects_only_admit_known_delivery_routes(url):
     'https://foruda.gitee.com/attach_file/123/BobbiTV-CE2054.bobbi-update.zip#fragment',
     'https://gitee.com/login',
     'https://raw.giteeusercontent.com/elsewhere/repository/current.json',
+    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?url=https%3A%2F%2Fexample.org',
+    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture',
+    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture&signature=',
+    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture&signature=a&signature=b',
 ])
 def test_domestic_redirect_policy_has_no_wildcard_hosts_or_login_hops(url):
     with pytest.raises(UpdateError, match='ONLINE_REDIRECT_REJECTED'):
@@ -166,7 +172,8 @@ def test_certificate_failure_does_not_silently_switch_host(monkeypatch):
     assert len(calls) == 1
 
 
-def test_mirror_builder_rejects_free_attachment_limit_before_publishing(tmp_path):
+def test_mirror_builder_rejects_free_attachment_limit_before_publishing(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / 'tools'))
     from build_online_repository import publish
     large = tmp_path/'large.zip'
     with large.open('wb') as stream:

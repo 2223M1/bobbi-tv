@@ -13,7 +13,7 @@ import time
 import zipfile
 import zlib
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from .offline_updates import MAX_BUNDLE, SignedBundle
@@ -53,7 +53,13 @@ def _allowed_redirect(value):
         if url.scheme != 'https' or url.fragment:
             return False
         if url.netloc == 'raw.giteeusercontent.com':
-            return not url.query and url.path == '/M12223/bobbi-tv-updates/raw/master/repository/current.json'
+            # Gitee signs anonymous raw redirects. These short-lived delivery
+            # parameters are not account credentials and never enter the feed.
+            query = parse_qsl(url.query, keep_blank_values=True, strict_parsing=True)
+            return (url.path == '/M12223/bobbi-tv-updates/raw/master/repository/current.json' and
+                    (not url.query or (len(query) == 2 and
+                     {key for key, _ in query} == {'metadata', 'signature'} and
+                     all(value for _, value in query))))
         filename = r'BobbiTV-CE[1-9][0-9]{3,7}\.bobbi-update\.zip'
         if url.netloc == 'gitee.com':
             return not url.query and re.fullmatch(
