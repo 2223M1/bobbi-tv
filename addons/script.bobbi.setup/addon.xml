@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="script.bobbi.setup" version="0.1.6" name="bobbi 首次设置" provider-name="bobbi TV contributors">
+<addon id="script.bobbi.setup" version="0.1.7" name="bobbi 首次设置" provider-name="bobbi TV contributors">
   <requires>
     <import addon="xbmc.python" version="3.0.1"/>
     <import addon="script.module.bobbi.platform" version="0.1.0"/>

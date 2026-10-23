@@ -25,6 +25,7 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
     kodi_ok = capabilities.get('standard_playback') is True
     helper_labels = {
         'ready': '已连接（还需实播检验）',
+        'paired': '已配对 · 点击检查连接',
         'not_paired': '尚未连接', 'invalid': '需要重新配对', 'offline': '需要启动或重试',
         'adapter_ready': '现有后台已连接（还需实播检验）',
         'adapter_offline': '已有接入 · 连接待检查',
@@ -46,6 +47,7 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
         ('cinema', '进入波比影院 · 切换新皮肤'),
         ('transport', '115 播放传输 · 渐进交付 / 整块回退'),
         ('updates', '更新与恢复 · 在线更新 / 本地安装 / 回退'),
+        ('diagnostics', '检查与诊断 · 搜索记录 / 预览 / 导出'),
         ('status', '关于波比 TV · 支持范围'),
     ]
 

@@ -82,6 +82,8 @@ class SourceListSession:
                 # published snapshot age/incompleteness evidence.
                 self.providers[provider]['completion'] = previous_completion
             self.revision += 1
+            from bobbi_core.search_trace import observe_providers
+            observe_providers(self.epoch, self.providers)
             return True
 
     def _merge_share_state(self, retained, source, state):
@@ -189,14 +191,16 @@ class SourceListSession:
                 if record['state'] not in self.TERMINAL:
                     record['state'] = 'CANCELLED'
             self.revision += 1
+            from bobbi_core.search_trace import observe_providers
+            observe_providers(self.epoch, self.providers)
 
     def snapshot(self, full=False):
         from bobbi_core.search_trace import observe
         with self.lock:
             # Rank the complete bounded set before the display cap.
             ranked = self.rank(list(self.entries.values()))
-            observe('session_pool', list(self.entries.values()))
-            observe('ranked', ranked)
+            observe('session_pool', list(self.entries.values()), invocation=self.epoch)
+            observe('ranked', ranked, invocation=self.epoch)
             recommended = next((self.key(source) for source in ranked
                 if not getattr(source, 'shareFailure', '')), None)
             cap = self.capacity if full else self.limit
@@ -207,7 +211,7 @@ class SourceListSession:
                 visible = [source for source in visible if self.key(source) != self.focus_key]
                 visible.insert(min(self.focus_position, len(visible)), focused)
                 visible = visible[:cap]
-            observe('visible', visible)
+            observe('visible', visible, invocation=self.epoch)
             return deepcopy(dict(epoch=self.epoch, revision=self.revision, cancelled=self.cancelled,
                 providers=self.providers, metadata=self.metadata, recommended_key=recommended,
                 superseded_count=len(self.entries) - len(ranked),

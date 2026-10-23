@@ -2,6 +2,42 @@
 from dataclasses import dataclass
 
 
+def provider_diagnostics(providers):
+    """Shared allowlisted projection for picker logs and opt-in user reports."""
+    names = {'setup', 'coordinator', 'preferred', 'local-entry', '115-local-index',
+             '漫迪 mdsub', 'qqdocs', 'juku', 'jackett', 'animegarden'}
+    states = {'COMPLETE', 'PARTIAL', 'FAILED', 'TIMEOUT', 'CANCELLED', 'PENDING', 'RUNNING'}
+    errors = {'ValueError', 'TypeError', 'KeyError', 'AttributeError', 'RuntimeError',
+              'ImportError', 'ModuleNotFoundError', 'JukuError', 'ShareError', 'TimeoutError',
+              'OperationalError', 'OSError', 'ConnectionError', 'ReadTimeout', 'ConnectTimeout',
+              'HTTPError', 'CANDIDATE_CAPACITY_EXCEEDED', 'SEARCH_DEADLINE', 'PREVIOUS_SEARCH_IO_BUSY'}
+    result = []
+    for provider, record in list(providers.items())[:40]:
+        provider = provider if isinstance(provider, str) else ''
+        record = record if isinstance(record, dict) else {}
+        name, _, ordinal = provider.rpartition(':')
+        if not name or not ordinal.isdecimal():
+            name, ordinal = provider, ''
+        name = name.casefold()
+        state, error = record.get('state'), record.get('error')
+        row = dict(provider=name if name in names else 'other',
+                   ordinal=int(ordinal) if ordinal and len(ordinal) < 4 else 0,
+                   state=state if isinstance(state, str) and state in states else 'UNKNOWN',
+                   error=error if isinstance(error, str) and error in errors else '')
+        count = record.get('count')
+        row['count'] = count if type(count) is int and 0 <= count <= 4096 else 0
+        completion = record.get('completion') or {}
+        completion = completion if isinstance(completion, dict) else {}
+        row['completion'] = {key:value for key,value in completion.items()
+                             if key in ('planned','succeeded','failed','timed_out','skipped','stale','truncated')
+                             and type(value) is int and 0 <= value <= 65536}
+        age = completion.get('snapshot_age')
+        if type(age) is int and 0 <= age <= 2147483647:
+            row['completion']['snapshot_age'] = age
+        result.append(row)
+    return result
+
+
 @dataclass(frozen=True)
 class SearchCompletion:
     planned: int = 0

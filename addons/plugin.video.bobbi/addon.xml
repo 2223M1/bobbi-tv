@@ -1,4 +1,4 @@
-<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.33" provider-name="bobbi TV">
+<addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.34" provider-name="bobbi TV">
   <requires>
     <import addon="script.module.bobbi.core" version="0.1.34" />
     <import addon="script.module.bobbi.mdsub" version="0.1.0" />

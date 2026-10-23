@@ -17,6 +17,16 @@ def existing_backend_status():
     return adapter_status(xbmcvfs.translatePath, cancelled=xbmc.Monitor().abortRequested)
 
 
+def existing_backend_state():
+    from bobbi_platform.bt_setup import adapter_state
+    return adapter_state(xbmcvfs.translatePath)
+
+
+def helper_state(path):
+    from bobbi_platform.bt_setup import helper_state as configured_state
+    return configured_state(xbmcvfs.translatePath, path)
+
+
 def show_existing_backend(dialog, state):
     from bobbi_platform.bt_setup import adapter_message
     dialog.ok('现有 BT 后台', adapter_message(state))
@@ -39,10 +49,11 @@ def helper_status(path):
 
 
 def pair_helper(dialog, path):
-    existing = existing_backend_status()
+    existing = existing_backend_state()
     if existing is not None:
+        existing = existing_backend_status() or existing
         show_existing_backend(dialog, existing)
-        return
+        return existing
     choice = dialog.select('连接本机 bobbi 助手', [
         'Android：输入助手显示的六位配对码',
         '查看本机 BT 支持说明',
@@ -53,7 +64,7 @@ def pair_helper(dialog, path):
     if choice in (0, 2, 3):
         # Another entry may have configured the cinema adapter while this
         # selector was open. Do not create a second pairing or engine then.
-        existing = existing_backend_status()
+        existing = existing_backend_state()
         if existing is not None:
             show_existing_backend(dialog, existing)
             return
@@ -62,14 +73,14 @@ def pair_helper(dialog, path):
         code = dialog.input('助手配对码（六位数字）', type=xbmcgui.INPUT_NUMERIC)
         if not code:
             return
-        existing = existing_backend_status()
+        existing = existing_backend_state()
         if existing is not None:
             show_existing_backend(dialog, existing)
             return
         try:
             pairing = exchange(code)
             TorrServerClient(engine_document(pairing)).ready(cancelled=xbmc.Monitor().abortRequested)
-            existing = existing_backend_status()
+            existing = existing_backend_state()
             if existing is not None:
                 show_existing_backend(dialog, existing)
                 return
@@ -94,7 +105,7 @@ def pair_helper(dialog, path):
             monitor = xbmc.Monitor()
             # The confirmation/progress dialog may outlive the initial check.
             # Recheck at the final effect, not only when entering this menu.
-            existing = existing_backend_status()
+            existing = existing_backend_state()
             if existing is not None:
                 progress.close()
                 show_existing_backend(dialog, existing)
@@ -110,7 +121,7 @@ def pair_helper(dialog, path):
         selected = dialog.browse(1, '选择 bobbi 配对文件（不用手填地址和密码）', 'files', mask='.json')
         if not selected:
             return
-        existing = existing_backend_status()
+        existing = existing_backend_state()
         if existing is not None:
             show_existing_backend(dialog, existing)
             return
@@ -122,7 +133,7 @@ def pair_helper(dialog, path):
         try:
             pairing = from_export(bytes(raw))
             TorrServerClient(engine_document(pairing)).ready(cancelled=xbmc.Monitor().abortRequested)
-            existing = existing_backend_status()
+            existing = existing_backend_state()
             if existing is not None:
                 show_existing_backend(dialog, existing)
                 return
@@ -142,14 +153,19 @@ def pair_helper(dialog, path):
         state = helper_status(path)
         if state.startswith('adapter_'):
             show_existing_backend(dialog, state)
-            return
+            return state
         dialog.ok('连接检查', '助手已连接，下一步可试播。' if state == 'ready'
                   else '尚未连接。请先在助手启动后台；若重新安装过助手，请重新导出并导入配对文件。')
+        return state
 
 
 def main():
     import sys
     dialog = xbmcgui.Dialog()
+    if len(sys.argv) > 1 and sys.argv[1] == 'diagnostics':
+        from bobbi_platform.diagnostics_ui import show
+        show(dialog)
+        return
     path = private_path(xbmcvfs.translatePath, 'config.json')
     pair_path = private_path(xbmcvfs.translatePath, 'helper-pairing.json')
     config = load_config(path)
@@ -162,7 +178,7 @@ def main():
         return
     system = 'android' if xbmc.getCondVisibility('System.Platform.Android') else 'kodi'
     capabilities = probe(rpc, system)
-    helper = helper_status(pair_path)
+    helper = helper_state(pair_path)
     while not xbmc.Monitor().abortRequested():
         from bobbi_platform.library_ui import registry
         library_store = None
@@ -183,8 +199,7 @@ def main():
             capabilities = probe(rpc, system)
             dialog.ok('播放器检查', summary(capabilities))
         elif action == 'helper':
-            pair_helper(dialog, pair_path)
-            helper = helper_status(pair_path)
+            helper = pair_helper(dialog, pair_path) or helper_state(pair_path)
         elif action == 'library':
             from bobbi_platform.library_ui import manage
             manage(config['library_root'])
@@ -237,6 +252,9 @@ def main():
         elif action == 'updates':
             if show_updates(dialog):
                 return  # Do not reopen setup over Kodi's native add-on browser.
+        elif action == 'diagnostics':
+            from bobbi_platform.diagnostics_ui import show
+            show(dialog)
         elif action == 'status':
             from bobbi_core.project_metadata import ATTRIBUTION
             dialog.ok('波比 TV', '个人 115 / NAS、手动选源、同版续播及中文字幕共用业务核心。\n'

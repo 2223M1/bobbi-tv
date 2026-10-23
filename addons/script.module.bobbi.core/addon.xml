@@ -1,4 +1,4 @@
-<addon id="script.module.bobbi.core" name="AM6B Shared Core" version="0.1.35" provider-name="AM6B local adaptation">
+<addon id="script.module.bobbi.core" name="AM6B Shared Core" version="0.1.36" provider-name="AM6B local adaptation">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />
     <import addon="script.module.requests" version="2.25.1" />

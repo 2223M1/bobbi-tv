@@ -113,6 +113,14 @@ def test_cancelled_check_never_claims_ready_or_sends_requests(adapter):
     assert adapter.calls == [] and adapter.sessions == []
 
 
+def test_configuration_state_uses_real_parser_but_never_constructs_client(adapter):
+    before = adapter.path.read_bytes()
+    assert bt_setup.adapter_state(adapter.translate) == 'adapter_configured'
+    assert bt_setup.helper_state(adapter.translate, adapter.path.parent/'not-paired.json') == 'adapter_configured'
+    assert adapter.path.read_bytes() == before
+    assert adapter.calls == [] and adapter.sessions == []
+
+
 def test_status_bridge_import_has_no_kodi_adapter_or_network_startup_dependency(monkeypatch):
     original = builtins.__import__
     def guarded(name, *args, **kwargs):
@@ -128,6 +136,7 @@ def test_status_bridge_import_has_no_kodi_adapter_or_network_startup_dependency(
                                    'adapter_unavailable', 'adapter_configured'])
 def test_existing_backend_has_one_status_and_no_pairing_or_install_menu(setup_ui, monkeypatch, tmp_path, state):
     monkeypatch.setattr(setup_ui.module, 'existing_backend_status', lambda: state)
+    monkeypatch.setattr(setup_ui.module, 'existing_backend_state', lambda: state)
     monkeypatch.setattr(setup_ui.module, 'load_pairing', lambda path: pytest.fail('do not substitute another helper'))
     assert setup_ui.module.helper_status(tmp_path/'pairing.json') == state
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path/'pairing.json')
@@ -143,7 +152,7 @@ def test_adapter_configured_while_selector_open_blocks_second_pairing_or_engine(
                                                                               tmp_path, choice):
     setup_ui.choice = choice
     states = iter((None, 'adapter_ready'))
-    monkeypatch.setattr(setup_ui.module, 'existing_backend_status', lambda: next(states))
+    monkeypatch.setattr(setup_ui.module, 'existing_backend_state', lambda: next(states))
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path/'pairing.json')
     assert setup_ui.called == [] and setup_ui.builtins == []
     assert not (tmp_path/'pairing.json').exists()
@@ -177,7 +186,7 @@ def test_adapter_appearing_during_final_dialog_or_probe_preserves_previous_pairi
     def effect(name, value=None):
         state.effects.append(name)
         return value
-    monkeypatch.setattr(setup_ui.module, 'existing_backend_status',
+    monkeypatch.setattr(setup_ui.module, 'existing_backend_state',
                         lambda: 'adapter_ready' if state.present else None)
     setup_ui.dialog.input = lambda *args, **kwargs: step('input', '123456')
     setup_ui.dialog.yesno = lambda *args: step('yesno', True)

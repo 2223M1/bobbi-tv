@@ -49,23 +49,47 @@ def _backend_module():
                 sys.modules[name] = value
 
 
-def adapter_status(translate, cancelled=lambda: False):
-    """Return one existing-adapter state, or None to use the legacy helper UI."""
+def _configured(translate):
+    """Existence/validation is local; it never constructs a network client."""
     try:
         path = Path(translate('special://profile/addon_data/'+ADAPTER_ID+'/backend.json'))
         if not path.is_absolute():
-            return 'adapter_unavailable'
+            return 'adapter_unavailable', None, None
         if not path.exists() and not path.is_symlink():
-            return None
+            return None, None, None
         backend = _backend_module()
     except (ImportError, AttributeError, OSError, RuntimeError, ValueError):
-        return 'adapter_unavailable'
+        return 'adapter_unavailable', None, None
     try:
         config = backend.load_config(path)
     except backend.BackendError as error:
-        return None if error.code == 'TORRENT_BACKEND_NOT_CONFIGURED' else 'adapter_invalid'
+        return (None if error.code == 'TORRENT_BACKEND_NOT_CONFIGURED' else 'adapter_invalid'), None, None
     except (OSError, ValueError):
-        return 'adapter_invalid'
+        return 'adapter_invalid', None, None
+    return 'adapter_configured', backend, config
+
+
+def adapter_state(translate):
+    """First-paint and mutation guards must not wait on optional BT connectivity."""
+    return _configured(translate)[0]
+
+
+def helper_state(translate, pairing_path):
+    state = adapter_state(translate)
+    if state is not None:
+        return state
+    from .pairing import load
+    try:
+        return 'paired' if load(pairing_path) is not None else 'not_paired'
+    except (ValueError, OSError):
+        return 'invalid'
+
+
+def adapter_status(translate, cancelled=lambda: False):
+    """Explicit read-only connection check, separate from configured ownership."""
+    state, backend, config = _configured(translate)
+    if backend is None:
+        return state
     client = None
     def active():
         if cancelled():

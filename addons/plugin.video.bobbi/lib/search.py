@@ -2180,7 +2180,7 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         processed = catalog_rows + _prepare_stremio_results(_process_search_results(rows, mode, tv_data.get('name', ''),
             episode, season, scoped_addon_url, query, media_type, rescrape,
             suppress_debrid_dialog=True, suppress_busy_dialog=True, recommendation_context=context))
-        observe('processed', processed)
+        observe('processed', processed, invocation=session.epoch)
         return processed
 
     def setup(manager):
