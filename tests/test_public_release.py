@@ -34,7 +34,8 @@ def test_online_repository_has_real_feed_and_packages_keep_hashes():
     import hashlib
     root = ET.parse(ROOT / 'addons/repository.bobbi/addon.xml').getroot()
     assert root.find("./extension[@point='xbmc.addon.repository']") is not None
-    assert root.findtext('./extension/dir/datadir') == 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/'
+    from bobbi_platform.online_updates import MIRROR_FEED
+    assert root.findtext('./extension/dir/datadir') == MIRROR_FEED
     assert not (ROOT / 'addons/repository.bobbi/default.py').exists()
     repository = ROOT / 'repository'
     for path in repository.glob('*/*.zip'):

@@ -259,7 +259,7 @@ def test_real_invalid_bodies_rejected(endpoint, route, maximum, error):
         transfer(endpoint.url+route, maximum=maximum)
 
 
-def test_actual_download_cancellation_owns_only_its_temp_and_next_request_works(endpoint, tmp_path, signing):
+def test_actual_download_cancellation_owns_only_its_temp_and_next_request_works(endpoint, tmp_path, signing, monkeypatch):
     endpoint.blob = package(tmp_path/'input.zip', signing).read_bytes()
     work = tmp_path/'work'
     work.mkdir()
@@ -267,7 +267,12 @@ def test_actual_download_cancellation_owns_only_its_temp_and_next_request_works(
     for name in preserved:
         (work/name).write_bytes(b'untouched')
     offer = offer_for(endpoint.blob)
-    offer['url'] = endpoint.url+'/drip'
+    original_open = online._open
+    route = ['/drip']
+    def local_transport(url):
+        assert url == offer['url']
+        return original_open(endpoint.url + route[0])
+    monkeypatch.setattr(online, '_open', local_transport)
     started = time.monotonic()
     delivered = []
     with pytest.raises(online.Cancelled):
@@ -276,7 +281,7 @@ def test_actual_download_cancellation_owns_only_its_temp_and_next_request_works(
     assert time.monotonic()-started < 1.15
     assert {p.name: p.read_bytes() for p in work.iterdir()} == {name: b'untouched' for name in preserved}
     before = list(delivered)
-    offer['url'] = endpoint.url+'/blob'
+    route[0] = '/blob'
     downloaded = online.download(offer, work, signing[1])
     assert downloaded.read_bytes() == endpoint.blob
     assert delivered == before

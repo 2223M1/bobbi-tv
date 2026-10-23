@@ -7,7 +7,7 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 
-from bobbi_platform.online_updates import parse_offer
+from bobbi_platform.online_updates import MIRROR_FEED, parse_offer
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -36,7 +36,7 @@ def test_published_feed_contains_only_repository_and_independent_bootstrap():
     repo = ET.parse(ROOT/'addons/repository.bobbi/addon.xml').getroot()
     extension = repo.find('extension[@point="xbmc.addon.repository"]')
     assert extension is not None
-    assert extension.find('./dir/info').text.endswith('/main/repository/addons.xml')
+    assert extension.find('./dir/info').text == MIRROR_FEED + 'addons.xml'
     offer = parse_offer((feed/'current.json').read_bytes())
     assert offer['tag'] == 'ce2054' and offer['sequence'] == 2026102054
 
