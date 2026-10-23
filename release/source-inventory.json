@@ -605,7 +605,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "e3a4602d4ff61adfff661e369d8fb161cf259312e227453f0c1b40b0fe7aef83",
+      "addon.xml": "9085fd8b4ecab52e2e4039f39b488000b0a0259bc32fe15f7955926fd6d7e0ff",
       "default.py": "c6c7f9b253a64c837e42713dcfa94f4ff48a0ffeee1f3eda66428839f51e6dd1"
     },
     "script.module.bobbi.catalog": {
@@ -747,7 +747,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "9cbe7d041856c85029b32f4e709ad1df62337562665de78fd1019f8000a3bded",
+      "addon.xml": "5bb23b987b9639daea6f4df201beaef80f7b033cb160184ea790431f9fb62ebd",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -775,7 +775,8 @@
       "lib/bobbi_platform/native_engine.py": "d00504fa5bc6c508b4adaa7733dc5b8cc4667610b7810652eeb4c989d01590e9",
       "lib/bobbi_platform/offline_updates.py": "cd10c6cd4bfe80f9d2d7f9f941fe245e9cc66401b950b25495581e8b5fd4b031",
       "lib/bobbi_platform/onboarding.py": "34e3c04557bdcfbefb33fae7debb63df25dc80cac0a84e5504aac6468699a3b6",
-      "lib/bobbi_platform/online_updates.py": "ea45db8f1c6ac7ec8367b2314a0897fc11be85999fa6c85fa311fe50ef1c19bd",
+      "lib/bobbi_platform/online_transport.py": "2a0a714c8ed4afb946a5dece51634c7f5def932e2cd54dd65d98d8f18421f244",
+      "lib/bobbi_platform/online_updates.py": "71dd484460672e85524b5833db93f477ac5449cf879c7a2cad2abf0a9d8d83e3",
       "lib/bobbi_platform/pair_code.py": "d905cc4c5706868b9749c82dce7273aa76bbdcb4eda2cc284ed8dd2d0a0a9b82",
       "lib/bobbi_platform/pairing.py": "db4cc3ae43227a38dff01dad63e8c12ba253097c44efb7736d01389d3b0e3411",
       "lib/bobbi_platform/paths.py": "6455ab508991a002d46eb332bf3aed12062829a135232e7f4fbaa1cdff337378",

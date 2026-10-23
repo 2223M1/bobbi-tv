@@ -1,5 +1,6 @@
 """Fetch a complete release; installation stays with the existing CE transaction."""
 import hashlib
+from contextvars import ContextVar
 from http.client import HTTPException
 import os
 from pathlib import Path
@@ -10,12 +11,18 @@ import tempfile
 import time
 import zipfile
 import zlib
-from urllib.request import HTTPRedirectHandler, HTTPSHandler, ProxyHandler, Request, build_opener
+from urllib.error import HTTPError
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from .offline_updates import MAX_BUNDLE, SignedBundle
+from .online_transport import CancellableHTTPSHandler
 from .updates import MAX_REDIRECTS, UpdateError, _json, _safe_path, allowed_release_redirect
 
 OFFER_URL = 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/current.json'
+TRANSFER_SECONDS = 600
+# Preserve the single-argument opener seam while keeping concurrent/nested
+# requests isolated. The callback runs only on the caller's thread.
+_ACTIVE = ContextVar('bobbi_online_active', default=lambda: None)
 
 
 class Cancelled(UpdateError):
@@ -30,14 +37,32 @@ class _Redirects(HTTPRedirectHandler):
         self.count += 1
         if self.count > MAX_REDIRECTS or not allowed_release_redirect(newurl):
             raise UpdateError('ONLINE_REDIRECT_REJECTED')
-        return super().redirect_request(req, fp, code, msg, headers, newurl)
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        # We never reuse the connection. Do not drain an unbounded redirect
+        # body before following a permitted URL.
+        if fp is not None:
+            fp.close()
+        return redirected
+
+    def http_error_302(self, req, fp, code, msg, headers):
+        try:
+            return super().http_error_302(req, fp, code, msg, headers)
+        finally:
+            fp.close()  # Includes rejected/malformed URLs and failed next hops.
+
+    http_error_301 = http_error_303 = http_error_307 = http_error_308 = http_error_302
 
 
 def _open(url):
     # No account cookies, private proxy or GitHub token belongs in this request.
-    opener = build_opener(ProxyHandler({}), HTTPSHandler(context=ssl.create_default_context()), _Redirects())
-    return opener.open(Request(url, headers={'User-Agent': 'BobbiTV-CE',
-                                            'Accept-Encoding': 'identity'}), timeout=5)
+    opener = build_opener(ProxyHandler({}),
+                          CancellableHTTPSHandler(_ACTIVE.get(), ssl.create_default_context()), _Redirects())
+    try:
+        return opener.open(Request(url, headers={'User-Agent': 'BobbiTV-CE',
+                                                'Accept-Encoding': 'identity'}), timeout=5)
+    except HTTPError as error:
+        error.close()  # HTTPError owns a response even though open() raised.
+        raise
 
 
 def _transfer(url, maximum, consume, cancelled, progress, expected=None):
@@ -45,18 +70,26 @@ def _transfer(url, maximum, consume, cancelled, progress, expected=None):
     def active():
         if cancelled():
             raise Cancelled('ONLINE_CANCELLED')
-        if time.monotonic() - started > 600:
+        if time.monotonic() - started >= TRANSFER_SECONDS:
             raise UpdateError('ONLINE_TIMEOUT')
     active()
+    token = _ACTIVE.set(active)
     try:
         _receive(url, maximum, consume, progress, expected, active)
     except HTTPException:
+        active()
         raise UpdateError('ONLINE_RESPONSE_INVALID') from None
+    except Exception:
+        active()
+        raise
+    finally:
+        _ACTIVE.reset(token)
 
 
 def _receive(url, maximum, consume, progress, expected, active):
     received = 0
     with _open(url) as response:
+        active()
         if response.status != 200 or response.headers.get('Content-Encoding', 'identity') not in ('', 'identity'):
             raise UpdateError('ONLINE_RESPONSE_INVALID')
         length = response.headers.get('Content-Length')
@@ -66,7 +99,11 @@ def _receive(url, maximum, consume, progress, expected, active):
             length = int(length)
         while True:
             active()
-            block = response.read(min(128 * 1024, maximum - received + 1))
+            # read1 returns available bytes without waiting to fill a large
+            # block. The production transport additionally polls during idle,
+            # headers, chunk framing and TLS, not only between these blocks.
+            read = getattr(response, 'read1', response.read)
+            block = read(min(128 * 1024, maximum - received + 1))
             active()
             if not block:
                 break
