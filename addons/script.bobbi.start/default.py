@@ -10,4 +10,4 @@ if bootstrap.is_dir():
 else:
     sys.path.insert(0, str(Path(xbmcaddon.Addon('script.module.bobbi.platform').getAddonInfo('path')) / 'lib'))
 from bobbi_platform.ce_install_ui import main
-main(root / 'resources' / 'complete.bobbi-update.zip', online='online' in sys.argv[1:])
+main(root / 'resources' / 'complete.bobbi-update.zip', online='online' in sys.argv[1:], storage='storage' in sys.argv[1:])

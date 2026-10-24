@@ -596,8 +596,8 @@
       "script.py": "e4e94a0c2a6b836aedf80192336cad7ac9a9735e4bb5b8e55804544bb231d362"
     },
     "script.bobbi.setup": {
-      "addon.xml": "fb2a031b580630ffac126f774c85e05158cd61735ba0246ed232d2c7eafef607",
-      "default.py": "5fae01505d77448d399b3b5770258ad5ecba8cf3e09bfb35e9166bb97eaa0271",
+      "addon.xml": "4aa3b84e045cc61e46846759a1b7bb2d7aae34bfe5f6367ba494ff3ef539a1d5",
+      "default.py": "58909f9fd1272f1a8f653d3a3dada3d79e9f140de7a248e20e7522be5c828c96",
       "metadata_credits.py": "f3f7c3a9df0917f882584aaeed989efb0af91f752a6b2e72588fb91898b05491",
       "resources/skins/Default/1080i/tmdb-attribution.xml": "201029275ba9a212f0990485ce5a0e2c4f07e6f6766eb3d79f196cd5d5b2041e",
       "resources/tmdb-logo.png": "10fded1b23bd86a92dfcc46706632de6f41ee4dc18009590086179cbdca0adc4",
@@ -605,8 +605,8 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "e61967ee7baf155a8260887b64847abb7e2b619912f63e13dcd9af29e6422732",
-      "default.py": "c6c7f9b253a64c837e42713dcfa94f4ff48a0ffeee1f3eda66428839f51e6dd1"
+      "addon.xml": "0a57f616933f27847419b864341c16b5b31de35be7436d1371514eaae4dc2ea6",
+      "default.py": "c47509ab7987d8edc3fc3aad6f08a0da7fae0e1588e04c1bd1ab21cc0f58bf23"
     },
     "script.module.bobbi.catalog": {
       "addon.xml": "236cc054ec6fff2f201eb233f484852bcfe809c687492e146d55f062a5daf3ec",
@@ -747,7 +747,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "a5f219435f9e6c99dee5ea4a7c3d5cd77c431131b31a6b1211206efb8a2e020f",
+      "addon.xml": "95bd823a774e83fac5e0e9f6798056f64dc6b7d3b6ded2883b79e48042570b41",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -759,8 +759,9 @@
       "lib/bobbi_platform/account_manager.py": "71155808e03c6f8ccd48403bfaa7ab9763ef798fc141e6f7bc2c8dd46be2070d",
       "lib/bobbi_platform/bt_setup.py": "92a2fab72ed828bc157d40059a1045dcead3c136fcc0c88ecf4406bd591ff9d8",
       "lib/bobbi_platform/capabilities.py": "226300a6b05da39633bf321649f2bad56782339f6b42ca675c45f2862c9d0e6f",
-      "lib/bobbi_platform/ce_install_ui.py": "ac01ab0fe9683ffbec4fb681b4144345212dfe221f2c8e62aa5eea367f281dbc",
-      "lib/bobbi_platform/ce_installer.py": "6fd8f5e14751bb194369166f8f350718a680bfc26b6d824f273d7af787377efc",
+      "lib/bobbi_platform/ce_install_ui.py": "d05f231b0d8dfb5e4c31894ff774460b42abf81f5d59d73d1175c3397fc423db",
+      "lib/bobbi_platform/ce_installer.py": "5ee9572f21043c34551e7bf9aa771fbfb31dc5edb91b13c3cec654165d728442",
+      "lib/bobbi_platform/ce_storage.py": "ed2803e53a1b054e59f703a94c8c407815f764b6083fdcba4f6389c401cef9d5",
       "lib/bobbi_platform/cloud115.py": "54194516b9292b8b35985e7eb0e14c2e734102a958a69f7143e861d8ea0a979a",
       "lib/bobbi_platform/cloud_hub.py": "fd1fc3b8235f79aeed1954309d6fe4c1636c19651ecb7ee4a0198aee34cb7331",
       "lib/bobbi_platform/cloud_ui.py": "42da992695c90d8f716baca35ddd35d9408523be9dd648d5a2977d606bd40f3c",
@@ -793,7 +794,7 @@
       "lib/bobbi_platform/stop_monitor.py": "dd59ae43b67721deb12c3ae33fbec08127ca8a562f9e32c8f5933f367b52e7f3",
       "lib/bobbi_platform/torrserver.py": "5856199c268a0801187f0f8411d4f91bbc593ebdfe176636f91d9fc29f83e7dd",
       "lib/bobbi_platform/transport_preferences.py": "259d997be2fd23098b8fea347746c2256c44317b58ab4a055ef474aeca37991b",
-      "lib/bobbi_platform/updates.py": "9dcdcad8030f40036af7d22ba1f970cd12da9480331267f943daf65c096cb9ff",
+      "lib/bobbi_platform/updates.py": "baa39cbba4ed770e656dd30183311d2daaff35941735e34e53782d33b57ca1ed",
       "lib/bobbi_platform/upstream_addons.py": "e5047b48e7cc1fb5d1bfdb593776bb2a60e436537ae2c29024c1b3c38881aef9",
       "resources/skins/Default/1080i/account-login.xml": "9a99bc52dc9cff08af2871e45c50fb362fd615ae70f38eaa448931db617a9bed"
     },

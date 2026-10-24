@@ -16,6 +16,7 @@ import uuid
 from .offline_updates import SignedBundle, load_trust
 from .updates import UpdateEngine, UpdateError, _safe_path, _Lock, _atomic, _json
 from .upstream_addons import OWNED_COMPONENTS, UPSTREAM_COMPONENTS, compare_versions
+from .ce_storage import install_plan, require_space, RESERVE
 
 ENTRY = 'script.bobbi.start'
 MANAGED = OWNED_COMPONENTS - {ENTRY}
@@ -229,6 +230,17 @@ class Installer:
                 raise
             self._restore(state)
 
+    def plan_space(self, bundle):
+        """Read-only preview; apply repeats it under its own transaction lock."""
+        with _Lock(self.work / 'installation.lock'):
+            previous = self._read()
+            if previous and (previous.get('host_pending') or previous['phase'] not in ('complete', 'restored')):
+                raise UpdateError('INSTALLATION_RECOVERY_REQUIRED')
+            self._check_idle()
+            with SignedBundle(bundle, self.trust, 'coreelec') as signed:
+                signed.check_all()
+                return install_plan(signed, self.addons, self.work, previous, MANAGED)
+
     def apply(self, bundle):
         with _Lock(self.work / 'installation.lock'):
             previous = self._read()
@@ -241,6 +253,8 @@ class Installer:
                     previous['sequence'] if previous['phase'] == 'complete' else 0) if previous else 0
                 if manifest['sequence'] <= watermark:
                     raise UpdateError('GENERATION_NOT_NEWER')
+                space = install_plan(signed, self.addons, self.work, previous, MANAGED)
+                require_space(space)  # Refuse before creating an orphan transaction.
                 txid = uuid.uuid4().hex
                 tx = self.work / txid
                 stage, backup = tx / 'stage', tx / 'backup'
@@ -251,14 +265,15 @@ class Installer:
                 engine = UpdateEngine(self.addons, tx / 'validator', self.trust['components'],
                     'private-candidate', 'coreelec', lambda *_: False, lambda *_: None,
                     lambda: False, nullcontext, offline=True)
-                if shutil.disk_usage(self.work).free < sum(r['size'] for r in manifest['components']) * 4:
-                    raise UpdateError('INSTALLATION_SPACE_REQUIRED')
                 for row in manifest['components']:
                     engine._extract(signed.read(row['file'], row['size']), row, stage)
                 # Install absent signed originals without changing existing
                 # upstream files/origins. Dependencies persist like Kodi's own
                 # dependency installs even if the cinema transaction is rolled back.
                 self.host.dependencies(stage)
+                free = shutil.disk_usage(self.work).free
+                require_space(dict(space, phase='after-dependencies', required_bytes=RESERVE,
+                                   free_bytes=free, fits=free >= RESERVE))
                 items = [dict(id=name, had_old=(self.addons / name).exists()) for name in sorted(MANAGED)]
                 for item in items:
                     if item['had_old']:

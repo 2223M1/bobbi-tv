@@ -145,6 +145,35 @@ def _atomic(path, value):
             os.unlink(temporary)
 
 
+def archive_rows(archive, item):
+    """Shared, read-only layout contract for extraction and space planning."""
+    rows = archive.infolist()
+    if len(rows) > MAX_FILES:
+        raise UpdateError('Archive file budget exceeded')
+    total, names = 0, set()
+    for row in rows:
+        name = row.filename
+        parts = PurePosixPath(name).parts
+        mode = row.external_attr >> 16
+        key = name.rstrip('/').casefold()
+        if (row.orig_filename != name or not name or '\\' in name or '\x00' in name or ':' in name
+                or name.startswith('/') or any(part in ('', '.', '..') for part in name.rstrip('/').split('/'))
+                or not parts or parts[0] != item['id'] or key in names
+                or any(ord(c) < 32 for c in name) or row.flag_bits & 1
+                or stat.S_ISLNK(mode) or (stat.S_IFMT(mode) not in (0, stat.S_IFREG, stat.S_IFDIR))):
+            raise UpdateError('Unsafe or duplicate archive path')
+        if any(part.endswith(('.', ' ')) or part.split('.')[0].upper() in
+               {'CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
+                'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'} for part in parts):
+            raise UpdateError('Nonportable archive path')
+        names.add(key)
+        total += row.file_size
+        if (total > MAX_EXPANDED or row.file_size > MAX_EXPANDED
+                or row.file_size > max(1, row.compress_size) * MAX_RATIO):
+            raise UpdateError('Archive expansion budget exceeded')
+    return rows
+
+
 class _Lock:
     def __init__(self, path):
         self.path = path
@@ -335,31 +364,7 @@ class UpdateEngine:
             raise UpdateError('Archive size or SHA256 mismatch')
         try:
             with zipfile.ZipFile(BytesIO(data)) as archive:
-                rows = archive.infolist()
-                if len(rows) > MAX_FILES:
-                    raise UpdateError('Archive file budget exceeded')
-                total, names = 0, set()
-                for row in rows:
-                    name = row.filename
-                    parts = PurePosixPath(name).parts
-                    mode = row.external_attr >> 16
-                    key = name.rstrip('/').casefold()
-                    if (row.orig_filename != name or not name or '\\' in name or '\x00' in name or ':' in name
-                            or name.startswith('/') or any(part in ('', '.', '..') for part in name.rstrip('/').split('/'))
-                            or not parts or parts[0] != item['id'] or key in names
-                            or any(ord(c) < 32 for c in name) or row.flag_bits & 1
-                            or stat.S_ISLNK(mode) or (stat.S_IFMT(mode) not in (0, stat.S_IFREG, stat.S_IFDIR))):
-                        raise UpdateError('Unsafe or duplicate archive path')
-                    # Reject Windows-normalized aliases on every target OS.
-                    if any(part.endswith(('.', ' ')) or part.split('.')[0].upper() in
-                           {'CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
-                            'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'} for part in parts):
-                        raise UpdateError('Nonportable archive path')
-                    names.add(key)
-                    total += row.file_size
-                    if (total > MAX_EXPANDED or row.file_size > MAX_EXPANDED
-                            or row.file_size > max(1, row.compress_size) * MAX_RATIO):
-                        raise UpdateError('Archive expansion budget exceeded')
+                rows = archive_rows(archive, item)
                 for row in rows:
                     target = stage.joinpath(*PurePosixPath(row.filename).parts)
                     if row.is_dir():

@@ -352,12 +352,18 @@ def failure_message(error):
     if code == 'PLAYBACK_ACTIVE':
         return '请先停止播放再更新或切换界面。当前影片与已安装程序保持不变。'
     if code == 'INSTALLATION_SPACE_REQUIRED' or getattr(error, 'errno', None) == errno.ENOSPC:
-        return '可用空间不足，请释放空间后重试。未删除你的程序备份、账号或媒体。'
+        plan = getattr(error, 'space', None)
+        sizes = ('需新增至少 {:.1f} MiB，当前可用 {:.1f} MiB。'.format(
+            plan['required_bytes']/1024**2, plan['free_bytes']/1024**2) if plan else '')
+        return sizes + '可用空间不足，可在“存储空间与更新缓存”预览并清理可重建缓存后重试。未删除程序备份、账号或媒体。'
     if isinstance(error, PermissionError) or getattr(error, 'errno', None) in (errno.EACCES, errno.EPERM, errno.EROFS):
         return '本机目录没有写入权限或处于只读状态。请检查存储设备，不要删除账号或程序备份。'
     if isinstance(getattr(error, 'reason', error), ssl.SSLError):
         return 'HTTPS 证书或安全连接检查未通过。请检查设备日期、时间和网络；也可使用完整离线包。'
     messages = {
+        'STORAGE_PLAN_CHANGED': '缓存内容已变化，本次清理已停止。请重新预览再确认；程序和备份不受影响。',
+        'Another update is active': '另一个安装或下载操作正在进行，请等待完成后重试。',
+        'ONLINE_CANCELLED': '已取消操作。程序、备份和账号保持不变。',
         'ONLINE_TIMEOUT': '查询或下载超时。支持续传的同版断点会保留，可稍后重新检查更新，也可使用完整离线包。',
         'ONLINE_SHORT_READ': '下载不完整，未安装这个包。支持续传的同版断点会保留，可重试或使用完整离线包。',
         'ONLINE_LENGTH_INVALID': '下载长度与发布信息不匹配，未安装这个包。请重新检查更新或下载完整离线包。',
@@ -382,7 +388,7 @@ def failure_message(error):
             '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。')
 
 
-def main(payload=None, online=False):
+def main(payload=None, online=False, storage=False):
     import xbmc
     import xbmcgui
     import xbmcvfs
@@ -396,10 +402,14 @@ def main(payload=None, online=False):
             return
         state = installer._read()
         actions = ['进入影院设置 / 登录自己的115', '安装本地完整包',
-                   '回退上一次程序安装', '返回原 Kodi 界面', '在线检查并安装最新正式版']
+                   '回退上一次程序安装', '返回原 Kodi 界面', '在线检查并安装最新正式版', '存储空间与更新缓存']
         first = state is None and not host.details('plugin.video.bobbi')
-        choice = 4 if online or (first and not (payload and Path(payload).is_file())) else (
-            1 if first else dialog.select('波比 TV', actions))
+        choice = 5 if storage else (4 if online or (first and not (payload and Path(payload).is_file())) else (
+            1 if first else dialog.select('波比 TV', actions)))
+        if choice == 5:
+            from .ce_storage import show
+            show(installer, host, dialog)
+            return
         if choice == 4:
             if not install_online(installer, host, dialog):
                 return
@@ -409,9 +419,13 @@ def main(payload=None, online=False):
             selected = choose_package(dialog, payload, first)
             if not selected:
                 return
-            if not dialog.yesno('安装波比影院', '只安装波比程序和必要依赖，不读取旧影院账号、不改音画设置。安装完成后可用自己的手机登录115。继续？'):
+            from .ce_storage import plan_text, require_space
+            selected = xbmcvfs.translatePath(selected)
+            plan = installer.plan_space(selected)
+            require_space(plan)
+            if not dialog.yesno('安装波比影院', plan_text(plan) + '\n只安装程序和必要依赖，不改账号与音画设置。继续？'):
                 return
-            installer.apply(xbmcvfs.translatePath(selected))
+            installer.apply(selected)
             dialog.ok('安装完成', '账号、片库与观看记录保留；更新后请重启 Kodi。\n'
                       '即将进入设置；115 可扫码登录，本地与 NAS 不需要网盘账号。')
             choice = 0

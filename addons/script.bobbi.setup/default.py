@@ -282,6 +282,7 @@ def show_updates(dialog):
         '已装插件 · Kodi 我的插件 / 原仓库更新',
         '波比影院 · 本地完整包 / 回退程序',
         '波比影院 · 在线检查并安装最新正式版',
+        '波比影院 · 存储空间与更新缓存',
     ])
     if choice in (0, 1):
         dialog.ok('打开 Kodi 原生插件管理',
@@ -303,6 +304,11 @@ def show_updates(dialog):
         if xbmc.Player().isPlaying():
             return False
         xbmc.executebuiltin('RunScript(script.bobbi.start,online)')
+        return True
+    if choice == 4:
+        if xbmc.Player().isPlaying():
+            return False
+        xbmc.executebuiltin('RunScript(script.bobbi.start,storage)')
         return True
     return False
 
