@@ -43,7 +43,7 @@ def test_published_feed_contains_only_repository_and_independent_bootstrap():
     assert extension is not None
     assert extension.find('./dir/info').text == MIRROR_FEED + 'addons.xml'
     offer = parse_offer((feed/'current.json').read_bytes())
-    assert offer['tag'] == 'ce2057' and offer['sequence'] == 2026102057
+    assert offer['tag'] == 'ce2072' and offer['sequence'] == 2026102072
 
 
 @pytest.mark.parametrize('algorithm', ['sha256', 'md5'])

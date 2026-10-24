@@ -14,7 +14,7 @@
     <license>GPL-3.0-or-later</license><platform>all</platform>
     <source>https://github.com/2223M1/bobbi-tv</source>
   </extension>
-</addon><addon id="script.bobbi.start" version="0.2.45" name="波比 TV · 开始使用" provider-name="bobbi TV contributors">
+</addon><addon id="script.bobbi.start" version="0.2.59" name="波比 TV · 开始使用" provider-name="bobbi TV contributors">
   <requires>
     <import addon="xbmc.python" version="3.0.1" />
     <import addon="script.module.pycryptodome" version="3.4.3" />
