@@ -13,6 +13,14 @@ MAX_BUNDLE = 768 * 1024 * 1024
 TRUST = Path(__file__).with_name('release_trust.json')
 
 
+def archive_info(name):
+    """Stable full-bundle headers across Windows maintainers and CE clients."""
+    info = zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0))
+    info.create_system = 3
+    info.external_attr = 0o600 << 16
+    return info
+
+
 def load_trust(path=TRUST):
     path = _safe_path(path)
     if not path.is_file() or path.stat().st_size > MAX_MANIFEST:
@@ -26,6 +34,36 @@ def load_trust(path=TRUST):
             len(set(value['components'])) != len(value['components'])):
         raise UpdateError('Invalid offline trust configuration')
     return value
+
+
+def signed_manifest(raw, signature, trust, profile):
+    """One contract for complete archives and their detached transport metadata."""
+    if len(raw) > MAX_MANIFEST or len(signature) > 1024 or not verify(raw, signature, trust['key']):
+        raise UpdateError('Offline release signature rejected')
+    value = _json(raw)
+    if (not isinstance(value, dict) or
+            set(value) != {'schema', 'channel', 'profile', 'sequence', 'components'} or
+            value['schema'] != 2 or type(value['schema']) is not int or
+            value['channel'] not in ('private-candidate', 'private-stable') or
+            value['profile'] != profile or type(value['sequence']) is not int or
+            value['sequence'] < 1 or not isinstance(value['components'], list) or
+            len(value['components']) != len(trust['components'])):
+        raise UpdateError('Offline release contract rejected')
+    by_file, by_id = {}, set()
+    for item in value['components']:
+        if (not isinstance(item, dict) or set(item) != {'id', 'version', 'file', 'size', 'sha256'} or
+                not isinstance(item['id'], str) or item['id'] not in trust['components'] or
+                item['id'] in by_id or not isinstance(item['version'], str) or
+                not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[+~-][A-Za-z0-9._-]{1,64})?', item['version']) or
+                item['file'] != item['id'] + '/' + item['id'] + '-' + item['version'] + '.zip' or
+                type(item['size']) is not int or not 0 < item['size'] <= MAX_ARCHIVE or
+                not isinstance(item['sha256'], str) or not re.fullmatch('[a-f0-9]{64}', item['sha256'])):
+            raise UpdateError('Invalid offline component')
+        by_id.add(item['id'])
+        by_file[item['file']] = item
+    if sum(item['size'] for item in value['components']) > MAX_BUNDLE - 2*MAX_MANIFEST:
+        raise UpdateError('Offline package budget exceeded')
+    return value, by_file
 
 
 class SignedBundle:
@@ -63,30 +101,7 @@ class SignedBundle:
                 raise UpdateError('Oversized signed release metadata')
             self.raw = self.archive.read('release.json')
             self.signature = self.archive.read('release.sig').decode('ascii')
-            if not verify(self.raw, self.signature, self.trust['key']):
-                raise UpdateError('Offline release signature rejected')
-            self.manifest = _json(self.raw)
-            value = self.manifest
-            if (not isinstance(value, dict) or
-                    set(value) != {'schema', 'channel', 'profile', 'sequence', 'components'} or
-                    value['schema'] != 2 or type(value['schema']) is not int or
-                    value['channel'] not in ('private-candidate', 'private-stable') or
-                    value['profile'] != self.profile or type(value['sequence']) is not int or
-                    value['sequence'] < 1 or not isinstance(value['components'], list) or
-                    len(value['components']) != len(self.trust['components'])):
-                raise UpdateError('Offline release contract rejected')
-            by_file, by_id = {}, set()
-            for item in value['components']:
-                if (not isinstance(item, dict) or set(item) != {'id', 'version', 'file', 'size', 'sha256'} or
-                        not isinstance(item['id'], str) or item['id'] not in self.trust['components'] or
-                        item['id'] in by_id or not isinstance(item['version'], str) or
-                        not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[+~-][A-Za-z0-9._-]{1,64})?', item['version']) or
-                        item['file'] != item['id'] + '/' + item['id'] + '-' + item['version'] + '.zip' or
-                        type(item['size']) is not int or not 0 < item['size'] <= MAX_ARCHIVE or
-                        not isinstance(item['sha256'], str) or not re.fullmatch('[a-f0-9]{64}', item['sha256'])):
-                    raise UpdateError('Invalid offline component')
-                by_id.add(item['id'])
-                by_file[item['file']] = item
+            self.manifest, by_file = signed_manifest(self.raw, self.signature, self.trust, self.profile)
             if names != set(by_file) | {'release.json', 'release.sig'}:
                 raise UpdateError('Offline package membership differs from signature')
             self.by_file = by_file

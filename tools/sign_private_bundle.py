@@ -13,7 +13,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.platform/lib'))
-from bobbi_platform.offline_updates import SignedBundle, MAX_BUNDLE
+from bobbi_platform.offline_updates import SignedBundle, MAX_BUNDLE, archive_info
 from bobbi_platform.updates import MAX_ARCHIVE, MAX_MANIFEST, _safe_path
 
 
@@ -102,9 +102,9 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(args.output, 'x', compression=zipfile.ZIP_STORED) as target:
         for name, content in [('release.json', raw), ('release.sig', signature)]:
-            target.writestr(zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0)), content)
+            target.writestr(archive_info(name), content)
         for row, blob in checked:
-            target.writestr(zipfile.ZipInfo(row['file'], (1980, 1, 1, 0, 0, 0)),
+            target.writestr(archive_info(row['file']),
                            blob)
     with SignedBundle(args.output, trust, args.profile) as bundle:
         bundle.check_all()

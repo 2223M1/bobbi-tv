@@ -283,7 +283,11 @@ def test_resume_through_actual_install_menu_preserves_data_until_complete(entry,
     assert entry.env.installer._read()['phase'] == 'complete'
     assert entry.commands == ['RunScript(script.bobbi.setup)']
     assert (entry.env.user/'watching').read_text() == 'user-history'
-    assert not list((entry.env.work/'downloads').iterdir())
+    # Completed transport blobs now remain for the next full-generation update.
+    # Neither the delivered archive nor a partial checkpoint may remain.
+    folder = entry.env.work/'downloads'
+    assert {p.name for p in folder.iterdir()} == {'components-v1'}
+    assert all(len(p.stem) == 64 and p.suffix == '.zip' for p in (folder/'components-v1').iterdir())
 
 
 def test_resume_headers_do_not_leak_into_nested_discovery(payload, monkeypatch):

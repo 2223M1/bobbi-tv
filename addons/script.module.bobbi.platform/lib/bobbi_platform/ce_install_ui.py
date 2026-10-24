@@ -308,7 +308,8 @@ def choose_package(dialog, payload, first):
 def install_online(installer, host, dialog):
     """A manual online action downloads first, then reuses the offline transaction."""
     import xbmcgui
-    from .online_updates import latest, download, Cancelled
+    from .online_updates import latest, Cancelled
+    from .online_components import download
     host.check_idle()
     progress = xbmcgui.DialogProgress()
     selected = None
@@ -323,11 +324,11 @@ def install_online(installer, host, dialog):
             dialog.ok('无需更新', '当前已安装此版本或更新的版本。需要恢复旧程序时，请使用回退入口。')
             return False
         if not dialog.yesno('安装 ' + offer['tag'].upper(),
-                '将下载约 %d MB 的完整程序包并更新整套影院。保留账号与观看记录，不自动切换皮肤；播放中不会安装。继续？'
+                '整套程序约 %d MB；可复用的组件不会重复下载。保留账号与观看记录，不自动切换皮肤；播放中不会安装。继续？'
                 % ((offer['size'] + 1024 * 1024 - 1) // (1024 * 1024))):
             return False
         host.check_idle()
-        progress.create('波比 TV · 在线更新', '正在下载完整程序包；支持的同版断点会续传。主动取消会清除本次下载。')
+        progress.create('波比 TV · 在线更新', '正在准备完整版本；优先复用组件，不支持时下载整包。可随时取消。')
         selected = download(offer, installer.work / 'downloads', installer.trust,
                             cancelled, lambda percent: progress.update(percent))
         if cancelled():

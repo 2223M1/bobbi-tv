@@ -18,7 +18,8 @@ from build_release import sources, files
 BOOTSTRAP = ('__init__.py', 'ce_installer.py', 'ce_install_ui.py', 'offline_updates.py',
              'updates.py', 'upstream_addons.py', 'signatures.py', 'release_trust.json',
              'paths.py', 'kodi.py', 'playback.py', 'capabilities.py',
-             'runtime.py', 'instance_lock.py', 'online_updates.py', 'online_transport.py', 'online_partial.py')
+             'runtime.py', 'instance_lock.py', 'online_updates.py', 'online_transport.py', 'online_partial.py',
+             'online_components.py')
 
 
 def build(bundle, output, online=False):

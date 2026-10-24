@@ -58,7 +58,7 @@ def _allowed_redirect(value):
                     (not url.query or (len(query) == 2 and
                      {key for key, _ in query} == {'metadata', 'signature'} and
                      all(value for _, value in query))))
-        filename = r'BobbiTV-CE[1-9][0-9]{3,7}\.bobbi-update\.zip'
+        filename = r'(?:BobbiTV-CE[1-9][0-9]{3,7}\.(?:bobbi-update|components-v1)|bobbi-component-[a-f0-9]{64})\.zip'
         if url.netloc == 'gitee.com':
             return not url.query and re.fullmatch(
                 r'/M12223/bobbi-tv-updates/attach_files/[1-9][0-9]*/download/' + filename, url.path) is not None
@@ -202,11 +202,13 @@ def latest(cancelled=lambda: False):
                 raise
 
 
-def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: None):
+def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: None, *, deadline=None, report=None):
     offer = parse_offer(json.dumps(offer))
     work = _safe_path(work)
     work.mkdir(parents=True, exist_ok=True)
-    deadline = time.monotonic() + TRANSFER_SECONDS
+    deadline = min(deadline, time.monotonic()+TRANSFER_SECONDS) if deadline is not None else time.monotonic()+TRANSFER_SECONDS
+    if report is not None:
+        report['downloaded_bytes'] = 0
     urls = tuple(dict.fromkeys((offer['url'], release_url(offer['tag']), release_url(offer['tag'], 'github'))))
 
     def active():
@@ -221,6 +223,10 @@ def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: Non
 
     active()
     with PartialDownload(work, offer, urls, active) as partial:
+        def consume(block):
+            if report is not None:
+                report['downloaded_bytes'] += len(block)
+            partial.write(block)
         try:
             if partial.source in urls:
                 urls = (partial.source,) + tuple(url for url in urls if url != partial.source)
@@ -235,13 +241,13 @@ def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: Non
                         raise UpdateError('INSTALLATION_SPACE_REQUIRED')
                     try:
                         try:
-                            _transfer(url, offer['size'], partial.write, cancelled, progress,
+                            _transfer(url, offer['size'], consume, cancelled, progress,
                                       offer['size'], deadline, partial)
                         except HTTPError as error:
                             if error.code != 416 or not partial.request_offset:
                                 raise
                             partial.reset()  # One bounded full restart of this origin.
-                            _transfer(url, offer['size'], partial.write, cancelled, progress,
+                            _transfer(url, offer['size'], consume, cancelled, progress,
                                       offer['size'], deadline, partial)
                         break
                     except Exception as error:
