@@ -605,7 +605,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "9692c4b6e55a8eee84e2d68aff3027a8522f3aa4bfc86f7b9ef5d016495c2cb8",
+      "addon.xml": "c0d2d212952112c2fe93099ccea307783bd2525643790d4ea21cce1c9946fc9f",
       "default.py": "c6c7f9b253a64c837e42713dcfa94f4ff48a0ffeee1f3eda66428839f51e6dd1"
     },
     "script.module.bobbi.catalog": {
@@ -747,7 +747,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "7c693e08485eb6a065a871fc3872be75e7527ecdd76b26d50d5fe673365a951f",
+      "addon.xml": "093cb092e42a8fbc0a5466cd72bee27b3781cb32216c67da84fd9714b8205023",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -759,7 +759,7 @@
       "lib/bobbi_platform/account_manager.py": "71155808e03c6f8ccd48403bfaa7ab9763ef798fc141e6f7bc2c8dd46be2070d",
       "lib/bobbi_platform/bt_setup.py": "92a2fab72ed828bc157d40059a1045dcead3c136fcc0c88ecf4406bd591ff9d8",
       "lib/bobbi_platform/capabilities.py": "226300a6b05da39633bf321649f2bad56782339f6b42ca675c45f2862c9d0e6f",
-      "lib/bobbi_platform/ce_install_ui.py": "41ecb18c7e9c514f09b63a40511c1c645ed4e069ac148ca535f16cc0c5fb7d84",
+      "lib/bobbi_platform/ce_install_ui.py": "10f5ae69cecaed1863ccf1c43b18746610919fe9695681a4ba19f70fc4ead1d5",
       "lib/bobbi_platform/ce_installer.py": "6fd8f5e14751bb194369166f8f350718a680bfc26b6d824f273d7af787377efc",
       "lib/bobbi_platform/cloud115.py": "54194516b9292b8b35985e7eb0e14c2e734102a958a69f7143e861d8ea0a979a",
       "lib/bobbi_platform/cloud_hub.py": "fd1fc3b8235f79aeed1954309d6fe4c1636c19651ecb7ee4a0198aee34cb7331",
@@ -777,8 +777,9 @@
       "lib/bobbi_platform/native_engine.py": "d00504fa5bc6c508b4adaa7733dc5b8cc4667610b7810652eeb4c989d01590e9",
       "lib/bobbi_platform/offline_updates.py": "cd10c6cd4bfe80f9d2d7f9f941fe245e9cc66401b950b25495581e8b5fd4b031",
       "lib/bobbi_platform/onboarding.py": "faec25e89702bd280988889d7bc93942310a83b572406db7f9b1e914d6f5fc13",
+      "lib/bobbi_platform/online_partial.py": "dec4396c13ccf108f614f16baeed198fcb3b2431748dbf1e00bbd2babafbdea1",
       "lib/bobbi_platform/online_transport.py": "2a0a714c8ed4afb946a5dece51634c7f5def932e2cd54dd65d98d8f18421f244",
-      "lib/bobbi_platform/online_updates.py": "8bd42a2f4ec6bf5dbcb31c86dde12497861a31c0189325c3b5b33a78c553b45f",
+      "lib/bobbi_platform/online_updates.py": "5a5db04e62b36fb21fbaecc20f47d5c2b7b9e24867d31b2d626f0151f586cfc2",
       "lib/bobbi_platform/pair_code.py": "d905cc4c5706868b9749c82dce7273aa76bbdcb4eda2cc284ed8dd2d0a0a9b82",
       "lib/bobbi_platform/pairing.py": "db4cc3ae43227a38dff01dad63e8c12ba253097c44efb7736d01389d3b0e3411",
       "lib/bobbi_platform/paths.py": "6455ab508991a002d46eb332bf3aed12062829a135232e7f4fbaa1cdff337378",

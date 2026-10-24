@@ -53,6 +53,18 @@ def endpoint(tmp_path, monkeypatch):
         def do_GET(self):
             state.requests.append((self.path, dict(self.headers)))
             try:
+                if self.path == '/resume':
+                    offset = int(self.headers.get('Range', 'bytes=0-')[6:-1])
+                    self.send_response(206 if offset else 200)
+                    self.send_header('ETag', '"fixed-release"')
+                    self.send_header('Content-Length', str(len(state.blob)-offset))
+                    if offset:
+                        self.send_header('Content-Range', 'bytes {}-{}/{}'.format(
+                            offset,len(state.blob)-1,len(state.blob)))
+                    self.end_headers()
+                    raw = state.blob[offset:] if offset else state.blob[:len(state.blob)//2]
+                    self.wfile.write(raw)
+                    return  # First response is a real socket EOF halfway through.
                 if self.path in ('/redirect', '/denied'):
                     self.send_response(302 if self.path == '/redirect' else 403)
                     self.send_header('Location', 'https://not-allowed.invalid/fixture')

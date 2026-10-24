@@ -327,7 +327,7 @@ def install_online(installer, host, dialog):
                 % ((offer['size'] + 1024 * 1024 - 1) // (1024 * 1024))):
             return False
         host.check_idle()
-        progress.create('波比 TV · 在线更新', '正在下载完整程序包，可取消。')
+        progress.create('波比 TV · 在线更新', '正在下载完整程序包；支持的同版断点会续传。主动取消会清除本次下载。')
         selected = download(offer, installer.work / 'downloads', installer.trust,
                             cancelled, lambda percent: progress.update(percent))
         if cancelled():
@@ -357,12 +357,15 @@ def failure_message(error):
     if isinstance(getattr(error, 'reason', error), ssl.SSLError):
         return 'HTTPS 证书或安全连接检查未通过。请检查设备日期、时间和网络；也可使用完整离线包。'
     messages = {
-        'ONLINE_TIMEOUT': '查询或下载超时，可稍后重试，也可使用国内下载页的完整离线包。',
-        'ONLINE_SHORT_READ': '下载不完整，未安装这个包。可重新下载或使用完整离线包。',
+        'ONLINE_TIMEOUT': '查询或下载超时。支持续传的同版断点会保留，可稍后重新检查更新，也可使用完整离线包。',
+        'ONLINE_SHORT_READ': '下载不完整，未安装这个包。支持续传的同版断点会保留，可重试或使用完整离线包。',
         'ONLINE_LENGTH_INVALID': '下载长度与发布信息不匹配，未安装这个包。请重新检查更新或下载完整离线包。',
         'ONLINE_CONTENT_INVALID': '下载内容不匹配，未安装这个包。请重新检查更新或下载完整离线包。',
         'ONLINE_GENERATION_MISMATCH': '下载包与更新索引的版本不一致，未安装。请稍后重新检查更新。',
         'ONLINE_PACKAGE_INVALID': '安装包格式不完整，未安装。请重新下载完整安装包。',
+        'ONLINE_RANGE_INVALID': '服务返回的续传范围或版本标记不一致，已放弃本次下载。可重新检查更新，现有程序没有改变。',
+        'ONLINE_DOWNLOAD_BUSY': '另一个更新入口正在下载，请先关闭它或等待完成；本次没有重复下载或安装。',
+        'ONLINE_CACHE_PATH_INVALID': '更新临时目录不是普通文件，未改动该目录。可使用完整离线包安装。',
         'ONLINE_OFFER_INVALID': '更新信息暂不可用。请稍后重试，也可从国内下载页获取完整离线包。',
         'ONLINE_RESPONSE_INVALID': '下载服务没有返回正常的安装内容。请稍后重试或使用完整离线包。',
         'ONLINE_REDIRECT_REJECTED': '下载地址不在当前支持的发布通道中。请使用项目下载页的完整离线包。',
@@ -373,7 +376,7 @@ def failure_message(error):
         return messages[code]
     if isinstance(error, UpdateError) and ('signature' in code or code.startswith('Offline ')):
         return '完整安装包校验未通过。请从项目下载页重新下载，不要修改或混装包内组件。'
-    return ('网络连接或下载未完成，可稍后重试，也可使用国内下载页的完整离线包。'
+    return ('网络连接或下载未完成；支持续传的同版断点会保留，可稍后重试，也可使用完整离线包。'
             if isinstance(error, OSError) or code.startswith('ONLINE_') else
             '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。')
 
