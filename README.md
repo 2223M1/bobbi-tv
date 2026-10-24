@@ -19,7 +19,7 @@
 
 **[国内下载与安装说明](https://gitee.com/M12223/bobbi-tv-updates) · [GitHub 备用下载](https://github.com/2223M1/bobbi-tv/releases)**
 
-当前主线版本：[CE2057 安装与更新](https://gitee.com/M12223/bobbi-tv-updates/releases/tag/ce2057)。提供轻量在线入口和完整离线安装包，不需要 GitHub / Gitee 账号。
+当前可下载安装包为 [CE2057](https://gitee.com/M12223/bobbi-tv-updates/releases/tag/ce2057)，提供轻量在线入口和完整离线包，不需要 GitHub / Gitee 账号。main 源码还包含尚未发布的改进，合并源码不会立即更新已安装的影院。
 
 在线安装先下载 [波比 TV 仓库 ZIP](https://gitee.com/M12223/bobbi-tv-updates/raw/master/repository/repository.bobbi/repository.bobbi-0.1.2.zip)。也可直接下载 **CoreELEC 完整安装包** [script.bobbi.start-CE2057.zip](https://gitee.com/M12223/bobbi-tv-updates/releases/download/ce2057/script.bobbi.start-CE2057.zip)；保留 ZIP 格式，直接交给 Kodi 安装。[GitHub 同版附件](https://github.com/2223M1/bobbi-tv/releases/tag/ce2057)可作备用。
 

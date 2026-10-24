@@ -169,6 +169,17 @@ def test_large_probe_yields_to_queued_tail_and_releases_producer(
         first, first_response = connect()
         assert paused.wait(2)
         assert first_response.read(1) == large_payload[:1]
+        entry = next(iter(service.records.values()))
+        contention_seen = Event()
+        contended = entry.io_lock.contended
+
+        def observe_contention():
+            result = contended()
+            if result:
+                contention_seen.set()
+            return result
+
+        monkeypatch.setattr(entry.io_lock, 'contended', observe_contention)
 
         def read_tail():
             connection = response = None
@@ -187,8 +198,10 @@ def test_large_probe_yields_to_queued_tail_and_releases_producer(
         worker = Thread(target=read_tail, daemon=True)
         worker.start()
         try:
-            entry = next(iter(service.records.values()))
-            wait_for(entry.io_lock.contended)
+            # A fast producer may yield and serve the tail before the test
+            # thread gets scheduled. Observe the real contention as an event,
+            # not a queue state that can already have disappeared.
+            wait_for(lambda: contention_seen.is_set() or observe_contention())
             if abandon:
                 # Cancel only this probe. Its already queued tail range remains
                 # valid, as do the account and source binding.
@@ -197,7 +210,9 @@ def test_large_probe_yields_to_queued_tail_and_releases_producer(
             resume.set()
             assert tail_done.wait(4)
             assert not failures and result == [large_payload[tail:tail+32768]]
+            assert contention_seen.is_set()
             if not abandon:
+                assert any(row['phase'] == 'yield' and row['start'] == 0 for row in events)
                 # Urgent contention must yield even while the original range
                 # remains live; the later suffix still completes byte-exactly.
                 assert first_response.read() == large_payload[1:]
