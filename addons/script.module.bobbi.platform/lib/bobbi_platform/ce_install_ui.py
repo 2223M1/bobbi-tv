@@ -423,7 +423,12 @@ def main(payload=None, online=False, storage=False):
             selected = xbmcvfs.translatePath(selected)
             plan = installer.plan_space(selected)
             require_space(plan)
-            if not dialog.yesno('安装波比影院', plan_text(plan) + '\n只安装程序和必要依赖，不改账号与音画设置。继续？'):
+            dialog.textviewer('安装所需空间 · 详细说明', plan_text(plan))
+            host.check_idle()
+            if not dialog.yesno('安装波比影院',
+                    '预计需新增至少 {:.1f} MiB，当前可用 {:.1f} MiB。\n'
+                    '只安装程序和必要依赖，不改账号与音画设置。继续？'.format(
+                        plan['required_bytes']/1024**2, plan['free_bytes']/1024**2)):
                 return
             installer.apply(selected)
             dialog.ok('安装完成', '账号、片库与观看记录保留；更新后请重启 Kodi。\n'

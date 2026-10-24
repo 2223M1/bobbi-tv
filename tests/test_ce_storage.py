@@ -304,3 +304,36 @@ def test_existing_backup_and_live_code_do_not_double_charge_extra_space(environm
     assert plan['current_program_bytes'] > 0 and plan['retained_backup_bytes'] > 0
     assert plan['backup_extra_bytes'] == 0
     assert plan['required_bytes'] == plan['stage_bytes'] + plan['dependency_copy_bytes'] + plan['reserve_bytes']
+
+
+def test_storage_details_scroll_and_delete_confirmation_stays_short(entry):
+    from bobbi_platform import ce_install_ui as ui
+    entries = cache_files(entry.env)
+    ui.main(storage=True)
+    assert len(entry.textviews) == len(entry.confirmations) == 1
+    assert '已交付' in entry.textviews[0][1]
+    assert len(entry.confirmations[0][1]) < 150
+    assert all(not path.exists() for path in entries)
+
+
+@pytest.mark.parametrize('playing_during_details', [False, True])
+def test_offline_space_details_precede_short_confirmation_and_recheck_idle(entry, monkeypatch, playing_during_details):
+    from bobbi_platform import ce_install_ui as ui
+    import sys
+    path = entry.env.root/'online.zip'
+    monkeypatch.setattr(sys.modules['xbmcvfs'], 'translatePath', lambda p: str(entry.env.addons) if p.startswith('special:') else p)
+    def view(*args):
+        entry.textviews.append(args)
+        entry.playing = playing_during_details
+    entry.dialog.textviewer = view
+    def decline(*args):
+        entry.confirmations.append(args)
+        return False
+    entry.dialog.yesno = decline
+    ui.main(payload=path)
+    assert len(entry.textviews) == 1 and '解压暂存' in entry.textviews[0][1]
+    if playing_during_details:
+        assert not entry.confirmations
+    else:
+        assert len(entry.confirmations) == 1 and len(entry.confirmations[0][1]) < 150
+    assert entry.env.installer._read() is None and entry.env.calls == []

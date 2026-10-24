@@ -248,10 +248,13 @@ def show(installer, host, dialog):
                       kept=plan['protected_transaction_bytes']/1024**2,legacy=plan['legacy_transactions'])
         if not plan['protected_sizes_complete']:
             detail += '\n部分目录未能完整统计，保留大小是已读下限，仍不会清理它们。'
+        dialog.textviewer('存储空间 · 更新缓存与保留范围', detail)
         if not plan['files']:
-            dialog.ok('存储空间 · 无可清理更新缓存', detail)
             return
-        if not dialog.yesno('存储空间 · 清理更新下载缓存？', detail):
+        active()
+        if not dialog.yesno('清理更新下载缓存？',
+                '移除 {:.1f} MiB（{} 个文件），之后需要时重新下载。\n'
+                '程序备份、账号、观看记录和媒体不变。缓存清理无法撤销。'.format(size, plan['files'])):
             return
         active()
         result = storage.clear(plan, active=active)

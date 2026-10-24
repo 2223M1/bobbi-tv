@@ -170,7 +170,7 @@ def entry(environment, signing, monkeypatch):
     raw = package(env.root/'online.zip', signing).read_bytes()
     offer = offer_for(raw)
     state = SimpleNamespace(playing=False, cancelled=False, commands=[], dialogs=[],
-        selections=[], confirmations=[], progress=[], closes=0, choice=4)
+        selections=[], confirmations=[], textviews=[], progress=[], closes=0, choice=4)
     def idle():
         if state.playing: raise PlaybackActive('PLAYBACK_ACTIVE')
     env.host.check_idle = idle
@@ -183,6 +183,7 @@ def entry(environment, signing, monkeypatch):
         state.confirmations.append(args)
         return True
     dialog = SimpleNamespace(select=select, yesno=confirm,
+        textviewer=lambda *args: state.textviews.append(args),
         ok=lambda *args: state.dialogs.append(args))
     progress = SimpleNamespace(create=lambda *args: None,
         update=state.progress.append, iscanceled=lambda: state.cancelled,

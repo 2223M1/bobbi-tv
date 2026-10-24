@@ -111,6 +111,12 @@ def media_type(raw):
     raise MetadataError('IMAGE_FORMAT')
 
 
+class _Flight:
+    """One transient result for existing subscribers, not another image cache."""
+    def __init__(self):
+        self.done, self.result = Event(), None
+
+
 class ImageCache:
     def __init__(self, root, stopped=None, transport=fetch, report=lambda code: None,
                  max_bytes=MAX_CACHE, max_files=MAX_FILES):
@@ -121,6 +127,8 @@ class ImageCache:
             raise ValueError('IMAGE_CACHE_PATH')
         self.root.mkdir(parents=True, exist_ok=True)
         self.lock, self.inflight, self.failures = Lock(), {}, {}
+        # The Kodi owner calls busy(). Never hold its state lock across file IO.
+        self.storage_lock = Lock()
         self.downloads = BoundedSemaphore(6)
         self.last_activity = 0
 
@@ -137,10 +145,13 @@ class ImageCache:
                 return None
             raw = target.read_bytes()
             kind = media_type(raw)
-            target.touch()
-            return raw, kind
         except (OSError, MetadataError):
             return None
+        try:
+            target.touch()
+        except OSError:
+            pass  # Valid bytes remain readable even on a read-only cache.
+        return raw, kind
 
     def _guard(self, deadline):
         if self.stopped.is_set():
@@ -162,17 +173,19 @@ class ImageCache:
             wait = self.inflight.get(path)
             owner = wait is None
             if owner:
-                wait = self.inflight[path] = Event()
+                wait = self.inflight[path] = _Flight()
                 self.last_activity = time.monotonic()
         if not owner:
-            while not wait.wait(.05):
+            while not wait.done.wait(.05):
                 self._guard(deadline)
             self._guard(deadline)
+            if wait.result is not None:
+                return wait.result
             cached = self._cached(target)
             if cached:
                 return cached
             raise MetadataError('IMAGE_UNAVAILABLE')
-        temporary, downloading = None, False
+        downloading = False
         try:
             while not self.downloads.acquire(timeout=.05):
                 self._guard(deadline)
@@ -186,18 +199,17 @@ class ImageCache:
             if not isinstance(raw, bytes) or not 0 < len(raw) <= min(MAX_BYTES, self.max_bytes):
                 raise MetadataError('LIMIT')
             kind = media_type(raw)
-            fd, temporary = tempfile.mkstemp(dir=str(self.root), prefix='.image-')
-            with os.fdopen(fd, 'wb') as stream:
-                stream.write(raw)
-                stream.flush()
-                os.fsync(stream.fileno())
+            try:
+                self._store(target, raw, deadline)
+            except OSError:
+                # Persistence is optional; do not turn a valid network image
+                # into a 503 or poison its network failure cooldown.
+                self.report('IMAGE_CACHE_IO')
             self._guard(deadline)
             with self.lock:
-                os.replace(temporary, target)
-                temporary = None
-                self._prune(target)
                 self.failures.pop(path, None)
-            return raw, kind
+                wait.result = (raw, kind)
+            return wait.result
         except (OSError, ValueError, RuntimeError) as error:
             with self.lock:
                 if len(self.failures) >= 512:
@@ -208,26 +220,55 @@ class ImageCache:
         finally:
             if downloading:
                 self.downloads.release()
-            if temporary is not None:
-                Path(temporary).unlink(missing_ok=True)
             with self.lock:
                 self.inflight.pop(path, None)
                 self.last_activity = time.monotonic()
-                wait.set()
+                wait.done.set()
 
-    def _prune(self, preserve):
+    def _store(self, target, raw, deadline):
+        temporary, acquired = None, False
+        try:
+            fd, temporary = tempfile.mkstemp(dir=str(self.root), prefix='.image-')
+            with os.fdopen(fd, 'wb') as stream:
+                stream.write(raw)
+                stream.flush()
+                os.fsync(stream.fileno())
+            while not self.storage_lock.acquire(timeout=.05):
+                self._guard(deadline)
+            acquired = True
+            self._guard(deadline)
+            # Make room before publication: a failed eviction must not admit
+            # another persistent file above quota. Only rebuildable art moves.
+            self._prune(target, deadline, len(raw))
+            self._guard(deadline)
+            os.replace(temporary, target)
+            temporary = None
+        finally:
+            if acquired:
+                self.storage_lock.release()
+            if temporary is not None:
+                try:
+                    Path(temporary).unlink(missing_ok=True)
+                except OSError:
+                    pass  # Never delete unknown paths to compensate for IO failure.
+
+    def _prune(self, preserve, deadline, incoming_bytes):
         files = []
-        for item in self.root.iterdir():
-            if CACHE_NAME.fullmatch(item.name) and not item.is_symlink() and item.is_file():
-                info = item.stat()
-                files.append((info.st_mtime, item, info.st_size))
-        total, count = sum(row[2] for row in files), len(files)
+        with os.scandir(self.root) as entries:
+            for entry in entries:
+                self._guard(deadline)
+                item = Path(entry.path)
+                if (item != preserve and CACHE_NAME.fullmatch(entry.name)
+                        and entry.is_file(follow_symlinks=False)):
+                    info = entry.stat(follow_symlinks=False)
+                    files.append((info.st_mtime, item, info.st_size))
+        total, count = incoming_bytes+sum(row[2] for row in files), len(files)+1
         for _, item, size in sorted(files):
             if total <= self.max_bytes and count <= self.max_files:
                 break
-            if item != preserve:
-                item.unlink(missing_ok=True)
-                total, count = total-size, count-1
+            self._guard(deadline)
+            item.unlink(missing_ok=True)
+            total, count = total-size, count-1
 
 
 class _Server(ThreadingMixIn, HTTPServer):

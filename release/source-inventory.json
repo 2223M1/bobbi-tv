@@ -605,7 +605,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "0a57f616933f27847419b864341c16b5b31de35be7436d1371514eaae4dc2ea6",
+      "addon.xml": "b2dff3e18cf8f38bf025946c9f0fb8881fb4284005ce84cd370eeca3dc8482de",
       "default.py": "c47509ab7987d8edc3fc3aad6f08a0da7fae0e1588e04c1bd1ab21cc0f58bf23"
     },
     "script.module.bobbi.catalog": {
@@ -621,7 +621,7 @@
       "resources/settings.xml": "3ad0dd1185d7871b2a549838ebf41410853281797c75f4e2277d9e5fabe2c298"
     },
     "script.module.bobbi.core": {
-      "addon.xml": "06e1dd045c61d939aea8dec4a7a8c21d61e85aefcc00f24374ff40c8ee894c13",
+      "addon.xml": "a2d5d3e7fc95622c5bd448c0dcbc881fe42d1e3c750f8639949c413904862762",
       "lib/bobbi_core/__init__.py": "f9e32762d2f4ce4acde5ff9c621551ce06932ebaecc5dc0bf8deeff25bf86a9e",
       "lib/bobbi_core/account_readiness.py": "d4a6ff03eb16191e3ed324c9a76adb91280818a234c9f6367e78bcc152cdbbe2",
       "lib/bobbi_core/anime_range_candidates.py": "4966fc9571a997836bf7d042563abf6747777376f8bca56a3634d28c3ee371a9",
@@ -654,7 +654,7 @@
       "lib/bobbi_core/font_preflight_lane.py": "7035c55e1b2223d162236935c3b2d9f733489e5b98df0249c30d0560cd7097be",
       "lib/bobbi_core/fonts.py": "46b582d48aebf158618b9ec5f5729674c6116452bb876b2cf45f1fef0f287447",
       "lib/bobbi_core/http_policy.py": "2bfd1344d74359df1af12ef8ae469f2e2d27c277df5d1ec0813ca6c3cd7126e8",
-      "lib/bobbi_core/image_cache.py": "e63c4755cf2825f88f609826cb9a7d635d6d323df525c7fcbefdd72eb1b8ae8a",
+      "lib/bobbi_core/image_cache.py": "b1bf67e625e24cc7830b24a30c1d50871fa346ce635e04009cea7ed3f2e00f13",
       "lib/bobbi_core/jackett_protocol.py": "88fd709bbf0d902bba738121c146dfa319860c974eb54a6bbcd00025cbe3b78d",
       "lib/bobbi_core/juku_api.py": "28c43209af74b3a7a43df3eac5dfbd9e01958ecf10424daada95b9eb26bf0328",
       "lib/bobbi_core/juku_catalog.py": "16c42129c77cf528bb700b143124b72db359d536e0a60bb8f2e930b8ac62ad53",
@@ -747,7 +747,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "95bd823a774e83fac5e0e9f6798056f64dc6b7d3b6ded2883b79e48042570b41",
+      "addon.xml": "05b09a45b1e77b1cd1f0720d6a751af9fa0fb6c14c3f5588f78bdf05efa39834",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -759,9 +759,9 @@
       "lib/bobbi_platform/account_manager.py": "71155808e03c6f8ccd48403bfaa7ab9763ef798fc141e6f7bc2c8dd46be2070d",
       "lib/bobbi_platform/bt_setup.py": "92a2fab72ed828bc157d40059a1045dcead3c136fcc0c88ecf4406bd591ff9d8",
       "lib/bobbi_platform/capabilities.py": "226300a6b05da39633bf321649f2bad56782339f6b42ca675c45f2862c9d0e6f",
-      "lib/bobbi_platform/ce_install_ui.py": "d05f231b0d8dfb5e4c31894ff774460b42abf81f5d59d73d1175c3397fc423db",
+      "lib/bobbi_platform/ce_install_ui.py": "4f7715a0fb7aaeee29062ededb1bc5707f1d54b72c58c474c88b6ee3224cbff8",
       "lib/bobbi_platform/ce_installer.py": "5ee9572f21043c34551e7bf9aa771fbfb31dc5edb91b13c3cec654165d728442",
-      "lib/bobbi_platform/ce_storage.py": "ed2803e53a1b054e59f703a94c8c407815f764b6083fdcba4f6389c401cef9d5",
+      "lib/bobbi_platform/ce_storage.py": "2edaf2c006dbc9f5127c4c654dd5390573d47973d5dd3197639fbb5cbc920035",
       "lib/bobbi_platform/cloud115.py": "54194516b9292b8b35985e7eb0e14c2e734102a958a69f7143e861d8ea0a979a",
       "lib/bobbi_platform/cloud_hub.py": "fd1fc3b8235f79aeed1954309d6fe4c1636c19651ecb7ee4a0198aee34cb7331",
       "lib/bobbi_platform/cloud_ui.py": "42da992695c90d8f716baca35ddd35d9408523be9dd648d5a2977d606bd40f3c",
