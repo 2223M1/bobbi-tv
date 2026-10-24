@@ -31,7 +31,7 @@ def login():
         dialog.ok('115 暂时无法登录', '请稍等片刻再试，已有账号保留。')
         return False
     if expected['authenticated']:
-        choice = dialog.select('115 账号', ['扫码切换或重新登录', '退出登录'])
+        choice = dialog.select('115 分享播放', ['扫码切换或重新登录', '退出登录'])
         if choice < 0:
             return False
         if choice == 1:

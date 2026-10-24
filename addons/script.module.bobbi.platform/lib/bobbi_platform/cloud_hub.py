@@ -1,5 +1,6 @@
 """Thin cloud settings UI; existing account, preparation and library owners."""
 from .runtime import call
+from . import cd2_mounts
 
 
 def status():
@@ -26,7 +27,7 @@ def cd2_label(value):
         if dependency == 'DEPENDENCY_UNAVAILABLE':
             return '连接失败，请检查登录'
         return '尚未检查连接'
-    return {'NOT_CONFIGURED': '未接入（可选）', 'STARTING': '正在启动',
+    return {'NOT_CONFIGURED': '未设置（可选）', 'STARTING': '正在启动',
             'WAITING_ACCOUNT': '等待登录 115', 'REVOKING': '正在切换账号',
             'UNAVAILABLE': '配置需要检查', 'STOPPED': '后台已停止',
             'HOST_UNAVAILABLE': '影院后台暂不可用'}.get(state, '状态暂不可用')
@@ -35,6 +36,7 @@ def cd2_label(value):
 def cd2_details(value):
     return ('CD2 · ' + cd2_label(value) + '\n\n'
             '观看 115 分享片源无需 CD2。\n'
+            '已有 CD2 挂载可直接在“我的片库”浏览，无需扫码。影院的 115 分享片源需单独登录一次。\n'
             '需要提前存片或挂载网盘时，请在 CloudDrive 中登录与影院相同的 115 账号。\n'
             '连接失败时，先到 CloudDrive 检查服务和登录状态。\n\n'
             '本页只显示后台状态，不会创建转存任务。文件是否就绪，请以选源页为准。')
@@ -63,16 +65,22 @@ def show(dialog=None):
     while not monitor.abortRequested():
         value = status()
         account = {True: '已保存登录', False: '未登录', None: '后台暂不可用'}[value['authenticated']]
-        rows = [('account', '115 账号 · ' + account),
+        rows = [('account', '115 分享播放 · ' + account),
                 ('cd2', 'CD2 提前存片 · ' + cd2_label(value['preparation'])),
                 ('library', '我的片库'),
                 ('transport', '115 读取方式'),
                 ('refresh', '刷新状态')]
+        if cd2_mounts.discover():
+            rows.insert(0, ('mounted', '使用已有 CD2 网盘 · 无需扫码'))
         choice = dialog.select('网盘账号与 CD2', [label for _, label in rows])
         if choice < 0 or choice >= len(rows):
             return
         action = rows[choice][0]
-        if action == 'account':
+        if action == 'mounted':
+            from .library_ui import open_existing_cd2
+            if open_existing_cd2(dialog):
+                return True  # Do not cover the opened library with this menu.
+        elif action == 'account':
             from .cloud_ui import login
             login()  # Existing QR cancellation and account-generation CAS.
         elif action == 'cd2':

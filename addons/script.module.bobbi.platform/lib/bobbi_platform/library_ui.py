@@ -1,5 +1,6 @@
 """Kodi-native dialogs inherit the active cinema skin and remote navigation."""
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlencode
+from . import cd2_mounts
 from .environment import private_path
 from .libraries import (Registry, LibraryError, MAX_CATALOG_BYTES, import_catalog,
                         vfs_source, joined_path, directory_items, split_location)
@@ -26,6 +27,60 @@ def message(error):
 
 def registry(translate):
     return Registry(private_path(translate, 'libraries.sqlite3'))
+
+
+def _cd2_source(dialog, store):
+    mounts = cd2_mounts.discover()
+    if not mounts:
+        dialog.ok('未发现 CD2 挂载', '请先在 CloudDrive 挂载网盘。远程 CD2 可通过 SMB 或 WebDAV 添加。')
+        return None
+    choice = dialog.select('选择 CD2 挂载目录', list(mounts)) if len(mounts) > 1 else 0
+    if choice < 0 or choice >= len(mounts):
+        return None
+    path = mounts[choice]
+    sources = store.sources()
+    source = next((row for row in sources if row.kind == 'vfs'
+                   and row.location.rstrip('/') == path), None)
+    # A mount can disappear while the selector is open. Do not
+    # silently save a stale path or label an ordinary directory as live CD2.
+    if path not in cd2_mounts.discover():
+        dialog.ok('CD2 挂载已变化', '请检查 CloudDrive 后重新打开。未修改片库来源。')
+        return None
+    if source is None:
+        names = {row.name for row in sources}
+        name, suffix = 'CD2 网盘', 2
+        while name in names:
+            name, suffix = 'CD2 网盘 %d' % suffix, suffix + 1
+        source = vfs_source(name, path)
+        store.save(source)
+    return source
+
+
+def open_existing_cd2(dialog=None):
+    """Reuse the existing library owner; no alternate account or player stack."""
+    import xbmc
+    import xbmcgui
+    import xbmcvfs
+    dialog = dialog or xbmcgui.Dialog()
+    if not xbmc.getCondVisibility('System.HasAddon(plugin.video.bobbi.library)'):
+        dialog.ok('片库组件未安装', '请用波比 TV 完整安装包修复，CD2 设置保留。')
+        return False
+    store = None
+    try:
+        store = registry(xbmcvfs.translatePath)
+        source = _cd2_source(dialog, store)
+        if source is None:
+            return False
+        target = 'plugin://plugin.video.bobbi.library/?' + urlencode(
+            dict(action='browse', source=source.id))
+    except (LibraryError, OSError, RuntimeError, ValueError) as error:
+        dialog.ok('未能打开 CD2 网盘', message(error))
+        return False
+    finally:
+        if store is not None:
+            store.close()
+    xbmc.executebuiltin('ActivateWindow(Videos,' + target + ',return)')
+    return True
 
 
 def _network(dialog, kind, previous=None):
@@ -112,9 +167,13 @@ def edit_source(dialog, vfs, store, previous):
 def add_source(dialog, vfs, store):
     kinds = ['SMB 共享', 'NFS 共享', 'WebDAV 网盘',
              '本机 / U盘 / 已保存目录', '导入直链片库']
+    if cd2_mounts.discover():
+        kinds.append('已有 CD2 网盘（无需扫码）')
     choice = dialog.select('添加来源', kinds)
-    if choice < 0:
+    if choice < 0 or choice >= len(kinds):
         return False
+    if choice == 5:
+        return _cd2_source(dialog, store) is not None
     if choice < 3:
         source = _network(dialog, ('smb', 'nfs', 'webdav')[choice])
     elif choice == 3:

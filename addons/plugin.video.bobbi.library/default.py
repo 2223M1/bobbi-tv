@@ -125,6 +125,10 @@ def execute(handle, params):
                                      info=file_info(entry.size, entry.modified)))
             else:
                 path = joined_path(source, relative)
+                # Kodi's exists() treats slashless paths as files. Nested
+                # folders must keep directory syntax, including local FUSE.
+                if not path.endswith(('/', '\\')):
+                    path += '\\' if '\\' in path else '/'
                 if not xbmcvfs.exists(path):
                     raise LibraryError('SOURCE_UNAVAILABLE')
                 listing, metadata = listing_with_metadata(path)

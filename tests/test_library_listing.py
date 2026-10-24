@@ -1,5 +1,8 @@
 from dataclasses import replace
+from contextlib import contextmanager
 import json
+import os
+from types import SimpleNamespace
 import pytest
 from bobbi_platform.libraries import import_catalog, vfs_source, LibraryError
 from bobbi_platform.library_listing import source_presentation, file_info, native_listing, local_listing
@@ -25,6 +28,27 @@ def test_local_metadata_does_not_require_remote_api_permission(tmp_path):
     assert listing==((True,'nested'),(False,'film.mkv'))
     assert metadata['film.mkv']['size']==13
     assert len(metadata['film.mkv']['date'])==10
+
+
+@pytest.mark.parametrize('path', ['/mnt/115open/', '/mnt/115open/动画/'])
+def test_ce_ascii_filesystem_codec_preserves_utf8_names_and_paths(monkeypatch, path):
+    from bobbi_platform import library_listing
+    seen=[]
+    @contextmanager
+    def scandir(value):
+        seen.append(value)
+        if isinstance(value,str):
+            value.encode('ascii')  # Embedded CE Python's filesystem codec.
+        names=[('动画'.encode(),True),('第一集.mkv'.encode(),False),(b'bad\xff.mkv',False)]
+        yield iter(SimpleNamespace(
+            name=raw if isinstance(value,bytes) else raw.decode('ascii','surrogateescape'),
+            is_dir=lambda folder=folder:folder,
+            stat=lambda:SimpleNamespace(st_size=123,st_mtime=1700000000)) for raw,folder in names)
+    monkeypatch.setattr(library_listing,'os',SimpleNamespace(name='posix',scandir=scandir,fspath=os.fspath))
+    listing,metadata=local_listing(path)
+    assert seen==[path.encode('utf-8')]
+    assert listing==((True,'动画'),(False,'第一集.mkv'))
+    assert metadata['第一集.mkv']['size']==123
 
 
 @pytest.mark.parametrize('size,date,expected', [(0,'',{'size':0}), (-1,'oops',{}),

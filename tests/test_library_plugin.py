@@ -116,6 +116,34 @@ def test_browse_filters_files_and_routes_only_local_ids(plugin):
     assert plugin.calls[0][0] == 'listdir' and not plugin.resolved
 
 
+@pytest.mark.parametrize('location,expected', [
+    ('/mnt/CloudDrive', '/mnt/CloudDrive/Season 1/'),
+    ('smb://nas.example/Movies', 'smb://nas.example/Movies/Season%201/'),
+    ('davs://nas.example/Movies', 'davs://nas.example/Movies/Season%201/'),
+    (r'C:\Movies', 'C:\\Movies\\Season 1\\'),
+])
+def test_nested_directory_uses_kodi_folder_exists_semantics(plugin, monkeypatch, location, expected):
+    source = vfs_source('Existing files', location)
+    store = Registry(plugin.path)
+    try:
+        store.save(source)
+    finally:
+        store.close()
+    checked, listed = [], []
+    def folder_exists(path):
+        checked.append(path)
+        return path == expected  # Kodi treats a slashless path as a file.
+    def listing(path):
+        listed.append(path)
+        return ((False, 'film.mkv'),), {}
+    monkeypatch.setattr(plugin.module.xbmcvfs, 'exists', folder_exists)
+    monkeypatch.setattr(plugin.module, 'listing_with_metadata', listing)
+    plugin.module.execute(17, {'action': 'browse', 'source': source.id, 'relative': 'Season 1'})
+    assert checked == listed == [expected]
+    assert plugin.rows[0][1].label == 'film.mkv'
+    assert not plugin.resolved
+
+
 def test_pagination_reaches_last_page_without_losing_or_repeating_items(plugin):
     plugin.directories = []
     plugin.files = ['film-%05d.mkv' % n for n in range(10000)]

@@ -12,6 +12,11 @@ from test_onboarding import setup_ui
 from test_library_ui import context as library_context
 
 
+@pytest.fixture(autouse=True)
+def no_unrelated_device_mounts(monkeypatch):
+    monkeypatch.setattr(cloud_hub.cd2_mounts, 'discover', lambda: ())
+
+
 def test_empty_host_cloud_view_does_not_construct_optional_dependencies(tmp_path, monkeypatch):
     h = Host(tmp_path)
     h.start()

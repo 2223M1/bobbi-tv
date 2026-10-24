@@ -14,7 +14,7 @@
       <control type="image" id="101"><left>68</left><top>166</top><width>416</width><height>416</height><aspectratio>keep</aspectratio></control>
       <control type="label" id="102"><left>552</left><top>184</top><width>640</width><height>56</height><font>font24</font><textcolor>FFF5F3EF</textcolor></control>
       <control type="label" id="103"><left>552</left><top>268</top><width>640</width><height>60</height><font>font20</font><textcolor>FFA9ADB7</textcolor><wrapmultiline>true</wrapmultiline></control>
-      <control type="textbox"><left>552</left><top>362</top><width>640</width><height>150</height><font>font13</font><textcolor>FFA9ADB7</textcolor><label>账号仅保存在本机。[CR]取消扫码会保留当前账号；不会删除或转存网盘文件。</label></control>
+      <control type="textbox"><left>552</left><top>362</top><width>640</width><height>150</height><font>font13</font><textcolor>FFA9ADB7</textcolor><label>用于影院中的 115 分享片源。[CR]已有 CD2 挂载可免扫码浏览。[CR]账号仅保存在本机，取消保留当前账号。</label></control>
       <control type="button" id="9001">
         <left>552</left><top>536</top><width>640</width><height>76</height><font>font20</font><label>取消并返回</label>
         <align>center</align><aligny>center</aligny><textcolor>FFF5F3EF</textcolor><focusedcolor>FF0A0B0E</focusedcolor>

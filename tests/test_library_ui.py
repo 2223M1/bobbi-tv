@@ -11,6 +11,7 @@ from bobbi_platform.libraries import LibraryError, Registry, import_catalog, vfs
 
 @pytest.fixture
 def context(monkeypatch, tmp_path):
+    monkeypatch.setattr(ui.cd2_mounts, 'discover', lambda: ())
     state = SimpleNamespace(inputs=[], selections=[], confirmations=[], paths=[], shown=[],
         input_options=[], builtins=[], raw=b'', closed=0, addon=True, aborted=False)
     state.path = tmp_path / 'libraries.sqlite3'

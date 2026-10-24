@@ -9,7 +9,7 @@ def create(image):
     class AccountQR(xbmcgui.WindowXMLDialog):
         def onInit(self):
             cinema = xbmc.getSkinDir() == 'skin.bobbi.cinema'
-            self.getControl(100).setLabel('登录 115 网盘', font='Head40' if cinema else 'font24')
+            self.getControl(100).setLabel('登录 115 分享播放', font='Head40' if cinema else 'font24')
             self.getControl(101).setImage(str(image))
             self.getControl(102).setLabel('用「115 生活」App 扫码', font='Head34' if cinema else 'font24')
             self.getControl(103).setLabel(self.message, font='Body26' if cinema else 'font20')

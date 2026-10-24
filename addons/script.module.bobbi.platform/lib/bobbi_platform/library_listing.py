@@ -69,16 +69,27 @@ def native_listing(response, path):
 def local_listing(path):
     """Local sources need not be registered for Kodi's remote-files API."""
     dirs, files, metadata = [], [], {}
-    with os.scandir(path) as entries:
+    # Embedded CE Python can use an ASCII filesystem codec. Kodi paths and
+    # cloud filenames are UTF-8; a bytes scan avoids surrogate-escaped names
+    # and also lets users enter a Chinese-named child directory. Windows keeps
+    # its native Unicode path API. Do not change the process-wide locale.
+    scan_path = os.fspath(path)
+    if os.name == 'posix' and isinstance(scan_path, str):
+        scan_path = scan_path.encode('utf-8')
+    with os.scandir(scan_path) as entries:
         for index, entry in enumerate(entries):
             if index >= MAX_DIRECTORY_ITEMS:
                 raise LibraryError('DIRECTORY_TOO_LARGE')
+            try:
+                name = entry.name.decode('utf-8') if isinstance(entry.name, bytes) else entry.name
+            except UnicodeDecodeError:
+                continue  # Invalid byte names cannot form a Kodi UTF-8 route.
             folder = entry.is_dir()
-            (dirs if folder else files).append(entry.name)
+            (dirs if folder else files).append(name)
             if not folder:
                 try:
                     stat = entry.stat()
-                    metadata[entry.name] = file_info(stat.st_size, datetime.fromtimestamp(stat.st_mtime).isoformat())
+                    metadata[name] = file_info(stat.st_size, datetime.fromtimestamp(stat.st_mtime).isoformat())
                 except OSError:
                     pass
     return directory_items(dirs, files), metadata

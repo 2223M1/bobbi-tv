@@ -234,7 +234,7 @@ def test_confirmed_qr_commits_once_then_refreshes_without_reconfirmation(context
     assert bool(context.menus) == authenticated
     assert context.builtins == ['Container.Refresh']
     assert context.dialogs[-1][0] == '115 登录成功'
-    assert context.labels == ['登录 115 网盘', '用「115 生活」App 扫码',
+    assert context.labels == ['登录 115 分享播放', '用「115 生活」App 扫码',
         '扫码后在手机确认。取消会保留当前账号。', '取消', '已扫码，请在手机上确认登录']
     assert_committed_before_refresh(context, 'account_install')
 
