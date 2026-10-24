@@ -257,7 +257,7 @@ class JacktookPLayer(xbmc.Player):
 
         try:
             if self.url.startswith('plugin://plugin.video.jacktorr/'):
-                raise RuntimeError('旧 BT 解析地址已失效，请返回选源窗口重新选择；未启动旧播放控制。')
+                raise RuntimeError('BT 播放地址已失效，请返回重新选源。')
             if data.get('_catalog_next'):
                 from lib.utils.player.direct_continuity import resolve_direct
                 self.url = data['url'] = resolve_direct(data, lambda: self._cinema_cancel.is_set()
@@ -271,12 +271,12 @@ class JacktookPLayer(xbmc.Player):
                 if known and known['state'] == 'ready':
                     cloud = resolve_direct_cloud(data, lambda: self._cinema_cancel.is_set() or not self._owns_playback_session())
                     if not cloud:
-                        raise RuntimeError('115 文件当前不可读或身份发生变化，请重新选源')
+                        raise RuntimeError('115 文件无法读取或已变化，请重新选源')
                     self.url = data['url'] = cloud['path']
                     data.update(direct_cloud_key=cloud['key'], size=cloud['bytes'], indexer='115 · CD2 · 漫迪')
                     self._cinema_phase('DIRECT_CLOUD_VERIFIED')
                 elif data.get('_catalog_next') or data.get('direct_cloud_required'):
-                    raise RuntimeError('同版本正在准备到 115，尚未验证就绪；请稍后重试')
+                    raise RuntimeError('同版本正在存入 115，请稍后重试')
             if data.get('prepared_resource_id'):
                 self._cinema_phase('PREPARED_VERIFY_BEGIN')
                 from lib.clients.bobi_library import load_prepared_index, local_path
@@ -285,7 +285,7 @@ class JacktookPLayer(xbmc.Player):
                 entries = [entry for title in snapshot['titles'] for entry in title['sources']
                            if entry['key'] == data['prepared_resource_id']]
                 if len(entries) != 1 or not resolve_entry(data, snapshot, entries[0], self._cinema_cancel.is_set):
-                    raise RuntimeError('云端身份核验失败，未播放未知文件')
+                    raise RuntimeError('无法确认网盘文件是否正确，请重新选源')
                 self.url = data['url'] = local_path(snapshot['mount_root'], entries[0]['path'])
                 data['source_title'] = entries[0]['title']
                 data['video_context'] = entries[0].get('video_context')
@@ -2352,7 +2352,7 @@ class JacktookPLayer(xbmc.Player):
                     self._cinema_prepare_inflight = None
                 if attempts == 5 and current_session() and not getattr(self, '_cinema_prepare_sent', False):
                     self._preparation_diagnostic('INTENT_RETRY_EXHAUSTED')
-                    notification('115 准备状态尚未确认，重新选择同片源可重试；不会盲目重复提交云任务',
+                    notification('尚未确认是否已存入 115。可重新选择此片源检查，不会重复提交。',
                                  heading='波比TV', time=5000)
         try:
             Thread(target=submit, name='cinema-prepare-ipc', daemon=True).start()
@@ -2400,20 +2400,20 @@ class JacktookPLayer(xbmc.Player):
             if self._owns_playback_session() and not self._cinema_cancel.is_set():
                 self._direct_prepare_sent = True
                 if result.get('state') == 'retryable':
-                    notification('个人 115 准备读取失败；重新选择此片源可重试', heading='波比TV', time=5000)
+                    notification('无法读取 115 存片状态，请重新选择此片源重试', heading='波比TV', time=5000)
                 elif result.get('state') in ('failed', 'rejected'):
-                    notification('个人 115 准备未完成；当前直连播放不受影响', heading='波比TV', time=5000)
+                    notification('尚未存入 115，不影响当前播放', heading='波比TV', time=5000)
                 elif result.get('state') == 'uncertain':
-                    notification('个人 115 任务结果待核对；不会重复提交', heading='波比TV', time=5000)
+                    notification('尚未确认 115 存片结果，不会重复提交', heading='波比TV', time=5000)
                 elif result.get('state') != 'ready':
-                    notification('当前片源正在准备到个人 115；完成验证后再标记就绪', heading='波比TV', time=5000)
+                    notification('正在存入你的 115，暂未就绪', heading='波比TV', time=5000)
         except (OSError, ValueError, RuntimeError):
             self._preparation_diagnostic('DIRECT_PREPARATION_UNAVAILABLE')
         finally:
             if (applicable and attempts == 5 and self._owns_playback_session() and not self._cinema_cancel.is_set()
                     and not getattr(self, '_direct_prepare_sent', False)):
                 self._preparation_diagnostic('DIRECT_PREPARATION_RETRY_EXHAUSTED')
-                notification('个人 115 准备状态尚未确认，重新选择同片源可重试；当前播放不受影响',
+                notification('未确认 115 存片状态，不影响当前播放。可重新选择此片源检查。',
                              heading='波比TV', time=5000)
 
     def check_cinema_continuity(self):
@@ -2500,12 +2500,12 @@ class JacktookPLayer(xbmc.Player):
                                 self._cinema_next_status = state
                                 kodilog('[CINEMA-NEXT] ' + state, level=xbmc.LOGINFO)
                                 if state in ('DIRECT_CLOUD_PREPARING', 'DIRECT_CLOUD_FAILED'):
-                                    message = ('下一集正在存入个人 115，尚未就绪' if state == 'DIRECT_CLOUD_PREPARING'
-                                               else '下一集存入 115 未完成，请检查准备状态或重新选源')
+                                    message = ('下一集正在存入你的 115，尚未就绪' if state == 'DIRECT_CLOUD_PREPARING'
+                                               else '下一集尚未存入 115，请稍后重试或重新选源')
                                     set_property('AM6B.NextPreparationState', message)
                                     notification(message, heading='波比TV', time=5000)
                                 elif prepared and (prepared.get('direct_source') or {}).get('provider') == 'mdsub':
-                                    set_property('AM6B.NextPreparationState', '同版本下一集已在 115 验证就绪')
+                                    set_property('AM6B.NextPreparationState', '同版本下一集已在 115 就绪')
                     gate.finish(token, bool(prepared), monotonic(), publish,
                                 provisional=bool(prepared and prepared.get('_next_transport') == 'bt'))
             try:
@@ -2587,9 +2587,9 @@ class JacktookPLayer(xbmc.Player):
                 and self._owns_playback_session() and not self._cinema_cancel.is_set()
                 and not self._cinema_next_data):
             kodilog('[CINEMA-NEXT] EOF_WITHOUT_VERIFIED_NEXT', level=xbmc.LOGINFO)
-            message = ('下一集尚未在 115 验证就绪，未自动启动不稳定外链；请稍后重试'
+            message = ('下一集尚未在 115 就绪，请稍后重试或手动选源'
                        if str(getattr(self, '_cinema_next_status', '')).startswith('DIRECT_CLOUD')
-                       else '本集已结束，未找到可接续的同版本下一集，请返回选源')
+                       else '本集已播完，未找到同版本下一集，请手动选源')
             notification(message, heading='波比TV', time=5000)
         if (not self.data.get('cinema_continuity') or not getattr(self, '_cinema_end', False)
                 or not self._owns_playback_session() or self._cinema_cancel.is_set()

@@ -48,7 +48,7 @@
       <width>885</width>
       <height>147</height>
       <align>center</align>
-      <label>需要复位皮肤设置吗？(警告:所有皮肤设置将被恢复成初始值!)</label>
+      <label>重置皮肤设置？所有外观设置将恢复默认值。</label>
       <font>font13</font>
       <textcolor>red</textcolor>
       <visible>!Player.Playing + !Player.Seeking + !Player.Paused + !Player.Forwarding + !Player.Rewinding</visible>

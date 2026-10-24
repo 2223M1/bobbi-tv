@@ -37,13 +37,13 @@
       <content>
         <item>
           <label>网盘与 NAS</label>
-          <label2>浏览自己的 SMB、NFS、WebDAV 与本机目录</label2>
+          <label2>浏览已添加的网盘、NAS 和本机视频</label2>
           <icon>bobi/icons/server.png</icon>
           <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi.library/",return)</onclick>
         </item>
         <item>
           <label>添加或管理来源</label>
-          <label2>新增、修改、移除连接；不会删除网盘与 NAS 上的文件</label2>
+          <label2>添加或修改连接，移除来源不会删除视频</label2>
           <icon>bobi/icons/plus.png</icon>
           <onclick>RunScript(script.bobbi.setup,libraries)</onclick>
         </item>
@@ -180,7 +180,7 @@
       </focusedlayout>
       <content>
         <item>
-          <label>影院设置</label><label2>登录、后台、原声字幕与更新</label2>
+          <label>影院设置</label><label2>账号、播放偏好与更新</label2>
           <icon>bobi/icons/film.png</icon>
           <onclick>RunPlugin(plugin://plugin.video.bobbi/?action=bobbi_setup)</onclick>
         </item>

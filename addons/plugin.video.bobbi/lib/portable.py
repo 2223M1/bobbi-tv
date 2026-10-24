@@ -17,7 +17,7 @@ def local_client():
     from bobbi_platform.pairing import load, engine_document
     pair = load(private_path(xbmcvfs.translatePath, 'helper-pairing.json'))
     if pair is None:
-        raise UnsupportedPlayback('先打开“bobbi 首次设置”连接本机助手，再选择 BT 片源。')
+        raise UnsupportedPlayback('请先在“影院设置”的“BT 播放”中连接本机助手。')
     return TorrServerClient(engine_document(pair))
 
 
@@ -31,7 +31,7 @@ def resolve_torrent(source, still_selected, information=None, force_picker=False
     expected, magnet = selected_magnet(source.infoHash, supplied[0] if supplied else None)
     client = local_client()
     progress = xbmcgui.DialogProgress()
-    progress.create('bobbi · 准备所选片源', '正在读取文件列表，最多等待 30 秒；可随时取消。')
+    progress.create('正在准备片源', '正在读取文件列表，最多等待 30 秒，可随时取消。')
     choosing = False
     evidence = 'USER_CONFIRMED_FILE'
     def cancelled():
@@ -133,7 +133,7 @@ def queue_selected(window, source, pack_select=False, subtitle_download=False, l
         window.item_information['_account'] = account
     except (OSError, ValueError, RuntimeError):
         window._selection_locked = False
-        window.last_error = '播放协调服务尚未就绪，请稍后重试。'
+        window.last_error = '播放器尚未就绪，请稍后重试。'
         window.setProperty('playback_error', window.last_error)
         return
     xbmcgui.Window(10000).setProperty(SELECTION, window.item_information['request_id'])
@@ -169,7 +169,7 @@ def manual_modal(window, base_modal):
             identity = selected_identity(str(source.guid or source.url or source.infoHash))
             options = getattr(window, '_standard_options', {})
             if source.type not in ('Direct', 'Stremio', 'Torrent'):
-                raise UnsupportedPlayback('所选来源缺少可用的文件解析器。')
+                raise UnsupportedPlayback('暂不支持打开此片源，请选择其他片源。')
             # Run discovery alongside selected URL resolution, not after the
             # player starts. Same-share authority is independently revalidated.
             subtitle_data = dict(window.item_information, source_title=getattr(source, 'title', ''))
@@ -241,15 +241,15 @@ def manual_modal(window, base_modal):
         except UnsupportedPlayback as error:
             window.last_error = str(error)
         except (ValueError, OSError, RuntimeError):
-            window.last_error = '当前片源未能解析。未自动改选其他版本。'
+            window.last_error = '片源解析失败，请重试或选择其他片源。'
             if handoff is not None and handoff.state == 'submission_unknown':
                 # The command may have reached Kodi. Never retry it or invoke
                 # legacy cancellation that stops another/current video.
-                window.last_error = '播放请求已发送但响应不明。请用 Kodi 标准播放器确认；本次不会重试。'
+                window.last_error = '未确认是否已开播，请打开播放控制查看。本次不会自动重试。'
                 xbmcgui.Dialog().ok('bobbi', window.last_error)
                 return False
         call('standard_playback', dict(operation='cancel', request_id=request_id))
-        xbmcgui.Dialog().ok('bobbi · 片源暂不可用', window.last_error)
+        xbmcgui.Dialog().ok('片源暂不可用', window.last_error)
         # Preserve the actual candidate pool and user's position on retry.
         window._restore_position = window.position
         if getattr(window, 'source_session', None):

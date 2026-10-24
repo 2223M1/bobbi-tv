@@ -151,7 +151,7 @@ def test_unknown_status_never_blindly_replays_and_exhaustion_is_visible(parity, 
         retry(p)
     assert called == ['prepare'] + ['status'] * 5
     assert not getattr(p.player, '_cinema_prepare_sent', False)
-    assert len(p.notices) == 1 and '重新选择同片源可重试' in p.notices[0]
+    assert len(p.notices) == 1 and '重新选择此片源检查' in p.notices[0]
 
 
 @pytest.mark.parametrize('operation', ['subtitle', 'font_preflight'])
@@ -245,7 +245,7 @@ def test_direct_unknown_receipt_only_queries_status_then_reports_retry(parity, m
             retry(p, direct=True)
         assert not getattr(p.player, '_direct_prepare_sent', False)
         assert calls == ['catalog_prepare'] + ['catalog_status'] * 5
-        assert len(p.notices) == 1 and '重新选择同片源可重试' in p.notices[0]
+        assert len(p.notices) == 1 and '重新选择此片源检查' in p.notices[0]
         assert queue.status(key)['state'] == 'absent'
     finally:
         queue.close()

@@ -10,14 +10,14 @@ def url(action, **params):
 def entries(action):
     if action == 'am6b_home':
         return [
-            ('我的网盘 / NAS / 个人片库', 'plugin://plugin.video.bobbi.library/',
-             '浏览自己添加的 SMB、NFS、WebDAV、本机目录和直链片库；手动选片，不转码。'),
-            ('添加与管理我的来源', 'plugin://plugin.video.bobbi.library/?action=manage',
-             '新增、修改或移除本机连接配置；不会删除网盘和 NAS 的媒体文件。'),
-            ('影院设置 · 登录 / 后台 / 更新', url('bobbi_setup'),
-             '连接自己的账号与 NAS，检查后台、原声字幕和更新。'),
+            ('我的片库', 'plugin://plugin.video.bobbi.library/',
+             '浏览已添加的网盘、NAS 和本机视频，选择原画质播放。'),
+            ('管理片库来源', 'plugin://plugin.video.bobbi.library/?action=manage',
+             '添加或修改连接。移除来源不会删除视频。'),
+            ('影院设置', url('bobbi_setup'),
+             '管理账号、播放偏好和更新。'),
             ('发现片单', url('am6b_discovery'),
-             '元数据片单，不代表资源已准备。进入条目后再选择来源。'),
+             '按海报选片，再查看可用片源。'),
         ]
     if action == 'am6b_discovery':
         return [
@@ -52,7 +52,7 @@ def helper_pick(params):
         'id': tmdb_id, 'language': 'en-US', 'append_to_response': 'external_ids',
     })
     if not details:
-        xbmcgui.Dialog().notification('波比TV', '元数据暂时不可用，请稍后重试')
+        xbmcgui.Dialog().notification('波比TV', '影片资料加载失败，请稍后重试')
         return
     name = getattr(details, 'title' if kind == 'movie' else 'name', '')
     if not isinstance(name, str) or not name.strip():

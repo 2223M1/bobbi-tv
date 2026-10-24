@@ -17,7 +17,7 @@ def offer(player, dialog, call):
         candidate = call('standard_playback', dict(operation='subtitle_candidate', request_id=request))
         if not candidate:
             return False
-        choice = dialog.select('中文字幕', ['加载本片已匹配的中文候选', '继续搜索其他字幕'])
+        choice = dialog.select('中文字幕', ['加载已找到的字幕', '搜索其他字幕'])
         if choice == 1:
             return False
         if choice == 0:

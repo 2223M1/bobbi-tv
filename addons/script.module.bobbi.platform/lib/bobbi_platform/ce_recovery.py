@@ -156,19 +156,18 @@ def show(installer, host, dialog):
     listing = installer.saved_generations()
     points = listing['points']
     if not points:
-        dialog.ok('程序恢复点', '尚无保存的完整程序包。更新成功后会尽量保留最近三个版本；原“回退上一次程序安装”仍可单独使用。')
+        dialog.ok('暂无恢复版本', '空间足够时，更新后会保存最近三个版本。也可返回使用“恢复上一版本”。')
         return False
     rows = ['版本 {} · {:.1f} MiB'.format(row['sequence'], row['size'] / 1024**2) for row in points]
-    choice = dialog.select('程序恢复点 · 不回退账号与观看记录', rows)
+    choice = dialog.select('选择恢复版本', rows)
     if choice < 0:
         return False
     point = points[choice]
-    dialog.textviewer('恢复完整程序版本',
-        '将整套恢复到版本 {}，保留账号、观看记录、媒体和第三方插件。\n'
-        '恢复后需重启 Kodi；原皮肤及音画设置不主动改变。\n'
-        '更新版本上限仍保留，旧包不会重新变成新更新。\n'
-        '已有 {} 个损坏或不可读取的恢复包未列出，也未删除。'.format(point['sequence'], listing['unavailable']))
-    if not dialog.yesno('恢复所选程序版本？', '仅恢复程序，不回退用户数据。完成后需重启 Kodi。'):
+    dialog.textviewer('恢复版本说明',
+        '将恢复到版本 {}，完成后需重启 Kodi。\n'
+        '账号、观看记录和媒体保留，不改第三方插件与音画设置。\n'
+        '有 {} 个不可用的恢复包未列出，原文件仍保留。'.format(point['sequence'], listing['unavailable']))
+    if not dialog.yesno('恢复这个版本？', '仅恢复程序，个人数据保留。完成后需重启 Kodi。'):
         return False
     host.check_idle()
     installer.restore_saved(point['name'])

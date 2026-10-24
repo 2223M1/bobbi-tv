@@ -88,11 +88,12 @@ def test_runtime_unavailable_is_not_reported_as_logged_out(monkeypatch, error):
 
 
 def test_running_owner_is_not_claimed_ready_without_dependency_check():
-    assert cloud_hub.cd2_label({'state': 'RUNNING'}) == '尚未完成连接检查'
-    assert cloud_hub.cd2_label(dict(state='RUNNING', dependency='DEPENDENCY_UNAVAILABLE')) == '连接或账号检查暂未通过'
+    assert cloud_hub.cd2_label({'state': 'RUNNING'}) == '尚未检查连接'
+    assert cloud_hub.cd2_label(dict(state='RUNNING', dependency='DEPENDENCY_UNAVAILABLE')) == '连接失败，请检查登录'
     assert '最近' in cloud_hub.cd2_label(dict(state='RUNNING', dependency='READY', ready=True))
     text = cloud_hub.cd2_details({'state': 'NOT_CONFIGURED'})
-    assert '不要求 CD2' in text and '分开管理' in text and '不代表' in text
+    assert '无需 CD2' in text and '相同的 115 账号' in text
+    assert '不会创建转存任务' in text and '文件是否就绪，请以选源页为准' in text
 
 
 @pytest.mark.parametrize('choices', [[-1], [1, -1], [4, -1]])

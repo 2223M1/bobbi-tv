@@ -90,7 +90,7 @@ def test_root_lists_sources_without_network_or_credentials(plugin):
     plugin.module.execute(17, {})
     assert len(plugin.rows) == 2
     assert not plugin.calls and not plugin.resolved
-    assert plugin.rows[0][1].label == '管理网盘 / NAS / 片库'
+    assert plugin.rows[0][1].label == '管理片库来源'
     assert plugin.rows[1][1].label == 'NAS'
     assert plugin.rows[0][1].properties['Bobi.Library.Manage'] == 'true'
     assert plugin.rows[1][1].properties['Bobi.Library.Kind'] == 'smb'

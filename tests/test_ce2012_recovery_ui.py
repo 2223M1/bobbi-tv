@@ -33,8 +33,9 @@ def test_real_main_keeps_recovery_choices_reachable(installed, monkeypatch, choi
     monkeypatch.setattr(ui, 'profile', lambda *a, **kw: actor.work)
     monkeypatch.setattr(ui, 'KodiHost', lambda: actor.host)
     monkeypatch.setattr(ui, 'Installer', lambda *a: actor)
+    monkeypatch.setattr(ui, 'rpc', lambda method, params: {'value': 'Arial'})
     ui.main()
-    assert menus[0][0] == '安装恢复尚未完成'
+    assert menus[0][0] == '安装未完成'
     assert len(menus[0][1]) == 3
     assert (actor.addons.parent / 'user-history').read_text() == 'new user data'
     if choice == 'rollback':
@@ -179,6 +180,7 @@ def test_persistent_restore_failure_keeps_retry_and_exit_reachable(installed, mo
     monkeypatch.setattr(ui, 'profile', lambda *a, **kw: actor.work)
     monkeypatch.setattr(ui, 'KodiHost', lambda: actor.host)
     monkeypatch.setattr(ui, 'Installer', lambda *a: actor)
+    monkeypatch.setattr(ui, 'rpc', lambda method, params: {'value': 'Arial'})
     ui.main()
     assert len(menus) == 2 and all(len(menu) == 2 for menu in menus)
     assert actor._read()['host_pending'] == 'restore'

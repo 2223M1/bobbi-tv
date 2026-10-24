@@ -123,7 +123,7 @@ def directory_entry(ids, label='相关电影资料未完成 · 重试'):
         return None
     item = make_list_item(label=label)
     item.getVideoInfoTag().setTitle(label)
-    item.getVideoInfoTag().setPlot('当前电影目录尚未确认完整；可重试，不代表没有关联电影。')
+    item.getVideoInfoTag().setPlot('关联电影尚未查全，请重试。')
     item.setProperty('Bobi.CatalogStatus', 'incomplete')
     item.setProperty('IsPlayable', 'false')
     return (build_url('bobi_related_movies', ids={'tmdb_id': ids['tmdb_id']}), item, True)
@@ -383,9 +383,9 @@ def show_related_movies(params):
     if not value['complete'] or stale:
         rows.append(directory_entry({'tmdb_id': identifier}, '电影目录未查全 · 重试'))
     elif not rows:
-        notification('未找到可可靠关联的电影，可在全局电影搜索中继续查找')
-        item = make_list_item(label='未找到已确认关联的电影 · 打开作品季目录')
-        item.getVideoInfoTag().setTitle('未找到已确认关联的电影 · 打开作品季目录')
+        notification('未找到关联电影，可按电影名称搜索')
+        item = make_list_item(label='未找到关联电影 · 查看剧集')
+        item.getVideoInfoTag().setTitle('未找到关联电影 · 查看剧集')
         item.setProperty('IsPlayable', 'false')
         rows.append((build_url('show_seasons_details', ids={'tmdb_id': identifier}, mode='tv', media_type='tv'), item, True))
     add_directory_items_batch(rows)

@@ -59,7 +59,7 @@
       <top>190</top>
       <width>1440</width>
       <height>46</height>
-      <label>高级操作 · 确认文件后继续解析，返回键取消</label>
+      <label>选择要播放的文件，按返回键取消</label>
       <font>font12</font>
       <textcolor>FFB3B3B3</textcolor>
     </control>
@@ -172,7 +172,7 @@
       <top>1008</top>
       <width>1710</width>
       <height>42</height>
-      <label>此入口保留手动选择能力，普通播放无需再次选择文件。</label>
+      <label>请按文件名核对正片或集数</label>
       <font>font11</font>
       <textcolor>FFB3B3B3</textcolor>
     </control>

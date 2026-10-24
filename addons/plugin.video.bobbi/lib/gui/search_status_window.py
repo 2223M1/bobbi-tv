@@ -149,8 +149,8 @@ class SearchStatusWindow(BaseWindow):
         self.getControl(13001).setLabel("正在搜索片源")
         self.setProperty("instant_close", "false")
         self.setProperty("search_heading", "正在搜索片源")
-        self.setProperty("search_subheading", "查询来源 · 完成后选择一次即可播放")
-        self.setProperty("search_hint", "正在并行查询可用来源，请稍候…")
+        self.setProperty("search_subheading", "选择片源后开始播放")
+        self.setProperty("search_hint", "正在查询各个来源…")
 
         # Set initial task names so feedback is visible before slow providers return.
         self._update_ui_state()

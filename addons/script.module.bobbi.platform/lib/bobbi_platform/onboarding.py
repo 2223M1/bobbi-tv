@@ -24,37 +24,34 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
     """Stable step IDs permit a simple remote-control menu and resumable UI."""
     kodi_ok = capabilities.get('standard_playback') is True
     helper_labels = {
-        'ready': '已连接（还需实播检验）',
-        'paired': '已配对 · 点击检查连接',
+        'ready': '已连接',
+        'paired': '已配对，点此检查',
         'not_paired': '尚未连接', 'invalid': '需要重新配对', 'offline': '需要启动或重试',
-        'adapter_ready': '现有后台已连接（还需实播检验）',
-        'adapter_offline': '已有接入 · 连接待检查',
-        'adapter_invalid': '已有配置 · 需要检查',
-        'adapter_unavailable': '已有配置 · 接入组件待检查',
-        'adapter_configured': '已有接入 · 尚未完成检查',
+        'adapter_ready': '已连接',
+        'adapter_offline': '连接失败，点此重试',
+        'adapter_invalid': '配置需要检查',
+        'adapter_unavailable': '组件暂不可用',
+        'adapter_configured': '已配置，点此检查',
     }
     library_label = ('需要检查' if library_count is None else
                      '已保存 %d 个来源' % library_count if library_count else
                      '原目录已保留' if library_root else '可跳过')
     return [
         ('check', '1. 检查播放器 · ' + ('通过' if kodi_ok else '需要处理')),
-        ('helper', '2. 可选 BT 后台（115 / NAS 无需）· ' + helper_labels.get(helper_state, '需要检查')),
-        ('library', '3. 我的网盘 / NAS / 片库 · ' + library_label),
-        ('language', '4. 原声与中文字幕 · 打开播放器设置'),
-        ('test', '5. 试播自己的视频 · 手动选择，不自动播放'),
-        ('cloud', '网盘与 CD2 · 115 扫码登录 / 云准备状态'),
-        ('catalog', '影视海报与搜索 · TMDb 来源 / 高级设置'),
-        ('cinema', '进入波比影院 · 切换新皮肤'),
-        ('updates', '更新与恢复 · 在线更新 / 本地安装 / 回退'),
-        ('diagnostics', '检查与诊断 · 搜索记录 / 预览 / 导出'),
-        ('status', '关于波比 TV · 支持范围'),
+        ('helper', '2. BT 播放（可选）· ' + helper_labels.get(helper_state, '需要检查')),
+        ('library', '3. 我的片库 · ' + library_label),
+        ('language', '4. 原声与中文字幕'),
+        ('test', '5. 选择视频试播'),
+        ('cloud', '网盘账号与 CD2'),
+        ('catalog', '海报与搜索设置'),
+        ('cinema', '进入波比影院'),
+        ('updates', '更新与恢复'),
+        ('diagnostics', '检查与诊断'),
+        ('status', '关于波比 TV'),
     ]
 
 
 def summary(capabilities):
     if capabilities.get('standard_playback') is not True:
-        return ('播放器接口暂不可用：' + '、'.join(capabilities.get('errors', [])) + '\n'
-                '请检查 Kodi 是否正常运行后重试。没有修改账号或音画设置。')
-    return ('Kodi 标准播放接口检查通过。\n'
-            '这不代表影片、HDR、音频直通或自动续播已经验收。\n'
-            '下一步可检查可选 BT 后台，或直接选择自己的视频测试。')
+        return '暂时无法连接播放器，请重启 Kodi 后再检查。'
+    return '播放器连接正常，可以选择视频试播。使用 115 或本地片库时，可跳过 BT 设置。'

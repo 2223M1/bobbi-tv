@@ -374,7 +374,7 @@
       </control>
       <control type="label">
         <left>40</left><top>0</top><width>1100</width><height>124</height>
-        <label>正在向各来源查询…  先到的片源会立即出现，可直接选择</label>
+        <label>正在查找更多片源，可先选择已显示的版本</label>
         <font>Label28</font><textcolor>FFB4B2AD</textcolor><aligny>center</aligny>
       </control>
     </control>

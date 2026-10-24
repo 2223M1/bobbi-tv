@@ -14,11 +14,11 @@ from bobbi_platform.updates import UpdateError
 @pytest.mark.parametrize('error,expected', [
     (OSError(errno.ENOSPC, 'PRIVATE'), '空间不足'),
     (PermissionError(errno.EACCES, 'PRIVATE'), '写入权限'),
-    (URLError(ssl.SSLCertVerificationError('PRIVATE')), '证书'),
-    (UpdateError('ONLINE_SHORT_READ'), '下载不完整'),
-    (UpdateError('ONLINE_CONTENT_INVALID'), '内容不匹配'),
+    (URLError(ssl.SSLCertVerificationError('PRIVATE')), '安全连接'),
+    (UpdateError('ONLINE_SHORT_READ'), '未下载完整'),
+    (UpdateError('ONLINE_CONTENT_INVALID'), '内容不符'),
     (UpdateError('ONLINE_GENERATION_MISMATCH'), '版本不一致'),
-    (UpdateError('Offline release signature rejected'), '完整安装包'),
+    (UpdateError('Offline release signature rejected'), '校验失败'),
 ])
 def test_install_failure_explains_actual_stage_without_echoing_response(entry, monkeypatch, error, expected):
     def fail(*args):
@@ -65,7 +65,7 @@ def test_storage_diagnostic_is_readonly_and_not_an_install_pass(monkeypatch):
     monkeypatch.setattr(diagnostics_ui.shutil, 'disk_usage',
                         lambda path: SimpleNamespace(free=123*1024**2, total=900*1024**2))
     result = diagnostics_ui.storage_text('/fixture')
-    assert '123 MiB' in result and '不是安装空间足够的证明' in result
+    assert '123 MiB' in result and '安装时会另行计算所需空间' in result
     def failed(path):
         raise OSError('PRIVATE')
     monkeypatch.setattr(diagnostics_ui.shutil, 'disk_usage', failed)

@@ -198,7 +198,7 @@ def test_space_plan_counts_allocation_and_only_missing_dependency_copies(environ
     missing = env.installer.plan_space(path)
     assert missing['dependency_copy_bytes'] > 0
     assert missing['required_bytes'] == plan['required_bytes']+missing['dependency_copy_bytes']
-    assert '已读下限' in plan_text(dict(plan, existing_sizes_complete=False))
+    assert '未统计完整' in plan_text(dict(plan, existing_sizes_complete=False))
 
 
 def test_space_consumed_during_staging_refuses_before_journal_and_quiesce(environment, signing, monkeypatch):
@@ -311,7 +311,7 @@ def test_storage_details_scroll_and_delete_confirmation_stays_short(entry):
     entries = cache_files(entry.env)
     ui.main(storage=True)
     assert len(entry.textviews) == len(entry.confirmations) == 1
-    assert '已交付' in entry.textviews[0][1]
+    assert '旧安装临时文件' in entry.textviews[0][1]
     assert len(entry.confirmations[0][1]) < 150
     assert all(not path.exists() for path in entries)
 
@@ -331,7 +331,7 @@ def test_offline_space_details_precede_short_confirmation_and_recheck_idle(entry
         return False
     entry.dialog.yesno = decline
     ui.main(payload=path)
-    assert len(entry.textviews) == 1 and '解压暂存' in entry.textviews[0][1]
+    assert len(entry.textviews) == 1 and '解压需' in entry.textviews[0][1]
     if playing_during_details:
         assert not entry.confirmations
     else:

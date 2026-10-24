@@ -40,7 +40,7 @@
                 </setting>
             </group>
             <group id="search" label="90006">
-                    <setting id="juku_enabled" type="boolean" label="共享目录（115 分享）" help="检索已接入的主站与共享目录；使用你自己的 115 账号播放，不自动转存。">
+                    <setting id="juku_enabled" type="boolean" label="共享目录（115 分享）" help="搜索共享片源，使用你的 115 账号播放。此选项不会自动转存。">
                         <default>true</default>
                         <control type="toggle" />
                     </setting>
@@ -1001,7 +1001,7 @@
         </category>
         <category id="playback_category" label="90139">
             <group id="playback_group" label="90139">
-                <setting id="cinema_continuity_enabled" type="boolean" label="波比TV：同版本自动续集与有界预读" help="仅自动继续索引中同作品、下一集、同版本的115文件；没有可靠匹配时停止，不降低规格或跳集。">
+                <setting id="cinema_continuity_enabled" type="boolean" label="同版本自动续播与提前读取" help="仅续播已确认同版本的 115 下一集。没有可靠匹配时停止，不降画质、不跳集。">
                     <default>false</default>
                     <control type="toggle" />
                 </setting>

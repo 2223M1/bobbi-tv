@@ -318,26 +318,26 @@ class ResolverWindow(BaseWindow):
             self.error_message = ''
             self.setProperty('loading_stage', '同片源 115 已就绪，正在接续')
         elif category in {'target_unresolved', 'invalid_binding', 'selected_file_missing', 'no_candidate'}:
-            self.error_message = "无法确定该片源中的目标集，未自动选择其他文件。"
+            self.error_message = "无法确认所选集数，请换一个片源。"
         elif category == 'metadata_timeout':
-            self.error_message = "等待 BT 元数据超时，尚未取得目标文件资料；请重试或选择其他片源。"
+            self.error_message = "读取种子文件列表超时，请重试或换源。"
         elif category == 'buffer_timeout':
-            self.error_message = "已取得目标文件资料，但首段缓冲超时；请重试或选择其他片源。"
+            self.error_message = "视频开头缓冲超时，请重试或换源。"
         elif category == 'torrent_download_timeout':
-            self.error_message = "获取种子文件超时，尚未开始视频缓冲；请重试或选择其他片源。"
+            self.error_message = "下载种子超时，请重试或换源。"
         elif category == 'torrent_download_failed':
-            self.error_message = "种子文件获取或校验失败，尚未开始视频缓冲；请刷新片源或重试。"
+            self.error_message = "未取得有效种子，请刷新片源后重试。"
         elif category in {'torrserver_error', 'preload_error', 'startup_timeout'}:
             self.error_message = "该片源暂时无法取得数据，请选择其他片源或稍后重试。"
         elif category == 'source_identity_mismatch':
-            self.error_message = "种子内容与所选片源不一致，已停止本次请求，请刷新片源。"
+            self.error_message = "种子与所选片源不符，已停止播放准备。请刷新片源。"
         elif category in {'cancelled', 'aborted'}:
-            self.error_message = "本次播放请求已取消或中止，未自动切换片源。"
+            self.error_message = "播放准备已中止，请重新选源。"
         try:
             terminal = json.loads(get_property("bobbi_cinema_terminal") or "{}")
             if terminal.get("session") == self.item_information.get("request_id"):
                 if terminal.get("category") in {"target_unresolved", "invalid_binding", "selected_file_missing", "no_candidate"}:
-                    self.error_message = "无法确定该片源中的目标集，未自动选择其他文件。"
+                    self.error_message = "无法确认所选集数，请换一个片源。"
                 elif terminal.get('category') == 'fullscreen_denied':
                     self.error_message = '视频未能进入全屏，已停止本次播放，请重试。'
         except (ValueError, TypeError, AttributeError):

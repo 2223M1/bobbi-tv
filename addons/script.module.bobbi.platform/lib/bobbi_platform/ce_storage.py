@@ -110,16 +110,16 @@ def require_space(report):
 
 def plan_text(plan):
     def mib(value): return (value+1024**2-1)//1024**2
-    text = ('完整包已在本地：{archive} MiB；解压暂存预计 {stage} MiB；缺失原版依赖复制 {seed} MiB。\n'
-            '现有程序 {current} MiB；已保留备份 {backup} MiB（均不删除）。\n'
-            '同盘移动备份不再复制一份；预留 {reserve} MiB。需新增至少 {required} MiB，可用 {free} MiB。\n'
-            'Kodi 另行下载的依赖及其他程序占用未计入保证；安装前会再检查。').format(
+    text = ('本次至少需要 {required} MiB，当前可用 {free} MiB。\n'
+            '已下载 {archive} MiB，解压需 {stage} MiB，补齐依赖需 {seed} MiB，另预留 {reserve} MiB。\n'
+            '现有程序 {current} MiB、备份 {backup} MiB 均保留。\n'
+            'Kodi 额外下载可能需要更多空间，安装前会再次检查。').format(
                 archive=mib(plan['archive_bytes']),stage=mib(plan['stage_bytes']),seed=mib(plan['dependency_copy_bytes']),
                 current=mib(plan['current_program_bytes']),backup=mib(plan['retained_backup_bytes']),
                 reserve=mib(plan['reserve_bytes']),required=mib(plan['required_bytes']),free=mib(plan['free_bytes']))
     if not plan['existing_sizes_complete']:
-        text += '\n现有程序与备份未能完整统计，显示的是已读下限，不影响新增空间估算。'
-    return text + '\n安装成功后会尽量另存完整恢复包，最多保留最近三个；额外空间不足时跳过，不影响原来的一次程序回退。'
+        text += '\n部分程序与备份未统计完整，实际占用可能更多。'
+    return text + '\n空间足够时会另存完整恢复包，最多保留三个版本。未另存时，仍可使用上一版本备份。'
 
 
 def _identity(path, root):
@@ -265,25 +265,24 @@ def show(installer, host, dialog):
     with Maintenance(installer) as storage:
         plan = storage.preview()
         size = (plan['reclaimable_bytes'] + plan['retired_transaction_bytes'])/(1024**2)
-        detail = ('可用空间 {free:.1f} MiB；可清理更新下载缓存 {cache:.1f} MiB（{files} 个文件）。\n'
-                  '可清理已完成且不再引用的旧程序事务 {retired:.1f} MiB（{transactions} 个）。\n'
-                  '当前事务、上一事务和未能证明可清理的旧事务保留 {kept:.1f} MiB。\n'
-                  '已交付或归属不明的下载文件也保留。这里只清理可重新下载的组件缓存和断点；清理后需重新下载，无法撤销。\n'
-                  '保留当前回退备份、完整恢复包、失败现场、账号、观看记录和媒体。').format(
+        detail = ('当前可用 {free:.1f} MiB。\n'
+                  '可清理下载缓存 {cache:.1f} MiB（{files} 个文件），旧安装临时文件 {retired:.1f} MiB（{transactions} 份）。\n'
+                  '另有 {kept:.1f} MiB 仍需保留，包含在用备份、未完成安装或无法确认用途的文件。\n'
+                  '清理后缓存需重新下载，无法撤销。恢复版本所需文件、账号、观看记录和媒体均保留。').format(
                       free=plan['free_bytes']/1024**2,cache=plan['reclaimable_bytes']/1024**2,files=plan['files'],
                       kept=plan['protected_transaction_bytes']/1024**2,
                       retired=plan['retired_transaction_bytes']/1024**2,transactions=plan['retired_transactions'])
         if not plan['protected_sizes_complete']:
-            detail += '\n部分目录未能完整统计，保留大小是已读下限，仍不会清理它们。'
-        dialog.textviewer('存储空间 · 更新缓存与保留范围', detail)
+            detail += '\n部分目录未统计完整，实际占用可能更多；这些目录不会清理。'
+        dialog.textviewer('存储空间与清理', detail)
         if not plan['files'] and not plan['retired_transactions']:
             return
         active()
-        if not dialog.yesno('清理更新缓存与已完成旧事务？',
-                '移除 {:.1f} MiB（{} 个缓存文件、{} 个已完成旧事务）。\n'
-                '当前回退与完整恢复包保留；清理无法撤销。'.format(size, plan['files'], plan['retired_transactions'])):
+        if not dialog.yesno('清理这些文件？',
+                '将删除 {:.1f} MiB（{} 个缓存文件、{} 份旧安装临时文件），无法撤销。\n'
+                '恢复版本所需文件与个人数据保留。'.format(size, plan['files'], plan['retired_transactions'])):
             return
         active()
         result = storage.clear(plan, active=active)
-        dialog.ok('存储清理完成', '已移除 {:.1f} MiB 更新缓存及无引用旧事务。当前程序、回退与恢复点、账号保持不变。'.format(
+        dialog.ok('清理完成', '已清理 {:.1f} MiB。当前程序、恢复文件与个人数据保留。'.format(
             result['removed_bytes']/1024**2))

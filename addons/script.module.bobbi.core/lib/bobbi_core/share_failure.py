@@ -161,7 +161,7 @@ def proofs(value):
 
 def message(code):
     return {
-        'login_required': '115 登录已失效，请重新授权自己的网盘账号。',
+        'login_required': '115 登录已失效，请到“网盘账号与 CD2”重新登录。',
         'share_unavailable': '这个分享暂时无法访问，请选择其他来源或稍后重试。',
         'share_revoked': '这个分享已被取消，请选择其他来源。',
         'identity_changed': '分享文件已变化，请刷新片源后重新选择。',

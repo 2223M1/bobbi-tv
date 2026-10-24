@@ -210,7 +210,7 @@ class SourceSelect(BaseWindow):
         self._source_interacted = False
         self._retry_shown = False
         self.setProperty('source_empty_title', '没有符合条件的片源')
-        self.setProperty('source_empty_hint', '按 上 切换清晰度为“全部”，或在“筛选”中放宽条件')
+        self.setProperty('source_empty_hint', '按上键选择“全部”清晰度，或放宽筛选条件')
         self._auto_select_pending = False  # Manual source selection is product policy.
 
     def onInit(self) -> None:
@@ -300,7 +300,7 @@ class SourceSelect(BaseWindow):
             try:
                 self._control_snapshot = read_snapshot()
             except (OSError, ValueError, RuntimeError):
-                self.last_error = '播放控制服务尚未就绪，请稍后重试'
+                self.last_error = '播放器尚未就绪，请稍后重试'
                 self.setProperty('playback_error', self.last_error)
                 # This dialog has not been shown yet; a property alone is invisible.
                 notification(self.last_error, time=5000)
@@ -487,18 +487,18 @@ class SourceSelect(BaseWindow):
         summary, error, diagnostic = search_status(snapshot['providers'], bool(self.sources))
         self.setProperty('source_empty_title', '部分来源查询未完成' if error and not self.sources
                          else '没有符合条件的片源')
-        self.setProperty('source_empty_hint', '可补查失败来源；查询失败不代表没有资源'
+        self.setProperty('source_empty_hint', '部分来源未查完，可点击“补查失败来源”重试'
                          if error and not self.sources else
-                         '按 上 切换清晰度为“全部”，或在“筛选”中放宽条件')
+                         '按上键选择“全部”清晰度，或放宽筛选条件')
         if not pending and not getattr(self, '_provider_terminal_logged', False):
             from lib.cinema.source_presentation import provider_diagnostics
             self._provider_terminal_logged = True
             kodilog('BOBBI-PROVIDERS ' + json.dumps(provider_diagnostics(snapshot['providers']),
                                                   ensure_ascii=True, sort_keys=True), level=xbmc.LOGINFO)
         if self._auto_select_pending and not self._source_interacted:
-            summary = '正在统一比较片源，完成后自动播放；操作列表可改为手动选择'
+            summary = '正在自动选源，操作列表可改为手选'
         if snapshot.get('superseded_count'):
-            summary += ' · 已合并 {} 个 115 同版 BT'.format(snapshot['superseded_count'])
+            summary += ' · {} 个同版 BT 已由 115 替代'.format(snapshot['superseded_count'])
         self.setProperty('source_status', summary)
         self.setProperty('source_diagnostics', diagnostic)
         self.setProperty('playback_error', self.last_error or error)
@@ -531,7 +531,7 @@ class SourceSelect(BaseWindow):
         if pump is None or not pump.retry_candidates():
             return
         if not pump.retry_failed():
-            self.setProperty('source_status', '上次查询仍在收尾，请稍后补查；已有片源可正常选择')
+            self.setProperty('source_status', '上次查询尚未结束，可先选择已有片源')
             return
         self._provider_terminal_logged = False
         self._refresh_progressive_sources()  # Incremental only; keep native cards/filter/focus.
@@ -614,7 +614,7 @@ class SourceSelect(BaseWindow):
             if not filtered_sources:
                 kodilog("No sources found matching the filter")
                 if selected_type == "chinese_subtitles":
-                    notification("当前结果没有标注中文字幕的片源，可选择全部以清除筛选")
+                    notification("未找到标注中文字幕的片源，可选“全部”清除筛选")
             self.filtered_sources = filtered_sources
             self.filter_applied = True
             self._filter_spec = (selected_type, None)

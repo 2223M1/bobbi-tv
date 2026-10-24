@@ -191,7 +191,7 @@ def test_logout_commits_once_then_refreshes(context):
     assert len(context.yesnos) == 1
     assert not context.flows
     assert context.builtins == ['Container.Refresh']
-    assert context.dialogs[-1][0] == '已退出本机 115'
+    assert context.dialogs[-1][0] == '已退出 115'
     assert_committed_before_refresh(context, 'account_logout')
 
 
@@ -207,7 +207,7 @@ def test_cancel_menu_or_logout_preserves_current_account(context, selection, con
 def test_unavailable_account_status_never_opens_login_or_writes(context, error):
     context.status_error = error
     assert ui.login() is False
-    assert context.dialogs[-1][0] == '115 账号服务尚未就绪'
+    assert context.dialogs[-1][0] == '115 暂时无法登录'
     assert context.current == OLD
     assert not context.flows and not context.menus and not context.builtins
     assert not mutations(context)
@@ -216,7 +216,7 @@ def test_unavailable_account_status_never_opens_login_or_writes(context, error):
 def test_invalid_status_scope_is_not_treated_as_logged_out(context):
     context.snapshot = {'authenticated': False}
     assert ui.login() is False
-    assert context.dialogs[-1][0] == '115 账号服务尚未就绪'
+    assert context.dialogs[-1][0] == '115 暂时无法登录'
     assert not context.flows and not mutations(context)
 
 
@@ -233,9 +233,9 @@ def test_confirmed_qr_commits_once_then_refreshes_without_reconfirmation(context
     assert context.yesnos == []
     assert bool(context.menus) == authenticated
     assert context.builtins == ['Container.Refresh']
-    assert context.dialogs[-1][0] == '115 登录已保存'
-    assert context.labels == ['登录自己的 115 网盘', '用「115 生活」App 扫码',
-        '扫描后，请在手机上确认登录', '取消并返回', '已扫描，请在手机上确认登录']
+    assert context.dialogs[-1][0] == '115 登录成功'
+    assert context.labels == ['登录 115 网盘', '用「115 生活」App 扫码',
+        '扫码后在手机确认。取消会保留当前账号。', '取消', '已扫码，请在手机上确认登录']
     assert_committed_before_refresh(context, 'account_install')
 
 
@@ -273,7 +273,8 @@ def test_expired_qr_preserves_current_login(context, phase):
         context.polls = [error]
     assert ui.login() is False
     assert context.current == OLD
-    assert context.dialogs[-1][0] == '本次登录未确认'
+    assert context.dialogs[-1][0] == '二维码已过期'
+    assert '重新扫码' in context.dialogs[-1][1] and '当前账号保留' in context.dialogs[-1][1]
     assert not mutations(context) and not context.builtins
 
 
@@ -287,7 +288,7 @@ def test_commit_failure_or_uncertain_receipt_is_not_retried_or_refreshed(context
     assert ui.login() is False
     assert len(mutations(context)) == 1
     assert not context.builtins
-    assert context.dialogs[-1][0] == ('账号状态已变化' if operation == 'logout' else '本次登录未确认')
+    assert context.dialogs[-1][0] == ('未确认退出结果' if operation == 'logout' else '未确认登录结果')
     assert all('没有修改已有登录' not in str(row) for row in context.dialogs)
     expected = None if operation == 'logout' else NEW
     assert context.current == (expected if committed else OLD)
@@ -302,7 +303,7 @@ def test_refresh_failure_does_not_misreport_successful_commit(context, operation
     assert context.current == (None if operation == 'logout' else NEW)
     assert len(mutations(context)) == 1
     assert context.builtins == ['Container.Refresh']
-    assert context.dialogs[-1][0] == ('已退出本机 115' if operation == 'logout' else '115 登录已保存')
+    assert context.dialogs[-1][0] == ('已退出 115' if operation == 'logout' else '115 登录成功')
 
 
 def test_transient_qr_poll_error_retries_before_single_commit(context):

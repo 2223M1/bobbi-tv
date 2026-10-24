@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="skin.bobbi.cinema" version="0.1.8" name="bobbi TV" provider-name="bobbi TV">
+<addon id="skin.bobbi.cinema" version="0.1.9" name="bobbi TV" provider-name="bobbi TV">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0" />
 		<import addon="script.skinvariables" version="2.2.2" />

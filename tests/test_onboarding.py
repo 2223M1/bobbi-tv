@@ -17,15 +17,16 @@ def test_steps_never_ask_for_box_model_or_claim_ready_cinema():
     assert len({key for key, _ in rows}) == len(rows)
     text = '\n'.join(label for _, label in rows)
     assert '机型' not in text and '选择型号' not in text
-    assert '还需实播' in text and '扫码登录' in text and '支持范围' in text
+    assert '选择视频试播' in text and '网盘账号与 CD2' in text and '关于波比 TV' in text
     assert '私人候选' not in text
     assert '可跳过' in dict(steps({}))['library']
     assert '需要处理' in dict(steps({}))['check']
 
 
 def test_status_explains_limit_in_plain_language():
-    assert '不代表' in summary({'standard_playback': True})
-    assert '播放器接口' in summary({})
+    assert '选择视频试播' in summary({'standard_playback': True})
+    assert '可以正常播放' not in summary({'standard_playback': True})
+    assert '无法连接播放器' in summary({})
     assert '重新导出' in engine_message('ENGINE_AUTH_REJECTED')
     assert 'unknown-secret-detail' not in engine_message('unknown-secret-detail')
 
@@ -103,7 +104,7 @@ def test_full_android_cinema_never_launches_itself_as_legacy_helper(setup_ui, tm
     setup_ui.choice = 1
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path / 'pairing.json')
     assert setup_ui.builtins == []
-    assert '不是旧助手' in str(setup_ui.dialogs)
+    assert '另配兼容的本机助手' in str(setup_ui.dialogs)
     setup_ui.android = False
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path / 'pairing.json')
     assert setup_ui.builtins == []
@@ -111,7 +112,7 @@ def test_full_android_cinema_never_launches_itself_as_legacy_helper(setup_ui, tm
 
 def test_update_label_distinguishes_original_addons_from_bobbi_bundle():
     label = dict(steps({}))['updates']
-    assert '在线更新' in label and '本地安装' in label and '回退' in label
+    assert label == '更新与恢复'
 
 
 @pytest.mark.parametrize('choice,target', [
@@ -124,8 +125,8 @@ def test_original_addon_menu_only_opens_native_browser(setup_ui, choice, target)
     assert setup_ui.builtins == ['ActivateWindow(addonbrowser,%s,return)' % target]
     assert setup_ui.called == []
     explanation = str(setup_ui.dialogs)
-    assert '原 ID' in explanation and '已安装的旧播放组件' in explanation
-    assert '不能整体用原版覆盖' in explanation
+    assert '管理插件和依赖' in explanation and '整包更新' in explanation
+    assert '勿用其他插件覆盖其组件' in explanation
 
 
 def test_bobbi_bundle_menu_opens_real_installer_without_applying(setup_ui):
@@ -158,4 +159,4 @@ def test_playback_started_during_menu_blocks_native_management(setup_ui, choice)
     setup_ui.dialog.ok = explain_then_start
     assert setup_ui.module.show_updates(setup_ui.dialog) is False
     assert setup_ui.builtins == [] and setup_ui.called == []
-    assert '当前已经开始播放' in str(setup_ui.dialogs)
+    assert '当前正在播放' in str(setup_ui.dialogs)

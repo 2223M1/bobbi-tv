@@ -117,14 +117,9 @@ def adapter_status(translate, cancelled=lambda: False):
 
 def adapter_message(state):
     return {
-        'adapter_ready': '影院已接入现有 BT 后台，连接检查通过。\n'
-                         '无需重新配对或安装其他后台；实际播放效果仍需试播检验。',
-        'adapter_offline': '影院已有 BT 接入，本次连接检查未通过。\n'
-                           '请检查现有后台的运行状态后重试。已有接入保持不变，无需另装后台。',
-        'adapter_invalid': '影院已有 BT 配置，但当前无法验证这份配置。\n'
-                           '本次未更改现有接入，也不会安装另一个后台。',
-        'adapter_unavailable': '影院已有 BT 配置，当前接入组件暂不可用。\n'
-                               '本次未更改现有接入，也不会安装另一个后台。',
-        'adapter_configured': '影院已有 BT 接入，本次未完成连接检查。\n'
-                              '已有接入保持不变，无需重新配对或安装其他后台。',
-    }.get(state, '现有 BT 接入需要检查。本次没有更改配置。')
+        'adapter_ready': '已连接现有 BT 后台，可以选择片源试播，无需重新安装。',
+        'adapter_offline': '无法连接现有 BT 后台，请确认它已启动后重试，无需另装后台。',
+        'adapter_invalid': '已有 BT 配置无法读取，请检查配置。原设置保留。',
+        'adapter_unavailable': 'BT 组件暂不可用，请重启 Kodi 后再试。原设置保留。',
+        'adapter_configured': '已保存 BT 配置，尚未检查连接，无需重新配对。',
+    }.get(state, 'BT 连接需要检查，原设置保留。')

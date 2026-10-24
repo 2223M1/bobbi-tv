@@ -155,36 +155,36 @@ def _label(candidate):
 def _failure(error):
     reason = str(getattr(error, "reason", str(error)))
     if reason == 'PROVIDER_NOT_CONFIGURED':
-        return '请先在“找中文字幕”插件设置中填写自己的 OpenSubtitles API Key；未改变播放。'
+        return '请先在“找中文字幕”插件设置中填写 OpenSubtitles API Key。当前播放不受影响。'
     if reason == 'READ_ONLY_RPC_UNAVAILABLE':
-        return '当前播放器未提供所需的原生字幕接口；原字幕和播放未改变。'
+        return '当前播放器不支持此字幕功能，原字幕和播放保留。'
     if reason in {"NO_ACTIVE_PLAYBACK", "DURATION_UNAVAILABLE"}:
         return "请先开始播放影片，待画面出现后再找字幕。"
     if reason in {"PLAYBACK_CHANGED", "CANCELLED", "CANCELLED_OR_DEADLINE"}:
-        return "已取消，或影片/字幕选择已经变化；未应用字幕。"
+        return "操作已取消或播放选择已变化，未加载字幕。"
     if reason in {"MEDIA_CONTEXT_UNAVAILABLE", "CONTEXT_INVALID"}:
-        return "当前影片的标题、年份或季集资料不足，未猜测匹配字幕。"
+        return "影片资料不足，无法查找对应字幕。"
     if "LIMIT" in reason or "QUOTA" in reason or "429" in reason:
-        return "字幕来源配额受限，请稍后重试；原字幕和播放未改变。"
+        return "字幕下载或查询次数已达限制，请稍后重试。原字幕保留。"
     if "TIMEOUT" in reason or "DEADLINE" in reason:
-        return "字幕来源响应超时，请稍后重试；原字幕和播放未改变。"
+        return "字幕服务响应超时，请稍后重试。原字幕保留。"
     if "AUTH" in reason:
-        return "字幕来源要求登录或认证暂不可用；原字幕和播放未改变。"
-    return "未能完成本次字幕操作，请稍后重试；原字幕和播放未改变。"
+        return "字幕服务登录验证失败，请检查插件设置。原字幕保留。"
+    return "字幕操作未完成，请稍后重试。原字幕和播放保留。"
 
 
 def _completion_message(alias, result):
-    lines = ["字幕已下载，尚未应用，也未验证同步。"]
+    lines = ["字幕已下载，需手动加载。时间可能需要调整。"]
     cached = result.get("cached") is True
     if cached:
-        lines.append("本地缓存命中，本次未消耗来源下载次数。")
+        lines.append("使用已下载文件，不占下载次数。")
     remaining = result.get("remaining")
     if type(remaining) is int and remaining >= 0:
         if cached:
-            lines.append("最近记录的来源剩余下载次数：{}（可能已变化，以网站为准）".format(remaining))
+            lines.append("上次记录还可下载 {} 次，以网站为准。".format(remaining))
         else:
-            lines.append("来源返回剩余下载次数：{}（以网站为准）".format(remaining))
-    lines.extend(["选择“浏览字幕”后，在本地缓存点选：", alias.name])
+            lines.append("还可下载 {} 次，以网站为准。".format(remaining))
+    lines.extend(["点击“浏览字幕”，在本地缓存中选择以下文件", alias.name])
     return "\n".join(lines)
 
 
@@ -208,7 +208,7 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
             if not isinstance(choices, list) or len(choices) > 20 or any(not isinstance(c, dict) for c in choices):
                 raise ValueError("PROVIDER_CANDIDATES_INVALID")
             if not choices:
-                dialogs.ok(HEADING, "没有找到这部作品的中文候选；未改变当前字幕。")
+                dialogs.ok(HEADING, "未找到中文字幕，原字幕保留。")
                 return "empty"
             selected = dialogs.select(HEADING + " · 选择后下载", [_label(c) for c in choices])
             if type(selected) is not int or not 0 <= selected < len(choices):
@@ -237,7 +237,7 @@ def run(rpc, dialogs, progress_factory, monitor, builtin, provider_factory,
                 return "browser_opened"
             return "downloaded"
     except AlreadyRunning:
-        dialogs.ok(HEADING, "已有字幕搜索窗口正在工作，请先完成或取消那次操作。")
+        dialogs.ok(HEADING, "已有字幕搜索窗口，请先完成或取消上次操作。")
         return "busy"
     except (ContextUnavailable, RuntimeError, ValueError, TypeError, OSError) as error:
         if not monitor.abortRequested():

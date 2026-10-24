@@ -214,7 +214,7 @@ def test_real_entry_online_install_preserves_user_data(entry, monkeypatch, route
     assert not list((env.work/'downloads').glob('online-*.zip'))
     assert env.installer._read()['previous_skin'] == 'skin.user.original'
     assert env.host.skin() == 'skin.user.original'
-    if route == 'menu': assert entry.selections[0][4] == '在线检查并安装最新正式版'
+    if route == 'menu': assert entry.selections[0][4] == '检查在线更新'
 
 
 @pytest.mark.parametrize('when', ['initial', 'confirmation', 'downloading', 'cancel', 'decline'])
@@ -244,7 +244,7 @@ def test_current_version_does_not_download_or_replace(entry, monkeypatch):
     before = list(entry.env.calls)
     monkeypatch.setattr(online, '_open', lambda _: pytest.fail('No second download'))
     ui.main(online=True)
-    assert '无需更新' in str(entry.dialogs)
+    assert '无需重复更新' in str(entry.dialogs)
     assert entry.env.calls == before and entry.commands == [] and not entry.confirmations
 
 
@@ -252,7 +252,7 @@ def test_entry_network_error_keeps_existing_install(entry, monkeypatch):
     def fail(*args): raise OSError('fixture-private-url')
     monkeypatch.setattr(online, 'latest', fail)
     ui.main(online=True)
-    assert '网络连接或下载未完成' in str(entry.dialogs)
+    assert '下载未完成，请检查网络后重试' in str(entry.dialogs)
     assert 'fixture-private-url' not in str(entry.dialogs)
     assert entry.env.calls == [] and entry.commands == []
 

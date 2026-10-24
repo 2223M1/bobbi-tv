@@ -9,11 +9,11 @@ def create(image):
     class AccountQR(xbmcgui.WindowXMLDialog):
         def onInit(self):
             cinema = xbmc.getSkinDir() == 'skin.bobbi.cinema'
-            self.getControl(100).setLabel('登录自己的 115 网盘', font='Head40' if cinema else 'font24')
+            self.getControl(100).setLabel('登录 115 网盘', font='Head40' if cinema else 'font24')
             self.getControl(101).setImage(str(image))
             self.getControl(102).setLabel('用「115 生活」App 扫码', font='Head34' if cinema else 'font24')
             self.getControl(103).setLabel(self.message, font='Body26' if cinema else 'font20')
-            self.getControl(9001).setLabel('取消并返回', font='Button28' if cinema else 'font20')
+            self.getControl(9001).setLabel('取消', font='Button28' if cinema else 'font20')
             self.setFocusId(9001)
 
         def set_status(self, value):
@@ -33,5 +33,5 @@ def create(image):
     window = AccountQR('account-login.xml',
         xbmcaddon.Addon('script.module.bobbi.platform').getAddonInfo('path'), 'Default', '1080i')
     window.cancelled = False
-    window.message = '扫描后，请在手机上确认登录'
+    window.message = '扫码后在手机确认。取消会保留当前账号。'
     return window

@@ -77,7 +77,7 @@ def execute(handle, params):
         rows = []
         category = '我的片库'
         if action == 'root':
-            rows.append(item('管理网盘 / NAS / 片库', route(action='manage'),
+            rows.append(item('管理片库来源', route(action='manage'),
                              properties={'Bobi.Library.Manage': 'true'}))
             for source in store.sources():
                 kind, label2 = source_presentation(source)
@@ -136,7 +136,7 @@ def execute(handle, params):
                 rows.append(item('下一页', route(action='browse', source=source.id, relative=relative,
                                                offset=offset + PAGE_SIZE), properties={'Bobi.NextPage': 'true'}))
             if not listing:
-                xbmcgui.Dialog().ok('没有可显示的条目', '目录可能为空、没有视频或权限不足；可回到片库管理检查连接。')
+                xbmcgui.Dialog().ok('没有找到视频', '目录可能为空或无法读取。请到“管理片库来源”检查连接。')
         else:
             raise LibraryError('INVALID_VALUE')
         if xbmc.Monitor().abortRequested():

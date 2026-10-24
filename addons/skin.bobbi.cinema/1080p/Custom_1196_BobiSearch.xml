@@ -124,7 +124,7 @@
       <height>45</height>
       <font>font12</font>
       <textcolor>FFAAAAAF</textcolor>
-      <label>确认输入片名；也可以选择动漫、电视剧或电影单独搜索。</label>
+      <label>按确认键输入片名，也可先选择影片类型。</label>
     </control>
     <include content="CinemaTopNav">
       <param name="down" value="9101" />

@@ -840,7 +840,7 @@ def _render_directory(data, item_builder, category_label, content_type, next_act
             retry.setProperty("IsPlayable", "false")
             retry.setProperty("AM6B.Directory.error", "provider_unavailable")
             retry.getVideoInfoTag().setPlot(
-                "暂时无法获取列表，不代表没有资源。选择此项重试原查询，或返回修改搜索。"
+                "列表加载失败。选择此项重试，或返回修改搜索。"
             )
             xbmcplugin.addDirectoryItems(handle, [
                 (_build_url(retry_action, **retry_params), retry, True),

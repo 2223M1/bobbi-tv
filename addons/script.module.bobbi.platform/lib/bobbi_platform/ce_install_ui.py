@@ -279,8 +279,8 @@ def recover_interactive(installer, dialog):
             except (OSError, ValueError, RuntimeError):
                 state = None
             rollback = bool(state and state['phase'] in ('activation_pending', 'complete'))
-            actions = ['重试恢复'] + (['回到上一程序版本（不改账号与观看记录）'] if rollback else []) + ['退出，保留现场']
-            choice = dialog.select('安装恢复尚未完成', actions, preselect=len(actions)-1)
+            actions = ['重试恢复'] + (['恢复上一版本（保留个人数据）'] if rollback else []) + ['退出，稍后处理']
+            choice = dialog.select('安装未完成', actions, preselect=len(actions)-1)
             if choice == 0:
                 continue
             if rollback and choice == 1:
@@ -297,12 +297,12 @@ def choose_package(dialog, payload, first):
     if embedded and first:
         return embedded
     if embedded:
-        choice = dialog.select('安装来源', ['选择新的完整签名包', '使用入口内附版本'])
+        choice = dialog.select('安装来源', ['选择完整安装包', '使用内附版本'])
         if choice < 0:
             return None
         if choice == 1:
             return embedded
-    return dialog.browse(1, '选择波比 CE 完整签名包', 'files', mask='.zip')
+    return dialog.browse(1, '选择波比 TV 完整安装包', 'files', mask='.zip')
 
 
 def install_online(installer, host, dialog):
@@ -314,21 +314,21 @@ def install_online(installer, host, dialog):
     progress = xbmcgui.DialogProgress()
     selected = None
     try:
-        progress.create('波比 TV · 在线更新', '正在查询最新正式版本，可取消。')
+        progress.create('波比 TV 更新', '正在检查更新，可取消。')
         cancelled = lambda: host.monitor.abortRequested() or progress.iscanceled()
         offer = latest(cancelled)
         state = installer._read() or {}
         watermark = max(state.get('high_watermark', 0), state.get('sequence', 0))
         progress.close()
         if offer['sequence'] <= watermark:
-            dialog.ok('无需更新', '当前已安装此版本或更新的版本。需要恢复旧程序时，请使用回退入口。')
+            dialog.ok('无需重复更新', '此版本或更新版本已安装过。需要恢复时，请选择“恢复上一版本”或“选择恢复版本”。')
             return False
         if not dialog.yesno('安装 ' + offer['tag'].upper(),
-                '整套程序约 %d MB；可复用的组件不会重复下载。保留账号与观看记录，不自动切换皮肤；播放中不会安装。继续？'
+                '完整安装包约 %d MB，已有组件可复用。账号与观看记录保留，完成后需重启 Kodi。继续安装？'
                 % ((offer['size'] + 1024 * 1024 - 1) // (1024 * 1024))):
             return False
         host.check_idle()
-        progress.create('波比 TV · 在线更新', '正在准备完整版本；优先复用组件，不支持时下载整包。可随时取消。')
+        progress.create('波比 TV 更新', '正在下载更新，已有组件会复用。可随时取消。')
         selected = download(offer, installer.work / 'downloads', installer.trust,
                             cancelled, lambda percent: progress.update(percent))
         if cancelled():
@@ -350,44 +350,64 @@ def failure_message(error):
     """Explain existing failures without echoing URLs, paths or server bodies."""
     code = str(error)
     if code == 'PLAYBACK_ACTIVE':
-        return '请先停止播放再更新或切换界面。当前影片与已安装程序保持不变。'
+        return '请先停止播放，再更新程序或切换界面。'
     if code == 'INSTALLATION_SPACE_REQUIRED' or getattr(error, 'errno', None) == errno.ENOSPC:
         plan = getattr(error, 'space', None)
         sizes = ('需新增至少 {:.1f} MiB，当前可用 {:.1f} MiB。'.format(
             plan['required_bytes']/1024**2, plan['free_bytes']/1024**2) if plan else '')
-        return sizes + '可用空间不足，可在“存储空间与更新缓存”预览并清理可重建缓存后重试。未删除程序备份、账号或媒体。'
+        return sizes + '空间不足，请到“存储空间与清理”查看可清理内容。'
     if isinstance(error, PermissionError) or getattr(error, 'errno', None) in (errno.EACCES, errno.EPERM, errno.EROFS):
-        return '本机目录没有写入权限或处于只读状态。请检查存储设备，不要删除账号或程序备份。'
+        return '无法写入存储设备，请检查空间和写入权限，勿删除账号或程序备份。'
     if isinstance(getattr(error, 'reason', error), ssl.SSLError):
-        return 'HTTPS 证书或安全连接检查未通过。请检查设备日期、时间和网络；也可使用完整离线包。'
+        return '无法建立安全连接，请检查设备时间和网络，或使用完整离线包。'
     messages = {
-        'STORAGE_PLAN_CHANGED': '缓存内容已变化，本次清理已停止。请重新预览再确认；程序和备份不受影响。',
+        'STORAGE_PLAN_CHANGED': '可清理内容已变化，本次已停止。请重新预览后再清理。',
         'Another update is active': '另一个安装或下载操作正在进行，请等待完成后重试。',
         'ONLINE_CANCELLED': '已取消操作。程序、备份和账号保持不变。',
-        'ONLINE_TIMEOUT': '查询或下载超时。支持续传的同版断点会保留，可稍后重新检查更新，也可使用完整离线包。',
-        'ONLINE_SHORT_READ': '下载不完整，未安装这个包。支持续传的同版断点会保留，可重试或使用完整离线包。',
-        'ONLINE_LENGTH_INVALID': '下载长度与发布信息不匹配，未安装这个包。请重新检查更新或下载完整离线包。',
-        'ONLINE_CONTENT_INVALID': '下载内容不匹配，未安装这个包。请重新检查更新或下载完整离线包。',
-        'ONLINE_GENERATION_MISMATCH': '下载包与更新索引的版本不一致，未安装。请稍后重新检查更新。',
-        'ONLINE_PACKAGE_INVALID': '安装包格式不完整，未安装。请重新下载完整安装包。',
-        'ONLINE_RANGE_INVALID': '服务返回的续传范围或版本标记不一致，已放弃本次下载。可重新检查更新，现有程序没有改变。',
-        'ONLINE_DOWNLOAD_BUSY': '另一个更新入口正在下载，请先关闭它或等待完成；本次没有重复下载或安装。',
-        'ONLINE_CACHE_PATH_INVALID': '更新临时目录不是普通文件，未改动该目录。可使用完整离线包安装。',
-        'ONLINE_OFFER_INVALID': '更新信息暂不可用。请稍后重试，也可从国内下载页获取完整离线包。',
-        'ONLINE_RESPONSE_INVALID': '下载服务没有返回正常的安装内容。请稍后重试或使用完整离线包。',
-        'ONLINE_REDIRECT_REJECTED': '下载地址不在当前支持的发布通道中。请使用项目下载页的完整离线包。',
-        'GENERATION_NOT_NEWER': '所选完整包不是更新版本。需要恢复旧程序时，请使用回退入口。',
-        'NO_PREVIOUS_PROGRAM_GENERATION': '本机没有可回退的上一程序版本。已有账号与观看记录未改变。',
-        'RECOVERY_POINT_INVALID': '所选完整恢复包已变化或不完整，未执行恢复。请保留现场，可使用上一次程序回退或重新下载完整包。',
-        'RECOVERY_STORE_LIMIT': '恢复目录条目超出预期，未自动清理。请保留目录并使用上一次程序回退。',
+        'ONLINE_TIMEOUT': '下载或查询超时，请重试。可续传的进度已保留，也可使用完整离线包。',
+        'ONLINE_SHORT_READ': '安装包未下载完整，请重试。可续传的进度已保留，现有程序未更改。',
+        'ONLINE_LENGTH_INVALID': '安装包大小不符，未安装。请重新下载完整包。',
+        'ONLINE_CONTENT_INVALID': '安装包内容不符，未安装。请重新下载完整包。',
+        'ONLINE_GENERATION_MISMATCH': '安装包与线上版本不一致，未安装。请稍后重新检查更新。',
+        'ONLINE_PACKAGE_INVALID': '安装包不完整，未安装。请重新下载完整包。',
+        'ONLINE_RANGE_INVALID': '无法续传这个安装包，请重新检查更新。现有程序未更改。',
+        'ONLINE_DOWNLOAD_BUSY': '另一个更新窗口正在下载，请等待完成或关闭它。',
+        'ONLINE_CACHE_PATH_INVALID': '下载缓存目录不可用，请改用完整离线包安装。',
+        'ONLINE_OFFER_INVALID': '暂时查不到更新，请稍后重试，或从国内下载页获取完整包。',
+        'ONLINE_RESPONSE_INVALID': '下载服务暂不可用，请重试或使用完整离线包。',
+        'ONLINE_REDIRECT_REJECTED': '此下载地址不受支持，请从项目下载页获取完整包。',
+        'GENERATION_NOT_NEWER': '所选安装包版本较旧或相同，请通过版本恢复入口使用旧版。',
+        'NO_PREVIOUS_PROGRAM_GENERATION': '本机没有上一版本备份，账号与观看记录保留。',
+        'RECOVERY_POINT_INVALID': '恢复包不完整或已变化，未恢复。请改用上一版本备份或重新下载完整包。',
+        'RECOVERY_STORE_LIMIT': '恢复目录需要检查，请保留文件并联系维护者。仍可尝试“恢复上一版本”。',
     }
     if code in messages:
         return messages[code]
     if isinstance(error, UpdateError) and ('signature' in code or code.startswith('Offline ')):
-        return '完整安装包校验未通过。请从项目下载页重新下载，不要修改或混装包内组件。'
-    return ('网络连接或下载未完成；支持续传的同版断点会保留，可稍后重试，也可使用完整离线包。'
+        return '安装包校验失败，请从项目下载页重新下载完整包。'
+    return ('下载未完成，请检查网络后重试，或使用完整离线包。可续传的进度已保留。'
             if isinstance(error, OSError) or code.startswith('ONLINE_') else
-            '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。')
+            '安装未完成，请重新打开“波比 TV · 开始使用”恢复或重试。')
+
+
+def readable_text(host, dialog):
+    """Offer Kodi's existing Unicode font before Chinese-only stock dialogs."""
+    if host.skin() != 'skin.estuary':
+        return True
+    if rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.font'}).get('value') != 'Default':
+        return True
+    host.check_idle()
+    if not dialog.yesno('Display Chinese text',
+            'Bobbi TV uses Chinese menus. Enable the built-in Arial font so they are readable? '
+            'This changes only the interface font, not video subtitles. Choose No to exit.'):
+        return False
+    host.check_idle()
+    changed = rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.font', 'value': 'Arial'})
+    actual = rpc('Settings.GetSettingValue', {'setting': 'lookandfeel.font'}).get('value')
+    if changed is not True or actual != 'Arial':
+        dialog.ok('Font not changed', 'Open Settings > Interface > Skin > Fonts, select Arial, then open Bobbi TV again.')
+        return False
+    return True
 
 
 def main(payload=None, online=False, storage=False):
@@ -399,20 +419,22 @@ def main(payload=None, online=False, storage=False):
     installer = Installer(xbmcvfs.translatePath('special://home/addons'),
                           profile('script.bobbi.start'), host)
     try:
+        if not readable_text(host, dialog):
+            return
         # Pending activation is runnable but still needs recovery/readback.
         if not recover_interactive(installer, dialog):
             return
         state = installer._read()
-        actions = ['进入影院设置 / 登录自己的115', '安装本地完整包',
-                   '回退上一次程序安装', '返回原 Kodi 界面', '在线检查并安装最新正式版', '存储空间与更新缓存',
-                   '选择完整程序恢复点']
+        actions = ['影院设置', '安装本地完整包',
+                   '恢复上一版本', '返回 Kodi 界面', '检查在线更新', '存储空间与清理',
+                   '选择恢复版本']
         first = state is None and not host.details('plugin.video.bobbi')
         choice = 5 if storage else (4 if online or (first and not (payload and Path(payload).is_file())) else (
             1 if first else dialog.select('波比 TV', actions)))
         if choice == 6:
             from .ce_recovery import show
             if show(installer, host, dialog):
-                dialog.ok('已恢复完整程序', '账号与观看记录不变。请重启 Kodi 后再开始观影。')
+                dialog.ok('版本已恢复', '请重启 Kodi 后再观看，账号与观看记录保留。')
             return
         if choice == 5:
             from .ce_storage import show
@@ -421,7 +443,7 @@ def main(payload=None, online=False, storage=False):
         if choice == 4:
             if not install_online(installer, host, dialog):
                 return
-            dialog.ok('安装完成', '即将进入影院设置。账号和观看记录保持不变；更新后请重启 Kodi。')
+            dialog.ok('安装完成', '账号与观看记录保留。即将进入设置，观看前请重启 Kodi。')
             choice = 0
         if choice == 1:
             selected = choose_package(dialog, payload, first)
@@ -431,21 +453,20 @@ def main(payload=None, online=False, storage=False):
             selected = xbmcvfs.translatePath(selected)
             plan = installer.plan_space(selected)
             require_space(plan)
-            dialog.textviewer('安装所需空间 · 详细说明', plan_text(plan))
+            dialog.textviewer('安装所需空间', plan_text(plan))
             host.check_idle()
             if not dialog.yesno('安装波比影院',
                     '预计需新增至少 {:.1f} MiB，当前可用 {:.1f} MiB。\n'
-                    '只安装程序和必要依赖，不改账号与音画设置。继续？'.format(
+                    '账号与音画设置保留。继续安装？'.format(
                         plan['required_bytes']/1024**2, plan['free_bytes']/1024**2)):
                 return
             installer.apply(selected)
-            dialog.ok('安装完成', '账号、片库与观看记录保留；更新后请重启 Kodi。\n'
-                      '即将进入设置；115 可扫码登录，本地与 NAS 不需要网盘账号。')
+            dialog.ok('安装完成', '账号、片库与观看记录保留。即将进入设置，观看前请重启 Kodi。')
             choice = 0
         elif choice == 2:
-            if dialog.yesno('回退程序', '只恢复上一次波比程序，不覆盖账号、片库和观看记录。继续？'):
+            if dialog.yesno('恢复上一版本？', '仅恢复程序，账号、片库与观看记录保留。完成后需重启 Kodi。'):
                 installer.rollback()
-                dialog.ok('已回退程序', '账号和观看记录保持不变。请重启 Kodi 后再开始观影。')
+                dialog.ok('版本已恢复', '请重启 Kodi 后再观看，账号与观看记录保留。')
             return
         elif choice == 3:
             host.check_idle()
@@ -459,7 +480,7 @@ def main(payload=None, online=False, storage=False):
     except (OSError, ValueError, RuntimeError) as error:
         xbmc.log('[bobbi-install] ' + type(error).__name__, xbmc.LOGERROR)
         if str(error) in ('PREVIOUS_PROGRAM_INCOMPLETE', 'PREVIOUS_PROGRAM_SPECIAL_FILE', 'PREVIOUS_PROGRAM_RECEIPT_REQUIRED'):
-            dialog.ok('暂不能回退', '旧程序备份不完整，或来自没有完整性记录的旧安装器。已拒绝不完整回退并保留现场，请保留备份并使用完整安装包恢复。')
+            dialog.ok('无法恢复旧版', '旧备份不完整或缺少核对记录。请保留备份，改用完整安装包恢复。')
         else:
             dialog.ok('操作未完成', failure_message(error))
     finally:

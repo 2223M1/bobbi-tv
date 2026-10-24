@@ -264,7 +264,7 @@ def test_entry_recovers_pending_activation_even_when_boot_is_allowed(tmp_path, m
     monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(tmp_path)))
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Dialog=lambda: SimpleNamespace(select=lambda *a: -1)))
     monkeypatch.setattr(ui, 'profile', lambda *args: tmp_path)
-    monkeypatch.setattr(ui, 'KodiHost', lambda: SimpleNamespace())
+    monkeypatch.setattr(ui, 'KodiHost', lambda: SimpleNamespace(skin=lambda: 'skin.bobbi.cinema'))
     monkeypatch.setattr(ui, 'Installer', lambda *args: SimpleNamespace(work=tmp_path,
         recover=lambda: calls.append('recover'), _read=lambda: dict(phase='activation_pending')))
     ui.main()

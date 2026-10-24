@@ -142,11 +142,11 @@ def test_failed_catalog_update_keeps_existing_and_closes_file(context):
 def test_check_is_readonly_and_not_claimed_as_playback(context):
     source = vfs_source('NAS', 'smb://nas/Movies')
     ui.check_source(context.dialog, context.vfs, source)
-    assert context.shown[-1][0] == '目录已读到'
-    assert '未开始播放' in context.shown[-1][1]
+    assert context.shown[-1][0] == '连接成功'
+    assert '文件夹或视频' in context.shown[-1][1] and '选片' in context.shown[-1][1]
     context.vfs.listdir = lambda _: ([], [])
     ui.check_source(context.dialog, context.vfs, source)
-    assert context.shown[-1][0] == '没有读到可显示的条目'
+    assert context.shown[-1][0] == '目录中没有可显示的内容'
     assert not context.builtins
 
 
@@ -168,7 +168,7 @@ def test_missing_library_plugin_shows_actionable_notice(context):
     context.addon = False
     context.selections = [1, -1]
     ui.manage()
-    assert any(row[0] == '需要片库组件' for row in context.shown)
+    assert any(row[0] == '片库组件未安装' for row in context.shown)
     assert not context.builtins
 
 

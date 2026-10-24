@@ -99,11 +99,11 @@ class Owner:
         speed = detail.get('download_bps')
         rate = ('{:,} B/s'.format(speed) if type(speed) is int
                 and 0 <= speed <= MAX_DIAGNOSTIC_NUMBER else '未知')
-        answer = xbmcgui.Dialog().yesno('片源已定位，BT 供数仍不足',
-            'BT 总下载速度：' + rate + '（非所选文件实测）\n'
-            '当前等待的是你选定的文件，不会换版或降低画质。\n'
-            '种子总缓存不能证明所选文件已连续读到；可继续等一轮，或返回选源。',
-            nolabel='返回选源', yeslabel='继续等待一轮', autoclose=30000)
+        answer = xbmcgui.Dialog().yesno('BT 下载较慢',
+            '所选视频仍在缓冲，是否再等一轮？\n'
+            '种子总下载速度 ' + rate + '，不代表当前视频的速度。\n'
+            '等待期间不换片源、不降画质。',
+            nolabel='返回选源', yeslabel='继续等待', autoclose=30000)
         self.active()  # A newer selection/stop while the dialog was up wins.
         return answer
 
@@ -113,7 +113,7 @@ class Owner:
         self.active()
         # No preselection or timeout default. A choice means this file only,
         # never an assertion that its release/episode has been auto-verified.
-        choice = xbmcgui.Dialog().select('无法自动确定正片 · 请核对真实文件（不自动续播）',
+        choice = xbmcgui.Dialog().select('请选择正片文件（本次不自动续播）',
             ['%s  ·  %.2f GiB' % (f['path'].replace('[', '［').replace(']', '］'),
                                   f['length'] / 1024**3) for f in files], autoclose=FILE_CHOICE_SECONDS * 1000)
         self.active()

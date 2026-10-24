@@ -23,7 +23,7 @@
       </control>
       <control type="label" id="101">
         <left>48</left><top>116</top><width>984</width><height>44</height>
-        <font>Body26</font><label>保留原画质与手选版本，不自动切换其他片源。</label><textcolor>FFA9ADB7</textcolor>
+        <font>Body26</font><label>可返回选源重试，不会自动更换版本。</label><textcolor>FFA9ADB7</textcolor>
       </control>
       <control type="label">
         <left>48</left><top>170</top><width>984</width><height>44</height>

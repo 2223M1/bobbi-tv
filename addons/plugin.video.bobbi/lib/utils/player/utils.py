@@ -529,14 +529,14 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
         level=LOGDEBUG,
     )
     if (data or {}).get('selection_policy') != 'exact':
-        raise RuntimeError('请通过当前选源窗口播放；通用 Kodi 使用独立的手动 BT 适配。')
+        raise RuntimeError('请返回选源页，重新选择此 BT 片源。')
     if not is_bobbi_torrent_addon():
-        raise RuntimeError('受控 BT 解析组件尚未安装或已禁用，请安装完整 bobbi 版本后重试。')
+        raise RuntimeError('BT 组件未安装或已禁用，请用波比 TV 完整安装包修复。')
     try:
         from bobbi_torrent.backend import load_config
         load_config()  # No network, engine start, legacy config or install prompt.
     except (ImportError, OSError, ValueError, RuntimeError):
-        raise RuntimeError('尚未配置可用的本机 BT 后台；未启动旧插件或更换片源。') from None
+        raise RuntimeError('尚未连接 BT 后台，请到“影院设置”的“BT 播放”中配置。') from None
 
     expected_file_param = ''
     if '_bt_next_selected' in (data or {}):

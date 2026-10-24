@@ -64,7 +64,7 @@ def test_preview_explains_incomplete_queries_and_stale_snapshot(screen):
     diagnostics_ui.show(screen.dialog)
     text = screen.previews[0][1]
     assert '超时 1' in text and '120 分钟' in text and '尚未搜遍' in text
-    assert '查询失败不等于没有资源' in text and '不是播放成功证明' in text
+    assert '补查失败来源' in text and '不包含手动筛选和播放结果' in text
     assert not screen.files
 
 
@@ -95,7 +95,7 @@ def test_failed_export_never_claims_saved(screen, written):
     screen.written = written
     screen.choices = [3, 0, -1]
     diagnostics_ui.show(screen.dialog)
-    assert '诊断暂不可用' in screen.dialogs[-1][0]
+    assert '诊断未完成' in screen.dialogs[-1][0]
     assert '诊断已保存' not in str(screen.dialogs)
 
 

@@ -54,11 +54,11 @@ def pair_helper(dialog, path):
         existing = existing_backend_status() or existing
         show_existing_backend(dialog, existing)
         return existing
-    choice = dialog.select('连接本机 bobbi 助手', [
-        'Android：输入助手显示的六位配对码',
-        '查看本机 BT 支持说明',
-        'CoreELEC：安装本机 BT 后台（可跳过）',
-        '选择助手导出的 bobbi 配对文件',
+    choice = dialog.select('设置 BT 播放', [
+        'Android 助手配对',
+        '使用说明',
+        '安装 CoreELEC BT 后台',
+        '导入助手配对文件',
         '重新检查连接',
     ])
     if choice in (0, 2, 3):
@@ -85,22 +85,21 @@ def pair_helper(dialog, path):
                 show_existing_backend(dialog, existing)
                 return
             save_pairing(path, pairing)
-            dialog.ok('已连接本机助手', '后续不用重复配对。打开助手启动后台后即可使用 BT 片源。')
+            dialog.ok('助手已连接', '以后打开助手并启动后台，就可以使用 BT 片源。')
         except (ValueError, OSError, TorrServerError):
-            dialog.ok('尚未配对', '请确认助手已启动，并重新显示配对码。原有配对未更改。')
+            dialog.ok('配对未完成', '请打开助手，获取新的配对码后重试。原有配对保留。')
     elif choice == 1:
-        dialog.ok('可选 BT 后台', '完整 Android 影院已内含 Kodi 播放器，不是旧助手。\n'
-                  '当前候选未内嵌 BT 下载后台；115 / NAS 播放不需要配对。\n'
-                  '只有你另行配置了兼容的本机后台时才导入其配对文件。不会打开应用配对自身。')
+        dialog.ok('BT 播放说明', '看 BT 片源需要连接下载后台。CoreELEC 可在这里安装，Android 需另配兼容的本机助手。\n'
+                  '只看 115 或本地 / NAS 片库，可以跳过。')
     elif choice == 2:
         from bobbi_platform.native_engine import install
         if xbmc.Player().isPlaying():
-            dialog.ok('请先停止播放', '后台安装不会中断你正在看的影片。')
+            dialog.ok('请先停止播放', '停止影片后再安装 BT 后台。')
             return
-        if not dialog.yesno('安装 CoreELEC 本机后台', '将下载约 63 MB，经校验后仅在本机运行。不会改 SSH、CD2、系统服务或开放远程控制端口。继续吗？'):
+        if not dialog.yesno('安装 BT 后台？', '需下载约 63 MB，仅在本机运行。不改 CD2 或系统服务。'):
             return
         progress = xbmcgui.DialogProgress()
-        progress.create('安装本机后台', '正在下载固定版本并核对 SHA-256；可取消。')
+        progress.create('安装 BT 后台', '正在下载，可随时取消。')
         try:
             monitor = xbmc.Monitor()
             # The confirmation/progress dialog may outlive the initial check.
@@ -112,13 +111,13 @@ def pair_helper(dialog, path):
                 return
             install(cancelled=lambda: monitor.abortRequested() or progress.iscanceled(), progress=progress.update)
             progress.close()
-            dialog.ok('后台已安装', '几秒后点“重新检查连接”。若服务尚未运行，下次打开 Kodi 将自动启动。')
+            dialog.ok('BT 后台已安装', '稍后选择“重新检查连接”。若仍未启动，请重启 Kodi。')
         except (ValueError, OSError):
-            dialog.ok('安装未完成', '需要 ARM CoreELEC 且能访问 GitHub；现有系统服务没有改动。可重试或只使用网盘 / NAS。')
+            dialog.ok('安装未完成', '此后台需要 ARM 版 CoreELEC，并能连接 GitHub。请检查网络后重试，网盘与 NAS 仍可使用。')
         finally:
             progress.close()
     elif choice == 3:
-        selected = dialog.browse(1, '选择 bobbi 配对文件（不用手填地址和密码）', 'files', mask='.json')
+        selected = dialog.browse(1, '选择助手导出的配对文件', 'files', mask='.json')
         if not selected:
             return
         existing = existing_backend_state()
@@ -146,16 +145,14 @@ def pair_helper(dialog, path):
         except ValueError:
             dialog.ok('配对文件不可用', '请使用这台盒子上的 bobbi 助手导出的文件。原有配对没有更改。')
             return
-        dialog.ok('助手已连接', '已核对后台版本和连接，后续不用重复配对。\n'
-                  '配对文件含本机凭据，不要上传或发给别人；不再需要时可自行删除。\n'
-                  '这一步没有开始播放，也未连接你的网盘账号。')
+        dialog.ok('助手已连接', '可以返回选片。配对文件含登录信息，请勿分享给别人。')
     elif choice == 4:
         state = helper_status(path)
         if state.startswith('adapter_'):
             show_existing_backend(dialog, state)
             return state
-        dialog.ok('连接检查', '助手已连接，下一步可试播。' if state == 'ready'
-                  else '尚未连接。请先在助手启动后台；若重新安装过助手，请重新导出并导入配对文件。')
+        dialog.ok('连接检查', '助手已连接，可以选择视频试播。' if state == 'ready'
+                  else '未连接。请先打开助手并启动后台；重装过助手则需重新配对。')
         return state
 
 
@@ -195,7 +192,7 @@ def main():
             if library_store is not None:
                 library_store.close()
         rows = steps(capabilities, config['library_root'], helper, library_count)
-        choice = dialog.select('bobbi TV · 跟着提示完成设置', [label for _, label in rows])
+        choice = dialog.select('影院设置', [label for _, label in rows])
         if choice < 0:
             return
         action = rows[choice][0]
@@ -215,15 +212,14 @@ def main():
             if xbmc.Player().isPlaying():
                 dialog.ok('当前正在播放', '请先手动停止，再开始测试。')
                 continue
-            video = dialog.browse(1, '选择你自己的视频开始测试', 'video',
+            video = dialog.browse(1, '选择视频试播', 'video',
                 mask='.mkv|.mp4|.m4v|.mov|.avi|.webm|.ts|.m2ts', defaultt=config['library_root'])
             if video:
                 identity = selected_identity(video)
                 standard_handoff(identity, -1).submit(identity, {'url': video, 'title': 'bobbi 播放测试'})
                 return  # Do not reopen setup over a newly started video.
         elif action == 'language':
-            dialog.ok('原声与中文字幕', '下一页在“语言”里选择“原始语言”和“中文”字幕。\n'
-                      '不会改分辨率、HDR、音频直通，也不进行转码。')
+            dialog.ok('原声与中文字幕', '下一页进入“语言”，将音轨首选语言设为“原始语言”，字幕首选语言设为“中文”。')
             xbmc.executebuiltin('ActivateWindow(playersettings)')
             return
         elif action == 'cloud':
@@ -235,8 +231,8 @@ def main():
             from bobbi_core.project_metadata import tmdb_key, ATTRIBUTION
             addon = xbmcaddon.Addon('plugin.video.bobbi')
             choice = dialog.select('影视海报与搜索', [
-                '波比专用 TMDb 配置 · ' + ('已提供，无需申请' if tmdb_key() else '尚未安装'),
-                '影院高级设置 / 自选检索服务'])
+                '影视资料服务 · ' + ('已配置' if tmdb_key() else '未配置'),
+                '搜索与高级设置'])
             if choice == 0:
                 from metadata_credits import MetadataCredits
                 credits = MetadataCredits('tmdb-attribution.xml', xbmcaddon.Addon('script.bobbi.setup').getAddonInfo('path'), 'Default', '1080i')
@@ -247,12 +243,12 @@ def main():
             from bobbi_platform.ce_installer import blocked
             from bobbi_platform.paths import profile
             if blocked(profile('script.bobbi.start')):
-                dialog.ok('安装尚未完成', '请先打开“波比开始使用”恢复安装。原皮肤保持不变。')
+                dialog.ok('安装尚未完成', '请打开“波比 TV · 开始使用”，完成恢复后再进入影院。')
                 continue
             if xbmc.Player().isPlaying():
                 dialog.ok('请先停止播放', '切换皮肤会关闭当前界面。')
                 continue
-            if dialog.yesno('进入波比影院', '切换到波比皮肤？Kodi 会询问是否保留；未确认会自动恢复原皮肤。'):
+            if dialog.yesno('切换到波比影院？', '切换后请选择“保留”。未确认会自动返回原皮肤。'):
                 rpc('Settings.SetSettingValue', {'setting': 'lookandfeel.skin', 'value': 'skin.bobbi.cinema'})
                 return
         elif action == 'updates':
@@ -263,9 +259,8 @@ def main():
             show(dialog)
         elif action == 'status':
             from bobbi_core.project_metadata import ATTRIBUTION
-            dialog.ok('波比 TV', '个人 115 / NAS、手动选源、同版续播及中文字幕共用业务核心。\n'
-                      'BT / CD2 云准备为可选能力，未配置时不会阻止启动。\n'
-                      '设备能力与已知问题见发行说明。不会自动刷机；未登录也可使用本地与 NAS 片库。\n'
+            dialog.ok('波比 TV', '支持 115、本地和 NAS 片库。BT 播放与 CD2 提前存片可按需配置。\n'
+                      '设备支持情况和已知问题见发行说明。\n'
                       + ATTRIBUTION)
         elif action == 'transport':
             from bobbi_platform.cloud_hub import transport
@@ -275,22 +270,21 @@ def main():
 def show_updates(dialog):
     """Route user-requested maintenance; never update during playback."""
     if xbmc.Player().isPlaying():
-        dialog.ok('请先停止播放', '播放中不打开插件更新操作页，也不会停止影片或执行更新。')
+        dialog.ok('请先停止播放', '停止影片后再更新程序。')
         return False
-    choice = dialog.select('更新与恢复 · 原版与定制分开维护', [
-        '原版依赖 · Kodi 依赖管理 / 更新',
-        '已装插件 · Kodi 我的插件 / 原仓库更新',
-        '波比影院 · 本地完整包 / 回退程序',
-        '波比影院 · 在线检查并安装最新正式版',
-        '波比影院 · 存储空间与更新缓存',
+    choice = dialog.select('更新与恢复', [
+        '管理 Kodi 依赖',
+        '管理已安装插件',
+        '本地安装与版本恢复',
+        '检查波比 TV 更新',
+        '存储空间与清理',
     ])
     if choice in (0, 1):
-        dialog.ok('打开 Kodi 原生插件管理',
-                  '原版依赖保留原 ID，由 Kodi 按可用的原仓库管理；这里不自动检查或执行更新。\n'
-                  '波比定制组件不能整体用原版覆盖。已安装的旧播放组件与原版也不是一回事，请勿直接替换。')
+        dialog.ok('Kodi 插件管理',
+                  '下一页可管理插件和依赖。波比影院请使用整包更新，勿用其他插件覆盖其组件。')
         # Playback can start while the selector or explanation is open.
         if xbmc.Player().isPlaying():
-            dialog.ok('当前已经开始播放', '本次不打开插件更新操作页，影片保持播放。')
+            dialog.ok('当前正在播放', '已取消打开更新页，请看完后再操作。')
             return False
         target = 'addons://dependencies/' if choice == 0 else 'addons://user/all/'
         xbmc.executebuiltin('ActivateWindow(addonbrowser,%s,return)' % target)
@@ -318,5 +312,4 @@ if __name__ == '__main__':
         main()
     except (ValueError, OSError, RuntimeError) as error:
         xbmc.log('[bobbi] setup failed: ' + type(error).__name__, xbmc.LOGERROR)
-        xbmcgui.Dialog().ok('这一步没有完成', '请重新打开 bobbi 设置重试。\n'
-                           '已保存的步骤会保留，不需要从头配置。')
+        xbmcgui.Dialog().ok('操作未完成', '请重新打开“影院设置”重试，已保存的设置保留。')

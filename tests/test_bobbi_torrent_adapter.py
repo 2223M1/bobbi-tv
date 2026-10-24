@@ -605,7 +605,7 @@ def test_actual_producer_emits_current_adapter_and_no_old_handle(monkeypatch):
 
 def test_producer_uninstalled_or_disabled_adapter_fails_before_launch(monkeypatch):
     make = producer(monkeypatch, available=False)
-    with pytest.raises(RuntimeError, match='尚未安装或已禁用'):
+    with pytest.raises(RuntimeError, match='BT 组件未安装或已禁用'):
         make(MAGNET, '', dict(selection_policy='exact'))
 
 
@@ -614,12 +614,12 @@ def test_producer_missing_backend_fails_before_launch(monkeypatch):
     def missing():
         raise BackendError('TORRENT_BACKEND_NOT_CONFIGURED')
     monkeypatch.setattr('bobbi_torrent.backend.load_config', missing)
-    with pytest.raises(RuntimeError, match='尚未配置'):
+    with pytest.raises(RuntimeError, match='尚未连接 BT 后台'):
         make(MAGNET, '', dict(selection_policy='exact'))
 
 
 def test_producer_stock_request_is_not_given_exact_native_rights(monkeypatch):
-    with pytest.raises(RuntimeError, match='通用 Kodi'):
+    with pytest.raises(RuntimeError, match='请返回选源页，重新选择此 BT 片源'):
         producer(monkeypatch)(MAGNET, '', dict(selection_policy='portable_manual'))
 
 

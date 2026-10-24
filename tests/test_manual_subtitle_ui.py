@@ -236,7 +236,8 @@ def test_download_only_then_explicit_safe_browser(tmp_path):
     assert all(p.closed for p in progresses)
     names = [p.name for p in tmp_path.iterdir()]
     assert any("手动下载-A Film 2008-简中-待校准-" in n for n in names)
-    assert "尚未应用" in dialogs.messages[-1][1]
+    assert "需手动加载" in dialogs.messages[-1][1]
+    assert "时间可能需要调整" in dialogs.messages[-1][1]
 
 
 def test_cancel_selection_never_downloads(tmp_path):
@@ -340,26 +341,26 @@ def test_account_change_during_metadata_read_is_rejected():
 
 def test_missing_personal_key_has_useful_message():
     assert 'API Key' in ui._failure(RuntimeError('PROVIDER_NOT_CONFIGURED'))
-    assert '原生字幕接口' in ui._failure(RuntimeError('READ_ONLY_RPC_UNAVAILABLE'))
+    assert '播放器不支持' in ui._failure(RuntimeError('READ_ONLY_RPC_UNAVAILABLE'))
 
 
 @pytest.mark.parametrize("remaining", [0, 4])
 def test_fresh_remaining_quota_is_displayed_as_provider_report(remaining):
     message = ui._completion_message(Path("example.srt"), dict(remaining=remaining, cached=False))
-    assert "来源返回剩余下载次数：{}（以网站为准）".format(remaining) in message
-    assert "缓存命中" not in message
+    assert "还可下载 {} 次，以网站为准".format(remaining) in message
+    assert "不占下载次数" not in message and "上次记录" not in message
 
 
 @pytest.mark.parametrize("remaining", [0, 4])
 def test_cached_remaining_is_explicitly_historical(remaining):
     message = ui._completion_message(Path("example.srt"), dict(remaining=remaining, cached=True))
-    assert "本地缓存命中，本次未消耗来源下载次数" in message
-    assert "最近记录" in message and "可能已变化" in message
+    assert "使用已下载文件，不占下载次数" in message
+    assert "上次记录还可下载 {} 次，以网站为准".format(remaining) in message
 
 
 @pytest.mark.parametrize("remaining", [True, -1, "4", None])
 def test_invalid_remaining_is_not_displayed(remaining):
-    assert "剩余下载次数" not in ui._completion_message(Path("example.srt"), dict(remaining=remaining))
+    assert "还可下载" not in ui._completion_message(Path("example.srt"), dict(remaining=remaining))
 
 
 def test_two_independent_invocations_do_not_share_lock(tmp_path):
