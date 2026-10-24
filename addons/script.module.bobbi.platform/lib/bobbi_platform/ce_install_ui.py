@@ -1,7 +1,9 @@
 """Kodi-native installation UI. No SSH, HTTP control port or developer paths."""
 from pathlib import Path
+import errno
 import os
 import shutil
+import ssl
 import sys
 import time
 import uuid
@@ -343,6 +345,39 @@ def install_online(installer, host, dialog):
             selected.unlink(missing_ok=True)
 
 
+def failure_message(error):
+    """Explain existing failures without echoing URLs, paths or server bodies."""
+    code = str(error)
+    if code == 'PLAYBACK_ACTIVE':
+        return '请先停止播放再更新或切换界面。当前影片与已安装程序保持不变。'
+    if code == 'INSTALLATION_SPACE_REQUIRED' or getattr(error, 'errno', None) == errno.ENOSPC:
+        return '可用空间不足，请释放空间后重试。未删除你的程序备份、账号或媒体。'
+    if isinstance(error, PermissionError) or getattr(error, 'errno', None) in (errno.EACCES, errno.EPERM, errno.EROFS):
+        return '本机目录没有写入权限或处于只读状态。请检查存储设备，不要删除账号或程序备份。'
+    if isinstance(getattr(error, 'reason', error), ssl.SSLError):
+        return 'HTTPS 证书或安全连接检查未通过。请检查设备日期、时间和网络；也可使用完整离线包。'
+    messages = {
+        'ONLINE_TIMEOUT': '查询或下载超时，可稍后重试，也可使用国内下载页的完整离线包。',
+        'ONLINE_SHORT_READ': '下载不完整，未安装这个包。可重新下载或使用完整离线包。',
+        'ONLINE_LENGTH_INVALID': '下载长度与发布信息不匹配，未安装这个包。请重新检查更新或下载完整离线包。',
+        'ONLINE_CONTENT_INVALID': '下载内容不匹配，未安装这个包。请重新检查更新或下载完整离线包。',
+        'ONLINE_GENERATION_MISMATCH': '下载包与更新索引的版本不一致，未安装。请稍后重新检查更新。',
+        'ONLINE_PACKAGE_INVALID': '安装包格式不完整，未安装。请重新下载完整安装包。',
+        'ONLINE_OFFER_INVALID': '更新信息暂不可用。请稍后重试，也可从国内下载页获取完整离线包。',
+        'ONLINE_RESPONSE_INVALID': '下载服务没有返回正常的安装内容。请稍后重试或使用完整离线包。',
+        'ONLINE_REDIRECT_REJECTED': '下载地址不在当前支持的发布通道中。请使用项目下载页的完整离线包。',
+        'GENERATION_NOT_NEWER': '所选完整包不是更新版本。需要恢复旧程序时，请使用回退入口。',
+        'NO_PREVIOUS_PROGRAM_GENERATION': '本机没有可回退的上一程序版本。已有账号与观看记录未改变。',
+    }
+    if code in messages:
+        return messages[code]
+    if isinstance(error, UpdateError) and ('signature' in code or code.startswith('Offline ')):
+        return '完整安装包校验未通过。请从项目下载页重新下载，不要修改或混装包内组件。'
+    return ('网络连接或下载未完成，可稍后重试，也可使用国内下载页的完整离线包。'
+            if isinstance(error, OSError) or code.startswith('ONLINE_') else
+            '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。')
+
+
 def main(payload=None, online=False):
     import xbmc
     import xbmcgui
@@ -373,14 +408,16 @@ def main(payload=None, online=False):
             if not dialog.yesno('安装波比影院', '只安装波比程序和必要依赖，不读取旧影院账号、不改音画设置。安装完成后可用自己的手机登录115。继续？'):
                 return
             installer.apply(xbmcvfs.translatePath(selected))
-            dialog.ok('安装完成', '即将进入影院设置；登录115后可浏览和手动选源。原Kodi界面可从“波比开始使用”返回。')
+            dialog.ok('安装完成', '账号、片库与观看记录保留；更新后请重启 Kodi。\n'
+                      '即将进入设置；115 可扫码登录，本地与 NAS 不需要网盘账号。')
             choice = 0
         elif choice == 2:
             if dialog.yesno('回退程序', '只恢复上一次波比程序，不覆盖账号、片库和观看记录。继续？'):
                 installer.rollback()
-                dialog.ok('已回退程序', '账号和观看记录保持不变。')
+                dialog.ok('已回退程序', '账号和观看记录保持不变。请重启 Kodi 后再开始观影。')
             return
         elif choice == 3:
+            host.check_idle()
             skin = (state or {}).get('previous_skin') or 'skin.estuary'
             if skin == 'skin.bobbi.cinema':
                 skin = 'skin.estuary'
@@ -393,14 +430,7 @@ def main(payload=None, online=False):
         if str(error) in ('PREVIOUS_PROGRAM_INCOMPLETE', 'PREVIOUS_PROGRAM_SPECIAL_FILE', 'PREVIOUS_PROGRAM_RECEIPT_REQUIRED'):
             dialog.ok('暂不能回退', '旧程序备份不完整，或来自没有完整性记录的旧安装器。已拒绝不完整回退并保留现场，请保留备份并使用完整安装包恢复。')
         else:
-            message = ('网络连接或下载未完成，可稍后重试，也可使用 Releases 中的完整离线包。'
-                       if isinstance(error, OSError) or str(error).startswith('ONLINE_') else
-                       '程序安装或启用尚未完成。可重新打开“波比开始使用”恢复或重试。')
-            if str(error) == 'PLAYBACK_ACTIVE':
-                message = '请先停止播放再更新。当前影片与已安装程序保持不变。'
-            elif str(error) == 'INSTALLATION_SPACE_REQUIRED':
-                message = '可用空间不足，请释放空间后重试。未删除你的程序备份、账号或媒体。'
-            dialog.ok('安装未完成', message)
+            dialog.ok('操作未完成', failure_message(error))
     finally:
         close = getattr(host, 'close', None)
         if close:

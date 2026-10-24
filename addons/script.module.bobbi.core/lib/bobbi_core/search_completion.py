@@ -1,5 +1,21 @@
 """Explicit, locator-free receipts for list-compatible provider results."""
 from dataclasses import dataclass
+import re
+
+
+def provider_failed(record):
+    """A limited/stale snapshot is not itself a failed network query."""
+    if record.get('state') in ('FAILED', 'TIMEOUT'):
+        return True
+    if record.get('state') != 'PARTIAL':
+        return False
+    completion = record.get('completion')
+    if isinstance(completion, dict):
+        return any(type(completion.get(key)) is int and completion[key] > 0
+                   for key in ('failed', 'timed_out'))
+    # Older in-process adapters supplied the summary before structured receipts.
+    return any(int(value) for value in re.findall(
+        r'\b(?:failed|timed_out)=(\d+)\b', str(record.get('error') or '')))
 
 
 def provider_diagnostics(providers):
@@ -10,7 +26,8 @@ def provider_diagnostics(providers):
     errors = {'ValueError', 'TypeError', 'KeyError', 'AttributeError', 'RuntimeError',
               'ImportError', 'ModuleNotFoundError', 'JukuError', 'ShareError', 'TimeoutError',
               'OperationalError', 'OSError', 'ConnectionError', 'ReadTimeout', 'ConnectTimeout',
-              'HTTPError', 'CANDIDATE_CAPACITY_EXCEEDED', 'SEARCH_DEADLINE', 'PREVIOUS_SEARCH_IO_BUSY'}
+              'HTTPError', 'CANDIDATE_CAPACITY_EXCEEDED', 'SEARCH_DEADLINE', 'PREVIOUS_SEARCH_IO_BUSY',
+              'RETRY_PROVIDER_UNAVAILABLE'}
     result = []
     for provider, record in list(providers.items())[:40]:
         provider = provider if isinstance(provider, str) else ''

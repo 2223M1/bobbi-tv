@@ -141,6 +141,24 @@ class SourceListSession:
                 self.confirmed = None
                 self.revision += 1
 
+    def retry_providers(self, providers):
+        """Reopen failed subscriptions only after their coordinator has drained.
+
+        Cards, account scope, metadata and selection identity are unchanged.
+        The caller owns IO drainage; a terminal record alone does not prove it.
+        """
+        from bobbi_core.search_completion import provider_failed
+        with self.lock:
+            if (self.cancelled or self.confirmed or not providers
+                    or any(row['state'] not in self.TERMINAL for row in self.providers.values())
+                    or any(not provider_failed(self.providers.get(key, {})) for key in providers)):
+                return False
+            for key in providers:
+                self.providers[key] = dict(state='PENDING', error='', count=0)
+            self.providers['setup'] = dict(state='PENDING', error='', count=0)
+            self.revision += 1
+            return True
+
     def invalidate_share(self, epoch, source, code='', state=None):
         """Downgrade only the captured exact card; do not remove any candidate."""
         from bobbi_core.share_failure import valid_card_state, tuple_hash

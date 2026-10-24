@@ -1,5 +1,6 @@
 """On-demand, local-only reports using the active skin's native dialogs."""
 import json
+import shutil
 import time
 from uuid import uuid4
 
@@ -12,6 +13,20 @@ STATES = {'PENDING': '等待中', 'RUNNING': '查询中', 'COMPLETE': '已完成
 STAGES = {'rss_parsed': '索引解析', 'catalog_input': '身份过滤前',
     'catalog_kept': '身份过滤后', 'provider_return': '来源返回', 'processed': '处理后',
     'session_pool': '候选池', 'ranked': '排序 / 合并后', 'visible': '提供给界面的候选'}
+ERRORS = {'PREVIOUS_SEARCH_IO_BUSY': '上次查询仍在收尾，请稍后补查。',
+          'SEARCH_DEADLINE': '已达到本轮查询时间上限；已有片源仍可选择。',
+          'CANDIDATE_CAPACITY_EXCEEDED': '候选数量达到上限；不是网络未连接。',
+          'RETRY_PROVIDER_UNAVAILABLE': '此来源当前未启用或未能建立查询。'}
+
+
+def storage_text(directory):
+    try:
+        usage = shutil.disk_usage(directory)
+    except OSError:
+        return '本机可用空间暂时无法读取；未清理任何文件。'
+    return ('本机可用空间：{} MiB / 总计 {} MiB。\n'
+            '程序、缓存与备份共用此存储；这不是安装空间足够的证明，未自动清理任何文件。').format(
+                usage.free // (1024 * 1024), usage.total // (1024 * 1024))
 
 
 def report_text(report):
@@ -42,8 +57,10 @@ def report_text(report):
                 counts.get('snapshot_age', 0)//60))
         if counts.get('truncated'):
             lines.append('达到查询 / 分页上限，尚未搜遍该来源。')
+        if row.get('error') in ERRORS:
+            lines.append(ERRORS[row['error']])
         if row['state'] in ('FAILED', 'TIMEOUT') or counts.get('failed') or counts.get('timed_out'):
-            lines.append('可返回选源重试；查询失败不等于没有资源。')
+            lines.append('可在选源页使用“补查失败来源”；已有卡片和筛选保留，查询失败不等于没有资源。')
     if report['incomplete']:
         lines.append('\n记录已达上限或部分记录不可读；不能将最后观测当作最终结果。')
     return '\n'.join(lines)
@@ -118,6 +135,7 @@ def show(dialog):
                 state = helper_state(xbmcvfs.translatePath, private_path(xbmcvfs.translatePath, 'helper-pairing.json'))
                 bt = dict(steps(capability, helper_state=state))['helper']
                 dialog.textviewer('本机只读检查', summary(capability) + '\n\n' + bt
+                    + '\n\n' + storage_text(directory)
                     + '\n\n没有联网验证来源，也未改动音画设置、账号或播放。')
             elif choice == 1:
                 if not active and count >= search_trace.MAX_REPORTS:

@@ -156,6 +156,7 @@ def manage(legacy_root=''):
     dialog = xbmcgui.Dialog()
     store = None
     changed = False
+    navigated = False
     try:
         store = registry(xbmcvfs.translatePath)
         # Keep the earlier single-directory preference. Do not rewrite Kodi's
@@ -177,6 +178,7 @@ def manage(legacy_root=''):
                 elif choice == 1:
                     if xbmc.getCondVisibility('System.HasAddon(plugin.video.bobbi.library)'):
                         xbmc.executebuiltin('ActivateWindow(Videos,plugin://plugin.video.bobbi.library/,return)')
+                        navigated = True
                         return True  # Tell enclosing menus not to cover navigation.
                     dialog.ok('需要片库组件', '请安装同一版本的“bobbi 我的片库”组件。已保存的连接会保留。')
                 else:
@@ -200,5 +202,5 @@ def manage(legacy_root=''):
     finally:
         if store is not None:
             store.close()
-        if changed:
+        if changed and not navigated:
             xbmc.executebuiltin('Container.Refresh')

@@ -123,7 +123,7 @@
       <scrolltime>120</scrolltime>
       <onup>noop</onup>
       <ondown>1000</ondown>
-      <onleft>noop</onleft>
+      <onleft>1500</onleft>
       <onright>1400</onright>
       <itemlayout width="168" height="64">
         <control type="image">
@@ -206,8 +206,8 @@
       <scrolltime tween="cubic" easing="out">160</scrolltime>
       <pagecontrol>1111</pagecontrol>
       <onup>1300</onup>
-      <ondown>noop</ondown>
-      <onleft>noop</onleft>
+      <ondown>1500</ondown>
+      <onleft>1500</onleft>
       <onright>noop</onright>
       <itemlayout width="1256" height="136">
         <control type="image">
@@ -388,12 +388,12 @@
       </control>
       <control type="label">
         <left>80</left><top>-4</top><width>1100</width><height>40</height>
-        <label>没有符合条件的片源</label>
+        <label>$INFO[Window().Property(source_empty_title)]</label>
         <font>Head30</font><textcolor>FFF5F3EF</textcolor>
       </control>
       <control type="label">
         <left>80</left><top>40</top><width>1100</width><height>32</height>
-        <label>按 上 切换清晰度为“全部”，或在“筛选”中放宽条件</label>
+        <label>$INFO[Window().Property(source_empty_hint)]</label>
         <font>Meta24</font><textcolor>FF7E7D79</textcolor>
       </control>
     </control>
@@ -416,7 +416,17 @@
       <left>96</left><top>1012</top><width>440</width><height>40</height>
       <label>确认 播放   ·   菜单 更多操作</label>
       <font>Meta22</font><textcolor>FF7E7D79</textcolor><aligny>center</aligny>
-      <visible>String.IsEmpty(Window().Property(playback_error))</visible>
+      <visible>String.IsEmpty(Window().Property(playback_error)) + !String.IsEqual(Window().Property(source_retry_visible),true)</visible>
+    </control>
+    <control type="button" id="1500">
+      <left>96</left><top>1008</top><width>440</width><height>56</height>
+      <label>$INFO[Window().Property(source_retry_label)]</label>
+      <font>Button24</font><textcolor>FFF5F3EF</textcolor><focusedcolor>FF0A0B0E</focusedcolor>
+      <align>center</align><aligny>center</aligny>
+      <texturefocus colordiffuse="FFFFFFFF" border="28">bobi/pill.png</texturefocus>
+      <texturenofocus colordiffuse="FF1E2128" border="28">bobi/pill.png</texturenofocus>
+      <visible>String.IsEqual(Window().Property(source_retry_visible),true)</visible>
+      <onup>1300</onup><onright>1300</onright><onleft>1300</onleft><ondown>1300</ondown>
     </control>
   </controls>
 </window>

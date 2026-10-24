@@ -32,7 +32,7 @@ def test_independent_contracts(tmp_path, script, extra):
     run = subprocess.run([sys.executable, '-X', 'utf8', str(ROOT/'tests/repros/ce2052'/script),
         '--repo', str(ROOT), '--output', str(output), *extra], cwd=ROOT,
         env=dict(os.environ, PYTHONUTF8='1'), capture_output=True, text=True, encoding='utf-8', timeout=45)
-    if output.exists() and json.loads(output.read_text()).get('status') == 'INCONCLUSIVE':
+    if output.exists() and json.loads(output.read_text(encoding='utf-8')).get('status') == 'INCONCLUSIVE':
         pytest.skip('Real dual-stack accept-queue fixture unavailable: '+run.stdout)
     assert run.returncode == 0, run.stdout+run.stderr
 

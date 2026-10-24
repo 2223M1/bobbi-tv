@@ -208,6 +208,9 @@ class SourceSelect(BaseWindow):
         self.source_pump = None
         self._source_revision = -1
         self._source_interacted = False
+        self._retry_shown = False
+        self.setProperty('source_empty_title', '没有符合条件的片源')
+        self.setProperty('source_empty_hint', '按 上 切换清晰度为“全部”，或在“筛选”中放宽条件')
         self._auto_select_pending = False  # Manual source selection is product policy.
 
     def onInit(self) -> None:
@@ -474,8 +477,19 @@ class SourceSelect(BaseWindow):
             self.display_list.selectItem(position)
         pending = sum(row['state'] not in self.source_session.TERMINAL for row in snapshot['providers'].values())
         self.setProperty('source_loading', 'true' if pending else 'false')
+        pump = getattr(self, 'source_pump', None)
+        retryable = bool(pump and pump.retry_candidates())
+        self._retry_shown = getattr(self, '_retry_shown', False) or (retryable and not pending)
+        self.setProperty('source_retry_visible', 'true' if self._retry_shown else 'false')
+        self.setProperty('source_retry_label', '正在查询…' if pending else
+                         '补查失败来源' if retryable else '查询已完成')
         from lib.cinema.source_presentation import search_status
         summary, error, diagnostic = search_status(snapshot['providers'], bool(self.sources))
+        self.setProperty('source_empty_title', '部分来源查询未完成' if error and not self.sources
+                         else '没有符合条件的片源')
+        self.setProperty('source_empty_hint', '可补查失败来源；查询失败不代表没有资源'
+                         if error and not self.sources else
+                         '按 上 切换清晰度为“全部”，或在“筛选”中放宽条件')
         if not pending and not getattr(self, '_provider_terminal_logged', False):
             from lib.cinema.source_presentation import provider_diagnostics
             self._provider_terminal_logged = True
@@ -501,7 +515,9 @@ class SourceSelect(BaseWindow):
             self._source_modal = False
 
     def _handle_source_action(self, action_id: int, control_id: Optional[int] = None) -> None:
-        if action_id == 7 and control_id == 1400:
+        if action_id == 7 and control_id == 1500:
+            self._retry_failed_sources()
+        elif action_id == 7 and control_id == 1400:
             self._handle_filter_action()
         elif action_id == 117:  # Context menu action
             self._handle_context_menu_action()
@@ -509,6 +525,16 @@ class SourceSelect(BaseWindow):
             self._handle_quality_select_action()
         elif action_id == 7 and control_id == 1000:  # Select action
             self._handle_select_action(control_id)
+
+    def _retry_failed_sources(self):
+        pump = getattr(self, 'source_pump', None)
+        if pump is None or not pump.retry_candidates():
+            return
+        if not pump.retry_failed():
+            self.setProperty('source_status', '上次查询仍在收尾，请稍后补查；已有片源可正常选择')
+            return
+        self._provider_terminal_logged = False
+        self._refresh_progressive_sources()  # Incremental only; keep native cards/filter/focus.
 
     def _handle_filter_action(self):
         filter_type_popup = FilterTypeWindow("filter_type.xml", ADDON_PATH)

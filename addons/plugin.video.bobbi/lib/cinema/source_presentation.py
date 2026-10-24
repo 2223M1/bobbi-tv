@@ -1,7 +1,6 @@
 """Source-picker display fields, separate from search and playback identity."""
-import re
 from urllib.parse import unquote
-from bobbi_core.search_completion import provider_diagnostics
+from bobbi_core.search_completion import provider_diagnostics, provider_failed
 
 from lib.cinema.frontend_contract import chinese, clean_title, image_url, integer, text, translations
 
@@ -45,15 +44,9 @@ def search_status(providers, has_results):
     terminal = {'COMPLETE', 'PARTIAL', 'FAILED', 'TIMEOUT', 'CANCELLED'}
     pending = sum(row.get('state') not in terminal for row in providers.values())
     partial = sum(row.get('state') == 'PARTIAL' for row in providers.values())
-    failures = 0
-    for row in providers.values():
-        if row.get('state') in ('FAILED', 'TIMEOUT'):
-            failures += 1
-        elif row.get('state') == 'PARTIAL':
-            # Receipts distinguish skipped queries from real network/parse failures.
-            counts = dict(re.findall(r'\b(failed|timed_out)=(\d+)\b', str(row.get('error') or '')))
-            failures += int(any(int(value) for value in counts.values()))
-    status = '正在查询 {} 个来源'.format(pending) if pending else '查询完成' if has_results else '未找到匹配片源'
+    failures = sum(provider_failed(row) for row in providers.values())
+    status = ('正在查询 {} 个来源'.format(pending) if pending else
+              '部分来源未完成' if failures else '查询完成' if has_results else '未找到匹配片源')
     error = '{} 个来源查询失败或超时'.format(failures) if failures else ''
     diagnostic = '{} 个来源仅返回部分结果'.format(partial) if partial else ''
     return status, error, diagnostic

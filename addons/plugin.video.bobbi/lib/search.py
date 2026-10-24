@@ -2183,7 +2183,11 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         observe('processed', processed, invocation=session.epoch)
         return processed
 
+    ready_setup = []
+
     def setup(manager):
+        if manager.retrying and ready_setup:
+            return ready_setup[0](manager)
         reconcile_source_selection(cache_backend=cache, settings_getter=get_setting,
                                    stremio_addons_getter=get_selected_stream_addons)
         scope = _build_search_cache_scope(scoped_addon_url) + ':provider-v1:' + hashlib.sha256(session.media.encode()).hexdigest()
@@ -2218,6 +2222,14 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
                 inferred_year = movie_years.primary_year
         aliases = _build_title_fallback_queries(query, ids, mode, SearchVariant.DEFAULT,
             inferred_year, title_language_mode=title_language_mode, details=details)
+        # Reuse this title's established identity and query plan on manual retry.
+        # Only request deadlines/tokens are rebuilt, not the metadata chain.
+        def submit_ready(manager):
+            submit(manager, inferred_year, movie_years, aliases, details)
+        ready_setup[:] = [submit_ready]
+        submit_ready(manager)
+
+    def submit(manager, inferred_year, movie_years, aliases, details):
         if manager.cancelled.is_set():
             return
         if not scoped_addon_url and not jackgram_only and ids.get('tmdb_id'):
