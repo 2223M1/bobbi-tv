@@ -18,16 +18,11 @@ def main(capabilities=None):
         host.start()
         host.can_quiesce = lambda: not xbmc.Player().isPlaying()
         host.configure_preparation(profile('plugin.video.bobbi'))
-        def refresh_catalog(**kwargs):
-            from bobbi_core.share_catalog import juku_enabled
-            if not juku_enabled():
-                return {'state': 'DISABLED'}
-            from bobbi_core.juku_catalog import refresh_one
-            return refresh_one(**kwargs)
         def idle():
             host.playing = xbmc.Player().isPlaying()
             return not host.playing and xbmc.getGlobalIdleTime() >= 30
-        host.configure_catalog_refresh(refresh_catalog, idle)
+        # Local preparation still needs playback state; no remote refresh job.
+        host.idle_probe = idle
         if native:
             # Keep the original actor on the Kodi thread, including ordered
             # events, subtitles and continuation. No stock fake receipt path.

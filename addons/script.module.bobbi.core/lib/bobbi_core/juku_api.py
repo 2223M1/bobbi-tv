@@ -25,10 +25,10 @@ import sysconfig
 import time
 from threading import Event, Lock, Thread
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 from urllib.request import Request, build_opener, HTTPSHandler, HTTPRedirectHandler, ProxyHandler
 
-BASE = 'https://api.jukuku.xyz'
+BASE = ''  # No upstream endpoint is supplied by the public application.
 STATE = None  # Resolved lazily from the active Kodi profile, never the author's host.
 APP_VERSION = '1.0.0'  # Wire protocol version found in 0.80, not Bobi's version.
 MAX_JSON = 8 * 1024 * 1024
@@ -189,7 +189,7 @@ class EdgeConnection(http.client.HTTPSConnection):
 
     def connect(self):
         server_name = self._tunnel_host or self.host
-        if server_name != 'api.jukuku.xyz' or (self.edge_ip and (self.port != 443 or self._tunnel_host)):
+        if not BASE or server_name != urlsplit(BASE).hostname or (self.edge_ip and (self.port != 443 or self._tunnel_host)):
             raise JukuError('EDGE_HOST')
         # With no edge this is the explicitly configured numeric loopback proxy.
         if not self.edge_ip and self.host != '127.0.0.1':
@@ -354,6 +354,10 @@ def sign_payload(key, payload):
 
 class Client:
     def __init__(self, state=STATE, cancelled=lambda: False, opener=None, proxy=None, edge_ip=None):
+        # Fail before configuration, keys, sessions or transport are touched.
+        # Retained protocol tests inject an offline fixture endpoint explicitly.
+        if not BASE:
+            raise JukuError('CATALOGUE_DISABLED')
         self.root = state_path(state)
         self.cancelled = cancelled
         config = load_json(self.root / 'config.json')
@@ -368,7 +372,7 @@ class Client:
         if not isinstance(edge_ip, str) or (edge_ip and (edge_ip not in EDGES or proxy)):
             raise JukuError('EDGE_CONFIG')
         # Fixed, observed 0.80 edge candidates avoid an unbounded DNS resolver
-        # and retain api.jukuku.xyz for Host/SNI/certificate validation. Never
+        # and retain the endpoint host for Host/SNI/certificate validation. Never
         # bypass an explicitly selected local proxy on fallback.
         edges = (None,) if proxy else tuple(dict.fromkeys((edge_ip or EDGES[0], *EDGES)))[:2]
         self.openers = [opener] if opener is not None else [

@@ -6,7 +6,7 @@ The same provider names are retained in direct-source continuation receipts.
 from importlib import import_module
 
 
-PROVIDERS = ('qqdocs', 'juku')
+PROVIDERS = ('qqdocs',)
 
 
 def _adapter(name):
@@ -48,8 +48,6 @@ def submit_catalogs(manager, ids, mode, season, episode, year, aliases, release_
         if name != 'qqdocs' and not module.enabled():
             continue
         options = dict(movie_years=movie_years)
-        if name == 'juku':
-            options['_progressive'] = True
         manager.submit_task(module.SITE, name, module.find_sources,
             ids, mode, season, episode, year, aliases, release_order,
             manager.deadline, manager.cancelled, **options)

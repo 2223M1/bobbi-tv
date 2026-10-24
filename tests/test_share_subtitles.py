@@ -6,6 +6,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.core/lib'))
+sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.catalog/lib'))
 from bobbi_core import share_subtitles as sidecar
 
 CHINESE = '1\n00:30:00,000 --> 00:30:02,000\n中文字幕，不用通过时间轴准入\n'.encode()

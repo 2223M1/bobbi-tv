@@ -26,6 +26,11 @@ from bobbi_core.source_list_session import SourceListSession
 from bobbi_core.provider_cache import ProviderResultCache
 
 
+@pytest.fixture(autouse=True)
+def offline_protocol_endpoint(monkeypatch):
+    monkeypatch.setattr(api, 'BASE', 'https://catalog.example.invalid')
+
+
 def movie(index=1):
     return dict(tmdbId=101, typeId=1, year=2024, title='Audit Movie', id=1, vodId=1,
         links=[dict(url='https://115.com/s/sabcdef', fileId=str(index),

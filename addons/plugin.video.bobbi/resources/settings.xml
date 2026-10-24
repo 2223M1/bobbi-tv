@@ -40,10 +40,6 @@
                 </setting>
             </group>
             <group id="search" label="90006">
-                    <setting id="juku_enabled" type="boolean" label="共享目录（115 分享）" help="搜索共享片源，使用你的 115 账号播放。此选项不会自动转存。">
-                        <default>true</default>
-                        <control type="toggle" />
-                    </setting>
                     <setting id="search_dialog_style" type="string" label="90238" help="">
                         <default>0</default>
                         <constraints>

@@ -20,16 +20,16 @@ def test_owned_component_display_metadata_is_project_facing():
                 assert not re.search(r'Jacktook|Sam-Max|Minsk|明斯克|Confluence', node.text or '', re.I)
 
 
-def test_existing_setting_ids_and_catalog_endpoint_are_preserved():
+def test_retired_catalog_has_no_switch_or_bundled_endpoint():
     settings = ET.parse(ROOT / 'addons/plugin.video.bobbi/resources/settings.xml')
     catalog = settings.find(".//setting[@id='juku_enabled']")
-    assert catalog is not None and catalog.get('label') == '共享目录（115 分享）'
+    assert catalog is None
     assert settings.find(".//setting[@id='auto_start_jacktook']") is not None
     assert settings.find(".//setting[@id='donate']") is None
     api = ast.parse((ROOT / 'addons/script.module.bobbi.core/lib/bobbi_core/juku_api.py').read_text(encoding='utf-8'))
     base = next(node.value for node in api.body if isinstance(node, ast.Assign)
                 and any(isinstance(target, ast.Name) and target.id == 'BASE' for target in node.targets))
-    assert ast.literal_eval(base) == 'https://api.jukuku.xyz'
+    assert ast.literal_eval(base) == ''
 
 
 def test_no_legacy_support_popup_or_recipient_route_is_rebranded():

@@ -22,6 +22,7 @@ from bobbi_core import juku_api as api
 
 @pytest.fixture(autouse=True)
 def isolated_crypto_selection(monkeypatch):
+    monkeypatch.setattr(api, 'BASE', 'https://catalog.example.invalid')
     monkeypatch.setattr(api, '_CRYPTO_NAMESPACE', None)
 
 
@@ -293,7 +294,7 @@ def test_socket_deadline_survives_connection_close_headers(monkeypatch):
     monkeypatch.setattr(api.socket, 'create_connection', lambda *args: local)
     context = SimpleNamespace(wrap_socket=lambda sock, server_hostname: sock,
                               check_hostname=True, verify_mode=ssl.CERT_REQUIRED)
-    connection = api.EdgeConnection('api.jukuku.xyz', api.EDGES[0], time.monotonic()+.20,
+    connection = api.EdgeConnection('catalog.example.invalid', api.EDGES[0], time.monotonic()+.20,
                                     lambda: False, context=context, timeout=1)
     sent = Event()
     def server():

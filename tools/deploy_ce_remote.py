@@ -267,17 +267,6 @@ def migrate_profiles(run, config):
     if old_token.is_file():
         copy_file(old_token, plugin / 'assrt-token', 16384)
         result['assrt_token_preserved'] = True
-    # Same device identity, not a shared upstream application key.
-    old_juku = PROFILES / 'plugin.video.jacktook/juku'
-    if old_juku.is_dir():
-        new_juku = plugin / 'juku'
-        new_juku.mkdir(mode=0o700)
-        for name in ('device.pem', 'session.json'):
-            if (old_juku / name).is_file():
-                copy_file(old_juku / name, new_juku / name, 65536)
-        for name in ('catalog.sqlite3',):
-            if (old_juku / name).is_file():
-                sqlite_backup(old_juku / name, new_juku / name, stopped)
     skin = PROFILES / 'skin.bobbi.cinema'
     skin.mkdir(mode=0o700)
     for name in ('settings.xml', 'skin_record.xml'):

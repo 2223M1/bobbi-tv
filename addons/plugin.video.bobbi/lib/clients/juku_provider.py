@@ -6,11 +6,8 @@ SITE = 'Juku · 115分享'
 
 
 def enabled():
-    try:
-        import xbmcaddon
-        return xbmcaddon.Addon('plugin.video.bobbi').getSetting('juku_enabled').strip().lower() == 'true'
-    except (ImportError, RuntimeError):
-        return False
+    # Retired integration. Old saved settings must not reactivate network IO.
+    return False
 
 
 def _query_cancelled(cancelled):

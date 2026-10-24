@@ -425,8 +425,6 @@ class Host:
             self.engine_worker.start()
 
     def _tick_catalog(self):
-        if self.refresh is None:
-            return
         now = time.monotonic()
         if now >= self.idle_check:
             self.idle_check = now + .5
@@ -434,6 +432,9 @@ class Host:
                 self.idle = self.idle_probe() is True
             except Exception:
                 self.idle = False
+        # Idle observation also throttles preparation when no catalogue runs.
+        if self.refresh is None:
+            return
         if self.refresh_worker is not None:
             if self.refresh_worker.is_alive():
                 return
