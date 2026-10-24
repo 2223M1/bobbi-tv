@@ -16,6 +16,7 @@
       "lib/bobbi_platform/capabilities.py",
       "lib/bobbi_platform/ce_install_ui.py",
       "lib/bobbi_platform/ce_installer.py",
+      "lib/bobbi_platform/ce_recovery.py",
       "lib/bobbi_platform/ce_storage.py",
       "lib/bobbi_platform/cloud115.py",
       "lib/bobbi_platform/cloud_hub.py",
