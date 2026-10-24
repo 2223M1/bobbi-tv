@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Dict, List
 from urllib.parse import unquote
 from zipfile import ZipFile
-from bobbi_core.image_cache import image_url as tmdb_image_url
+from bobbi_core.image_cache import image_batch, image_url as tmdb_image_url
 
 import requests
 import xbmc
@@ -757,6 +757,7 @@ def build_actor(member, is_cast=True):
         )
 
 
+@image_batch()
 def set_listitem_artwork(list_item, data, fanart_data):
     tier_map = {"0": "low", "1": "medium", "2": "high", "3": "original"}
     tier = tier_map.get(get_setting_fresh("image_resolution_tier", "2"), "high")

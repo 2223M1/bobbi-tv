@@ -175,6 +175,11 @@ class Installer:
             raise UpdateError('HOST_ACTIVATION_NOT_CONFIRMED')
         state['phase'] = 'complete'
         self._write(state)
+        from .ce_recovery import record_transaction
+        try:
+            record_transaction(self, state)
+        except (OSError, ValueError, UpdateError):
+            pass  # Missing retirement proof means protected, never disposable.
 
     def _check_idle(self):
         # New Kodi hosts reject known active playback before a completed
@@ -241,7 +246,23 @@ class Installer:
                 signed.check_all()
                 return install_plan(signed, self.addons, self.work, previous, MANAGED)
 
+    def saved_generations(self):
+        from .ce_recovery import RecoveryStore
+        with _Lock(self.work / 'installation.lock'):
+            state = self._read()
+            if state and (state.get('host_pending') or state['phase'] not in ('complete', 'restored')):
+                raise UpdateError('INSTALLATION_RECOVERY_REQUIRED')
+            return RecoveryStore(self.work, self.trust).list()
+
+    def restore_saved(self, name):
+        from .ce_recovery import RecoveryStore
+        # The private apply path repeats validation under the transaction lock.
+        return self._apply(RecoveryStore(self.work, self.trust).path(name), restoring=True)
+
     def apply(self, bundle):
+        return self._apply(bundle)
+
+    def _apply(self, bundle, restoring=False):
         with _Lock(self.work / 'installation.lock'):
             previous = self._read()
             if previous and (previous.get('host_pending') or previous['phase'] not in ('complete', 'restored')):
@@ -251,7 +272,13 @@ class Installer:
                 manifest = signed.check_all()
                 watermark = max(previous.get('high_watermark', 0),
                     previous['sequence'] if previous['phase'] == 'complete' else 0) if previous else 0
-                if manifest['sequence'] <= watermark:
+                if restoring:
+                    from .ce_recovery import RecoveryStore
+                    store = RecoveryStore(self.work, self.trust)
+                    point = store.inspect(Path(bundle).name)
+                    if not previous or point['sequence'] > watermark or store.path(point['name']) != Path(bundle):
+                        raise UpdateError('RECOVERY_POINT_INVALID')
+                elif manifest['sequence'] <= watermark:
                     raise UpdateError('GENERATION_NOT_NEWER')
                 space = install_plan(signed, self.addons, self.work, previous, MANAGED)
                 require_space(space)  # Refuse before creating an orphan transaction.
@@ -282,6 +309,8 @@ class Installer:
                     sequence=manifest['sequence'], high_watermark=watermark, previous_skin=self.host.skin(),
                     enabled=self.host.enabled(), versions={r['id']: r['version'] for r in manifest['components']
                         if r['id'] in MANAGED})
+                if previous:
+                    state['previous_tx'] = previous['tx']
                 # Archive/dependency preparation can outlast the initial idle
                 # observation. Recheck before replacing the previous journal;
                 # quiesce still owns the final guarded replacement barrier.
@@ -305,7 +334,7 @@ class Installer:
                     state['phase'] = 'activation_pending'
                     # The verified generation can now start; retain the high
                     # watermark even if activation or a later rollback fails.
-                    state['high_watermark'] = manifest['sequence']
+                    state['high_watermark'] = max(watermark, manifest['sequence'])
                     self._write(state)
                 except BaseException as error:
                     if isinstance(error, PlaybackActive) and not quiesced:
@@ -319,4 +348,14 @@ class Installer:
                 # Transient RPC failure keeps activation pending, not a falsely
                 # complete install or an unnecessary destructive swap-back.
                 self._activate(state)
+                # Optional complete-package retention cannot undo a successful
+                # install. Original one-step rollback remains independent.
+                from .ce_recovery import RecoveryStore
+                import zipfile
+                try:
+                    state['recovery_archive'] = RecoveryStore(self.work, self.trust).remember(
+                        signed, protected=((previous.get('recovery_archive') or {}).get('name'),) if previous else ())
+                except (OSError, ValueError, UpdateError, zipfile.BadZipFile):
+                    state['recovery_archive'] = dict(saved=False, reason='unavailable')
+                self._write(state)
                 return manifest

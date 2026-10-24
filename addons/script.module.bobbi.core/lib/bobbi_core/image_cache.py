@@ -5,6 +5,8 @@ The read-only image server is separate from authenticated player control.
 """
 import hashlib
 import hmac
+from contextlib import contextmanager
+from contextvars import ContextVar
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
@@ -27,6 +29,46 @@ MAX_CACHE = 128 * 1024 * 1024
 MAX_FILES = 2048
 _services = WeakSet()
 _services_lock = Lock()
+_presentation = ContextVar('bobbi_artwork_presentation', default=None)
+
+
+@contextmanager
+def image_batch():
+    """Share one lazy endpoint snapshot during synchronous page/card projection.
+
+    No HTTP, worker lifetime or cross-page cache belongs in this scope. Nested
+    projections reuse it; exceptions release it. Explicit roots stay fresh.
+    """
+    if _presentation.get() is not None:
+        yield
+        return
+    token = _presentation.set({})
+    try:
+        yield
+    finally:
+        _presentation.reset(token)
+
+
+def _endpoint(root):
+    try:
+        if root is None:
+            from bobbi_platform.paths import profile
+            root = profile()
+        config = _configuration(Path(root) / 'image-runtime.json')
+        if config is not None:
+            return 'http://127.0.0.1:{}/art/{}/'.format(config['port'], config['token'])
+    except (OSError, ValueError, TypeError, ImportError):
+        pass
+    return None
+
+
+def _presentation_endpoint(root):
+    snapshot = _presentation.get() if root is None else None
+    if snapshot is None:
+        return _endpoint(root)
+    if 'endpoint' not in snapshot:
+        snapshot['endpoint'] = _endpoint(root)
+    return snapshot['endpoint']
 
 
 def visible_images_busy():
@@ -87,17 +129,8 @@ def image_url(value, size=None, root=None):
     except (TypeError, ValueError):
         return value  # Non-TMDb artwork remains its existing independent source.
     original = 'https://image.tmdb.org' + path
-    try:
-        if root is None:
-            from bobbi_platform.paths import profile
-            root = profile()
-        location = Path(root) / 'image-runtime.json'
-        config = _configuration(location)
-        if config is None:
-            return original
-        return 'http://127.0.0.1:{}/art/{}/{}'.format(config['port'], config['token'], path[5:])
-    except (OSError, ValueError, TypeError, ImportError):
-        return original
+    endpoint = _presentation_endpoint(root)
+    return endpoint + path[5:] if endpoint else original
 
 
 def media_type(raw):

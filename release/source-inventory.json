@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "409872523f8428aaeb4b2ebf668972bf8eb3bb0f1f339384f7162ee4529eb1c1",
+      "addon.xml": "3dd1c55263887b268f5f2556faebb5a321426290228f3673e8198f8e3e89ca94",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
@@ -201,13 +201,13 @@
       "lib/clients/subtitle/submanager.py": "3a7b57c221dbd78f0e5707f5f506cafd36a2523ee936a7ce842f6b004d12a50f",
       "lib/clients/subtitle/utils.py": "ae142e05640710f75bd79b9118d60ebb260b67ae7a1674690ee75b6a0ebe0aa9",
       "lib/clients/tmdb/anime.py": "bf1ede654d140d6a0ad713529269e52cb6a6d3551db5dbbc6ef366895da60be5",
-      "lib/clients/tmdb/anime_fast_catalog.py": "425d4e8aeda7b230acfc825c3d4c359231d182f34840291e9d8e65db7914b900",
+      "lib/clients/tmdb/anime_fast_catalog.py": "9823e5f4b5d053dcfa2280b5d636ab8f20ff834840e80c36ac74db084de3286d",
       "lib/clients/tmdb/anime_metadata.py": "6b409623c63a200de0a9f3d69a8dcaf0c7899b3262b48013105d5368c7a301dc",
       "lib/clients/tmdb/base.py": "6978b6f74eb0c3914152c02d4bc82f99fe15b62c3faaeb0b8eba3b368a6cd057",
       "lib/clients/tmdb/collections.py": "5bc32d41c84d846f572b3920433c3ab253ece9a83cac3eebf1cd017fdb73c579",
       "lib/clients/tmdb/detail_cache.py": "31b2f65fb580696a82f282b26e2fde028e70ce10934818cec5521c085cc31fda",
       "lib/clients/tmdb/episode_order.py": "b6b365fdcc588ce9805eb6e0b07c268def7b7996609bcd3a82c83aa159110785",
-      "lib/clients/tmdb/frontend_metadata.py": "fc136bb4ca1565328a437dc93092a04ca33e304113ad160b333706031b047f90",
+      "lib/clients/tmdb/frontend_metadata.py": "19b870d431052a4fcbfa8921941e3898483f4299fd9d5ed6f3ab276c247704fd",
       "lib/clients/tmdb/movie_details_guard.py": "bb7bf27c211a0952fae71c57f5d89e3cc1fb286a7452b40938e352d6498b5718",
       "lib/clients/tmdb/movie_years.py": "3d63340e32a6862545e4dc952666fc14429a96e778469e23522109bbe4f7967c",
       "lib/clients/tmdb/navigation.py": "9166db6857d7ea34113b70fe08d29d80fb4f4451addf5b08791a12363b127047",
@@ -215,7 +215,7 @@
       "lib/clients/tmdb/people_client.py": "188b9e9434bf0b432173498b9bb280e052b563092784531b05b5553965f79766",
       "lib/clients/tmdb/related_movies.py": "8ccb9f02bf1fbeb9fb1dada4643c63c681bcbfc50116b592fe46eb25804e93c9",
       "lib/clients/tmdb/season_card.py": "7d0c5b628ed538880ddeb92bae52ec91b4014ff9415bbd49b4c7c4ccbd73107a",
-      "lib/clients/tmdb/season_cards.py": "5e1598c6344294802403915a9bb5907fb394e6b15b03af7172687a8c42e04e70",
+      "lib/clients/tmdb/season_cards.py": "f932a416d7838ab0146350e3ff45597a694eb18b2a8772823d7105c3871b5eed",
       "lib/clients/tmdb/subtitle_scope.py": "a7c93e921ed75d0a70a6cc5b422f6e7c54fe977d9d8bec89f5b7eadd84dc0ad9",
       "lib/clients/tmdb/tmdb.py": "4843a8bb234ac2b2a3e2977ecbd83a43f0a63a780b3882624a948baa84b8df3b",
       "lib/clients/tmdb/trailers.py": "0c10ff7b68ac7fff523dc4aa16eb12c5c7edae368eaa9b69da6867ed696730e1",
@@ -309,7 +309,7 @@
       "lib/utils/general/processors.py": "56eb33c024024a7d2768fde2a7059d23c234de968bf5363af8ea9c8733926493",
       "lib/utils/general/source_platform.py": "d7ad79e4b0337cbae64dbadd80335436719ef494118a1fb85f5239eeaf5734a1",
       "lib/utils/general/source_resolution.py": "3eb739d44d30634bd576bd3929c315f8dfafea617a4f80d2c7cb5842ab13254d",
-      "lib/utils/general/utils.py": "922da58392891ccf641ae4ac1e3ed1fee06a16a8583b363ca002114c25e27a13",
+      "lib/utils/general/utils.py": "a2a02e267374b65ff26208b496407f97f383901d458e678020782a5a4a951689",
       "lib/utils/kodi/kodi_formats.py": "050471f1f9998a119b72b1f47539fd79b88f2739cb45af953949d22457188920",
       "lib/utils/kodi/last_files_actions.py": "127bd48bc47b9d6c29136fe80a5ea4e4520cbb19d1c1ee8f553631e5c1833de2",
       "lib/utils/kodi/logging.py": "a2405e10c62db30038edebcf0a0b96bd44090586a18618d9c769e81840caf81c",
@@ -605,7 +605,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "b2dff3e18cf8f38bf025946c9f0fb8881fb4284005ce84cd370eeca3dc8482de",
+      "addon.xml": "9ffa6546cd1471e9760cd6961d67ed45c0d725bc7f056965ec5e3eec61606879",
       "default.py": "c47509ab7987d8edc3fc3aad6f08a0da7fae0e1588e04c1bd1ab21cc0f58bf23"
     },
     "script.module.bobbi.catalog": {
@@ -621,7 +621,7 @@
       "resources/settings.xml": "3ad0dd1185d7871b2a549838ebf41410853281797c75f4e2277d9e5fabe2c298"
     },
     "script.module.bobbi.core": {
-      "addon.xml": "a2d5d3e7fc95622c5bd448c0dcbc881fe42d1e3c750f8639949c413904862762",
+      "addon.xml": "d2faf9372230b1987ecaf0949bc243f1b6ac961dd6da39c5bd22fa32100dd2bc",
       "lib/bobbi_core/__init__.py": "f9e32762d2f4ce4acde5ff9c621551ce06932ebaecc5dc0bf8deeff25bf86a9e",
       "lib/bobbi_core/account_readiness.py": "d4a6ff03eb16191e3ed324c9a76adb91280818a234c9f6367e78bcc152cdbbe2",
       "lib/bobbi_core/anime_range_candidates.py": "4966fc9571a997836bf7d042563abf6747777376f8bca56a3634d28c3ee371a9",
@@ -654,7 +654,7 @@
       "lib/bobbi_core/font_preflight_lane.py": "7035c55e1b2223d162236935c3b2d9f733489e5b98df0249c30d0560cd7097be",
       "lib/bobbi_core/fonts.py": "46b582d48aebf158618b9ec5f5729674c6116452bb876b2cf45f1fef0f287447",
       "lib/bobbi_core/http_policy.py": "2bfd1344d74359df1af12ef8ae469f2e2d27c277df5d1ec0813ca6c3cd7126e8",
-      "lib/bobbi_core/image_cache.py": "b1bf67e625e24cc7830b24a30c1d50871fa346ce635e04009cea7ed3f2e00f13",
+      "lib/bobbi_core/image_cache.py": "ab20547e4d7a863e5d9bfcf95705012e59ae93b3cc7ec0927057301be1f97efa",
       "lib/bobbi_core/jackett_protocol.py": "88fd709bbf0d902bba738121c146dfa319860c974eb54a6bbcd00025cbe3b78d",
       "lib/bobbi_core/juku_api.py": "28c43209af74b3a7a43df3eac5dfbd9e01958ecf10424daada95b9eb26bf0328",
       "lib/bobbi_core/juku_catalog.py": "16c42129c77cf528bb700b143124b72db359d536e0a60bb8f2e930b8ac62ad53",
@@ -747,7 +747,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "05b09a45b1e77b1cd1f0720d6a751af9fa0fb6c14c3f5588f78bdf05efa39834",
+      "addon.xml": "3ca5168a903c5791efd62276b391d6f636309392dcbe926cb90e633ed73175c3",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -759,9 +759,10 @@
       "lib/bobbi_platform/account_manager.py": "71155808e03c6f8ccd48403bfaa7ab9763ef798fc141e6f7bc2c8dd46be2070d",
       "lib/bobbi_platform/bt_setup.py": "92a2fab72ed828bc157d40059a1045dcead3c136fcc0c88ecf4406bd591ff9d8",
       "lib/bobbi_platform/capabilities.py": "226300a6b05da39633bf321649f2bad56782339f6b42ca675c45f2862c9d0e6f",
-      "lib/bobbi_platform/ce_install_ui.py": "4f7715a0fb7aaeee29062ededb1bc5707f1d54b72c58c474c88b6ee3224cbff8",
-      "lib/bobbi_platform/ce_installer.py": "5ee9572f21043c34551e7bf9aa771fbfb31dc5edb91b13c3cec654165d728442",
-      "lib/bobbi_platform/ce_storage.py": "2edaf2c006dbc9f5127c4c654dd5390573d47973d5dd3197639fbb5cbc920035",
+      "lib/bobbi_platform/ce_install_ui.py": "3d2baae37d75aa8a912e21e439355274c6c036ac5369e1d7544da212f33cb16a",
+      "lib/bobbi_platform/ce_installer.py": "08e2fc93175665219134165784f0c371170636a1277e93465bf04bc2cf633832",
+      "lib/bobbi_platform/ce_recovery.py": "9e89931092f145858162417bffa12424fc5e6e49de56fae940d6184f562d4bd6",
+      "lib/bobbi_platform/ce_storage.py": "f95583c21d5e3ce9d1c6e1d23301b2da05dffc006cae7161d5c3d9f50c3eb80c",
       "lib/bobbi_platform/cloud115.py": "54194516b9292b8b35985e7eb0e14c2e734102a958a69f7143e861d8ea0a979a",
       "lib/bobbi_platform/cloud_hub.py": "fd1fc3b8235f79aeed1954309d6fe4c1636c19651ecb7ee4a0198aee34cb7331",
       "lib/bobbi_platform/cloud_ui.py": "42da992695c90d8f716baca35ddd35d9408523be9dd648d5a2977d606bd40f3c",

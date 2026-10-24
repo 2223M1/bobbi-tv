@@ -1,4 +1,4 @@
-"""CE install capacity and explicit transport-cache maintenance, never rollback GC."""
+"""CE install capacity and explicit cleanup; current rollback stays protected."""
 from contextlib import ExitStack
 from io import BytesIO
 import os
@@ -119,7 +119,7 @@ def plan_text(plan):
                 reserve=mib(plan['reserve_bytes']),required=mib(plan['required_bytes']),free=mib(plan['free_bytes']))
     if not plan['existing_sizes_complete']:
         text += '\n现有程序与备份未能完整统计，显示的是已读下限，不影响新增空间估算。'
-    return text
+    return text + '\n安装成功后会尽量另存完整恢复包，最多保留最近三个；额外空间不足时跳过，不影响原来的一次程序回退。'
 
 
 def _identity(path, root):
@@ -189,13 +189,20 @@ class Maintenance:
         budget = [SCAN_FILES, SCAN_BYTES]
         device = self.work.stat().st_dev
         protected, complete, legacy = 0, True, 0
+        retired, retired_bytes = [], 0
+        from .ce_recovery import retired_transaction
         for count, path in enumerate(self.work.iterdir(), 1):
             if count > SCAN_FILES:
                 complete = False
                 break
             if re.fullmatch('[a-f0-9]{32}', path.name):
                 size, known = footprint(path, budget, device)
-                protected += size
+                receipt = retired_transaction(self.work, path.name, state) if known else None
+                if receipt:
+                    retired.append((path, receipt))
+                    retired_bytes += size
+                else:
+                    protected += size
                 complete = complete and known
                 if not state or path.name != state['tx']: legacy += 1
         handoff, downloads_complete = footprint(self.work/'downloads', budget, device)
@@ -203,9 +210,10 @@ class Maintenance:
                     free_bytes=shutil.disk_usage(self.work).free,
                     protected_transaction_bytes=protected, protected_sizes_complete=complete,
                     legacy_transactions=legacy, retained_download_bytes=max(0, handoff-sum(identity[2] for _, identity in rows)),
-                    retained_download_sizes_complete=downloads_complete)
+                    retained_download_sizes_complete=downloads_complete,
+                    retired_transactions=len(retired), retired_transaction_bytes=retired_bytes)
         # No caller-supplied filename list can become deletion authority.
-        self.plan = (plan, dict(plan), rows)
+        self.plan = (plan, dict(plan), rows, retired, state)
         return plan
 
     def clear(self, plan, active=lambda: None):
@@ -213,6 +221,12 @@ class Maintenance:
             raise UpdateError('STORAGE_PLAN_CHANGED')
         rows = self.plan[2]
         active()
+        if self.installer._read() != self.plan[4]:
+            raise UpdateError('STORAGE_PLAN_CHANGED')
+        from .ce_recovery import retired_transaction
+        for path, receipt in self.plan[3]:
+            if retired_transaction(self.work, path.name, self.plan[4]) != receipt:
+                raise UpdateError('STORAGE_PLAN_CHANGED')
         current = [(path, _identity(path, self.work)) for path in self._candidates()]
         if current != rows:
             raise UpdateError('STORAGE_PLAN_CHANGED')
@@ -224,8 +238,19 @@ class Maintenance:
             path.unlink()  # Exact flat, ordinary files only; no recursive delete.
             removed += 1
             size += identity[2]
+        removed_transactions = 0
+        for path, receipt in self.plan[3]:
+            active()
+            if (path.parent != self.work or retired_transaction(self.work, path.name, self.plan[4]) != receipt):
+                raise UpdateError('STORAGE_PLAN_CHANGED')
+            # Only completed, no-longer-referenced program transactions with
+            # exact receipts. A partial cleanup cannot affect the live journal,
+            # its previous transaction, recovery packages or user profile.
+            shutil.rmtree(_safe_path(path))
+            removed_transactions += 1
+        size += plan['retired_transaction_bytes'] if removed_transactions else 0
         self.plan = None
-        return dict(removed_files=removed, removed_bytes=size)
+        return dict(removed_files=removed, removed_bytes=size, removed_transactions=removed_transactions)
 
 
 def show(installer, host, dialog):
@@ -239,24 +264,26 @@ def show(installer, host, dialog):
     active()
     with Maintenance(installer) as storage:
         plan = storage.preview()
-        size = plan['reclaimable_bytes']/(1024**2)
+        size = (plan['reclaimable_bytes'] + plan['retired_transaction_bytes'])/(1024**2)
         detail = ('可用空间 {free:.1f} MiB；可清理更新下载缓存 {cache:.1f} MiB（{files} 个文件）。\n'
-                  '当前事务/回退与旧事务保留 {kept:.1f} MiB；其中 {legacy} 个旧事务不自动删除。\n'
+                  '可清理已完成且不再引用的旧程序事务 {retired:.1f} MiB（{transactions} 个）。\n'
+                  '当前事务、上一事务和未能证明可清理的旧事务保留 {kept:.1f} MiB。\n'
                   '已交付或归属不明的下载文件也保留。这里只清理可重新下载的组件缓存和断点；清理后需重新下载，无法撤销。\n'
-                  '不删除程序备份、失败现场、账号、观看记录或媒体。').format(
-                      free=plan['free_bytes']/1024**2,cache=size,files=plan['files'],
-                      kept=plan['protected_transaction_bytes']/1024**2,legacy=plan['legacy_transactions'])
+                  '保留当前回退备份、完整恢复包、失败现场、账号、观看记录和媒体。').format(
+                      free=plan['free_bytes']/1024**2,cache=plan['reclaimable_bytes']/1024**2,files=plan['files'],
+                      kept=plan['protected_transaction_bytes']/1024**2,
+                      retired=plan['retired_transaction_bytes']/1024**2,transactions=plan['retired_transactions'])
         if not plan['protected_sizes_complete']:
             detail += '\n部分目录未能完整统计，保留大小是已读下限，仍不会清理它们。'
         dialog.textviewer('存储空间 · 更新缓存与保留范围', detail)
-        if not plan['files']:
+        if not plan['files'] and not plan['retired_transactions']:
             return
         active()
-        if not dialog.yesno('清理更新下载缓存？',
-                '移除 {:.1f} MiB（{} 个文件），之后需要时重新下载。\n'
-                '程序备份、账号、观看记录和媒体不变。缓存清理无法撤销。'.format(size, plan['files'])):
+        if not dialog.yesno('清理更新缓存与已完成旧事务？',
+                '移除 {:.1f} MiB（{} 个缓存文件、{} 个已完成旧事务）。\n'
+                '当前回退与完整恢复包保留；清理无法撤销。'.format(size, plan['files'], plan['retired_transactions'])):
             return
         active()
         result = storage.clear(plan, active=active)
-        dialog.ok('更新缓存已清理', '已移除 {:.1f} MiB 可重新下载的缓存。程序、备份和账号保持不变。'.format(
+        dialog.ok('存储清理完成', '已移除 {:.1f} MiB 更新缓存及无引用旧事务。当前程序、回退与恢复点、账号保持不变。'.format(
             result['removed_bytes']/1024**2))

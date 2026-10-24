@@ -5,7 +5,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from urllib.parse import urlencode
-from bobbi_core.image_cache import image_url as tmdb_image_url
+from bobbi_core.image_cache import image_batch, image_url as tmdb_image_url
 
 import xbmc
 import xbmcgui
@@ -852,10 +852,11 @@ def _render_directory(data, item_builder, category_label, content_type, next_act
         return True
 
     directory_items = []
-    for result in _am6b_value(data, "results", []) or []:
-        item = item_builder(result)
-        if item:
-            directory_items.append(item)
+    with image_batch():
+        for result in _am6b_value(data, "results", []) or []:
+            item = item_builder(result)
+            if item:
+                directory_items.append(item)
 
     total_pages = _positive_int(_am6b_value(data, "total_pages", 0), 0)
     if next_action and total_pages > page:

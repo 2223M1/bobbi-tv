@@ -378,6 +378,8 @@ def failure_message(error):
         'ONLINE_REDIRECT_REJECTED': '下载地址不在当前支持的发布通道中。请使用项目下载页的完整离线包。',
         'GENERATION_NOT_NEWER': '所选完整包不是更新版本。需要恢复旧程序时，请使用回退入口。',
         'NO_PREVIOUS_PROGRAM_GENERATION': '本机没有可回退的上一程序版本。已有账号与观看记录未改变。',
+        'RECOVERY_POINT_INVALID': '所选完整恢复包已变化或不完整，未执行恢复。请保留现场，可使用上一次程序回退或重新下载完整包。',
+        'RECOVERY_STORE_LIMIT': '恢复目录条目超出预期，未自动清理。请保留目录并使用上一次程序回退。',
     }
     if code in messages:
         return messages[code]
@@ -402,10 +404,16 @@ def main(payload=None, online=False, storage=False):
             return
         state = installer._read()
         actions = ['进入影院设置 / 登录自己的115', '安装本地完整包',
-                   '回退上一次程序安装', '返回原 Kodi 界面', '在线检查并安装最新正式版', '存储空间与更新缓存']
+                   '回退上一次程序安装', '返回原 Kodi 界面', '在线检查并安装最新正式版', '存储空间与更新缓存',
+                   '选择完整程序恢复点']
         first = state is None and not host.details('plugin.video.bobbi')
         choice = 5 if storage else (4 if online or (first and not (payload and Path(payload).is_file())) else (
             1 if first else dialog.select('波比 TV', actions)))
+        if choice == 6:
+            from .ce_recovery import show
+            if show(installer, host, dialog):
+                dialog.ok('已恢复完整程序', '账号与观看记录不变。请重启 Kodi 后再开始观影。')
+            return
         if choice == 5:
             from .ce_storage import show
             show(installer, host, dialog)

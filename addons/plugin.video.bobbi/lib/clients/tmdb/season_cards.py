@@ -15,7 +15,7 @@ import tempfile
 from threading import Lock
 import time
 from urllib.parse import parse_qs, urlencode, urlsplit
-from bobbi_core.image_cache import image_url as tmdb_image_url
+from bobbi_core.image_cache import image_batch, image_url as tmdb_image_url
 
 from lib.clients.tmdb.season_card import latest_season, poster_path, title_for
 
@@ -63,6 +63,7 @@ def _fresh(identifier):
         return False
 
 
+@image_batch()
 def apply(item, identifier, series_title, english_title='', chinese_title=''):
     """Project cached art/title only. The caller retains its original URL."""
     view = cached_view(identifier)

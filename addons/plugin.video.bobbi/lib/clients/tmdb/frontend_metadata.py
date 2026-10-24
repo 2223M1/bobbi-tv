@@ -7,6 +7,7 @@ from pathlib import Path
 import tempfile
 import time
 from urllib.parse import urlencode
+from bobbi_core.image_cache import image_batch
 
 from lib.cinema.frontend_contract import chinese, clean_title, image_url, integer, season_name, text, translations
 
@@ -53,6 +54,7 @@ def source_window(info):
     return window_fields(info, details, season_details)
 
 
+@image_batch()
 def apply(item, identifier, mode, data=None, titles=None):
     """Set display metadata only; caller owns route/payload/search identity."""
     data, titles = data or {}, titles or {}
