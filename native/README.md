@@ -45,42 +45,65 @@ existing user-profile choices are preserved.
 Android 8/API26 or newer; ABI-specific ARM64 and ARMv7 APKs. Application ID
 `org.bobbi.helper` and the original release signer are preserved, so installation
 does not require clearing account/app data. This candidate contains the actual
-Kodi engine and UI, but not the previous helper's TorrServer/BT service. A BT
-backend remains optional and must not be represented as already installed.
+Kodi engine, UI and the packaged MatriX.147 local BT service. The service starts
+only for a BT selection or an explicit setup action, with a visible stop control.
+An existing explicit backend configuration takes priority.
 Native updates use Android's package manager; runtime add-on hot replacement is
 not enabled. A rollback APK must use the same signer and a new, higher version
 code. Do not uninstall/clear data to bypass an installation conflict.
 
-The Android generation 2072 stages the same 22 current component archives as
+The Android generation 2074 stages the same 22 current component archives as
 CoreELEC, including the current cinema skin, search, library, cloud and subtitle
-code. Maintenance menus route to APK instructions, not CE installation/recovery
-or a CE engine download. Existing compatible local BT pairing remains optional.
-The ABI-native Kodi 21.3 host is reused, not replaced with a CE binary.
-The newer CE transport-capsule extension is not in this Android host, so the
-BT-to-115 switch that preserves native audio/subtitle state is not available;
-the shared controller rejects unsupported capture without stopping playback.
+code. Maintenance menus offer online APK lookup and local APK installation,
+delegating confirmation and data-preserving replacement to Android.
+Both ABI-native Kodi 21.3 engines are recompiled with original-audio selection
+and the single-use transport capsule for playback position and manual audio/
+subtitle intent. Hardware-specific CE playback code is not included.
+
+Optional cloud preparation connects to a separately running, local Android
+CloudDrive service. The configured 115 account must match the cinema account.
+Fresh file verification returns an ephemeral local HTTP route, so Android does
+not need a filesystem mount or root. CloudDrive remains responsible for its
+login and background lifecycle. A packaged Android ffprobe qualifies media.
+Exact-release font archives use packaged decoder tools in a resource-limited
+child, with private font storage read by the next subtitle renderer.
 
 To refresh an existing isolated native build, build the root components first
 with the maintainer's application configuration (not `--source-check`). Package
 each ABI with a strictly increasing Android version code and explicit display
 version. For the original 21-component native staging image only, pass the
 reviewed addition flag for the 22nd torrent adapter.
+For a new build tree, first run `build-android.sh ROOT ABI template` with the
+frozen manifest environment. Its temporary APK supplies the upstream assets,
+not a distributable application. Repackage it with all native host/tool inputs;
+omit the addition flag when its manifest already contains all 22 components.
 
 ```sh
 python3 native/repackage-android.py --root /opt/bobbi-native-20261019 \
-  --manifest /absolute/path/components/manifest.json --sequence 2026102072 \
-  --version-name '2072 (Kodi 21.3)' --abi arm64 \
-  --allow-component-addition plugin.video.bobbi.torrent
+  --manifest /absolute/path/components/manifest.json --sequence 2026102074 \
+  --version-name '2074 (Kodi 21.3)' --abi arm64 \
+  --allow-component-addition plugin.video.bobbi.torrent \
+  --native-library /opt/bobbi-native-20261019/build-arm64/libkodi.so \
+  --engine-root /absolute/path/to/locked/jniLibs \
+  --probe-library /opt/bobbi-native-20261019/probe-arm64/ffprobe \
+  --font-directory /opt/bobbi-native-20261019/fonts-arm64
 ```
 
 Repeat with `--abi armv7`. Re-sign both build-only APKs with `sign-host-apk.py`
 using the existing local release key and that exact components manifest. Do not
 publish the temporary-signed inputs, private build inputs or profile backups.
 The `android/` directory is the legacy helper, not the full cinema APK source.
+Its engine implementation is reused by `stage-android-host.py`; do not install
+the helper over the full cinema. Build native tools with `build-android-probe.sh`
+and `build-android-fonts.sh`, then sign only the final frozen component snapshot.
 
 The normal Kodi audio/video path remains full quality. Device-level decoder,
 HDR, audio passthrough and Android 16KiB page-size compatibility still require
 real hardware validation; compilation and ZIP inspection do not certify them.
+CloudDrive grant/range playback, BT-to-115 handoff, system install prompts and
+font appearance also remain unverified on Android hardware. Ordinary same-pack
+preparation is available; cross-torrent advance discovery still requires an
+explicitly configured search backend. No private CE service is copied into an APK.
 
 ## Reproducible build boundary
 

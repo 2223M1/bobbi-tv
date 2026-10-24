@@ -38,7 +38,8 @@ def configuration(path):
     required = {'schema', 'enabled', 'cd2_endpoint', 'cd2_token_file', 'account',
                 'destination', 'ffprobe', 'download_capability', 'torrserver_endpoint'}
     optional = {'cd2_login_file', 'tmdb_proxy', 'torrserver_pairing_file', 'tmdb_api_key_file',
-                'jackett_endpoint', 'jackett_api_key_file', 'font_tool', 'font_native_directory'}
+                'jackett_endpoint', 'jackett_api_key_file', 'font_tool', 'font_native_directory',
+                'playback_transport', 'font_decoder', 'font_cache_directory', 'font_work_directory'}
     if (not isinstance(value, dict) or set(value) - required - optional or required - set(value)
             or type(value['schema']) is not int or value['schema'] != 1
             or value['enabled'] is not True):
@@ -49,6 +50,10 @@ def configuration(path):
     for key in ('cd2_endpoint', 'torrserver_endpoint', 'tmdb_proxy'):
         if key in value:
             value[key] = _endpoint(value[key])
+    if value.get('playback_transport', 'mount') not in ('mount', 'http'):
+        raise ValueError('PREPARATION_TRANSPORT')
+    if value.get('font_decoder', 'ce') not in ('ce', 'android'):
+        raise ValueError('PREPARATION_FONT_DECODER')
     import re
     from .preparation import scope_path
     if not re.fullmatch('[0-9a-f]{64}', str(value['account'])):
@@ -379,10 +384,14 @@ class Session:
             from .font_cache import FontCache
             from .release_font_loader import ReleaseFontLoader
             from .subtitle_font_preparation import SubtitleFontPreparation
-            self.font_cache = FontCache(self.ledger, state / 'fonts', c['font_native_directory'])
+            self.font_cache = FontCache(self.ledger, c.get('font_cache_directory', state / 'fonts'), c['font_native_directory'])
             store.font_cache = self.font_cache
-            loader = ReleaseFontLoader(self.provider, qualifier, state / 'font-work', c['font_tool'],
-                                       lambda: self.lease.valid() and not self.playing)
+            decode = None
+            if c.get('font_decoder') == 'android':
+                from bobbi_platform.android_tools import font_decoder
+                decode = font_decoder(c['font_tool'])
+            loader = ReleaseFontLoader(self.provider, qualifier, c.get('font_work_directory', state / 'font-work'), c['font_tool'],
+                                       lambda: self.lease.valid() and not self.playing, decoder=decode)
             self.font_work = SubtitleFontPreparation(self.subtitles, self.font_cache, loader,
                                                       lambda: self.lease.valid() and not self.playing)
         from .font_playback_preflight import FontPlaybackPreflight
@@ -406,9 +415,14 @@ class Session:
         protection = PreparedProtection(self.ledger)
         self.protection_lane = ProtectionLane(protection)
         self.resources.callback(self.protection_lane.close)
-        self.resolve_lane = ResolveLane(PreparedResolver(self.queue, c['account'], resolve_provider, protection))
+        address = None
+        if c.get('playback_transport') == 'http':
+            from .prepared_transport import resolve_address
+            address = lambda provider, item: resolve_address(provider, item, qualifier)
+        self.resolve_lane = ResolveLane(PreparedResolver(self.queue, c['account'], resolve_provider, protection,
+                                                       address=address))
         self.resources.callback(self.resolve_lane.close)
-        direct_io = DirectIO(self.provider, provider_client, qualifier, cancelled)
+        direct_io = DirectIO(self.provider, provider_client, qualifier, cancelled, address=address)
         self.direct_queue = DirectQueue(state / 'direct.sqlite3', root / 'bobi-direct.json',
                                        c['account'], c['destination'], direct_io, account_scope=self.lease.scope)
         self.resources.callback(self.direct_queue.close)

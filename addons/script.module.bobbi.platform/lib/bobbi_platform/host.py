@@ -460,12 +460,15 @@ class Host:
             return
         self.preparation_attempted = True
         try:
-            # This capability currently uses CE's configured CD2 mount and
-            # ffprobe; Android/stock base paths never import or launch it.
-            from .native_engine import architecture
-            architecture()
             from bobbi_core.preparation_host import configuration, PreparationHost
             config = configuration(path)
+            from .android_engine import available
+            if available():
+                if config.get('playback_transport') != 'http':
+                    raise ValueError('ANDROID_PREPARATION_REQUIRES_HTTP')
+            else:
+                from .native_engine import architecture
+                architecture()
             self.preparation = PreparationHost(self.preparation_root, self.accounts, config,
                 playing=lambda: self.playing, report=self.report)
         except (ValueError, OSError, RuntimeError):

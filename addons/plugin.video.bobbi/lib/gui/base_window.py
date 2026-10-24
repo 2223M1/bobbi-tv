@@ -372,18 +372,23 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
                 playback_data[target_key] = value
         if playback_data.get('selection_policy') == 'exact' and playback_data.get('prepared_resource_id'):
             from lib.clients.bobi_library import load_prepared_index, local_path
+            from bobbi_core.prepared_transport import playback_path
             from lib.cinema.preparation_client import resolve_entry
             prepared = load_prepared_index()
             entries = [entry for title in prepared['titles'] for entry in title['sources']
                        if entry['key'] == playback_data['prepared_resource_id']]
-            if len(entries) != 1 or not resolve_entry(playback_data, prepared, entries[0]):
+            entry = resolve_entry(playback_data, prepared, entries[0]) if len(entries) == 1 else None
+            if not entry:
                 raise RuntimeError('云端文件身份已变化或暂不可用，请刷新片源')
-            playback_data['url'] = local_path(prepared['mount_root'], entries[0]['path'])
-            playback_data['source_title'] = entries[0]['title']
-            playback_data['video_context'] = entries[0].get('video_context')
+            playback_data['url'] = playback_path(prepared['mount_root'], entry)
+            playback_data['source_title'] = entry['title']
+            playback_data['video_context'] = entry.get('video_context')
+            if entry.get('_playback_url'):
+                playback_data['subtitles_path'] = []
         if playback_data.get('selection_policy') == 'exact' and playback_data.get('is_torrent'):
             try:
                 from lib.clients.bobi_library import load_prepared_index, local_path
+                from bobbi_core.prepared_transport import playback_path
                 from lib.cinema.prepared_index import selected_cloud
                 from lib.cinema.preparation_client import resolve_entry
                 prepared = load_prepared_index()
@@ -391,13 +396,13 @@ class BaseWindow(xbmcgui.WindowXMLDialog):
                 if entry:
                     entry = resolve_entry(playback_data, prepared, entry)
                 if entry:
-                    playback_data.update(url=local_path(prepared['mount_root'], entry['path']),
+                    playback_data.update(url=playback_path(prepared['mount_root'], entry),
                         type=IndexerType.DIRECT, indexer='115 · CD2', is_torrent=False, magnet='',
                         source_title=entry['title'], prepared_resource_id=entry['key'],
                         prepared_version_key=entry['prepared_version_key'],
                         prepared_source_info_hash=entry['prepared_source_info_hash'],
                         video_context=entry.get('video_context'),
-                        subtitles_path=[local_path(prepared['mount_root'], p) for p in entry.get('subtitles', [])[:4]])
+                        subtitles_path=[] if entry.get('_playback_url') else [local_path(prepared['mount_root'], p) for p in entry.get('subtitles', [])[:4]])
                     playback_data.pop('episode_binding', None)
                     playback_data.pop('info_hash', None)
             except (OSError, ValueError, KeyError, TypeError):

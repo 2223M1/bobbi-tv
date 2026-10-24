@@ -30,10 +30,11 @@ def digest(path):
 
 
 class ReleaseFontLoader:
-    def __init__(self, provider, qualifier, root, tool, allowed):
+    def __init__(self, provider, qualifier, root, tool, allowed, decoder=None):
         self.provider, self.qualifier = provider, qualifier
         self.root, self.tool = safe_directory(root), Path(tool)
         self.allowed = allowed
+        self.decoder = decoder
 
     def _guard(self):
         if self.allowed() is not True:
@@ -67,6 +68,8 @@ class ReleaseFontLoader:
 
     def _decode(self, archive, sha256, output):
         self._guard()
+        if self.decoder is not None:
+            return self.decoder(archive, sha256, output, self.allowed)
         if (any(p.is_symlink() for p in (self.tool, *self.tool.parents))
                 or not self.tool.is_file() or self.tool.stat().st_size > 4*1024*1024
                 or digest(self.tool) != TOOL_HASH):

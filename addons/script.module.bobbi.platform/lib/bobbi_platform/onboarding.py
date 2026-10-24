@@ -24,6 +24,7 @@ def steps(capabilities, library_root='', helper_state='not_paired', library_coun
     """Stable step IDs permit a simple remote-control menu and resumable UI."""
     kodi_ok = capabilities.get('standard_playback') is True
     helper_labels = {
+        'android_builtin': '已内置，选源时启动',
         'ready': '已连接',
         'paired': '已配对，点此检查',
         'not_paired': '尚未连接', 'invalid': '需要重新配对', 'offline': '需要启动或重试',

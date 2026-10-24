@@ -140,6 +140,12 @@ def resolve_entry(data, snapshot, entry, cancelled=lambda: False, budget=3.0, pe
                 expected['video_context'] = entry['video_context']
             if not all(result.get(key) == value for key, value in expected.items()) or cancelled():
                 return None
+            entry = {key: value for key, value in entry.items() if key != '_playback_url'}
+            if 'playback_url' in result:
+                from .prepared_transport import checked_url
+                # Do not persist this address into the index or use an address
+                # supplied by a search candidate. Only the fresh host receipt.
+                entry = dict(entry, _playback_url=checked_url(result['playback_url']))
             return {'entry': entry, 'verification': dict(body)} if return_verification else entry
         if result.get('state') != 'pending':
             return None

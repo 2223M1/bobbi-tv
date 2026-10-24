@@ -5,10 +5,11 @@ from bobbi_core.runtime_measurement import measured
 
 
 class PreparedResolver:
-    def __init__(self, queue, account, provider, protection=None, observer=None):
+    def __init__(self, queue, account, provider, protection=None, observer=None, address=None):
         self.queue, self.account, self.provider = queue, account, provider
         self.protection = protection
         self.observer = observer
+        self.address = address
 
     @measured('resolve_owner_plan')
     def plan(self, body):
@@ -50,7 +51,14 @@ class PreparedResolver:
         values = [row for row in self.provider.identified_files(parent)
                   if row.get('file_id') == item['file_id'] and row.get('path') == item['cloud_path']
                   and row.get('bytes') == item['bytes'] and not row.get('directory') and not row.get('forbidden')]
-        return len(values) == 1 and self.provider.account_scope() == self.account
+        if len(values) != 1 or self.provider.account_scope() != self.account:
+            return False
+        if self.address is None:
+            return True
+        url = self.address(self.provider, values[0])
+        if self.provider.account_scope() != self.account:
+            return False
+        return {'playback_url': url}
 
     @measured('resolve_owner_finish')
     def finish(self, plan, verified):
@@ -68,7 +76,8 @@ class PreparedResolver:
             same = qualification_token(self.queue, current, body['source_info_hash']) == plan['qualification']
         except (KeyError, ValueError):
             current, same = old, False
-        if (verified is not True or not same
+        portable = isinstance(verified, dict) and set(verified) == {'playback_url'} and self.address is not None
+        if ((verified is not True and not portable) or not same
                 or ('qualification' not in body and self.queue.generation() != body['generation'])
                 or current['state'] != 'ready' or current['suppressed']
                 or any(current[key] != old[key] for key in ('account', 'file_id', 'cloud_path', 'bytes', 'version_key', 'media_id'))):
@@ -78,6 +87,9 @@ class PreparedResolver:
                     path=current['cloud_path'], bytes=current['bytes'], version_key=current['version_key'])
         if 'qualification' in body:
             result['qualification'] = plan['qualification']
+        if portable:
+            from .prepared_transport import checked_url
+            result['playback_url'] = checked_url(verified['playback_url'])
         from bobbi_core.video_context import prepared_video
         result['video_context'] = prepared_video(self.queue, current['resource_id'], body['source_info_hash'])
         if self.protection is not None:

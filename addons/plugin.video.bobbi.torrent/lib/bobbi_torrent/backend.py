@@ -110,8 +110,23 @@ def load_config(path=None):
         raise BackendError('TORRENT_BACKEND_CONFIG_INVALID') from None
 
 
+def playback_config(cancelled=lambda: False):
+    try:
+        return load_config()
+    except BackendError as error:
+        if error.code != 'TORRENT_BACKEND_NOT_CONFIGURED':
+            raise
+        from bobbi_platform.android_engine import available, configuration
+        if not available():
+            raise
+        try:
+            return validate_backend_config(configuration(cancelled=cancelled))
+        except (OSError, ValueError, RuntimeError):
+            raise BackendError('TORRENT_ANDROID_ENGINE_UNAVAILABLE') from None
+
+
 def subtitle_connection():
-    config = load_config()
+    config = playback_config()
     auth = config['auth']
     return config['endpoint'], ((auth['username'], auth['password']) if auth else None)
 

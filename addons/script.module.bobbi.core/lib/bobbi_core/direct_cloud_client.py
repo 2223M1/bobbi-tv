@@ -77,6 +77,9 @@ def resolve(data, cancelled=lambda: False):
             from bobbi_core.direct_cloud import MOUNT
             expected = dict(body, proof=row['proof'], bytes=row['source']['size'], path=MOUNT + row['file']['path'])
             if all(result.get(k) == v for k, v in expected.items()) and not cancelled():
+                if 'playback_url' in result:
+                    from .prepared_transport import checked_url
+                    result = dict(result, path=checked_url(result['playback_url']))
                 return result
             return None
         if result.get('state') != 'pending':

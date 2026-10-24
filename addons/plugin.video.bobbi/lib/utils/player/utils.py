@@ -534,7 +534,12 @@ def get_jacktorr_url(magnet: str, url: str, data: Optional[Dict[str, Any]] = Non
         raise RuntimeError('BT 组件未安装或已禁用，请用波比 TV 完整安装包修复。')
     try:
         from bobbi_torrent.backend import load_config
-        load_config()  # No network, engine start, legacy config or install prompt.
+        try:
+            load_config()  # Pure first check; Android starts only in the selected owner.
+        except RuntimeError as error:
+            from bobbi_platform.android_engine import available
+            if getattr(error, 'code', '') != 'TORRENT_BACKEND_NOT_CONFIGURED' or not available():
+                raise
     except (ImportError, OSError, ValueError, RuntimeError):
         raise RuntimeError('尚未连接 BT 后台，请到“影院设置”的“BT 播放”中配置。') from None
 

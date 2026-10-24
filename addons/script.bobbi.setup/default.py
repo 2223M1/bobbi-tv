@@ -24,6 +24,8 @@ def existing_backend_state():
 
 def helper_state(path):
     from bobbi_platform.bt_setup import helper_state as configured_state
+    if xbmc.getCondVisibility('System.Platform.Android') and existing_backend_state() is None:
+        return 'android_builtin'
     return configured_state(xbmcvfs.translatePath, path)
 
 
@@ -49,6 +51,9 @@ def helper_status(path):
 
 
 def pair_helper(dialog, path):
+    if xbmc.getCondVisibility('System.Platform.Android'):
+        from bobbi_platform.android_engine import show
+        return show(dialog)
     existing = existing_backend_state()
     if existing is not None:
         existing = existing_backend_status() or existing
@@ -57,8 +62,6 @@ def pair_helper(dialog, path):
     actions = [(0, 'Android 助手配对'), (1, '使用说明'),
                (2, '安装 CoreELEC BT 后台'), (3, '导入助手配对文件'),
                (4, '重新检查连接')]
-    if xbmc.getCondVisibility('System.Platform.Android'):
-        actions = [row for row in actions if row[0] != 2]
     selected = dialog.select('设置 BT 播放', [label for _, label in actions])
     if selected < 0 or selected >= len(actions):
         return

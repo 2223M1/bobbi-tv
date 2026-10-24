@@ -19,6 +19,8 @@ def main():
     parser.add_argument('--private-root', type=Path, required=True)
     parser.add_argument('--abi', choices=['arm64-v8a', 'armeabi-v7a'], required=True)
     parser.add_argument('--manifest', type=Path, required=True)
+    parser.add_argument('--allow-legacy-host', action='store_true',
+                        help='Explicit maintenance only for a host without Android engine contracts')
     args = parser.parse_args()
     with zipfile.ZipFile(args.input) as apk:
         expected_machine = 183 if args.abi == 'arm64-v8a' else 40
@@ -34,6 +36,18 @@ def main():
         native = apk.getinfo('lib/' + args.abi + '/libkodi.so')
         if native.file_size < 20 * 1024 * 1024:
             raise ValueError('Not a real native Kodi host')
+        host = None
+        if 'assets/system/bobbi-android-host.json' not in apk.namelist() and not args.allow_legacy_host:
+            raise ValueError('Build-only/legacy host is missing the complete Android lifecycle bridge')
+        if 'assets/system/bobbi-android-host.json' in apk.namelist():
+            host = json.loads(apk.read('assets/system/bobbi-android-host.json'))
+            for field, filename in (('native_library_sha256', 'libkodi.so'),
+                                    ('engine_sha256', 'libbobbi_torrserver.so'),
+                                    ('media_probe_sha256', 'libbobbi_ffprobe.so'),
+                                    ('font_decoder_sha256', 'libbobbi_7zip.so'),
+                                    ('font_limiter_sha256', 'libbobbi_font_limiter.so')):
+                if native_libraries.get('lib/'+args.abi+'/'+filename) != host.get(field):
+                    raise ValueError('Packaged Android host differs from build input: '+filename)
         if 'assets/system/bobbi-components.json' not in apk.namelist():
             raise ValueError('Missing frozen offline components receipt')
         components = json.loads(apk.read('assets/system/bobbi-components.json'))
@@ -95,6 +109,7 @@ def main():
               'components_manifest_sha256': components['components_manifest_sha256'],
               'components_count': len(components['components']), 'component_files_verified': component_files,
               'native_libraries': native_libraries,
+              'android_host': host,
               'bytes': args.output.stat().st_size,
               'sha256': hashlib.sha256(args.output.read_bytes()).hexdigest(),
               'real_device_verified': False}

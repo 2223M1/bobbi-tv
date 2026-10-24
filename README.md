@@ -23,7 +23,7 @@
 
 安装时选择发行说明指定的 **CoreELEC 完整安装包**，文件名以 `script.bobbi.start-` 开头。保留 ZIP 格式，直接交给 Kodi 安装。GitHub 自动生成的 `Source code` 压缩包用于开发，不能直接安装。
 
-Android 候选版内含 Kodi，使用独立 APK，不与 CoreELEC ZIP 包混用。Windows 暂未跟进。
+Android 候选版内含 Kodi 和本机 BT，提供 ARM64、ARMv7 APK，要求 Android 8 或更新版本。尚未完成真机验收，不与 CoreELEC ZIP 包混用。Windows 暂未跟进。
 
 ## 功能
 
@@ -49,6 +49,8 @@ Android 候选版内含 Kodi，使用独立 APK，不与 CoreELEC ZIP 包混用�
 
 基础安装和使用不需要 SSH，也不用刷写系统。BT 播放是可选功能，需要在设置中配置相应的播放后台。
 
+Android 直接安装 APK，选择 BT 片源时会启动内置后台。需要提前存到 115 时，先运行 Android 版 CloudDrive，再到影院的「网盘账号与 CD2」连接本机服务，无需 root 或挂载。
+
 ## 使用说明
 
 ### 账号与片源
@@ -68,6 +70,8 @@ Android 候选版内含 Kodi，使用独立 APK，不与 CoreELEC ZIP 包混用�
 停止播放后，打开 **影院设置 → 更新与恢复 → 检查波比 TV 更新**，按提示安装并重启 Kodi。
 
 需要回退时，打开 **更新与恢复 → 本地安装与版本恢复**，选择 **恢复上一版本**，或通过 **选择恢复版本** 找回已保存的版本。账号、片库和观看记录会保留。想回到原界面，可在「波比 TV · 开始使用」中选择 **返回 Kodi 界面**。
+
+Android 在「更新与恢复」中检查 APK 更新，也可选择本地 APK 覆盖安装。请使用同一签名、版本更新的安装包，勿卸载应用或清除数据。Android 不支持上述 CE 版本恢复。
 
 ## 反馈
 

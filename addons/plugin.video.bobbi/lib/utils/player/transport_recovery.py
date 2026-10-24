@@ -184,8 +184,8 @@ def verify_ready(context, cancelled, diagnostic=None):
     diagnostic_note(diagnostic, 'VERIFY_RESOLVE')
     result = resolve_entry(context['data'], snapshot, entry, cancelled, return_verification=True)
     if result and not cancelled():
-        from lib.clients.bobi_library import local_path
-        value = dict(result, url=local_path(snapshot['mount_root'], entry['path']))
+        from bobbi_core.prepared_transport import playback_path
+        value = dict(result, url=playback_path(snapshot['mount_root'], result['entry']))
         diagnostic_note(diagnostic, 'VERIFY_READY')
         return value
     diagnostic_note(diagnostic, 'VERIFY_UNAVAILABLE')

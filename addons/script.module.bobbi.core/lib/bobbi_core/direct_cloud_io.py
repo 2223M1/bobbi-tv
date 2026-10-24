@@ -9,8 +9,9 @@ from bobbi_core.media_probe import http_range_reader, probe
 
 
 class DirectIO:
-    def __init__(self, provider, provider_factory, qualifier, cancelled=lambda: False):
+    def __init__(self, provider, provider_factory, qualifier, cancelled=lambda: False, address=None):
         self.provider, self.factory, self.qualifier, self.cancelled = provider, provider_factory, qualifier, cancelled
+        self.address = address
 
     def _guard(self, provider, account):
         if self.cancelled() or provider.account_scope() != account:
@@ -123,6 +124,13 @@ class DirectIO:
         try:
             self._guard(provider, plan['account'])
             source = validate_catalog(plan['intent'])
-            return self.matching(provider, plan['destination'], source) == plan['evidence']['file']
+            item = self.matching(provider, plan['destination'], source)
+            if item != plan['evidence']['file']:
+                return False
+            if self.address is None:
+                return True
+            url = self.address(provider, item)
+            self._guard(provider, plan['account'])
+            return {'playback_url': url}
         finally:
             provider.session.close()

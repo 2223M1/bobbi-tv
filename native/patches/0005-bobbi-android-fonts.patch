@@ -1,0 +1,29 @@
+diff --git a/xbmc/cores/VideoPlayer/DVDSubtitles/DVDSubtitlesLibass.cpp b/xbmc/cores/VideoPlayer/DVDSubtitles/DVDSubtitlesLibass.cpp
+--- a/xbmc/cores/VideoPlayer/DVDSubtitles/DVDSubtitlesLibass.cpp
++++ b/xbmc/cores/VideoPlayer/DVDSubtitles/DVDSubtitlesLibass.cpp
+@@ -25,6 +25,10 @@
+ #include <algorithm>
+ #include <cstring>
+ #include <mutex>
++#ifdef TARGET_ANDROID
++#include <androidjni/Context.h>
++#include <androidjni/File.h>
++#endif
+ 
+ using namespace KODI::SUBTITLES::STYLE;
+ using namespace UTILS;
+@@ -114,6 +118,14 @@
+         UTILS::FONT::FONTPATH::TEMP, items, UTILS::FONT::SUPPORTED_EXTENSIONS_MASK,
+         XFILE::DIR_FLAG_BYPASS_CACHE | XFILE::DIR_FLAG_NO_FILE_DIRS | XFILE::DIR_FLAG_NO_FILE_INFO);
+   }
++  // Android's emulated external storage does not support hardlinks. The
++  // preparation owner publishes exact-release fonts in this app-private
++  // directory; the next renderer reads them without a skin/player reload.
++#ifdef TARGET_ANDROID
++  const auto preparedFonts = CJNIContext::getDir("bobbi-fonts", 0).getAbsolutePath();
++  XFILE::CDirectory::GetDirectory(preparedFonts, items, UTILS::FONT::SUPPORTED_EXTENSIONS_MASK,
++      XFILE::DIR_FLAG_BYPASS_CACHE | XFILE::DIR_FLAG_NO_FILE_DIRS | XFILE::DIR_FLAG_NO_FILE_INFO);
++#endif
+   for (const auto& item : items)
+   {
+     if (item->m_bIsFolder)

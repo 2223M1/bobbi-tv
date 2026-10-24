@@ -59,9 +59,23 @@ def main():
     parser.add_argument('--sequence', type=int, required=True)
     parser.add_argument('--version-name', required=True)
     parser.add_argument('--abi', choices=['arm64', 'armv7'], required=True)
+    parser.add_argument('--native-library', type=Path, required=True,
+                        help='Recompiled ABI-native libkodi.so with Android host contracts')
+    parser.add_argument('--engine-root', type=Path, required=True,
+                        help='Directory containing locked Android engine ABI directories')
+    parser.add_argument('--probe-library', type=Path, required=True,
+                        help='ABI-native ffprobe built by build-android-probe.sh')
+    parser.add_argument('--font-directory', type=Path, required=True,
+                        help='ABI-native tools built by build-android-fonts.sh')
     parser.add_argument('--allow-component-addition', choices=[REVIEWED_COMPONENT_ADDITION],
                         help='Explicitly approve only the reviewed 21-to-22 component migration')
     args = parser.parse_args()
+    if bool(args.native_library) != bool(args.engine_root):
+        raise ValueError('Native host and Android engine must be staged together')
+    if bool(args.native_library) != bool(args.probe_library):
+        raise ValueError('Full Android host requires its native media probe')
+    if bool(args.native_library) != bool(args.font_directory):
+        raise ValueError('Full Android host requires its font tools')
     if not 2026101905 < args.sequence <= 2100000000:
         raise ValueError('A newer valid Android version code is required')
     task = args.root.resolve()
@@ -96,6 +110,13 @@ def main():
     stager = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(stager)
     receipt = stager.stage(manifest, app / 'assets')
+    host_receipt = None
+    if args.native_library:
+        spec = importlib.util.spec_from_file_location('stage_android_host', Path(__file__).with_name('stage-android-host.py'))
+        host_stager = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(host_stager)
+        host_receipt = host_stager.stage(app, 'arm64-v8a' if args.abi == 'arm64' else 'armeabi-v7a',
+                                        args.engine_root, args.native_library, args.probe_library, args.font_directory)
     # This one-off throwaway signer is not the release identity. The Windows
     # signing step verifies all frozen bytes, ABI and the existing final signer.
     java = task / 'toolchain/jdk-17.0.18+8'
@@ -124,7 +145,8 @@ def main():
         'version_name': args.version_name,
         'components_manifest_sha256': receipt['components_manifest_sha256'],
         'inventory_transition': inventory_transition,
-        'native_engine_recompiled': False, 'final_release_signed': False}))
+        'native_engine_recompiled': host_receipt is not None, 'host': host_receipt,
+        'final_release_signed': False}))
 
 
 if __name__ == '__main__':

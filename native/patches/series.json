@@ -1,9 +1,27 @@
 {
   "base_commit": "a3a448d26b8d560a65655dab2cd122994dc4e146",
   "patches": [
-    {"file": "0001-bobbi-playback-contracts.patch", "sha256": "a1ed9a6fad9a05b788d8a5d3975641cb2e8b15f0d7567f5dbec07b782ac47493"},
-    {"file": "0002-bobbi-host-packaging.patch", "sha256": "5343a948cb5fa3b15b8b4980263b84a074480efa63ab8102013b6025e2f9c45b"}
+    {
+      "file": "0001-bobbi-playback-contracts.patch",
+      "sha256": "a1ed9a6fad9a05b788d8a5d3975641cb2e8b15f0d7567f5dbec07b782ac47493"
+    },
+    {
+      "file": "0002-bobbi-host-packaging.patch",
+      "sha256": "5343a948cb5fa3b15b8b4980263b84a074480efa63ab8102013b6025e2f9c45b"
+    },
+    {
+      "file": "0003-bobbi-transport-handoff.patch",
+      "sha256": "b4d5c90d87c079678b5c98a9e96015db2f92bdbd86e68e79b76354fdddb50659"
+    },
+    {
+      "file": "0004-bobbi-android-host.patch",
+      "sha256": "ed9277fcea0a1ffe2c60429ebce68a4655a2ccaaaffd8e110386145097405cd6"
+    },
+    {
+      "file": "0005-bobbi-android-fonts.patch",
+      "sha256": "68c542bfd6864cb77e394018f0f6bee727aba5a65f1f2fba1d77de45922f90f9"
+    }
   ],
   "clean_apply_verified": true,
-  "port_scope": "Generic playback instance, manual subtitle intent, actor-time and fullscreen contracts; no CE/AMLogic/DV kernel or renderer patch"
+  "port_scope": "Generic playback, subtitle intent, original audio, single-use transport handoff and Android host; no CE/AMLogic/DV hardware patch"
 }

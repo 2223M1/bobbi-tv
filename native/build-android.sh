@@ -3,6 +3,7 @@ set -euo pipefail
 task_root="${1:?Supply isolated build root}"
 abi="${2:?Supply arm64 or armv7}"
 step="${3:-host}"
+script_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 case "$task_root" in /opt/bobbi-native-*) ;; *) echo 'Invalid isolated root' >&2; exit 2;; esac
 case "$abi" in arm64|armv7) ;; *) exit 2;; esac
 source_root="$task_root/src-$abi"
@@ -21,8 +22,11 @@ case "$step" in
     make -C "$task_root/build-$abi" -j8
     ;;
   apk)
+    echo 'Use the template step, then repackage-android.py with native/engine/probe/font inputs. A template APK is not distributable.' >&2
+    exit 2
+    ;;
+  template)
     export BOBBI_COMPONENTS_MANIFEST="${BOBBI_COMPONENTS_MANIFEST:?Frozen components manifest required}"
-    script_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
     export BOBBI_STAGE_TOOL="$script_root/stage-components.py"
     export BOBBI_GRADLE="python3 $script_root/gradle-isolated.py $task_root"
     # An ephemeral build-only certificate is replaced on Windows with the
@@ -37,6 +41,7 @@ case "$step" in
         -dname 'CN=Build Only,O=Local Build,C=CN'
     fi
     make -C "$task_root/build-$abi" apk
+    echo 'Build-only packaging template. Do not install or distribute; use repackage-android.py and sign-host-apk.py.'
     ;;
   *) exit 2;;
 esac

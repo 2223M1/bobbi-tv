@@ -1,6 +1,8 @@
 """The approved thin torrent adapter must not open arbitrary inventory migration."""
 import importlib.util
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -84,3 +86,20 @@ def test_malformed_or_duplicate_component_inventory_fails_closed(invalid, side):
     inputs[side] = manifest(invalid)
     with pytest.raises(ValueError):
         PACKAGE.validate_component_inventory(**inputs)
+
+
+@pytest.mark.parametrize('missing', [
+    '--native-library', '--engine-root', '--probe-library', '--font-directory',
+])
+def test_packaging_cli_requires_complete_host_before_accessing_inputs(tmp_path, missing):
+    command = [sys.executable, str(Path(PACKAGE.__file__)),
+               '--root', str(tmp_path), '--manifest', str(tmp_path/'manifest.json'),
+               '--sequence', '2026102074', '--version-name', '2074', '--abi', 'arm64']
+    for argument in ('--native-library', '--engine-root', '--probe-library', '--font-directory'):
+        if argument != missing:
+            command.extend([argument, str(tmp_path/'unread-input')])
+    result = subprocess.run(command, capture_output=True, text=True, timeout=20)
+    assert result.returncode == 2
+    assert missing in result.stderr
+    assert 'required' in result.stderr
+    assert 'Traceback' not in result.stderr

@@ -84,7 +84,12 @@ def show(dialog=None):
             from .cloud_ui import login
             login()  # Existing QR cancellation and account-generation CAS.
         elif action == 'cd2':
-            dialog.textviewer('CD2 · 提前存片', cd2_details(value['preparation']))
+            from .android_engine import available
+            if available():
+                from .android_preparation import show as configure
+                configure(dialog)
+            else:
+                dialog.textviewer('CD2 · 提前存片', cd2_details(value['preparation']))
         elif action == 'library':
             from .library_ui import manage
             config = load_config(private_path(xbmcvfs.translatePath, 'config.json'))

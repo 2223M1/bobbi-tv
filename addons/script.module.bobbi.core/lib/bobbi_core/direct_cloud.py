@@ -229,11 +229,16 @@ class DirectResolver:
         return self.io.verify(plan)
 
     def finish(self, plan, verified):
-        if not verified:
+        portable = isinstance(verified, dict) and set(verified) == {'playback_url'} and getattr(self.io, 'address', None) is not None
+        if verified is not True and not portable:
             return dict(state='unavailable')
         current = self.plan(plan['body'])
         if current != plan:
             return dict(state='unavailable')
         item = plan['evidence']['file']
-        return dict(state='ready', **plan['body'], path=MOUNT + item['path'], bytes=item['bytes'],
-                    proof=plan['evidence']['proof'])
+        result = dict(state='ready', **plan['body'], path=MOUNT + item['path'], bytes=item['bytes'],
+                      proof=plan['evidence']['proof'])
+        if portable:
+            from .prepared_transport import checked_url
+            result['playback_url'] = checked_url(verified['playback_url'])
+        return result

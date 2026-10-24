@@ -279,16 +279,20 @@ class JacktookPLayer(xbmc.Player):
                     raise RuntimeError('同版本正在存入 115，请稍后重试')
             if data.get('prepared_resource_id'):
                 self._cinema_phase('PREPARED_VERIFY_BEGIN')
-                from lib.clients.bobi_library import load_prepared_index, local_path
+                from lib.clients.bobi_library import load_prepared_index
+                from bobbi_core.prepared_transport import playback_path
                 from lib.cinema.preparation_client import resolve_entry
                 snapshot = load_prepared_index()
                 entries = [entry for title in snapshot['titles'] for entry in title['sources']
                            if entry['key'] == data['prepared_resource_id']]
-                if len(entries) != 1 or not resolve_entry(data, snapshot, entries[0], self._cinema_cancel.is_set):
+                entry = resolve_entry(data, snapshot, entries[0], self._cinema_cancel.is_set) if len(entries) == 1 else None
+                if not entry:
                     raise RuntimeError('无法确认网盘文件是否正确，请重新选源')
-                self.url = data['url'] = local_path(snapshot['mount_root'], entries[0]['path'])
-                data['source_title'] = entries[0]['title']
-                data['video_context'] = entries[0].get('video_context')
+                self.url = data['url'] = playback_path(snapshot['mount_root'], entry)
+                data['source_title'] = entry['title']
+                data['video_context'] = entry.get('video_context')
+                if entry.get('_playback_url'):
+                    data['subtitles_path'] = []  # Prepared subtitle RPC supplies the local copy.
                 self._cinema_phase('PREPARED_VERIFY_END')
             self.list_item = make_listing(data)
             self._cinema_phase('LIST_ITEM_READY')

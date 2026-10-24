@@ -146,7 +146,17 @@ def main(argv=None):
         request = parse_request(argv)
         owner = Owner(request['request_id'])
         owner.active()
-        backend = Backend(load_config())
+        def cancelled():
+            owner.active()
+            return xbmc.Monitor().abortRequested()
+        try:
+            config = load_config()
+        except BackendError as error:
+            if error.code != 'TORRENT_BACKEND_NOT_CONFIGURED':
+                raise
+            from .backend import playback_config
+            config = playback_config(cancelled=cancelled)
+        backend = Backend(config)
         session = requests.Session()
         entered = True
         execute(request, owner, backend, session, xbmcgui.ListItem,

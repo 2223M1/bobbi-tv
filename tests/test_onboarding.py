@@ -100,12 +100,16 @@ def test_cancel_file_chooser_creates_no_file(setup_ui, tmp_path):
     assert not path.exists() and not setup_ui.called
 
 
-def test_full_android_cinema_never_launches_itself_as_legacy_helper(setup_ui, tmp_path):
+def test_full_android_cinema_never_launches_itself_as_legacy_helper(setup_ui, tmp_path, monkeypatch):
+    from bobbi_platform import android_engine
+    calls = []
+    monkeypatch.setattr(android_engine, 'request', lambda action: calls.append(action) or {'state': 'STOPPED'})
     setup_ui.android = True
     setup_ui.choice = 1
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path / 'pairing.json')
     assert setup_ui.builtins == []
-    assert '另配兼容的本机助手' in str(setup_ui.dialogs)
+    assert calls == ['engine_status', 'engine_stop']
+    assert '配对' not in str(setup_ui.dialogs)
     setup_ui.android = False
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path / 'pairing.json')
     assert setup_ui.builtins == []
@@ -143,13 +147,18 @@ def test_android_setup_updates_uses_apk_route(setup_ui):
     assert setup_ui.builtins == [] and 'APK' in str(setup_ui.dialogs)
 
 
-def test_android_bt_menu_omits_ce_install_and_preserves_file_import(setup_ui, tmp_path):
+def test_android_bt_menu_uses_builtin_without_overwriting_legacy_pairing(setup_ui, tmp_path, monkeypatch):
+    from bobbi_platform import android_engine
+    monkeypatch.setattr(android_engine, 'request', lambda action: {'state': 'STOPPED'})
     setup_ui.android = True
     setup_ui.choice = 2
     path = tmp_path / 'pairing.json'
+    save(path, from_export(json.dumps(setup_ui.value)))
+    before = path.read_bytes()
     setup_ui.module.pair_helper(setup_ui.dialog, path)
     assert all('CoreELEC' not in label for label in setup_ui.selections[0][1])
     assert load(path).password == setup_ui.value['password']
+    assert path.read_bytes() == before and not setup_ui.called
 
 
 def test_cancel_update_menu_does_nothing(setup_ui):

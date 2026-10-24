@@ -7,7 +7,8 @@ def show_updates(dialog):
         dialog.ok('请先停止播放', '停止影片后再更新程序。')
         return False
     choice = dialog.select('更新与恢复', [
-        '管理 Kodi 依赖', '管理已安装插件', 'Android 安装与更新说明'])
+        '管理 Kodi 依赖', '管理已安装插件', 'Android 安装与更新说明',
+        '检查 Android 更新', '从本地 APK 更新'])
     if choice < 0:
         return False
     if choice == 2:
@@ -15,6 +16,9 @@ def show_updates(dialog):
                   '下载适合设备架构的波比 TV APK，直接覆盖安装，账号与观看记录会保留。\n'
                   '请勿使用 CoreELEC ZIP 包，也不要卸载应用或清除数据。')
         return False
+    if choice in (3, 4):
+        from .android_updates import install_from_ui
+        return install_from_ui(dialog, online=choice == 3)
     if choice not in (0, 1):
         return False
     dialog.ok('Kodi 插件管理',

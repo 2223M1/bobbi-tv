@@ -1,0 +1,95 @@
+diff --git a/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp b/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp
+--- a/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp
++++ b/xbmc/interfaces/json-rpc/JSONServiceDescription.cpp
+@@ -210,6 +210,7 @@
+   { "Profiles.LoadProfile",                         CProfilesOperations::LoadProfile},
+ 
+ // System operations
++  { "System.BobiAndroid",                           CSystemOperations::BobiAndroid },
+   { "System.GetProperties",                         CSystemOperations::GetProperties },
+   { "System.EjectOpticalDrive",                     CSystemOperations::EjectOpticalDrive },
+   { "System.Shutdown",                              CSystemOperations::Shutdown },
+diff --git a/xbmc/interfaces/json-rpc/SystemOperations.cpp b/xbmc/interfaces/json-rpc/SystemOperations.cpp
+--- a/xbmc/interfaces/json-rpc/SystemOperations.cpp
++++ b/xbmc/interfaces/json-rpc/SystemOperations.cpp
+@@ -13,8 +13,47 @@
+ #include "messaging/ApplicationMessenger.h"
+ #include "powermanagement/PowerManager.h"
+ #include "utils/Variant.h"
++#ifdef TARGET_ANDROID
++#include "CompileInfo.h"
++#include "application/ApplicationComponents.h"
++#include "application/ApplicationPlayer.h"
++#include "utils/JSONVariantParser.h"
++#include <algorithm>
++#include <androidjni/Context.h>
++#include <androidjni/jutils-details.hpp>
++#endif
+ 
+ using namespace JSONRPC;
++
++JSONRPC_STATUS CSystemOperations::BobiAndroid(const std::string& method,
++    ITransportLayer* transport, IClient* client, const CVariant& parameterObject, CVariant& result)
++{
++#ifdef TARGET_ANDROID
++  using namespace jni;
++  const auto action = parameterObject["action"].asString();
++  if (action == "install" &&
++      CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>()->IsPlaying())
++  {
++    result["state"] = "PLAYING";
++    return OK;
++  }
++  auto className = std::string(CCompileInfo::GetClass()) + "/HostBridge";
++  std::replace(className.begin(), className.end(), '/', '.');
++  const auto clazz = CJNIContext::getClassLoader().loadClass(className);
++  const auto response = call_static_method<jhstring>(xbmc_jnienv(), clazz, "request",
++      "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++      jcast<jhstring>(action), jcast<jhstring>(parameterObject["argument"].asString()));
++  if (xbmc_jnienv()->ExceptionCheck())
++  {
++    xbmc_jnienv()->ExceptionClear();
++    return FailedToExecute;
++  }
++  return CJSONVariantParser::Parse(jcast<std::string>(response), result) ? OK : FailedToExecute;
++#else
++  result["state"] = "UNSUPPORTED";
++  return OK;
++#endif
++}
+ 
+ JSONRPC_STATUS CSystemOperations::GetProperties(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)
+ {
+diff --git a/xbmc/interfaces/json-rpc/SystemOperations.h b/xbmc/interfaces/json-rpc/SystemOperations.h
+--- a/xbmc/interfaces/json-rpc/SystemOperations.h
++++ b/xbmc/interfaces/json-rpc/SystemOperations.h
+@@ -17,6 +17,8 @@
+   class CSystemOperations
+   {
+   public:
++    static JSONRPC_STATUS BobiAndroid(const std::string& method, ITransportLayer* transport,
++        IClient* client, const CVariant& parameterObject, CVariant& result);
+     static JSONRPC_STATUS GetProperties(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result);
+ 
+     static JSONRPC_STATUS EjectOpticalDrive(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result);
+diff --git a/xbmc/interfaces/json-rpc/schema/methods.json b/xbmc/interfaces/json-rpc/schema/methods.json
+--- a/xbmc/interfaces/json-rpc/schema/methods.json
++++ b/xbmc/interfaces/json-rpc/schema/methods.json
+@@ -6333,6 +6333,17 @@
+     ],
+     "returns": "string"
+   },
++  "System.BobiAndroid": {
++    "type": "method",
++    "description": "Device-local Android host engine and package maintenance.",
++    "transport": "Response",
++    "permission": "ControlSystem",
++    "params": [
++      { "name": "action", "type": "string", "enum": ["info", "engine_status", "engine_start", "engine_stop", "install"], "required": true },
++      { "name": "argument", "type": "string", "default": "", "maxLength": 4096 }
++    ],
++    "returns": "any"
++  },
+   "System.GetProperties": {
+     "type": "method",
+     "description": "Retrieves the values of the given properties",

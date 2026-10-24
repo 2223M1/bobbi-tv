@@ -86,16 +86,17 @@ def resolve_selected(data, cancelled):
         data.pop('direct_cloud_required', None)
     if data.get('prepared_resource_id'):
         from lib.clients.bobi_library import load_prepared_index, local_path
+        from bobbi_core.prepared_transport import playback_path
         from bobbi_core.preparation_client import resolve_entry
         snapshot = load_prepared_index()
         entries = [entry for title in snapshot['titles'] for entry in title['sources']
                    if entry['key'] == data['prepared_resource_id']]
-        if len(entries) != 1 or not resolve_entry(data, snapshot, entries[0], cancelled):
+        entry = resolve_entry(data, snapshot, entries[0], cancelled) if len(entries) == 1 else None
+        if not entry:
             raise ValueError('SELECTED_CLOUD_FILE_CHANGED')
-        entry = entries[0]
-        data.update(url=local_path(snapshot['mount_root'], entry['path']),
+        data.update(url=playback_path(snapshot['mount_root'], entry),
                     source_title=entry['title'], video_context=entry.get('video_context'),
-                    subtitles_path=[local_path(snapshot['mount_root'], path)
+                    subtitles_path=[] if entry.get('_playback_url') else [local_path(snapshot['mount_root'], path)
                                     for path in entry.get('subtitles', [])[:4]])
     if cancelled():
         raise RuntimeError('SELECTION_CANCELLED')

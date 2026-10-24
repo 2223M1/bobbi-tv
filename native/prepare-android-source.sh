@@ -9,7 +9,7 @@ source_root="$task_root/src-$abi"
 test ! -e "$source_root" || { echo 'Source already exists; refusing reset' >&2; exit 2; }
 git clone --shared "$task_root/src-arm64" "$source_root"
 test "$(git -C "$source_root" rev-parse HEAD)" = a3a448d26b8d560a65655dab2cd122994dc4e146
-git -C "$source_root" apply "$script_root/patches/0001-bobbi-playback-contracts.patch" "$script_root/patches/0002-bobbi-host-packaging.patch"
+python3 "$script_root/apply-series.py" "$source_root"
 export JAVA_HOME="$task_root/toolchain/jdk-17.0.18+8"
 export PATH="$task_root/depends-arm64/x86_64-linux-gnu-native/bin:$task_root/host-bin:$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin"
 export RUSTUP_HOME="$task_root/depends-arm64/x86_64-linux-gnu-native/.rustup"
