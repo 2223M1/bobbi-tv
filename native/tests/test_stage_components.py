@@ -53,6 +53,12 @@ class StageTests(unittest.TestCase):
             STAGE.stage(self.manifest, self.host)
         self.assertFalse((self.host / 'addons').exists())
 
+    def test_non_installable_source_check_cannot_be_packaged_as_android(self):
+        self.manifest.write_text(json.dumps({'channel': 'source-check', 'components': self.rows}))
+        with self.assertRaisesRegex(ValueError, 'not an installable'):
+            STAGE.stage(self.manifest, self.host)
+        self.assertFalse((self.host / 'addons').exists())
+
     def test_existing_profile_rejected(self):
         (self.host / 'portable_data').mkdir()
         with self.assertRaises(ValueError):

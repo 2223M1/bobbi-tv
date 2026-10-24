@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.platform/lib'))
 from bobbi_platform.offline_updates import SignedBundle, load_trust
 from build_release import sources, files
 
-BOOTSTRAP = ('__init__.py', 'ce_installer.py', 'ce_install_ui.py', 'ce_storage.py', 'ce_recovery.py', 'offline_updates.py',
+BOOTSTRAP = ('__init__.py', 'ce_installer.py', 'ce_install_ui.py', 'android_ui.py', 'ce_storage.py', 'ce_recovery.py', 'offline_updates.py',
              'updates.py', 'upstream_addons.py', 'signatures.py', 'release_trust.json',
              'paths.py', 'kodi.py', 'playback.py', 'capabilities.py',
              'runtime.py', 'instance_lock.py', 'online_updates.py', 'online_transport.py', 'online_partial.py',

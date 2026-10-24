@@ -30,6 +30,9 @@ jobs:
       - name: Isolated preparation regression
         if: ${{ !cancelled() }}
         run: python -m pytest -q -rs tests/preparation_regression --junitxml=test-results/ci-preparation.xml
+      - name: Native Android component packaging contracts
+        if: ${{ !cancelled() }}
+        run: python -m pytest -q native/tests/test_stage_components.py native/tests/test_repackage_android.py --junitxml=test-results/ci-android-packaging.xml
       - name: Source-only component build (no application key or signing secrets)
         if: ${{ !cancelled() }}
         run: python tools/build_release.py --source-check --output dist/repository-check

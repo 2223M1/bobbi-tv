@@ -54,13 +54,15 @@ def pair_helper(dialog, path):
         existing = existing_backend_status() or existing
         show_existing_backend(dialog, existing)
         return existing
-    choice = dialog.select('设置 BT 播放', [
-        'Android 助手配对',
-        '使用说明',
-        '安装 CoreELEC BT 后台',
-        '导入助手配对文件',
-        '重新检查连接',
-    ])
+    actions = [(0, 'Android 助手配对'), (1, '使用说明'),
+               (2, '安装 CoreELEC BT 后台'), (3, '导入助手配对文件'),
+               (4, '重新检查连接')]
+    if xbmc.getCondVisibility('System.Platform.Android'):
+        actions = [row for row in actions if row[0] != 2]
+    selected = dialog.select('设置 BT 播放', [label for _, label in actions])
+    if selected < 0 or selected >= len(actions):
+        return
+    choice = actions[selected][0]
     if choice in (0, 2, 3):
         # Another entry may have configured the cinema adapter while this
         # selector was open. Do not create a second pairing or engine then.
@@ -269,6 +271,9 @@ def main():
 
 def show_updates(dialog):
     """Route user-requested maintenance; never update during playback."""
+    if xbmc.getCondVisibility('System.Platform.Android'):
+        from bobbi_platform.android_ui import show_updates as android_updates
+        return android_updates(dialog)
     if xbmc.Player().isPlaying():
         dialog.ok('请先停止播放', '停止影片后再更新程序。')
         return False

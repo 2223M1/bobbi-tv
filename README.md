@@ -23,7 +23,7 @@
 
 安装时选择发行说明指定的 **CoreELEC 完整安装包**，文件名以 `script.bobbi.start-` 开头。保留 ZIP 格式，直接交给 Kodi 安装。GitHub 自动生成的 `Source code` 压缩包用于开发，不能直接安装。
 
-Windows 和 Android 暂未跟进当前版本，旧包不与当前 CoreELEC 版混用。
+Android 候选版内含 Kodi，使用独立 APK，不与 CoreELEC ZIP 包混用。Windows 暂未跟进。
 
 ## 功能
 

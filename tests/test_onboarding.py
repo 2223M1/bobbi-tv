@@ -40,7 +40,7 @@ def test_library_status_counts_saved_sources_without_claiming_online():
 @pytest.fixture
 def setup_ui(monkeypatch, tmp_path):
     state = SimpleNamespace(choice=3, selected='selected.json', raw=None, called=[], dialogs=[],
-                            error=None, closed=False, android=True, builtins=[], playing=False,
+                            error=None, closed=False, android=False, builtins=[], playing=False,
                             selections=[])
     xbmc = SimpleNamespace(Monitor=lambda: SimpleNamespace(abortRequested=lambda: False),
         Player=lambda: SimpleNamespace(isPlaying=lambda: state.playing),
@@ -101,6 +101,7 @@ def test_cancel_file_chooser_creates_no_file(setup_ui, tmp_path):
 
 
 def test_full_android_cinema_never_launches_itself_as_legacy_helper(setup_ui, tmp_path):
+    setup_ui.android = True
     setup_ui.choice = 1
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path / 'pairing.json')
     assert setup_ui.builtins == []
@@ -133,6 +134,22 @@ def test_bobbi_bundle_menu_opens_real_installer_without_applying(setup_ui):
     setup_ui.choice = 2
     assert setup_ui.module.show_updates(setup_ui.dialog) is True
     assert setup_ui.builtins == ['RunScript(script.bobbi.start)'] and setup_ui.called == []
+
+
+def test_android_setup_updates_uses_apk_route(setup_ui):
+    setup_ui.android = True
+    setup_ui.choice = 2
+    assert setup_ui.module.show_updates(setup_ui.dialog) is False
+    assert setup_ui.builtins == [] and 'APK' in str(setup_ui.dialogs)
+
+
+def test_android_bt_menu_omits_ce_install_and_preserves_file_import(setup_ui, tmp_path):
+    setup_ui.android = True
+    setup_ui.choice = 2
+    path = tmp_path / 'pairing.json'
+    setup_ui.module.pair_helper(setup_ui.dialog, path)
+    assert all('CoreELEC' not in label for label in setup_ui.selections[0][1])
+    assert load(path).password == setup_ui.value['password']
 
 
 def test_cancel_update_menu_does_nothing(setup_ui):

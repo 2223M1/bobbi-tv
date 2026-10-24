@@ -19,6 +19,8 @@ def stage(manifest_path, host):
     if (host / 'portable_data').exists() or (host / 'userdata/guisettings.xml').exists():
         raise ValueError('Existing user profile is not a build staging destination')
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+    if manifest.get('channel') == 'source-check' or manifest.get('installable') is False:
+        raise ValueError('Source-check components are not an installable generation')
     rows = manifest['components']
     seen, archives = set(), []
     for row in rows:

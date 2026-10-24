@@ -19,6 +19,24 @@ def manifest(ids):
 BASE = ['component.' + str(index) for index in range(21)]
 
 
+def test_current_display_version_preserves_sequence_and_signing_template():
+    source = 'android {\n versionCode Integer.parseInt(System.getenv("BOBBI_ANDROID_VERSION_CODE"))\n versionName "0.2.0-private.1 (Kodi 21.3)"\n}\n'
+    updated = PACKAGE.versioned_gradle(source, '2072 (Kodi 21.3)')
+    assert 'versionName "2072 (Kodi 21.3)"' in updated
+    assert source.replace('0.2.0-private.1 (Kodi 21.3)', '2072 (Kodi 21.3)') == updated
+
+
+@pytest.mark.parametrize('value', ['', 'x";exec()', 'x\nversionCode 1', 'x'*81])
+def test_version_name_rejects_gradle_injection(value):
+    with pytest.raises(ValueError):
+        PACKAGE.versioned_gradle('versionName "old"\n//BOBBI_ANDROID_VERSION_CODE', value)
+
+
+def test_unknown_version_template_rejected():
+    with pytest.raises(ValueError):
+        PACKAGE.versioned_gradle('versionName "old"', '2072')
+
+
 @pytest.mark.parametrize('ids', [BASE, BASE + [TORRENT]])
 def test_unchanged_inventory_remains_valid_without_approval(ids):
     result = PACKAGE.validate_component_inventory(manifest(ids), manifest(ids))

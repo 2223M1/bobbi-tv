@@ -12,6 +12,7 @@
       "lib/bobbi_platform/_vendor/segno/writers.py",
       "lib/bobbi_platform/account_dialog.py",
       "lib/bobbi_platform/account_manager.py",
+      "lib/bobbi_platform/android_ui.py",
       "lib/bobbi_platform/bt_setup.py",
       "lib/bobbi_platform/capabilities.py",
       "lib/bobbi_platform/cd2_mounts.py",

@@ -412,6 +412,9 @@ def readable_text(host, dialog):
 
 def main(payload=None, online=False, storage=False):
     import xbmc
+    if getattr(xbmc, 'getCondVisibility', lambda _: False)('System.Platform.Android'):
+        from .android_ui import start
+        return start(online=online, storage=storage)
     import xbmcgui
     import xbmcvfs
     dialog = xbmcgui.Dialog()

@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import shutil
 import subprocess
@@ -11,6 +12,16 @@ import sys
 
 
 REVIEWED_COMPONENT_ADDITION = 'plugin.video.bobbi.torrent'
+
+
+def versioned_gradle(source, version_name):
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9 .()+_-]{0,79}', version_name):
+        raise ValueError('Invalid Android version name')
+    result, count = re.subn(r'(?m)^(\s*)versionName\s+"[^"\r\n]+"\s*$',
+                            lambda match: match[1] + 'versionName "' + version_name + '"', source)
+    if count != 1 or 'BOBBI_ANDROID_VERSION_CODE' not in result:
+        raise ValueError('Unknown native Android version template')
+    return result
 
 
 def validate_component_inventory(previous, frozen, allowed_addition=None):
@@ -46,10 +57,13 @@ def main():
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--sequence', type=int, required=True)
+    parser.add_argument('--version-name', required=True)
     parser.add_argument('--abi', choices=['arm64', 'armv7'], required=True)
     parser.add_argument('--allow-component-addition', choices=[REVIEWED_COMPONENT_ADDITION],
                         help='Explicitly approve only the reviewed 21-to-22 component migration')
     args = parser.parse_args()
+    if not 2026101905 < args.sequence <= 2100000000:
+        raise ValueError('A newer valid Android version code is required')
     task = args.root.resolve()
     if os.name != 'posix' or str(task) != '/opt/bobbi-native-20261019':
         raise ValueError('Use the isolated existing Linux build workspace')
@@ -69,6 +83,8 @@ def main():
     app.mkdir()
     for filename in ('build.gradle', 'AndroidManifest.xml'):
         shutil.copy2(source / 'xbmc' / filename, app / filename)
+    gradle = app / 'build.gradle'
+    gradle.write_text(versioned_gradle(gradle.read_text(), args.version_name), encoding='utf-8')
     old_addons = source / 'xbmc/assets/addons'
 
     def ignore(path, names):
@@ -105,6 +121,7 @@ def main():
     if not output.is_file():
         raise ValueError('Gradle did not produce a host APK')
     print(json.dumps({'apk': str(output), 'sequence': args.sequence,
+        'version_name': args.version_name,
         'components_manifest_sha256': receipt['components_manifest_sha256'],
         'inventory_transition': inventory_transition,
         'native_engine_recompiled': False, 'final_release_signed': False}))

@@ -51,6 +51,33 @@ Native updates use Android's package manager; runtime add-on hot replacement is
 not enabled. A rollback APK must use the same signer and a new, higher version
 code. Do not uninstall/clear data to bypass an installation conflict.
 
+The Android generation 2072 stages the same 22 current component archives as
+CoreELEC, including the current cinema skin, search, library, cloud and subtitle
+code. Maintenance menus route to APK instructions, not CE installation/recovery
+or a CE engine download. Existing compatible local BT pairing remains optional.
+The ABI-native Kodi 21.3 host is reused, not replaced with a CE binary.
+The newer CE transport-capsule extension is not in this Android host, so the
+BT-to-115 switch that preserves native audio/subtitle state is not available;
+the shared controller rejects unsupported capture without stopping playback.
+
+To refresh an existing isolated native build, build the root components first
+with the maintainer's application configuration (not `--source-check`). Package
+each ABI with a strictly increasing Android version code and explicit display
+version. For the original 21-component native staging image only, pass the
+reviewed addition flag for the 22nd torrent adapter.
+
+```sh
+python3 native/repackage-android.py --root /opt/bobbi-native-20261019 \
+  --manifest /absolute/path/components/manifest.json --sequence 2026102072 \
+  --version-name '2072 (Kodi 21.3)' --abi arm64 \
+  --allow-component-addition plugin.video.bobbi.torrent
+```
+
+Repeat with `--abi armv7`. Re-sign both build-only APKs with `sign-host-apk.py`
+using the existing local release key and that exact components manifest. Do not
+publish the temporary-signed inputs, private build inputs or profile backups.
+The `android/` directory is the legacy helper, not the full cinema APK source.
+
 The normal Kodi audio/video path remains full quality. Device-level decoder,
 HDR, audio passthrough and Android 16KiB page-size compatibility still require
 real hardware validation; compilation and ZIP inspection do not certify them.
