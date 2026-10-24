@@ -162,6 +162,10 @@ def pair_helper(dialog, path):
 def main():
     import sys
     dialog = xbmcgui.Dialog()
+    if len(sys.argv) > 1 and sys.argv[1] == 'cloud':
+        from bobbi_platform.cloud_hub import show
+        show(dialog)
+        return
     if len(sys.argv) > 1 and sys.argv[1] == 'diagnostics':
         from bobbi_platform.diagnostics_ui import show
         show(dialog)
@@ -202,7 +206,8 @@ def main():
             helper = pair_helper(dialog, pair_path) or helper_state(pair_path)
         elif action == 'library':
             from bobbi_platform.library_ui import manage
-            manage(config['library_root'])
+            if manage(config['library_root']):
+                return
         elif action == 'test':
             if not capabilities['standard_playback']:
                 dialog.ok('先检查播放器', summary(capabilities))
@@ -222,8 +227,9 @@ def main():
             xbmc.executebuiltin('ActivateWindow(playersettings)')
             return
         elif action == 'cloud':
-            from bobbi_platform.cloud_ui import login
-            login()
+            from bobbi_platform.cloud_hub import show
+            if show(dialog):
+                return
         elif action == 'catalog':
             import xbmcaddon
             from bobbi_core.project_metadata import tmdb_key, ATTRIBUTION
@@ -262,14 +268,8 @@ def main():
                       '设备能力与已知问题见发行说明。不会自动刷机；未登录也可使用本地与 NAS 片库。\n'
                       + ATTRIBUTION)
         elif action == 'transport':
-            from bobbi_platform.transport_preferences import load, save
-            mode = load(path.parent)
-            selected = dialog.select('115 传输模式 · 下次启动 Kodi 生效',
-                ['整块交付（回退模式）', '渐进交付（有界 8 MiB 队列）'], preselect=1 if mode else 0)
-            if selected in (0, 1):
-                save(path.parent, selected == 1)
-                dialog.ok('已保存，不中断当前播放', '下次启动 Kodi 后使用所选模式。\n'
-                          '两种模式都保持原码流、原音轨，不转码，不整部缓存。')
+            from bobbi_platform.cloud_hub import transport
+            transport(dialog)
 
 
 def show_updates(dialog):

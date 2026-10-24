@@ -132,6 +132,28 @@ def test_same_uid_renewal_keeps_preparation_incarnation(tmp_path):
         host.thread.join(2)
 
 
+def test_cloud_dependency_view_is_owned_and_cleared_on_account_change(tmp_path):
+    from bobbi_core.account_readiness import AccountReadiness
+    accounts, a = logged_in(tmp_path)
+    class HealthSession(FakeSession):
+        def __init__(self, *args):
+            super().__init__(*args)
+            self.readiness = AccountReadiness('fixture')
+            self.readiness.begin()
+            self.readiness.complete(account='fixture')
+    host = PreparationHost(tmp_path, accounts, {}, session_factory=HealthSession)
+    try:
+        eventually(lambda: bool(host.snapshot()['dependency']))
+        assert host.snapshot()['dependency']['state'] == 'READY'
+        snapshot = host.snapshot()
+        snapshot['dependency']['state'] = 'modified'
+        assert host.snapshot()['dependency']['state'] == 'READY'
+        accounts.logout(a)
+        assert host.snapshot()['dependency'] is None
+    finally:
+        host.close()
+
+
 def test_logout_then_same_uid_has_fresh_incarnation_not_resumed_old_queue(tmp_path):
     accounts, a = logged_in(tmp_path)
     sessions = []
@@ -170,7 +192,8 @@ def test_late_io_result_cannot_publish_after_epoch_revocation(tmp_path):
     assert not published
 
 
-def test_real_session_constructs_in_epoch_directory_without_cloud_io(tmp_path, monkeypatch):
+@pytest.mark.parametrize('renewable', [False, True])
+def test_real_session_constructs_in_epoch_directory_without_cloud_io(tmp_path, monkeypatch, renewable):
     accounts, a = logged_in(tmp_path)
     token, tmdb = tmp_path / 'token', tmp_path / 'tmdb'
     token.write_text('fixture-local-token')
@@ -179,8 +202,21 @@ def test_real_session_constructs_in_epoch_directory_without_cloud_io(tmp_path, m
     config = dict(account='a' * 64, destination='/115open/fixture', cd2_endpoint='http://127.0.0.1:19798',
         torrserver_endpoint='http://127.0.0.1:8090', cd2_token_file=str(token), tmdb_api_key_file=str(tmdb),
         ffprobe='fixture-not-executed', download_capability='GetDownloadUrlPath')
+    if renewable:
+        login = tmp_path / 'cd2-login'
+        login.write_text(json.dumps(dict(username='fixture', password='fixture')))
+        config['cd2_login_file'] = str(login)
     session = Session(tmp_path, config, Lease(accounts, a), lambda: False, lambda _: None)
     try:
+        if renewable:
+            first = session.provider.provider
+            second = session.resolve_lane.resolver.provider.provider
+            third = session.direct_resolve.resolver.io.factory()
+            try:
+                assert first.authentication is second.authentication is third.provider.authentication
+                assert len({id(p.session) for p in (first, second, third)}) == 3
+            finally:
+                third.session.close()
         expected = tmp_path / 'preparation' / (a['account_id'][4:] + '-' + str(a['epoch'])) / 'resources.sqlite'
         assert expected.is_file()
         with pytest.raises(ValueError):

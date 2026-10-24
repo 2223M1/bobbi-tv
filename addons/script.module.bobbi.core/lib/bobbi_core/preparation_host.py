@@ -132,6 +132,7 @@ class PreparationHost:
         self.lock = Lock()
         self.lease = None
         self.state, self.last_revoke = 'STARTING', None
+        self.dependency = None
         self.unsubscribe = accounts.subscribe(self._changed)
         self.thread = Thread(target=self._run, name='bobbi-preparation-owner', daemon=True)
         self.thread.start()
@@ -143,12 +144,15 @@ class PreparationHost:
                 self.lease.revoked.set()
                 self.last_revoke = dict(account=previous, admission_closed=True, drained=False)
                 self.state = 'REVOKING'
+                self.dependency = None
         self.wake.set()
 
     def snapshot(self):
         with self.lock:
             return dict(state=self.state, account=deepcopy(self.lease.scope) if self.lease else None,
-                        revoke=deepcopy(self.last_revoke))
+                        revoke=deepcopy(self.last_revoke),
+                        dependency=deepcopy(self.dependency) if self.state == 'RUNNING'
+                        and self.lease is not None and not self.lease.revoked.is_set() else None)
 
     def request(self, method, body, scope):
         from .capabilities import descriptor
@@ -217,7 +221,7 @@ class PreparationHost:
                         session = self.factory(self.root, self.config, lease, self.playing, self.report)
                         lease.check()
                         with self.lock:
-                            self.state = 'RUNNING'
+                            self.state, self.dependency = 'RUNNING', None
                     except Exception as error:
                         if session is not None:
                             session.close()
@@ -235,6 +239,13 @@ class PreparationHost:
                 if session is not None:
                     try:
                         session.tick()
+                        # Publish an owner-thread observation, never read the
+                        # mutable readiness gate or issue CD2 IO from UI/IPC.
+                        readiness = getattr(session, 'readiness', None)
+                        dependency = readiness.snapshot() if readiness is not None else None
+                        with self.lock:
+                            if self.lease is lease and not lease.revoked.is_set():
+                                self.dependency = dependency
                     except Exception as error:
                         self.report('PREPARATION_TICK_' + type(error).__name__)
                         self._first_failure(error)
@@ -291,7 +302,7 @@ class Session:
 
     def _initialize(self, root):
         from concurrent.futures import ThreadPoolExecutor
-        from .authenticated_cd2 import AuthenticatedCD2
+        from .authenticated_cd2 import AuthenticatedCD2, CD2Authentication
         from .cd2 import CD2
         from .cloud_qualifier import CloudQualifier
         from .ledger import Ledger
@@ -325,10 +336,12 @@ class Session:
         self.resources.callback(process_lock.close)
         self.snapshot_path = root / 'bobi-prepared.json'
         token = _private(c['cd2_token_file'])
+        credentials = lambda: json.loads(_private(c['cd2_login_file']))
+        authentication = CD2Authentication(token, credentials) if c.get('cd2_login_file') else None
         def provider_client():
             base = c['cd2_endpoint'] + '/clouddrive.CloudDriveFileSrv/'
-            raw = (AuthenticatedCD2(token, base, lambda: json.loads(_private(c['cd2_login_file'])))
-                   if c.get('cd2_login_file') else CD2(token, base))
+            raw = (AuthenticatedCD2(token, base, credentials, authentication=authentication)
+                   if authentication is not None else CD2(token, base))
             return ScopedProvider(raw, self.lease, c['account'])
         self.provider, resolve_provider = provider_client(), provider_client()
         self.resources.callback(self.provider.session.close)

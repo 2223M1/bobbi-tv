@@ -177,7 +177,7 @@ def manage(legacy_root=''):
                 elif choice == 1:
                     if xbmc.getCondVisibility('System.HasAddon(plugin.video.bobbi.library)'):
                         xbmc.executebuiltin('ActivateWindow(Videos,plugin://plugin.video.bobbi.library/,return)')
-                        return
+                        return True  # Tell enclosing menus not to cover navigation.
                     dialog.ok('需要片库组件', '请安装同一版本的“bobbi 我的片库”组件。已保存的连接会保留。')
                 else:
                     source = sources[choice - 2]

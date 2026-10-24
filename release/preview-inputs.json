@@ -17,6 +17,7 @@
       "lib/bobbi_platform/ce_install_ui.py",
       "lib/bobbi_platform/ce_installer.py",
       "lib/bobbi_platform/cloud115.py",
+      "lib/bobbi_platform/cloud_hub.py",
       "lib/bobbi_platform/cloud_ui.py",
       "lib/bobbi_platform/diagnostics_ui.py",
       "lib/bobbi_platform/downloads.py",

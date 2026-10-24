@@ -165,6 +165,23 @@ class Host:
             return self._owner_request(body, lifecycle=True)
         if action == 'account_status' and not body:
             return self.accounts.snapshot()
+        if action == 'cloud_status' and not body:
+            # A local view of the existing owners, not another health checker.
+            # Account->preparation lock ordering matches account revocation.
+            scope = self.accounts.snapshot()
+            def view():
+                if self.preparation is not None:
+                    state = self.preparation.snapshot()
+                    if state.get('account') is not None and state['account'] != scope:
+                        state = dict(state='WAITING_ACCOUNT' if not scope['authenticated'] else 'STARTING')
+                else:
+                    state = dict(state='UNAVAILABLE' if self.preparation_attempted else
+                                 'STARTING' if (self.root / 'preparation.json').is_file() else 'NOT_CONFIGURED')
+                dependency = state.get('dependency') or {}
+                return dict(authenticated=scope['authenticated'], preparation=dict(
+                    state=state['state'], dependency=dependency.get('state', 'UNVERIFIED'),
+                    ready=dependency.get('ready') is True))
+            return self.accounts.run_if_current(scope, view, authenticated=False)
         if action == 'account_install' and set(body) == {'credentials', 'expected'}:
             return self.accounts.install(body['credentials'], body['expected'])
         if action == 'account_logout' and set(body) == {'expected'}:
