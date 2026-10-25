@@ -1,1 +1,19 @@
-{"schema":1,"releases":[]}
+{
+  "schema": 1,
+  "releases": [
+    {
+      "version_code": 2026102074,
+      "abi": "arm64-v8a",
+      "url": "https://github.com/2223M1/bobbi-tv/releases/download/android2074/BobbiTV-2074-android-arm64-v8a.apk",
+      "size": 204019478,
+      "sha256": "bdb7882839b966e1be87a549ba5c53798adebd4d7aa2b83f18583b26fe95c9be"
+    },
+    {
+      "version_code": 2026102074,
+      "abi": "armeabi-v7a",
+      "url": "https://github.com/2223M1/bobbi-tv/releases/download/android2074/BobbiTV-2074-android-armeabi-v7a.apk",
+      "size": 204027764,
+      "sha256": "c522127cc2f72019bfdb244a1ccc3384bceddb5e4cae36b9364997ecc3e20e54"
+    }
+  ]
+}
