@@ -10,7 +10,7 @@ def _fetch_batch(session, urls, budget=8.0, *, deadline=None, cancelled=None,
                       mode='rss', max_response_bytes=4 * 1024 * 1024, request_timeout=2.0,
                       on_response=None):
     deadline = min(deadline if deadline is not None else float('inf'),
-                   time.monotonic() + min(8.0, max(0.0, float(budget))))
+                   time.monotonic() + min(30.0, max(0.0, float(budget))))
     receipt = new_receipt(urls)
     if receipt is not None and cancelled is not None:
         receipt.user_cancel_observability = 'caller_callback'
@@ -38,6 +38,7 @@ def _fetch_batch(session, urls, budget=8.0, *, deadline=None, cancelled=None,
             outcomes[ordinal] = state, response if state == 'succeeded' else None
             observe(receipt, 'terminal', row, state, reason, getattr(response, 'status_code', None))
             if state == 'succeeded' and on_response is not None and not cancelled() and time.monotonic() < deadline:
+                response._bobbi_query_url = tasks[ordinal][1]
                 # Parse a completed sibling while slower requests are still in
                 # flight. Rebinding uses actual ordinals, never arrival order.
                 observe(receipt, 'bind_responses', [item or (None, None) for item in outcomes])

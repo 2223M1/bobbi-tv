@@ -5,7 +5,7 @@ No release-group preference, remote lookup, filename mutation or file proof.
 import re
 import unicodedata
 
-from bobbi_core.candidate_titles import matches, normalized, chinese_episode_numbers
+from bobbi_core.candidate_titles import matches, normalized, chinese_episode_numbers, discovery_matches
 from bobbi_core.pack_parser import detect_pack_scope, release_season_markers
 
 
@@ -56,7 +56,7 @@ def first_season_episode(title, aliases, season, episode):
         return bool(chinese == (episode,) and not release_season_markers(title)
                     and detect_pack_scope(title, 1)['pack_type'] == 'none')
     if (release_season_markers(title) or detect_pack_scope(title, 1)['pack_type'] != 'none'
-            or not matches(title, aliases, 'tv', release_season=1)):
+            or not discovery_matches(title, aliases, 1)):
         return False
     text = unicodedata.normalize('NFKC', title)
     for _ in range(3):
@@ -72,11 +72,12 @@ def first_season_episode(title, aliases, season, episode):
     if re.search(continuation, text, re.I):
         return False
     pattern = (r'(?:\s-\s*([0-9]{1,3})(?:v\d+)?(?=\s*(?:\[|\(|$))'
-               r'|\[([0-9]{1,3})(?:v\d+)?\])')
+               r'|\[([0-9]{1,3})(?:v\d+)?\]'
+               r'|(?<![a-z0-9])(?:episode|ep|e)[ ._-]*([0-9]{1,3})(?:v\d+)?(?=\s*(?:\[|\(|$)))')
     numbered = set()
     for segment in re.split(r'[/|()]', text):
         for marker in re.finditer(pattern, segment, re.I):
-            number = int(marker[1] or marker[2])
+            number = int(marker[1] or marker[2] or marker[3])
             numbered.add(number)
     # A bilingual release may place the trusted Chinese title in one segment
     # and the number after its romanised counterpart. The full catalogue gate

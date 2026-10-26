@@ -201,18 +201,19 @@ class PreProcessBuilder(BaseProcessBuilder):
         super().__init__(results)
 
     def remove_duplicates(self) -> "PreProcessBuilder":
-        seen_values: List[str] = []
+        from bobbi_core.source_list_session import SourceListSession
+        identity = SourceListSession({}, lambda rows: rows)
+        seen_values = set()
         unique_results: List[TorrentStream] = []
         retained = {}
         for res in self.results:
-            key = (
-                getattr(res, "infoHash", None)
-                or getattr(res, "title", None)
-                or getattr(res, "guid", None)
-            )
-            if key and key not in seen_values:
+            try:
+                key = identity.key(res)
+            except (ValueError, TypeError, AttributeError):
+                key = None
+            if key is None or key not in seen_values:
                 unique_results.append(res)
-                seen_values.append(key)
+                seen_values.add(key)
                 retained[key] = res
             elif key and getattr(res, 'requiresCatalogEpisodeProof', False):
                 retained[key].requiresCatalogEpisodeProof = True

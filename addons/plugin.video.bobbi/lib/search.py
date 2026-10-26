@@ -508,7 +508,7 @@ def _cinema_requires_catalog_admission(source):
 def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=None, release_episode=None, fallback_query=None, anime=False, anime_range_context=None):
     from bobbi_core.search_trace import observe
     observe('catalog_input', results or [])
-    from bobbi_core.candidate_titles import matches, _legacy_matches
+    from bobbi_core.candidate_titles import matches, discovery_matches
     from bobbi_core.search_completion import replace_rows
     # Missing catalog evidence is unknown, not a negative work match. The
     # original request remains a lexical screen only; never publish it as a
@@ -536,8 +536,7 @@ def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=Non
             or source in range_rows
             or matches(getattr(source, 'title', ''), candidate_aliases, mode, release_season=release_season)
             or (mode == 'tv' and aliases and type(release_season) is int
-                and release_scope(getattr(source, 'title', ''), aliases, release_season) == 'unknown'
-                and _legacy_matches(getattr(source, 'title', ''), aliases, mode, release_season))]
+                and discovery_matches(getattr(source, 'title', ''), aliases, release_season))]
     if mode == 'tv' and release_season is not None and release_episode is not None:
         from lib.utils.general.processors import PreProcessBuilder
         scoped = [row for row in kept if _cinema_requires_catalog_admission(row)]
@@ -1689,6 +1688,7 @@ def _submit_search_tasks_managed(
                 year=year,
                 cancelled=getattr(getattr(manager, 'cancelled', None), 'is_set', None),
                 deadline=getattr(manager, 'deadline', None),
+                query_cache=getattr(manager, 'query_result_cache', None),
                 **({'_progressive': True} if hasattr(manager, 'session') else {}),
             )
         if _is_source_enabled(Indexer.JACKGRAM):
@@ -2197,6 +2197,8 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         manager.result_cache = ProviderResultCache(cache, scope,
             hours=get_cache_expiration() if is_cache_enabled() else 0,
             refresh=rescrape, cacheable=lambda key: key in (Indexer.JACKETT, 'animegarden'))
+        manager.query_result_cache = ProviderResultCache(cache, scope + ':queries',
+            hours=min(1/6, get_cache_expiration()) if is_cache_enabled() else 0, refresh=rescrape)
         details = {}
         if ids.get('tmdb_id') and mode in ('tv', 'movies'):
             from lib.clients.tmdb.utils.utils import get_tmdb_media_details

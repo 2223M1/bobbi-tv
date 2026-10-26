@@ -466,7 +466,10 @@ def test_progressive_partial_never_overwrites_provider_success():
     with ThreadPoolExecutor(max_workers=1) as pool:
         manager.pool = pool
         manager.submit_task('name', 'provider', produce, _progressive=True).result(3)
-    assert normal.get('provider', 'name') == [old]
+    restored = normal.get('provider', 'name')
+    assert restored == [old, new] and not restored.completion.complete
+    key, token = normal._identity('provider', 'name')
+    assert normal._read(key, token) == [old]  # Complete snapshot was not replaced.
     assert session.status()['providers']['provider:1']['state'] == 'PARTIAL'
 
 

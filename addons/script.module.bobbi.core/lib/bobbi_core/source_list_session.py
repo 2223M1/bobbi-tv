@@ -4,8 +4,10 @@ Workers publish copies. Only the existing window loop renders snapshots. A
 visible card is identified by a stable key, never by an old list ordinal.
 """
 from copy import deepcopy
+import base64
 from hashlib import sha256
 import json
+import re
 from threading import RLock
 from uuid import uuid4
 import time
@@ -39,7 +41,11 @@ class SourceListSession:
             metadata = {}
         # Without a verified BT/cloud exact-file mapping these stay separate.
         # Identical URLs or paths never establish cross-transport equivalence.
-        identity = dict(media=self.media, release=source_identity(source),
+        info_hash = getattr(source, 'infoHash', '')
+        release = ('bt:' + base64.b32decode(info_hash.upper()).hex()
+                   if isinstance(info_hash, str) and re.fullmatch('[a-zA-Z2-7]{32}', info_hash)
+                   else source_identity(source))
+        identity = dict(media=self.media, release=release,
                         transport=(getattr(source, 'preparedResourceId', '') or
                                    getattr(source, 'debridType', '') or 'unprepared'),
                         file_index=metadata.get('fileIdx'), file_path=metadata.get('filename'))

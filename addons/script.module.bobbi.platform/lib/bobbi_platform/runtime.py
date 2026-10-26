@@ -17,6 +17,11 @@ class NoRedirect(HTTPRedirectHandler):
         raise ValueError('Local service redirect rejected')
 
 
+class ServiceRejected(ValueError):
+    """A fixed local category, never exception text from a remote service."""
+    code = 'SELECTION_UNVERIFIED'
+
+
 def call(action, body, timeout=3):
     path = profile(name='runtime.json')
     if not path.is_file() or path.is_symlink() or path.stat().st_size > 4096:
@@ -38,6 +43,8 @@ def call(action, body, timeout=3):
     if result.get('ok') is not True:
         if result.get('error') == 'unavailable':
             raise OSError('Local service temporarily unavailable')
+        if result.get('error') == 'selection_unverified':
+            raise ServiceRejected('Selected file is not eligible for automatic preparation')
         raise ValueError('Local service rejected request')
     return result['result']
 
@@ -95,8 +102,10 @@ class Handler(BaseHTTPRequestHandler):
             # Fixed category only. Preserve unavailable vs explicit rejection
             # so read-only callers may retry; never send exception text/URLs.
             response = {'ok': False, 'error': 'unavailable'}
-        except Exception:
+        except Exception as error:
             response = {'ok': False}
+            if isinstance(error, ValueError) and str(error) == 'PREPARATION_CURRENT_VERIFIED_SELECTION_REQUIRED':
+                response['error'] = 'selection_unverified'
         try:
             raw = json.dumps(response).encode()
             if len(raw) > 16384:

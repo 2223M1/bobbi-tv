@@ -42,3 +42,18 @@ def test_bounded_response(tmp_path, monkeypatch):
             runtime.call('large', {})
     finally:
         server.close()
+
+
+def test_preparation_rejection_has_a_fixed_category(tmp_path, monkeypatch):
+    path = tmp_path / 'runtime.json'
+    monkeypatch.setattr(runtime, 'profile', lambda **kw: path)
+    def dispatch(*args):
+        raise ValueError('PREPARATION_CURRENT_VERIFIED_SELECTION_REQUIRED')
+    server = runtime.Runtime(dispatch, path)
+    server.start()
+    try:
+        with pytest.raises(runtime.ServiceRejected) as caught:
+            runtime.call('preparation', {})
+        assert caught.value.code == 'SELECTION_UNVERIFIED'
+    finally:
+        server.close()

@@ -2275,7 +2275,7 @@ class JacktookPLayer(xbmc.Player):
             self.start_direct_preparation()
             return
         attempts = getattr(self, '_cinema_prepare_attempts', 0)
-        if (getattr(self, '_cinema_prepare_sent', False)
+        if (getattr(self, '_cinema_prepare_sent', False) or getattr(self, '_cinema_prepare_blocked', False)
                 or getattr(self, '_cinema_prepare_inflight', None) is not None or attempts >= 6
                 or monotonic() < getattr(self, '_cinema_prepare_due', 0)):
             return
@@ -2350,11 +2350,17 @@ class JacktookPLayer(xbmc.Player):
                     self._cinema_prepare_sent = True
                     kodilog('[CINEMA-PREPARE] INTENT_ACCEPTED_NOT_CLOUD_READY request=' + session, level=xbmc.LOGINFO)
             except Exception as error:
-                kodilog('[CINEMA-PREPARE] ' + type(error).__name__, level=xbmc.LOGWARNING)
+                if getattr(error, 'code', '') == 'SELECTION_UNVERIFIED' and current_session():
+                    self._cinema_prepare_blocked = True
+                    self._preparation_diagnostic('SELECTION_UNVERIFIED_NOT_SUBMITTED')
+                    notification('当前手选文件未自动存入 115，不影响继续观看。', heading='波比TV', time=5000)
+                else:
+                    kodilog('[CINEMA-PREPARE] ' + type(error).__name__, level=xbmc.LOGWARNING)
             finally:
                 if self._cinema_prepare_inflight is job:
                     self._cinema_prepare_inflight = None
-                if attempts == 5 and current_session() and not getattr(self, '_cinema_prepare_sent', False):
+                if (attempts == 5 and current_session() and not getattr(self, '_cinema_prepare_sent', False)
+                        and not getattr(self, '_cinema_prepare_blocked', False)):
                     self._preparation_diagnostic('INTENT_RETRY_EXHAUSTED')
                     notification('尚未确认是否已存入 115。可重新选择此片源检查，不会重复提交。',
                                  heading='波比TV', time=5000)

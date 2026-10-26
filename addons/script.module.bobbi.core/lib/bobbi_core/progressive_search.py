@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Event, Thread, RLock
 from time import monotonic
 from bobbi_core.search_admission import try_acquire
-from bobbi_core.search_completion import SearchResults, provider_failed
+from bobbi_core.search_completion import SearchCompletion, SearchResults, provider_failed
 
 
 class ProgressiveSearch:
@@ -155,21 +155,28 @@ class ProgressiveSearch:
             if self.cancelled.is_set():
                 return
             self.session.publish(self.session.epoch, provider, state='RUNNING')
+            streamed, result, saved, receipt, stream_overflow = [], None, False, None, False
             try:
                 def emit(result):
+                    nonlocal stream_overflow
                     if self.cancelled.is_set() or monotonic() >= self.deadline:
                         return False
                     completion = result.completion if isinstance(result, SearchResults) else None
                     rows = self.transform(result or [])
                     if self.cancelled.is_set() or monotonic() >= self.deadline:
                         return False
-                    return self.session.publish(self.session.epoch, provider, rows,
+                    accepted = self.session.publish(self.session.epoch, provider, rows,
                         state='RUNNING', error=completion.summary() if completion else '',
                         **({'completion': completion} if completion is not None else {}))
+                    if accepted and self.result_cache is not None:
+                        stream_overflow |= len(streamed) + len(result or []) > 2048
+                        streamed.extend(list(result or [])[:max(0, 2048-len(streamed))])
+                    return accepted
                 cached = (self.result_cache.get(indexer_key, name)
                           if self.result_cache is not None and not self.retrying else None)
                 call_options = dict(kwargs, publish=emit) if progressive else kwargs
                 result = fn(*args, **call_options) if cached is None else cached
+                receipt = result.completion if isinstance(result, SearchResults) else None
                 from bobbi_core.search_trace import observe
                 observe('provider_return', result or [], 'network' if cached is None else 'cache',
                         invocation=self.session.epoch)
@@ -187,14 +194,27 @@ class ProgressiveSearch:
                             state=completion.state if completion is not None else 'COMPLETE',
                             error=completion.summary() if completion is not None and not completion.complete else '',
                             **({'completion': completion} if completion is not None else {}))
-                        if (accepted and cached is None and self.result_cache is not None
-                                and (completion is None or completion.complete)):
+                        if accepted and cached is None and self.result_cache is not None:
                             self.result_cache.put(indexer_key, name, raw)
+                            saved = True
             except Exception as error:
                 if not self.cancelled.is_set():
                     state = 'TIMEOUT' if ('timeout' in type(error).__name__.casefold()
                         or getattr(error, 'code', '') in ('DEADLINE', 'CANCELLED')) else 'FAILED'
                     self.session.publish(self.session.epoch, provider, state=state, error=type(error).__name__)
+            finally:
+                # Final parsing/ranking can outlive the coordinator deadline.
+                # Preserve only rows already accepted while it was live; late
+                # rows never enter the current UI or this fallback snapshot.
+                # Explicit user closure/cancellation still revokes the work.
+                if (streamed and not saved and self.result_cache is not None
+                        and not self._closed and not self.session.cancelled):
+                    receipt = receipt or SearchCompletion(1, succeeded=1)
+                    if receipt.complete:
+                        receipt = receipt.combine(SearchCompletion(1, timed_out=1))
+                    if stream_overflow:
+                        receipt = receipt.combine(SearchCompletion(truncated=1))
+                    self.result_cache.put(indexer_key, name, SearchResults(streamed, receipt))
         self.lease.retain()
         try:
             future = self.pool.submit(run)

@@ -283,3 +283,16 @@ def matches(title, aliases, mode, release_season=None):
                         and not release_season_markers(title)
                         and detect_pack_scope(title, 1)['pack_type'] == 'none')
     return _legacy_matches(title, aliases, mode, release_season)
+
+
+def discovery_matches(title, aliases, season):
+    """Candidate-only fallback shared by bare and labelled episode discovery.
+
+    Unknown release packaging is not negative work evidence. Keep the full
+    catalogue name and explicit conflict checks, without promoting this lexical
+    match to an exact-file proof or permission for automatic continuation.
+    """
+    from .episode_scope import release_scope
+    scope = release_scope(title, aliases, season)
+    return (scope == 'matched' or (scope == 'unknown'
+            and _legacy_matches(title, aliases, 'tv', season)))

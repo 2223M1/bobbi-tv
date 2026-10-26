@@ -83,6 +83,22 @@ def retry(value, direct=False):
     (value.player.start_direct_preparation if direct else value.player.start_cinema_preparation)()
 
 
+def test_manual_selection_rejection_does_not_retry_or_claim_cloud_ready(parity, monkeypatch):
+    from bobbi_platform.runtime import ServiceRejected
+    attempts = []
+    def denied(*args, **kwargs):
+        attempts.append(args)
+        raise ServiceRejected('Selected file is not eligible')
+    monkeypatch.setattr(preparation_client, 'call', denied)
+    parity.player.start_cinema_preparation()
+    for _ in range(8):
+        parity.clock[0] += 60
+        parity.player.start_cinema_preparation()
+    assert len(attempts) == 1 and len(parity.notices) == 1
+    assert not getattr(parity.player, '_cinema_prepare_sent', False)
+    assert not getattr(parity.player, '_cinema_prepare_ticket', None)
+
+
 def test_cd2_unverified_still_accepts_exact_local_intent_and_does_not_submit_cloud(parity):
     p = parity
     p.player.start_cinema_preparation()

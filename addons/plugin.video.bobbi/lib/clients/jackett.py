@@ -39,7 +39,7 @@ class Jackett(BaseClient):
         self._indexer_anime_caps = {}
 
     def _search_cinema(self, query, mode, season, episode, categories,
-                       additional_params, year, anime_absolute_query, anime_release_query='', title_queries=(), movie_years=None, movie_tmdb_id=None, movie_imdb_id=None, anime_title_queries=(), cancelled=None, deadline=None, publish=None):
+                       additional_params, year, anime_absolute_query, anime_release_query='', title_queries=(), movie_years=None, movie_tmdb_id=None, movie_imdb_id=None, anime_title_queries=(), cancelled=None, deadline=None, publish=None, query_cache=None):
         """Keep successful per-indexer results, not Jackett's slow all wrapper.
 
         Discover only already-configured providers. Four globally admitted
@@ -50,8 +50,11 @@ class Jackett(BaseClient):
         from lib.clients.jackett_fanout import fetch_independent, fetch_inventory
         from bobbi_core.search_completion import SearchCompletion, SearchResults
         cancelled = cancelled or (lambda: xbmc.Monitor().abortRequested() is True)
-        deadline = min(deadline if deadline is not None else float('inf'),
-                       time.monotonic() + min(8, get_jackett_timeout()))
+        # Interactive results stream immediately. Allow bounded supplementation
+        # to use the existing user budget instead of abandoning most aliases at
+        # eight seconds. Background callers still own their shorter deadline.
+        budget = min(25, get_jackett_timeout()) if publish is not None else min(8, get_jackett_timeout())
+        deadline = min(deadline if deadline is not None else float('inf'), time.monotonic() + budget)
         if self._configured_indexers is None:
             inventory = fetch_inventory(self.session, self.base_url + '&t=indexers&configured=true',
                                         deadline, cancelled)
@@ -106,13 +109,25 @@ class Jackett(BaseClient):
             # downstream full-alias and exact season/episode gates still apply.
             urls.insert(0, self._build_url(self._make_base_url('nyaasi'), query, 'anime'))
         from lib.clients.fanout_diagnostics import FanoutReceipt, make_plan, observe
-        plan = make_plan(list(dict.fromkeys(urls)), query, mode, season, episode, year,
+        cached_rows, missing, cached_count, cached_age = [], [], 0, 0
+        for url in dict.fromkeys(urls):
+            cached = query_cache.get('jackett-query', url) if query_cache is not None else None
+            if cached is None:
+                missing.append(url)
+            else:
+                cached_rows.extend(cached)
+                cached_count += 1
+                cached_age = max(cached_age, getattr(getattr(cached, 'completion', None), 'snapshot_age', 0))
+        cached_completion = SearchCompletion(cached_count, succeeded=cached_count, snapshot_age=cached_age)
+        if cached_rows and publish is not None and not cancelled() and time.monotonic() < deadline:
+            publish(SearchResults(cached_rows, cached_completion))
+        plan = make_plan(missing, query, mode, season, episode, year,
             title_queries, anime_title_queries, anime_absolute_query, anime_release_query,
             movie_tmdb_id, movie_imdb_id)
         request_timeout = 2.0
         if mode == 'tv' and (anime_title_queries or anime_absolute_query or anime_release_query):
             request_timeout = self._anime_request_timeout(urls, deadline)
-        results, parse_failures, processed = [], 0, 0
+        results, parse_failures, processed = list(cached_rows), 0, 0
         def parse_ready(response):
             nonlocal parse_failures, processed
             processed += 1
@@ -124,6 +139,10 @@ class Jackett(BaseClient):
                 parse_failures += 1
             else:
                 results.extend(parsed)
+                if query_cache is not None and not cancelled() and time.monotonic() < deadline:
+                    key = getattr(response, '_bobbi_query_url', None)
+                    if key is not None:
+                        query_cache.put('jackett-query', key, parsed)
                 if parsed and publish is not None and not cancelled() and time.monotonic() < deadline:
                     # The caller applies the same media/episode identity filter
                     # to streamed and final rows before the stable list session.
@@ -132,7 +151,7 @@ class Jackett(BaseClient):
         # Leave a bounded settle margin inside the provider's original budget.
         # Successful responses are parsed on arrival, never discarded merely
         # because a different request runs to this network deadline.
-        responses = fetch_independent(self.session, plan, budget=min(8, get_jackett_timeout()),
+        responses = fetch_independent(self.session, plan, budget=budget,
                                       deadline=deadline - .25, cancelled=cancelled,
                                       request_timeout=request_timeout, on_response=parse_ready)
         parse_failures += len(responses) - processed
@@ -142,13 +161,13 @@ class Jackett(BaseClient):
             observe(receipt, 'emit', 'parse_complete')
         kodilog('Cinema Jackett independent responses: {}/{}; candidates: {}'.format(len(responses), len(urls), len(results)))
         if isinstance(responses, SearchResults):
-            completion = responses.completion.with_parse_failures(parse_failures)
+            completion = responses.completion.with_parse_failures(parse_failures).combine(cached_completion)
         else:
             # Compatibility with injected transports lacking a receipt is
             # conservative: missing responses can never claim completeness.
-            planned = len(set(urls))
+            planned = len(missing)
             completion = SearchCompletion(planned, len(responses) - parse_failures,
-                                          planned - len(responses) + parse_failures)
+                                          planned - len(responses) + parse_failures).combine(cached_completion)
         kodilog('Cinema Jackett completion: {} {}'.format(completion.state, completion.summary()))
         result = SearchResults(results, completion)
         reference = observe(receipt, 'reference')
@@ -488,12 +507,13 @@ class Jackett(BaseClient):
         cancelled=None,
         deadline=None,
         publish=None,
+        query_cache=None,
     ) -> Optional[List[TorrentStream]]:
         try:
             if xbmc.getSkinDir() == 'skin.bobbi.cinema':
                 try:
                     return self._search_cinema(query, mode, season, episode, categories,
-                                               additional_params, year, anime_absolute_query, anime_release_query, title_queries, movie_years, movie_tmdb_id, movie_imdb_id, anime_title_queries, cancelled, deadline, publish)
+                                               additional_params, year, anime_absolute_query, anime_release_query, title_queries, movie_years, movie_tmdb_id, movie_imdb_id, anime_title_queries, cancelled, deadline, publish, query_cache)
                 except requests.Timeout:
                     # A timed-out inventory request precedes the bounded fanout.
                     from bobbi_core.search_completion import SearchCompletion, SearchResults
