@@ -8,6 +8,7 @@ import base64
 import json
 import math
 import re
+from pathlib import Path
 from time import monotonic
 from urllib.parse import parse_qsl, urlencode, urlsplit
 
@@ -22,6 +23,30 @@ ENDPOINT = 'https://api.animes.garden/resources'
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 MAX_ROWS = 200
 BUDGET_SECONDS = 4.0
+
+
+def _network_proxy(path=None):
+    """Optional device-local route, never a public server or global proxy."""
+    try:
+        if path is None:
+            from bobbi_core.runtime_paths import ProfilePath
+            path = Path(ProfilePath('search-network.json'))
+        if path.stat().st_size > 2048:
+            return None
+        config = json.loads(path.read_text(encoding='utf-8'))
+        if not isinstance(config, dict) or config.get('schema') != 1:
+            return None
+        value = config.get('animegarden_proxy')
+        if not isinstance(value, str):
+            return None
+        parsed = urlsplit(value)
+        if (parsed.scheme == 'http' and parsed.hostname in ('127.0.0.1', '::1')
+                and parsed.port and not parsed.username and not parsed.password
+                and parsed.path in ('', '/') and not parsed.query and not parsed.fragment):
+            return value
+    except (OSError, ValueError, RuntimeError, TypeError):
+        pass
+    return None
 
 
 def query_plan(anime_queries):
@@ -140,11 +165,23 @@ def find_sources(ids, mode, anime_queries, deadline, cancelled):
         return SearchResults([], SearchCompletion(len(urls), skipped=len(urls)))
     if not isinstance(deadline, (float, int)) or not math.isfinite(deadline) or deadline <= monotonic():
         return SearchResults([], SearchCompletion(len(urls), timed_out=len(urls)))
+    deadline = min(deadline, monotonic() + BUDGET_SECONDS)
     with requests.Session() as session:
         session.headers['User-Agent'] = 'AM6B-AnimeGarden/1.0'
+        proxy = _network_proxy()
+        if proxy:
+            session.trust_env = False
+            session.proxies = {'https://api.animes.garden': proxy}
         responses = fetch_independent(session, urls, budget=BUDGET_SECONDS,
             deadline=deadline, cancelled=cancelled_fn, mode='json',
             max_response_bytes=MAX_RESPONSE_BYTES, request_timeout=None)
+        if proxy and not responses and not cancelled_fn() and deadline - monotonic() > .5:
+            # A refused/offline local relay must not remove the direct route.
+            # Both attempts share the original deadline, never two full budgets.
+            session.proxies = {}
+            responses = fetch_independent(session, urls, budget=BUDGET_SECONDS,
+                deadline=deadline, cancelled=cancelled_fn, mode='json',
+                max_response_bytes=MAX_RESPONSE_BYTES, request_timeout=None)
     if not isinstance(responses, SearchResults) or responses.completion.succeeded != len(responses):
         # A custom/legacy transport without a receipt cannot claim completeness.
         return SearchResults([], SearchCompletion(len(urls), failed=len(urls)))

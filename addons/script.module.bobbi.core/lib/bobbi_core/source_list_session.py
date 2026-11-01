@@ -10,6 +10,7 @@ import json
 import re
 from threading import RLock
 from uuid import uuid4
+from urllib.parse import urlsplit
 import time
 
 from bobbi_core.playback_request import source_identity
@@ -45,6 +46,21 @@ class SourceListSession:
         release = ('bt:' + base64.b32decode(info_hash.upper()).hex()
                    if isinstance(info_hash, str) and re.fullmatch('[a-zA-Z2-7]{32}', info_hash)
                    else source_identity(source))
+        if (release.startswith('transport:') and getattr(source, 'indexer', '') == 'Jackett'
+                and getattr(source, 'type', '') == 'Torrent'):
+            # Jackett's encrypted download URL rotates between queries. Its
+            # site-scoped RSS permalink remains the same release; titles do not.
+            guid, provider = getattr(source, 'guid', ''), getattr(source, 'provider', '')
+            try:
+                locator = (urlsplit(guid) if isinstance(guid, str) and len(guid) <= 8192
+                           and not any(ord(char) <= 32 or ord(char) == 127 for char in guid) else None)
+                if (isinstance(provider, str) and provider and locator
+                        and locator.scheme in ('http', 'https') and locator.hostname
+                        and not locator.username and not locator.password
+                        and (locator.path not in ('', '/') or locator.query)):
+                    release = 'indexer-guid:' + sha256((provider + '\0' + guid).encode()).hexdigest()
+            except ValueError:
+                pass  # Unknown identity retains its original transport card.
         identity = dict(media=self.media, release=release,
                         transport=(getattr(source, 'preparedResourceId', '') or
                                    getattr(source, 'debridType', '') or 'unprepared'),

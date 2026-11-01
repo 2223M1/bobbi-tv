@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "2ac2c7d97f131e7ee422a24f99f8dbcdd83763f24eb5791382f1b1aadaff38d5",
+      "addon.xml": "cdedcfcf16c1908cc6af460c357ec9c75527d0a4835173ded0d72cf673b4a7b2",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
@@ -143,7 +143,7 @@
       "lib/cinema/subtitle_timing.py": "ed0946536875cad5918fc51bc1623e2458d3a595243a8a7161260a2538046b50",
       "lib/cinema/torrent_metadata.py": "e337f191b5197ae81066d64e71b49b48eff836f303aca76679e33e07b06b6745",
       "lib/clients/anilist.py": "472e799bcda584657292f09c1abacd45117c87a2d5c117eb21c9b3410ebad404",
-      "lib/clients/animegarden_provider.py": "36c202dc36830247d856c68a8101257e6eb560f4c73b10e98ffde5c01f1b7d85",
+      "lib/clients/animegarden_provider.py": "6634b5959740b1331cc7b4956dd42d4ad902c8af24b0662ed926fa6c547a457e",
       "lib/clients/anizip.py": "7982953dd6088a0ee8490134b68f0617a9f510fb3d2169f368da846b2a06d5b2",
       "lib/clients/base.py": "e8558dccbf94383a432ac4c920768b665b479c3c398d07d5832346565eff30e7",
       "lib/clients/bobi_library.py": "175a3316ffc1a93dc2a04f4f0379a00b6506940112bc99863173437c537909cc",
@@ -621,7 +621,7 @@
       "resources/settings.xml": "3ad0dd1185d7871b2a549838ebf41410853281797c75f4e2277d9e5fabe2c298"
     },
     "script.module.bobbi.core": {
-      "addon.xml": "4a218998d69c679af5faca2b8f4c96b28c357e9059b44e84cde264f3afa74641",
+      "addon.xml": "50067ae44d6c0a7ecb259c6073e6d738a7ae5f2df8b416ec5665876b89e2d39a",
       "lib/bobbi_core/__init__.py": "f9e32762d2f4ce4acde5ff9c621551ce06932ebaecc5dc0bf8deeff25bf86a9e",
       "lib/bobbi_core/account_readiness.py": "d4a6ff03eb16191e3ed324c9a76adb91280818a234c9f6367e78bcc152cdbbe2",
       "lib/bobbi_core/android_font_decoder.py": "f61bf11376abf483f4d1b01e4f4f965a3dc69f795e8271a44a8c36fb718af119",
@@ -713,7 +713,7 @@
       "lib/bobbi_core/share_stream.py": "a07f0f283e6660bcfedc1e467c14348f516f0f7f30e94066365fed8526c01333",
       "lib/bobbi_core/share_subtitles.py": "76a383f8aa7756069bbfe4f5002d4147d1cab0d4ec8372458cf93973f2f5141c",
       "lib/bobbi_core/source_intent.py": "99dbad990f2e2a2566d9146d2638a90960c7759781cc0078e2b02a472b0285fb",
-      "lib/bobbi_core/source_list_session.py": "6fb8d357dcb07f932af645eb72b5ebbd8085025a1c0a2cd180e44c8d84642640",
+      "lib/bobbi_core/source_list_session.py": "02c424ab761c5b2f03c52dbcf8059a6251c1a77428212c80f5b7160e29136fe1",
       "lib/bobbi_core/subtitle_binding.py": "a703da3527dbe224b75f90cb908360e2bdbddca2df869b827e3743458e4514bb",
       "lib/bobbi_core/subtitle_candidates.py": "dbc097e0ab396d62fe48405e0e394c8760d1e0514c33fe6b2bcafe73f5ed939b",
       "lib/bobbi_core/subtitle_cues.py": "f44e95ea3b7045846b8405ea957744c4ea6d8629c1efbaf73e59e4a4b904674e",
