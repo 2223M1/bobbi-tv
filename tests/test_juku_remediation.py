@@ -390,6 +390,9 @@ def test_local_first_and_final_search_receipt(tmp_path, monkeypatch, failed, exp
 
 
 def test_real_provider_and_coordinator_keep_receipt_and_focus(tmp_path, monkeypatch):
+    from bobbi_core import source_library
+    source = source_library.SourceLibrary('https://catalog.example.invalid', 'a'*32, tmp_path)
+    monkeypatch.setattr(source_library, 'current', lambda: source)
     seed(tmp_path)
     monkeypatch.setattr(cat, '_account', lambda client=None: '')
     module_path = ROOT / 'addons/plugin.video.bobbi/lib/clients/juku_provider.py'
@@ -419,7 +422,7 @@ def test_real_provider_and_coordinator_keep_receipt_and_focus(tmp_path, monkeypa
             raise api.JukuError('HTTP_503')
     original = cat.search
     def routed(*args, **kwargs):
-        return original(*args, state=tmp_path, client=Remote(), **kwargs)
+        return original(*args, client=Remote(), **kwargs)
     monkeypatch.setattr(cat, 'search', routed)
     manager = ProgressiveSearch(session, None, lambda rows: rows)
     manager.deadline = time.monotonic()+3

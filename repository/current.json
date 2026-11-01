@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "tag": "ce2072",
-  "sequence": 2026102072,
-  "size": 95911030,
-  "sha256": "1a86ba75f47aa801d61989b48ea9b6476469863bcf734060775c58832be575e8",
-  "url": "https://github.com/2223M1/bobbi-tv/releases/download/ce2072/BobbiTV-CE2072.bobbi-update.zip"
+  "tag": "ce2080",
+  "sequence": 2026102080,
+  "size": 95934438,
+  "sha256": "39e2435a50bcb8e1832e7b03929a5efbeaa6d1d9f17ce5b3704287629620331c",
+  "url": "https://github.com/2223M1/bobbi-tv/releases/download/ce2080/BobbiTV-CE2080.bobbi-update.zip"
 }

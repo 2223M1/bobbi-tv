@@ -169,9 +169,13 @@ def add_source(dialog, vfs, store):
              '本机 / U盘 / 已保存目录', '导入直链片库']
     if cd2_mounts.discover():
         kinds.append('已有 CD2 网盘（无需扫码）')
+    kinds.append('源库网址')
     choice = dialog.select('添加来源', kinds)
     if choice < 0 or choice >= len(kinds):
         return False
+    if kinds[choice] == '源库网址':
+        from .source_library_ui import add
+        return add(dialog, store)
     if choice == 5:
         return _cd2_source(dialog, store) is not None
     if choice < 3:
@@ -227,9 +231,12 @@ def manage(legacy_root=''):
             except LibraryError:
                 dialog.ok('原目录未能导入', '原设置保留，请用“添加来源”重新选择。')
         while not xbmc.Monitor().abortRequested():
+            from bobbi_core.source_library import current
+            online = current()
             sources = store.sources()
             choice = dialog.select('我的片库', ['＋ 添加来源', '打开我的片库']
-                + [source.name + (' · NAS / 目录' if source.kind == 'vfs' else ' · 直链片库') for source in sources])
+                + [source.name + (' · NAS / 目录' if source.kind == 'vfs' else ' · 直链片库') for source in sources]
+                + (['源库 · ' + online.name] if online else []))
             if choice < 0:
                 return
             try:
@@ -241,6 +248,9 @@ def manage(legacy_root=''):
                         navigated = True
                         return True  # Tell enclosing menus not to cover navigation.
                     dialog.ok('片库组件未安装', '请用波比 TV 完整安装包修复，已保存的来源保留。')
+                elif online and choice == len(sources) + 2:
+                    from .source_library_ui import manage as manage_online
+                    changed = manage_online(dialog, store, online) or changed
                 else:
                     source = sources[choice - 2]
                     action = dialog.select(source.name, ['检查连接' if source.kind == 'vfs' else '检查片库格式',

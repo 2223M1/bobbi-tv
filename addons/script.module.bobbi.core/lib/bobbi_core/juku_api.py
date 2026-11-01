@@ -12,6 +12,7 @@ import hashlib
 import http.client
 import importlib
 import importlib.util
+import ipaddress
 import json
 import math
 import os
@@ -38,9 +39,21 @@ AUTH_RETRY_SECONDS = 30
 # 0.80 cfdialer.DefaultCloudflareIPs, reduced to two bounded alternatives.
 # These are transport destinations, never replacements for TLS hostname checks.
 EDGES = ('162.159.153.1', '172.64.150.1')
+CDN_NETWORKS = tuple(ipaddress.ip_network(value) for value in ('104.16.0.0/13', '172.64.0.0/13'))
 PATH = re.compile(r'^/(?:videos/search|videos/[0-9]+(?:/cloud-files)?|shared-libraries/public|shared-libraries/(?:preview|detail)/[A-Za-z0-9_-]+)$')
 _CRYPTO_LOAD_LOCK = Lock()
 _CRYPTO_NAMESPACE = None
+
+
+def direct_destinations(addresses, port):
+    addresses = list(dict.fromkeys(row[4][0] for row in addresses))
+    # Reuse the catalogue protocol's existing anycast routes only for hosts
+    # actually resolved onto those CDN networks. Other endpoints stay direct;
+    # every route still sends the user's original Host/SNI and verifies its cert.
+    cdn = port == 443 and any(ipaddress.ip_address(address) in network
+        for address in addresses for network in CDN_NETWORKS)
+    targets = list(dict.fromkeys((list(EDGES) if cdn else []) + addresses))[:4]
+    return [(address, port) for address in targets]
 
 
 class JukuError(RuntimeError):
@@ -52,6 +65,10 @@ class JukuError(RuntimeError):
 def state_path(state=None):
     if state is not None:
         return Path(state)
+    from bobbi_core.source_library import current
+    source = current()
+    if source is not None:
+        return source.root
     from bobbi_platform.paths import profile
     return profile('plugin.video.bobbi', 'juku')
 
@@ -169,9 +186,10 @@ class EdgeConnection(http.client.HTTPSConnection):
     otherwise run forever. The one request watcher only shuts down this socket;
     response.close/connection.close always stops it. It never touches playback.
     """
-    def __init__(self, host, edge_ip, deadline, cancelled, **kwargs):
+    def __init__(self, host, edge_ip, deadline, cancelled, expected_host=None, **kwargs):
         super().__init__(host, **kwargs)
         self.edge_ip = edge_ip
+        self.expected_host = expected_host
         self.deadline, self.cancelled = deadline, cancelled
         self._watch_stop = Event()
         self._watch_socket = None
@@ -189,13 +207,36 @@ class EdgeConnection(http.client.HTTPSConnection):
 
     def connect(self):
         server_name = self._tunnel_host or self.host
-        if not BASE or server_name != urlsplit(BASE).hostname or (self.edge_ip and (self.port != 443 or self._tunnel_host)):
+        expected = self.expected_host or urlsplit(BASE).hostname
+        if not expected or server_name != expected or (self.edge_ip and (self.port != 443 or self._tunnel_host)):
             raise JukuError('EDGE_HOST')
         # With no edge this is the explicitly configured numeric loopback proxy.
-        if not self.edge_ip and self.host != '127.0.0.1':
+        if not self.edge_ip and self._tunnel_host and self.host != '127.0.0.1':
             raise JukuError('LOCAL_PROXY_REQUIRED')
         guard(self.deadline, self.cancelled)
         destination = (self.edge_ip, 443) if self.edge_ip else (self.host, self.port)
+        if not self.edge_ip and not self._tunnel_host:
+            # One hostname can resolve to a reachable and an unreachable CDN
+            # address. A successful TCP connect is not yet a usable TLS route.
+            addresses = socket.getaddrinfo(self.host, self.port, type=socket.SOCK_STREAM)
+            guard(self.deadline, self.cancelled)  # libc DNS cannot be interrupted.
+            destinations = direct_destinations(addresses, self.port)
+        else:
+            destinations = [destination]
+        for index, destination in enumerate(destinations):
+            guard(self.deadline, self.cancelled)
+            self._watch_stop = Event()
+            try:
+                self._connect_one(destination, server_name)
+                return
+            except (OSError, http.client.HTTPException):
+                self._close_attempt()
+                guard(self.deadline, self.cancelled)
+                if index + 1 == len(destinations):
+                    raise
+        raise OSError('No catalogue address')
+
+    def _connect_one(self, destination, server_name):
         raw = socket.create_connection(destination, min(3, self.timeout, self.deadline-time.monotonic()))
         self.sock = self._watch_socket = raw
         Thread(target=self._watch, name='JukuRequestDeadline', daemon=True).start()
@@ -208,8 +249,17 @@ class EdgeConnection(http.client.HTTPSConnection):
             self.sock.settimeout(max(.001, self.deadline-time.monotonic()))
             guard(self.deadline, self.cancelled)
         except BaseException:
-            self.close()
+            self._close_attempt()
             raise
+
+    def _close_attempt(self):
+        # endheaders() has already set Request-sent before connect(). Calling
+        # HTTPConnection.close() between TLS candidates would reset it to Idle
+        # and make the successful candidate fail with ResponseNotReady.
+        self._watch_stop.set()
+        if self.sock is not None:
+            self.sock.close()
+        self.sock = self._watch_socket = None
 
     def getresponse(self):
         self._receiving_response = True
@@ -237,14 +287,15 @@ class EdgeConnection(http.client.HTTPSConnection):
 
 
 class EdgeHTTPSHandler(HTTPSHandler):
-    def __init__(self, edge_ip, context):
+    def __init__(self, edge_ip, context, expected_host=None):
         super().__init__(context=context)
         self.edge_ip = edge_ip
+        self.expected_host = expected_host
 
     def https_open(self, request):
         def connection(host, **kwargs):
             return EdgeConnection(host, self.edge_ip, request.juku_deadline,
-                                  request.juku_cancelled, **kwargs)
+                                  request.juku_cancelled, expected_host=self.expected_host, **kwargs)
         return self.do_open(connection, request, context=self._context)
 
 
@@ -353,13 +404,22 @@ def sign_payload(key, payload):
 
 
 class Client:
-    def __init__(self, state=STATE, cancelled=lambda: False, opener=None, proxy=None, edge_ip=None):
-        # Fail before configuration, keys, sessions or transport are touched.
-        # Retained protocol tests inject an offline fixture endpoint explicitly.
-        if not BASE:
+    def __init__(self, state=STATE, cancelled=lambda: False, opener=None, proxy=None, edge_ip=None,
+                 endpoint=None):
+        from bobbi_core.source_library import current, normalize, cache_path, cancellation
+        source = current() if not endpoint and not BASE else None
+        self.base = normalize(endpoint) if endpoint else BASE or (source.endpoint if source else '')
+        if not self.base:
             raise JukuError('CATALOGUE_DISABLED')
-        self.root = state_path(state)
-        self.cancelled = cancelled
+        if endpoint:
+            self.root = cache_path(self.base)
+        elif source is not None:
+            self.root = source.root
+            if state is not None and Path(state).resolve() != self.root.resolve():
+                raise JukuError('SOURCE_CHANGED')
+        else:
+            self.root = state_path(state)
+        self.cancelled = cancellation(source, cancelled) if source else cancelled
         config = load_json(self.root / 'config.json')
         if proxy is None:
             proxy = config.get('proxy', '')
@@ -374,10 +434,13 @@ class Client:
         # Fixed, observed 0.80 edge candidates avoid an unbounded DNS resolver
         # and retain the endpoint host for Host/SNI/certificate validation. Never
         # bypass an explicitly selected local proxy on fallback.
-        edges = (None,) if proxy else tuple(dict.fromkeys((edge_ip or EDGES[0], *EDGES)))[:2]
+        # User endpoints use ordinary verified HTTPS. Fixed edges are optional
+        # per-endpoint transport configuration, never applied to arbitrary hosts.
+        edges = ((None,) if proxy or (not edge_ip and not BASE) else
+                 tuple(dict.fromkeys((edge_ip or EDGES[0], *EDGES)))[:2])
         self.openers = [opener] if opener is not None else [
             build_opener(ProxyHandler({'https': proxy} if proxy else {}), NoRedirect(),
-                         EdgeHTTPSHandler(edge, ssl.create_default_context())) for edge in edges]
+                         EdgeHTTPSHandler(edge, ssl.create_default_context(), urlsplit(self.base).hostname)) for edge in edges]
         self.opener = self.openers[0]  # Kept for callers inspecting the first transport.
         self.requests = 0
 
@@ -429,7 +492,7 @@ class Client:
                                 'X-Body-Hash': hashlib.sha256(body).hexdigest(),
                                 'X-Access-Token': token,
                                 'X-Signature': base64.b64encode(signature).decode('ascii')})
-            request = Request(BASE + path + ('?' + query if query else ''),
+            request = Request(getattr(self, 'base', BASE) + path + ('?' + query if query else ''),
                               data=body if method == 'POST' else None, headers=headers, method=method)
             request.juku_deadline, request.juku_cancelled = attempt_deadline, self.cancelled
             self.requests += 1
@@ -446,7 +509,7 @@ class Client:
                 if not retryable or index + 1 == len(self.openers):
                     raise
 
-    def _receive(self, opener, request, deadline, max_bytes, destination=None):
+    def _receive(self, opener, request, deadline, max_bytes, destination=None, *, raw_document=False):
         target = Path(destination) if destination is not None else None
         temporary = target.with_name(target.name + '.part') if target is not None else None
         sink = None
@@ -486,6 +549,8 @@ class Client:
                     guard(deadline, self.cancelled)
                     os.replace(str(temporary), str(target))
                     return dict(bytes=received, sha256=digest.hexdigest())
+                if raw_document:
+                    return bytes(raw)
                 data = json.loads(raw)
         except HTTPError as error:
             error.close()

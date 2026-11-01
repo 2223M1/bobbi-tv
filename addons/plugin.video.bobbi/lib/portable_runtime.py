@@ -19,9 +19,11 @@ def main(capabilities=None):
         host.can_quiesce = lambda: not xbmc.Player().isPlaying()
         host.configure_preparation(profile('plugin.video.bobbi'))
         def idle():
+            from bobbi_core.source_library import observe_host
+            observe_host(host)
             host.playing = xbmc.Player().isPlaying()
             return not host.playing and xbmc.getGlobalIdleTime() >= 30
-        # Local preparation still needs playback state; no remote refresh job.
+        # Remote refresh is attached lazily only after an explicit URL is saved.
         host.idle_probe = idle
         if native:
             # Keep the original actor on the Kodi thread, including ordered

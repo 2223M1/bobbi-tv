@@ -22,7 +22,7 @@ from bobbi_core.release_identity import WEAK
 from bobbi_core.search_completion import SearchCompletion, SearchResults
 
 STATE = juku_api.STATE
-SITE = 'Juku · 115分享'
+SITE = '自选源库 · 115'
 DAY = 86400
 FRESH = DAY
 STALE = 7 * DAY
@@ -630,6 +630,7 @@ def _finish(cache, candidates, spec):
 
 
 def search(spec, deadline, cancelled, state=STATE, client=None, diagnostic=None, publish=None):
+    state = juku_api.state_path(state)
     spec = _spec(spec)
     report = diagnostic or (lambda event: None)
     counts = dict(succeeded=0, failed=0, skipped=0, timed_out=0)
@@ -753,6 +754,7 @@ def selected(locator, guid, title, size, media, state=STATE, deadline=None, canc
 
 
 def resolve(locator, guid, title, size, media, state=STATE, deadline=None, cancelled=None, client=None):
+    state = juku_api.state_path(state)
     deadline = time.monotonic()+8 if deadline is None else deadline
     _guard(deadline, cancelled)
     row = selected(locator, guid, title, size, media, state, deadline, cancelled)
@@ -797,6 +799,7 @@ def resolve(locator, guid, title, size, media, state=STATE, deadline=None, cance
 
 
 def next_file(current, identity, cancelled, deadline, state=STATE, client=None):
+    state = juku_api.state_path(state)
     tmdb, season, episode = identity
     pointer = current.get('direct_source') or {}
     try:

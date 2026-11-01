@@ -1,40 +1,24 @@
 """Authorised catalogue adapter using the existing selected-share transport."""
-import time
-from threading import Lock
-
-SITE = 'Juku · 115分享'
+SITE = '自选源库 · 115'
 
 
 def enabled():
-    # Retired integration. Old saved settings must not reactivate network IO.
-    return False
+    from bobbi_core.source_library import current
+    return current() is not None
 
 
 def _query_cancelled(cancelled):
-    """User cancellation is immediate; addon-setting reads are at most 1 Hz.
-
-    The HTTP deadline watcher and search worker can both call this guard. A
-    disabled request stays cancelled even if the switch is toggled back on.
-    The caller already checked the initial setting before constructing it.
-    """
-    stopped = cancelled.is_set if hasattr(cancelled, 'is_set') else cancelled or (lambda: False)
-    next_check, disabled, lock = time.monotonic() + 1, False, Lock()
-    def check():
-        nonlocal next_check, disabled
-        if stopped():
-            return True
-        with lock:
-            now = time.monotonic()
-            if not disabled and now >= next_check:
-                disabled = not enabled()
-                next_check = now + 1
-            return disabled
+    """Freeze this endpoint; edits revoke late discovery without touching video."""
+    from bobbi_core.source_library import current, cancellation
+    source = current()
+    check = cancellation(source, cancelled) if source else lambda: True
+    check.source = source
     return check
 
 
 def is_source(source):
     return (getattr(source, 'type', '') == 'Direct'
-            and getattr(source, 'indexer', '') == SITE
+            and getattr(source, 'indexer', '') in (SITE, 'Juku · 115分享')
             and str(getattr(source, 'guid', '')).startswith('juku:')
             and str(getattr(source, 'url', '')).startswith('am6bjuku://'))
 
@@ -75,6 +59,7 @@ def find_sources(ids, mode, season, episode, year, aliases, release_order,
         if publish is not None and not cancelled():
             publish(convert(rows))
     rows = search(spec, deadline, cancelled,
+        state=cancelled.source.root,
         diagnostic=lambda value: kodilog('bobbi Juku search: ' + json.dumps(value, sort_keys=True)),
         publish=progress if publish is not None else None)
     if cancelled():
@@ -99,4 +84,7 @@ def next_source(current, identity, cancelled, deadline):
     if not enabled():
         return None, 'PROVIDER_DISABLED'
     from bobbi_core.juku_catalog import next_file
-    return next_file(current, identity, _query_cancelled(cancelled), deadline)
+    check = _query_cancelled(cancelled)
+    if check():
+        return None, 'PROVIDER_DISABLED'
+    return next_file(current, identity, check, deadline, state=check.source.root)

@@ -9,6 +9,11 @@ from importlib import import_module
 PROVIDERS = ('qqdocs',)
 
 
+def providers():
+    from bobbi_core.source_library import current
+    return PROVIDERS + (('juku',) if current() is not None else ())
+
+
 def _adapter(name):
     module_name = 'lib.clients.' + name + '_provider'
     try:
@@ -23,7 +28,7 @@ def provider_for(source):
     if getattr(source, 'type', '') != 'Direct':
         return None
     guid = str(getattr(source, 'guid', ''))
-    for name in PROVIDERS:
+    for name in providers():
         if guid.startswith(name + ':'):
             module = _adapter(name)
             return name if module is not None and module.is_source(source) else None
@@ -39,7 +44,7 @@ def resolve_source(source, item):
 
 def submit_catalogs(manager, ids, mode, season, episode, year, aliases, release_order,
                     movie_years=None):
-    for name in PROVIDERS:
+    for name in providers():
         module = _adapter(name)
         if module is None:
             continue
