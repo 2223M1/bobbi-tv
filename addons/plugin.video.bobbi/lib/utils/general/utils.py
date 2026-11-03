@@ -14,19 +14,15 @@ from urllib.parse import unquote
 from zipfile import ZipFile
 from bobbi_core.image_cache import image_batch, image_url as tmdb_image_url
 
-import requests
 import xbmc
 from xbmc import getSupportedMedia
 from xbmcgui import Dialog, DialogProgressBG
 from xbmcplugin import addDirectoryItem, setContent, setPluginCategory
 
-from lib.api.fanart.fanart import get_fanart
-from lib.api.tmdbv3api.tmdb import TMDb
 from lib.api.trakt.lists_cache import lists_cache
 from lib.api.trakt.main_cache import main_cache
 from lib.api.trakt.trakt_cache import trakt_cache, trakt_watched_cache
-from lib.api.tvdbapi.tvdbapi import TVDBAPI
-from lib.clients.base import TorrentStream
+from lib.domain.torrent import TorrentStream
 from lib.clients.stremio.constants import (
     STREMIO_ADDONS_CATALOGS_KEY,
     STREMIO_ADDONS_KEY,
@@ -37,7 +33,6 @@ from lib.clients.subtitle.utils import get_language_code
 from lib.db.cached import cache
 from lib.db.pickle_db import PickleDatabase
 from lib.gui.qr_progress_dialog import QRProgressDialog
-from lib.utils.debrid.qrcode_utils import make_qrcode
 from lib.utils.general.processors import PostProcessBuilder, PreProcessBuilder
 from lib.utils.kodi.settings import get_cache_expiration, is_cache_enabled
 from lib.utils.kodi.utils import (
@@ -62,7 +57,6 @@ from lib.utils.kodi.utils import (
     translatePath,
     translation,
 )
-from lib.vendor.torf._magnet import Magnet
 
 pickle_db = PickleDatabase()
 
@@ -828,6 +822,7 @@ def get_rpdb_poster(imdb_id, api_key, cached_only=False):
     if cached_only or not remaining:
         return None
 
+    import requests
     try:
         response = requests.get(
             f"https://api.ratingposterdb.com/{api_key}/imdb/{imdb_id}?lang=en",
@@ -1038,6 +1033,11 @@ def is_in_library(title):
     return pickle_db.get_item("jt:lib", title) is not None
 
 
+def get_fanart(*args, **kwargs):
+    from lib.api.fanart.fanart import get_fanart as fetch
+    return fetch(*args, **kwargs)
+
+
 def get_fanart_details(tvdb_id="", tmdb_id="", mode="tv", cached_only=False):
     identifier = "{}|{}".format("fanart.tv", tvdb_id if tvdb_id and tvdb_id != "None" else tmdb_id)
     cached = cache.get(identifier)
@@ -1135,6 +1135,7 @@ def tvdb_get(path, params=None):
     if data:
         return data
     if path == "get_imdb_id":
+        from lib.api.tvdbapi.tvdbapi import TVDBAPI
         data = TVDBAPI().get_imdb_id(params)
     cache.set(
         identifier,
@@ -1291,6 +1292,7 @@ def clear_tmdb_cache():
                     'bobi_episode_order_v1:%', 'bobi_related_movies_%',
                     'bobi_frontend_v1:%', 'am6b_season_card_v1:%'):
         cache.delete_like(pattern)
+    from lib.api.tmdbv3api.tmdb import TMDb
     TMDb().cache_clear()
     notification(translation(30240))
 
@@ -1506,6 +1508,7 @@ def clean_auto_play_undesired(results: List[TorrentStream]) -> List[TorrentStrea
 
 
 def is_torrent_url(uri):
+    import requests
     res = requests.head(uri, timeout=20, headers=USER_AGENT_HEADER)
     return bool(
         res.status_code == 200 and res.headers.get("Content-Type") == "application/octet-stream"
@@ -1536,6 +1539,7 @@ def is_video(s):
 
 
 def get_info_hash_from_magnet(magnet):
+    from lib.vendor.torf._magnet import Magnet
     return Magnet.from_string(magnet).infohash
 
 
@@ -1610,6 +1614,7 @@ def get_public_ip():
     if public_ip:
         return public_ip
 
+    import requests
     urls = ["https://ipconfig.io/ip", "https://api.ipify.org/"]
 
     for url in urls:
@@ -1630,6 +1635,7 @@ def get_public_ip():
 
 
 def export_to_kodi_paste(log_content):
+    import requests
     try:
         response = requests.post(
             "https://paste.kodi.tv/documents",
@@ -1667,6 +1673,7 @@ def show_log_export_dialog(params):
             )
             if choice == 1:
                 paste_url = export_to_kodi_paste(content)
+                from lib.utils.debrid.qrcode_utils import make_qrcode
                 qr_code = make_qrcode(paste_url)
                 copy2clip(paste_url)
                 progressDialog = QRProgressDialog("qr_dialog.xml", ADDON_PATH)

@@ -77,6 +77,39 @@ def test_valid_patch_records_exact_geometry(framebuffer):
     assert p.patch_stability(result, [result]*10)['status'] == 'PASS'
 
 
+def test_retained_patch_bytes_match_declared_rectangle_and_hash(framebuffer):
+    import hashlib
+    root, device = framebuffer
+    (root / 'pan').write_text('0,2')
+    retained = []
+    result = p.framebuffer_patch(root, device, (2, 1, 3, 2), capture=retained.append)
+    expected = bytes(range(104, 116)) + bytes(range(136, 148))
+    assert retained == [expected]
+    assert result['sha256'] == hashlib.sha256(expected).hexdigest()
+    assert result['box'] == [2, 1, 3, 2]
+    assert result['stride'] == 32 and result['virtual_size'] == [8, 8]
+
+
+def test_patch_handles_framebuffer_driver_page_aligned_reads(framebuffer, monkeypatch):
+    root, device = framebuffer
+    raw = device.read_bytes()
+    # AMLogic fb_read may address the containing page, ignoring an intra-page
+    # seek. Keep the expected rectangle independent of the reader implementation.
+    class Driver(io.BytesIO):
+        def read(self, count):
+            self.seek(self.tell() // 64 * 64)
+            return super().read(count)
+    class Device:
+        def open(self, *args, **kwargs):
+            return Driver(raw)
+    import mmap
+    monkeypatch.setattr(mmap, 'PAGESIZE', 64)
+    retained = []
+    result = p.framebuffer_patch(root, Device(), (2, 1, 3, 2), capture=retained.append)
+    assert result['valid']
+    assert retained == [bytes(range(40, 52)) + bytes(range(72, 84))]
+
+
 @pytest.mark.parametrize('size', [0, 33, 95])
 def test_empty_or_short_read_is_not_a_pixel_hash(framebuffer, size):
     root, device = framebuffer

@@ -31,6 +31,7 @@ result['display_before'] = {name:xbmc.getCondVisibility(name) for name in
 window = None
 frame_stop = Event()
 frame_worker = None
+patch_files = {}
 
 
 def inspect(name, current):
@@ -57,7 +58,14 @@ def inspect(name, current):
 
 def card_patch():
     """Pixels of the first card's static quality/text; excludes status badges."""
-    return framebuffer_patch()
+    import hashlib
+    def retain(raw):
+        digest = hashlib.sha256(raw).hexdigest()
+        if digest not in patch_files and len(patch_files) < 8:
+            filename = 'card-patch-' + str(len(patch_files)) + '.bgra'
+            (ROOT / filename).write_bytes(raw)
+            patch_files[digest] = filename
+    return framebuffer_patch(capture=retain)
 
 
 try:
@@ -129,6 +137,7 @@ try:
     # Finish the deliberate filter/focus animation BEFORE publishing arrivals.
     # Retain every baseline sample; an unreadable baseline is inconclusive.
     if monitor.waitForAbort(1.2): raise RuntimeError('UI_SMOKE_INTERRUPTED')
+    inspect('sources-baseline', window)
     baseline_samples = []
     for _ in range(10):
         baseline_samples.append(card_patch())
@@ -181,6 +190,7 @@ finally:
     frame_stop.set()
     if frame_worker: frame_worker.join(2)
     if window is not None: window.close()
+    result['patch_files'] = patch_files
     faulthandler.cancel_dump_traceback_later()
     trace.close()
     (ROOT/'result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')

@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import re
 from pathlib import Path
 import sys
 import time
@@ -12,7 +13,7 @@ REMOTE = r'''
 import hashlib,json,pathlib,zipfile
 from io import BytesIO
 root=pathlib.Path('/storage/.kodi/addons')
-bundle=root/'script.bobbi.start/resources/complete.bobbi-update.zip'
+bundle=pathlib.Path(BUNDLE)
 if hashlib.sha256(bundle.read_bytes()).hexdigest()!=EXPECTED:raise RuntimeError('EMBEDDED_PAYLOAD_MISMATCH')
 with zipfile.ZipFile(bundle) as signed:
  manifest=json.loads(signed.read('release.json'))
@@ -34,7 +35,12 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--transport-source',type=Path,required=True)
     p.add_argument('--bundle',type=Path,required=True)
+    p.add_argument('--run-id', help='Verify an installed upgrade against its immutable deployment input')
     a=p.parse_args()
+    if a.run_id and not re.fullmatch(r'[0-9]{8}-[0-9]{6}', a.run_id):
+        p.error('Use a timestamp deployment run ID')
+    remote_bundle = ('/storage/.local/share/bobbi-private-deploy/' + a.run_id + '/candidate.zip'
+                     if a.run_id else '/storage/.kodi/addons/script.bobbi.start/resources/complete.bobbi-update.zip')
     sys.path.insert(0,str(ROOT/'addons/script.module.bobbi.platform/lib'))
     from bobbi_platform.offline_updates import SignedBundle,load_trust
     from bobbi_platform.upstream_addons import OWNED_COMPONENTS
@@ -45,10 +51,11 @@ def main():
     m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
     c,w=m.connect()
     try:
-        code='EXPECTED='+repr(hashlib.sha256(a.bundle.read_bytes()).hexdigest())+'\nOWNED='+repr(sorted(OWNED_COMPONENTS))+'\n'+REMOTE
+        code='BUNDLE='+repr(remote_bundle)+'\nEXPECTED='+repr(hashlib.sha256(a.bundle.read_bytes()).hexdigest())+'\nOWNED='+repr(sorted(OWNED_COMPONENTS))+'\n'+REMOTE
         rc,value,diag=w.readonly(c,code.encode(),deadline_seconds=30)
     finally:c.close()
     out=ROOT/'review-evidence/ce2023'/('installed-files-'+str(time.time_ns())+'.json')
+    out.parent.mkdir(parents=True, exist_ok=True)
     result=dict(transport_exit=rc,diagnostic_present=bool(diag),expected_sequence=sequence,result=value)
     out.write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(dict(evidence=str(out),**result)))

@@ -14,13 +14,14 @@ MAX_BYTES = 8 * 1024 * 1024
 MAX_FILES = 16000
 VIDEO_EXTENSIONS = {'.mp4', '.mkv', '.avi', '.webm', '.mov', '.m4v'}
 DEFAULT_INDEX = Path(__file__).resolve().parents[2] / 'resources' / 'catalog.json'
+_UNSAFE_CHARACTER = re.compile(r'[\x00-\x1f\x7f\\]')
 
 
 def checked_path(path):
     if (not isinstance(path, str) or not path.startswith('/') or path.startswith('//')
             or len(path) > 2048 or len(path.split('/')) < 3
             or any(part in ('', '.', '..') or part.startswith('._') for part in path.split('/')[1:])
-            or any(ord(char) < 32 or ord(char) == 127 for char in path) or '\\' in path
+            or _UNSAFE_CHARACTER.search(path)
             or Path(path).suffix.casefold() not in VIDEO_EXTENSIONS):
         raise ValueError('INVALID_MDSUB_PATH')
     return path

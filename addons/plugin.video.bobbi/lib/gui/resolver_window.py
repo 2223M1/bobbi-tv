@@ -8,7 +8,6 @@ import json
 import xbmc
 import xbmcgui
 
-from lib.clients.subtitle.submanager import SubtitleManager
 from lib.db.cached import cache
 from lib.domain.torrent import TorrentStream
 from lib.gui.base_window import BaseWindow
@@ -517,6 +516,7 @@ class ResolverWindow(BaseWindow):
 
     def _download_subtitle(self):
         try:
+            from lib.clients.subtitle.submanager import SubtitleManager
             subtitle_manager = SubtitleManager(self.playback_info, notification)
             subtitles_path = subtitle_manager.fetch_subtitles()
             if subtitles_path:

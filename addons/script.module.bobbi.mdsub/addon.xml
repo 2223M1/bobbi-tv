@@ -1,4 +1,4 @@
-<addon id="script.module.bobbi.mdsub" name="AM6B 漫迪片库" version="0.1.0" provider-name="AM6B">
+<addon id="script.module.bobbi.mdsub" name="AM6B 漫迪片库" version="0.1.1" provider-name="AM6B">
   <requires><import addon="xbmc.python" version="3.0.0" /></requires>
   <extension point="xbmc.python.module" library="lib" />
   <extension point="xbmc.addon.metadata">

@@ -170,15 +170,28 @@ def navigate(run, window):
     raise RuntimeError('PREVIEW_WINDOW_NOT_REACHED')
 
 
+def _framebuffer_bytes(device, offset, size):
+    # Some AMLogic fb_read implementations start at the containing physical
+    # page. An unaligned seek silently returns the wrong pixels, not a short
+    # read. Read the prefix explicitly; this also works with normal fbdev/files.
+    import mmap
+    prefix = offset % mmap.PAGESIZE
+    with device.open('rb', buffering=0) as stream:
+        stream.seek(offset - prefix)
+        return stream.read(prefix + size)[prefix:]
+
+
 def framebuffer_patch(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb0'),
-                      box=(620, 220, 140, 70)):
+                      box=(620, 220, 140, 70), capture=None):
     """One measured GUI patch; invalid reads are evidence, never pixel hashes."""
     result = dict(valid=False, reason='UNREADABLE', sha256=None, expected_bytes=None,
                   actual_bytes=None, expected_patch_bytes=None, actual_patch_bytes=None,
-                  pan_before=None, pan_after=None)
+                  pan_before=None, pan_after=None, box=list(box),
+                  reader='page-aligned-fbdev-v2')
     try:
         stride = int((root / 'stride').read_text())
         width, virtual_height = map(int, (root / 'virtual_size').read_text().strip().split(','))
+        result.update(stride=stride, virtual_size=[width, virtual_height])
         if int((root / 'bits_per_pixel').read_text()) != 32:
             result['reason'] = 'UNSUPPORTED_FORMAT'
             return result
@@ -194,9 +207,7 @@ def framebuffer_patch(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb
             if pan_x != 0 or not 0 <= pan <= virtual_height - y - h:
                 result['reason'] = 'INVALID_OFFSET'
                 return result
-            with device.open('rb', buffering=0) as stream:
-                stream.seek((pan+y)*stride)
-                raw = stream.read(stride*h)
+            raw = _framebuffer_bytes(device, (pan+y)*stride, stride*h)
             result['actual_bytes'] = len(raw)
             if len(raw) != stride*h:
                 result['reason'] = 'SHORT_READ'
@@ -211,6 +222,8 @@ def framebuffer_patch(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb
                 result['reason'] = 'SHORT_PATCH'
                 return result
             result.update(valid=True, reason='OK', sha256=hashlib.sha256(patch).hexdigest())
+            if capture is not None:
+                capture(patch)
             return result
         result['reason'] = 'MOVING'
     except (OSError, ValueError, TypeError):
@@ -240,9 +253,7 @@ def framebuffer_png(root=Path('/sys/class/graphics/fb0'), device=Path('/dev/fb0'
         pan = int((root / 'pan').read_text().split(',')[1])
         if not 0 <= pan <= virtual_height - height:
             raise RuntimeError('INVALID_FRAMEBUFFER_OFFSET')
-        with device.open('rb', buffering=0) as stream:
-            stream.seek(pan * stride)
-            raw = stream.read(height * stride)
+        raw = _framebuffer_bytes(device, pan * stride, height * stride)
         if len(raw) != height * stride:
             raise RuntimeError('INCOMPLETE_FRAMEBUFFER')
         if pan == int((root / 'pan').read_text().split(',')[1]):

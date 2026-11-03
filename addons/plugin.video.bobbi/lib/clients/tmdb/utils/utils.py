@@ -9,7 +9,6 @@ from urllib import parse
 import xbmc
 from xbmcplugin import addDirectoryItem
 
-from lib.api.mdblist.mdblist import MDblistAPI
 from lib.api.tmdbv3api.as_obj import AsObj
 from lib.api.tmdbv3api.objs.anime import TmdbAnime
 from lib.api.tmdbv3api.objs.collection import Collection
@@ -411,6 +410,7 @@ def mdblist_get(path, params=None) -> Optional[List]:
     if data:
         return data
 
+    from lib.api.mdblist.mdblist import MDblistAPI
     handlers = {
         "get_user_lists": lambda _: MDblistAPI().get_user_lists(),
         "get_list_items": lambda p: MDblistAPI().get_list_items(

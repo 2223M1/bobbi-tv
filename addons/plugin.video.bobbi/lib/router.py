@@ -957,6 +957,10 @@ def _route_source_manager(action, params):
 
 
 def _route_core(action, params):
+    if action == "search":
+        from lib.search import run_search_entry
+
+        return run_search_entry(params)
     if action == "open_excluded_languages_dialog":
         from lib.gui.excluded_languages_dialog import open_excluded_languages_dialog
 
@@ -1032,7 +1036,6 @@ def _route_core(action, params):
             reset_views,
             restore_settings_backup,
             save_view,
-            search,
             search_direct,
             search_item,
             search_menu,
@@ -1059,7 +1062,6 @@ def _route_core(action, params):
             "animation_menu": animation_menu,
             "animation_item": animation_item,
             "tv_menu": tv_menu,
-            "search": search,
             "search_direct": search_direct,
             "search_item": search_item,
             "next_page_anime": next_page_anime,

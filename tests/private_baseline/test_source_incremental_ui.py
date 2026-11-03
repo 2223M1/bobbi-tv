@@ -9,10 +9,16 @@ from lib.domain.torrent import TorrentStream
 class Item:
     def __init__(self, label='', **kw):
         self.label, self.props, self.writes = label, {}, 0
+        self.reads, self.batches = 0, []
     def getLabel(self): return self.label
     def setLabel(self, label): self.label = label; self.writes += 1
-    def getProperty(self, key): return self.props.get(key, '')
+    def getProperty(self, key):
+        self.reads += 1
+        return self.props.get(key, '')
     def setProperty(self, key, value): self.props[key] = value; self.writes += 1
+    def setProperties(self, values):
+        self.batches.append(dict(values))
+        for key, value in values.items(): self.setProperty(key, value)
 
 
 class Control:
@@ -105,3 +111,58 @@ def test_quality_count_changes_in_place_without_resetting_tab_focus(window):
     assert old[0].getLabel() == '全部 (2)'
     assert window.quality.resets == 0 and window.quality.selects == 2
     assert window.quality.getSelectedItem() is old[1]
+
+
+def test_card_properties_published_once_without_native_field_reads(window):
+    window.sources = [source('a')]
+    window.populate_sources_list()
+    item = window.display_list.items[0]
+    assert len(item.batches) == 1
+    assert item.reads == 0
+    assert item.props['source_key'] == 'a'
+    assert item.props['quality_plain'] == '1080p'
+    writes = item.writes
+    window.populate_sources_list(incremental=True)
+    assert len(item.batches) == 1 and item.writes == writes
+    assert item.reads == 1  # The selected key, never every card field.
+    previous = dict(item.props)
+    window.sources[0].seeders = 7
+    window.populate_sources_list(incremental=True)
+    assert item.batches[-1]['seeders'] == '7'
+    assert item.batches[-1] == {key: value for key, value in item.props.items()
+                                if previous.get(key, '') != value}
+    assert window.display_list.items[0] is item
+
+
+def test_card_projection_only_commits_after_native_write_succeeds():
+    class FailingItem(Item):
+        def setProperties(self, values):
+            super().setProperties(values)
+            raise RuntimeError('native failure')
+    prior = {'optional': 'old', 'status': 'old'}
+    item = FailingItem()
+    update = ui._CardUpdate(item, prior)
+    update.setProperty('status', 'new')
+    with pytest.raises(RuntimeError):
+        update.flush()
+    assert prior == {'optional': 'old', 'status': 'old'}
+    item = Item()
+    update = ui._CardUpdate(item, prior)
+    update.setProperty('status', 'new')
+    update.flush()
+    assert item.batches == [{'optional': '', 'status': 'new'}]
+    assert prior == {'status': 'new'}
+
+
+def test_withdrawn_then_returning_card_gets_all_properties(window):
+    a, b = source('a'), source('b')
+    window.sources = [a, b]
+    window.populate_sources_list()
+    previous = window.display_list.items[1]
+    window.sources = [a]
+    window.populate_sources_list(incremental=True)
+    window.sources = [a, b]
+    window.populate_sources_list(incremental=True)
+    returned = window.display_list.items[1]
+    assert returned is not previous
+    assert returned.props == previous.props and returned.props['source_key'] == 'b'

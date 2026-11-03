@@ -12,6 +12,9 @@ from urllib.parse import parse_qsl, urlsplit
 from lib.utils.parsers.resolution import resolution_class
 
 
+_INVALID_LOCATOR = re.compile(r'[\x00-\x20\x7f\s]')
+
+
 def _positive_bytes(value):
     if isinstance(value, bool):
         return 0
@@ -44,7 +47,7 @@ def _bt_evidence(source):
     # URL parsers may strip leading C0 controls/spaces, or embedded CR/LF/TAB.
     # Reject these before scheme dispatch so a disguised conflicting magnet
     # cannot enter the less-specific name/byte equality path.
-    if len(locator) > 16384 or any(ord(char) < 33 or ord(char) == 127 or char.isspace() for char in locator):
+    if len(locator) > 16384 or _INVALID_LOCATOR.search(locator):
         return '', True
     if not locator.lower().startswith('magnet:'):
         return normalized, False

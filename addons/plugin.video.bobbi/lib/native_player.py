@@ -318,12 +318,12 @@ class JacktookPLayer(xbmc.Player):
 
     def _drain_nextep_queue(self) -> bool:
         """Process queued next episodes after current video has stopped"""
-        from lib.utils.kodi.settings import auto_play_enabled as _auto_play_enabled
-
         if not JacktookPLayer._nextep_queue:
             return False
 
         while JacktookPLayer._nextep_queue:
+            if self._cinema_cancel.is_set() or self.kodi_monitor.abortRequested():
+                return False
             entry = JacktookPLayer._nextep_queue.pop(0)
             data = entry.get("data", {})
             results = entry.get("results")
@@ -334,7 +334,7 @@ class JacktookPLayer(xbmc.Player):
                 f"queue_remaining={len(JacktookPLayer._nextep_queue)}"
             )
 
-            if _auto_play_enabled() or results is None:
+            if results is None:
                 # This is an internal handoff after the previous plugin action
                 # has already finished resolving. setResolvedUrl() no longer has
                 # a pending Kodi request to answer, so mark the new playback for
@@ -346,22 +346,16 @@ class JacktookPLayer(xbmc.Player):
                 player = JacktookPLayer()
                 self._cinema_phase('NEXT_CONSTRUCT_END')
                 player.run(data=handoff_data)
+                stopped = (player._was_superseded or player._cinema_cancel.is_set()
+                           or player.kodi_monitor.abortRequested())
                 del player
+                if stopped:
+                    return True  # Child cancellation is not the parent's Event.
             else:
                 # Manual: show source select (safe context — no video playing)
-                from lib.search import show_source_select as _show_source_select
+                from lib.search import show_next_sources
 
-                resolved = _show_source_select(
-                    results,
-                    mode=data.get("mode", "tv"),
-                    ids=data.get("ids", {}),
-                    tv_data=data.get("tv_data", {}),
-                    query=data.get("query", ""),
-                    media_type=data.get("media_type", ""),
-                    rescrape=False,
-                    direct=False,
-                    autoplay_context=str(AUTOPLAY_CONTEXT_NEXT_EPISODE),
-                )
+                resolved = show_next_sources(data)
                 kodilog(f"[PLAYNEXT] source_select returned resolved={resolved}")
                 if not resolved:
                     kodilog("[PLAYNEXT] source_select cancelled; cleanup only")
@@ -372,6 +366,7 @@ class JacktookPLayer(xbmc.Player):
                         self.PLAYLIST.clear()
                     except Exception as e:
                         kodilog(f"[PLAYNEXT] failed clearing playlist after cancel: {e}")
+                    return True
 
         return True
 
@@ -914,7 +909,15 @@ class JacktookPLayer(xbmc.Player):
                     self._startup_failed_for_reselect = False
                     self.cancel_playback()
             if (hasattr(self, '_cinema_cancel')
-                    and getattr(self, '_startup_failure_category', None) != 'prepared_ready'):
+                    and getattr(self, '_startup_failure_category', None) != 'prepared_ready'
+                    and not (self.data.get('selection_policy') == 'exact'
+                        and (getattr(self, '_cinema_natural_queued', False)
+                             or getattr(self, '_transport_parent_queued', False)))):
+                # An exact handoff has already reserved a new owner generation.
+                # Old workers recheck that owner and cannot publish/apply again.
+                # Do not turn ordinary parent retirement into a user cancel:
+                # run/drain still observe the unchanged resolver Event, and the
+                # child must pass its own current-owner bind/start checks.
                 self._cinema_cancel.set()
             if not observation_timed_out and self._owns_playback_session():
                 kodilog("[PLAYER] monitor: owner cleanup for playback session")
@@ -1543,12 +1546,8 @@ class JacktookPLayer(xbmc.Player):
 
         from lib.utils.kodi.settings import auto_play_enabled
 
-        if auto_play_enabled():
-            cached_data = cache.get(cache_key)
-            if not cached_data:
-                kodilog(f"[PLAYNEXT] Autoscrape resolved cache MISS for key={cache_key}")
-                return False
-
+        cached_data = cache.get(cache_key) if auto_play_enabled() else None
+        if cached_data:
             entry_data = dict(cached_data)
             entry_data["autoplay"] = True
             entry_data["playnext_context"] = True
@@ -1575,10 +1574,7 @@ class JacktookPLayer(xbmc.Player):
                     "results": cached_results,
                 }
             )
-            kodilog(
-                f"[PLAYNEXT] Queued manual source select from cache "
-                f"({len(cached_results)} sources), stopping player"
-            )
+            kodilog("[PLAYNEXT] Queued source search with per-query cache, stopping player")
 
         self.stop()
         clear_property("bobbi_next_dialog_action")

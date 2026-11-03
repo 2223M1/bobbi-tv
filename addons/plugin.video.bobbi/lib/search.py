@@ -1,8 +1,10 @@
 import hashlib
 import json
-from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from typing import Any, List, Mapping, Optional
 from urllib.parse import unquote
+from time import monotonic
+
+_IMPORT_STARTED = monotonic()
 
 import xbmc
 from xbmcgui import Dialog
@@ -14,7 +16,6 @@ from lib.clients.nuvio.helpers import (
 from lib.clients.nuvio.helpers import (
     get_selected_stream_addons as get_selected_nuvio_stream_addons,
 )
-from lib.clients.stremio.addon_client import StremioAddonClient
 from lib.clients.stremio.constants import STREMIO_ADDON_ALIASES_KEY, STREMIO_ADDONS_KEY
 from lib.clients.stremio.helpers import (
     get_addon_by_base_url,
@@ -33,7 +34,7 @@ from lib.clients.stremio.playback import (
 from lib.db.cached import cache
 from lib.domain.torrent import TorrentStream
 from lib.gui.custom_dialogs import source_select
-from lib.gui.search_status_window import SearchStatusWindow, SearchTaskManager
+from lib.gui.search_status_window import SearchStatusWindow
 from lib.player import JacktookPLayer
 from lib.utils.clients.utils import get_client, update_dialog
 from lib.utils.debrid.debrid_utils import check_debrid_cached, is_supported_debrid_type
@@ -44,9 +45,7 @@ from lib.utils.general.utils import (
     Players,
     SearchVariant,
     build_media_metadata,
-    cache_results,
     clean_auto_play_undesired,
-    get_cached_results,
     info_hash_to_magnet,
     normalize_tv_data,
     post_process,
@@ -67,6 +66,7 @@ from lib.utils.kodi.utils import (
 from lib.utils.player.utils import resolve_playback_url
 from lib.utils.source_manager import parse_source_selection, reconcile_source_selection
 
+_IMPORT_SECONDS = monotonic() - _IMPORT_STARTED
 TITLE_LANGUAGE_LOCALIZED_FIRST = "localized_first"
 TITLE_LANGUAGE_ENGLISH_FIRST = "english_first"
 TITLE_LANGUAGE_ENGLISH_ONLY = "english_only"
@@ -79,7 +79,7 @@ class SearchCancelled(Exception):
 
     def __init__(self, results: Optional[List[TorrentStream]] = None):
         super().__init__("Search cancelled")
-        self.results = results or []
+        self.results = results if results is not None else []
 
 
 class SilentProgressDialog:
@@ -531,9 +531,10 @@ def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=Non
                   and range_eligible(getattr(source, 'title', ''), anime_range_context, release_season, release_episode)]
     for source in range_rows:
         source.requiresCatalogEpisodeProof = True
+    range_ids = {id(source) for source in range_rows}
     kept = [source for source in screened
             if not _cinema_requires_catalog_admission(source)
-            or source in range_rows
+            or id(source) in range_ids
             or matches(getattr(source, 'title', ''), candidate_aliases, mode, release_season=release_season)
             or (mode == 'tv' and aliases and type(release_season) is int
                 and discovery_matches(getattr(source, 'title', ''), aliases, release_season))]
@@ -542,7 +543,12 @@ def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=Non
         scoped = [row for row in kept if _cinema_requires_catalog_admission(row)]
         eligible = PreProcessBuilder(scoped).filter_sources('', release_episode, release_season,
             anime_aliases=aliases if anime else None, anime_range_context=anime_range_context if anime else None).get_results()
-        kept = [row for row in kept if row not in scoped or row in eligible]
+        scoped_ids, eligible_ids = {id(row) for row in scoped}, {id(row) for row in eligible}
+        # Both lists contain original input objects. Identity hits are O(1),
+        # but the episode builder can collapse equal, distinct copies; retain
+        # the original equality fallback for those copies and unknown rows.
+        kept = [row for row in kept if id(row) not in scoped_ids
+                or id(row) in eligible_ids or row in eligible]
     rejected = len(results or []) - len(kept)
     if rejected or title_basis == 'request_query_unverified':
         kodilog('Cinema catalog candidate screening: rejected={}, kept={}; title_basis={}; labels are not readiness'.format(rejected, len(kept), title_basis), level=xbmc.LOGINFO)
@@ -1096,7 +1102,6 @@ def run_search_entry(params: dict, catalog_sources=None):
     preferred_stremio_streams = safe_json_loads(params.get("preferred_stremio_streams") or "[]")
     preferred_results = _preferred_stremio_results(preferred_stremio_streams)
 
-    suppress_debrid_dialog = False
     if xbmc.getSkinDir() == 'skin.bobbi.cinema' and not direct:
         return _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
             rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
@@ -1115,24 +1120,11 @@ def run_search_entry(params: dict, catalog_sources=None):
             title_language_mode=title_language_mode,
             year=year,
             jackgram_only=jackgram_only,
+            tv_data=tv_data,
         )
     except SearchCancelled as exc:
         kodilog("Search cancelled from detailed status window")
         results = exc.results
-        suppress_debrid_dialog = True
-        if results and not rescrape:
-            _cache_scope = _build_search_cache_scope(scoped_addon_url)
-            if jackgram_only:
-                _cache_scope = f"{_cache_scope}:jackgram"
-            cache_results(
-                results,
-                query,
-                mode,
-                media_type,
-                episode,
-                season,
-                cache_scope=_cache_scope,
-            )
 
     if not results and not preferred_results:
         notification("No results found")
@@ -1150,20 +1142,9 @@ def run_search_entry(params: dict, catalog_sources=None):
             source_metadata['catalog_aliases'] = aliases
             # Also screen old cached results and partial cancelled searches.
             results = _cinema_filter_catalog_candidates(results, aliases, mode, fallback_query=query)
-    recommendation_context = {"mode": mode, "query": query, **source_metadata} if source_metadata is not None else None
-    final_results = _prepare_stremio_results(preferred_results) + _process_search_results(
-        results,
-        mode,
-        ep_name,
-        episode,
-        season,
-        scoped_addon_url,
-        query,
-        media_type,
-        rescrape,
-        suppress_debrid_dialog=suppress_debrid_dialog,
-        **({"recommendation_context": recommendation_context} if recommendation_context is not None else {}),
-    )
+    # The shared coordinator already applied identity, episode and preparation
+    # gates. Re-running them here would strip exact-file catalogue adapters.
+    final_results = _prepare_stremio_results(preferred_results) + list(results)
     final_results = _filter_movie_year_candidates(final_results, _movie_catalog_context(ids, mode))
 
     if not final_results:
@@ -1267,6 +1248,7 @@ def _perform_search(indexer_key, dialog, *args, **kwargs):
 
             if video_id:
                 try:
+                    from lib.clients.stremio.addon_client import StremioAddonClient
                     client = StremioAddonClient(addon)
                     results.extend(client.search(video_id, *rest_args))
                 except Exception as e:
@@ -1310,233 +1292,17 @@ def _submit_search_tasks(
     title_aliases: Optional[List[str]] = None,
     jackgram_only: bool = False,
 ):
-    def submit_performer(*args, **kwargs):
-        if "show_dialog" not in kwargs:
+    """Legacy executor/UI adapter; provider selection has one implementation."""
+    class Submission:
+        def submit_task(self, name, key, function, *args, **kwargs):
             kwargs["show_dialog"] = show_dialog
-        if "scoped_addon_url" not in kwargs:
-            kwargs["scoped_addon_url"] = scoped_addon_url
-        if "variant" not in kwargs:
-            kwargs["variant"] = variant
-        if "title_language_mode" not in kwargs:
-            kwargs["title_language_mode"] = title_language_mode
-        if "year" not in kwargs:
-            kwargs["year"] = year
-        return executor.submit(
-            _perform_search,
-            *args,
-            **kwargs,
-        )
+            task = executor.submit(function, *args, **kwargs)
+            tasks.append(task)
+            return task
 
-    if jackgram_only:
-        if _is_source_enabled(Indexer.JACKGRAM):
-            add_task_if_enabled(
-                executor,
-                tasks,
-                "jackgram_enabled",
-                Indexer.JACKGRAM,
-                _perform_search,
-                dialog,
-                tmdb_id,
-                query,
-                mode,
-                media_type,
-                season,
-                episode,
-                show_dialog=show_dialog,
-                scoped_addon_url=scoped_addon_url,
-            )
-        return
-
-    if scoped_addon_url:
-        addon = get_addon_by_base_url(scoped_addon_url)
-        if (
-            addon
-            and (ids.get("imdb_id") or ids.get("original_id") or ids.get("tmdb_id"))
-            and _is_source_enabled(Indexer.STREMIO, addon.key())
-        ):
-            tasks.append(
-                submit_performer(Indexer.STREMIO, dialog, ids, mode, media_type, season, episode)
-            )
-    else:
-        if _is_source_enabled(Indexer.EASYNEWS):
-            add_task_if_enabled(
-                executor,
-                tasks,
-                "easynews_enabled",
-                Indexer.EASYNEWS,
-                _perform_search_with_title_fallback,
-                dialog,
-                query,
-                ids,
-                mode,
-                media_type,
-                season,
-                episode,
-                show_dialog=show_dialog,
-                scoped_addon_url=scoped_addon_url,
-                variant=variant,
-                title_language_mode=title_language_mode,
-                year=year,
-            )
-        if _is_source_enabled(Indexer.BURST):
-            add_task_if_enabled(
-                executor,
-                tasks,
-                "jacktookburst_enabled",
-                Indexer.BURST,
-                _perform_search,
-                dialog,
-                imdb_id or "",
-                query,
-                mode,
-                media_type,
-                season,
-                episode,
-                show_dialog=show_dialog,
-                scoped_addon_url=scoped_addon_url,
-            )
-        if get_setting("prowlarr_enabled") and _is_source_enabled(Indexer.PROWLARR):
-            indexers_ids = get_setting("prowlarr_indexer_ids")
-            tasks.append(
-                executor.submit(
-                    _perform_search_with_title_fallback,
-                    Indexer.PROWLARR,
-                    dialog,
-                    query,
-                    ids,
-                    mode,
-                    season,
-                    episode,
-                    indexers_ids,
-                    show_dialog=show_dialog,
-                    scoped_addon_url=scoped_addon_url,
-                    variant=variant,
-                    title_language_mode=title_language_mode,
-                    year=year,
-                )
-            )
-        if _is_source_enabled(Indexer.JACKETT):
-            add_task_if_enabled(
-                executor,
-                tasks,
-                "jackett_enabled",
-                Indexer.JACKETT,
-                _perform_search_with_title_fallback,
-                dialog,
-                query,
-                ids,
-                mode,
-                season,
-                episode,
-                show_dialog=show_dialog,
-                scoped_addon_url=scoped_addon_url,
-                variant=variant,
-                title_language_mode=title_language_mode,
-                year=year,
-            )
-        if _is_source_enabled(Indexer.JACKGRAM):
-            add_task_if_enabled(
-                executor,
-                tasks,
-                "jackgram_enabled",
-                Indexer.JACKGRAM,
-                _perform_search,
-                dialog,
-                tmdb_id,
-                query,
-                mode,
-                media_type,
-                season,
-                episode,
-                show_dialog=show_dialog,
-                scoped_addon_url=scoped_addon_url,
-            )
-        if _is_source_enabled(Indexer.EXTERNAL_SCRAPER):
-            add_task_if_enabled(
-                executor,
-                tasks,
-                "external_scraper_enabled",
-                Indexer.EXTERNAL_SCRAPER,
-                _perform_search,
-                dialog,
-                tmdb_id,
-                query,
-                mode,
-                media_type,
-                season,
-                episode,
-                show_dialog=show_dialog,
-                scoped_addon_url=scoped_addon_url,
-                imdb_id=imdb_id or "",
-                tvdb_id=(ids or {}).get("tvdb_id", ""),
-                year=str(year) if year else "",
-                aliases=title_aliases,
-            )
-        if get_setting("stremio_enabled") and (
-            ids.get("imdb_id") or ids.get("original_id") or ids.get("tmdb_id")
-        ):
-            for addon in get_selected_stream_addons()[:MAX_STREMIO_ADDONS_PER_SEARCH]:
-                if _is_source_enabled(Indexer.STREMIO, addon.key()):
-                    tasks.append(
-                        submit_performer(
-                            Indexer.STREMIO,
-                            dialog,
-                            ids,
-                            mode,
-                            media_type,
-                            season,
-                            episode,
-                            scoped_addon_url=addon.url(),
-                        )
-                    )
-        if _is_enabled("nuvio_enabled") and (
-            ids.get("imdb_id") or ids.get("original_id") or ids.get("tmdb_id")
-        ):
-            for addon in _get_selected_nuvio_stream_addons_safe()[:MAX_STREMIO_ADDONS_PER_SEARCH]:
-                if _is_source_enabled(Indexer.STREMIO, addon.key(), addon_origin="Nuvio"):
-                    tasks.append(
-                        submit_performer(
-                            Indexer.STREMIO,
-                            dialog,
-                            ids,
-                            mode,
-                            media_type,
-                            season,
-                            episode,
-                            scoped_addon_url=addon.url(),
-                            addon_override=addon,
-                        )
-                    )
-
-
-def _collect_search_results(tasks, listener, show_dialog) -> List[TorrentStream]:
-    results_by_future = {}
-    total_tasks = len(tasks)
-    completed_tasks = 0
-
-    for future in as_completed(tasks):
-        try:
-            completed_tasks += 1
-            if show_dialog and total_tasks > 0:
-                percent = int(completed_tasks / total_tasks * 100)
-                update_dialog("Searching", f"Searching... {percent}%", listener.dialog, percent)
-
-            results = future.result()
-            kodilog(
-                f"Search task completed with {len(results) if results else 0} result(s)",
-                level=xbmc.LOGDEBUG,
-            )
-            results_by_future[future] = results or []
-        except Exception as e:
-            import traceback
-
-            error_details = traceback.format_exc()
-            kodilog(f"Error resolving future result in thread pool: {e}\n{error_details}")
-
-    total_results = []
-    for future in tasks:
-        total_results.extend(results_by_future.get(future, []))
-    return total_results
+    return _submit_search_tasks_managed(Submission(), dialog, query, mode,
+        media_type, season, episode, ids, scoped_addon_url, tmdb_id, imdb_id,
+        variant, title_language_mode, year, title_aliases, jackgram_only)
 
 
 def _submit_search_tasks_managed(
@@ -1689,7 +1455,7 @@ def _submit_search_tasks_managed(
                 cancelled=getattr(getattr(manager, 'cancelled', None), 'is_set', None),
                 deadline=getattr(manager, 'deadline', None),
                 query_cache=getattr(manager, 'query_result_cache', None),
-                **({'_progressive': True} if hasattr(manager, 'session') else {}),
+                **({'_progressive': True, '_cache_seed_only': True} if hasattr(manager, 'session') else {}),
             )
         if _is_source_enabled(Indexer.JACKGRAM):
             add_task_if_enabled_managed(
@@ -1707,7 +1473,7 @@ def _submit_search_tasks_managed(
                 show_dialog=False,
                 scoped_addon_url=scoped_addon_url,
             )
-        if _is_source_enabled(Indexer.EXTERNAL_SCRAPER):
+        if _is_enabled('external_scraper_enabled') and _is_source_enabled(Indexer.EXTERNAL_SCRAPER):
             module_display_name = get_setting("external_scraper_module_name") or "External Scraper"
             manager.submit_task(
                 module_display_name,
@@ -1769,181 +1535,56 @@ def _submit_search_tasks_managed(
                     )
 
 
-def _check_search_caches(
-    query: str,
-    ids: dict,
-    mode: str,
-    media_type: str,
-    episode: int,
-    season: int,
-    cache_scope: str,
-    allow_autoscrape_fallback: bool = True,
-) -> Optional[List[TorrentStream]]:
-    """Check the scoped cache and, optionally, the autoscrape fallback cache.
+class _SearchProgress:
+    """Presentation adapter; the same coordinator owns all query state."""
+    def __init__(self, session, pump):
+        self.session, self.pump = session, pump
 
-    Returns cached results if found (even an empty list), or None if
-    no cache entry exists (caller should perform a fresh search).
-    """
-    cached = get_cached_results(
-        query,
-        mode,
-        media_type,
-        episode,
-        season,
-        cache_scope=cache_scope,
-    )
-    if cached is not None:
-        return cached
+    @property
+    def is_cancelled(self):
+        return self.session.cancelled
 
-    # Fallback: autoscrape cache (PlayNext background scrape) under
-    # ``as_results:{id}_{season}_{episode}``.
-    if not allow_autoscrape_fallback or (mode != "tv" and media_type != "tv"):
-        return None
-    id_value = (
-        (ids or {}).get("original_id") or (ids or {}).get("imdb_id") or (ids or {}).get("tmdb_id")
-    )
-    if id_value is None or season is None or episode is None:
-        return None
+    @property
+    def is_complete(self):
+        return not self.pump.thread.is_alive()
 
-    from lib.db.cached import cache as _cache
-    from lib.utils.player.utils import get_autoscrape_results_cache_key
+    def cancel_pending(self):
+        self.session.cancel()
+        self.pump.cancel()
 
-    as_key = get_autoscrape_results_cache_key(id_value, season, episode)
-    as_results = _cache.get(as_key)
-    if as_results is None:
-        return None
-
-    kodilog(f"[CACHE] Autoscrape cache HIT for {as_key}, reusing {len(as_results)} results")
-    cache_results(
-        as_results,
-        query,
-        mode,
-        media_type,
-        episode,
-        season,
-        cache_scope=cache_scope,
-    )
-    return as_results
+    def snapshot_tasks(self):
+        from lib.gui.search_status_window import SearchTask
+        states = {'PENDING': 'Pending', 'RUNNING': 'In Progress',
+                  'COMPLETE': 'Completed', 'PARTIAL': 'Completed',
+                  'FAILED': 'Failed', 'TIMEOUT': 'Failed', 'CANCELLED': 'Cancelled'}
+        return [SearchTask(name=key.split(':')[0], indexer_key=key,
+                    status=states[row['state']], result_count=row['count'])
+                for key, row in self.session.status()['providers'].items()]
 
 
-def _run_detailed_search(
-    query: str,
-    ids: dict,
-    mode: str,
-    media_type: str,
-    season: int,
-    episode: int,
-    scoped_addon_url: str,
-    tmdb_id: Optional[int],
-    imdb_id: Optional[str],
-    variant: str,
-    title_language_mode: str,
-    year: Optional[int],
-    title_aliases: List[str],
-    jackgram_only: bool = False,
-) -> List[TorrentStream]:
-    """Run an interactive search with immediate full-screen progress feedback."""
-    if jackgram_only:
-        scoped_addon_url = ""
-    executor = ThreadPoolExecutor(max_workers=_search_worker_count())
-    manager = SearchTaskManager(executor)
-    try:
-        _submit_search_tasks_managed(
-            manager,
-            None,
-            query,
-            mode,
-            media_type,
-            season,
-            episode,
-            ids,
-            scoped_addon_url,
-            tmdb_id,
-            imdb_id,
-            variant=variant,
-            title_language_mode=title_language_mode,
-            year=year,
-            title_aliases=title_aliases,
-            jackgram_only=jackgram_only,
-        )
-
-        item_info = {"ids": ids, "mode": mode}
-        if ids:
-            item_info.update(build_media_metadata(ids, mode))
-
-        window = SearchStatusWindow(
-            "search_status.xml",
-            ADDON_PATH,
-            task_manager=manager,
-            item_information=item_info,
-        )
-        try:
-            window.show()
-            window.run_until_complete()
-        finally:
-            del window
-
-        if manager.is_cancelled:
-            manager.cancel_pending()
-            raise SearchCancelled(manager.collect_results())
-
-        return manager.collect_results()
-    except Exception:
-        manager.cancel_pending()
-        raise
-    finally:
-        executor.shutdown(wait=False)
-
-
-def _run_simple_search(
-    query: str,
-    ids: dict,
-    mode: str,
-    media_type: str,
-    season: int,
-    episode: int,
-    scoped_addon_url: str,
-    tmdb_id: Optional[int],
-    imdb_id: Optional[str],
-    show_dialog: bool,
-    variant: str,
-    title_language_mode: str,
-    year: Optional[int],
-    title_aliases: List[str],
-    jackgram_only: bool = False,
-) -> List[TorrentStream]:
-    """Run a silent/background search or the emergency progress fallback."""
-    if jackgram_only:
-        scoped_addon_url = ""
-    tasks: List[Future] = []
-    with DialogListener() as listener:
-        if show_dialog:
-            listener.dialog.create("")
-
-        with ThreadPoolExecutor(max_workers=_search_worker_count()) as executor:
-            _submit_search_tasks(
-                executor,
-                tasks,
-                listener.dialog,
-                query,
-                mode,
-                media_type,
-                season,
-                episode,
-                ids,
-                scoped_addon_url,
-                tmdb_id,
-                imdb_id,
-                show_dialog,
-                variant=variant,
-                title_language_mode=title_language_mode,
-                year=year,
-                title_aliases=title_aliases,
-                jackgram_only=jackgram_only,
-            )
-            total_results = _collect_search_results(tasks, listener, show_dialog)
-
-    return total_results
+def _session_results(session):
+    from bobbi_core.search_completion import SearchCompletion, SearchResults
+    snapshot = session.snapshot(full=True)
+    completion = SearchCompletion()
+    for key, record in snapshot['providers'].items():
+        receipt = record.get('completion')
+        if receipt is not None:
+            part = SearchCompletion(**receipt)
+        elif record['state'] == 'COMPLETE':
+            # Setup does no source query; local sources and ordinary adapters
+            # without subquery receipts still represent one completed provider.
+            part = SearchCompletion() if key == 'setup' else SearchCompletion(1, succeeded=1)
+        else:
+            outcome = ('timed_out' if record['state'] == 'TIMEOUT' else
+                       'skipped' if record['state'] in ('CANCELLED', 'PENDING', 'RUNNING') else 'failed')
+            part = SearchCompletion(1, **{outcome: 1})
+        # A timeout after a cached/streamed success must not promote its older
+        # receipt to a complete final search.
+        if record['state'] in ('TIMEOUT', 'FAILED', 'CANCELLED') and part.complete:
+            outcome = {'TIMEOUT': 'timed_out', 'FAILED': 'failed', 'CANCELLED': 'skipped'}[record['state']]
+            part = part.combine(SearchCompletion(1, **{outcome: 1}))
+        completion = completion.combine(part)
+    return SearchResults([row for _, row in snapshot['entries']], completion)
 
 
 def search_client(
@@ -1960,117 +1601,46 @@ def search_client(
     title_language_mode: str = TITLE_LANGUAGE_LOCALIZED_FIRST,
     year: Optional[int] = None,
     jackgram_only: bool = False,
+    tv_data=None,
+    cancelled=None,
 ) -> List[TorrentStream]:
-    close_busy_dialog()
-    reconcile_source_selection(
-        cache_backend=cache,
-        settings_getter=get_setting,
-        stremio_addons_getter=get_selected_stream_addons,
-        nuvio_addons_getter=get_selected_stream_addon_records,
-    )
-    if year is None:
-        year = _infer_tmdb_year(ids, mode)
+    """Collect already-filtered candidates from the picker's execution core.
 
-    title_aliases = _build_title_fallback_queries(
-        query,
-        ids,
-        mode,
-        SearchVariant.DEFAULT,
-        year,
-        title_language_mode=title_language_mode,
-    )
-    if jackgram_only and scoped_addon_url:
-        scoped_addon_url = ""
-    cache_scope = _build_search_cache_scope(scoped_addon_url)
+    Background callers never instantiate a window or manipulate busy dialogs.
+    Provider/query caches, identity filters and deadlines have one owner; no
+    aggregate search cache may hide failed siblings or extend their lifetime.
+    """
+    tv_data = dict(tv_data or {}, season=season, episode=episode)
     if jackgram_only:
-        cache_scope = f"{cache_scope}:jackgram"
-
-    if not rescrape:
-        cached = _check_search_caches(
-            query,
-            ids,
-            mode,
-            media_type,
-            episode,
-            season,
-            cache_scope,
-            allow_autoscrape_fallback=not jackgram_only,
-        )
-        if cached is not None:
-            if jackgram_only:
-                return _filter_isolated_jackgram_cache_results(query, cached)
-            return cached
-
-    tmdb_id, imdb_id = (ids.get("tmdb_id"), ids.get("imdb_id")) if ids else (None, None)
-
-    if show_dialog:
-        try:
-            total_results = _run_detailed_search(
-                query,
-                ids,
-                mode,
-                media_type,
-                season,
-                episode,
-                scoped_addon_url,
-                tmdb_id,
-                imdb_id,
-                variant,
-                title_language_mode,
-                year,
-                title_aliases,
-                jackgram_only=jackgram_only,
-            )
-        except SearchCancelled:
-            raise
-        except Exception as e:
-            kodilog(f"Detailed search status failed, falling back to simple search: {e}")
-            total_results = _run_simple_search(
-                query,
-                ids,
-                mode,
-                media_type,
-                season,
-                episode,
-                scoped_addon_url,
-                tmdb_id,
-                imdb_id,
-                True,
-                variant,
-                title_language_mode,
-                year,
-                title_aliases,
-                jackgram_only=jackgram_only,
-            )
-    else:
-        total_results = _run_simple_search(
-            query,
-            ids,
-            mode,
-            media_type,
-            season,
-            episode,
-            scoped_addon_url,
-            tmdb_id,
-            imdb_id,
-            show_dialog,
-            variant,
-            title_language_mode,
-            year,
-            title_aliases,
-            jackgram_only=jackgram_only,
-        )
-
-    cache_results(
-        total_results,
-        query,
-        mode,
-        media_type,
-        episode,
-        season,
-        cache_scope=cache_scope,
-    )
-    return total_results
+        scoped_addon_url = ""
+    session, pump = _create_source_search({}, query, ids or {}, mode, media_type,
+        tv_data, rescrape, scoped_addon_url, variant, title_language_mode, year,
+        jackgram_only, {}, [])
+    progress = _SearchProgress(session, pump)
+    monitor = xbmc.Monitor()
+    pump.start()
+    try:
+        if show_dialog:
+            close_busy_dialog()
+            window = SearchStatusWindow("search_status.xml", ADDON_PATH,
+                task_manager=progress, item_information={"ids": ids, "mode": mode})
+            try:
+                window.show()
+                window.run_until_complete()
+            finally:
+                window.close()
+        else:
+            while pump.thread.is_alive():
+                if monitor.abortRequested() or (cancelled is not None and cancelled()):
+                    progress.cancel_pending()
+                    break
+                pump.thread.join(.05)
+        results = _session_results(session)
+        if session.cancelled:
+            raise SearchCancelled(results)
+        return results
+    finally:
+        pump.cancel()
 
 
 def pre_process_results(
@@ -2115,9 +1685,10 @@ def process_results(
     return debrid_results + torrent_results
 
 
-def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
+def _create_source_search(params, query, ids, mode, media_type, tv_data,
         rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
-        playback_context, preferred, catalog_sources=None):
+        playback_context, preferred, catalog_sources=None, budget=30):
+    created_at = monotonic()
     from lib.cinema.source_list_session import SourceListSession
     from lib.cinema.progressive_search import ProgressiveSearch
     from lib.utils.general.cinema_source_rank import rank_sources
@@ -2145,6 +1716,10 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
     from bobbi_platform.paths import profile
     from bobbi_core.search_trace import configure, observe
     configure(profile('script.module.bobbi.core'), session.epoch)
+    def phase(name):
+        kodilog('BOBBI-SEARCH-PHASE ' + json.dumps(dict(invocation=session.epoch,
+            phase=name, elapsed=round(monotonic() - created_at, 4),
+            import_seconds=round(_IMPORT_SECONDS, 4))), level=xbmc.LOGINFO)
     if catalog_sources:
         session.publish(session.epoch, 'local-entry', catalog_sources)
     if preferred:
@@ -2160,6 +1735,7 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
             session.publish(session.epoch, '115-local-index', clouds)
         except (ValueError, OSError, KeyError, TypeError) as error:
             session.publish(session.epoch, '115-local-index', state='FAILED', error=type(error).__name__)
+    phase('LOCAL_READY')
 
     def transform(rows):
         # Exact-file catalogue rows have already passed their independent
@@ -2186,19 +1762,25 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
     ready_setup = []
 
     def setup(manager):
+        phase('SETUP_BEGIN')
         if manager.retrying and ready_setup:
+            manager.query_result_cache.resume_cached_queries()
             return ready_setup[0](manager)
         reconcile_source_selection(cache_backend=cache, settings_getter=get_setting,
                                    stremio_addons_getter=get_selected_stream_addons)
-        scope = _build_search_cache_scope(scoped_addon_url) + ':provider-v1:' + hashlib.sha256(session.media.encode()).hexdigest()
+        configuration = _build_search_cache_scope(scoped_addon_url)
+        scope = configuration + ':provider-v1:' + hashlib.sha256(session.media.encode()).hexdigest()
         # The progressive path no longer reads/writes an aggregate full-search
         # cache. Healthy providers survive sibling failure and only missing or
         # expired scopes repeat IO. Exact-file catalogs own their locator cache.
         manager.result_cache = ProviderResultCache(cache, scope,
-            hours=get_cache_expiration() if is_cache_enabled() else 0,
+            hours=min(.5, get_cache_expiration()) if is_cache_enabled() else 0,
             refresh=rescrape, cacheable=lambda key: key in (Indexer.JACKETT, 'animegarden'))
-        manager.query_result_cache = ProviderResultCache(cache, scope + ':queries',
-            hours=min(1/6, get_cache_expiration()) if is_cache_enabled() else 0, refresh=rescrape)
+        # URLs already bind site, query and every season/year parameter. Share
+        # identical broad-title requests across episodes/callers; identity
+        # filtering still runs independently for the requested work/episode.
+        manager.query_result_cache = ProviderResultCache(cache, configuration + ':queries-v2',
+            hours=min(.5, get_cache_expiration()) if is_cache_enabled() else 0, refresh=rescrape)
         details = {}
         if ids.get('tmdb_id') and mode in ('tv', 'movies'):
             from lib.clients.tmdb.utils.utils import get_tmdb_media_details
@@ -2224,12 +1806,14 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
                 inferred_year = movie_years.primary_year
         aliases = _build_title_fallback_queries(query, ids, mode, SearchVariant.DEFAULT,
             inferred_year, title_language_mode=title_language_mode, details=details)
+        phase('IDENTITY_READY')
         # Reuse this title's established identity and query plan on manual retry.
         # Only request deadlines/tokens are rebuilt, not the metadata chain.
         def submit_ready(manager):
             submit(manager, inferred_year, movie_years, aliases, details)
         ready_setup[:] = [submit_ready]
         submit_ready(manager)
+        phase('PLAN_SUBMITTED')
 
     def submit(manager, inferred_year, movie_years, aliases, details):
         if manager.cancelled.is_set():
@@ -2250,12 +1834,22 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
             # No BGM subject ID is promoted to trusted TMDb catalogue identity.
             from lib.clients.animegarden_provider import find_sources as animegarden_sources
             manager.submit_task('AnimeGarden RSS', 'animegarden', animegarden_sources,
-                ids, mode, _cinema_anime_queries(ids, mode, details=details), manager.deadline, manager.cancelled)
+                ids, mode, _cinema_anime_queries(ids, mode, details=details), manager.deadline, manager.cancelled,
+                query_cache=manager.query_result_cache, _progressive=True, _cache_seed_only=True)
 
         # Optional RPDB/Fanart IO belongs to idle navigation warming. A picker
         # uses cached art (or TMDb art) and releases its search lease promptly.
 
-    pump = ProgressiveSearch(session, setup, transform, workers=min(4, _search_worker_count()))
+    pump = ProgressiveSearch(session, setup, transform, workers=min(4, _search_worker_count()), budget=budget)
+    return session, pump
+
+
+def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
+        rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
+        playback_context, preferred, catalog_sources=None):
+    session, pump = _create_source_search(params, query, ids, mode, media_type, tv_data,
+        rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
+        playback_context, preferred, catalog_sources)
     pump.start()
     try:
         initial = [source for _, source in session.snapshot()['entries']]
@@ -2265,6 +1859,19 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
             auto_select_sources=str(params.get('force_select', False)).lower() not in ('true', '1'))
     finally:
         pump.cancel()
+
+
+def show_next_sources(data):
+    """Legacy next-entry adapter; never display an opaque aggregate cache.
+
+    The shared per-query cache seeds current candidates and supplements expired
+    or failed queries, including after an account/source configuration change.
+    """
+    return _run_progressive_source_entry({'force_select': True}, data.get('query', ''),
+        data.get('ids', {}), data.get('mode', 'tv'), data.get('media_type', ''),
+        data.get('tv_data', {}), False, '', SearchVariant.DEFAULT,
+        _normalize_title_language_mode(get_setting('search_title_language_mode', TITLE_LANGUAGE_LOCALIZED_FIRST)),
+        None, False, {'playnext_context': True, 'direct_play': True}, [])
 
 
 def show_source_select(
@@ -2398,6 +2005,12 @@ def auto_play(
         if group_matches:
             selected_result = group_matches[0]
 
+    from lib.clients.catalog_providers import provider_for
+    if provider_for(selected_result):
+        # A catalogue locator is not a playable URL. This legacy automatic
+        # path has no selected-file authority; use the ordinary manual picker.
+        return False
+
     description = _autoplay_description(selected_result, ids, mode)
     if _is_stremio_source(selected_result):
         try:
@@ -2452,6 +2065,7 @@ def auto_play(
 
 
 def stremio_addon_generator(stremio_addons, dialog, show_dialog):
+    from lib.clients.stremio.addon_client import StremioAddonClient
     for addon in stremio_addons:
         if show_dialog:
             update_dialog(addon.manifest.name, "Searching...", dialog)

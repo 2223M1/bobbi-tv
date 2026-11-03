@@ -46,12 +46,15 @@ print(path.read_text() if path.exists() else json.dumps(dict(passed=False,error=
         (output/'result.json').write_text(json.dumps(dict(exit_code=rc,result=result,
             diagnostic_present=bool(diagnostic)),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
         with client.open_sftp() as sftp:
-            for name in ('account','terminal','metadata','sources-before','sources-after'):
+            for name in ('account','terminal','metadata','sources-before','sources-baseline','sources-after'):
                 try: sftp.get(run+'/'+name+'.png',str(output/(name+'.png')))
                 except OSError: pass
             for name in ('smoke-stack.txt','progress.json'):
                 try: sftp.get(run+'/'+name,str(output/name))
                 except OSError: pass
+            for name in result.get('patch_files', {}).values():
+                if re.fullmatch(r'card-patch-[0-7]\.bgra', name):
+                    sftp.get(run+'/'+name, str(output/name))
     finally:
         client.close()
     print(json.dumps(dict(evidence=str(output),**result),ensure_ascii=False))

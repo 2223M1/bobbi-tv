@@ -1,9 +1,27 @@
 """Bounded provider orchestration; never renders GUI or starts a player."""
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
+from math import ceil
 from threading import Event, Thread, RLock
 from time import monotonic
 from bobbi_core.search_admission import try_acquire
 from bobbi_core.search_completion import SearchCompletion, SearchResults, provider_failed
+
+
+def _failure_diagnostic(error, invocation, ordinal):
+    """Retain code locations, never exception text, source URLs or locals."""
+    import json
+    import logging
+    import re
+    import traceback
+    from pathlib import Path
+    module = getattr(error, 'name', None) if isinstance(error, ImportError) else None
+    if not isinstance(module, str) or not re.fullmatch(r'[A-Za-z_][A-Za-z_0-9.]{0,160}', module):
+        module = None
+    frames = [dict(file=Path(frame.filename).name, line=frame.lineno, function=frame.name)
+              for frame in traceback.extract_tb(error.__traceback__)[-8:]]
+    logging.getLogger(__name__).warning('BOBBI-SEARCH-FAILURE %s', json.dumps(dict(
+        invocation=invocation, ordinal=ordinal, error=type(error).__name__, module=module, frames=frames)))
 
 
 class ProgressiveSearch:
@@ -133,6 +151,7 @@ class ProgressiveSearch:
 
     def submit_task(self, name, indexer_key, fn, *args, **kwargs):
         progressive = kwargs.pop('_progressive', False)
+        cache_seed_only = kwargs.pop('_cache_seed_only', False)
         if self.cancelled.is_set() or monotonic() >= self.deadline:
             return None
         identity = (str(indexer_key), str(name))
@@ -156,9 +175,11 @@ class ProgressiveSearch:
                 return
             self.session.publish(self.session.epoch, provider, state='RUNNING')
             streamed, result, saved, receipt, stream_overflow = [], None, False, None, False
+            streamed_origin = None
             try:
-                def emit(result):
-                    nonlocal stream_overflow
+                def emit(result, *, seed=False):
+                    nonlocal stream_overflow, streamed_origin
+                    emitted_at = monotonic()
                     if self.cancelled.is_set() or monotonic() >= self.deadline:
                         return False
                     completion = result.completion if isinstance(result, SearchResults) else None
@@ -168,14 +189,25 @@ class ProgressiveSearch:
                     accepted = self.session.publish(self.session.epoch, provider, rows,
                         state='RUNNING', error=completion.summary() if completion else '',
                         **({'completion': completion} if completion is not None else {}))
-                    if accepted and self.result_cache is not None:
+                    if accepted and not seed and self.result_cache is not None:
+                        origin = emitted_at - (completion.snapshot_age if completion is not None else 0)
+                        streamed_origin = min(streamed_origin, origin) if streamed_origin is not None else origin
                         stream_overflow |= len(streamed) + len(result or []) > 2048
                         streamed.extend(list(result or [])[:max(0, 2048-len(streamed))])
                     return accepted
                 cached = (self.result_cache.get(indexer_key, name)
                           if self.result_cache is not None and not self.retrying else None)
+                if cached is not None and (cache_seed_only or
+                        isinstance(cached, SearchResults) and not cached.completion.complete):
+                    # Show retained cards immediately, but keep the producer
+                    # live so its per-query cache can fill only missing work.
+                    # Seed rows are never counted as freshly streamed output.
+                    if not emit(cached, seed=True):
+                        return
+                    cached = None
                 call_options = dict(kwargs, publish=emit) if progressive else kwargs
                 result = fn(*args, **call_options) if cached is None else cached
+                returned_at = monotonic()
                 receipt = result.completion if isinstance(result, SearchResults) else None
                 from bobbi_core.search_trace import observe
                 observe('provider_return', result or [], 'network' if cached is None else 'cache',
@@ -195,9 +227,13 @@ class ProgressiveSearch:
                             error=completion.summary() if completion is not None and not completion.complete else '',
                             **({'completion': completion} if completion is not None else {}))
                         if accepted and cached is None and self.result_cache is not None:
+                            if completion is not None:
+                                raw = SearchResults(raw, replace(completion,
+                                    snapshot_age=completion.snapshot_age + ceil(monotonic() - returned_at)))
                             self.result_cache.put(indexer_key, name, raw)
                             saved = True
             except Exception as error:
+                _failure_diagnostic(error, self.session.epoch, ordinal)
                 if not self.cancelled.is_set():
                     state = 'TIMEOUT' if ('timeout' in type(error).__name__.casefold()
                         or getattr(error, 'code', '') in ('DEADLINE', 'CANCELLED')) else 'FAILED'
@@ -214,6 +250,8 @@ class ProgressiveSearch:
                         receipt = receipt.combine(SearchCompletion(1, timed_out=1))
                     if stream_overflow:
                         receipt = receipt.combine(SearchCompletion(truncated=1))
+                    receipt = replace(receipt, snapshot_age=max(receipt.snapshot_age,
+                        ceil(monotonic() - streamed_origin) if streamed_origin is not None else 0))
                     self.result_cache.put(indexer_key, name, SearchResults(streamed, receipt))
         self.lease.retain()
         try:

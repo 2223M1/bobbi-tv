@@ -2,7 +2,7 @@ import re
 from enum import Enum
 from typing import Dict, List, Optional
 
-from lib.clients.base import TorrentStream
+from lib.domain.torrent import TorrentStream
 from lib.utils.kodi.utils import get_setting, kodilog
 from lib.utils.parsers.title_parser import extract_codec_hdr
 from lib.utils.general.source_resolution import source_resolution

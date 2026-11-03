@@ -37,8 +37,9 @@ def _fetch_batch(session, urls, budget=8.0, *, deadline=None, cancelled=None,
                 raise ValueError('Invalid HTTP terminal event')
             outcomes[ordinal] = state, response if state == 'succeeded' else None
             observe(receipt, 'terminal', row, state, reason, getattr(response, 'status_code', None))
-            if state == 'succeeded' and on_response is not None and not cancelled() and time.monotonic() < deadline:
+            if state == 'succeeded':
                 response._bobbi_query_url = tasks[ordinal][1]
+            if state == 'succeeded' and on_response is not None and not cancelled() and time.monotonic() < deadline:
                 # Parse a completed sibling while slower requests are still in
                 # flight. Rebinding uses actual ordinals, never arrival order.
                 observe(receipt, 'bind_responses', [item or (None, None) for item in outcomes])

@@ -130,8 +130,8 @@ def test_partial_expiry_and_empty_failure_do_not_replace_good_snapshot(monkeypat
     monkeypatch.setattr(module, 'time', lambda: clock[0])
     cache = module.ProviderResultCache(backend(), 'scope', hours=24)
     cache.put('jackett', 'search', SearchResults([row(1)], SearchCompletion(2, succeeded=1, skipped=1)))
-    clock[0] += 599
-    assert cache.get('jackett', 'search').completion.snapshot_age == 599
+    clock[0] += 1799
+    assert cache.get('jackett', 'search').completion.snapshot_age == 1799
     clock[0] += 2
     assert cache.get('jackett', 'search') is None
     cache.put('jackett', 'search', [row(2)])
@@ -154,10 +154,10 @@ def test_partial_refresh_does_not_renew_old_results_forever(monkeypatch):
     cache = module.ProviderResultCache(backend(), 'scope', hours=24)
     receipt = SearchCompletion(2, succeeded=1, skipped=1)
     cache.put('jackett', 'search', SearchResults([row(1)], receipt))
-    clock[0] += 590
+    clock[0] += 1790
     cache.put('jackett', 'search', SearchResults([row(2)], receipt))
     result = cache.get('jackett', 'search')
-    assert result == [row(1), row(2)] and result.completion.snapshot_age == 590
+    assert result == [row(1), row(2)] and result.completion.snapshot_age == 1790
     clock[0] += 11
     assert cache.get('jackett', 'search') is None
 

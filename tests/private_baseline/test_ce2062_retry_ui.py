@@ -81,6 +81,33 @@ def test_partial_empty_is_not_claimed_to_be_no_resources():
     assert search_status({'juku': row}, False)[1] == ''
 
 
+def test_provider_status_does_not_republish_unchanged_window_metadata(window, monkeypatch):
+    from lib.gui import source_select as ui
+    monkeypatch.setattr(ui, 'kodilog', lambda *a, **kw: None)
+    window._refresh_frontend_metadata = lambda **kw: None
+    window._source_revision = -1
+    window.last_error = ''
+    window._auto_select_pending = False
+    window.list_sources = []
+    window.source_pump = None
+    window._filter_spec = None
+    applied = []
+    window.add_item_information_to_window = lambda info: applied.append(info.copy())
+    session = window.source_session = SourceListSession({}, lambda rows: rows)
+    session.set_metadata({'title': 'Example', 'year': 2026})
+    window._refresh_progressive_sources(force=True)
+    session.publish(session.epoch, 'first', state='RUNNING')
+    window._refresh_progressive_sources()
+    session.publish(session.epoch, 'first', state='FAILED', error='timeout')
+    window._refresh_progressive_sources()
+    assert len(applied) == 1  # Status-only updates do not rewrite all header fields.
+    session.set_metadata({'title': 'Example localized', 'year': 2026})
+    window._refresh_progressive_sources()
+    assert len(applied) == 2 and applied[-1]['title'] == 'Example localized'
+    window._refresh_progressive_sources(force=True)
+    assert len(applied) == 3  # A reopened native window receives its full state.
+
+
 def test_retry_has_native_theme_button_and_remote_navigation():
     import xml.etree.ElementTree as ET
     root = Path(__file__).resolve().parents[2]
@@ -142,3 +169,32 @@ def test_actual_source_entry_reuses_metadata_and_only_resubmits_failed_provider(
     search._run_progressive_source_entry({'force_select': True}, 'Fixture', {'tmdb_id': 1},
         'movies', 'movie', {}, False, '', 'default', 'localized_first', 2024, False, {}, [])
     assert metadata == [1]
+
+
+@pytest.mark.parametrize('enabled', [False, True])
+def test_legacy_and_managed_submit_use_the_same_plan(monkeypatch, enabled):
+    from lib import search
+    calls = []
+    class Submission:
+        def submit_task(self, name, key, function, *args, **kwargs):
+            calls.append((function, args, kwargs))
+        def submit(self, function, *args, **kwargs):
+            calls.append((function, args, kwargs))
+            return object()
+    settings = {key: enabled for key in search.BUILTIN_INDEXER_SETTINGS.values()}
+    settings['easynews_enabled'] = enabled
+    monkeypatch.setattr(search, 'get_setting', lambda key, default=None: settings.get(key, default))
+    monkeypatch.setattr(search, '_is_source_enabled', lambda *a, **kw: True)
+    monkeypatch.setattr(search, 'get_selected_stream_addons', lambda: [])
+    args = (None, 'Fixture', 'tv', 'tv', 1, 2, {'tmdb_id': 1}, '', 1, 'tt123')
+    submission = Submission()
+    search._submit_search_tasks_managed(submission, *args)
+    managed = list(calls)
+    calls.clear()
+    tasks = []
+    search._submit_search_tasks(submission, tasks, *args, show_dialog=True)
+    assert len(calls) == len(managed) == len(tasks)
+    for old, new in zip(calls, managed):
+        assert old[:2] == new[:2]
+        assert old[2] == dict(new[2], show_dialog=True)
+    assert any(row[1][0] == search.Indexer.EXTERNAL_SCRAPER for row in calls) is enabled

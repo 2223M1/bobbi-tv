@@ -87,6 +87,24 @@ def rss(title='Fixture'):
             'a'*40+'</link><size>12345</size></item></channel></rss>').encode()
 
 
+@pytest.mark.parametrize('description,code,reason', [
+    ('Connection refused (site.example:443)', '900', 'indexer_upstream_connect'),
+    ('Challenge detected but FlareSolverr is not configured', '900', 'indexer_challenge'),
+    ('Request timed out', '900', 'indexer_upstream_timeout'),
+    ('Missing query parameter', '200', 'indexer_parameters'),
+    ('Secret diagnostic text', '900', 'indexer_error'),
+])
+def test_torznab_error_classification_keeps_status_without_error_body(chain, description, code, reason):
+    body = ('<error code="'+code+'" description="'+description+'"/>').encode()
+    response = Response(body, 400)
+    session = SimpleNamespace(get=lambda *a, **kw: response)
+    result = chain.fanout.fetch_independent(session, ['http://fixture.invalid/error'])
+    assert not result and result.completion.failed == 1
+    # The same classification function is used by the real HTTP worker.
+    assert chain.http._error_reason(Response(body, 400), lambda:False, time.monotonic()+1) == reason
+    assert description not in str(chain.logs)
+
+
 def client(chain, bodies, get=None):
     def request(url, **options):
         return bodies[url]
@@ -100,6 +118,42 @@ def client(chain, bodies, get=None):
 def search(value, seconds=1, **kwargs):
     return value._search_cinema('Fixture', 'movies', 1, 1, None, None, 2020, '',
                                deadline=time.monotonic()+seconds, **kwargs)
+
+
+@pytest.mark.parametrize('first_anime', [False, True])
+def test_inventory_reuse_does_not_inherit_previous_title_scheduling(chain, monkeypatch, first_anime):
+    from bobbi_core.search_completion import SearchCompletion, SearchResults
+    values, discovered, plans = {}, [], []
+    class Cache:
+        def get(self, provider, key):
+            return values.get((provider, key))
+        def put(self, provider, key, rows):
+            values[provider, key] = rows
+    def inventory(*args):
+        discovered.append(1)
+        return SearchResults([SimpleNamespace(raise_for_status=lambda: None,
+            content=b'<indexers><indexer id="dmhy" configured="true"/><indexer id="nyaasi" configured="true"/></indexers>')], SearchCompletion(1, succeeded=1))
+    monkeypatch.setattr(chain.fanout, 'fetch_inventory', inventory)
+    cache = Cache()
+    for anime in (first_anime, not first_anime):
+        value = client(chain, {})
+        value._configured_indexers = None
+        def urls(*args):
+            plans.append(list(value._configured_indexers))
+            return []
+        value._movie_urls = urls
+        value._search_cinema('Fixture', 'movies', 1, 1, None, None, 2020,
+            'anime' if anime else '', query_cache=cache)
+    assert len(discovered) == 1
+    assert plans == [(['nyaasi', 'dmhy'] if anime else ['dmhy', 'nyaasi'])
+                     for anime in (first_anime, not first_anime)]
+
+
+@pytest.mark.parametrize('invalid', [None, {}, {'ids':['bad/url']},
+    {'ids':['nyaasi'], 'movie':{}, 'anime':{}},
+    {'ids':['nyaasi'], 'movie':{'nyaasi':None}, 'anime':{'nyaasi':'bad'}}])
+def test_damaged_inventory_is_not_treated_as_live_source_configuration(chain, invalid):
+    assert chain.jackett.Jackett._valid_inventory(invalid) is False
 
 
 def test_real_ce_counterexample_fast_responses_survive_slowest_deadline(chain):
@@ -245,7 +299,7 @@ def test_generator_close_is_bounded_and_workers_release_slots(chain):
 
 def test_thread_start_failure_releases_slot_without_joining_unstarted_thread(chain, monkeypatch):
     releases = []
-    monkeypatch.setattr(chain.http, '_slot', lambda: SimpleNamespace(release=lambda: releases.append(1)))
+    monkeypatch.setattr(chain.http, '_slot', lambda key=None: SimpleNamespace(release=lambda: releases.append(1)))
     class FailedThread:
         def __init__(self, **options):
             pass
@@ -314,7 +368,7 @@ def test_picker_logs_one_terminal_provider_snapshot_not_each_refresh(chain):
         chain.logs.append(value)
     namespace = dict(json=json,kodilog=log,xbmc=SimpleNamespace(LOGINFO=1))
     exec(compile(ast.Module(body=[method],type_ignores=[]),'source_select.py','exec'),namespace)
-    snapshot = dict(revision=1,recommended_key=None,metadata={},entries=[],
+    snapshot = dict(revision=1,content_revision=1,recommended_key=None,metadata={},entries=[],
                     providers={'Juku:1':dict(state='RUNNING',count=0)})
     session = SimpleNamespace(TERMINAL={'FAILED','COMPLETE','PARTIAL','TIMEOUT','CANCELLED'},
         focus_key=None,status=lambda:snapshot,snapshot=lambda **k:snapshot)

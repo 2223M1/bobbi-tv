@@ -147,7 +147,7 @@ def parse_page(content):
     return rows, pagination['complete'], rejected
 
 
-def find_sources(ids, mode, anime_queries, deadline, cancelled):
+def find_sources(ids, mode, anime_queries, deadline, cancelled, query_cache=None, publish=None):
     """Supplement an existing search, with a cancellable four-second ceiling.
 
     Only the catalogue's anime alias builder may supply anime_queries. This
@@ -166,30 +166,28 @@ def find_sources(ids, mode, anime_queries, deadline, cancelled):
     if not isinstance(deadline, (float, int)) or not math.isfinite(deadline) or deadline <= monotonic():
         return SearchResults([], SearchCompletion(len(urls), timed_out=len(urls)))
     deadline = min(deadline, monotonic() + BUDGET_SECONDS)
-    with requests.Session() as session:
-        session.headers['User-Agent'] = 'AM6B-AnimeGarden/1.0'
-        proxy = _network_proxy()
-        if proxy:
-            session.trust_env = False
-            session.proxies = {'https://api.animes.garden': proxy}
-        responses = fetch_independent(session, urls, budget=BUDGET_SECONDS,
-            deadline=deadline, cancelled=cancelled_fn, mode='json',
-            max_response_bytes=MAX_RESPONSE_BYTES, request_timeout=None)
-        if proxy and not responses and not cancelled_fn() and deadline - monotonic() > .5:
-            # A refused/offline local relay must not remove the direct route.
-            # Both attempts share the original deadline, never two full budgets.
-            session.proxies = {}
-            responses = fetch_independent(session, urls, budget=BUDGET_SECONDS,
-                deadline=deadline, cancelled=cancelled_fn, mode='json',
-                max_response_bytes=MAX_RESPONSE_BYTES, request_timeout=None)
-    if not isinstance(responses, SearchResults) or responses.completion.succeeded != len(responses):
-        # A custom/legacy transport without a receipt cannot claim completeness.
-        return SearchResults([], SearchCompletion(len(urls), failed=len(urls)))
-    if cancelled_fn():
-        return SearchResults([], SearchCompletion(len(urls), skipped=len(urls)))
-    rows, parse_failures, omitted_pages = [], 0, 0
-    for response in responses:
+    observed_at = monotonic()
+    cached_rows, missing = [], []
+    cached_completion = SearchCompletion()
+    for url in urls:
+        cached = query_cache.get('animegarden-query', url) if query_cache is not None else None
+        if cached is None:
+            missing.append(url)
+        else:
+            cached_rows.extend(cached)
+            cached_completion = cached_completion.combine(cached.completion)
+    if cached_rows and publish is not None and not cancelled_fn():
+        publish(SearchResults(cached_rows, cached_completion))
+    if not missing:
+        return SearchResults(cached_rows, cached_completion)
+    rows, parse_failures, omitted_pages = list(cached_rows), 0, 0
+    processed = set()
+    def parse_ready(response):
+        nonlocal parse_failures, omitted_pages
+        processed.add(id(response))
         try:
+            if cancelled_fn() or monotonic() >= deadline:
+                raise ValueError('Response outlived search')
             if response.status_code != 200:
                 raise ValueError('Resource HTTP status changed')
             candidates, complete, malformed = parse_page(response.content)
@@ -198,11 +196,55 @@ def find_sources(ids, mode, anime_queries, deadline, cancelled):
             # Record one discovered continuation deliberately outside this
             # bounded plan. A truncated page must never make a full cache.
             omitted_pages += int(not complete)
+            url = getattr(response, '_bobbi_query_url', None)
+            if (query_cache is not None and url in missing and not malformed
+                    and not cancelled_fn() and monotonic() < deadline):
+                # A successful bounded page can be reused without claiming
+                # that its unqueried continuation has also been searched.
+                receipt = SearchCompletion(1, succeeded=1)
+                if not complete:
+                    receipt = receipt.combine(SearchCompletion(1, skipped=1))
+                query_cache.put('animegarden-query', url, SearchResults(candidates, receipt))
+            if candidates and publish is not None and not cancelled_fn() and monotonic() < deadline:
+                receipt = SearchCompletion(1, failed=1) if malformed else SearchCompletion(1, succeeded=1)
+                if not complete:
+                    receipt = receipt.combine(SearchCompletion(1, skipped=1))
+                publish(SearchResults(candidates, receipt))
         except (ValueError, UnicodeError, TypeError, AttributeError, RecursionError):
             parse_failures += 1
+    with requests.Session() as session:
+        session.headers['User-Agent'] = 'AM6B-AnimeGarden/1.0'
+        proxy = _network_proxy()
+        if proxy:
+            session.trust_env = False
+            session.proxies = {'https://api.animes.garden': proxy}
+        responses = fetch_independent(session, missing, budget=BUDGET_SECONDS,
+            deadline=deadline, cancelled=cancelled_fn, mode='json',
+            max_response_bytes=MAX_RESPONSE_BYTES, request_timeout=None, on_response=parse_ready)
+        if proxy and not responses and not cancelled_fn() and deadline - monotonic() > .5:
+            # A refused/offline local relay must not remove the direct route.
+            # Both attempts share the original deadline, never two full budgets.
+            session.proxies = {}
+            responses = fetch_independent(session, missing, budget=BUDGET_SECONDS,
+                deadline=deadline, cancelled=cancelled_fn, mode='json',
+                max_response_bytes=MAX_RESPONSE_BYTES, request_timeout=None, on_response=parse_ready)
+    if not isinstance(responses, SearchResults) or responses.completion.succeeded != len(responses):
+        # A custom/legacy transport without a receipt cannot claim completeness.
+        return SearchResults(cached_rows, cached_completion.combine(
+            SearchCompletion(len(missing), failed=len(missing))))
+    if cancelled_fn():
+        return SearchResults([], SearchCompletion(len(urls), skipped=len(urls)))
+    for response in responses:
+        if id(response) not in processed:
+            parse_ready(response)
     completion = responses.completion.with_parse_failures(parse_failures)
     if omitted_pages:
         completion = completion.combine(SearchCompletion(omitted_pages, skipped=omitted_pages))
+    from dataclasses import replace
+    cached_completion = replace(cached_completion, snapshot_age=(
+        cached_completion.snapshot_age + math.ceil(monotonic() - observed_at)
+        if cached_completion.planned else 0))
+    completion = cached_completion.combine(completion)
     # Exact swarm equality only: different encodes/subtitle editions, groups,
     # repacks, single episodes and packs remain distinct for manual selection.
     unique = {}

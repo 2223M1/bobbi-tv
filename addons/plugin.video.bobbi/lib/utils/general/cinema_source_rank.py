@@ -21,7 +21,7 @@ def chinese_subtitle_preference(source):
     A supplied URL is not proof of download success. Labels deliberately say
     pending verification until the selected source is actually inspected/played.
     """
-    from lib.cinema.subtitle_projection import source_label
+    from bobbi_core.subtitle_projection import source_label
     prepared = source_label(source)
     if prepared:
         return 2, prepared

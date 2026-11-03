@@ -354,7 +354,7 @@ def detect_chinese_subtitle_kind(
 
 
 def source_has_chinese_subtitles(source):
-    from lib.cinema.subtitle_projection import source_label
+    from bobbi_core.subtitle_projection import source_label
     if source_label(source):
         return True
     return bool(

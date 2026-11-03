@@ -2,8 +2,6 @@ import concurrent.futures
 from datetime import timedelta
 from typing import Callable, List, Optional
 
-import requests
-
 from lib.api.stremio.addon_manager import (
     Addon,
     AddonManager,
@@ -188,6 +186,7 @@ def get_addon_by_key(addon_key):
 def ping_addons(
     addons: List[Addon], progress_callback: Optional[Callable[[int, int], None]] = None
 ) -> List[Addon]:
+    import requests
     reachable_addons = []
     total = len(addons)
     completed = 0

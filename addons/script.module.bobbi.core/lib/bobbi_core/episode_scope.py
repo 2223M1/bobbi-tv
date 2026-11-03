@@ -6,6 +6,7 @@ Unknown semantic words survive the closed metadata grammar.
 """
 import re
 import unicodedata
+from functools import lru_cache
 
 from .catalog_identity import normalized
 from .filename_semantics import parse_filename
@@ -24,7 +25,7 @@ _VIDEO_EXTENSION = re.compile(r'(?i)\.(?:3g2|3gp|asf|avc|avi|bivx|divx|dv|dvr-ms
     r'rcv|rec|rmvb|svq3|tp|trp|ts|ty|vc1|vdr|viv|vob|vp3|webm|wmv|xvid)$')
 
 
-def _consume_aliases(text, aliases):
+def _alias_patterns(aliases):
     # Work names are consumed before interpreting words such as Movie/Special.
     # Remaining text must still be metadata: a matching bilingual segment does
     # not erase another segment's sequel/arc name.
@@ -33,7 +34,7 @@ def _consume_aliases(text, aliases):
     # additional scope merely because the longer string is also in TMDb.
     # A canonical name containing "Special" with no shorter base is unchanged.
     names = {normalized(a) for a in aliases if isinstance(a, str)} - {''}
-    found = False
+    patterns = []
     for alias in sorted(names, key=len, reverse=True):
         qualified = False
         for base in names:
@@ -49,7 +50,22 @@ def _consume_aliases(text, aliases):
         if qualified:
             continue
         pattern = r'(?<![a-z0-9])' + r'[\W_]*'.join(re.escape(t) for t in alias.split()) + r'(?![a-z0-9])'
-        text, count = re.subn(pattern, ' ', text, flags=re.I)
+        patterns.append(re.compile(pattern, re.I))
+    return tuple(patterns)
+
+
+_cached_alias_patterns = lru_cache(maxsize=128)(_alias_patterns)
+
+
+def _consume_aliases(text, aliases):
+    names = tuple(a for a in aliases if isinstance(a, str))
+    # Reuse the immutable grammar, not an identity verdict. Changed aliases
+    # get a new key; oversized/custom inputs keep the uncached behavior.
+    bounded = len(names) <= 128 and all(type(a) is str and len(a) <= 512 for a in names)
+    patterns = (_cached_alias_patterns if bounded else _alias_patterns)(names)
+    found = False
+    for pattern in patterns:
+        text, count = pattern.subn(' ', text)
         found = found or bool(count)
     return text, found
 

@@ -17,7 +17,8 @@ from .search_completion import SearchCompletion, SearchResults
 class ProviderResultCache:
     SLOTS = 256
     MAX_ROWS = 2048
-    PARTIAL_SECONDS = 600
+    PARTIAL_SECONDS = 1800
+    LANES = 4
 
     def __init__(self, backend, scope, hours=0, refresh=False, cacheable=None):
         self.backend, self.scope = backend, str(scope)
@@ -26,12 +27,17 @@ class ProviderResultCache:
         self.refresh = bool(refresh)
         self.cacheable = cacheable or (lambda key: True)
 
+    def resume_cached_queries(self):
+        """A retry may reuse successes written during the initial forced pass."""
+        self.refresh = False
+
     def _identity(self, provider, name):
         token = sha256((self.scope + '\0' + str(provider) + '\0' + str(name)).encode()).hexdigest()
         return 'cinema:provider-snapshot:v2:' + str(int(token, 16) % self.SLOTS), token
 
     def _read(self, key, token):
-        record = self.backend.get(key)
+        record = next((record for _, record in self._lanes(key)
+                       if isinstance(record, dict) and record.get('scope') == token), None)
         if (not isinstance(record, dict) or record.get('scope') != token
                 or not isinstance(record.get('rows'), list) or len(record['rows']) > self.MAX_ROWS
                 or type(record.get('created')) not in (float, int)
@@ -41,6 +47,23 @@ class ProviderResultCache:
         completion = SearchCompletion(**record['completion'])
         return SearchResults(deepcopy(record['rows']), replace(completion,
             snapshot_age=completion.snapshot_age + max(0, int(time() - record['created']))))
+
+    def _lanes(self, key):
+        # Independent keys avoid a read/modify/write bucket replacing another
+        # producer. Lane zero also reads pre-upgrade snapshots unchanged.
+        for index in range(self.LANES):
+            lane = key if index == 0 else key + ':lane:' + str(index)
+            yield lane, self.backend.get(lane)
+
+    def _write(self, key, token, value, ttl):
+        lanes = list(self._lanes(key))
+        owned = next((lane for lane, row in lanes
+                      if isinstance(row, dict) and row.get('scope') == token), None)
+        def expiry(row):
+            value = row.get('expires') if isinstance(row, dict) else None
+            return value if type(value) in (int, float) and math.isfinite(value) else 0
+        target = owned or min(lanes, key=lambda item: expiry(item[1]))[0]
+        self.backend.set(target, value, ttl)
 
     @staticmethod
     def _merge(old, new):
@@ -100,15 +123,20 @@ class ProviderResultCache:
                     return
                 ttl = timedelta(seconds=min(remaining, self.hours * 3600))
             else:
-                ttl = timedelta(hours=self.hours) if rows else timedelta(seconds=30)
+                remaining = self.hours * 3600 - completion.snapshot_age if rows else 30
+                if remaining <= 0:
+                    return
+                ttl = timedelta(seconds=remaining)
             if len(rows) > self.MAX_ROWS:
                 completion = replace(completion, truncated=completion.truncated + 1)
             now = time()
-            self.backend.set(key, dict(scope=token, rows=deepcopy(list(rows)[:self.MAX_ROWS]),
+            self._write(key, token, dict(scope=token, rows=deepcopy(list(rows)[:self.MAX_ROWS]),
                 completion=asdict(completion), created=now, expires=now + ttl.total_seconds()), ttl)
             if completion.complete:
                 # A complete refresh supersedes the previous incomplete view.
                 # Both supported cache backends expose get/set, not delete.
-                self.backend.set(key + ':partial', {}, timedelta(seconds=1))
+                for lane, record in self._lanes(key + ':partial'):
+                    if isinstance(record, dict) and record.get('scope') == token:
+                        self.backend.set(lane, {}, timedelta(seconds=1))
         except (OSError, ValueError, TypeError, RuntimeError, KeyError, OverflowError):
             pass

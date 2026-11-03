@@ -39,6 +39,28 @@ def _technical(text):
     return not text or _technical_tail(text)
 
 
+def _extras_technical(text):
+    """Accept dotted release metadata, never an unknown film/edition suffix."""
+    if _technical(text):
+        return True
+    from bobbi_core.candidate_titles import _RELEASE_TECHNICAL
+    tail = text.strip()
+    consumed = False
+    while tail:
+        # A release-group suffix is meaningful only after technical fields.
+        if consumed and re.fullmatch(r'-[a-z0-9][a-z0-9._-]{0,63}', tail, re.I):
+            return True
+        tail = tail.lstrip(' ._[]()【】')
+        if not tail:
+            return consumed
+        token = _RELEASE_TECHNICAL.match(tail)
+        if not token or (token.end() < len(tail) and tail[token.end()] not in ' ._-[]()【】'):
+            return False
+        consumed = True
+        tail = tail[token.end():]
+    return consumed
+
+
 def conflict(title, aliases):
     """Return a narrow conflict reason, or '' for unknown/nonconflicting.
 
@@ -86,6 +108,6 @@ def conflict(title, aliases):
         # A bounded question in parentheses describes the extras, not a movie
         # payload. Bare (Movie)/(TV) labels or unknown prose remain unknown.
         suffix = re.sub(r'\([^()\r\n]{1,160}[?？]\)', ' ', suffix)
-        if _technical(suffix):
+        if _extras_technical(suffix):
             return 'extras_only'
     return ''

@@ -6,18 +6,9 @@ from threading import Lock
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
 
-import requests
 from xbmc import LOGDEBUG
 from xbmcgui import Dialog
 
-from lib.api.debrid.base import ProviderException
-from lib.clients.debrid.alldebrid import AllDebridHelper
-from lib.clients.debrid.debrider import DebriderHelper
-from lib.clients.debrid.easydebrid import EasyDebridHelper
-from lib.clients.debrid.offcloud import OffcloudHelper
-from lib.clients.debrid.premiumize import PremiumizeHelper
-from lib.clients.debrid.realdebrid import RealDebridHelper
-from lib.clients.debrid.torbox import TorboxHelper
 from lib.clients.stremio.constants import STREMIO_ADDON_ALIASES_KEY, STREMIO_ADDONS_KEY
 from lib.db.cached import cache
 from lib.domain.torrent import TorrentStream
@@ -41,16 +32,15 @@ from lib.utils.general.utils import (
 )
 from lib.utils.kodi.logging import summarize_locator_for_log
 from lib.utils.kodi.utils import get_setting, kodilog, notification, translation
-from lib.utils.torrent.torrserver_utils import extract_torrent_metadata
 
 DEBRID_HELPERS = {
-    DebridType.RD: RealDebridHelper,
-    DebridType.PM: PremiumizeHelper,
-    DebridType.TB: TorboxHelper,
-    DebridType.OC: OffcloudHelper,
-    DebridType.DB: DebriderHelper,
-    DebridType.AD: AllDebridHelper,
-    DebridType.ED: EasyDebridHelper,
+    DebridType.RD: ("realdebrid", "RealDebridHelper"),
+    DebridType.PM: ("premiumize", "PremiumizeHelper"),
+    DebridType.TB: ("torbox", "TorboxHelper"),
+    DebridType.OC: ("offcloud", "OffcloudHelper"),
+    DebridType.DB: ("debrider", "DebriderHelper"),
+    DebridType.AD: ("alldebrid", "AllDebridHelper"),
+    DebridType.ED: ("easydebrid", "EasyDebridHelper"),
 }
 
 DEBRID_CHECKS = {
@@ -97,10 +87,13 @@ def _build_debrid_cache_scope() -> str:
 
 
 def get_debrid_helper(debrid_type: str):
-    helper_cls = DEBRID_HELPERS.get(debrid_type)
-    if not helper_cls:
+    descriptor = DEBRID_HELPERS.get(debrid_type)
+    if not descriptor:
         notification(f"Unknown debrid type: {debrid_type}")
         raise ValueError(f"Unknown debrid type: {debrid_type}")
+    from importlib import import_module
+    module, name = descriptor
+    helper_cls = getattr(import_module('lib.clients.debrid.' + module), name)
     return helper_cls()
 
 
@@ -137,16 +130,16 @@ def _is_torrent_ready_in_debrid(debrid_type: str, info_hash: str) -> bool:
 
     try:
         if debrid_type == DebridType.RD:
-            torrent_info = RealDebridHelper().client.get_available_torrent(info_hash)
+            torrent_info = get_debrid_helper(DebridType.RD).client.get_available_torrent(info_hash)
             if torrent_info and torrent_info.get("status") == "downloaded":
                 return True
         elif debrid_type == DebridType.AD:
-            result = AllDebridHelper().client.add_magnet(info_hash_to_magnet(info_hash))
+            result = get_debrid_helper(DebridType.AD).client.add_magnet(info_hash_to_magnet(info_hash))
             magnet = result.get("data", {}).get("magnets", [])[0]
             if magnet and magnet.get("ready"):
                 return True
         elif debrid_type == DebridType.TB:
-            torrent_info = TorboxHelper().client.get_available_torrent(info_hash)
+            torrent_info = get_debrid_helper(DebridType.TB).client.get_available_torrent(info_hash)
             if (
                 torrent_info
                 and torrent_info.get("download_finished")
@@ -154,13 +147,13 @@ def _is_torrent_ready_in_debrid(debrid_type: str, info_hash: str) -> bool:
             ):
                 return True
         elif debrid_type == DebridType.OC:
-            response = OffcloudHelper().client.get_cache_info(
+            response = get_debrid_helper(DebridType.OC).client.get_cache_info(
                 [info_hash_to_magnet(info_hash)], include_files=False
             )
             if isinstance(response, list) and response and response[0].get("cached"):
                 return True
         elif debrid_type == DebridType.DB:
-            info = DebriderHelper().get_info(info_hash)
+            info = get_debrid_helper(DebridType.DB).get_info(info_hash)
             if info and info.get("files"):
                 return True
     except Exception as e:
@@ -172,10 +165,10 @@ def _is_torrent_ready_in_debrid(debrid_type: str, info_hash: str) -> bool:
 def _add_to_realdebrid(info_hash: str, torrent_data: bytes, torrent_name: str):
     if torrent_data:
         kodilog("Debrid transfer path: uploading torrent file to RD")
-        return RealDebridHelper().add_torrent_file(torrent_data, torrent_name=torrent_name)
+        return get_debrid_helper(DebridType.RD).add_torrent_file(torrent_data, torrent_name=torrent_name)
     elif info_hash:
         kodilog("Debrid transfer path: sending magnet/info_hash to RD")
-        return RealDebridHelper().add_magnet(info_hash)
+        return get_debrid_helper(DebridType.RD).add_magnet(info_hash)
     notification(translation(90361))
     return None
 
@@ -183,10 +176,10 @@ def _add_to_realdebrid(info_hash: str, torrent_data: bytes, torrent_name: str):
 def _add_to_alldebrid(info_hash: str, torrent_data: bytes, torrent_name: str):
     if torrent_data:
         kodilog("Debrid transfer path: uploading torrent file to AD")
-        return AllDebridHelper().add_torrent_file(torrent_data, torrent_name=torrent_name)
+        return get_debrid_helper(DebridType.AD).add_torrent_file(torrent_data, torrent_name=torrent_name)
     elif info_hash:
         kodilog("Debrid transfer path: sending magnet/info_hash to AD")
-        return AllDebridHelper().client.add_magnet(info_hash_to_magnet(info_hash))
+        return get_debrid_helper(DebridType.AD).client.add_magnet(info_hash_to_magnet(info_hash))
     notification(translation(90361))
     return None
 
@@ -194,10 +187,10 @@ def _add_to_alldebrid(info_hash: str, torrent_data: bytes, torrent_name: str):
 def _add_to_torbox(info_hash: str, torrent_data: bytes, torrent_name: str):
     if torrent_data:
         kodilog("Debrid transfer path: uploading torrent file to TB")
-        return TorboxHelper().add_torrent_file(torrent_data, torrent_name=torrent_name)
+        return get_debrid_helper(DebridType.TB).add_torrent_file(torrent_data, torrent_name=torrent_name)
     elif info_hash:
         kodilog("Debrid transfer path: sending magnet/info_hash to TB")
-        return TorboxHelper().add_torbox_torrent(info_hash)
+        return get_debrid_helper(DebridType.TB).add_torbox_torrent(info_hash)
     notification(translation(90361))
     return None
 
@@ -205,7 +198,7 @@ def _add_to_torbox(info_hash: str, torrent_data: bytes, torrent_name: str):
 def _add_to_offcloud(info_hash: str, torrent_data: bytes, torrent_name: str):
     if info_hash:
         kodilog("Debrid transfer path: sending magnet/info_hash to OC")
-        return OffcloudHelper().add_cloud_download(info_hash)
+        return get_debrid_helper(DebridType.OC).add_cloud_download(info_hash)
     notification(translation(90361))
     return None
 
@@ -215,7 +208,7 @@ def _add_to_debrider(info_hash: str):
         notification(translation(90361))
         return None
     kodilog("Debrid transfer path: sending magnet/info_hash to DB")
-    return DebriderHelper().add_magnet(info_hash)
+    return get_debrid_helper(DebridType.DB).add_magnet(info_hash)
 
 
 _DEBRID_ADDERS = {
@@ -248,6 +241,7 @@ def add_source_to_debrid(
             result = adder(info_hash, torrent_data, torrent_name)
 
         if not result:
+            from lib.api.debrid.base import ProviderException
             raise ProviderException(f"Failed to add torrent to {debrid_type}: no response data")
 
         kodilog(f"Debrid transfer succeeded: debrid={debrid_type}, result={result is not None}")
@@ -448,6 +442,7 @@ def extract_info_hash(res: TorrentStream) -> Optional[str]:
 
 
 def get_torrent_data_from_uri(uri: str) -> Tuple[bytes, str, str, str]:
+    import requests
     kodilog(f"get_torrent_data_from_uri: Checking URI: {uri}", level=LOGDEBUG)
     torrent_data = b""
     magnet = ""
@@ -496,6 +491,7 @@ def get_torrent_data_from_uri(uri: str) -> Tuple[bytes, str, str, str]:
                     info_hash = get_info_hash_from_magnet(magnet).lower()
                     return torrent_data, magnet, info_hash, torrent_url
 
+                from lib.utils.torrent.torrserver_utils import extract_torrent_metadata
                 magnet = extract_torrent_metadata(res.content)
                 kodilog(
                     f"get_torrent_data_from_uri: Extracted magnet: {summarize_locator_for_log(magnet)}"
@@ -618,6 +614,7 @@ def process_external_cache(data: dict, debrid: str, token: str, url: str):
             endpoint = f"/stream/movie/{imdb_id}.json"
 
         url = f"{base_link}{endpoint}"
+        import requests
         response = requests.get(url, headers=headers, timeout=9)
         response.raise_for_status()
         return response

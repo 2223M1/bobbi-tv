@@ -742,6 +742,11 @@ def cache_autoscrape_result(
     """Cache resolved playback data with a TTL (default from autoscrape_ttl setting)."""
     if ttl_hours is None:
         ttl_hours = int(get_setting("autoscrape_ttl", 4) or 4)
+    from bobbi_core.search_completion import SearchResults
+    if isinstance(data, SearchResults):
+        ttl_hours = min(ttl_hours, max(0, 1800 - data.completion.snapshot_age) / 3600)
+        if ttl_hours <= 0:
+            return
     cache.set(key, data, expires=timedelta(hours=ttl_hours))
 
 
@@ -799,17 +804,18 @@ def autoscrape_next_episode(
     results_cache_key = get_autoscrape_results_cache_key(id_value, season, episode)
 
     try:
-        from lib.search import _process_search_results, search_client
+        from lib.search import search_client
 
         raw_results = search_client(
             query=item_data.get("title", ""),
             ids=ids,
             mode=item_data.get("mode", ""),
             media_type=item_data.get("media_type", ""),
-            rescrape=True,
+            rescrape=False,
             season=season,
             episode=episode,
             show_dialog=False,
+            tv_data=next_tv_data,
         )
 
         if not raw_results:
@@ -817,23 +823,8 @@ def autoscrape_next_episode(
             return
 
         if not get_setting("auto_play", False):
-            results = _process_search_results(
-                raw_results,
-                item_data.get("mode", ""),
-                next_tv_data.get("name", ""),
-                episode,
-                season,
-                "",
-                item_data.get("title", ""),
-                item_data.get("media_type", ""),
-                True,
-                suppress_debrid_dialog=True,
-                suppress_busy_dialog=force,
-            )
-            if not results:
-                kodilog("Autoscrape: no results after normal source processing")
-                return
-            cache_autoscrape_result(results_cache_key, results)
+            results = raw_results
+            cache_autoscrape_result(results_cache_key, results, ttl_hours=.5)
             kodilog(
                 f"Autoscrape: cached processed results {results_cache_key} "
                 f"({len(results)} sources)"
@@ -842,7 +833,7 @@ def autoscrape_next_episode(
 
         results = raw_results
         _extract_quality_from_titles(results)
-        cache_autoscrape_result(results_cache_key, results)
+        cache_autoscrape_result(results_cache_key, results, ttl_hours=.5)
         kodilog(f"Autoscrape: cached results {results_cache_key} ({len(results)} sources)")
 
         # Apply auto_play heuristics to select best source
@@ -852,6 +843,13 @@ def autoscrape_next_episode(
             quality_matches = results
 
         selected_result = quality_matches[0]
+
+        from lib.clients.catalog_providers import provider_for
+        if provider_for(selected_result):
+            # Keep the full candidate in as_results for normal selection.
+            # No signed URL or discovery-only locator belongs in as_ playback
+            # data; owner-bound same-version continuation has its own resolver.
+            return
 
         playback_info = resolve_playback_url(
             data={

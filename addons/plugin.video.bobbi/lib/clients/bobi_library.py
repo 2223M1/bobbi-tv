@@ -130,7 +130,7 @@ def to_source(data, entry, identity=None):
     source.preparedMediaProfile = bind_prepared_profile(source, entry)
     if source.preparedResourceId and entry.get('prepared_subtitle'):
         from bobbi_core.video_context import checked_video
-        from lib.cinema.subtitle_projection import checked
+        from bobbi_core.subtitle_projection import checked
         try:
             video = checked_video(entry.get('video_context'))
             if (video['release_key'] == source.preparedVersionKey

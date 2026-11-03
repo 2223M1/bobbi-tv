@@ -3,8 +3,6 @@ import logging
 import os
 import time
 
-import requests
-
 from .as_obj import AsObj
 from .exceptions import TMDbException
 
@@ -173,6 +171,7 @@ class TMDb:
 
     @classmethod
     def _request_with_bounds(cls, requester, method, url, data, json_payload, proxies):
+        import requests
         method = str(method or "GET").upper()
         attempts = cls.MAX_GET_ATTEMPTS if method == "GET" else 1
         last_error = None

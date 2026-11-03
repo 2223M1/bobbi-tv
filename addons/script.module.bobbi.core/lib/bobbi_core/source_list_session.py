@@ -28,6 +28,8 @@ class SourceListSession:
         self.lock = RLock()
         self.entries, self.providers = {}, {}
         self.revision = 0
+        self.content_revision = 0
+        self._ranked_cache = None
         self.cancelled = False
         self.focus_key = None
         self.focus_position = 0
@@ -85,16 +87,23 @@ class SourceListSession:
                 return False  # A timed-out producer cannot revive its subscription.
             if len(self.entries.keys() | {key for key, _ in copies}) > self.capacity:
                 copies, state, error = [], 'FAILED', 'CANDIDATE_CAPACITY_EXCEEDED'
+            changed = False
             for key, source in copies:
+                changed |= key not in self.entries
                 retained = self.entries.setdefault(key, source)
                 share_state = getattr(source, 'shareState', {})
                 if valid_card_state(share_state):
-                    self._merge_share_state(retained, source, share_state)
+                    changed |= self._merge_share_state(retained, source, share_state)
                 elif not getattr(retained, 'shareState', {}) and getattr(source, 'shareFailure', '') in ('share_revoked', 'identity_changed'):
+                    changed |= (getattr(retained, 'shareFailure', '') != source.shareFailure
+                                or getattr(retained, 'verifiedShareFile', False) is not False)
                     retained.shareFailure = source.shareFailure
                     retained.verifiedShareFile = False
                 if getattr(source, 'requiresCatalogEpisodeProof', False):
+                    changed |= getattr(retained, 'requiresCatalogEpisodeProof', False) is not True
                     retained.requiresCatalogEpisodeProof = True
+            if changed:
+                self._content_changed()
             previous_completion = self.providers.get(provider, {}).get('completion')
             self.providers[provider] = dict(state=state, error=str(error)[:120], count=len(copies))
             if completion is not None:
@@ -108,6 +117,22 @@ class SourceListSession:
             observe_providers(self.epoch, self.providers)
             return True
 
+    def _content_changed(self):
+        # Called under the session lock. Lifecycle text alone never invalidates
+        # the pure identity/filter/rank projection or its copied UI payload.
+        self.content_revision += 1
+        self._ranked_cache = None
+
+    def _ranked(self):
+        if self._ranked_cache is None:
+            from bobbi_core.search_trace import observe
+            rows = list(self.entries.values())
+            ranked = self.rank(rows)
+            self._ranked_cache = [(self.key(source), source) for source in ranked]
+            observe('session_pool', rows, invocation=self.epoch)
+            observe('ranked', ranked, invocation=self.epoch)
+        return self._ranked_cache
+
     def _merge_share_state(self, retained, source, state):
         # Host epochs are monotonic across account switches and logout. Never
         # let a late provider's old account or old empty observation win.
@@ -116,7 +141,9 @@ class SourceListSession:
             if retained is source:
                 retained.shareFailure, retained.shareState = '', {}
                 retained.verifiedShareFile = False
-            return
+                return True
+            return False
+        changed = False
         if self.share_scope != scope:
             self.share_scope = scope
             for item in self.entries.values():
@@ -124,12 +151,17 @@ class SourceListSession:
                 if old and (old.get('epoch'), old.get('account')) != scope:
                     item.shareFailure, item.shareState = '', {}
                     item.verifiedShareFile = False
+                    changed = True
         old = getattr(retained, 'shareState', {})
         if old and retained is not source and (old['tuple'] != state['tuple'] or old['observed'] >= state['observed']):
-            return
+            return changed
+        verified = bool(not state['code'] and getattr(source, 'verifiedShareFile', False))
+        changed |= (old != state or getattr(retained, 'shareFailure', '') != state['code']
+                    or getattr(retained, 'verifiedShareFile', False) != verified)
         retained.shareState = deepcopy(state)
         retained.shareFailure = state['code']
-        retained.verifiedShareFile = bool(not state['code'] and getattr(source, 'verifiedShareFile', False))
+        retained.verifiedShareFile = verified
+        return changed
 
     def focus(self, key, position):
         with self.lock:
@@ -142,7 +174,7 @@ class SourceListSession:
                 return None
             # A newer provider may supersede a card already rendered by the
             # GUI. Never resolve that stale key or silently substitute a file.
-            if key not in {self.key(source) for source in self.rank(list(self.entries.values()))}:
+            if key not in {identity for identity, _ in self._ranked()}:
                 return None
             self.confirmed = key
             self.revision += 1
@@ -153,7 +185,7 @@ class SourceListSession:
         with self.lock:
             if epoch != self.epoch or self.cancelled or key not in self.entries:
                 return None
-            if key not in {self.key(source) for source in self.rank(list(self.entries.values()))}:
+            if key not in {identity for identity, _ in self._ranked()}:
                 return None
             return deepcopy(self.entries[key])
 
@@ -191,7 +223,6 @@ class SourceListSession:
             if (epoch != self.epoch or self.cancelled or self.confirmed != key or retained is None
                     or any(getattr(retained, name, None) != getattr(source, name, None) for name in fields)):
                 return False
-            retained.verifiedShareFile = False
             if code in ('share_revoked', 'identity_changed'):
                 if valid_card_state(state):
                     media = json.loads(self.media)
@@ -217,7 +248,9 @@ class SourceListSession:
                     retained.shareState = dict(retained.shareState, observed=time.perf_counter_ns(), code=code)
                 else:
                     return False
+            retained.verifiedShareFile = False
             self.revision += 1
+            self._content_changed()
             return True
 
     def cancel(self):
@@ -234,28 +267,29 @@ class SourceListSession:
             from bobbi_core.search_trace import observe_providers
             observe_providers(self.epoch, self.providers)
 
-    def snapshot(self, full=False):
+    def snapshot(self, full=False, after_content_revision=None):
         from bobbi_core.search_trace import observe
         with self.lock:
             # Rank the complete bounded set before the display cap.
-            ranked = self.rank(list(self.entries.values()))
-            observe('session_pool', list(self.entries.values()), invocation=self.epoch)
-            observe('ranked', ranked, invocation=self.epoch)
-            recommended = next((self.key(source) for source in ranked
+            ranked = self._ranked()
+            recommended = next((key for key, source in ranked
                 if not getattr(source, 'shareFailure', '')), None)
             cap = self.capacity if full else self.limit
-            visible = ranked[:cap]
-            eligible_keys = {self.key(source) for source in ranked}
-            if self.focus_key in eligible_keys:
-                focused = self.entries[self.focus_key]
-                visible = [source for source in visible if self.key(source) != self.focus_key]
-                visible.insert(min(self.focus_position, len(visible)), focused)
-                visible = visible[:cap]
-            observe('visible', visible, invocation=self.epoch)
+            visible = None
+            if after_content_revision != self.content_revision:
+                visible = ranked[:cap]
+                eligible_keys = {key for key, _ in ranked}
+                if self.focus_key in eligible_keys:
+                    focused = (self.focus_key, self.entries[self.focus_key])
+                    visible = [pair for pair in visible if pair[0] != self.focus_key]
+                    visible.insert(min(self.focus_position, len(visible)), focused)
+                    visible = visible[:cap]
+                observe('visible', [source for _, source in visible], invocation=self.epoch)
             return deepcopy(dict(epoch=self.epoch, revision=self.revision, cancelled=self.cancelled,
+                content_revision=self.content_revision,
                 providers=self.providers, metadata=self.metadata, recommended_key=recommended,
                 superseded_count=len(self.entries) - len(ranked),
-                entries=[(self.key(source), source) for source in visible]))
+                entries=visible))
 
     def status(self):
         self._refresh_share_scope()
@@ -288,9 +322,11 @@ class SourceListSession:
                     item.shareFailure, item.shareState = '', {}
                     item.verifiedShareFile = False
             self.revision += 1
+            self._content_changed()
 
     def set_metadata(self, metadata):
         with self.lock:
             if not self.cancelled and not self.confirmed:
                 self.metadata = deepcopy(metadata)
                 self.revision += 1
+                self._content_changed()

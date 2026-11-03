@@ -56,7 +56,6 @@ from lib.utils.parsers.title_parser import (
     parse_title_info,
     source_has_chinese_subtitles,
 )
-from lib.utils.torrent.torrserver_utils import add_source_to_torrserver
 
 THEMES = {
     "0": {"card_bg": "FF362e33", "card_focus": "992A3E5C", "card_accent": "FF00559D"},
@@ -106,14 +105,40 @@ def _manual_source_limit(sources, limit):
     return sources[:limit]
 
 
+def _source_card_fields(template, skin):
+    if skin == 'skin.bobbi.cinema' and template in ('source_select.xml', 'source_select_direct.xml'):
+        # Bundled XML, its quality variable, selection identity and diagnostics.
+        # Other skins/templates retain the complete legacy property contract.
+        return frozenset(('type_plain', 'title', 'chinese_subtitles', 'badges_plain',
+            'release_group', 'size', 'seeders', 'languages_plain', 'source_site',
+            'recommendation_status', 'quality_plain', 'source_key', 'peers',
+            'status_plain', 'recommendation_reason'))
+    return None
+
+
 class _CardUpdate:
-    """Change fields on the retained native ListItem, never rebind the list."""
-    def __init__(self, item):
+    """Project owned fields once; retain the native item and its GUI locking."""
+    def __init__(self, item, previous, fields=None):
         self.item = item
+        self.previous = previous
+        self.fields = fields
+        self.values = {}
 
     def setProperty(self, key, value):
-        if self.item.getProperty(key) != value:
-            self.item.setProperty(key, value)
+        if self.fields is None or key in self.fields:
+            self.values[key] = value
+
+    def flush(self):
+        changed = {key: self.values.get(key, '')
+                   for key in self.values.keys() | self.previous.keys()
+                   if self.values.get(key, '') != self.previous.get(key, '')}
+        if changed:
+            # setProperties still takes Kodi's per-field GUI locks. Avoid
+            # native reads, duplicate writes, and repeated Python crossings,
+            # not the locks required for already-visible WindowXML items.
+            self.item.setProperties(changed)
+        self.previous.clear()
+        self.previous.update(self.values)
 
 
 def _has_chinese_candidate(source):
@@ -181,6 +206,7 @@ class SourceSelect(BaseWindow):
         uncached: Optional[List[TorrentStream]] = None,
     ):
         super().__init__(xml_file, location, item_information=item_information)
+        self._card_fields = _source_card_fields(xml_file, xbmc.getSkinDir())
         self.uncached_sources: List[TorrentStream] = uncached or []
         self.position: int = -1
         self.sources: List[TorrentStream] = sources or []
@@ -216,6 +242,7 @@ class SourceSelect(BaseWindow):
     def onInit(self) -> None:
         # Kodi recreates controls when a closed resolver returns to this dialog.
         self._rendered_cards = {}
+        self._rendered_card_values = {}
         self._rendered_keys = []
         self._quality_items = {}
         self._quality_keys = []
@@ -459,17 +486,24 @@ class SourceSelect(BaseWindow):
             item = self.display_list.getSelectedItem()
             if item:
                 self.source_session.focus(item.getProperty('source_key'), self.display_list.getSelectedPosition())
-        snapshot = self.source_session.snapshot(full=True)
+        snapshot = self.source_session.snapshot(full=True,
+            after_content_revision=None if force else getattr(self, '_source_content_revision', None))
         self._source_revision = snapshot['revision']
+        self._source_content_revision = snapshot['content_revision']
         self._recommended_key = snapshot['recommended_key']
         self.setProperty('source_coalesced_count', str(snapshot.get('superseded_count', 0)))
-        if snapshot['metadata']:
+        if snapshot['metadata'] and (force or snapshot['metadata'] !=
+                                     getattr(self, '_applied_source_metadata', None)):
             self.add_item_information_to_window(dict(self.item_information, **snapshot['metadata']))
-        self.sources = [source for _, source in snapshot['entries']]
-        self.populate_qualities_header()
-        if self.filter_applied and getattr(self, '_filter_spec', None):
-            self.filtered_sources = self._apply_source_filter(*self._filter_spec)
-        self.populate_sources_list(incremental=not force)
+            # A status receipt carries the same metadata snapshot. Do not turn
+            # each provider tick into another full native header/queue update.
+            self._applied_source_metadata = snapshot['metadata']
+        if snapshot['entries'] is not None:
+            self.sources = [source for _, source in snapshot['entries']]
+            self.populate_qualities_header()
+            if self.filter_applied and getattr(self, '_filter_spec', None):
+                self.filtered_sources = self._apply_source_filter(*self._filter_spec)
+            self.populate_sources_list(incremental=not force)
         if self.list_sources and not capture_focus:
             keys = [self.source_session.key(source) for source in self.list_sources]
             position = keys.index(self.source_session.focus_key) if self.source_session.focus_key in keys else min(
@@ -800,6 +834,7 @@ class SourceSelect(BaseWindow):
         key_for = (self.source_session.key if getattr(self, 'source_session', None)
                    else lambda source: str(id(source)))
         cards = getattr(self, '_rendered_cards', {}) if incremental else {}
+        card_values = getattr(self, '_rendered_card_values', {}) if incremental else {}
         keys = list(getattr(self, '_rendered_keys', [])) if incremental else []
         if not incremental:
             self.display_list.reset()  # Explicit filter/reopen, never provider publication.
@@ -812,7 +847,9 @@ class SourceSelect(BaseWindow):
         # Every surviving card keeps its native object and relative position.
         for position in range(len(keys) - 1, -1, -1):
             if keys[position] not in desired:
-                cards.pop(keys.pop(position))
+                removed_key = keys.pop(position)
+                cards.pop(removed_key)
+                card_values.pop(removed_key, None)
                 self.display_list.removeItem(position)
                 rebound = True
         keys += [key for key in desired if key not in cards]
@@ -837,7 +874,8 @@ class SourceSelect(BaseWindow):
                 menu_items.append(cards[key])
             elif cards[key].getLabel() != source.title:
                 cards[key].setLabel(source.title)
-            menu_item = _CardUpdate(cards[key])
+            menu_item = _CardUpdate(cards[key], card_values.setdefault(key, {}),
+                                    getattr(self, '_card_fields', None))
             if getattr(self, 'source_session', None):
                 menu_item.setProperty('source_key', self.source_session.key(source))
             menu_item.setProperty("title", source.title)
@@ -847,7 +885,7 @@ class SourceSelect(BaseWindow):
             menu_item.setProperty("hdr_info", info["badges"])
             menu_item.setProperty("badges_plain", _plain_source_badges(info["badges"]))
             release_group = info["release_group"] or ""
-            from lib.cinema.subtitle_projection import source_card_label, source_label
+            from bobbi_core.subtitle_projection import source_card_label, source_label
             chinese_subtitles = detect_chinese_subtitle_kind(
                 source.title,
                 languages=getattr(source, "languages", None),
@@ -932,11 +970,13 @@ class SourceSelect(BaseWindow):
             menu_item.setProperty("recommendation_reason", preference["reason"])
             menu_item.setProperty("recommendation_status", recommendation_label(recommended, preference['caution'], status))
             menu_item.setProperty("isPack", str(source.isPack))
+            menu_item.flush()
 
         if menu_items:
             self.display_list.addItems(menu_items)
             rebound = True
         self._rendered_cards, self._rendered_keys = cards, keys
+        self._rendered_card_values = card_values
         if incremental and rebound and keys:
             # Structural updates enqueue a full native bind, despite preserving
             # our ListItems. Always enqueue the matching selection after that
@@ -1012,6 +1052,7 @@ class SourceSelect(BaseWindow):
         }
         data = _json.dumps(metadata)
 
+        from lib.utils.torrent.torrserver_utils import add_source_to_torrserver
         add_source_to_torrserver(
             magnet=magnet,
             url=url,

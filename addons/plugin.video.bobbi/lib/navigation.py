@@ -1098,31 +1098,8 @@ def play_autoscraped(params):
                 player.run(data=play_data)
                 del player
                 return
-            # Autoplay disabled: show source select with cached raw results
-            results_cache_key = get_autoscrape_results_cache_key(id_value, season, episode)
-            cached_results = cache.get(results_cache_key)
-            if cached_results:
-                mode = params.get("mode", "tv")
-                kodilog(
-                    "PlayAutoscraped: showing source select with"
-                    f" {len(cached_results)} cached results (mode={mode})"
-                )
-                from lib.search import show_source_select
-
-                show_source_select(
-                    cached_results,
-                    mode=mode,
-                    ids=ids,
-                    tv_data=tv_data,
-                    query=params.get("query", ""),
-                    media_type=params.get("media_type", ""),
-                    rescrape=False,
-                    direct=False,
-                    autoplay_context=autoplay_context,
-                )
-                return
-            kodilog("PlayAutoscraped: no cached results, falling back to search")
-
+            # Manual selection always enters the shared query/cache core.
+            # An old aggregate must not suppress missing or expired queries.
     from lib.search import run_search_entry
 
     run_search_entry(params)

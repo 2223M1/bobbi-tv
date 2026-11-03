@@ -1,5 +1,6 @@
 import concurrent.futures
 import re
+from math import ceil
 import time
 import xml.etree.ElementTree as ET
 from typing import Any, List, Optional
@@ -55,6 +56,14 @@ class Jackett(BaseClient):
         # eight seconds. Background callers still own their shorter deadline.
         budget = min(25, get_jackett_timeout()) if publish is not None else min(8, get_jackett_timeout())
         deadline = min(deadline if deadline is not None else float('inf'), time.monotonic() + budget)
+        inventory_key = self.base_url + '&t=indexers&configured=true'
+        if self._configured_indexers is None and query_cache is not None:
+            cached_inventory = query_cache.get('jackett-inventory', inventory_key)
+            if cached_inventory and self._valid_inventory(cached_inventory[0]):
+                value = cached_inventory[0]
+                self._configured_indexers = value['ids']
+                self._indexer_caps = value['movie']
+                self._indexer_anime_caps = value['anime']
         if self._configured_indexers is None:
             inventory = fetch_inventory(self.session, self.base_url + '&t=indexers&configured=true',
                                         deadline, cancelled)
@@ -67,14 +76,19 @@ class Jackett(BaseClient):
                    if node.get('configured') == 'true' and re.fullmatch(r'[a-zA-Z0-9_-]+', node.get('id', ''))]
             if not ids or len(ids) > 16:
                 raise ValueError('Configured indexer inventory is empty or too large')
-            # Anime-specialist providers must get work slots before broad sites.
-            ids.sort(key=lambda value: (bool(anime_absolute_query or anime_release_query)
-                                       and value not in ('nyaasi', 'tokyotosho'), value))
             self._configured_indexers = ids
             self._indexer_caps = {node.get('id'): self._movie_caps(node.find('caps'))
                                   for node in root.findall('indexer') if node.get('id') in ids}
             self._indexer_anime_caps = {node.get('id'): self._anime_caps(node)
                                        for node in root.findall('indexer') if node.get('id') in ids}
+            if query_cache is not None and not cancelled() and time.monotonic() < deadline:
+                query_cache.put('jackett-inventory', inventory_key, [dict(ids=ids,
+                    movie=self._indexer_caps, anime=self._indexer_anime_caps)])
+        # Inventory is shared across titles, but scheduling belongs to this
+        # search. A preceding movie must not change an anime's first work slots.
+        self._configured_indexers = sorted(self._configured_indexers,
+            key=lambda value: (bool(anime_absolute_query or anime_release_query)
+                               and value not in ('nyaasi', 'tokyotosho'), value))
         titles = list(dict.fromkeys([query] + [q for q in title_queries if isinstance(q, str) and q.strip()]))[:3]
         specs = [(title, mode, season, episode, False) for title in titles]
         include_packs = mode == 'tv' and season and get_setting('include_season_packs')
@@ -110,6 +124,7 @@ class Jackett(BaseClient):
             urls.insert(0, self._build_url(self._make_base_url('nyaasi'), query, 'anime'))
         from lib.clients.fanout_diagnostics import FanoutReceipt, make_plan, observe
         cached_rows, missing, cached_count, cached_age = [], [], 0, 0
+        cache_observed_at = time.monotonic()
         for url in dict.fromkeys(urls):
             cached = query_cache.get('jackett-query', url) if query_cache is not None else None
             if cached is None:
@@ -160,6 +175,10 @@ class Jackett(BaseClient):
         if receipt is not None:
             observe(receipt, 'emit', 'parse_complete')
         kodilog('Cinema Jackett independent responses: {}/{}; candidates: {}'.format(len(responses), len(urls), len(results)))
+        if cached_count:
+            from dataclasses import replace
+            cached_completion = replace(cached_completion,
+                snapshot_age=cached_age + ceil(time.monotonic() - cache_observed_at))
         if isinstance(responses, SearchResults):
             completion = responses.completion.with_parse_failures(parse_failures).combine(cached_completion)
         else:
@@ -174,6 +193,38 @@ class Jackett(BaseClient):
         if reference is not None:
             result.fanout_diagnostic_ref = reference
         return result
+
+    @staticmethod
+    def _valid_inventory(value):
+        """A damaged optional snapshot must fall back to live discovery."""
+        if not isinstance(value, dict):
+            return False
+        ids = value.get('ids')
+        if (not isinstance(ids, list) or not 0 < len(ids) <= 16
+                or any(not isinstance(key, str) or not re.fullmatch(r'[a-zA-Z0-9_-]+', key) for key in ids)
+                or len(set(ids)) != len(ids)):
+            return False
+        def params(fields):
+            return fields is None or isinstance(fields, (set, frozenset, list, tuple)) and len(fields) <= 32 and all(
+                isinstance(field, str) for field in fields)
+        for kind in ('movie', 'anime'):
+            mapping = value.get(kind)
+            if not isinstance(mapping, dict) or any(key not in mapping for key in ids):
+                return False
+            for key in ids:
+                caps = mapping[key]
+                if kind == 'movie' and caps is None:
+                    continue
+                fields = ('search', 'movie-search') if kind == 'movie' else ('search', 'tv-search')
+                if not isinstance(caps, dict) or any(field not in caps or not params(caps[field]) for field in fields):
+                    return False
+                if kind == 'movie':
+                    categories = caps.get('categories')
+                    if not isinstance(categories, (set, frozenset, list, tuple)) or any(type(cat) is not int for cat in categories):
+                        return False
+                elif not isinstance(caps.get('language', ''), str):
+                    return False
+        return True
 
     def _tv_fallback_urls(self, titles, season, episode, categories, additional_params, include_packs):
         """Replace each ordinary TV request using the existing inventory caps.
