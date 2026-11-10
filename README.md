@@ -3,7 +3,7 @@
 <p align="center">给电视大屏用的 Kodi 影院</p>
 
 <p align="center">
-  <a href="https://gitee.com/M12223/bobbi-tv-updates">下载与更新</a> ·
+  <a href="https://github.com/2223M1/bobbi-tv/releases/latest">下载与更新</a> ·
   <a href="#功能">功能</a> ·
   <a href="#安装">安装</a> ·
   <a href="https://github.com/2223M1/bobbi-tv/issues">问题反馈</a>
@@ -17,7 +17,7 @@
 
 ## 下载
 
-**[国内下载](https://gitee.com/M12223/bobbi-tv-updates) · [GitHub 下载](https://github.com/2223M1/bobbi-tv/releases)**
+**[正式版下载](https://github.com/2223M1/bobbi-tv/releases/latest) · [国内镜像](https://gitee.com/M12223/bobbi-tv-updates)**
 
 版本与更新说明以下载页为准。
 
