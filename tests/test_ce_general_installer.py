@@ -23,7 +23,7 @@ def signing():
         key=dict(algorithm='RSA3072-SHA256', e=65537, n=format(numbers.n, 'x')))
 
 
-def package(path, signing, sequence=1, version='1.0.0', profile='coreelec'):
+def package(path, signing, sequence=1, version='1.0.0', profile='coreelec', channel='private-candidate'):
     items, content = [], {}
     for name in sorted(FULL_COMPONENTS):
         raw = archive(name, version)
@@ -31,7 +31,7 @@ def package(path, signing, sequence=1, version='1.0.0', profile='coreelec'):
         content[filename] = raw
         items.append(dict(id=name, version=version, file=filename, size=len(raw),
                           sha256=hashlib.sha256(raw).hexdigest()))
-    raw = json.dumps(dict(schema=2, channel='private-candidate', profile=profile,
+    raw = json.dumps(dict(schema=2, channel=channel, profile=profile,
                          sequence=sequence, components=items), sort_keys=True).encode()
     signature = base64.b64encode(signing[0].sign(raw, padding.PKCS1v15(), hashes.SHA256()))
     with zipfile.ZipFile(path, 'w') as target:

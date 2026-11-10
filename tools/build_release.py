@@ -41,7 +41,7 @@ def files(root):
             if (root.name, name) == LOCAL_RESOURCE:
                 continue  # Separate maintainer input; a clean Git clone stays testable.
             result[name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    require_clean(result)
+    require_clean(result, root.name)
     return result
 
 
@@ -94,6 +94,8 @@ def project_resource(roots):
 
 
 def build(destination, *, source_check=False):
+    from vendor_licenses import verify, verify_component_archive
+    notices = verify()
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=True)
     inventory = json.loads(INVENTORY.read_text(encoding='utf-8'))['components']
@@ -104,6 +106,8 @@ def build(destination, *, source_check=False):
     # This is explicitly not an installable/signable private release.
     local_resource = None if source_check else project_resource(roots)
     manifest = {'version': '0.2.0-private.1', 'channel': 'private-candidate', 'device_verified': False, 'components': []}
+    manifest['notices'] = notices
+    manifest['distribution_cleared'] = not notices['unresolved_components']
     if source_check:
         manifest.update(channel='source-check', installable=False)
     xml = ET.Element('addons')
@@ -120,6 +124,8 @@ def build(destination, *, source_check=False):
         archive(root, inventory[addon], output,
                 {LOCAL_RESOURCE[1]: local_resource}
                 if addon == LOCAL_RESOURCE[0] and local_resource is not None else None)
+        with zipfile.ZipFile(output) as packaged:
+            verify_component_archive(addon, packaged)
         output.with_suffix(output.suffix + '.sha256').write_text(
             hashlib.sha256(output.read_bytes()).hexdigest(), encoding='ascii')
         # Kodi uses raw artwork alongside repository zip paths.

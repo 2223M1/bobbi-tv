@@ -83,6 +83,16 @@ def open_existing_cd2(dialog=None):
     return True
 
 
+def open_library(dialog):
+    """Open existing sources without requiring a native cloud account."""
+    import xbmc
+    if not xbmc.getCondVisibility('System.HasAddon(plugin.video.bobbi.library)'):
+        dialog.ok('片库组件未安装', '请用波比 TV 完整安装包修复，已保存的来源保留。')
+        return False
+    xbmc.executebuiltin('ActivateWindow(Videos,plugin://plugin.video.bobbi.library/,return)')
+    return True
+
+
 def _network(dialog, kind, previous=None):
     prefix = {'smb': 'smb://', 'nfs': 'nfs://', 'webdav': 'davs://'}[kind]
     heading = {'smb': 'NAS 地址和共享目录，例如 nas.local/Movies',
@@ -236,21 +246,24 @@ def manage(legacy_root=''):
             sources = store.sources()
             choice = dialog.select('我的片库', ['＋ 添加来源', '打开我的片库']
                 + [source.name + (' · NAS / 目录' if source.kind == 'vfs' else ' · 直链片库') for source in sources]
-                + (['源库 · ' + online.name] if online else []))
+                + (['源库 · ' + online.name] if online else []) + ['片库索引与任务'])
             if choice < 0:
                 return
             try:
                 if choice == 0:
                     changed = add_source(dialog, xbmcvfs, store) or changed
                 elif choice == 1:
-                    if xbmc.getCondVisibility('System.HasAddon(plugin.video.bobbi.library)'):
-                        xbmc.executebuiltin('ActivateWindow(Videos,plugin://plugin.video.bobbi.library/,return)')
+                    if open_library(dialog):
                         navigated = True
                         return True  # Tell enclosing menus not to cover navigation.
-                    dialog.ok('片库组件未安装', '请用波比 TV 完整安装包修复，已保存的来源保留。')
                 elif online and choice == len(sources) + 2:
                     from .source_library_ui import manage as manage_online
                     changed = manage_online(dialog, store, online) or changed
+                elif choice == len(sources) + 2 + bool(online):
+                    from .catalog_ui import manage as manage_index
+                    if manage_index():
+                        navigated = True
+                        return True
                 else:
                     source = sources[choice - 2]
                     action = dialog.select(source.name, ['检查连接' if source.kind == 'vfs' else '检查片库格式',

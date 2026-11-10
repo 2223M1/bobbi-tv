@@ -100,6 +100,35 @@ def test_continue_card_adds_public_work_route_without_changing_default_actions(p
     assert not item.tag.setResumePoint.called
 
 
+def test_file_and_title_history_share_snapshot_preview_and_only_opaque_file_routes(page, monkeypatch):
+    from bobbi_core.file_ref import from_selected
+    from lib.db.file_history import KEY
+    from datetime import datetime
+    account = dict(provider='quark', account_id='quark:' + 'd' * 64, epoch=1, authenticated=True)
+    ref = from_selected(account, dict(file_id='private-file', name='私人视频.mkv', size=100, directory=False), 'private-parent')
+    record = dict(version=1, id=ref['id'], file_ref=ref, position=97., duration=100.,
+        completion_reason='ERROR', updated_at=datetime(2026, 11, 10).timestamp(),
+        generation=1, sequence=2, session_id='e' * 32)
+    page.history['title'] = watched()
+    class Database:
+        def get_keys_checked(self, keys):
+            page.reads += 1
+            assert keys == ('jt:lfh', KEY)
+            return {'jt:lfh': deepcopy(page.history), KEY: {ref['id']: deepcopy(record)}}
+    monkeypatch.setattr(continuing, 'PickleDatabase', Database)
+    continuing.show_continue_watching({})
+    assert len(page.rows) == 2 and page.reads == 1 and page.calls == 0
+    url, item, folder = page.rows[0]
+    assert json.loads(url.split('?', 1)[1]) == {'history_id': ref['id']}
+    assert url.startswith('pan_history_play?') and not folder
+    assert item.properties['PercentPlayed'] == '97' and item.properties['Bobi.File.State'] == 'verification_required'
+    assert 'private-file' not in url + str(item.menu) and 'private-parent' not in url + str(item.menu)
+    assert not item.tag.setResumePoint.called
+    page.rows.clear()
+    continuing.show_continue_watching({'resume_preview': 'true'})
+    assert len(page.rows) == 1 and page.rows[0][0] == url and page.reads == 2
+
+
 @pytest.mark.parametrize('change', [dict(ids={}), dict(ids={'tmdb_id': 0}),
     dict(ids={'tmdb_id': True}), dict(tv_data={}), dict(tv_data={'season': 1, 'episode': 0}),
     dict(mode='movies'), dict(mode='unknown'), dict(ids=[]), dict(tv_data=[])])

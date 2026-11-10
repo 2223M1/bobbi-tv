@@ -99,7 +99,8 @@ def test_high_progress_error_keeps_real_resume_and_order():
 
 @pytest.mark.parametrize('reason,completed', [('ERROR',False), ('UNKNOWN',False),
     ('STOP',False), ('SUPERSEDED',False), ('CANCEL',False), ('NATURAL_EOF',True)])
-def test_actual_stop_method_cannot_report_error_as_watched(reason, completed):
+def test_actual_stop_method_cannot_report_error_as_watched(reason, completed, monkeypatch):
+    monkeypatch.syspath_prepend(str(ROOT / 'addons/plugin.video.bobbi'))
     path = ROOT / 'addons/plugin.video.bobbi/lib/native_player.py'
     cls = next(n for n in ast.parse(path.read_text(encoding='utf-8')).body
                if isinstance(n, ast.ClassDef) and n.name == 'JacktookPLayer')
@@ -119,6 +120,7 @@ def test_actual_stop_method_cannot_report_error_as_watched(reason, completed):
     env['handle_playback_stop'](player)
     assert player.data['completed'] is completed and player.data['progress'] == 97
     assert events[0] == ('stop' if completed else 'pause')
+    assert events[-1]['completed'] is completed and events[-1]['terminal_reason'] == reason
 
 
 @pytest.mark.parametrize('evidence,request_id,cancelled,allowed', [

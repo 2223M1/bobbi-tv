@@ -30,6 +30,8 @@ def build(bundle, output, online=False):
             raise ValueError('Bootstrap source inventory changed')
     with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
         manifest = signed.check_all()
+        from vendor_licenses import verify_bundle_notices
+        verify_bundle_notices(signed)
         entry = next(row for row in manifest['components'] if row['id'] == 'script.bobbi.start')
         platform = next(row for row in manifest['components'] if row['id'] == 'script.module.bobbi.platform')
         from io import BytesIO

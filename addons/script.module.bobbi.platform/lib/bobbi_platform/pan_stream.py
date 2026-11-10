@@ -7,6 +7,8 @@ from copy import deepcopy
 import hashlib
 import json
 import re
+import math
+import time
 from urllib.parse import urlencode
 
 from .pan_accounts import PanError, provider_id
@@ -70,8 +72,9 @@ def headers(value, url, values):
     return True
 
 
-def address(value, resolved):
-    if (type(resolved) is not dict or set(resolved) != {'url', 'size', 'original', 'headers'}
+def address(value, resolved, clock=time.time):
+    if (type(resolved) is not dict or not {'url', 'size', 'original', 'headers'} <= set(resolved)
+            or not set(resolved) <= {'url', 'size', 'original', 'headers', 'expires_at'}
             or resolved['original'] is not True or type(resolved['size']) is not int
             or resolved['size'] != value['size'] or type(resolved['headers']) is not dict):
         raise PanError('PAN_FILE_CHANGED')
@@ -79,4 +82,9 @@ def address(value, resolved):
     h = {k: v for k, v in resolved['headers'].items() if k != 'Cookie' or v}
     if not headers(value, resolved['url'], h):
         raise PanError('PAN_DOWNLOAD_ORIGIN_REJECTED')
-    return resolved['url'] + '|' + urlencode(h)
+    expiry = resolved.get('expires_at')
+    if expiry is not None and (type(expiry) not in (int, float) or not math.isfinite(expiry)
+            or not clock() < expiry <= clock() + 7 * 86400):
+        raise PanError('PAN_EXPIRY_INVALID')
+    from bobbi_core.share_stream import ResolvedResource
+    return ResolvedResource(resolved['url'] + '|' + urlencode(h), expiry)

@@ -11,6 +11,20 @@ from threading import BoundedSemaphore, Thread
 from urllib.request import Request, build_opener, ProxyHandler, HTTPRedirectHandler
 from .paths import profile
 
+MAX_MESSAGE_BYTES = 16384
+LOGIN_ERROR_PHASES = frozenset(('qr', 'confirm', 'exchange', 'identity'))
+LOGIN_ERROR_ACTIONS = frozenset(('pan_login_begin', 'pan_login_poll'))
+CATALOG_ERRORS = frozenset(('CATALOG_ACCOUNT_MISMATCH', 'CATALOG_ACTION_INVALID', 'CATALOG_SCAN_BUSY',
+    'CATALOG_SERVICE_CLOSED', 'CATALOG_PAGE_INVALID', 'CATALOG_REVIEW_STATE', 'CATALOG_TASK_NOT_FOUND',
+    'CATALOG_FILE_NOT_FOUND', 'CATALOG_TASK_STATE', 'CATALOG_TASK_TERMINAL', 'CATALOG_BATCH_LIMIT',
+    'CATALOG_ID_INVALID', 'CATALOG_MAPPING_INVALID', 'CATALOG_REVIEW_INVALID', 'CATALOG_METADATA_INVALID',
+    'CATALOG_SCHEMA_UNSUPPORTED', 'CATALOG_STORAGE_UNSAFE', 'CATALOG_REPLY_LIMIT'))
+
+
+def encode_message(value):
+    """The wire budget counts UTF-8 bytes, not characters or ASCII escapes."""
+    return json.dumps(value, ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode('utf-8')
+
 
 class NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, *args):
@@ -30,22 +44,29 @@ def call(action, body, timeout=3):
     if (set(data) != {'port', 'token'} or type(data['port']) is not int or not 1024 <= data['port'] <= 65535
             or not isinstance(data['token'], str) or len(data['token']) != 64):
         raise ValueError('Invalid local runtime configuration')
-    raw = json.dumps({'action': action, 'body': body}).encode()
-    if len(raw) > 16384:
+    raw = encode_message({'action': action, 'body': body})
+    if len(raw) > MAX_MESSAGE_BYTES:
         raise ValueError('Local request too large')
     request = Request('http://127.0.0.1:%d/control' % data['port'], data=raw,
         headers={'Authorization': 'Bearer ' + data['token'], 'Content-Type': 'application/json'})
     with build_opener(ProxyHandler({}), NoRedirect()).open(request, timeout=timeout) as response:
-        reply = response.read(16385)
-    if len(reply) > 16384:
+        reply = response.read(MAX_MESSAGE_BYTES + 1)
+    if len(reply) > MAX_MESSAGE_BYTES:
         raise ValueError('Local reply too large')
     result = json.loads(reply)
     if result.get('ok') is not True:
         if result.get('error') == 'pan':
             from .pan_accounts import PanError, PUBLIC_ERRORS
-            if (isinstance(action, str) and action.startswith('pan_')
+            if (isinstance(action, str) and action.startswith(('pan_', 'catalog_'))
                     and type(result.get('code')) is str and result['code'] in PUBLIC_ERRORS):
-                raise PanError(result['code'])
+                error = PanError(result['code'])
+                phase = result.get('phase')
+                if action in LOGIN_ERROR_ACTIONS and type(phase) is str and phase in LOGIN_ERROR_PHASES:
+                    error.login_phase = phase
+                raise error
+        if (result.get('error') == 'catalog' and isinstance(action, str) and action.startswith('catalog_')
+                and type(result.get('code')) is str and result['code'] in CATALOG_ERRORS):
+            raise ValueError(result['code'])
         if result.get('error') == 'unavailable':
             raise OSError('Local service temporarily unavailable')
         if result.get('error') == 'selection_unverified':
@@ -98,7 +119,7 @@ class Handler(BaseHTTPRequestHandler):
         request = None
         try:
             length = int(self.headers.get('Content-Length', '0'))
-            if not 0 < length <= 16384:
+            if not 0 < length <= MAX_MESSAGE_BYTES:
                 raise ValueError
             request = json.loads(self.rfile.read(length))
             if not isinstance(request, dict) or set(request) != {'action', 'body'}:
@@ -113,16 +134,23 @@ class Handler(BaseHTTPRequestHandler):
             from .pan_accounts import PanError, PUBLIC_ERRORS
             if (isinstance(error, PanError) and str(error) in PUBLIC_ERRORS
                     and type(request) is dict and isinstance(request.get('action'), str)
-                    and request['action'].startswith('pan_')):
+                    and request['action'].startswith(('pan_', 'catalog_'))):
                 response.update(error='pan', code=str(error))
+                phase = getattr(error, 'login_phase', None)
+                if (request['action'] in LOGIN_ERROR_ACTIONS
+                        and type(phase) is str and phase in LOGIN_ERROR_PHASES):
+                    response['phase'] = phase
+            if (isinstance(error, ValueError) and str(error) in CATALOG_ERRORS and type(request) is dict
+                    and isinstance(request.get('action'), str) and request['action'].startswith('catalog_')):
+                response.update(error='catalog', code=str(error))
             if isinstance(error, ValueError) and str(error) == 'PREPARATION_CURRENT_VERIFIED_SELECTION_REQUIRED':
                 response['error'] = 'selection_unverified'
         try:
-            raw = json.dumps(response).encode()
-            if len(raw) > 16384:
+            raw = encode_message(response)
+            if len(raw) > MAX_MESSAGE_BYTES:
                 raise ValueError('Reply too large')
         except (ValueError, TypeError):
-            raw = b'{"ok":false}'
+            raw = b'{"ok":false,"error":"message_too_large"}'
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.send_header('Content-Length', str(len(raw)))

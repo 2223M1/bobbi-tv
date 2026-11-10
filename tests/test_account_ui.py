@@ -22,7 +22,7 @@ def context(monkeypatch, tmp_path):
         dialogs=[], menus=[], yesnos=[], calls=[], builtins=[], events=[], labels=[],
         polls=[('confirmed', deepcopy(NEW))], flows=[], windows=[], qr_images=[],
         status_error=None, commit_error=None, committed_before_error=False,
-        refresh_error=None, begin_error=None, cancel_on_show=None, cancel_on_poll=None,
+        refresh_error=None, begin_error=None, close_error=None, cancel_on_show=None, cancel_on_poll=None,
         aborted=False, abort_on_wait=False, waits=0,
     )
     # A real sentinel catches accidental direct credential-file replacement/deletion.
@@ -60,9 +60,13 @@ def context(monkeypatch, tmp_path):
         if action == 'account_logout':
             assert set(body) == {'expected'}
             state.current = None
+            state.snapshot = dict(account_id='', epoch=state.snapshot['epoch'] + 1, authenticated=False)
         else:
             assert set(body) == {'credentials', 'expected'}
             state.current = deepcopy(body['credentials'])
+            identity = account_manager.account_id(body['credentials'])
+            state.snapshot = dict(account_id=identity,
+                epoch=state.snapshot['epoch'] + (identity != state.snapshot['account_id']), authenticated=True)
         state.events.append(('committed', action))
         if state.commit_error is not None:
             raise state.commit_error
@@ -94,6 +98,8 @@ def context(monkeypatch, tmp_path):
 
         def close(self):
             self.closed += 1
+            if state.close_error is not None:
+                raise state.close_error
 
         def getControl(self, control_id): return Control()
         def setFocusId(self, control_id): assert control_id == 9001
@@ -112,9 +118,9 @@ def context(monkeypatch, tmp_path):
             return state.aborted
 
         def waitForAbort(self, seconds):
-            assert seconds == 2
+            assert 0 < seconds <= .1
             state.waits += 1
-            assert state.waits <= 8, 'Mock poll must remain bounded'
+            assert state.waits <= 160, 'Mock poll must remain bounded'
             if state.abort_on_wait:
                 state.aborted = True
             return state.aborted
@@ -235,7 +241,8 @@ def test_confirmed_qr_commits_once_then_refreshes_without_reconfirmation(context
     assert context.builtins == ['Container.Refresh']
     assert context.dialogs[-1][0] == '115 登录成功'
     assert context.labels == ['登录 115 分享播放', '用「115 生活」App 扫码',
-        '扫码后在手机确认。取消会保留当前账号。', '取消', '已扫码，请在手机上确认登录']
+        '正在准备二维码，可按返回取消。', '取消', '正在准备二维码，可按返回取消。',
+        '扫码后请在手机确认。可按返回取消。', '已扫码，请在手机上确认登录。可按返回取消。']
     assert_committed_before_refresh(context, 'account_install')
 
 
@@ -306,6 +313,16 @@ def test_refresh_failure_does_not_misreport_successful_commit(context, operation
     assert context.dialogs[-1][0] == ('已退出 115' if operation == 'logout' else '115 登录成功')
 
 
+def test_kodi_close_failure_does_not_misreport_acknowledged_115_login(context):
+    context.close_error = RuntimeError('synthetic Kodi window already closed')
+    assert ui.login() is True
+    assert context.current == NEW
+    assert len(mutations(context)) == 1 and mutations(context)[0][0] == 'account_install'
+    assert context.dialogs[-1][0] == '115 登录成功'
+    assert not any(title == '未确认登录结果' for title, _ in context.dialogs)
+    assert context.flows[0].cancelled == 1
+
+
 def test_transient_qr_poll_error_retries_before_single_commit(context):
     context.polls = [cloud115.CloudError('QR_POLL_RETRY'), ('confirmed', deepcopy(NEW))]
     assert ui.login() is True
@@ -317,6 +334,6 @@ def test_transient_qr_poll_error_retries_before_single_commit(context):
 def test_exhausted_network_retries_keep_current_account(context):
     context.polls = [cloud115.CloudError('NETWORK_ERROR') for _ in range(4)]
     assert ui.login() is False
-    assert context.flows[0].polled == 4
+    assert context.flows[0].polled == 3
     assert context.current == OLD
     assert not mutations(context) and not context.builtins

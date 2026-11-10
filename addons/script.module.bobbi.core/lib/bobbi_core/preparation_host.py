@@ -446,6 +446,22 @@ class Session:
 
     def dispatch(self, method, body):
         self.lease.check()
+        if method == 'jobs':
+            from .job_snapshot import preparation
+            from .media_library_index import page, identifier
+            if type(body) is not dict or set(body) - {'task', 'offset', 'limit'}:
+                raise ValueError('JOB_FIELDS_INVALID')
+            offset, limit = body.get('offset', 0), body.get('limit', 5)
+            page(offset, limit)
+            args = [self.config['account']]
+            where = "provider='115' AND account=?"
+            if body.get('task') is not None:
+                where += ' AND id=?'
+                args.append(identifier(body['task']))
+            rows = self.queue.db.execute('SELECT id,state,updated FROM tasks WHERE ' + where +
+                ' ORDER BY updated DESC,id DESC LIMIT ? OFFSET ?', tuple(args + [limit + 1, offset])).fetchall()
+            return dict(items=[preparation(row, self.lease.scope) for row in rows[:limit]],
+                next_offset=offset + limit if len(rows) > limit else None)
         # Local durable intake/status and immutable subtitle/font reads must
         # remain available during a transient CD2 health failure. Cloud IO is
         # still gated here and in tick(), and this account lease stays required.

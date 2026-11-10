@@ -216,6 +216,8 @@ class Installer:
                     self._write(state)
                     self._restore(state)
                 return True
+            from .ce_recovery import clear_preparations
+            clear_preparations(self)
         return False
 
     def rollback(self):
@@ -280,42 +282,51 @@ class Installer:
                         raise UpdateError('RECOVERY_POINT_INVALID')
                 elif manifest['sequence'] <= watermark:
                     raise UpdateError('GENERATION_NOT_NEWER')
+                from .ce_recovery import (record_preparation, preparation_transaction,
+                                          clear_preparation, clear_preparations, PREPARATION)
+                clear_preparations(self)
                 space = install_plan(signed, self.addons, self.work, previous, MANAGED)
                 require_space(space)  # Refuse before creating an orphan transaction.
                 txid = uuid.uuid4().hex
                 tx = self.work / txid
                 stage, backup = tx / 'stage', tx / 'backup'
-                stage.mkdir(parents=True)
-                backup.mkdir()
-                # Reuse the existing archive parser (paths, file budgets, XML
-                # identity, hashes); do not reuse its exclusive-host apply API.
-                engine = UpdateEngine(self.addons, tx / 'validator', self.trust['components'],
-                    'private-candidate', 'coreelec', lambda *_: False, lambda *_: None,
-                    lambda: False, nullcontext, offline=True)
-                for row in manifest['components']:
-                    engine._extract(signed.read(row['file'], row['size']), row, stage)
-                # Install absent signed originals without changing existing
-                # upstream files/origins. Dependencies persist like Kodi's own
-                # dependency installs even if the cinema transaction is rolled back.
-                self.host.dependencies(stage)
-                free = shutil.disk_usage(self.work).free
-                require_space(dict(space, phase='after-dependencies', required_bytes=RESERVE,
-                                   free_bytes=free, fits=free >= RESERVE))
-                items = [dict(id=name, had_old=(self.addons / name).exists()) for name in sorted(MANAGED)]
-                for item in items:
-                    if item['had_old']:
-                        item['old_tree'] = program_tree(self.addons / item['id'])
-                state = dict(schema=1, phase='staged', tx=txid, items=items,
-                    sequence=manifest['sequence'], high_watermark=watermark, previous_skin=self.host.skin(),
-                    enabled=self.host.enabled(), versions={r['id']: r['version'] for r in manifest['components']
-                        if r['id'] in MANAGED})
-                if previous:
-                    state['previous_tx'] = previous['tx']
-                # Archive/dependency preparation can outlast the initial idle
-                # observation. Recheck before replacing the previous journal;
-                # quiesce still owns the final guarded replacement barrier.
-                self._check_idle()
-                self._write(state)  # Gate entrypoints before quiescing any code.
+                tx.mkdir()
+                try:
+                    record_preparation(self.work, txid, manifest['sequence'])
+                    stage.mkdir()
+                    backup.mkdir()
+                    # Share the signed archive validator, not its host lifecycle.
+                    engine = UpdateEngine(self.addons, tx / 'validator', self.trust['components'],
+                        manifest['channel'], 'coreelec', lambda *_: False, lambda *_: None,
+                        lambda: False, nullcontext, offline=True)
+                    for row in manifest['components']:
+                        engine._extract(signed.read(row['file'], row['size']), row, stage)
+                    # Kodi's independently installed dependencies remain installed.
+                    self.host.dependencies(stage)
+                    free = shutil.disk_usage(self.work).free
+                    require_space(dict(space, phase='after-dependencies', required_bytes=RESERVE,
+                                       free_bytes=free, fits=free >= RESERVE))
+                    items = [dict(id=name, had_old=(self.addons / name).exists()) for name in sorted(MANAGED)]
+                    for item in items:
+                        if item['had_old']:
+                            item['old_tree'] = program_tree(self.addons / item['id'])
+                    state = dict(schema=1, phase='staged', tx=txid, items=items,
+                        sequence=manifest['sequence'], high_watermark=watermark, previous_skin=self.host.skin(),
+                        enabled=self.host.enabled(), versions={r['id']: r['version'] for r in manifest['components']
+                            if r['id'] in MANAGED})
+                    if previous:
+                        state['previous_tx'] = previous['tx']
+                    self._check_idle()
+                    self._write(state)  # From this point only journal recovery owns tx.
+                    (tx / PREPARATION).unlink()
+                except BaseException:
+                    try:
+                        proof = preparation_transaction(self.work, txid, self._read())
+                        if proof:
+                            clear_preparation(self, txid, proof)
+                    except (OSError, ValueError, UpdateError):
+                        pass  # Preserve the original error and unproven recovery data.
+                    raise
                 quiesced = False
                 try:
                     self.host.quiesce()

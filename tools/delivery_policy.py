@@ -1,11 +1,7 @@
-"""Owner-approved document-only cleanup; never exclude executable or asset bytes.
-
-This is a private packaging choice, not a grant of redistribution rights.
-Exact source inventories, upstream IDs and inline code credits remain intact.
-"""
+"""Only pinned notices may cross the otherwise document-clean package boundary."""
 import re
 
-POLICY = 'private-document-clean-v1'
+POLICY = 'pinned-notices-v2'
 # Match document filenames only. A license directory is not permission to
 # discard a .py/.ttf/.wav, and e.g. license_status.py is executable input.
 EXCLUDE = re.compile(
@@ -15,6 +11,13 @@ EXCLUDE = re.compile(
     r'(?:licenses?/)(?:[^/]+/)*[^/]+\.(?:md|txt|json|rst|html))$', re.I)
 
 
-def require_clean(paths):
-    if any(EXCLUDE.search(path) for path in paths):
+def require_clean(paths, component=None):
+    from vendor_licenses import load_manifest
+    allowed = {(row['component'], row['path']) for row in load_manifest().get('deliveries', [])}
+    def permitted(path):
+        if component is not None:
+            return (component, path) in allowed
+        prefix, separator, relative = path.partition('/')
+        return bool(separator) and (prefix, relative) in allowed
+    if any(EXCLUDE.search(path) and not permitted(path) for path in paths):
         raise ValueError('Document policy conflict; review input before refreshing inventory')

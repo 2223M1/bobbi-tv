@@ -1,5 +1,5 @@
 """Bounded direct HTTPS JSON and provider-private cookie jars. No redirects."""
-from http.client import HTTPException
+from http.client import HTTPException, RemoteDisconnected
 from contextlib import contextmanager
 from http.cookiejar import Cookie, CookieJar
 import json
@@ -10,9 +10,26 @@ from urllib.parse import urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, HTTPCookieProcessor, ProxyHandler, Request, build_opener
 
 from .pan_accounts import PanError
+from .pan_request_policy import RateLimited, retry_after, safe_read, SAFE_OPERATIONS
 
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36'
+QUARK_USER_AGENT = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+    '(KHTML, like Gecko) quark-cloud-drive/2.5.20 Chrome/100.0.4896.160 '
+    'Electron/18.3.5.4-b478491100 Safari/537.36 Channel/pckk_other_ch')
+UC_USER_AGENT = QUARK_USER_AGENT.replace('quark-cloud-drive', 'uc-cloud-drive')
+WEBKIT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+CHROME133_USER_AGENT = WEBKIT_USER_AGENT + ' (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+MOBILE_REFRESH = 'https://aas.caiyun.feixin.10086.cn:443/tellin/authTokenRefresh.do'
+MOBILE_CATALOG_ROUTES = frozenset((
+    'https://yun.139.com/orchestration/personalCloud/catalog/v1.0/getDirectoryCatalog',
+    'https://yun.139.com/orchestration/personalCloud/upload/v1.0/getDownloadUrl',
+))
+TIANYI_FILE_ROUTES = frozenset((
+    'https://cloud.189.cn/api/open/file/listFiles.action',
+    'https://cloud.189.cn/api/open/file/getFileInfo.action',
+    'https://cloud.189.cn/api/open/file/getFileDownloadUrl.action',
+))
 MAX_REPLY = 2 * 1024 * 1024
 DOMAINS = {'quark': 'quark.cn', 'uc': 'uc.cn', 'baidu': 'baidu.com', '189': '189.cn'}
 API = {'quark': 'https://drive-pc.quark.cn', 'uc': 'https://pc-api.uc.cn', 'baidu': 'https://pan.baidu.com'}
@@ -29,6 +46,8 @@ TOKEN_ROUTES = {
         ('POST', 'https://user-njs.yun.139.com/user/route/qryRoutePolicy'),
         ('POST', 'https://yun.139.com/orchestration/personalCloud/catalog/v1.0/getDisk'),
         ('POST', 'https://yun.139.com/orchestration/personalCloud/uploadAndDownload/v1.0/downloadRequest'),
+        *(('POST', url) for url in MOBILE_CATALOG_ROUTES),
+        ('POST', MOBILE_REFRESH),
     },
     '189': {
         ('GET', 'https://cloud.189.cn/api/portal/loginUrl.action'),
@@ -46,6 +65,7 @@ TOKEN_ROUTES = {
         ('GET', 'https://cloud.189.cn/api/open/user/getUserInfoForPortal.action'),
         ('GET', 'https://cloud.189.cn/api/open/file/listFiles.action'),
         ('GET', 'https://cloud.189.cn/api/open/file/getFileDownloadUrl.action'),
+        ('GET', 'https://cloud.189.cn/api/open/file/getFileInfo.action'),
     },
     'aliyun': {
         ('GET', 'https://passport.aliyundrive.com/newlogin/qrcode/generate.do'),
@@ -55,15 +75,20 @@ TOKEN_ROUTES = {
         ('POST', 'https://api.alipan.com/adrive/v3/file/list'),
         ('POST', 'https://api.alipan.com/v2/file/get'),
         ('POST', 'https://api.alipan.com/v2/file/get_download_url'),
+        ('POST', 'https://auth.aliyundrive.com/v2/account/token'),
+        ('POST', 'https://user.aliyundrive.com/v2/user/get'),
+        ('POST', 'https://api.aliyundrive.com/adrive/v3/file/list'),
+        ('POST', 'https://api.aliyundrive.com/v2/file/get'),
+        ('POST', 'https://api.aliyundrive.com/v2/file/get_download_url'),
     },
     '123': {
         ('GET', 'https://user.123pan.cn/centerlogin'),
         ('GET', 'https://user.123pan.cn/api/user/qr-code/generate'),
         ('GET', 'https://user.123pan.cn/api/user/qr-code/result'),
         ('POST', 'https://user.123pan.cn/api/user/qr-code/wx_code'),
-        ('POST', 'https://user.123pan.cn/api/user/sign_in'),
+        ('POST', 'https://login.123pan.com/api/user/sign_in'),
         ('GET', 'https://api.123pan.cn/b/api/user/info'),
-        ('GET', 'https://www.123pan.cn/b/api/file/list/new'),
+        ('GET', 'https://yun.123pan.com/b/api/file/list/new'),
         ('POST', 'https://www.123pan.cn/a/api/file/download_info'),
     },
     'guangya': {
@@ -71,7 +96,7 @@ TOKEN_ROUTES = {
         ('POST', 'https://account.guangyapan.com/v1/auth/token'),
         ('GET', 'https://account.guangyapan.com/v1/user/me'),
         ('POST', 'https://api.guangyapan.com/userres/v1/file/get_file_list'),
-        ('POST', 'https://api.guangyapan.com/nd.bizuserres.s/v1/get_res_download_url'),
+        ('POST', 'https://api.guangyapan.com/userres/v1/get_res_download_url'),
     },
     'xunlei': {
         ('POST', 'https://xluser-ssl.xunlei.com/v1/shield/captcha/init'),
@@ -94,6 +119,7 @@ AUTH_ROUTES = {
 }
 UC_AUTH_ROUTES = {
     ('GET', 'https://api.open.uc.cn/cas/ajax/getTokenForQrcodeLogin'),
+    ('POST', 'https://api.open.uc.cn/cas/ajax/getTokenForQrcodeLogin'),
     ('GET', 'https://api.open.uc.cn/cas/ajax/getServiceTicketByQrcodeToken'),
     ('GET', 'https://drive.uc.cn/account/info'),
 }
@@ -102,7 +128,7 @@ BAIDU_ROUTES = {
     ('GET', 'https://passport.baidu.com/v2/api/qrcode'),
     ('GET', 'https://passport.baidu.com/channel/unicast'),
     ('GET', 'https://passport.baidu.com/v3/login/main/qrbdusslogin'),
-    ('GET', 'https://pan.baidu.com/api/gettemplatevariable'),
+    ('GET', 'https://mbd.baidu.com/userx/v1/info/get'),
     ('GET', 'https://pan.baidu.com/api/list'),
     ('GET', 'https://pan.baidu.com/api/filemetas'),
 }
@@ -117,11 +143,17 @@ def _cookie_rows(provider, rows):
         if (type(row) is not dict or set(row) != {'name', 'value', 'domain', 'path'}
                 or any(type(v) is not str for v in row.values())
                 or not re.fullmatch(r'[A-Za-z0-9_-]{1,64}', row['name'])
-                or not 0 < len(row['value']) <= 4096
+                or len(row['value']) > 4096
+                # Baidu file responses can clear optional browser state with
+                # NAME=. Preserve that valid CookieJar value across rotation;
+                # it is not account authority. BDUSS must remain non-empty
+                # and still passes the provider's minimum-length check below.
+                or (not row['value'] and (provider != 'baidu' or row['name'] == 'BDUSS'))
                 or not row['value'].isascii()
                 or re.search(r'[;\x00-\x20\x7f-\uffff]', row['value'])
                 or row['domain'].lstrip('.') not in (domain, urlsplit(API[provider]).hostname,
                     urlsplit(WEB[provider]).hostname, 'passport.baidu.com' if provider == 'baidu' else domain,
+                    'mbd.baidu.com' if provider == 'baidu' else domain,
                     'open.e.189.cn' if provider == '189' else domain, 'e.189.cn' if provider == '189' else domain)
                 or not row['path'].startswith('/') or len(row['path']) > 256
                 or re.search(r'[\x00-\x20\x7f]', row['path'])):
@@ -179,6 +211,7 @@ class Session:
             raise PanError('PAN_PROVIDER_INVALID')
         self.provider, self.jar, self.clock = provider, CookieJar(), clock
         self.deadline = None
+        self.operation = None
         if saved is not None:
             _, saved = credentials(provider, saved)
             for row in saved['cookies']:
@@ -225,12 +258,34 @@ class Session:
         except ValueError:
             raise PanError('PAN_REPLY_INVALID') from None
 
-    def request_raw(self, url, query=None, body=None, limit=MAX_REPLY, headers=None, form=None, metadata=False):
+    def request_raw(self, url, query=None, body=None, limit=MAX_REPLY, headers=None, form=None, metadata=False, xml_body=None):
+        operation = self.operation
+        method = 'POST' if body is not None or form is not None or xml_body is not None else 'GET'
+        for attempt in range(2):
+            if operation is not None:
+                operation.consume_request()
+            try:
+                return self._request_once(url, query, body, limit, headers, form, metadata, xml_body)
+            except RateLimited as error:
+                if operation is not None and operation.cooldowns is not None:
+                    operation.cooldowns.mark(operation.expected, error.delay)
+                if (operation is None or operation.kind not in SAFE_OPERATIONS or attempt
+                        or not safe_read(self.provider, method, url)):
+                    raise
+                operation.wait(error.delay)
+
+    def _request_once(self, url, query=None, body=None, limit=MAX_REPLY, headers=None, form=None, metadata=False, xml_body=None):
         if metadata and self.provider != '189':
             raise PanError('PAN_REQUEST_INVALID')
-        if body is not None and form is not None:
+        if sum(value is not None for value in (body, form, xml_body)) > 1:
             raise PanError('PAN_REQUEST_INVALID')
-        method = 'POST' if body is not None or form is not None else 'GET'
+        if xml_body is not None and (self.provider != '139' or url != MOBILE_REFRESH
+                or type(xml_body) is not bytes or not 0 < len(xml_body) <= 16384
+                or query or metadata):
+            raise PanError('PAN_REQUEST_INVALID')
+        if url == MOBILE_REFRESH and xml_body is None:
+            raise PanError('PAN_REQUEST_INVALID')
+        method = 'POST' if body is not None or form is not None or xml_body is not None else 'GET'
         parsed = urlsplit(url)
         api = self.provider in ('quark', 'uc') and parsed.scheme + '://' + parsed.netloc == API[self.provider]
         auth = self.provider == 'quark' and (method, url) in AUTH_ROUTES
@@ -255,7 +310,7 @@ class Session:
                             'X-SDK-Version', 'X-Captcha-Token', 'Did', 'Dt', 'Lt', 'Reqid',
                             'mcloud-client', 'mcloud-sign', 'mcloud-skey', 'X-Deviceinfo',
                             'x-yun-api-version', 'x-yun-app-channel', 'x-yun-client-info',
-                            'x-yun-module-type', 'x-yun-svc-type'}
+                            'x-yun-module-type', 'x-yun-svc-type', 'x-account', 'sessionKey'}
                 or type(value) is not str or not 0 < len(value) <= 8192
                 or not value.isascii() or re.search(r'[\x00-\x1f\x7f]', value)
                 for key, value in extra.items())):
@@ -263,28 +318,69 @@ class Session:
         if 'X-Captcha-Token' in extra and not (self.provider == 'xunlei'
                 and parsed.hostname == 'api-pan.xunlei.com'):
             raise PanError('PAN_ORIGIN_REJECTED')
+        if 'x-account' in extra and not (self.provider == '139' and method == 'POST'
+                and url.split('?', 1)[0] in MOBILE_CATALOG_ROUTES):
+            raise PanError('PAN_ORIGIN_REJECTED')
+        if 'sessionKey' in extra and not (self.provider == '189' and method == 'GET'
+                and url.split('?', 1)[0] in TIANYI_FILE_ROUTES):
+            raise PanError('PAN_ORIGIN_REJECTED')
+        if self.provider == '123' and parsed.hostname == 'login.123pan.com':
+            # QR tickets are consumed by the login service, not the QR service.
+            # Keep its browser context exact; never forward a bearer token here.
+            context = {
+                'Origin': 'https://login.123pan.com',
+                'Referer': 'https://login.123pan.com/centerlogin?redirect_url=https%3A%2F%2Fwww.123684.com&source_page=website',
+            }
+            if any(extra.get(key) != value for key, value in context.items()):
+                raise PanError('PAN_ORIGIN_REJECTED')
         if 'Authorization' in extra and not (
-                self.provider == 'aliyun' and parsed.hostname == 'api.alipan.com'
-                or self.provider == '123' and parsed.hostname in ('api.123pan.cn', 'www.123pan.cn')
+                self.provider == 'aliyun' and (parsed.hostname in ('api.alipan.com', 'api.aliyundrive.com')
+                    or parsed.hostname == 'user.aliyundrive.com' and parsed.path == '/v2/user/get')
+                or self.provider == '123' and parsed.hostname in ('api.123pan.cn', 'www.123pan.cn', 'yun.123pan.com')
                 or self.provider == 'guangya' and parsed.hostname in ('account.guangyapan.com', 'api.guangyapan.com')
                 or self.provider == 'xunlei' and (parsed.hostname == 'api-pan.xunlei.com'
                     or parsed.hostname == 'xluser-ssl.xunlei.com' and parsed.path == '/v1/user/me')
-                or self.provider == '139' and (mobile_route or url in {
+                or self.provider == '139' and (mobile_route or url.split('?', 1)[0] in MOBILE_CATALOG_ROUTES or url in {
                     'https://user-njs.yun.139.com/user/route/qryRoutePolicy',
                     'https://yun.139.com/orchestration/personalCloud/catalog/v1.0/getDisk',
                     'https://yun.139.com/orchestration/personalCloud/uploadAndDownload/v1.0/downloadRequest'})):
             raise PanError('PAN_ORIGIN_REJECTED')
-        headers = {'User-Agent': USER_AGENT, 'Accept': 'application/json',
+        agent = {'quark': QUARK_USER_AGENT, 'uc': UC_USER_AGENT, '123': CHROME133_USER_AGENT}.get(self.provider, USER_AGENT)
+        if self.provider == 'baidu' and (parsed.hostname == 'passport.baidu.com'
+                or parsed.hostname == 'mbd.baidu.com'):
+            agent = WEBKIT_USER_AGENT
+        if self.provider == 'baidu' and parsed.hostname == 'mbd.baidu.com':
+            agent = 'Mozilla/5.0 (Linux; Android 12; SM-X800) AppleWebKit/537.36'
+        if self.provider == 'baidu' and parsed.path == '/api/list':
+            agent = 'pan.baidu.com'
+        if self.provider == 'aliyun':
+            agent = CHROME133_USER_AGENT if parsed.hostname in ('auth.aliyundrive.com', 'auth.alipan.com') else WEBKIT_USER_AGENT
+        headers = {'User-Agent': agent, 'Accept': 'application/json',
                    'Referer': WEB[self.provider] + '/', 'Cache-Control': 'no-store'}
+        if self.provider == 'baidu' and parsed.hostname == 'mbd.baidu.com':
+            headers.pop('Referer')
+        if self.provider == '189' and method == 'GET' and url.split('?', 1)[0] in TIANYI_FILE_ROUTES:
+            headers['Accept'] = 'application/json;charset=UTF-8'
+        if self.provider == '123' and parsed.hostname == 'login.123pan.com':
+            headers.update({'Accept': 'application/json, text/plain, */*',
+                            'Accept-Language': 'zh-CN,zh;q=0.9'})
         headers.update(extra)
         if data is not None:
-            headers['Content-Type'] = 'application/json'
+            headers['Content-Type'] = 'application/json;charset=UTF-8' if self.provider == '139' else 'application/json'
         if form is not None:
             if type(form) is not dict:
                 raise PanError('PAN_REQUEST_INVALID')
             data = urlencode(form).encode('ascii')
             headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        timeout = 8 if self.deadline is None else min(8, self.deadline - self.clock())
+        if xml_body is not None:
+            data = xml_body
+            headers['Content-Type'] = 'application/xml'
+        # Baidu's confirmation endpoint is a long-poll, unlike normal API IO.
+        # Keep this exception route-specific and inside the enclosing budget.
+        ceiling = 15 if self.provider == 'baidu' and parsed.path == '/channel/unicast' else 8
+        timeout = ceiling if self.deadline is None else min(ceiling, self.deadline - self.clock())
+        if self.operation is not None:
+            timeout = min(timeout, self.operation.deadline - self.operation.clock())
         if timeout <= 0:
             raise PanError('PAN_NETWORK_ERROR')
         deadline = self.clock() + timeout
@@ -302,6 +398,8 @@ class Session:
                     raise
                 reply = error  # OAuth pending is structured, bounded JSON, not success.
             with reply:
+                if reply.status == 429:
+                    raise RateLimited(retry_after(reply.headers.get('Retry-After')))
                 if metadata and reply.status in (301, 302, 303, 307, 308):
                     return b'', reply.status, reply.headers.get('Location')
                 if reply.status != 200 and not (reply.status == 400 and oauth_error
@@ -315,6 +413,8 @@ class Session:
                 raw = bytearray()
                 reader = getattr(reply, 'read1', reply.read)
                 while True:
+                    if self.operation is not None:
+                        self.operation.check()
                     remaining = deadline - self.clock()
                     if remaining <= 0:
                         raise PanError('PAN_NETWORK_ERROR')
@@ -342,8 +442,15 @@ class Session:
         except PanError:
             raise
         except HTTPError as error:
+            delay = retry_after(getattr(error.headers, 'get', lambda key: None)('Retry-After')) if error.code == 429 else None
             error.close()
+            if delay is not None:
+                raise RateLimited(delay) from None
             raise PanError('PAN_LOGIN_REQUIRED' if error.code in (401, 403) else 'PAN_HTTP_REJECTED') from None
+        except RemoteDisconnected:
+            # This connection error also inherits HTTPException; classify it
+            # before framing errors so a safe poll remains retryable.
+            raise PanError('PAN_NETWORK_ERROR') from None
         except (HTTPException, ValueError):
             raise PanError('PAN_REPLY_INVALID') from None
         except OSError:

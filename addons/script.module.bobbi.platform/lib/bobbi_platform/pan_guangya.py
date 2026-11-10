@@ -12,7 +12,7 @@ def entry(row):
         raise PanError('PAN_REPLY_INVALID')
     return dict(file_id=identifier(row.get('fileId')), name=text(row.get('fileName')),
         size=number(row.get('fileSize')), directory=row['resType'] == 2,
-        modified=number(row.get('utime')))
+        modified=number(row.get('utime', 0)))
 
 
 class Client(RenewableClient):
@@ -24,7 +24,8 @@ class Client(RenewableClient):
             'Authorization': 'Bearer ' + self.saved['access_token'],
             'Did': self.saved['device_id'], 'Dt': '4'})
         if type(value.get('code')) is not int or value['code'] != 0:
-            raise PanError('PAN_API_REJECTED')
+            raise PanError('PAN_LOGIN_REQUIRED' if type(value.get('code')) is int
+                and value['code'] in (401, 1001) else 'PAN_API_REJECTED')
         if type(value.get('data')) is not dict:
             raise PanError('PAN_REPLY_INVALID')
         return value['data']
@@ -34,7 +35,13 @@ class Client(RenewableClient):
         value = self._call('/userres/v1/file/get_file_list', dict(
             parentId='' if parent == '0' else identifier(parent), page=page-1,
             pageSize=size, orderBy=3, sortType=1))
-        result = listing(value.get('list'), value.get('total'), page, size, entry)
+        rows = value.get('list')
+        if type(rows) is not list:
+            raise PanError('PAN_REPLY_INVALID')
+        # Older personal-directory replies have no total. Keep page-local
+        # reads, allowing at most one empty trailing page instead of a scan.
+        total = value.get('total', (page - 1) * size + len(rows) + int(len(rows) == size))
+        result = listing(rows, total, page, size, entry)
         for item in result['items']:
             if not item['directory']:
                 item['listing'] = dict(parent=parent, page=page, size=size)
@@ -54,6 +61,7 @@ class Client(RenewableClient):
         matches = [row for row in rows if row['file_id'] == fid]
         if len(matches) != 1 or matches[0] != selected:
             raise PanError('PAN_FILE_CHANGED')
-        value = self._call('/nd.bizuserres.s/v1/get_res_download_url', {'fileId': fid})
-        url = original_url(value.get('signedURL') or value.get('downloadUrl'), ('guangyapan.com', 'aliyuncs.com'))
+        value = self._call('/userres/v1/get_res_download_url', {'fileId': fid})
+        url = original_url(value.get('downloadUrl') or value.get('signedURL')
+            or value.get('url') or value.get('signedUrl'), ('guangyapan.com', 'aliyuncs.com'))
         return dict(url=url, size=selected['size'], original=True, headers={'User-Agent': USER_AGENT})

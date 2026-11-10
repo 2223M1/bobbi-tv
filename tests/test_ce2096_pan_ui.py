@@ -3,6 +3,7 @@ from copy import deepcopy
 from pathlib import Path
 import sys
 from types import SimpleNamespace
+from urllib.error import HTTPError
 
 import pytest
 
@@ -14,8 +15,9 @@ from test_accounts import credential
 
 @pytest.fixture
 def ui(tmp_path, monkeypatch):
-    state = SimpleNamespace(calls=[], messages=[], selections=[], menus=[], window=None,
-                            cancel_poll=False, lost_commit=False, aborted=False, polls=0)
+    state = SimpleNamespace(calls=[], messages=[], selections=[], menus=[], statuses=[], window=None,
+                            cancel_poll=False, lost_commit=False, aborted=False, polls=0,
+                            close_error=None, closes=0)
     state.row = dict(provider='quark', account=empty_scope('quark'), capabilities=['qr_login', 'list_files'])
     state.dialog = SimpleNamespace(ok=lambda *a: state.messages.append(a),
         select=lambda *a, **kw: (state.menus.append(a), state.selections.pop(0))[1],
@@ -32,8 +34,12 @@ def ui(tmp_path, monkeypatch):
         abortRequested=lambda: state.aborted, waitForAbort=lambda seconds: state.aborted),
         executebuiltin=lambda value: None))
     def window(*args):
-        state.window = SimpleNamespace(cancelled=False, show=lambda: None, close=lambda: None,
-                                       set_status=lambda *a: None)
+        def close():
+            state.closes += 1
+            if state.close_error is not None:
+                raise state.close_error
+        state.window = SimpleNamespace(cancelled=False, show=lambda: None, close=close,
+                                       set_status=state.statuses.append, set_image=lambda *a: None)
         return state.window
     monkeypatch.setattr(account_dialog, 'create', window)
     def call(action, body, **kwargs):
@@ -108,6 +114,138 @@ def test_lost_commit_reply_cancel_reports_actual_commit_not_unchanged(ui):
     assert ui.calls[-1][0] == 'pan_login_cancel'
     assert ui.messages[-1][0] == '登录已保存'
     assert 'fixture-sensitive' not in repr(ui.messages)
+
+
+def test_kodi_close_failure_does_not_misreport_acknowledged_native_login(ui):
+    ui.close_error = RuntimeError('synthetic Kodi window already closed')
+    assert pan_ui.login(ui.row, ui.dialog) is True
+    assert [action for action, _ in ui.calls] == ['pan_login_begin', 'pan_login_poll', 'pan_login_commit']
+    assert ui.messages[-1][0].startswith('已保存 ')
+    assert not any(title == '未确认登录结果' for title, _ in ui.messages)
+
+
+def test_kodi_close_failure_cannot_skip_native_cancel(ui):
+    ui.close_error = RuntimeError('synthetic Kodi window already closed')
+    ui.cancel_poll = True
+    assert pan_ui.login(ui.row, ui.dialog) is False
+    assert [action for action, _ in ui.calls] == ['pan_login_begin', 'pan_login_poll', 'pan_login_cancel']
+    assert not ui.messages
+
+
+@pytest.mark.parametrize('code,message', [
+    ('PAN_API_REJECTED', '网盘未接受本次请求'),
+    ('PAN_HTTP_REJECTED', '网盘服务暂不接受连接'),
+    ('PAN_REPLY_INVALID', '网盘返回的信息无法安全识别'),
+    ('PAN_CHALLENGE_REQUIRED', '额外验证'),
+    ('PAN_ACCOUNT_CHANGED', '账号已变更'),
+])
+def test_terminal_login_error_is_not_repolled_or_replaced_by_expiry(ui, monkeypatch, code, message):
+    original = pan_ui.call
+    def call(action, body, **kwargs):
+        if action != 'pan_login_poll':
+            return original(action, body, **kwargs)
+        ui.calls.append((action, deepcopy(body)))
+        ui.polls += 1
+        if ui.polls == 1:
+            raise PanError(code)
+        return dict(state='failed')  # Host retains terminal failure, not its cause.
+    monkeypatch.setattr(pan_ui, 'call', call)
+    assert pan_ui.login(ui.row, ui.dialog) is False
+    assert [action for action, _ in ui.calls] == ['pan_login_begin', 'pan_login_poll', 'pan_login_cancel']
+    assert ui.polls == 1 and message in ui.messages[-1][1]
+    assert '二维码已失效' not in repr(ui.messages)
+    assert not any('正在重试' in status for status in ui.statuses)
+
+
+@pytest.mark.parametrize('error', [
+    PanError('PAN_NETWORK_ERROR'), PanError('PAN_QR_POLL_RETRY'),
+    OSError('fixture-sensitive'), TimeoutError('fixture-sensitive'),
+])
+def test_transient_login_transport_error_retries_and_still_requires_commit(ui, monkeypatch, error):
+    original = pan_ui.call
+    def call(action, body, **kwargs):
+        if action == 'pan_login_poll' and not ui.polls:
+            ui.calls.append((action, deepcopy(body)))
+            ui.polls += 1
+            raise error
+        return original(action, body, **kwargs)
+    monkeypatch.setattr(pan_ui, 'call', call)
+    assert pan_ui.login(ui.row, ui.dialog) is True
+    assert [action for action, _ in ui.calls] == [
+        'pan_login_begin', 'pan_login_poll', 'pan_login_poll', 'pan_login_commit']
+    assert any('正在重试' in status for status in ui.statuses)
+    assert 'fixture-sensitive' not in repr(ui.messages + ui.statuses)
+
+
+def test_login_transport_retries_are_bounded_and_never_commit_on_exhaustion(ui, monkeypatch):
+    original = pan_ui.call
+    def call(action, body, **kwargs):
+        if action == 'pan_login_poll':
+            ui.calls.append((action, deepcopy(body)))
+            raise TimeoutError('fixture-sensitive')
+        return original(action, body, **kwargs)
+    monkeypatch.setattr(pan_ui, 'call', call)
+    assert pan_ui.login(ui.row, ui.dialog) is False
+    assert [action for action, _ in ui.calls] == [
+        'pan_login_begin', 'pan_login_poll', 'pan_login_poll', 'pan_login_poll', 'pan_login_cancel']
+    assert sum('正在重试' in status for status in ui.statuses) == 2
+    assert 'fixture-sensitive' not in repr(ui.messages + ui.statuses)
+    assert '二维码已失效' not in repr(ui.messages)
+
+
+@pytest.mark.parametrize('error', [PanError('PAN_API_REJECTED'), TimeoutError('fixture-sensitive')])
+def test_cancel_during_error_reply_wins_without_retry_commit_or_failure_dialog(ui, monkeypatch, error):
+    original = pan_ui.call
+    def call(action, body, **kwargs):
+        if action == 'pan_login_poll':
+            ui.calls.append((action, deepcopy(body)))
+            ui.window.cancelled = True
+            raise error
+        return original(action, body, **kwargs)
+    monkeypatch.setattr(pan_ui, 'call', call)
+    assert pan_ui.login(ui.row, ui.dialog) is False
+    assert [action for action, _ in ui.calls] == ['pan_login_begin', 'pan_login_poll', 'pan_login_cancel']
+    assert not ui.messages
+    assert not any('正在重试' in status for status in ui.statuses)
+
+
+@pytest.mark.parametrize('error', [
+    ValueError('fixture-sensitive'), RuntimeError('fixture-sensitive'),
+    TypeError('fixture-sensitive'), Exception('fixture-sensitive'),
+    PanError('PAN_private-fixture-sensitive'),
+    HTTPError('https://fixture-sensitive/', 403, 'fixture-sensitive', {}, None),
+])
+def test_unknown_login_failure_stops_without_retry_or_exception_text(ui, monkeypatch, error):
+    original = pan_ui.call
+    def call(action, body, **kwargs):
+        if action == 'pan_login_poll':
+            ui.calls.append((action, deepcopy(body)))
+            raise error
+        return original(action, body, **kwargs)
+    monkeypatch.setattr(pan_ui, 'call', call)
+    assert pan_ui.login(ui.row, ui.dialog) is False
+    assert [action for action, _ in ui.calls] == ['pan_login_begin', 'pan_login_poll', 'pan_login_cancel']
+    assert 'fixture-sensitive' not in repr(ui.messages + ui.statuses)
+    assert '二维码已失效' not in repr(ui.messages)
+    assert not any('正在重试' in status for status in ui.statuses)
+
+
+@pytest.mark.parametrize('state,message', [
+    ('failed', '本次登录未完成'), ('account_changed', '账号已变更'),
+    ('cancelled', '本次扫码已结束'), ('unexpected', 'INVALID_STATE'),
+])
+def test_terminal_login_state_does_not_invent_qr_expiry(ui, monkeypatch, state, message):
+    original = pan_ui.call
+    def call(action, body, **kwargs):
+        if action == 'pan_login_poll':
+            ui.calls.append((action, deepcopy(body)))
+            return dict(state=state)
+        return original(action, body, **kwargs)
+    monkeypatch.setattr(pan_ui, 'call', call)
+    assert pan_ui.login(ui.row, ui.dialog) is False
+    assert [action for action, _ in ui.calls] == ['pan_login_begin', 'pan_login_poll', 'pan_login_cancel']
+    assert message in ui.messages[-1][1]
+    assert '二维码已失效' not in repr(ui.messages)
 
 
 def test_browse_baidu_navigates_paths_and_never_plays(ui, monkeypatch):
@@ -192,7 +330,8 @@ def test_transient_directory_error_retries_same_folder_page_cursor(ui, monkeypat
     monkeypatch.setattr(pan_ui, 'call', call)
     ui.selections = [0, 0, -1]
     pan_ui.browse(dict(provider=provider, account=expected), ui.dialog)
-    assert ui.calls[1][1] == ui.calls[2][1]
+    assert {k: v for k, v in ui.calls[1][1].items() if k != 'operation_id'} == {
+        k: v for k, v in ui.calls[2][1].items() if k != 'operation_id'}
     assert ui.calls[2][1]['page'] == 2 and ui.calls[2][1]['cursor'] == 'cursor1'
     assert ui.menus[1][1][0] == '重试当前位置' and not ui.messages
 

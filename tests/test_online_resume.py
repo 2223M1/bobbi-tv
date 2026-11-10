@@ -8,7 +8,7 @@ import pytest
 
 from bobbi_platform import online_updates as online
 from bobbi_platform.updates import UpdateError
-from test_online_updates import Response, offer_for, package, signing, entry, environment
+from test_online_updates import Response, offer_for, tracked_offer, package, signing, entry, environment
 from test_online_transport import endpoint
 
 
@@ -294,12 +294,12 @@ def test_resume_headers_do_not_leak_into_nested_discovery(payload, monkeypatch):
     raw, offer, work, trust = payload
     interrupt(monkeypatch,*payload)
     def response(url):
-        if url == online.OFFER_URL:
+        if url in (online.feed_url('stable', source) for source in ('gitee', 'github')):
             assert headers() == {}
-            return Response(json.dumps(offer).encode())
+            return Response(json.dumps(tracked_offer()).encode())
         before = headers()
         assert before['Range']
-        assert online.latest() == offer
+        assert online.latest() == tracked_offer()
         assert headers() == before
         return ranged(raw,len(raw)//2)
     monkeypatch.setattr(online,'_open',response)

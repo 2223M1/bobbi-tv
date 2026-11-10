@@ -88,7 +88,7 @@ def plugin(monkeypatch, tmp_path):
 
 def test_root_lists_sources_without_network_or_credentials(plugin):
     plugin.module.execute(17, {})
-    assert len(plugin.rows) == 2
+    assert len(plugin.rows) == 3
     assert not plugin.calls and not plugin.resolved
     assert plugin.rows[0][1].label == '管理片库来源'
     assert plugin.rows[1][1].label == 'NAS'
@@ -96,6 +96,9 @@ def test_root_lists_sources_without_network_or_credentials(plugin):
     assert plugin.rows[1][1].properties['Bobi.Library.Kind'] == 'smb'
     assert plugin.rows[1][1].label2 == 'SMB · nas.example'
     assert plugin.rows[1][1].properties['Bobi.Library.Location'] == 'SMB · nas.example'
+    assert plugin.rows[2][1].label == '我的文件 · 原生网盘'
+    assert dict(parse_qsl(urlsplit(plugin.rows[2][0]).query)) == {'action': 'native_files'}
+    assert plugin.rows[2][1].properties['Bobi.Library.Kind'] == 'native_pan'
     assert all('test-secret' not in target and 'nas.example' not in target for target, _, _ in plugin.rows)
     assert plugin.content == 'files' and plugin.closed == 1
 

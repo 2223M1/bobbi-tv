@@ -139,6 +139,8 @@ class StandardSession:
         return natural
 
     def _save(self, row, reason):
+        if row['data'].get('_pan_file'):
+            row['data']['_file_history_sequence'] = row['data'].get('_file_history_sequence', 0) + 1
         data = deepcopy(row['data'])
         data.update(current_time=row['position'], total_time=row['duration'],
             progress=(100 * row['position'] / row['duration'] if row['duration'] else 0),

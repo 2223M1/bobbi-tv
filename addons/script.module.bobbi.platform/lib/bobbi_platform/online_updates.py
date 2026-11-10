@@ -22,6 +22,38 @@ MIRROR_FEED = MIRROR_ROOT + '/raw/master/repository/'
 OFFER_URL = MIRROR_FEED + 'current.json'
 FALLBACK_OFFER_URL = 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/current.json'
 TRANSFER_SECONDS = 600
+DISCOVERY_SECONDS = 20
+TRACKS = ('stable', 'preview')
+# Explicit migration exception: this exact already-published stable artifact
+# predates signed stable channels. No other schema-1 identity is adopted.
+LEGACY_STABLE = ('ce2080', 2026102080, 95934438,
+    '39e2435a50bcb8e1832e7b03929a5efbeaa6d1d9f17ce5b3704287629620331c')
+
+
+def feed_url(track, source):
+    if track not in TRACKS or source not in ('gitee', 'github'):
+        raise UpdateError('ONLINE_TRACK_MISMATCH')
+    root = MIRROR_FEED if source == 'gitee' else FALLBACK_OFFER_URL.rsplit('/', 1)[0] + '/'
+    return root + track + '/current.json'
+
+
+def selected_track(work, value=None):
+    """Independent preference; never mutate the installation high watermark."""
+    from .updates import _atomic
+    path = _safe_path(work) / 'update-track.json'
+    if value is not None:
+        if value not in TRACKS:
+            raise UpdateError('ONLINE_TRACK_MISMATCH')
+        _atomic(path, dict(schema=1, track=value))
+    if not path.exists():
+        return 'stable'
+    if path.stat().st_size > 1024:
+        raise UpdateError('ONLINE_TRACK_MISMATCH')
+    data = _json(path.read_bytes())
+    if (not isinstance(data, dict) or set(data) != {'schema', 'track'}
+            or type(data['schema']) is not int or data['schema'] != 1 or data['track'] not in TRACKS):
+        raise UpdateError('ONLINE_TRACK_MISMATCH')
+    return data['track']
 # Preserve the single-argument opener seam while keeping concurrent/nested
 # requests isolated. The callback runs only on the caller's thread.
 _ACTIVE = ContextVar('bobbi_online_active', default=lambda: None)
@@ -54,7 +86,10 @@ def _allowed_redirect(value):
             # Gitee signs anonymous raw redirects. These short-lived delivery
             # parameters are not account credentials and never enter the feed.
             query = parse_qsl(url.query, keep_blank_values=True, strict_parsing=True)
-            return (url.path == '/M12223/bobbi-tv-updates/raw/master/repository/current.json' and
+            member = (r'(?:current\.json|addons\.xml(?:\.md5|\.sha256)?|index\.html|'
+                r'script\.bobbi\.start/script\.bobbi\.start-[0-9.]+\.zip(?:\.sha256)?|'
+                r'repository\.bobbi/repository\.bobbi-[0-9.]+\.zip(?:\.sha256)?)')
+            return (re.fullmatch(r'/M12223/bobbi-tv-updates/raw/master/repository/(?:(?:stable|preview)/)?' + member, url.path) is not None and
                     (not url.query or (len(query) == 2 and
                      {key for key, _ in query} == {'metadata', 'signature'} and
                      all(value for _, value in query))))
@@ -175,10 +210,13 @@ def _receive(url, maximum, consume, progress, expected, active, partial=None):
             raise UpdateError('ONLINE_SHORT_READ')
 
 
-def parse_offer(raw):
+def parse_offer(raw, track=None):
     value = _json(raw)
-    if (not isinstance(value, dict) or set(value) != {'schema', 'tag', 'sequence', 'url', 'size', 'sha256'}
-            or type(value['schema']) is not int or value['schema'] != 1
+    fields = {'schema', 'tag', 'sequence', 'url', 'size', 'sha256'}
+    if isinstance(value, dict) and value.get('schema') == 2:
+        fields |= {'track', 'manifest_channel', 'prerelease', 'versions'}
+    if (not isinstance(value, dict) or set(value) != fields
+            or type(value['schema']) is not int or value['schema'] not in (1, 2)
             or not isinstance(value['tag'], str) or not re.fullmatch(r'ce[1-9][0-9]{3,7}', value['tag'])
             or type(value['sequence']) is not int or value['sequence'] < 1
             or type(value['size']) is not int or not 0 < value['size'] <= MAX_BUNDLE
@@ -186,20 +224,78 @@ def parse_offer(raw):
         raise UpdateError('ONLINE_OFFER_INVALID')
     if value['url'] not in (release_url(value['tag']), release_url(value['tag'], 'github')):
         raise UpdateError('ONLINE_OFFER_INVALID')
+    legacy = tuple(value[key] for key in ('tag', 'sequence', 'size', 'sha256')) == LEGACY_STABLE
+    if value['schema'] == 2:
+        if (value['track'] not in TRACKS or type(value['prerelease']) is not bool
+                or value['prerelease'] != (value['track'] == 'preview')
+                or value['manifest_channel'] != ('private-candidate' if value['track'] == 'preview' else 'private-stable')
+                   and not (legacy and value['track'] == 'stable' and value['manifest_channel'] == 'private-candidate')
+                or not isinstance(value['versions'], dict) or not value['versions']
+                or len(value['versions']) > 128
+                or any(not isinstance(name, str) or not re.fullmatch(r'[a-z0-9_.-]{1,128}', name)
+                       or not isinstance(version, str) or not re.fullmatch(r'[0-9][a-zA-Z0-9.+_-]{0,63}', version)
+                       for name, version in value['versions'].items())):
+            raise UpdateError('ONLINE_TRACK_MISMATCH')
+    if track is not None and (track not in TRACKS or
+            (value['schema'] == 1 and not (legacy and track == 'stable')) or
+            (value['schema'] == 2 and value['track'] != track)):
+        raise UpdateError('ONLINE_TRACK_MISMATCH')
     return value
 
 
-def latest(cancelled=lambda: False):
-    deadline = time.monotonic() + TRANSFER_SECONDS
-    urls = tuple(dict.fromkeys((OFFER_URL, FALLBACK_OFFER_URL)))
+def check_offer_manifest(offer, manifest):
+    if manifest['sequence'] != offer['sequence']:
+        raise UpdateError('ONLINE_GENERATION_MISMATCH')
+    if offer['schema'] == 2 and (manifest['channel'] != offer['manifest_channel']
+            or {r['id']: r['version'] for r in manifest['components']} != offer['versions']):
+        raise UpdateError('ONLINE_TRACK_MISMATCH')
+
+
+def latest(cancelled=lambda: False, *, track='stable', report=None):
+    deadline = time.monotonic() + min(TRANSFER_SECONDS, DISCOVERY_SECONDS)
+    urls = tuple(feed_url(track, source) for source in ('gitee', 'github'))
+    candidates, unavailable = [], []
+    last_error = None
     for index, url in enumerate(urls):
         chunks = []
+        legacy = False
         try:
-            _transfer(url, 32768, chunks.append, cancelled, lambda _: None, deadline=deadline)
-            return parse_offer(b''.join(chunks))
-        except (URLError, TimeoutError, ConnectionError) as error:
-            if index == len(urls)-1 or not _network_failure(error):
+            # Reserve a share for each mirror; one timeout cannot starve the other.
+            until = deadline if index else min(deadline, time.monotonic() + DISCOVERY_SECONDS / 2)
+            try:
+                _transfer(url, 32768, chunks.append, cancelled, lambda _: None, deadline=until)
+            except HTTPError as error:
+                if error.code != 404 or track != 'stable':
+                    raise
+                chunks.clear()
+                legacy = True
+                _transfer((OFFER_URL, FALLBACK_OFFER_URL)[index], 32768, chunks.append,
+                          cancelled, lambda _: None, deadline=until)
+            try:
+                candidates.append(parse_offer(b''.join(chunks), track))
+            except UpdateError:
+                if not legacy:
+                    raise
+                # Compatibility is an allowlist, not a reinterpretation of old
+                # channel-less offers. Still try the other official mirror.
+                raise UpdateError('ONLINE_LEGACY_UNVERIFIED') from None
+        except (URLError, TimeoutError, ConnectionError, UpdateError) as error:
+            if isinstance(error, Cancelled) or not (_network_failure(error) or
+                    str(error) in ('ONLINE_TIMEOUT', 'ONLINE_LEGACY_UNVERIFIED')):
                 raise
+            unavailable.append(index)
+            last_error = error
+    if not candidates:
+        raise last_error or UpdateError('ONLINE_OFFER_INVALID')
+    candidates.sort(key=lambda value: value['sequence'], reverse=True)
+    if len(candidates) == 2 and candidates[0]['sequence'] == candidates[1]['sequence']:
+        if {k: v for k, v in candidates[0].items() if k != 'url'} != {k: v for k, v in candidates[1].items() if k != 'url'}:
+            raise UpdateError('ONLINE_MIRROR_CONFLICT')
+    if report is not None:
+        report.update(track=track, mirrors=('unavailable' if unavailable else 'out-of-sync'
+            if len({o['sequence'] for o in candidates}) > 1 else 'synchronized'),
+            compatibility='pinned-schema1' if candidates[0]['schema'] == 1 else 'versioned')
+    return candidates[0]
 
 
 def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: None, *, deadline=None, report=None):
@@ -263,8 +359,7 @@ def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: Non
             # Discovery and checkpoints never replace the existing trust anchor.
             try:
                 with SignedBundle(partial.path, trust, 'coreelec') as signed:
-                    if signed.check_all()['sequence'] != offer['sequence']:
-                        raise UpdateError('ONLINE_GENERATION_MISMATCH')
+                    check_offer_manifest(offer, signed.check_all())
             except (zipfile.BadZipFile, EOFError, zlib.error):
                 raise UpdateError('ONLINE_PACKAGE_INVALID') from None
             active()

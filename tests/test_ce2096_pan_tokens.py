@@ -78,7 +78,8 @@ def test_aliyun_qr_form_isolation_exchange_and_identity():
     ext = base64.b64encode(json.dumps({'pds_login_result': {'refreshToken': 'fixture-initial'},
         'unrelated': '名字'}, ensure_ascii=False).encode('gb18030')).decode()
     wire = Wire(ali_content(codeContent='https://signin.aliyundrive.com/qr?fixture=1', ck='fixture-ck', t=123),
-        ali_content(qrCodeStatus='NEW'), ali_content(qrCodeStatus='CONFIRMED', bizExt=ext), aliyun_token())
+        ali_content(qrCodeStatus='NEW'), ali_content(qrCodeStatus='CONFIRMED', bizExt=ext), aliyun_token(),
+        dict(default_drive_id='100', resource_drive_id='100', backup_drive_id='200'))
     login = pan_aliyun.Login(wire, clock=lambda: 1, wall_clock=lambda: 1000)
     assert login.begin().startswith('https://signin.aliyundrive.com/')
     assert login.poll() == ('waiting', None)
@@ -86,6 +87,8 @@ def test_aliyun_qr_form_isolation_exchange_and_identity():
     assert state == 'ready' and value['subject'] == '12345' and value['expires_at'] == 4600
     assert wire.calls[1]['form']['ck'] == 'fixture-ck'
     assert wire.calls[-1]['body']['refresh_token'] == 'fixture-initial'
+    assert wire.calls[-1]['url'] == 'https://auth.aliyundrive.com/v2/account/token'
+    assert len(wire.calls) == 4
     assert 'fixture' not in repr(login)
     with pytest.raises(PanError, match='FINISHED'):
         login.poll()
@@ -155,8 +158,8 @@ def c123_row(**kw):
 
 
 def test_123_qr_and_identity_read_retry_does_not_reconsume_login_code():
-    wire = Wire(b'<html/>', dict(code=0, data=dict(uniID='fixture-qr', url='https://yun.123pan.cn/wx-app-login.html')),
-        dict(code=0, data=dict(loginStatus=1)), dict(code=0, data=dict(loginStatus=2)),
+    wire = Wire(dict(code=0, data=dict(uniID='fixture-qr', url='https://yun.123pan.cn/wx-app-login.html')),
+        dict(code=0, data=dict(loginStatus=1)), dict(code=0, data=dict(loginStatus=3, scanPlatform=4)),
         dict(code=0, data=dict(wxCode='fixture-wx')), dict(code=0, data=dict(token='fixture-access')),
         PanError('PAN_NETWORK_ERROR'), dict(code=0, data=dict(UID=12345)))
     login = pan_123.Login(wire)
@@ -172,7 +175,7 @@ def test_123_qr_and_identity_read_retry_does_not_reconsume_login_code():
 @pytest.mark.parametrize('url', ['https://evil.test/qr', 'http://yun.123pan.cn/wx-app-login.html',
     'https://yun.123pan.cn/wx-app-login.html?redirect=evil'])
 def test_123_untrusted_qr_rejected(url):
-    login = pan_123.Login(Wire(b'', dict(code=0, data=dict(uniID='fixture-qr', url=url))))
+    login = pan_123.Login(Wire(dict(code=0, data=dict(uniID='fixture-qr', url=url))))
     with pytest.raises(PanError):
         login.begin()
 

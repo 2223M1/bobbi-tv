@@ -321,6 +321,11 @@ def addon_router():
             play(params)
             return
 
+        if action == 'pan_history_play':
+            from lib.pan_playback import resume
+            resume(params)
+            return
+
         if action == "am6b_helper_pick":
             from lib.clients.maintainable_ui import helper_pick
             helper_pick(params)

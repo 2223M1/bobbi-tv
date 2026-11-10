@@ -174,7 +174,8 @@ def test_parent_transport_stop_saves_progress_without_remote_completion_or_late_
     from lib.db import deferred_history
     saved = []
     monkeypatch.setattr(deferred_history, 'defer_watched_file', lambda data: saved.append(deepcopy(data)) or True)
-    method = methods({'handle_playback_stop'}, dict(deepcopy=deepcopy))[ 'handle_playback_stop']
+    method = methods({'handle_playback_stop'}, dict(deepcopy=deepcopy,
+        set_watched_file=lambda data: pytest.fail('accepted deferred save must not also save synchronously')))[ 'handle_playback_stop']
     actor = SimpleNamespace(_transport_parent_queued=True, data=deepcopy(recovery_case.data),
         _is_trakt_tracking_excluded=lambda: False,
         _sync_yamtrack_watched=lambda: pytest.fail('transport change is not completion'),

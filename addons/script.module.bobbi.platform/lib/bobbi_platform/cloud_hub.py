@@ -34,10 +34,10 @@ def cd2_label(value):
 
 
 def cd2_details(value):
-    return ('CD2 · ' + cd2_label(value) + '\n\n'
+    return ('115 提前存片（CD2） · ' + cd2_label(value) + '\n\n'
             '观看 115 分享片源无需 CD2。\n'
             '已有 CD2 挂载可直接在“我的片库”浏览，无需扫码。影院的 115 分享片源需单独登录一次。\n'
-            '需要提前存片或挂载网盘时，请在 CloudDrive 中登录与影院相同的 115 账号。\n'
+            '仅使用 115 提前存片时，需要在 CloudDrive 中登录与影院相同的 115 账号；其他网盘挂载不需要 115 登录。\n'
             '连接失败时，先到 CloudDrive 检查服务和登录状态。\n\n'
             '本页只显示后台状态，不会创建转存任务。文件是否就绪，请以选源页为准。')
 
@@ -62,7 +62,7 @@ def account_label(value):
 def connection_details(value, mounts):
     """Read-only projection; never enumerate cloud folders or expose credentials."""
     return ('115 分享播放 · ' + account_label(value) + '\n'
-            'CD2 提前存片 · ' + cd2_label(value['preparation']) + '\n'
+            '115 提前存片（CD2） · ' + cd2_label(value['preparation']) + '\n'
             '本机 CD2 挂载 · ' + ('发现 %d 个' % len(mounts) if mounts else '未发现') + '\n\n'
             '115 支持本机扫码登录，可重新登录、切换或退出；同时使用一个分享播放账号。'
             '已保存登录不代表账号仍有效，也不代表所有片源都能播放。\n\n'
@@ -82,7 +82,7 @@ def _configure_cd2(dialog, value):
         from .android_preparation import show as configure
         configure(dialog)
     else:
-        dialog.textviewer('CD2 · 提前存片', cd2_details(value['preparation']))
+        dialog.textviewer('115 提前存片（CD2）', cd2_details(value['preparation']))
 
 
 def _manage_library():
@@ -103,7 +103,7 @@ def details(dialog):
         rows = [('status', '状态与支持范围'),
                 ('account', '115 账号 · ' + account_label(value) + ' · 登录 / 切换 / 退出'),
                 ('library', '多网盘 / NAS 连接 · 添加 / 检查 / 修改 / 移除'),
-                ('cd2', 'CD2 提前存片 · ' + cd2_label(value['preparation'])),
+                ('cd2', '115 提前存片（CD2） · ' + cd2_label(value['preparation'])),
                 ('transport', '高级 · 115 读取方式'),
                 ('refresh', '刷新状态'),
                 ('native', '原生多网盘 · 接入与验证')]
@@ -138,10 +138,11 @@ def show(dialog=None):
         value = status()
         account = account_label(value)
         rows = [('account', '115 分享播放 · ' + account),
-                ('cd2', 'CD2 提前存片 · ' + cd2_label(value['preparation'])),
+                ('cd2', '115 提前存片（CD2） · ' + cd2_label(value['preparation'])),
                 ('library', '我的片库 · 多网盘 / NAS'),
                 ('details', '详细管理'),
-                ('refresh', '刷新状态')]
+                ('refresh', '刷新状态'),
+                ('files', '我的文件 · 原生网盘')]
         if cd2_mounts.discover():
             rows.insert(0, ('mounted', '使用已有 CD2 网盘 · 无需扫码'))
         choice = dialog.select('网盘账号与连接', [label for _, label in rows])
@@ -162,4 +163,8 @@ def show(dialog=None):
                 return True
         elif action == 'details':
             if details(dialog):
+                return True
+        elif action == 'files':
+            from .pan_ui import choose_files
+            if choose_files(dialog):
                 return True

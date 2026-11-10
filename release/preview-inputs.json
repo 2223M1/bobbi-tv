@@ -19,6 +19,8 @@
       "lib/bobbi_platform/android_updates.py",
       "lib/bobbi_platform/bt_setup.py",
       "lib/bobbi_platform/capabilities.py",
+      "lib/bobbi_platform/catalog_service.py",
+      "lib/bobbi_platform/catalog_ui.py",
       "lib/bobbi_platform/cd2_mounts.py",
       "lib/bobbi_platform/ce_install_ui.py",
       "lib/bobbi_platform/ce_installer.py",
@@ -36,6 +38,7 @@
       "lib/bobbi_platform/libraries.py",
       "lib/bobbi_platform/library_listing.py",
       "lib/bobbi_platform/library_ui.py",
+      "lib/bobbi_platform/login_flow.py",
       "lib/bobbi_platform/maintenance_lease.py",
       "lib/bobbi_platform/native_engine.py",
       "lib/bobbi_platform/offline_updates.py",
@@ -52,9 +55,12 @@
       "lib/bobbi_platform/pan_baidu.py",
       "lib/bobbi_platform/pan_device.py",
       "lib/bobbi_platform/pan_guangya.py",
+      "lib/bobbi_platform/pan_history.py",
       "lib/bobbi_platform/pan_http.py",
       "lib/bobbi_platform/pan_mobile.py",
+      "lib/bobbi_platform/pan_providers.py",
       "lib/bobbi_platform/pan_quark_uc.py",
+      "lib/bobbi_platform/pan_request_policy.py",
       "lib/bobbi_platform/pan_service.py",
       "lib/bobbi_platform/pan_stream.py",
       "lib/bobbi_platform/pan_tianyi.py",
@@ -102,6 +108,7 @@
       "lib/bobbi_core/capabilities.py",
       "lib/bobbi_core/catalog_identity.py",
       "lib/bobbi_core/catalog_release.py",
+      "lib/bobbi_core/catalog_review.py",
       "lib/bobbi_core/cd2.py",
       "lib/bobbi_core/child_lifetime.py",
       "lib/bobbi_core/cloud_mapping.py",
@@ -117,6 +124,7 @@
       "lib/bobbi_core/episode_order.py",
       "lib/bobbi_core/episode_revision.py",
       "lib/bobbi_core/episode_scope.py",
+      "lib/bobbi_core/file_ref.py",
       "lib/bobbi_core/filename_semantics.py",
       "lib/bobbi_core/font_archive.py",
       "lib/bobbi_core/font_cache.py",
@@ -127,6 +135,7 @@
       "lib/bobbi_core/http_policy.py",
       "lib/bobbi_core/image_cache.py",
       "lib/bobbi_core/jackett_protocol.py",
+      "lib/bobbi_core/job_snapshot.py",
       "lib/bobbi_core/juku_api.py",
       "lib/bobbi_core/juku_catalog.py",
       "lib/bobbi_core/juku_refresh.py",
@@ -134,6 +143,7 @@
       "lib/bobbi_core/ledger.py",
       "lib/bobbi_core/ledger_extension.py",
       "lib/bobbi_core/matroska_qualification.py",
+      "lib/bobbi_core/media_library_index.py",
       "lib/bobbi_core/media_probe.py",
       "lib/bobbi_core/media_profile_refresh.py",
       "lib/bobbi_core/metadata_cache.py",
@@ -232,6 +242,7 @@
       "lib/requests/status_codes.py",
       "lib/requests/structures.py",
       "lib/requests/utils.py",
+      "licenses/upstream-LICENSE.txt",
       "resources/icon.png"
     ],
     "script.module.certifi": [
@@ -240,6 +251,7 @@
       "lib/certifi/__main__.py",
       "lib/certifi/cacert.pem",
       "lib/certifi/core.py",
+      "licenses/upstream-LICENSE.txt",
       "resources/icon.png"
     ],
     "script.module.chardet": [
@@ -292,6 +304,7 @@
       "lib/chardet/utf1632prober.py",
       "lib/chardet/utf8prober.py",
       "lib/chardet/version.py",
+      "licenses/upstream-LICENSE.txt",
       "resources/icon.png"
     ],
     "script.module.idna": [
@@ -304,6 +317,7 @@
       "lib/idna/intranges.py",
       "lib/idna/package_data.py",
       "lib/idna/uts46data.py",
+      "licenses/upstream-LICENSE.txt",
       "resources/icon.png"
     ],
     "script.module.urllib3": [
@@ -345,6 +359,7 @@
       "lib/urllib3/util/url.py",
       "lib/urllib3/util/util.py",
       "lib/urllib3/util/wait.py",
+      "licenses/upstream-LICENSE.txt",
       "resources/icon.png"
     ]
   }

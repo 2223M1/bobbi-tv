@@ -35,6 +35,10 @@ def make_item(url, data):
     if request:
         item.setProperty('bobbi.standard.request', request)
         tag.setUniqueID(request, 'bobbi_request')
+    if data.get('_pan_file'):
+        position = data.get('_file_resume_position', 0)
+        if type(position) in (int, float) and 0 < position <= 864000:
+            item.setProperty('StartOffset', str(position))
     # Do not override global audio/HDR/codec/refresh-rate/OSD settings. Original
     # language and Chinese preference are a first-run user-confirmed setting.
     return item

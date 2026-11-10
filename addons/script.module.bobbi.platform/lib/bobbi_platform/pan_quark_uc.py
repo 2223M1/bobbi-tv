@@ -9,7 +9,7 @@ from urllib.parse import urlencode, urlsplit
 from uuid import uuid4
 
 from .pan_accounts import PanError
-from .pan_http import API, WEB, USER_AGENT, Session
+from .pan_http import API, WEB, QUARK_USER_AGENT, UC_USER_AGENT, Session
 
 
 def _text(value, limit=256):
@@ -41,7 +41,7 @@ class Client:
         self.session = session if session is not None else Session(provider, saved)
 
     def _call(self, path, query=None, body=None):
-        query = dict(query or {}, pr='ucpro' if self.provider == 'quark' else 'UCBrowser', fr='pc')
+        query = dict(query or {}, pr='ucpro' if self.provider == 'quark' else 'UCBrowser', fr='pc', uc_param_str='')
         value = self.session.request(API[self.provider] + '/1/clouddrive' + path, query, body)
         if (type(value.get('code')) is not int or value['code'] != 0
                 or type(value.get('status')) is not int or value['status'] != 200):
@@ -70,7 +70,8 @@ class Client:
     def list_files(self, parent='0', page=1, size=10):
         self._pagination(page, size)
         value = self._call('/file/sort', dict(pdir_fid=file_id(parent), _page=page, _size=size,
-            _fetch_total=1, fetch_all_file=1, _sort='file_type:asc,file_name:asc'))
+            _fetch_total=1, _fetch_sub_dirs=0, fetch_all_file=1, fetch_risk_file_name=1,
+            _sort='file_type:asc,file_name:asc'))
         return self._page(value, page, size)
 
     def share_token(self, share_id, password=''):
@@ -111,7 +112,7 @@ class Client:
             raise PanError('PAN_DOWNLOAD_ORIGIN_REJECTED')
         return dict(url=url, original=True, size=selected['size'], headers={
             'Cookie': self.session.cookie_header(url), 'Referer': WEB[self.provider] + '/',
-            'User-Agent': USER_AGENT})
+            'User-Agent': QUARK_USER_AGENT if self.provider == 'quark' else UC_USER_AGENT})
 
 
 class QuarkLogin:
@@ -122,6 +123,7 @@ class QuarkLogin:
         self.provider = provider
         self.session = session if session is not None else Session(provider)
         self.clock, self.started, self.token, self.terminal = clock, 0, None, False
+        self.request_id, self.exchanged, self.phase = str(uuid4()), False, 'prepare'
 
     def __repr__(self):
         return '<Cloud web QR login: token hidden>'
@@ -131,15 +133,25 @@ class QuarkLogin:
 
     def _request(self, operation, query=None):
         host = 'https://uop.quark.cn' if self.provider == 'quark' else 'https://api.open.uc.cn'
-        client = '532' if self.provider == 'quark' else '381'
-        return self.session.request(host + '/cas/ajax/' + operation,
-            dict(query or {}, client_id=client, v='1.2', request_id=str(uuid4())))
+        prepare = operation == 'getTokenForQrcodeLogin'
+        client = ('386' if prepare else '532') if self.provider == 'quark' else '529'
+        values = dict(query or {}, client_id=client, v='1.2', request_id=self.request_id)
+        url = host + '/cas/ajax/' + operation
+        if self.provider == 'uc':
+            stamp = dict(__dt=10000 + uuid4().int % 90000, __t=int(time.time() * 1000))
+            if prepare:
+                return self.session.request(url, query=stamp, form=values)
+            values.update(stamp)
+        return self.session.request(url, values)
 
     def begin(self):
         if self.token is not None or self.terminal:
             raise PanError('PAN_QR_FINISHED')
+        self.phase = 'prepare'
         value = self._request('getTokenForQrcodeLogin')
-        if value.get('status') != 2000000:
+        if self.terminal:
+            raise PanError('PAN_QR_FINISHED')
+        if type(value.get('status')) is not int or value['status'] != 2000000:
             raise PanError('PAN_QR_UNAVAILABLE')
         try:
             self.token = _text(value['data']['members']['token'], 2048)
@@ -147,42 +159,92 @@ class QuarkLogin:
             raise PanError('PAN_REPLY_INVALID') from None
         self.started = self.clock()
         if self.provider == 'uc':
-            return 'https://su.uc.cn/1_n0ZCv?' + urlencode(dict(token=self.token, client_id='381',
-                uc_param_str='', uc_biz_str='S:custom|C:titlebar_fix'))
+            return 'https://su.uc.cn/1_n0ZCv?' + urlencode(dict(token=self.token, client_id='529',
+                uc_param_str='dsdnfrpfbivesscpgimibtbmnijblauputogpintnwktprchmt',
+                uc_biz_str='S:custom|C:titlebar_fix'))
         return 'https://su.quark.cn/4_eMHBJ?' + urlencode(dict(token=self.token, client_id='532',
             ssb='weblogin', uc_param_str='', uc_biz_str='S:custom|OPT:SAREA@0|OPT:IMMERSIVE@1|OPT:BACK_BTN_STYLE@0'))
 
-    def poll(self):
+    def _check_active(self):
         if self.terminal or self.token is None:
             raise PanError('PAN_QR_FINISHED')
         if self.clock() - self.started >= 180:
             self.cancel()
             raise PanError('PAN_QR_EXPIRED')
-        value = self._request('getServiceTicketByQrcodeToken', dict(token=self.token))
-        status = value.get('status')
-        if status == 50004001:
-            return 'waiting', None
-        if status in (50004002, 50004003, 50004004):
-            self.cancel()
-            raise PanError('PAN_QR_EXPIRED' if status == 50004002 else 'PAN_QR_CANCELLED')
-        if status != 2000000:
-            raise PanError('PAN_QR_POLL_RETRY')
-        try:
-            ticket = _text(value['data']['members']['service_ticket'], 4096)
-        except (KeyError, TypeError):
-            raise PanError('PAN_REPLY_INVALID') from None
-        value = self.session.request(WEB[self.provider] + '/account/info', dict(st=ticket, lw='scan'))
-        if value.get('success') is not True:
-            raise PanError('PAN_QR_EXCHANGE_FAILED')
-        # A read-only drive request both verifies access and collects refreshed
-        # drive cookies. Neither the ticket nor remote user details cross IPC.
-        Client(self.provider, session=self.session)._call('/member', dict(fetch_subscribe='false', fetch_identity='false'))
+
+    def _credentials(self):
         saved = self.session.export()
+        # The server-issued stable __uid and session cookie must actually
+        # apply to this provider's drive, not merely exist in the cookie jar.
+        scope = Session(self.provider, saved)
+        header = scope.cookie_header(API[self.provider] + '/1/clouddrive/file/sort')
+        names = {part.strip().partition('=')[0] for part in header.split(';')}
+        if not {'__uid', '__pus'} <= names:
+            raise PanError('PAN_CREDENTIALS_INVALID')
+        return saved
+
+    def poll(self):
+        self._check_active()
+        if not self.exchanged:
+            self.phase = 'confirm'
+            value = self._request('getServiceTicketByQrcodeToken', dict(token=self.token))
+            self._check_active()
+            status = value.get('status')
+            if type(status) is not int:
+                raise PanError('PAN_REPLY_INVALID')
+            if status == 50004001:
+                return 'waiting', None
+            if status in (50004002, 50004003, 50004004):
+                self.cancel()
+                raise PanError('PAN_QR_EXPIRED' if status == 50004002 else 'PAN_QR_CANCELLED')
+            if status != 2000000:
+                raise PanError('PAN_QR_POLL_RETRY')
+            try:
+                ticket = _text(value['data']['members']['service_ticket'], 4096)
+            except (KeyError, TypeError):
+                raise PanError('PAN_REPLY_INVALID') from None
+            self.phase = 'exchange'
+            query = dict(st=ticket)
+            if self.provider == 'quark':
+                query['lw'] = 'scan'
+            # An ambiguous ticket exchange must never be consumed twice. Only
+            # the later read-only identity request may resume after a timeout.
+            self.exchanged = True
+            try:
+                value = self.session.request(WEB[self.provider] + '/account/info', query)
+                if value.get('success') is not True:
+                    raise PanError('PAN_QR_EXCHANGE_FAILED')
+            except Exception:
+                self.cancel()
+                raise
+            self._check_active()
+        self.phase = 'identity'
+        try:
+            saved = self._credentials()
+        except PanError:
+            # Some web exchanges finish setting the drive cookies on this
+            # official bootstrap request. Its membership/drive result is not
+            # an authentication gate; only complete, scoped cookies matter.
+            try:
+                self.session.request(API[self.provider] + '/1/clouddrive/member',
+                    dict(pr='ucpro' if self.provider == 'quark' else 'UCBrowser',
+                         fr='pc', uc_param_str='', fetch_subscribe='true',
+                         fetch_identity='true', _ch='home'))
+            except PanError as error:
+                self._check_active()
+                try:
+                    saved = self._credentials()
+                except PanError:
+                    raise error from None
+            else:
+                self._check_active()
+                saved = self._credentials()
+        self._check_active()
         self.cancel()
         return 'ready', saved
 
 
 class UCLogin(QuarkLogin):
-    """UC's public browser client, not Juku's separate desktop-client identity."""
+    """UC's public QR client; no copied account or signed device credential."""
     def __init__(self, session=None, clock=time.monotonic):
         super().__init__(session=session, clock=clock, provider='uc')

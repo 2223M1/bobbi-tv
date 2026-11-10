@@ -42,7 +42,9 @@ class HistoryWriter:
                 continue
             try:
                 from lib.utils.general.utils import set_watched_file
-                set_watched_file(data)
+                if set_watched_file(data) is False:
+                    self.failed += 1
+                    self.diagnose('HISTORY_WRITE_FAILED')
             except Exception:
                 self.failed += 1
                 self.diagnose('HISTORY_WRITE_FAILED')

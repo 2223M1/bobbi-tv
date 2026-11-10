@@ -252,7 +252,7 @@ class JacktookPLayer(xbmc.Player):
         close_busy_dialog()
         kodilog(
             f"[PLAYER] run() started: url_type={'plugin' if self.url.startswith('plugin://') else 'direct'}, "
-            f"mode={data.get('mode')}, url_start={self.url[:80]}"
+            f"mode={data.get('mode')}, url_start={'[personal file]' if data.get('_pan_file') else self.url[:80]}"
         )
 
         try:
@@ -435,6 +435,8 @@ class JacktookPLayer(xbmc.Player):
                 list_item.setProperty('StartOffset', '0')
                 list_item.setProperty('StartPercent', '0')
                 list_item.getVideoInfoTag().setResumePoint(0, 0)
+            elif self.data.get('_pan_file') and self.data.get('_file_resume_position', 0) > 0:
+                list_item.setProperty('StartOffset', str(self.data.pop('_file_resume_position')))
             elif 0 < resume_percent < 100:
                 list_item.setProperty('StartPercent', str(resume_percent))
             if self.data.get('selection_policy') == 'exact':
@@ -1839,11 +1841,9 @@ class JacktookPLayer(xbmc.Player):
             # delayed remote pause from the old player could overwrite the
             # child's new start, and must not spend the capsule's open budget.
             self.data.update(terminal_reason='STOP', completed=False)
-            if not self._is_trakt_tracking_excluded():
-                from lib.db.deferred_history import defer_watched_file
-                saved = deepcopy(self.data)
-                if not defer_watched_file(saved):
-                    set_watched_file(saved)
+            if self.data.get('_pan_file') or not self._is_trakt_tracking_excluded():
+                from lib.services.playback_history import submit_native
+                submit_native(self.data, deferred=True, save=set_watched_file)
             return
         kodilog("[PLAYER] handle_playback_stop entered")
         if self.data.get('selection_policy') == 'exact':
@@ -1872,16 +1872,10 @@ class JacktookPLayer(xbmc.Player):
         self._delete_completed_trakt_playback()
         self._cinema_phase('TRACKING_STOP_END')
 
-        if not self._is_trakt_tracking_excluded():
+        if self.data.get('_pan_file') or not self._is_trakt_tracking_excluded():
             self._cinema_phase('HISTORY_SAVE_BEGIN')
-            deferred = False
-            if getattr(self, '_cinema_natural_queued', False):
-                from lib.db.deferred_history import defer_watched_file
-                deferred = defer_watched_file(self.data)
-            if not deferred:
-                set_watched_file(self.data)
-            else:
-                self._cinema_phase('HISTORY_SAVE_QUEUED')
+            from lib.services.playback_history import submit_native
+            submit_native(self.data, deferred=getattr(self, '_cinema_natural_queued', False), save=set_watched_file)
             self._cinema_phase('HISTORY_SAVE_END')
 
         if self.data.get('selection_policy') != 'exact':
@@ -2995,9 +2989,10 @@ class JacktookPLayer(xbmc.Player):
             notification("Playback Cancelled", time=2000)
 
     def mark_watched(self, data):
-        if self._is_trakt_tracking_excluded():
+        if not data.get('_pan_file') and self._is_trakt_tracking_excluded():
             return
-        set_watched_file(data)
+        from lib.services.playback_history import submit_native
+        submit_native(data, reason='STARTED' if data.get('_pan_file') else None, save=set_watched_file)
 
     def _is_live_tv(self):
         return bool(self.data.get("is_live_tv"))

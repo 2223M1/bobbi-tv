@@ -1,0 +1,298 @@
+{
+  "schema": 1,
+  "baseline": "898bb1e2b39f361a9f82e4722bffc78e310cfe48",
+  "documents": [
+    {
+      "id": "script.skinvariables",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.skinvariables.txt",
+      "repository": "jurialmunkey/script.skinvariables",
+      "commit": "45be183640d4a3f1be96ad97c7d0032b2a174dcb",
+      "source_path": "LICENSE.txt",
+      "source_url": "https://raw.githubusercontent.com/jurialmunkey/script.skinvariables/45be183640d4a3f1be96ad97c7d0032b2a174dcb/LICENSE.txt",
+      "git_blob_sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "kind": "metadata-evidence-not-license",
+      "file": "licenses/vendor/script.module.jurialmunkey.txt",
+      "repository": "jurialmunkey/script.module.jurialmunkey",
+      "commit": "8f42fb5f4698f3e4552f38955964b2f3843dba69",
+      "source_path": "addon.xml",
+      "source_url": "https://raw.githubusercontent.com/jurialmunkey/script.module.jurialmunkey/8f42fb5f4698f3e4552f38955964b2f3843dba69/addon.xml",
+      "git_blob_sha": "dc53409bd4b2cf8f39cd9db24978cc3981c4d28d",
+      "sha256": "f355a2810c2022d1992e2ba52299092774b62c9ace40e7508d989e083e466175",
+      "bytes": 915
+    },
+    {
+      "id": "script.module.infotagger",
+      "kind": "metadata-evidence-not-license",
+      "file": "licenses/vendor/script.module.infotagger.txt",
+      "repository": "jurialmunkey/script.module.infotagger",
+      "commit": "0118f53c9cf68a6625794d07af607cac1e920064",
+      "source_path": "addon.xml",
+      "source_url": "https://raw.githubusercontent.com/jurialmunkey/script.module.infotagger/0118f53c9cf68a6625794d07af607cac1e920064/addon.xml",
+      "git_blob_sha": "ffa9a6e7847c0c436722ab950deb2401b399e099",
+      "sha256": "0810c77be8311cc2b7f703b8fb124ca1607722fc9d307899c9d1cd8eba94729a",
+      "bytes": 824
+    },
+    {
+      "id": "script.module.requests",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.requests.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.requests/script.module.requests-2.31.0.zip",
+      "archive_sha256": "a5704f0fd7afb4154e1beea9b5f05a002bcd75fa581a1e5fd15ece39bf2bd38a",
+      "archive_bytes": 67576,
+      "source_path": "script.module.requests/LICENSE.txt",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+      "bytes": 10142
+    },
+    {
+      "id": "script.module.routing",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.routing.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.routing/script.module.routing-0.2.3+matrix.1.zip",
+      "archive_sha256": "dc9110ffd2a5022feffafb22a710cd95aabe5722c52004f347d3a274f67d00f9",
+      "archive_bytes": 25369,
+      "source_path": "script.module.routing/LICENSE.txt",
+      "sha256": "0ae0485a5bd37a63e63603596417e4eb0e653334fa6c7f932ca3a0e85d4af227",
+      "bytes": 35148
+    },
+    {
+      "id": "script.module.certifi",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.certifi.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.certifi/script.module.certifi-2023.5.7.zip",
+      "archive_sha256": "c16d4cd2efe6e57dbb5e8d71a9beb3af213b1e3d717e8b0b24f0cbdc4c645070",
+      "archive_bytes": 162689,
+      "source_path": "script.module.certifi/LICENSE.txt",
+      "sha256": "a02f6c638f9fb84d06f7764c3ab085d8af7eda5b93c166da54312479077c6fb0",
+      "bytes": 1052
+    },
+    {
+      "id": "script.module.chardet",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.chardet.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.chardet/script.module.chardet-5.1.0.zip",
+      "archive_sha256": "d5010fc55a9523d86a306ae9e6a8dea0e3248fe079b9ed37280fe86110cd766a",
+      "archive_bytes": 204491,
+      "source_path": "script.module.chardet/LICENSE.txt",
+      "sha256": "6095e9ffa777dd22839f7801aa845b31c9ed07f3d6bf8a26dc5d2dec8ccc0ef3",
+      "bytes": 26432
+    },
+    {
+      "id": "script.module.idna",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.idna.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.idna/script.module.idna-3.10.0.zip",
+      "archive_sha256": "c4ff34dbfab2736e9214a374d331bd6f558d8b3fea8eb7902e210749509242b3",
+      "archive_bytes": 73349,
+      "source_path": "script.module.idna/LICENSE.txt",
+      "sha256": "a59f0b0ef3635874109a4461ca44ff7a70d50696e814767bfaf721d4c9b0db0f",
+      "bytes": 1541
+    },
+    {
+      "id": "script.module.urllib3",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.urllib3.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.urllib3/script.module.urllib3-2.2.3.zip",
+      "archive_sha256": "740b2d63bb50eee9fb35f01c567ec8d3588c5bbd548e2b8d280932be30d82f53",
+      "archive_bytes": 130842,
+      "source_path": "script.module.urllib3/LICENSE.txt",
+      "sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+      "bytes": 1093
+    }
+  ],
+  "components": [
+    {
+      "id": "script.skinvariables",
+      "version": "2.2.9",
+      "source_lock": "release/kodi-vendors.json#script.skinvariables",
+      "documents": [
+        "script.skinvariables"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "pinned upstream document; no inferred project grant"
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "version": "0.2.35",
+      "source_lock": "release/kodi-vendors.json#script.module.jurialmunkey",
+      "documents": [
+        "script.module.jurialmunkey"
+      ],
+      "status": "unresolved-full-license",
+      "license_evidence": "pinned upstream document; no inferred project grant"
+    },
+    {
+      "id": "script.module.infotagger",
+      "version": "0.1.0",
+      "source_lock": "release/kodi-vendors.json#script.module.infotagger",
+      "documents": [
+        "script.module.infotagger"
+      ],
+      "status": "unresolved-full-license",
+      "license_evidence": "pinned upstream document; no inferred project grant"
+    },
+    {
+      "id": "script.module.requests",
+      "version": "2.31.0",
+      "source_lock": "release/kodi-vendors.json#script.module.requests",
+      "documents": [
+        "script.module.requests"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "Apache-2.0"
+    },
+    {
+      "id": "script.module.routing",
+      "version": "0.2.3+matrix.1",
+      "source_lock": "release/kodi-vendors.json#script.module.routing",
+      "documents": [
+        "script.module.routing"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "GPL-3.0"
+    },
+    {
+      "id": "script.module.certifi",
+      "version": "2023.5.7",
+      "source_lock": "release/kodi-vendors.json#script.module.certifi",
+      "documents": [
+        "script.module.certifi"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "MPL-2.0"
+    },
+    {
+      "id": "script.module.chardet",
+      "version": "5.1.0",
+      "source_lock": "release/kodi-vendors.json#script.module.chardet",
+      "documents": [
+        "script.module.chardet"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "LGPL-2.1"
+    },
+    {
+      "id": "script.module.idna",
+      "version": "3.10.0",
+      "source_lock": "release/kodi-vendors.json#script.module.idna",
+      "documents": [
+        "script.module.idna"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "BSD-3-Clause"
+    },
+    {
+      "id": "script.module.urllib3",
+      "version": "2.2.3",
+      "source_lock": "release/kodi-vendors.json#script.module.urllib3",
+      "documents": [
+        "script.module.urllib3"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "MIT"
+    },
+    {
+      "id": "plugin.video.bobbi",
+      "documents": [],
+      "status": "unresolved-source",
+      "source_lock": "release/source-inventory.json#components/plugin.video.bobbi",
+      "reason": "Inherited plugin and vendored torf/segno require exact-source licensing review."
+    },
+    {
+      "id": "script.module.bobbi.platform",
+      "documents": [],
+      "status": "unresolved-source",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.platform",
+      "reason": "Vendored segno 1.6.6: inline BSD notice exists; exact source lock/full license unresolved."
+    },
+    {
+      "id": "script.module.bobbi.core",
+      "documents": [],
+      "status": "unresolved-source",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.core",
+      "reason": "Extracted inherited plugin code requires corresponding upstream source/license review."
+    },
+    {
+      "id": "script.module.bobbi.mdsub",
+      "documents": [],
+      "status": "unresolved-source",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.mdsub",
+      "reason": "Inherited subtitle parsing requires exact-source license review."
+    },
+    {
+      "id": "script.module.bobbi.catalog",
+      "documents": [],
+      "status": "unresolved-source",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.catalog",
+      "reason": "Bundled catalog assets/data provenance remains unresolved."
+    },
+    {
+      "id": "skin.bobbi.cinema",
+      "documents": [],
+      "status": "unresolved-source",
+      "source_lock": "release/source-inventory.json#components/skin.bobbi.cinema",
+      "reason": "Inherited skin and each bundled font require exact-source rights review."
+    },
+    {
+      "id": "resource.uisounds.bobbi-modern",
+      "documents": [],
+      "status": "unresolved-source",
+      "source_lock": "release/source-inventory.json#components/resource.uisounds.bobbi-modern",
+      "reason": "Bundled sound asset provenance remains unresolved."
+    }
+  ],
+  "deliveries": [
+    {
+      "component": "script.skinvariables",
+      "document": "script.skinvariables",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.requests",
+      "document": "script.module.requests",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.routing",
+      "document": "script.module.routing",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.certifi",
+      "document": "script.module.certifi",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.chardet",
+      "document": "script.module.chardet",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.idna",
+      "document": "script.module.idna",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.urllib3",
+      "document": "script.module.urllib3",
+      "path": "licenses/upstream-LICENSE.txt"
+    }
+  ],
+  "release_gates": [
+    "All required full licenses resolved",
+    "Pinned notice bytes retained in every distributed component",
+    "No whole-project license inferred",
+    "Separate signed artifact, track/mirror and device gates"
+  ]
+}

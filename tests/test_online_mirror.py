@@ -10,7 +10,7 @@ import pytest
 
 from bobbi_platform import online_updates as online
 from bobbi_platform.updates import UpdateError
-from test_online_updates import Response, offer_for
+from test_online_updates import Response, offer_for, tracked_offer
 from test_ce_general_installer import package, signing
 
 MIRROR = 'https://gitee.com/M12223/bobbi-tv-updates'
@@ -76,10 +76,10 @@ def test_discovery_falls_back_once_only_on_transport_failure(monkeypatch):
         calls.append(url)
         if len(calls) == 1:
             raise URLError(TimeoutError())
-        return Response(json.dumps(offer_for(b'blob')).encode())
+        return Response(json.dumps(tracked_offer(b'blob')).encode())
     monkeypatch.setattr(online, '_open', open_response)
-    assert online.latest() == offer_for(b'blob')
-    assert calls == [online.OFFER_URL, online.FALLBACK_OFFER_URL]
+    assert online.latest() == tracked_offer(b'blob')
+    assert calls == [online.feed_url('stable', mirror) for mirror in ('gitee', 'github')]
 
 
 @pytest.mark.parametrize('failure', ['cancel', 'json', 'length', 'redirect'])

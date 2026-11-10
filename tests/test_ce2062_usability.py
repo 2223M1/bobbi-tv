@@ -1,6 +1,7 @@
 """Small remaining first-use/recovery issues through existing product entrypoints."""
 import errno
 import ssl
+from pathlib import Path
 from urllib.error import URLError
 
 import pytest
@@ -9,6 +10,11 @@ from test_online_updates import entry, environment, signing, ui, online
 from test_library_ui import context
 from bobbi_platform import library_ui
 from bobbi_platform.updates import UpdateError
+
+
+@pytest.fixture(autouse=True)
+def isolated_core_path(monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / 'addons/script.module.bobbi.core/lib'))
 
 
 @pytest.mark.parametrize('error,expected', [
@@ -21,7 +27,7 @@ from bobbi_platform.updates import UpdateError
     (UpdateError('Offline release signature rejected'), '校验失败'),
 ])
 def test_install_failure_explains_actual_stage_without_echoing_response(entry, monkeypatch, error, expected):
-    def fail(*args):
+    def fail(*args, **kwargs):
         raise error
     monkeypatch.setattr(online, 'latest', fail)
     ui.main(online=True)

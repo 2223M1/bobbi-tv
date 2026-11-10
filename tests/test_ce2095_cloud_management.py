@@ -36,9 +36,15 @@ def test_default_layer_hides_transport_and_keeps_quick_actions(ui, monkeypatch):
     ui.choices = [-1]
     cloud_hub.show()
     labels = ui.menus[0][1]
-    assert len(labels) == 5
-    assert '115 分享播放' in labels[0] and '我的片库' in labels[2]
-    assert labels[3] == '详细管理'
+    assert len(labels) == 6
+    assert labels[:5] == [
+        '115 分享播放 · 未登录',
+        '115 提前存片（CD2） · 未设置（可选）',
+        '我的片库 · 多网盘 / NAS',
+        '详细管理',
+        '刷新状态',
+    ]
+    assert labels[5] == '我的文件 · 原生网盘'
     assert '读取方式' not in str(labels)
 
 

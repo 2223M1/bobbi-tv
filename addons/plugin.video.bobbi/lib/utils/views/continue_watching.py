@@ -28,10 +28,26 @@ from lib.utils.views.last_files import parse_time
 
 
 def has_continue_watching_items():
-    return bool(history_rows(PickleDatabase().get_key("jt:lfh").items(), parse_time))
+    try:
+        return bool(_history_snapshot(PickleDatabase())[1])
+    except (OSError, ValueError, TypeError, AttributeError):
+        # Keep the destination discoverable so it can show its unavailable
+        # state. A broken optional history store must not break the root menu.
+        return True
 
 
 def remove_continue_watching_item(params):
+    if params.get('history_id'):
+        from lib.db.file_history import FileHistory
+        files = FileHistory()
+        try:
+            current = files.get(params['history_id'])
+            if history_digest(current) == params.get('digest'):
+                files.remove(params['history_id'], current)
+        except (OSError, ValueError, TypeError):
+            notification('本地文件记录暂不可用')
+        executebuiltin('Container.Refresh')
+        return
     if params.get('entries'):
         expected = json.loads(params['entries'])
         database = PickleDatabase()
@@ -122,6 +138,54 @@ def _series_browse_context(data):
     return [('查看全剧分集', 'ActivateWindow(Videos,{},return)'.format(url))]
 
 
+def _history_snapshot(database):
+    # Both namespaces share one atomic read. Compatibility adapters exposing
+    # only the legacy interface continue to provide ordinary title history.
+    if not hasattr(database, 'get_keys_checked'):
+        history = database.get_key_checked('jt:lfh')
+        return history, history_rows(history.items(), parse_time)
+    from datetime import datetime
+    from lib.db.file_history import FileHistory, KEY
+    values = database.get_keys_checked(('jt:lfh', KEY))
+    history = values.get('jt:lfh') or {}
+    items = history_rows(history.items(), parse_time)
+    unavailable = False
+    try:
+        files = FileHistory.read_rows(values.get(KEY))
+    except (ValueError, TypeError):
+        files, unavailable = [], True
+    for row in files:
+        items.append([row['id'], dict(_file_record=row,
+            timestamp=datetime.fromtimestamp(row['updated_at']).strftime('%a, %d %b %Y %H:%M:%S')), []])
+    items = sorted(items, key=lambda row: parse_time((row[0], row[1])), reverse=True)
+    if unavailable:
+        items.append(['', {'_file_unavailable': True}, []])
+    return history, items
+
+
+def _file_item(record):
+    from lib.cinema.frontend_contract import personal_file_projection
+    from bobbi_platform.pan_accounts import NAMES
+    display = personal_file_projection(record, NAMES)
+    item = make_list_item(label=display['title'])
+    item.setArt({'icon': os.path.join(ADDON_PATH, 'resources', 'img', 'history.png')})
+    if display['percent'] is not None:
+        item.setProperty('PercentPlayed', str(display['percent']))
+    else:
+        item.setProperty('Bobi.File.Duration', 'unknown')
+    item.setProperty('Bobi.SourceKind', display['source'] + ' · ' + display['kind'])
+    item.setProperty('Bobi.Resume.State', 'ready')
+    item.setProperty('Bobi.File.State', display['state'])
+    item.setProperty('Bobi.File.ResumeDetail', display['detail'])
+    item.setProperty('IsPlayable', 'false')
+    item.addContextMenuItems([
+        ('从头播放', 'RunPlugin({})'.format(build_url('pan_history_play', history_id=record['id'], start_over='true'))),
+        ('从继续观看中移除', 'RunPlugin({})'.format(build_url('remove_continue_watching',
+            history_id=record['id'], digest=history_digest(record)))),
+    ])
+    return build_url('pan_history_play', history_id=record['id']), item, False
+
+
 def show_continue_watching(params=None):
     if params is None:
         params = {}
@@ -134,8 +198,7 @@ def show_continue_watching(params=None):
     page = 1 if preview else int(params.get("page", 1))
 
     try:
-        history = PickleDatabase().get_key_checked('jt:lfh')
-        filtered_items = history_rows(history.items(), parse_time)
+        history, filtered_items = _history_snapshot(PickleDatabase())
     except (OSError, ValueError, TypeError, AttributeError):
         add_directory_items_batch([_resume_status('error')])
         end_of_directory(cache=False)
@@ -149,6 +212,15 @@ def show_continue_watching(params=None):
     directory_items = [_resume_status('empty')] if preview and not filtered_items else []
 
     for title, data, source_keys in items:
+        if data.get('_file_unavailable'):
+            unavailable = make_list_item(label='个人文件观看记录暂不可用')
+            unavailable.setProperty('IsPlayable', 'false')
+            unavailable.setProperty('Bobi.Resume.State', 'error')
+            directory_items.append(('', unavailable, False))
+            continue
+        if '_file_record' in data:
+            directory_items.append(_file_item(data['_file_record']))
+            continue
         # Display is a separate projection. Playback receives the original payload.
         # Retain release317's URL-decoding at the playback boundary.
         data = dict(data, title=unquote(data.get('title') or ''))

@@ -218,8 +218,7 @@ def _reuse(offer, cache, trust, cancelled, progress, deadline, report):
     receive(root+metadata_name(offer['tag']), METADATA_LIMIT, chunks.append,
             until=min(reuse_deadline, time.monotonic()+15))
     raw, signature, manifest = metadata(b''.join(chunks), trust)
-    if manifest['sequence'] != offer['sequence']:
-        raise UpdateError('ONLINE_GENERATION_MISMATCH')
+    online.check_offer_manifest(offer, manifest)
     rows = manifest['components']
     cache.prune(rows)
     total = sum(row['size'] for row in rows)
@@ -265,8 +264,7 @@ def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: Non
                     report['mode'] = 'components'
                     selected = _reuse(offer, cache, trust, cancelled, progress, deadline, report)
                     with SignedBundle(selected, trust, 'coreelec') as signed:
-                        if signed.check_all()['sequence'] != offer['sequence']:
-                            raise UpdateError('ONLINE_GENERATION_MISMATCH')
+                        online.check_offer_manifest(offer, signed.check_all())
                     active()
             except online.Cancelled:
                 raise

@@ -236,7 +236,12 @@ def test_refresh_during_inflight_page_cannot_repopulate_old_cache(service):
         return dict(items=[], stale=True)
     service.client_factory = lambda *args: SimpleNamespace(list_files=listing)
     replies = []
-    thread = Thread(target=lambda: replies.append(service.list_files(expected, '0', 2)))
+    def read():
+        try:
+            replies.append(service.list_files(expected, '0', 2))
+        except PanError as error:
+            replies.append(str(error))
+    thread = Thread(target=read)
     thread.start()
     try:
         assert started.wait(1)
@@ -245,7 +250,7 @@ def test_refresh_during_inflight_page_cannot_repopulate_old_cache(service):
     finally:
         finish.set()
         thread.join(2)
-    assert not thread.is_alive() and replies == [dict(items=[], stale=True)]
+    assert not thread.is_alive() and replies == ['PAN_PAGE_EXPIRED']
     assert not service.directory_cache
 
 

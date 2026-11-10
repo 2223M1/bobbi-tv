@@ -17,12 +17,134 @@ from .ce_storage import RESERVE
 
 NAME = re.compile(r'([1-9][0-9]{0,18})-([a-f0-9]{64})\.zip')
 KEEP = 3
+PREPARATION = 'preparing.json'
+
+
+def record_preparation(work, tx, sequence):
+    """Call under installation.lock, before writing any staged payload."""
+    if (not isinstance(tx, str) or not re.fullmatch('[a-f0-9]{32}', tx)
+            or type(sequence) is not int or sequence < 1):
+        raise UpdateError('PREPARATION_RECEIPT_INVALID')
+    root = _safe_path(Path(work) / tx)
+    if any(root.iterdir()):
+        raise UpdateError('PREPARATION_RECEIPT_INVALID')
+    _atomic(root / PREPARATION, dict(schema=1, tx=tx, phase='preparing', sequence=sequence))
+
+
+def preparation_transaction(work, tx, state, budget=None):
+    """Prove an uncommitted staging tree; names or age alone confer no ownership.
+
+    The lock prevents installer races. A bounded identity vector additionally
+    detects changed files, links, mounts and directory replacement during UI
+    confirmation. Invalid/legacy trees are deliberately protected.
+    """
+    from .ce_storage import SCAN_FILES, SCAN_BYTES
+    if (not re.fullmatch('[a-f0-9]{32}', tx) or state and
+            (state.get('phase') not in ('complete', 'restored') or state.get('host_pending')
+             or tx in (state.get('tx'), state.get('previous_tx')))):
+        return None
+    budget = budget if budget is not None else [SCAN_FILES, SCAN_BYTES]
+    try:
+        work = _safe_path(work)
+        root = _safe_path(work / tx)
+        receipt = _safe_path(root / PREPARATION)
+        info = receipt.lstat()
+        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1
+                or info.st_dev != work.stat().st_dev or info.st_size > 4096):
+            return None
+        value = _json(receipt.read_bytes())
+        names = set()
+        for child in root.iterdir():
+            names.add(child.name)
+            if len(names) > 4:
+                return None
+            if child.name != PREPARATION and not stat.S_ISDIR(child.lstat().st_mode):
+                return None
+        if (not isinstance(value, dict) or set(value) != {'schema', 'tx', 'phase', 'sequence'}
+                or type(value['schema']) is not int or value['schema'] != 1
+                or value['tx'] != tx or value['phase'] != 'preparing'
+                or type(value['sequence']) is not int or value['sequence'] < 1
+                or names - {PREPARATION, 'stage', 'validator', 'backup'}):
+            return None
+        backup = root / 'backup'
+        if backup.exists() and (not backup.is_dir() or any(backup.iterdir())):
+            return None
+        device, rows, stack = work.stat().st_dev, {}, [root]
+        while stack:
+            path = _safe_path(stack.pop())
+            info = path.lstat()
+            budget[0] -= 1
+            isdir = stat.S_ISDIR(info.st_mode)
+            if (budget[0] < 0 or info.st_dev != device or not
+                    (isdir or stat.S_ISREG(info.st_mode) and info.st_nlink == 1)):
+                return None
+            if not isdir:
+                budget[1] -= info.st_size
+                if budget[1] < 0:
+                    return None
+            rows[path.relative_to(root).as_posix()] = (
+                info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+            if isdir:
+                with os.scandir(path) as entries:
+                    for entry in entries:
+                        if len(stack) >= budget[0]:
+                            return None
+                        stack.append(Path(entry.path))
+        return dict(receipt=value, entries=rows)
+    except (OSError, ValueError, UpdateError):
+        return None
+
+
+def clear_preparation(installer, tx, proof):
+    """Re-read journal even when its atomic write raised after replacement."""
+    if not proof or preparation_transaction(installer.work, tx, installer._read()) != proof:
+        raise UpdateError('STORAGE_PLAN_CHANGED')
+    root = _safe_path(installer.work / tx)
+    # Payload first; retain the receipt until cleanup completes so a crash can
+    # retry. Never traverse an uninspected recursive tree with rmtree.
+    names = sorted((name for name in proof['entries'] if name not in ('.', PREPARATION)),
+                   key=lambda name: (name.count('/'), name), reverse=True)
+    for name in names:
+        path = _safe_path(root / name)
+        info = path.lstat()
+        expected = proof['entries'][name]
+        if (info.st_dev, info.st_ino, info.st_mode) != expected[:3]:
+            raise UpdateError('STORAGE_PLAN_CHANGED')
+        if stat.S_ISDIR(info.st_mode):
+            path.rmdir()  # Unknown late children fail closed.
+        else:
+            if (info.st_size, info.st_mtime_ns, info.st_ctime_ns) != expected[3:]:
+                raise UpdateError('STORAGE_PLAN_CHANGED')
+            path.unlink()
+    if {p.name for p in root.iterdir()} != {PREPARATION}:
+        raise UpdateError('STORAGE_PLAN_CHANGED')
+    (root / PREPARATION).unlink()
+    root.rmdir()
+
+
+def clear_preparations(installer):
+    """Startup/retry cleanup; caller holds installation.lock. Unknowns remain."""
+    from .ce_storage import SCAN_FILES, SCAN_BYTES
+    budget, removed = [SCAN_FILES, SCAN_BYTES], 0
+    for count, path in enumerate(installer.work.iterdir(), 1):
+        if count > SCAN_FILES or budget[0] <= 0 or budget[1] < 0:
+            break
+        proof = preparation_transaction(installer.work, path.name, installer._read(), budget)
+        if proof:
+            clear_preparation(installer, path.name, proof)
+            removed += 1
+    return removed
 
 
 def record_transaction(installer, state):
     """Receipts only for transactions this installer completed, never adoption."""
     from .ce_installer import program_tree
     root = _safe_path(installer.work / state['tx'])
+    # A crash after journal publication may have left the preparation receipt.
+    # The completed journal owns this tx; it is never preparation garbage now.
+    preparing = _safe_path(root / PREPARATION)
+    if preparing.exists():
+        preparing.unlink()
     names = {path.name for path in root.iterdir()}
     if names - {'backup', 'stage', 'validator', 'abandoned', 'complete.json'}:
         raise UpdateError('RECOVERY_TRANSACTION_UNKNOWN')

@@ -22,7 +22,8 @@ def test_complete_login_only_exchanges_once_and_does_not_persist_until_requested
     assert flow.poll() == ('scanned', None)
     state, value = flow.poll()
     assert state == 'confirmed' and value['cookies'] == ACCOUNT['cookies']
-    assert calls[-1] == ('https://qrcodeapi.115.com/app/1.0/os_linux/1.0/login/qrcode/', {'values': {'account': 'example'}})
+    assert calls[-1] == ('https://passportapi.115.com/app/1.0/os_linux/1.0/login/qrcode',
+                         {'values': {'account': 'example', 'app': 'os_linux'}})
     assert not list(tmp_path.iterdir())
     with pytest.raises(CloudError, match='QR_FINISHED'):
         flow.poll()

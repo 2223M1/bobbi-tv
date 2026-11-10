@@ -313,11 +313,12 @@ def test_concurrent_request_cancellation_cannot_close_other_response(endpoint):
 
 
 def test_query_uses_real_transport_and_can_cancel_before_headers(endpoint, monkeypatch):
-    offer = offer_for(b'fixture')
+    from test_online_updates import tracked_offer
+    offer = tracked_offer(b'fixture')
     endpoint.blob = json.dumps(offer).encode()
-    monkeypatch.setattr(online, 'OFFER_URL', endpoint.url+'/blob')
+    monkeypatch.setattr(online, 'feed_url', lambda *args: endpoint.url+'/blob')
     assert online.latest() == offer
-    monkeypatch.setattr(online, 'OFFER_URL', endpoint.url+'/headers')
+    monkeypatch.setattr(online, 'feed_url', lambda *args: endpoint.url+'/headers')
     started = time.monotonic()
     with pytest.raises(online.Cancelled):
         online.latest(lambda: time.monotonic()-started > .2)

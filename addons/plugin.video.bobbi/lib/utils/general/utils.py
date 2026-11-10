@@ -968,9 +968,9 @@ def build_media_metadata(ids, mode: str, enrich_art=True, details=None) -> dict:
 
 def set_watched_file(data, database=None):
     if data.get('_pan_file'):
-        # Unclassified personal files have no proved title/season identity.
-        # Never persist their expiring stream URL as a resumable catalog item.
-        return
+        from lib.db.file_history import FileHistory
+        return FileHistory(pickle_db if database is None else database,
+                           report=lambda code: kodilog('[FILE-HISTORY] ' + code)).save(data)
     title = data.get("title", "")
     if isinstance(title, str):
         title = unquote(title)
@@ -999,7 +999,9 @@ def set_watched_file(data, database=None):
 
 def clear_continue_watching_history():
     """Clear all Continue Watching entries from the shared database."""
-    pickle_db.set_key("jt:lfh", {})
+    from lib.db.file_history import KEY
+    pickle_db.set_key("jt:lfh", {}, commit=False)
+    pickle_db.set_key(KEY, {})
 
 
 def set_watched_title(title, ids, mode, tg_data="", media_type="", library_data=None):

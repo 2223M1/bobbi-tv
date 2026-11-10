@@ -21,6 +21,8 @@ jobs:
           printf 'event=%s ref=%s\n' "$VERIFY_EVENT" "$VERIFY_REF"
           git show -s --format='commit=%H%ntree=%T%nparents=%P'
       - run: python -m pip install -r requirements-test.txt
+      - name: Verify pinned third-party notices offline (not distribution clearance)
+        run: python tools/vendor_licenses.py
       # The inherited Kodi mock harness is intentionally a separate process.
       - name: Primary tests
         run: python -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=test-results/ci-primary.xml

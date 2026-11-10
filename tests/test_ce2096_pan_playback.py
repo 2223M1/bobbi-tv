@@ -46,7 +46,8 @@ def entry(monkeypatch):
     def call(action, body, **kw):
         state.calls.append((action, deepcopy(body)))
         if action == 'pan_claim_play':
-            return dict(request_id=state.ticket, account=state.expected, selected=state.file)
+            return dict(request_id=state.ticket, account=state.expected, selected=state.file,
+                        **getattr(state, 'claim_extra', {}))
         if action == 'pan_open_stream':
             if state.fail: raise state.fail
             return dict(state='ready', request_id=state.ticket, account=state.expected, bytes=8,
@@ -93,6 +94,52 @@ def test_resolution_failure_never_reselects_or_replays_entry(entry):
 def test_route_accepts_only_an_opaque_ticket(entry):
     entry.module.play({'ticket': 'https://evil.test/'})
     assert not entry.calls and not entry.played
+
+
+@pytest.mark.parametrize('native', [True, False])
+def test_history_reuses_pre_reserved_owner_and_real_position_without_reselection(entry, native):
+    from bobbi_core.file_ref import from_selected, locator
+    entry.native = native
+    ref = from_selected(entry.expected, entry.file, '0')
+    history = dict(file_ref=ref, generation=2, session_id='c' * 32)
+    entry.claim_extra = dict(file_ref=ref, history={k: history[k] for k in ('generation', 'session_id')})
+    reservation = dict(account=entry.expected, owner={'request_id': entry.ticket},
+                       file_ref=ref, position=42)
+    entry.module.play({'ticket': entry.ticket}, reservation=reservation)
+    assert len(entry.played) == 1 and not entry.errors
+    assert not [a for a, b in entry.calls if a in ('native_select', 'standard_playback')]
+    data = entry.played[0]
+    assert data['_file_history'] == history and data['_file_resume_position'] == 42
+    assert data['_pan_locator'] == locator(ref)
+    assert 'selected' not in data and 'file_ref' not in data
+
+
+@pytest.mark.parametrize('native', [True, False])
+def test_resume_reserves_before_host_verification_and_cancel_retires_only_that_request(entry, native, monkeypatch):
+    from bobbi_core.file_ref import from_selected
+    entry.native = native
+    ref = from_selected(entry.expected, entry.file, '0')
+    row = dict(file_ref=ref, position=42)
+    monkeypatch.setitem(sys.modules, 'lib.db.file_history', SimpleNamespace(
+        FileHistory=lambda: SimpleNamespace(get=lambda identifier: row)))
+    original = entry.module.call
+    def call(action, body, **kwargs):
+        if action == 'pan_status':
+            entry.calls.append((action, body))
+            return {'providers': [dict(provider='quark', account=entry.expected)]}
+        if action == 'pan_prepare_history_play':
+            entry.calls.append((action, body))
+            entry.cancel = True  # Back wins while remote metadata is finishing.
+            return dict(ticket=body['request_id'])
+        return original(action, body, **kwargs)
+    monkeypatch.setattr(entry.module, 'call', call)
+    entry.module.resume({'history_id': ref['id']})
+    assert not entry.played and not entry.errors
+    actions = [a for a, b in entry.calls]
+    assert actions.index('native_select' if native else 'standard_playback') < actions.index('pan_prepare_history_play')
+    assert 'pan_cancel_operation' in actions and 'pan_close_stream' in actions
+    assert 'pan_claim_play' not in actions and actions.count('native_select') == int(native)
+    assert entry.calls[-1][1]['operation'] == 'cancel'
 
 
 def test_personal_native_listitem_does_not_invent_movie_metadata():

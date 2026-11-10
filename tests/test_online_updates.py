@@ -25,6 +25,12 @@ def offer_for(raw, sequence=1):
         url='https://github.com/2223M1/bobbi-tv/releases/download/ce2054/BobbiTV-CE2054.bobbi-update.zip')
 
 
+def tracked_offer(raw=b'valid', sequence=1, track='stable'):
+    return dict(offer_for(raw, sequence), schema=2, track=track, prerelease=track == 'preview',
+        manifest_channel='private-stable' if track == 'stable' else 'private-candidate',
+        versions={'plugin.video.bobbi': '1.0.0'})
+
+
 class Response(BytesIO):
     def __init__(self, raw, headers=None, status=200):
         super().__init__(raw)
@@ -52,14 +58,14 @@ def test_offer_rejects_bad_json(raw):
 
 
 def test_latest_uses_fixed_index_and_limits_bytes(monkeypatch):
-    offer = offer_for(b'valid')
+    offer = tracked_offer(b'valid')
     calls = []
     def open_response(url):
         calls.append(url)
         return Response(json.dumps(offer).encode())
     monkeypatch.setattr(online, '_open', open_response)
     assert online.latest() == offer
-    assert calls == [online.OFFER_URL]
+    assert calls == [online.feed_url('stable', mirror) for mirror in ('gitee', 'github')]
     monkeypatch.setattr(online, '_open', lambda _: Response(b' '*32769, headers={}))
     with pytest.raises(UpdateError, match='ONLINE_LENGTH_INVALID'): online.latest()
 
@@ -195,7 +201,7 @@ def entry(environment, signing, monkeypatch):
     monkeypatch.setattr(ui, 'profile', lambda *a, **kw: env.work)
     monkeypatch.setattr(ui, 'KodiHost', lambda: env.host)
     monkeypatch.setattr(ui, 'Installer', lambda *a: env.installer)
-    monkeypatch.setattr(online, 'latest', lambda cancelled: offer)
+    monkeypatch.setattr(online, 'latest', lambda cancelled, **kwargs: offer)
     monkeypatch.setattr(online, '_open', lambda _: Response(raw))
     state.env, state.dialog, state.offer = env, dialog, offer
     return state
@@ -249,7 +255,7 @@ def test_current_version_does_not_download_or_replace(entry, monkeypatch):
 
 
 def test_entry_network_error_keeps_existing_install(entry, monkeypatch):
-    def fail(*args): raise OSError('fixture-private-url')
+    def fail(*args, **kwargs): raise OSError('fixture-private-url')
     monkeypatch.setattr(online, 'latest', fail)
     ui.main(online=True)
     assert '下载未完成，请检查网络后重试' in str(entry.dialogs)

@@ -19,8 +19,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.platform/lib'))
 from bobbi_platform.offline_updates import SignedBundle, load_trust
-from bobbi_platform.online_updates import _transfer, parse_offer, release_url
-from bobbi_platform.updates import _safe_path
+from bobbi_platform.online_updates import _transfer, parse_offer, release_url, feed_url, check_offer_manifest
+from bobbi_platform.updates import _safe_path, _json
 
 
 def identity(path):
@@ -51,7 +51,36 @@ def source_matches(signed):
             raise ValueError('Signed component differs from frozen source: ' + name)
 
 
-def prepare(bundle, entry, component_assets, feeds, output):
+def source_check_evidence(first, second):
+    """Two reproducible source checks, both tied to the reviewed source vector."""
+    from check_repository import compare
+    from build_release import sources, files
+    count = compare(first, second)
+    built = json.loads((Path(first) / 'manifest.json').read_text(encoding='utf-8'))
+    roots = sources()
+    if (built.get('channel') != 'source-check' or built.get('installable') is not False
+            or len(built.get('components', [])) != len(roots)
+            or {row['id'] for row in built['components']} != set(roots)):
+        raise ValueError('Source-check evidence required')
+    for row in built['components']:
+        if row['file'] != '{0}/{0}-{1}.zip'.format(row['id'], row['version']):
+            raise ValueError('Invalid source-check component path')
+        path = _safe_path(Path(first) / row['file'])
+        checked = identity(path)
+        if (checked['bytes'], checked['sha256']) != (row['bytes'], row['sha256']):
+            raise ValueError('Source-check component changed')
+        with zipfile.ZipFile(path) as archive:
+            prefix = row['id'] + '/'
+            if any(not name.startswith(prefix) for name in archive.namelist()):
+                raise ValueError('Source-check component identity differs')
+            actual = {name[len(prefix):]: hashlib.sha256(archive.read(name)).hexdigest() for name in archive.namelist()}
+            if len(actual) != len(archive.namelist()) or actual != files(roots[row['id']]):
+                raise ValueError('Source-check differs from frozen source')
+    return dict(reproducible_files=count, files=[identity(path) for folder in (first, second)
+        for path in sorted(Path(folder).rglob('*')) if path.is_file()])
+
+
+def prepare(bundle, entry, component_assets, feeds, output, *, track, github_release, source_checks):
     from audit_ce_entry import audit
     output = Path(output)
     if output.exists():
@@ -60,6 +89,13 @@ def prepare(bundle, entry, component_assets, feeds, output):
     tree = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD^{tree}'], text=True).strip()
     if subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain', '--untracked-files=no'], text=True):
         raise ValueError('Commit tracked changes before freezing publication')
+    metadata = json.loads(Path(github_release).read_text(encoding='utf-8'))
+    if (track not in ('stable', 'preview') or metadata.get('prerelease') is not (track == 'preview')
+            or metadata.get('draft') is not False or metadata.get('target_commitish') != commit):
+        raise ValueError('GitHub release track/commit metadata differs')
+    from vendor_licenses import require_distribution
+    require_distribution()
+    source_evidence = source_check_evidence(*source_checks)
     with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
         manifest = signed.check_all()
         source_matches(signed)
@@ -71,7 +107,10 @@ def prepare(bundle, entry, component_assets, feeds, output):
             raise ValueError('Embedded complete package differs')
     feed_rows, offers = {}, {}
     for channel, folder in feeds.items():
-        offer = parse_offer((Path(folder) / 'current.json').read_bytes())
+        offer = parse_offer((Path(folder) / 'current.json').read_bytes(), track)
+        check_offer_manifest(offer, manifest)
+        if offer['schema'] != 2 or offer['tag'] != metadata.get('tag_name'):
+            raise ValueError('Versioned feed/release metadata required')
         if offer['url'] != release_url(offer['tag'], channel) or offer['sequence'] != manifest['sequence']:
             raise ValueError('Feed generation/channel differs')
         if any(offer[key] != identity(bundle)[other] for key, other in (('size', 'bytes'), ('sha256', 'sha256'))):
@@ -80,7 +119,7 @@ def prepare(bundle, entry, component_assets, feeds, output):
         from build_online_repository import publish
         with tempfile.TemporaryDirectory(prefix='bobbi-release-feed-') as temporary:
             expected_feed = Path(temporary) / 'expected'
-            publish(bundle, expected_feed, offer['tag'], channel)
+            publish(bundle, expected_feed, offer['tag'], channel, track, metadata['prerelease'])
             expected_files = {p.relative_to(expected_feed).as_posix(): identity(p)['sha256']
                               for p in expected_feed.rglob('*') if p.is_file()}
             actual_files = {p.relative_to(folder).as_posix(): identity(p)['sha256']
@@ -107,14 +146,19 @@ def prepare(bundle, entry, component_assets, feeds, output):
             if actual['sha256'] != identity(path)['sha256']:
                 raise ValueError('Component asset changed')
             assets[path.name] = actual
-    receipt = dict(schema=1, commit=commit, tree=tree, tag=tag, sequence=manifest['sequence'],
-                   assets=assets, feeds=feed_rows, offers=offers, created_at=int(time.time()))
+    receipt = dict(schema=2, commit=commit, tree=tree, tag=tag, track=track, sequence=manifest['sequence'],
+                   assets=assets, feeds=feed_rows, offers=offers, github_release=identity(github_release),
+                   source_checks=source_evidence,
+                   evidence=[identity(ROOT / 'licenses/THIRD-PARTY.json'), identity(ROOT / 'release/capability-matrix.json')],
+                   created_at=int(time.time()))
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return receipt
 
 
 def recheck_local(receipt):
-    for row in list(receipt['assets'].values()) + [r for feed in receipt['feeds'].values() for r in feed.values()]:
+    extra = [receipt['github_release']] if 'github_release' in receipt else []
+    extra += receipt.get('evidence', []) + receipt.get('source_checks', {}).get('files', [])
+    for row in list(receipt['assets'].values()) + [r for feed in receipt['feeds'].values() for r in feed.values()] + extra:
         if identity(row['path']) != row:
             raise ValueError('Frozen publication input changed')
 
@@ -122,24 +166,50 @@ def recheck_local(receipt):
 def readback(receipt, channel, report, transfer=_transfer):
     """Every byte, including the optional component route, before any promotion."""
     recheck_local(receipt)
-    base = release_url(receipt['tag'], channel).rsplit('/', 1)[0] + '/'
+    if receipt.get('schema') != 2 or receipt.get('track') not in ('stable', 'preview') or set(receipt['feeds']) != {'github', 'gitee'}:
+        raise ValueError('Versioned dual-mirror publication receipt required')
+    if channel not in ('github', 'gitee'):
+        raise ValueError('Invalid mirror channel')
     result = dict(commit=receipt['commit'], tree=receipt['tree'], tag=receipt['tag'],
-                  channel=channel, started_at=int(time.time()), files=[], passed=False)
+                  track=receipt['track'], channel=channel, started_at=int(time.time()), files=[], passed=False,
+                  promotable=False)
     try:
-        for name, expected in receipt['assets'].items():
+        chunks = []
+        transfer('https://api.github.com/repos/2223M1/bobbi-tv/releases/tags/' + receipt['tag'],
+                 256 * 1024, chunks.append, lambda: False, lambda _: None,
+                 deadline=time.monotonic() + 20)
+        metadata = _json(b''.join(chunks))
+        if (metadata.get('tag_name') != receipt['tag'] or metadata.get('draft') is not False
+                or metadata.get('prerelease') is not (receipt['track'] == 'preview')
+                or metadata.get('target_commitish') != receipt['commit']):
+            raise ValueError('Remote GitHub release identity differs')
+        result['github_release_identity'] = 'matched'
+        targets = []
+        for mirror in ('github', 'gitee'):
+            base = release_url(receipt['tag'], mirror).rsplit('/', 1)[0] + '/'
+            targets.extend((mirror, 'asset', base + name, name, expected) for name, expected in receipt['assets'].items())
+            base = feed_url(receipt['track'], mirror).rsplit('/', 1)[0] + '/'
+            for name, expected in receipt['feeds'][mirror].items():
+                relative = Path(name)
+                if relative.is_absolute() or '..' in relative.parts or '\\' in name or ':' in name:
+                    raise ValueError('Invalid feed path')
+                targets.append((mirror, 'feed', base + name, name, expected))
+        deadline = time.monotonic() + 1200
+        for mirror, kind, url, name, expected in targets:
             digest, count = hashlib.sha256(), 0
             def consume(block):
                 nonlocal count
                 count += len(block)
                 digest.update(block)
-            transfer(base + name, expected['bytes'], consume, lambda: False, lambda _: None,
-                     expected=expected['bytes'], deadline=time.monotonic() + 600)
-            row = dict(file=name, bytes=count, matched=count == expected['bytes'] and digest.hexdigest() == expected['sha256'])
+            transfer(url, expected['bytes'], consume, lambda: False, lambda _: None,
+                     expected=expected['bytes'], deadline=deadline)
+            row = dict(mirror=mirror, kind=kind, file=name, bytes=count, matched=count == expected['bytes'] and digest.hexdigest() == expected['sha256'])
             result['files'].append(row)
             if not row['matched']:
                 raise ValueError('Remote release asset differs')
         recheck_local(receipt)
         result['passed'] = True
+        result['promotable'] = True
         return result
     except Exception as error:
         result['error_class'] = type(error).__name__
@@ -151,8 +221,10 @@ def readback(receipt, channel, report, transfer=_transfer):
 
 def promote(receipt, channel, target, report, transfer=_transfer):
     """Keep old ZIPs; publish data before discovery pointers. No network writes."""
-    readback(receipt, channel, report, transfer)
     target = _safe_path(Path(target).absolute())
+    if target.name != receipt.get('track'):
+        raise ValueError('Promotion target must be the selected track directory; legacy current.json is immutable here')
+    readback(receipt, channel, report, transfer)
     target.mkdir(parents=True, exist_ok=True)
     feed = receipt['feeds'][channel]
     pointers = ('addons.xml.md5', 'addons.xml.sha256', 'addons.xml', 'index.html', 'current.json')
@@ -189,16 +261,23 @@ if __name__ == '__main__':
     stage = sub.add_parser('prepare')
     for name in ('bundle', 'entry', 'component-assets', 'github-feed', 'gitee-feed', 'output'):
         stage.add_argument('--' + name, required=True, type=Path)
+    stage.add_argument('--track', choices=('stable', 'preview'), required=True)
+    stage.add_argument('--github-release', type=Path, required=True, help='Frozen GitHub release JSON with resolved target commit')
+    stage.add_argument('--source-first', type=Path, required=True)
+    stage.add_argument('--source-second', type=Path, required=True)
     for operation in ('verify', 'promote'):
         step = sub.add_parser(operation)
         step.add_argument('--receipt', required=True, type=Path)
         step.add_argument('--channel', required=True, choices=('github', 'gitee'))
         step.add_argument('--report', required=True, type=Path)
-        if operation == 'promote': step.add_argument('--target', required=True, type=Path)
+        if operation == 'promote':
+            step.add_argument('--target', required=True, type=Path, help='Local repository/stable or repository/preview directory')
     args = parser.parse_args()
     if args.operation == 'prepare':
         result = prepare(args.bundle, args.entry, args.component_assets,
-                         dict(github=args.github_feed, gitee=args.gitee_feed), args.output)
+                         dict(github=args.github_feed, gitee=args.gitee_feed), args.output,
+                         track=args.track, github_release=args.github_release,
+                         source_checks=(args.source_first, args.source_second))
         print(json.dumps({key: result[key] for key in ('commit', 'tree', 'tag', 'sequence')}))
     else:
         receipt = json.loads(args.receipt.read_text(encoding='utf-8'))

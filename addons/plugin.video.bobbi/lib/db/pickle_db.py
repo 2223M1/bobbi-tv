@@ -130,6 +130,15 @@ class PickleDatabase:
             database.get(key, {}).pop(subkey, None)
         elif action == "delete_if" and database.get(key, {}).get(subkey) == value:
             database.get(key, {}).pop(subkey, None)
+        elif action == "file_report":
+            # Re-evaluate under the cross-process commit lock, not only in a
+            # stale writer snapshot. A late old session cannot win disk order.
+            current = database.get(key, {}).get(subkey)
+            if (isinstance(current, dict) and current.get('version') == 1
+                    and current.get('generation') == value.get('generation')
+                    and current.get('session_id') == value.get('session_id')
+                    and value.get('sequence', 0) > current.get('sequence', 0)):
+                database[key][subkey] = copy.deepcopy(value)
 
     def _queue(self, operation, commit):
         self._pending.append(copy.deepcopy(operation))
@@ -139,6 +148,33 @@ class PickleDatabase:
 
     def set_item(self, key: str, subkey: str, value, commit: bool = True):
         return self._queue(("set", key, subkey, value), commit)
+
+    def file_report(self, key, subkey, value):
+        return self._queue(('file_report', key, subkey, value), True)
+
+    def begin_file_session(self, key, subkey, transform, limit=500):
+        """Reserve ordering before playback, using the existing atomic store.
+
+        No callback or network work belongs here. A failed reservation never
+        changes the in-memory record or discards pending legacy operations.
+        """
+        with _writer_lock(self._database_path):
+            latest = _read(self._database_path)
+            for operation in self._pending:
+                self._apply(latest, operation)
+            rows = latest.setdefault(key, {})
+            if type(rows) is not dict:
+                raise ValueError('FILE_HISTORY_SCHEMA_UNSUPPORTED')
+            value = transform(copy.deepcopy(rows.get(subkey)))
+            rows[subkey] = copy.deepcopy(value)
+            if len(rows) > limit:
+                oldest = sorted((k for k in rows if k != subkey),
+                    key=lambda k: rows[k].get('updated_at', 0) if type(rows[k]) is dict else 0)
+                for identifier in oldest[:len(rows) - limit]:
+                    del rows[identifier]
+            _atomic_save(self._database_path, latest)
+            self._database, self._pending = latest, []
+            return copy.deepcopy(value)
 
     def get_item(self, key: str, subkey: str):
         self._reload()
@@ -163,6 +199,12 @@ class PickleDatabase:
         if not self._reload():
             raise OSError('History unavailable')
         return copy.deepcopy(self._database.get(key))
+
+    def get_keys_checked(self, keys):
+        """One disk snapshot for mixed title/file history and home previews."""
+        if not self._reload():
+            raise OSError('History unavailable')
+        return {key: copy.deepcopy(self._database.get(key)) for key in keys}
 
     def commit(self):
         if not self._pending:

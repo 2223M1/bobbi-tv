@@ -1,10 +1,61 @@
 """QR rendered locally; no login material sent to third-party QR services."""
 import tempfile
 from pathlib import Path
+from threading import Event, Lock
 from .cloud115 import Login, CloudError
 from .environment import private_path
 from .account_manager import validate_snapshot
 from .runtime import call
+
+
+class _LoginAdapter:
+    """115 protocol stays separate; only the account owner can persist it."""
+    def __init__(self, flow, expected):
+        self.flow, self.expected = flow, expected
+        self.cancelled, self.lock, self._saved = Event(), Lock(), None
+
+    @property
+    def phase(self):
+        return getattr(self.flow, 'phase', 'confirm')
+
+    def begin(self):
+        qr = self.flow.begin()
+        if self.cancelled.is_set():
+            self.flow.cancel()  # A late begin must not revive an abandoned token.
+            return dict(state='cancelled')
+        return dict(state='waiting', qr=qr)
+
+    def poll(self):
+        state, value = self.flow.poll()
+        with self.lock:
+            if self.cancelled.is_set():
+                return dict(state='cancelled')
+            if state == 'confirmed':
+                self._saved = value
+                return dict(state='ready')  # Credentials never enter the runner/UI result.
+        if state not in ('waiting', 'scanned'):
+            raise CloudError('INVALID_REPLY')
+        return dict(state=state)
+
+    def retryable(self, error):
+        # The protocol claims its one-use exchange before sending it. A lost
+        # exchange reply must not be replaced by another poll or exchange.
+        return not getattr(self.flow, 'terminal', False)
+
+    def commit(self):
+        with self.lock:
+            if self.cancelled.is_set() or self._saved is None:
+                raise CloudError('QR_FINISHED')
+            value = self._saved
+        reply = call('account_install', dict(credentials=value, expected=self.expected))
+        validate_snapshot(reply, authenticated=True)
+        return dict(state='committed')
+
+    def cancel(self):
+        self.cancelled.set()
+        with self.lock:
+            self._saved = None
+        self.flow.cancel()
 
 
 def _refresh_account_view():
@@ -21,7 +72,6 @@ def login():
     import xbmc
     import xbmcgui
     import xbmcvfs
-    from ._vendor import segno
     dialog = xbmcgui.Dialog()
     path = private_path(xbmcvfs.translatePath, '115-os_linux.json')
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -46,51 +96,34 @@ def login():
             dialog.ok('已退出 115', '本机登录已移除，网盘文件保留。')
             return True
 
-    from .account_dialog import create
-    flow, window = Login(), None
+    from .account_dialog import create, render_qr, failure_details, safe_close
+    from .login_flow import LoginRunner, LoginFlowError
+    adapter, window, runner = _LoginAdapter(Login(), expected), None, None
     monitor = xbmc.Monitor()
     with tempfile.TemporaryDirectory(prefix='bobbi-qr-', dir=str(path.parent)) as directory:
         image = Path(directory) / 'login.png'
         try:
-            qr = flow.begin()
-            segno.make(qr, micro=False).save(str(image), scale=10, border=4)
-            window = create(image)
+            window = create('')
+            window.message = '正在准备二维码，可按返回取消。'
             window.show()
-            failures = 0
-            while not monitor.abortRequested() and not window.cancelled:
-                if monitor.waitForAbort(2):
-                    break
-                try:
-                    state, value = flow.poll()
-                    failures = 0
-                except CloudError as error:
-                    if error.code in ('NETWORK_ERROR', 'QR_POLL_RETRY') and failures < 3:
-                        failures += 1
-                        window.set_status('连接中断，正在重试。可按返回取消。')
-                        continue
-                    raise
-                if state == 'confirmed':
-                    if not window.cancelled and not monitor.abortRequested():
-                        call('account_install', {'credentials': value, 'expected': expected})
-                        window.close()
-                        _refresh_account_view()
-                        dialog.ok('115 登录成功', '已保存到这台设备，可以返回选片。')
-                        return True
-                    break
-                if state == 'scanned':
-                    window.set_status('已扫码，请在手机上确认登录')
-        except (CloudError, OSError, ValueError, RuntimeError) as error:
-            if window is not None:
-                window.close()
+            runner = LoginRunner(window, monitor)
+            if runner.run(adapter, lambda state: render_qr(window, image, state)):
+                safe_close(window)
+                _refresh_account_view()
+                dialog.ok('115 登录成功', '已保存到这台设备，可以返回选片。')
+                return True
+        except Exception as error:
+            safe_close(window)
             # An IPC timeout can follow a successful atomic save. Never claim
             # unchanged state or repeat the account exchange in that case.
-            if isinstance(error, CloudError) and error.code in ('QR_EXPIRED', 'QR_CANCELLED'):
-                dialog.ok('二维码已过期' if error.code == 'QR_EXPIRED' else '已取消登录',
+            code = error.code if isinstance(error, (CloudError, LoginFlowError)) else ''
+            if code in ('QR_EXPIRED', 'QR_CANCELLED', 'EXPIRED'):
+                dialog.ok('已取消登录' if code == 'QR_CANCELLED' else '二维码已过期',
                           '请重新扫码，当前账号保留。')
             else:
-                dialog.ok('未确认登录结果', '请重新打开账号管理查看状态。若仍未登录，请重新扫码。')
+                detail = failure_details(runner, error, '115') if runner is not None else '登录界面暂不可用。'
+                dialog.ok('未确认登录结果', detail + '\n请重新打开账号管理查看状态。')
         finally:
-            flow.cancel()
-            if window is not None:
-                window.close()
+            adapter.cancel()
+            safe_close(window)
     return False

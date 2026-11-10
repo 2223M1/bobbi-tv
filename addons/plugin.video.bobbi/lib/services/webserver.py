@@ -344,7 +344,60 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
     """Handles web UI + JSON API requests."""
 
     def log_message(self, format, *args):
+        if self.path.startswith('/manage'):
+            return
         kodilog(f"[WebServer] {format % args}")
+
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(3)
+
+    def _management_reply(self, value, status=200, cookie=None, content_type='application/json; charset=utf-8'):
+        from lib.services.phone_management import encode
+        body = value if type(value) is bytes else encode(value)
+        self.send_response(status)
+        self.send_header('Content-Type', content_type)
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('Referrer-Policy', 'no-referrer')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+        if cookie:
+            self.send_header('Set-Cookie', cookie)
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _management(self, post=False):
+        from lib.services.phone_management import MAX_BODY, PhoneError
+        manager = getattr(self.server, 'phone_management', None)
+        if manager is None:
+            self.send_error(404)
+            return
+        try:
+            manager.check_origin(self.headers, write=post)
+            if not post:
+                resource = {'/manage': ('manage.html', 'text/html; charset=utf-8'),
+                            '/manage.js': ('manage.js', 'application/javascript; charset=utf-8')}.get(self.path)
+                if resource is None:
+                    raise PhoneError('NOT_FOUND', 404)
+                with open(os.path.join(_WEB_DIR, resource[0]), 'rb') as stream:
+                    self._management_reply(stream.read(131072), content_type=resource[1])
+                return
+            if (self.headers.get('Transfer-Encoding') is not None or
+                    self.headers.get('Content-Type', '').split(';')[0] != 'application/json'):
+                raise PhoneError('INVALID_REQUEST', 400)
+            length = self.headers.get('Content-Length', '')
+            if not length.isdecimal() or not 0 < int(length) <= MAX_BODY:
+                raise PhoneError('REQUEST_TOO_LARGE', 413)
+            raw = self.rfile.read(int(length))
+            if len(raw) != int(length):
+                raise PhoneError('INVALID_REQUEST', 400)
+            result, cookie = manager.handle(self.path, self.headers, raw)
+            self._management_reply(result, cookie=cookie)
+        except PhoneError as error:
+            self._management_reply(dict(error=str(error)), error.status)
+        except (OSError, ValueError, KeyError, TypeError):
+            self._management_reply(dict(error='MANAGEMENT_UNAVAILABLE'), 503)
 
     def _send_json(self, data, status=200):
         body = json.dumps(data).encode("utf-8")
@@ -370,7 +423,11 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
     # --- Routes ---
 
     def do_GET(self):
-        if self.path == "/" or self.path == "":
+        if self.path.startswith('/manage'):
+            self._management()
+        elif getattr(self.server, 'phone_management', None) is not None:
+            self.send_error(404)
+        elif self.path == "/" or self.path == "":
             self._serve_index()
         elif self.path == "/api/addons":
             self._api_get_addons()
@@ -378,7 +435,11 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_POST(self):
-        if self.path == "/api/addons":
+        if self.path.startswith('/manage'):
+            self._management(post=True)
+        elif getattr(self.server, 'phone_management', None) is not None:
+            self.send_error(404)
+        elif self.path == "/api/addons":
             self._api_add_addon()
         elif self.path == "/api/addons/validate":
             self._api_validate()
@@ -386,6 +447,9 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_DELETE(self):
+        if getattr(self.server, 'phone_management', None) is not None:
+            self.send_error(404)
+            return
         if self.path.startswith("/api/addons/"):
             addon_id = self.path[len("/api/addons/") :]
             self._api_remove_addon(addon_id)
@@ -393,6 +457,9 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_PUT(self):
+        if getattr(self.server, 'phone_management', None) is not None:
+            self.send_error(404)
+            return
         if self.path.startswith("/api/addons/") and self.path.endswith("/toggle"):
             addon_id = self.path[len("/api/addons/") : -len("/toggle")]
             self._api_toggle_addon(addon_id)
@@ -400,6 +467,9 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_OPTIONS(self):
+        if self.path.startswith('/manage'):
+            self._management_reply(dict(error='ORIGIN_FORBIDDEN'), 403)
+            return
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -542,16 +612,18 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
 class StremioWebServer:
     """Threaded HTTP server that starts/stops on demand."""
 
-    def __init__(self, port=8081):
+    def __init__(self, port=8081, phone_management=None):
         self.port = port
         self._server = None
         self._thread = None
+        self.phone_management = phone_management
 
     def start(self):
         if self._server:
             return
         try:
             self._server = HTTPServer(("0.0.0.0", self.port), StremioRequestHandler)
+            self._server.phone_management = self.phone_management
             self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
             self._thread.start()
             kodilog(f"[WebServer] Started on port {self.port}")
@@ -560,6 +632,8 @@ class StremioWebServer:
             self._server = None
 
     def stop(self):
+        if self.phone_management is not None:
+            self.phone_management.revoke()
         if self._server:
             self._server.shutdown()
             self._server.server_close()

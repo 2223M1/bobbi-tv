@@ -28,6 +28,7 @@ class Host:
         self.stream_factory, self.native_rpc = stream_factory, native_rpc
         self.accounts = self.streams = self.engine = self.images = None
         self.pans = None  # Optional native providers; never replaces the 115 owner.
+        self.catalog = None  # Opt-in personal directory index; no startup IO.
         self.playback_accounts = None
         self.pan_unsubscribe = lambda: None
         self.owner = self.preparation = None
@@ -138,6 +139,16 @@ class Host:
             except Full:
                 self.report('PAN_STOP_QUEUE_FULL')
 
+    def _catalog(self):
+        pans = self._pans()
+        with self.lock:
+            if self.stopping.is_set():
+                raise ValueError('RUNTIME_NOT_READY')
+            if self.catalog is None:
+                from .catalog_service import CatalogService
+                self.catalog = CatalogService(self.root, pans, playing=lambda: self.playing)
+            return self.catalog
+
     def bind_owner(self, dispatch, account_changed=None):
         self.owner = dispatch  # Called on the native owner thread, never via IPC.
         self.owner_account_changed = account_changed
@@ -189,8 +200,35 @@ class Host:
             raise ValueError('RUNTIME_NOT_READY')
         if not isinstance(body, dict):
             raise ValueError('RUNTIME_FIELDS')
+        if action == 'pan_prepare_history_play' and set(body) == {'history_id', 'request_id'}:
+            from lib.db.file_history import FileHistory
+            from .pan_history import prepare_history_play
+            return prepare_history_play(self._pans(), FileHistory().get(body['history_id']), body['request_id'])
         if isinstance(action, str) and action.startswith('pan_'):
-            return self._pans().dispatch(action, body)
+            result = self._pans().dispatch(action, body)
+            if action == 'pan_claim_play' and isinstance(result, dict) and result.get('file_ref'):
+                try:
+                    from lib.db.file_history import FileHistory
+                    history = FileHistory().begin(result['file_ref'])
+                    result = dict(result, history={key: history[key] for key in ('generation', 'session_id')}
+                                  if history else None)
+                except (ImportError, ValueError, OSError, RuntimeError):
+                    result = dict(result, history=None)
+            return result
+        if action == 'catalog_history' and 'expected' in body and set(body) <= {'expected', 'offset', 'limit'}:
+            from .pan_history import history_summary
+            return history_summary(self._pans(), **body)
+        if isinstance(action, str) and action.startswith('catalog_'):
+            return self._catalog().dispatch(action, body)
+        if action == 'jobs' and set(body) <= {'kind', 'expected', 'task', 'offset', 'limit'}:
+            if body.get('kind') == 'scan':
+                return self._catalog().dispatch('catalog_jobs', {k: v for k, v in body.items() if k != 'kind'})
+            if body.get('kind') == 'preparation':
+                scope = self.accounts.require_current(body.get('expected'))
+                if self.preparation is None:
+                    return dict(items=[], next_offset=None, state='NOT_CONFIGURED')
+                return self.preparation.request('jobs', {k: v for k, v in body.items() if k not in ('kind', 'expected')}, scope)
+            raise ValueError('JOB_KIND_INVALID')
         if action == 'quiesce' and body == {'protocol': 1} and type(body['protocol']) is int:
             # Serialized with playback, never decide isPlaying on an HTTP
             # worker. The existing per-instance bearer token scopes this call.
@@ -537,6 +575,9 @@ class Host:
             job.done.set()
         with self.lock:
             pans = self.pans
+            catalog = self.catalog
+        if catalog is not None:
+            drain(catalog.close, 'LIBRARY_SCANNER')
         if pans is not None:
             drain(pans.close, 'NATIVE_CLOUD')
         drain(lambda: self.runtime.close(release_lease=False), 'RUNTIME')

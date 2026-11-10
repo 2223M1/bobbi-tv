@@ -63,6 +63,7 @@ def main():
     parser.add_argument('--components', type=Path)
     parser.add_argument('--profile', choices=('coreelec', 'windows', 'android'))
     parser.add_argument('--sequence', type=int)
+    parser.add_argument('--track', choices=('preview', 'stable'), default='preview')
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
     trust_path = ROOT / 'addons/script.module.bobbi.platform/lib/bobbi_platform/release_trust.json'
@@ -92,7 +93,7 @@ def main():
         raise ValueError('Signing key differs from pinned trust')
     built = json.loads((args.components / 'manifest.json').read_text(encoding='utf-8'))
     checked = checked_components(args.components, built, trust)
-    manifest = dict(schema=2, channel='private-candidate', profile=args.profile,
+    manifest = dict(schema=2, channel='private-stable' if args.track == 'stable' else 'private-candidate', profile=args.profile,
                     sequence=args.sequence, components=[])
     for row, blob in checked:
         manifest['components'].append(dict(id=row['id'], version=row['version'], file=row['file'],

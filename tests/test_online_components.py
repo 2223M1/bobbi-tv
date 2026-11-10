@@ -167,7 +167,7 @@ def test_real_online_entry_installs_warm_reassembled_generation(entry, signing, 
     _, blobs = assets(path)
     calls = network(monkeypatch, blobs)
     offer = offer_for(path.read_bytes())
-    monkeypatch.setattr(online, 'latest', lambda cancelled: offer)
+    monkeypatch.setattr(online, 'latest', lambda cancelled, **kwargs: offer)
     components.download(offer, entry.env.work/'downloads', signing[1]).unlink()
     calls.clear()
     ce_install_ui.main(online=True)

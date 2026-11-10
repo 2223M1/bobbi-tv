@@ -84,6 +84,16 @@ def history_digest(data):
     return hashlib.sha256(json.dumps(data, sort_keys=True, ensure_ascii=True).encode()).hexdigest()
 
 
+def personal_file_projection(record, labels):
+    """Display only. A ready-looking row never proves remote availability."""
+    ref = record['file_ref']
+    duration, position = record['duration'], record['position']
+    return dict(title=ref['name'], source=labels.get(ref['provider'], ref['provider']),
+        percent=min(100, round(100 * position / duration)) if duration else None,
+        state='verification_required', kind='原文件',
+        detail='恢复时核验原账号与文件 · 待实机验证')
+
+
 def translations(details, kind):
     field = 'title' if kind == 'movie' else 'name'
     result = {'zh': '', 'en': ''}

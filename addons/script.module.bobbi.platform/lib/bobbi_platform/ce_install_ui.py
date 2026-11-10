@@ -308,7 +308,7 @@ def choose_package(dialog, payload, first):
 def install_online(installer, host, dialog):
     """A manual online action downloads first, then reuses the offline transaction."""
     import xbmcgui
-    from .online_updates import latest, Cancelled
+    from .online_updates import latest, Cancelled, selected_track
     from .online_components import download
     host.check_idle()
     progress = xbmcgui.DialogProgress()
@@ -316,13 +316,20 @@ def install_online(installer, host, dialog):
     try:
         progress.create('波比 TV 更新', '正在检查更新，可取消。')
         cancelled = lambda: host.monitor.abortRequested() or progress.iscanceled()
-        offer = latest(cancelled)
+        track, mirrors = selected_track(installer.work), {}
+        offer = latest(cancelled, track=track, report=mirrors)
         state = installer._read() or {}
         watermark = max(state.get('high_watermark', 0), state.get('sequence', 0))
         progress.close()
         if offer['sequence'] <= watermark:
-            dialog.ok('无需重复更新', '此版本或更新版本已安装过。需要恢复时，请选择“恢复上一版本”或“选择恢复版本”。')
+            dialog.ok('无需重复更新', ('稳定版尚未追上已安装版本，等待同轨道后续更新；不会自动降级。\n'
+                if track == 'stable' and offer['sequence'] < watermark else '') +
+                '此版本或更新版本已安装过。需要恢复时，请选择“恢复上一版本”或“选择恢复版本”。')
             return False
+        dialog.textviewer('更新版本', '轨道 {}\n已装 {}\n候选 {}\n镜像 {}'.format(
+            '稳定版' if track == 'stable' else '预览版', state.get('sequence', '未安装'), offer['tag'].upper(),
+            {'synchronized': '已同步', 'out-of-sync': '尚未同步，使用较新版本',
+             'unavailable': '部分不可用，使用已核实镜像'}.get(mirrors.get('mirrors'), '未报告')))
         if not dialog.yesno('安装 ' + offer['tag'].upper(),
                 '完整安装包约 %d MB，已有组件可复用。账号与观看记录保留，完成后需重启 Kodi。继续安装？'
                 % ((offer['size'] + 1024 * 1024 - 1) // (1024 * 1024))):
@@ -374,6 +381,9 @@ def failure_message(error):
         'ONLINE_DOWNLOAD_BUSY': '另一个更新窗口正在下载，请等待完成或关闭它。',
         'ONLINE_CACHE_PATH_INVALID': '下载缓存目录不可用，请改用完整离线包安装。',
         'ONLINE_OFFER_INVALID': '暂时查不到更新，请稍后重试，或从国内下载页获取完整包。',
+        'ONLINE_TRACK_MISMATCH': '发行轨道与安装包不匹配，未安装。请等待正确的同轨道版本。',
+        'ONLINE_LEGACY_UNVERIFIED': '旧更新入口的稳定版身份尚未核实，未安装。请等待轨道入口同步或使用已核实的离线包。',
+        'ONLINE_MIRROR_CONFLICT': '镜像同版本内容冲突，未安装。请等待发布者核对后再试。',
         'ONLINE_RESPONSE_INVALID': '下载服务暂不可用，请重试或使用完整离线包。',
         'ONLINE_REDIRECT_REJECTED': '此下载地址不受支持，请从项目下载页获取完整包。',
         'GENERATION_NOT_NEWER': '所选安装包版本较旧或相同，请通过版本恢复入口使用旧版。',
@@ -430,10 +440,18 @@ def main(payload=None, online=False, storage=False):
         state = installer._read()
         actions = ['影院设置', '安装本地完整包',
                    '恢复上一版本', '返回 Kodi 界面', '检查在线更新', '存储空间与清理',
-                   '选择恢复版本']
+                   '选择恢复版本', '更新轨道（稳定版 / 预览版）']
         first = state is None and not host.details('plugin.video.bobbi')
         choice = 5 if storage else (4 if online or (first and not (payload and Path(payload).is_file())) else (
             1 if first else dialog.select('波比 TV', actions)))
+        if choice == 7:
+            from .online_updates import selected_track, TRACKS
+            current = selected_track(installer.work)
+            selected = dialog.select('更新轨道', ['稳定版（默认）', '预览版（测试）'], preselect=TRACKS.index(current))
+            if selected in (0, 1) and (selected == 0 or dialog.yesno('使用预览版？',
+                    '预览版可能有未验证功能。切回稳定版不会自动降级。继续？')):
+                selected_track(installer.work, TRACKS[selected])
+            return
         if choice == 6:
             from .ce_recovery import show
             if show(installer, host, dialog):

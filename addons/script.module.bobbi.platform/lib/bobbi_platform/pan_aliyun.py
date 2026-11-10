@@ -14,7 +14,10 @@ from .pan_http import Session, USER_AGENT
 from .pan_tokens import identifier, number, original_url, page_number, saved, text, token
 
 AUTH = 'https://passport.aliyundrive.com/newlogin/qrcode/'
-API = 'https://api.alipan.com'
+API = 'https://api.aliyundrive.com'
+TOKEN_URL = 'https://auth.aliyundrive.com/v2/account/token'
+USER_URL = 'https://user.aliyundrive.com/v2/user/get'
+WEB_HEADERS = {'Origin': 'https://www.alipan.com', 'Referer': 'https://www.alipan.com/'}
 
 
 def credentials(value):
@@ -23,7 +26,7 @@ def credentials(value):
     token(value['refresh_token'])
     number(value['expires_at'], 1)
     identifier(value['device_id'])
-    if (type(value['drives']) is not dict or not value['drives']
+    if (type(value['drives']) is not dict
             or not set(value['drives']) <= {'default', 'resource', 'backup'}):
         raise PanError('PAN_CREDENTIALS_INVALID')
     for drive in value['drives'].values():
@@ -39,8 +42,8 @@ def checked(value):
 
 
 def refreshed(session, refresh, device, clock):
-    value = checked(session.request('https://auth.alipan.com/v2/account/token',
-        body={'grant_type': 'refresh_token', 'refresh_token': token(refresh)}))
+    value = checked(session.request(TOKEN_URL,
+        body={'grant_type': 'refresh_token', 'refresh_token': token(refresh)}, headers=WEB_HEADERS))
     lifetime = number(value.get('expires_in'), 1)
     if lifetime > 31 * 86400:
         raise PanError('PAN_REPLY_INVALID')
@@ -65,6 +68,7 @@ def entry(row, drive):
 class Client:
     def __init__(self, value, session=None, clock=time.time):
         self.saved = credentials(value)[1]
+        self.drives = dict(self.saved['drives'])
         self.session = session if session is not None else Session('aliyun')
         self.clock = clock
 
@@ -80,6 +84,7 @@ class Client:
             raise PanError('PAN_RENEW_IDENTITY_CHANGED')
         publish(current, previous)  # Persist before further IO; CAS owned by Host.
         self.saved = current
+        self.drives = dict(current['drives'])
 
     def _call(self, path, body):
         return checked(self.session.request(API + path, body=body, headers={
@@ -91,9 +96,27 @@ class Client:
         if type(parent) is not str or parent.count(':') != 1:
             raise PanError('PAN_FILE_ID_INVALID')
         drive, fid = parent.split(':')
-        if identifier(drive) not in self.saved['drives'].values():
+        identifier(drive)
+        identifier(fid)
+        self._ensure_drives()
+        if drive not in self.drives.values():
             raise PanError('PAN_FILE_ID_INVALID')
-        return drive, identifier(fid)
+        return drive, fid
+
+    def _ensure_drives(self):
+        if self.drives:
+            return
+        # Drive discovery belongs to browsing/playback, not QR authorization.
+        # No account publication or credential rotation occurs on this read.
+        value = checked(self.session.request(USER_URL, body={}, headers=dict(WEB_HEADERS,
+            Authorization='Bearer ' + self.saved['access_token'])))
+        if 'user_id' in value and value['user_id'] != self.saved['subject']:
+            raise PanError('PAN_RENEW_IDENTITY_CHANGED')
+        drives = {kind: identifier(value[kind + '_drive_id']) for kind in ('default', 'resource', 'backup')
+                  if value.get(kind + '_drive_id')}
+        if not drives:
+            raise PanError('PAN_REPLY_INVALID')
+        self.drives = drives
 
     def list_files(self, parent='0', page=1, size=10, cursor=''):
         page_number(page, size)
@@ -102,9 +125,10 @@ class Client:
         if parent == '0':
             if page != 1 or cursor:
                 raise PanError('PAN_PAGE_INVALID')
+            self._ensure_drives()
             items, seen = [], set()
             for kind, label in (('resource', '资源库'), ('backup', '备份盘'), ('default', '默认网盘')):
-                drive = self.saved['drives'].get(kind)
+                drive = self.drives.get(kind)
                 if drive and drive not in seen:
                     seen.add(drive)
                     items.append(dict(file_id=drive + ':root', name=label, size=0, directory=True))
@@ -148,12 +172,14 @@ class Login:
         self.clock, self.wall_clock = clock, wall_clock
         self.device, self.ck, self.stamp, self.refresh = uuid4().hex, None, None, None
         self.started, self.terminal = 0, False
+        self.pending, self.phase = None, 'prepare'
 
     def __repr__(self):
         return '<Aliyun QR: credentials hidden>'
 
     def cancel(self):
         self.terminal, self.ck, self.stamp, self.refresh = True, None, None, None
+        self.pending = None
 
     @staticmethod
     def _content(value):
@@ -167,9 +193,12 @@ class Login:
     def begin(self):
         if self.terminal or self.ck is not None:
             raise PanError('PAN_QR_FINISHED')
+        self.phase = 'prepare'
         value = self._content(self.session.request(AUTH + 'generate.do', query=dict(
             appName='aliyun_drive', fromSite='52', appEntrance='web', isMobile='false',
-            lang='zh_CN', returnUrl='', bizParams='', **{'_bx-v': '2.2.3'})))
+            lang='zh_CN', returnUrl='', bizParams='', **{'_bx-v': '2.2.3'}), headers=WEB_HEADERS))
+        if self.terminal:
+            raise PanError('PAN_QR_FINISHED')
         qr = original_url(value.get('codeContent'), ('aliyundrive.com', 'alipan.com'))
         self.ck = text(value.get('ck'), 2048)
         stamp = value.get('t')
@@ -180,18 +209,24 @@ class Login:
         self.stamp, self.started = stamp, self.clock()
         return qr
 
-    def poll(self):
+    def _check_active(self):
         if self.terminal or self.ck is None:
+            self.cancel()
             raise PanError('PAN_QR_FINISHED')
         if self.clock() - self.started >= 180:
             self.cancel()
             raise PanError('PAN_QR_EXPIRED')
-        if self.refresh is None:
+
+    def poll(self):
+        self._check_active()
+        if self.pending is None:
+            self.phase = 'confirm'
             value = self._content(self.session.request(AUTH + 'query.do',
                 query=dict(appName='aliyun_drive', fromSite='52', **{'_bx-v': '2.2.3'}),
                 form=dict(t=self.stamp, ck=self.ck, appName='aliyun_drive', appEntrance='web',
                     isMobile='false', lang='zh_CN', returnUrl='', fromSite='52', bizParams='',
-                    navlanguage='zh-CN', navPlatform='Win32')))
+                    navlanguage='zh-CN', navPlatform='Win32'), headers=WEB_HEADERS))
+            self._check_active()
             status = value.get('qrCodeStatus')
             if status in ('NEW', 'SCANED'):
                 return 'waiting', None
@@ -206,6 +241,21 @@ class Login:
                 self.refresh = token(content['pds_login_result']['refreshToken'])
             except (ValueError, KeyError, TypeError):
                 raise PanError('PAN_QR_EXCHANGE_FAILED') from None
-        result = refreshed(self.session, self.refresh, self.device, self.wall_clock)
+            self.phase = 'exchange'
+            # This refresh rotates credentials. Do not replay after an ambiguous
+            # exchange failure; retain a successful result for identity-only retry.
+            try:
+                self.pending = refreshed(self.session, self.refresh, self.device, self.wall_clock)
+            except Exception:
+                self.cancel()
+                raise
+            self.refresh = None
+            self._check_active()
+        # The successful token exchange already carries the stable user_id.
+        # Member/drive metadata is not another login gate; absent drive IDs
+        # are discovered only when the user opens the drive.
+        self.phase = 'identity'
+        self._check_active()
+        result = self.pending
         self.cancel()
         return 'ready', result

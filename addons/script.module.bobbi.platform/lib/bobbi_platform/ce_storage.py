@@ -189,8 +189,9 @@ class Maintenance:
         budget = [SCAN_FILES, SCAN_BYTES]
         device = self.work.stat().st_dev
         protected, complete, legacy = 0, True, 0
-        retired, retired_bytes = [], 0
-        from .ce_recovery import retired_transaction
+        unknown, unknown_bytes = 0, 0
+        retired, retired_bytes, preparations, preparation_bytes = [], 0, [], 0
+        from .ce_recovery import retired_transaction, preparation_transaction
         for count, path in enumerate(self.work.iterdir(), 1):
             if count > SCAN_FILES:
                 complete = False
@@ -198,11 +199,18 @@ class Maintenance:
             if re.fullmatch('[a-f0-9]{32}', path.name):
                 size, known = footprint(path, budget, device)
                 receipt = retired_transaction(self.work, path.name, state) if known else None
+                preparing = preparation_transaction(self.work, path.name, state, budget) if known and not receipt else None
                 if receipt:
                     retired.append((path, receipt))
                     retired_bytes += size
+                elif preparing:
+                    preparations.append((path, preparing))
+                    preparation_bytes += size
                 else:
                     protected += size
+                    if not state or path.name not in (state['tx'], state.get('previous_tx')):
+                        unknown += 1
+                        unknown_bytes += size
                 complete = complete and known
                 if not state or path.name != state['tx']: legacy += 1
         handoff, downloads_complete = footprint(self.work/'downloads', budget, device)
@@ -211,9 +219,11 @@ class Maintenance:
                     protected_transaction_bytes=protected, protected_sizes_complete=complete,
                     legacy_transactions=legacy, retained_download_bytes=max(0, handoff-sum(identity[2] for _, identity in rows)),
                     retained_download_sizes_complete=downloads_complete,
-                    retired_transactions=len(retired), retired_transaction_bytes=retired_bytes)
+                    retired_transactions=len(retired), retired_transaction_bytes=retired_bytes,
+                    preparation_transactions=len(preparations), preparation_bytes=preparation_bytes,
+                    protected_unknown_transactions=unknown, protected_unknown_bytes=unknown_bytes)
         # No caller-supplied filename list can become deletion authority.
-        self.plan = (plan, dict(plan), rows, retired, state)
+        self.plan = (plan, dict(plan), rows, retired, state, preparations)
         return plan
 
     def clear(self, plan, active=lambda: None):
@@ -223,7 +233,10 @@ class Maintenance:
         active()
         if self.installer._read() != self.plan[4]:
             raise UpdateError('STORAGE_PLAN_CHANGED')
-        from .ce_recovery import retired_transaction
+        from .ce_recovery import retired_transaction, preparation_transaction, clear_preparation
+        for path, proof in self.plan[5]:
+            if preparation_transaction(self.work, path.name, self.installer._read()) != proof:
+                raise UpdateError('STORAGE_PLAN_CHANGED')
         for path, receipt in self.plan[3]:
             if retired_transaction(self.work, path.name, self.plan[4]) != receipt:
                 raise UpdateError('STORAGE_PLAN_CHANGED')
@@ -249,8 +262,14 @@ class Maintenance:
             shutil.rmtree(_safe_path(path))
             removed_transactions += 1
         size += plan['retired_transaction_bytes'] if removed_transactions else 0
+        for path, proof in self.plan[5]:
+            active()
+            clear_preparation(self.installer, path.name, proof)
+        size += plan['preparation_bytes']
+        prepared = len(self.plan[5])
         self.plan = None
-        return dict(removed_files=removed, removed_bytes=size, removed_transactions=removed_transactions)
+        return dict(removed_files=removed, removed_bytes=size, removed_transactions=removed_transactions,
+                    removed_preparations=prepared)
 
 
 def show(installer, host, dialog):
@@ -264,7 +283,7 @@ def show(installer, host, dialog):
     active()
     with Maintenance(installer) as storage:
         plan = storage.preview()
-        size = (plan['reclaimable_bytes'] + plan['retired_transaction_bytes'])/(1024**2)
+        size = (plan['reclaimable_bytes'] + plan['retired_transaction_bytes'] + plan['preparation_bytes'])/(1024**2)
         detail = ('当前可用 {free:.1f} MiB。\n'
                   '可清理下载缓存 {cache:.1f} MiB（{files} 个文件），旧安装临时文件 {retired:.1f} MiB（{transactions} 份）。\n'
                   '另有 {kept:.1f} MiB 仍需保留，包含在用备份、未完成安装或无法确认用途的文件。\n'
@@ -272,15 +291,20 @@ def show(installer, host, dialog):
                       free=plan['free_bytes']/1024**2,cache=plan['reclaimable_bytes']/1024**2,files=plan['files'],
                       kept=plan['protected_transaction_bytes']/1024**2,
                       retired=plan['retired_transaction_bytes']/1024**2,transactions=plan['retired_transactions'])
+        detail += '\n可安全回收未提交准备文件 {:.1f} MiB（{} 份）。'.format(
+            plan['preparation_bytes']/1024**2, plan['preparation_transactions'])
+        if plan['protected_unknown_transactions']:
+            detail += '\n{} 份旧临时目录归属未确认，保留不动。'.format(plan['protected_unknown_transactions'])
         if not plan['protected_sizes_complete']:
             detail += '\n部分目录未统计完整，实际占用可能更多；这些目录不会清理。'
         dialog.textviewer('存储空间与清理', detail)
-        if not plan['files'] and not plan['retired_transactions']:
+        if not plan['files'] and not plan['retired_transactions'] and not plan['preparation_transactions']:
             return
         active()
         if not dialog.yesno('清理这些文件？',
                 '将删除 {:.1f} MiB（{} 个缓存文件、{} 份旧安装临时文件），无法撤销。\n'
-                '恢复版本所需文件与个人数据保留。'.format(size, plan['files'], plan['retired_transactions'])):
+                '恢复版本所需文件与个人数据保留。'.format(size, plan['files'],
+                    plan['retired_transactions'] + plan['preparation_transactions'])):
             return
         active()
         result = storage.clear(plan, active=active)

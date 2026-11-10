@@ -256,6 +256,9 @@ class Registry:
                 raise LibraryError('UNKNOWN_STORAGE_VERSION')
             self.db.execute('CREATE TABLE IF NOT EXISTS sources (id TEXT PRIMARY KEY, record TEXT NOT NULL)')
             self.db.execute('CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)')
+            # Optional directory membership is an extension of this registry,
+            # not a second source owner. Older versions ignore this table.
+            self.db.execute('CREATE TABLE IF NOT EXISTS pan_directories (id TEXT PRIMARY KEY, record TEXT NOT NULL)')
             self.db.execute('PRAGMA user_version=1')
             self.db.commit()
         except LibraryError:
@@ -318,7 +321,7 @@ class Registry:
             with self.db:
                 self.db.execute('BEGIN IMMEDIATE')
                 current = self.db.execute('SELECT id FROM sources').fetchall()
-                if len(current) >= MAX_SOURCES and source.id not in {row[0] for row in current}:
+                if len(current) + len(self.directories()) >= MAX_SOURCES and source.id not in {row[0] for row in current}:
                     raise LibraryError('TOO_MANY_SOURCES')
                 self.db.execute('INSERT OR REPLACE INTO sources(id, record) VALUES (?,?)', (source.id, raw))
         except sqlite3.Error:
@@ -338,7 +341,7 @@ class Registry:
                 current = self.sources()
                 already = any(s.kind == 'vfs' and s.location == source.location for s in current)
                 if not already:
-                    if len(current) >= MAX_SOURCES:
+                    if len(current) + len(self.directories()) >= MAX_SOURCES:
                         raise LibraryError('TOO_MANY_SOURCES')
                     raw = json.dumps(dict(source.__dict__, items=[]), ensure_ascii=False)
                     self.db.execute('INSERT INTO sources(id, record) VALUES (?,?)', (source.id, raw))
@@ -354,3 +357,47 @@ class Registry:
                 self.db.execute('DELETE FROM sources WHERE id=?', (source_id,))
         except sqlite3.Error:
             raise LibraryError('STORAGE_UNAVAILABLE') from None
+
+    def directories(self):
+        rows = self.db.execute('SELECT record FROM pan_directories ORDER BY id LIMIT ?', (MAX_SOURCES + 1,)).fetchall()
+        if len(rows) > MAX_SOURCES:
+            raise LibraryError('TOO_MANY_SOURCES')
+        return tuple(_pan_directory(_json(row[0])) for row in rows)
+
+    def directory(self, source_id):
+        for row in self.directories():
+            if row['id'] == source_id:
+                return row
+        raise LibraryError('SOURCE_NOT_FOUND')
+
+    def save_directory(self, name, expected, parent):
+        # Store only a stable account identifier and explicit user-selected
+        # directory. Epochs and credentials remain owned by PanService.
+        key = hashlib.sha256(json.dumps([expected['provider'], expected['account_id'], parent],
+            ensure_ascii=True, separators=(',', ':')).encode()).hexdigest()[:32]
+        row = _pan_directory(dict(id=key, name=name, provider=expected['provider'],
+            account_id=expected['account_id'], parent=parent))
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            current = self.directories()
+            if len(current) + len(self.sources()) >= MAX_SOURCES and not any(r['id'] == key for r in current):
+                raise LibraryError('TOO_MANY_SOURCES')
+            self.db.execute('INSERT OR REPLACE INTO pan_directories VALUES(?,?)', (key, json.dumps(row, ensure_ascii=False)))
+        return row
+
+    def remove_directory(self, source_id):
+        self.directory(source_id)
+        with self.db:
+            self.db.execute('DELETE FROM pan_directories WHERE id=?', (source_id,))
+
+
+def _pan_directory(row):
+    from bobbi_core.file_ref import PROVIDERS
+    if (type(row) is not dict or set(row) != {'id', 'name', 'provider', 'account_id', 'parent'}
+            or row['provider'] not in PROVIDERS or not re.fullmatch('[0-9a-f]{32}', str(row['id']))):
+        raise LibraryError('INVALID_SOURCE')
+    for key, maximum in (('name', 80), ('account_id', 256), ('parent', 4096)):
+        _text(row[key], maximum)
+        if '://' in row[key]:
+            raise LibraryError('INVALID_SOURCE')
+    return dict(row)

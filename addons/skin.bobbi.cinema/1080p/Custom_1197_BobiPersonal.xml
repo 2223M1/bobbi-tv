@@ -37,7 +37,7 @@
       <content>
         <item>
           <label>网盘与 NAS</label>
-          <label2>浏览已添加的网盘、NAS 和本机视频</label2>
+          <label2>浏览原生网盘、已添加的 NAS 和本机视频</label2>
           <icon>bobi/icons/server.png</icon>
           <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi.library/",return)</onclick>
         </item>
@@ -55,7 +55,7 @@
         </item>
         <item>
           <label>继续观看</label>
-          <label2>有进度但还没看完的影片与剧集</label2>
+          <label2>有进度的影片、剧集与个人网盘原文件</label2>
           <icon>bobi/icons/history.png</icon>
           <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=continue_watching_menu",return)</onclick>
         </item>

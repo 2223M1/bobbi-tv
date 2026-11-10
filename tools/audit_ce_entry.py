@@ -33,6 +33,8 @@ def audit(path, online_bundle=None):
                 bundle = Path(online_bundle)
             with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
                 manifest = signed.check_all()
+                from vendor_licenses import verify_bundle_notices
+                verify_bundle_notices(signed)
                 component = next(row for row in manifest['components'] if row['id'] == 'script.bobbi.start')
                 with zipfile.ZipFile(BytesIO(signed.read(component['file'], component['size']))) as source:
                     expected = set(source.namelist())
@@ -60,12 +62,9 @@ def audit(path, online_bundle=None):
                 'assert "bobbi_core" not in sys.modules')
             subprocess.run([sys.executable, '-I', '-B', '-c', script, str(temporary/'bootstrap')],
                            check=True, timeout=15, cwd=temporary)
-            # Legacy entries can contain a document; current clean builds do
-            # not. Neither presence nor absence is a runtime trust primitive.
-            # Signature, same-generation code and isolated import stay required.
     return dict(schema=1, sequence=manifest['sequence'], user_entry=Path(path).name,
         kodi_addon_xml='passed', complete_signature='passed', embedded_complete_payload=online_bundle is None,
-        same_generation_bootstrap='passed',
+        same_generation_bootstrap='passed', pinned_component_notices='passed',
         isolated_bootstrap_import='passed', signed_entry_members='passed', account_state_copied=False,
         scope='actual ZIP and fresh interpreter; not clean-device installation certification')
 

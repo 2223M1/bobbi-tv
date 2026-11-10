@@ -119,6 +119,29 @@ class Client(RenewableClient):
         value = self._get(FILES + '/' + identifier(selected['file_id']), {'space': ''})
         if entry(value) != selected:
             raise PanError('PAN_FILE_CHANGED')
-        # web_content_link is the original file; medias may contain transcoding.
-        url = original_url(value.get('web_content_link'), CDN)
+        # Juku's file-info contract also exposes explicitly marked original
+        # media and the raw octet-stream link. Never select an unmarked media
+        # rendition or forward the account bearer to the download origin.
+        link = value.get('web_content_link')
+        if not link:
+            media = value.get('medias', [])
+            if type(media) is not list or len(media) > 64:
+                raise PanError('PAN_REPLY_INVALID')
+            for row in media:
+                if type(row) is dict and row.get('is_origin') is True:
+                    source = row.get('link')
+                    if type(source) is not dict:
+                        raise PanError('PAN_REPLY_INVALID')
+                    link = source.get('url')
+                    if link:
+                        break
+        if not link:
+            links = value.get('links', {})
+            if type(links) is not dict:
+                raise PanError('PAN_REPLY_INVALID')
+            raw = links.get('application/octet-stream', {})
+            if type(raw) is not dict:
+                raise PanError('PAN_REPLY_INVALID')
+            link = raw.get('url')
+        url = original_url(link, CDN)
         return dict(url=url, size=selected['size'], original=True, headers={'User-Agent': USER_AGENT})

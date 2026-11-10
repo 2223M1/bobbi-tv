@@ -89,36 +89,40 @@ def test_mobile_qr_uses_fresh_keys_nested_pending_and_unknown_is_not_waiting():
         login.poll()
 
 
-def test_mobile_new_account_route_retry_does_not_reconsume_qr():
+def test_mobile_new_account_defers_route_retry_until_directory_access():
     wire = Wire(reply(encryptAccount=base64.b64encode(b'13800000000').decode(), authToken='fixture-auth',
-        cutoverStatus='1', userDomainId='uid1', routerInfo=[]), PanError('PAN_NETWORK_ERROR'),
-        reply(routePolicyList=[dict(modName='personal', httpsUrl=saved()['route'])]))
+        cutoverStatus='1', userDomainId='uid1', routerInfo=[]))
     pytest.importorskip('Crypto')
     now = [0]
     flow = mobile.Login(wire, clock=lambda: now[0])
     flow.started, flow.key, flow.secret = 0, b'abcdefghijklmnop', 'fixture-secret'
-    with pytest.raises(PanError, match='NETWORK'):
-        flow.poll()
-    now[0] = 2
     state, value = flow.poll()
     assert state == 'ready' and value['subject'] == saved()['subject']
     assert sum(c['url'].endswith('/login') for c in wire.calls) == 1
-    assert value['route'] == saved()['route']
+    assert value['route'] == '' and value['user_domain_id'] == 'uid1'
+    access = Wire(PanError('PAN_NETWORK_ERROR'),
+        reply(routePolicyList=[dict(modName='personal', httpsUrl=saved()['route'])]),
+        reply(items=[], nextPageCursor=''))
+    client = mobile.Client(value, access)
+    with pytest.raises(PanError, match='NETWORK'):
+        client.list_files()
+    assert client.list_files()['items'] == []
+    assert client.saved['route'] == saved()['route']
 
 
 @pytest.mark.parametrize('pds', [True, False])
 def test_mobile_both_personal_drive_formats_exact_original(pds):
     data = (dict(items=[row()], nextPageCursor='') if pds else
-        dict(getDiskResult=dict(catalogList=[], contentList=[dict(contentID='file1', contentName='movie.mkv',
-            contentSize=100, updateTime='2026-11-09T10:00:00')], nodeCount=1)))
-    download = dict(url='https://download.yun.139.com/original') if pds else dict(downloadURL='https://download.yun.139.com/original')
+        dict(catalogList=[], contentList=[dict(contentId='file1', contentName='movie.mkv',
+            contentSize=100, updateTime='2026-11-09T10:00:00')]))
+    download = dict(url='https://download.yun.139.com/original')
     wire = Wire(reply(**data), reply(**data), reply(**download))
     client = mobile.Client(saved(pds), wire)
     selected = client.list_files()['items'][0]
     grant = client.resolve_original(selected)
     assert grant['original'] is True and grant['size'] == 100
     assert 'auth' not in json.dumps(grant)
-    assert wire.calls[0]['body']['parentFileId' if pds else 'catalogID'] == ('/' if pds else 'root')
+    assert wire.calls[0]['body']['parentFileId' if pds else 'catalogId'] == ('/' if pds else mobile.CATALOG_ROOT)
 
 
 def test_mobile_marker_pages_and_changed_file_not_opened():

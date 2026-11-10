@@ -11,10 +11,10 @@ import zipfile
 from build_ce_entry import build, ROOT
 from build_release import archive, files
 from bobbi_platform.offline_updates import SignedBundle, load_trust
-from bobbi_platform.online_updates import release_url
+from bobbi_platform.online_updates import release_url, parse_offer
 
 
-def publish(bundle, output, tag, source='gitee'):
+def publish(bundle, output, tag, source='gitee', track='stable', prerelease=None):
     if not re.fullmatch(r'ce[1-9][0-9]{3,7}', tag):
         raise ValueError('Invalid release tag')
     output = Path(output)
@@ -26,6 +26,11 @@ def publish(bundle, output, tag, source='gitee'):
         raise ValueError('Gitee attachment exceeds the free 100M limit')
     with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
         manifest = signed.check_all()
+        offer = dict(schema=2, tag=tag, sequence=manifest['sequence'], size=bundle.stat().st_size,
+            sha256=hashlib.sha256(bundle.read_bytes()).hexdigest(), url=url, track=track,
+            prerelease=track == 'preview' if prerelease is None else prerelease,
+            manifest_channel=manifest['channel'], versions={r['id']: r['version'] for r in manifest['components']})
+        parse_offer(json.dumps(offer), track)
         rows = {row['id']: row for row in manifest['components']}
         # Never index metadata from a different checkout than the signed source.
         for name in ('script.bobbi.start', 'repository.bobbi'):
@@ -57,9 +62,6 @@ def publish(bundle, output, tag, source='gitee'):
     (output / 'addons.xml').write_bytes(raw)
     (output / 'addons.xml.sha256').write_text(hashlib.sha256(raw).hexdigest(), encoding='ascii')
     (output / 'addons.xml.md5').write_text(hashlib.md5(raw).hexdigest(), encoding='ascii')
-    offer = dict(schema=1, tag=tag, sequence=manifest['sequence'], size=bundle.stat().st_size,
-        sha256=hashlib.sha256(bundle.read_bytes()).hexdigest(),
-        url=url)
     (output / 'current.json').write_bytes((json.dumps(offer, indent=2) + '\n').encode('utf-8'))
     repo = rows['repository.bobbi']
     # Optional landing page. Raw GitHub URLs do not serve a directory index.
@@ -77,5 +79,6 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--tag', required=True)
     parser.add_argument('--source', choices=('gitee', 'github'), default='gitee')
+    parser.add_argument('--track', choices=('stable', 'preview'), required=True)
     args = parser.parse_args()
-    print(json.dumps(publish(args.bundle, args.output, args.tag, args.source), indent=2))
+    print(json.dumps(publish(args.bundle, args.output, args.tag, args.source, args.track), indent=2))

@@ -71,6 +71,11 @@ def execute(handle, params):
         xbmc.executebuiltin('RunScript(script.bobbi.setup,libraries)')
         xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
         return
+    if action == 'native_files':
+        from bobbi_platform.pan_ui import choose_files
+        choose_files(xbmcgui.Dialog())
+        xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
+        return
     store = None
     try:
         store = registry(xbmcvfs.translatePath)
@@ -83,6 +88,9 @@ def execute(handle, params):
                 kind, label2 = source_presentation(source)
                 rows.append(item(source.name, route(action='browse', source=source.id),
                                  label2=label2, properties={'Bobi.Library.Kind': kind}))
+            rows.append(item('我的文件 · 原生网盘', route(action='native_files'),
+                label2='扫码登录的个人网盘 · 待实机验证',
+                properties={'Bobi.Library.Kind': 'native_pan'}))
         elif action in ('browse', 'play'):
             source = store.get(params.get('source', ''))
             relative = relative_path(params.get('relative', ''))

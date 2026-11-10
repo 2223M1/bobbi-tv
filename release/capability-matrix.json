@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "scope": "unreleased source; previous CE2096 verification is not certification of these changes",
+  "statuses": ["implemented", "mock-tested", "artifact-verified", "device-verified", "unsupported"],
+  "rows": [
+    {"platform": "coreelec", "architecture": "armhf/arm64", "feature": "stable-preview-updates", "status": "mock-tested", "evidence": ["tests/test_update_tracks.py", "tests/test_ce_release_gate.py"], "device": "not_run", "artifact": "not_run", "remote_mirrors": "not_run"},
+    {"platform": "coreelec", "architecture": "armhf/arm64", "feature": "installation-rollback-preparation-cleanup", "status": "mock-tested", "evidence": ["tests/test_ce_preparation_cleanup.py", "tests/test_ce_recovery_points.py"], "device": "not_run", "artifact": "not_run"},
+    {"platform": "coreelec", "architecture": "armhf/arm64", "feature": "cloud-account-directory-original-file-playback", "status": "implemented", "evidence": ["addons/script.module.bobbi.platform/lib/bobbi_platform/pan_service.py"], "device": "not_run", "real_accounts": "not_run", "notes": "Authentication, listing and playback are separate checks; account validity is not device verification."},
+    {"platform": "coreelec", "architecture": "armhf/arm64", "feature": "offline-preparation", "status": "implemented", "evidence": ["tests/preparation_regression"], "device": "not_run", "real_accounts": "not_run"},
+    {"platform": "android", "architecture": "armeabi-v7a/arm64-v8a", "feature": "component-packaging", "status": "implemented", "evidence": ["native/tests/test_stage_components.py", "native/tests/test_repackage_android.py"], "device": "not_run", "artifact": "not_run"},
+    {"platform": "android", "architecture": "armeabi-v7a/arm64-v8a", "feature": "ce-zip-installation", "status": "unsupported", "evidence": ["addons/script.module.bobbi.platform/lib/bobbi_platform/ce_install_ui.py"], "notes": "Android uses its APK path, not the CoreELEC ZIP installer."},
+    {"platform": "all", "architecture": "all", "feature": "pinned-third-party-notices", "status": "mock-tested", "evidence": ["licenses/THIRD-PARTY.json", "tests/test_vendor_licenses.py"], "distribution_clearance": "blocked_unresolved_components"}
+  ]
+}
