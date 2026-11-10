@@ -612,7 +612,7 @@
       "resources/white.png": "1b285f3936913e90a0dd6e0e07b8f09b964a4e4b95cca70b1883a576183642fc"
     },
     "script.bobbi.start": {
-      "addon.xml": "8a2bddf2217c04575df697aa198e23eb8c402203b75080c1f7c56fa513e16e82",
+      "addon.xml": "aa1650c5fb170b1aadd0309b3a3e7e4870e726c77f40fc277bab32ade5e2053a",
       "default.py": "c47509ab7987d8edc3fc3aad6f08a0da7fae0e1588e04c1bd1ab21cc0f58bf23"
     },
     "script.module.bobbi.catalog": {
