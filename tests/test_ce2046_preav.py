@@ -246,6 +246,7 @@ def test_source_window_before_show_has_visible_feedback_and_stops_jobs(monkeypat
     ns = dict(Parent=Parent, notification=lambda *a, **k: notices.append(a))
     exec(compile(block, str(path), 'exec'), ns)
     window = ns['SourceSelect']()
+    window.item_information = {}
     window.source_session = SimpleNamespace(cancel=lambda: stopped.append('session')) if persistent else None
     window.source_pump = SimpleNamespace(cancel=lambda: stopped.append('pump')) if persistent else None
     window.setProperty = lambda *args: None

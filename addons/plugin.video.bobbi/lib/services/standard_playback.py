@@ -141,7 +141,7 @@ class StandardPlayback:
         self.last_handoff = None
         self.subtitle_worker = self.subtitle_job = self.subtitle_pending = None
         self.history = HistoryWriter(host.report)
-        self.session = StandardSession(host.accounts, history=self.history.save,
+        self.session = StandardSession(getattr(host, 'playback_accounts', host.accounts), history=self.history.save,
             next_loader=self.next_with_subtitle, open_next=self.open_next)
         parent = self
         class Player(xbmc.Player):

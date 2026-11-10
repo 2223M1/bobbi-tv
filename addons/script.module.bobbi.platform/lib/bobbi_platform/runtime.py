@@ -41,6 +41,11 @@ def call(action, body, timeout=3):
         raise ValueError('Local reply too large')
     result = json.loads(reply)
     if result.get('ok') is not True:
+        if result.get('error') == 'pan':
+            from .pan_accounts import PanError, PUBLIC_ERRORS
+            if (isinstance(action, str) and action.startswith('pan_')
+                    and type(result.get('code')) is str and result['code'] in PUBLIC_ERRORS):
+                raise PanError(result['code'])
         if result.get('error') == 'unavailable':
             raise OSError('Local service temporarily unavailable')
         if result.get('error') == 'selection_unverified':
@@ -90,6 +95,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.headers.get('Authorization', ''), 'Bearer ' + self.server.token):
             self.send_error(403)
             return
+        request = None
         try:
             length = int(self.headers.get('Content-Length', '0'))
             if not 0 < length <= 16384:
@@ -104,6 +110,11 @@ class Handler(BaseHTTPRequestHandler):
             response = {'ok': False, 'error': 'unavailable'}
         except Exception as error:
             response = {'ok': False}
+            from .pan_accounts import PanError, PUBLIC_ERRORS
+            if (isinstance(error, PanError) and str(error) in PUBLIC_ERRORS
+                    and type(request) is dict and isinstance(request.get('action'), str)
+                    and request['action'].startswith('pan_')):
+                response.update(error='pan', code=str(error))
             if isinstance(error, ValueError) and str(error) == 'PREPARATION_CURRENT_VERIFIED_SELECTION_REQUIRED':
                 response['error'] = 'selection_unverified'
         try:

@@ -1,11 +1,14 @@
 """Cache-only UI projection and bounded background TMDb enrichment."""
 from contextlib import contextmanager
+from copy import deepcopy
+from dataclasses import dataclass
 from datetime import timedelta
 import json
 import os
 from pathlib import Path
 import tempfile
 import time
+from types import MappingProxyType
 from urllib.parse import urlencode
 from bobbi_core.image_cache import image_batch
 
@@ -32,6 +35,61 @@ def _cached(key, urgent=False):
     return record.get('data') or {}
 
 
+@dataclass(frozen=True)
+class EpisodeProjection:
+    """One directory's public display data, explicitly shared with its workers."""
+    identifier: int
+    season: int
+    details: dict
+    verified: dict
+    title_pair: dict
+    season_data: dict
+    episodes: object
+    pending: tuple
+
+
+def episode_projection(identifier, season):
+    """Read the shared work/season once, not once per episode card.
+
+    This value belongs only to the current render. It is never persisted or
+    reused by another directory, and contains no viewing/account/playback state.
+    Copies separate the worker inputs from a cache producer's mutable objects.
+    """
+    try:
+        return _episode_projection(identifier, season)
+    except (TypeError, ValueError, AttributeError, RecursionError):
+        # Optional presentation data must not move a malformed cache failure
+        # outside the existing per-card isolation and drop the entire page.
+        return None
+
+
+def _episode_projection(identifier, season):
+    identifier, season = integer(identifier), integer(season)
+    if not identifier or season is None:
+        return None
+    keys = ('tv:{}'.format(identifier), 'tv:{}:season:{}'.format(identifier, season))
+    details, season_data = (deepcopy(_cached(key)) for key in keys)
+    verified = translations(details, 'tv') if details else {}
+    pair = {}
+    if not verified.get('zh') or not verified.get('en'):
+        from lib.db.cached import cache
+        value = cache.get('am6b_anime_titles_v1|tv|{}'.format(identifier))
+        if isinstance(value, dict):
+            pair = deepcopy(value)
+    episodes = {}
+    for row in season_data.get('episodes', []):
+        if not isinstance(row, dict):
+            continue
+        # Preserve the first matching row, as the previous linear lookup did.
+        # An unhashable provider number could never equal an integer episode.
+        try:
+            episodes.setdefault(row.get('episode_number'), row)
+        except TypeError:
+            continue
+    return EpisodeProjection(identifier, season, details, verified, pair,
+        season_data, MappingProxyType(episodes), tuple(key for key in keys if key in _pending))
+
+
 def source_window(info):
     from lib.cinema.source_presentation import window_fields
     ids = info.get('ids') or {}
@@ -55,21 +113,29 @@ def source_window(info):
 
 
 @image_batch()
-def apply(item, identifier, mode, data=None, titles=None):
+def apply(item, identifier, mode, data=None, titles=None, projection=None):
     """Set display metadata only; caller owns route/payload/search identity."""
     data, titles = data or {}, titles or {}
     identifier = integer(identifier)
     if mode not in ('movie', 'movies', 'tv', 'tvshow', 'season', 'episode'):
         return
     kind = 'movie' if mode in ('movie', 'movies') else 'tv'
+    season = integer(data.get('season', data.get('season_number')))
+    view = (projection if isinstance(projection, EpisodeProjection)
+            and mode == 'episode' and projection.identifier == identifier
+            and projection.season == season else None)
     urgent = bool(data.get('continue_watching') or data.get('ready'))
-    details = _cached('{}:{}'.format(kind, identifier), urgent=urgent) if identifier else {}
-    verified = translations(details, kind) if details else {}
+    if view is not None and urgent:
+        for key in view.pending:
+            _pending[key] = True
+    details = view.details if view is not None else (
+        _cached('{}:{}'.format(kind, identifier), urgent=urgent) if identifier else {})
+    verified = view.verified if view is not None else (translations(details, kind) if details else {})
     zh = verified.get('zh') or chinese(clean_title(titles.get('zh')))
     en = verified.get('en') or clean_title(titles.get('en'))
     if identifier and (not zh or not en):
         from lib.db.cached import cache
-        pair = cache.get('am6b_anime_titles_v1|{}|{}'.format(kind, identifier))
+        pair = view.title_pair if view is not None else cache.get('am6b_anime_titles_v1|{}|{}'.format(kind, identifier))
         if isinstance(pair, dict):
             zh = zh or chinese(clean_title(pair.get('zh')))
             en = en or clean_title(pair.get('en'))
@@ -89,16 +155,16 @@ def apply(item, identifier, mode, data=None, titles=None):
         item.setLabel2(en)
     if kind == 'tv':
         tag.setTvShowTitle(work)
-    season = integer(data.get('season', data.get('season_number')))
     episode = integer(data.get('episode', data.get('episode_number')))
     season_data, ep_data = {}, {}
     if kind == 'tv' and season is not None:
         tag.setSeason(season)
         if identifier and dbtype in ('episode', 'season'):
-            season_data = _cached('tv:{}:season:{}'.format(identifier, season), urgent=urgent)
+            season_data = view.season_data if view is not None else _cached('tv:{}:season:{}'.format(identifier, season), urgent=urgent)
         if episode is not None:
             tag.setEpisode(episode)
-            ep_data = next((e for e in season_data.get('episodes', []) if e.get('episode_number') == episode), {})
+            ep_data = (view.episodes.get(episode, {}) if view is not None else
+                next((e for e in season_data.get('episodes', []) if e.get('episode_number') == episode), {}))
         name = season_name(season_data.get('name') or data.get('season_name'))
         item.setProperty('Bobi.SeasonName', name)
     if dbtype == 'episode':

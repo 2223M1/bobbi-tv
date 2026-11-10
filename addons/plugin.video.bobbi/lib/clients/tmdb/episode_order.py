@@ -142,7 +142,7 @@ def show_order_episodes(params):
     from datetime import date
     from lib.utils.kodi.utils import add_directory_items_batch, end_of_directory, apply_section_view, notification
     from lib.utils.general.utils import set_content_type
-    from lib.utils.views.shows import _process_episode
+    from lib.utils.views.shows import _process_episode, _local_episode_progress
     ids = json.loads(params.get('ids', '{}'))
     order = get_order(ids.get('tmdb_id'))
     if order is None or params.get('digest') != order['digest']:
@@ -154,6 +154,7 @@ def show_order_episodes(params):
     rows = []
     today = date.today().isoformat()
     if selected:
+        local_progress = _local_episode_progress(ids)
         for row in selected['episodes']:
             # A future/unannounced episode must not be advertised as playable.
             if not row['air_date'] or row['air_date'] > today:
@@ -161,7 +162,8 @@ def show_order_episodes(params):
             episode = dict(row, id=row['episode_id'], episode_number=row['catalog_episode'],
                            season_number=row['catalog_season'])
             _, url, item = _process_episode(episode, params.get('tv_name', ''), row['catalog_season'],
-                ids, 'tv', 'tv', {}, localized_titles={'zh': row['name'], 'display': row['name']}, display_order=row)
+                ids, 'tv', 'tv', {}, localized_titles={'zh': row['name'], 'display': row['name']},
+                display_order=row, local_progress=local_progress)
             if item is not None:
                 rows.append((url, item, False))
     set_content_type('episode')

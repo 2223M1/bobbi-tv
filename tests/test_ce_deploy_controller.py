@@ -421,12 +421,17 @@ def test_upgrade_profile_snapshot_keeps_account_epoch_and_detects_changes(tmp_pa
     marker = tmp_path / 'plugin.video.bobbi/runtime-paths.json'
     marker.write_text(json.dumps(dict(schema=1, subtitle_abi='ce-f9', native_sha256=CE_F9_SHA256)))
     before = controller.upgrade_profile_snapshot()
+    pan_path = tmp_path / 'script.module.bobbi.platform/pan-accounts-v1.json'
+    assert before['script.module.bobbi.platform/pan-accounts-v1.json'] is None
+    pan_path.write_text('{"schema":1,"fixture":"retained"}')
+    assert controller.upgrade_profile_snapshot() != before
+    pan_path.unlink()
     assert before['script.module.bobbi.platform/115-os_linux.json']
     assert before['plugin.video.bobbi/database.pickle'] is None
     assert json.loads(account.read_text())['_account']['epoch'] == 7
     (tmp_path / 'plugin.video.bobbi/database.pickle').write_bytes(b'new-history')
     assert controller.upgrade_profile_snapshot() != before
-    assert len(checks) == 2
+    assert len(checks) == 3
     marker.write_text(json.dumps(dict(schema=1, subtitle_abi='profile')))
     with pytest.raises(ValueError, match='NATIVE_ABI'):
         controller.upgrade_profile_snapshot()

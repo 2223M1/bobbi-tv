@@ -296,6 +296,9 @@ def show_episode_info(tv_name, season, ids, mode, media_type, prepared_pages=Non
     )
     fanart_details = get_fanart_details(tvdb_id=ids.get("tvdb_id"), mode=mode, cached_only=True)
 
+    from lib.clients.tmdb.frontend_metadata import episode_projection
+    projection = episode_projection(tmdb_id, season)
+    local_progress = _local_episode_progress(ids)
     results = execute_thread_pool_collection(
         localized_rows,
         _process_localized_episode_row,
@@ -305,6 +308,8 @@ def show_episode_info(tv_name, season, ids, mode, media_type, prepared_pages=Non
         mode,
         media_type,
         fanart_details,
+        projection,
+        local_progress,
     )
     results.sort(key=lambda item: item[0])
     item_count = len([list_item for _, _, list_item in results if list_item is not None])
@@ -319,7 +324,8 @@ def show_episode_info(tv_name, season, ids, mode, media_type, prepared_pages=Non
 
 
 def _process_localized_episode_row(
-    row, tv_name, season, ids, mode, media_type, fanart_details
+    row, tv_name, season, ids, mode, media_type, fanart_details, projection=None,
+    local_progress=None
 ):
     _, episode, titles = row
     return _process_episode(
@@ -331,7 +337,98 @@ def _process_localized_episode_row(
         media_type,
         fanart_details,
         localized_titles=titles,
+        projection=projection,
+        local_progress=local_progress,
     )
+
+
+def _local_episode_progress(ids):
+    """One profile-local display snapshot; no playback/resume authority."""
+    from lib.cinema.frontend_contract import history_identity, integer, progress
+    from lib.db.pickle_db import PickleDatabase
+    from lib.utils.general.utils import parse_time
+    from lib.api.simkl import is_simkl_authenticated
+    identifier = integer(ids.get('tmdb_id')) if isinstance(ids, dict) else None
+    # SIMKL's remote indicator is applied later by add_directory_items_batch.
+    # Preserve it without a second remote request or conflicting local badges.
+    if not identifier or is_simkl_authenticated():
+        return {}
+    try:
+        history = PickleDatabase().get_key_checked('jt:lfh')
+        if not isinstance(history, dict):
+            return {}
+    except (OSError, ValueError, TypeError, AttributeError):
+        return {}
+    candidates = []
+    for key, data in history.items():
+        if (not isinstance(data, dict) or not isinstance(data.get('ids', {}), dict)
+                or not isinstance(data.get('tv_data'), dict)
+                or data.get('mode') in ('movie', 'movies')):
+            continue
+        identity = history_identity(data)
+        if identity[:2] != ('tv', identifier) or identity[3] <= 0:
+            continue
+        candidates.append((key, data, identity[2:]))
+    current = None
+    if any('_account' in data for _, data, _ in candidates):
+        try:
+            from bobbi_platform.account_manager import validate_snapshot
+            from bobbi_platform.runtime import call
+            current = validate_snapshot(call('account_status', {}, timeout=.1), authenticated=True)
+        except (ImportError, OSError, ValueError, TypeError, RuntimeError):
+            pass
+    selected = {}
+    # As in continue-watching, newest record wins before progress filtering.
+    # Equal-minute records retain the existing reverse insertion-order rule.
+    for key, data, identity in reversed(candidates):
+        if '_account' in data:
+            if current is None:
+                continue
+            try:
+                scope = validate_snapshot(data['_account'], authenticated=True)
+            except (OSError, ValueError, TypeError, RuntimeError):
+                continue
+            if scope['account_id'] != current['account_id']:
+                continue
+        elif (data.get('prepared_resource_id') or data.get('direct_cloud_key')
+              or '115' in str(data.get('indexer', ''))):
+            continue  # An old private record without account identity is unknown.
+        try:
+            stamp = parse_time((key, data))
+        except (TypeError, ValueError, AttributeError):
+            continue
+        if identity not in selected or stamp > selected[identity][0]:
+            selected[identity] = (stamp, data)
+    result = {}
+    for identity, (_, data) in selected.items():
+        completed = data.get('completed') is True
+        percent = progress(data)
+        if completed:
+            result[identity] = (True, 0)
+        elif 0 < percent <= 100:
+            # Do not turn legacy/high-percent errors into an EOF receipt.
+            result[identity] = (False, min(99, max(1, round(percent))))
+    return result
+
+
+def _apply_local_episode_progress(item, state):
+    if state is None:
+        return
+    try:
+        tag = item.getVideoInfoTag()
+        watched = tag.getPlayCount()
+        if isinstance(watched, (int, float)) and watched > 0:
+            return
+        existing = item.getProperty('PercentPlayed')
+        if isinstance(existing, str) and existing and float(existing) > 0:
+            return
+        completed, percent = state
+        if completed:
+            tag.setPlaycount(1)
+        else:
+            item.setProperty('PercentPlayed', str(percent))
+    except (AttributeError, TypeError, ValueError, RuntimeError):
+        pass  # Optional display state must not hide an episode or alter its route.
 
 
 def episode_card_caption(number, title):
@@ -352,6 +449,8 @@ def _process_episode(
     fanart_details,
     localized_titles=None,
     display_order=None,
+    projection=None,
+    local_progress=None,
 ):
     localized_titles = localized_titles or {}
     episode_number = int(_episode_value(episode, "episode_number", 0) or 0)
@@ -394,11 +493,15 @@ def _process_episode(
     from lib.clients.tmdb.frontend_metadata import apply
     apply(list_item, ids.get('tmdb_id'), 'episode', dict(title=tv_name,
           episode_title=display_name, season=season, episode=episode_number,
-          still_path=_episode_value(episode, 'still_path', '')))
+          still_path=_episode_value(episode, 'still_path', '')), projection=projection)
     if display_order:
         list_item.getVideoInfoTag().setSeason(display_order['season'])
         list_item.getVideoInfoTag().setEpisode(display_order['episode'])
         list_item.setProperty('Bobi.SeasonName', '')
+    # The lookup stays in catalog coordinates even when the card displays a
+    # production-season/absolute anime order. Never add a native ResumePoint.
+    if local_progress is not None:
+        _apply_local_episode_progress(list_item, local_progress.get((season, episode_number)))
 
     context_menu = add_tmdb_episode_context_menu(mode, tv_name, tv_data, ids)
     if is_trakt_auth():

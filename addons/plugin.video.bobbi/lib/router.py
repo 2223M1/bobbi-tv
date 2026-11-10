@@ -316,6 +316,11 @@ def addon_router():
         params = dict(parse.parse_qsl(param_string))
         action = params.get("action", "")
 
+        if action == 'pan_play':
+            from lib.pan_playback import play
+            play(params)
+            return
+
         if action == "am6b_helper_pick":
             from lib.clients.maintainable_ui import helper_pick
             helper_pick(params)

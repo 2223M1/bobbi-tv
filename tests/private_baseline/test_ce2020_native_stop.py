@@ -43,7 +43,10 @@ def test_native_owner_and_auxiliary_monitor_exit_without_kodi_disable(tmp_path, 
     worker=Thread(target=service); worker.start()
     try:
         assert entered.wait(1)
-        assert account_bindings == [server.accounts]
+        assert account_bindings == [server.playback_accounts]
+        assert server.playback_accounts.legacy is server.accounts
+        assert server.playback_accounts.snapshot() == server.accounts.snapshot()
+        assert server.pans is None  # Multi-pan startup is still lazy.
         assert server.owner_account_changed is account_changed
         assert runtime.call('quiesce',{'protocol':1}) == {'accepted':True}
         worker.join(3)

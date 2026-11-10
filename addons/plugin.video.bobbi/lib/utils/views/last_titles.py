@@ -1,10 +1,9 @@
 import json
 import os
 
-from lib.clients.tmdb.utils.utils import tmdb_get
 from lib.db.pickle_db import PickleDatabase
 from lib.jacktook.utils import kodilog
-from lib.utils.general.utils import parse_time, set_media_infoTag, set_pluging_category
+from lib.utils.general.utils import parse_time, set_pluging_category
 from lib.utils.kodi.utils import (
     ADDON_PATH,
     add_directory_items_batch,
@@ -49,22 +48,30 @@ def show_last_titles(params):
     list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "clear.png")})
     directory_items.append((build_url("clear_history", type="lth"), list_item, True))
 
+    from lib.clients.tmdb.frontend_metadata import apply, flush
+
     for title, data in items:
         formatted_time = data["timestamp"]
         mode = data["mode"]
         ids = data.get("ids")
-
-        if mode == "tv":
-            details = tmdb_get("tv_details", ids.get("tmdb_id"))
-        else:
-            details = tmdb_get("movie_details", ids.get("tmdb_id"))
-
-        if not details:
-            kodilog(f"Failed to get details for {mode} with ID {ids.get('tmdb_id')}")
+        if mode not in ("tv", "movies", "tg_latest"):
             continue
 
-        list_item = make_list_item(label=f"{title} — {formatted_time}")
-        set_media_infoTag(list_item, data=details, mode=mode)
+        label = f"{title} — {formatted_time}"
+        list_item = make_list_item(label=label)
+        if mode in ("tv", "movies"):
+            # The local history record owns identity, title/time and ordering.
+            # Optional display metadata never waits for HTTP or hides an entry.
+            tag = list_item.getVideoInfoTag()
+            tag.setMediaType("tvshow" if mode == "tv" else "movie")
+            tag.setTitle(title)
+            try:
+                apply(list_item, ids.get("tmdb_id") if isinstance(ids, dict) else None,
+                      mode, dict(title=title))
+            except Exception as error:
+                kodilog("History display metadata unavailable: " + type(error).__name__)
+            finally:
+                list_item.setLabel(label)
         list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "trending.png")})
         list_item.addContextMenuItems(
             [
@@ -106,3 +113,4 @@ def show_last_titles(params):
 
     end_of_directory()
     apply_section_view("view.history")
+    flush()

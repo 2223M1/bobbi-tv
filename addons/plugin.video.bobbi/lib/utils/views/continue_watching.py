@@ -107,6 +107,21 @@ def _resume_status(state):
     return ('', item, False)
 
 
+def _series_browse_context(data):
+    """A public work route, never a copy of a historical playback request."""
+    if (data.get('mode') not in ('tv', 'show', 'tvshow', 'episode', 'anime')
+            or not isinstance(data.get('ids', {}), dict)
+            or not isinstance(data.get('tv_data'), dict)):
+        return []
+    from lib.cinema.frontend_contract import history_identity
+    identity = history_identity(data)
+    if identity[0] != 'tv' or identity[1] <= 0 or identity[3] <= 0:
+        return []
+    url = build_url('show_tmdb_item', id=identity[1], mode='tv', media_type='tv',
+                    title=clean_title(data.get('title')))
+    return [('查看全剧分集', 'ActivateWindow(Videos,{},return)'.format(url))]
+
+
 def show_continue_watching(params=None):
     if params is None:
         params = {}
@@ -159,6 +174,7 @@ def show_continue_watching(params=None):
             ('从头播放', 'RunPlugin({})'.format(build_url('play_media', data=json.dumps(data), start_over='true', continue_watching='true'))),
             ('选择其他片源', 'RunPlugin({})'.format(build_url('bobi_continue_action', data=json.dumps(data)))),
         ]
+        context_menu.extend(_series_browse_context(data))
         context_menu.append(
             (
                 '从继续观看中移除',

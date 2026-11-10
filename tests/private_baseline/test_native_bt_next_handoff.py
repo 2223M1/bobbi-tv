@@ -39,6 +39,8 @@ def native(proved, monkeypatch):
     def call(body):
         commands.append(deepcopy(body))
         assert body['account_scope'] == proved.current['_account']
+        if body['operation'] == 'reserve_next_picker':
+            return {'reserved': False}  # This fixture covers playback, not UI admission.
         if body['operation'] == 'authorize_next':
             if granted[0]: return {'authorized': False}
             granted[0] = True
@@ -82,11 +84,12 @@ def test_missing_or_corrupt_cloud_index_still_allows_service_proved_bt(native, m
     assert native.queued[0]['data']['_next_transport'] == 'bt'
 
 
-def test_no_service_proof_cannot_reserve_cached_bt(native, proved, monkeypatch):
+def test_no_service_proof_cannot_reserve_cached_bt_only_requests_manual_picker(native, proved, monkeypatch):
     monkeypatch.setattr(bobi_library, 'load_prepared_index', lambda: {'titles': []})
     proved.status['result'] = {}
     native.actor.queue_cinema_natural_end()
-    assert native.commands == native.queued == []
+    assert [row['operation'] for row in native.commands] == ['reserve_next_picker']
+    assert native.queued == []
 
 
 @pytest.mark.parametrize('change', ['selection', 'cancel', 'account'])
@@ -104,7 +107,8 @@ def test_final_fresh_io_cannot_override_new_selection_cancel_or_account(native, 
     monkeypatch.setattr(preparation_client, 'call', call)
     monkeypatch.setattr(preparation_client, 'resolve_entry', resolve)
     native.actor.queue_cinema_natural_end()
-    assert native.commands == native.queued == []
+    assert native.queued == []
+    assert [row['operation'] for row in native.commands] == (['reserve_next_picker'] if change == 'account' else [])
 
 
 def test_lost_child_reservation_reply_is_not_replayed_or_enqueued(native, monkeypatch):

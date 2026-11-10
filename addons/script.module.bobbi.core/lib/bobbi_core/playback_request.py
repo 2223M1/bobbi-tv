@@ -49,6 +49,11 @@ def select(snapshot, request_id, identity, account_scope=None, retry_from=None):
 
 
 def data_identity(data):
+    if data.get('_pan_file') is True:
+        locator = data.get('_pan_locator')
+        if type(locator) is not str or not re.fullmatch(r'bobbipan://(?:quark|uc|baidu|aliyun|123|189|139|guangya|xunlei)/[0-9a-f]{64}', locator):
+            raise ValueError('PAN_SELECTION_INVALID')
+        return 'transport:' + digest(locator)
     return source_identity(SimpleNamespace(infoHash=data.get('info_hash', ''),
         preparedResourceId=data.get('prepared_resource_id', ''), url=data.get('url', '')))
 

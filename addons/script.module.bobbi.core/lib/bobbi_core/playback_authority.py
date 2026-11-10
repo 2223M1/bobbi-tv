@@ -74,6 +74,7 @@ class PlaybackAuthority:
         self.native_windows = {}
         self.continuation = None
         self.reserved_continuation = False
+        self.next_picker = None
         self.subtitle_pending = None
         self.subtitle_completed = None
         self.start_receipt = None
@@ -381,6 +382,12 @@ class PlaybackAuthority:
             if scope is not None and scope != self.selection_account:
                 raise RuntimeError('PLAYBACK_ACCOUNT_CHANGED')
             scope = self.selection_account
+        if message.get('operation') == 'reserve_next_picker' and scope is None and self.accounts is not None:
+            # Even an account-independent BT parent must not produce a delayed
+            # picker after the user changes accounts. Capture only at EOF; an
+            # existing playback/caller scope above must never be replaced.
+            scope = self.accounts.snapshot()
+            message = dict(message, account_scope=scope)
         if scope is not None:
             if self.accounts is None:
                 raise RuntimeError('PLAYBACK_ACCOUNT_OWNER_UNAVAILABLE')
@@ -414,6 +421,54 @@ class PlaybackAuthority:
         if operation == 'snapshot':
             return owner.snapshot()
         args = (message.get('boot_id'), message.get('epoch'), message.get('request_id'))
+        if operation == 'next_picker_status':
+            permit = self.next_picker
+            terminal_matches = bool(permit and row and row['phase'] == 'TERMINAL'
+                and row['reason'] == 'NATURAL_EOF'
+                and row['native_instance'] == permit['native_instance']
+                and row['request_id'] == permit['parent_request_id']
+                and row['user_intent'] == permit['native_user_intent'])
+            allowed = bool(permit and permit['args'] == args and owner._current(*args)
+                and self.native_epoch == self.reservation_epoch
+                and owner.observed is None
+                and (self.native_idle or terminal_matches)
+                and type(permit['gui_user_intent']) is int and permit['gui_user_intent'] >= 0
+                and type(self.gui_state.get('gui_user_intent')) is int
+                and self.gui_state.get('gui_user_intent') == permit['gui_user_intent'])
+            if permit and permit['args'] == args and not allowed:
+                # A newer player/UI interaction is final revocation, not a
+                # temporary reason to retry and reopen this old picker later.
+                self.next_picker = None
+            return dict(allowed=allowed, snapshot=owner.snapshot())
+        if operation == 'reserve_next_picker':
+            # EOF grants permission to show choices, never to bind/start a source.
+            # Reserve before optional metadata/search IO spends the retained
+            # native terminal's three-second admission window.
+            child = message.get('child_request_id')
+            if (not isinstance(child, str) or not re.fullmatch('[0-9a-f]{32}', child)
+                    or child == args[2]):
+                raise ValueError('Fresh next-picker request identity required')
+            terminal = owner.terminal
+            ended = self._continuation_receipt(row)
+            instance = message.get('native_instance')
+            if (self.continuation or self.next_picker or not owner._current(*args)
+                    or self.native_epoch != self.reservation_epoch or owner.observed is not None
+                    or type(self.gui_state.get('gui_user_intent')) is not int
+                    or self.gui_state['gui_user_intent'] < 0
+                    or not ended or ended['phase'] != 'TERMINAL' or ended['reason'] != 'NATURAL_EOF'
+                    or ended['native_instance'] != instance or ended['request_id'] != args[2]
+                    or not terminal or terminal['native_instance'] != instance
+                    or not owner.consume_next(*args, instance)):
+                return {'reserved': False}
+            permit = dict(parent_request_id=args[2], native_instance=instance,
+                native_user_intent=ended['user_intent'],
+                gui_user_intent=self.gui_state.get('gui_user_intent'))
+            scope = self.selection_account if self.selection_account is not None else message.get('account_scope')
+            selected = self.dispatch(dict(operation='select', boot_id=args[0], epoch=args[1],
+                request_id=child, selection_identity='next-picker:' + args[2], account_scope=scope))
+            permit['args'] = (selected['boot_id'], selected['epoch'], child)
+            self.next_picker = permit
+            return dict(reserved=True, snapshot=selected, account_scope=deepcopy(self.selection_account))
         if operation == 'startup_failure':
             # Read-only recovery receipt. Cancellation still revokes ALL control
             # rights; acknowledging an exact failed open does not restore them.
@@ -465,6 +520,7 @@ class PlaybackAuthority:
                 self.account_revocation = None
                 self.continuation = None
                 self.reserved_continuation = False
+                self.next_picker = None
                 self.subtitle_pending = None
                 self.start_receipt = None
                 self.start_receipt_consumed = False
@@ -476,6 +532,10 @@ class PlaybackAuthority:
                     owner.observe_external(row['native_instance'], row['file_identity'] or row['url_sha256'])
             return result
         if operation == 'bind_file':
+            # Identity remains UI-only even if native intent applied but its
+            # reply was lost before the permit could be returned/stored.
+            if owner.desired and owner.desired['selection_identity'].startswith('next-picker:'):
+                return {'bound': False}
             if self.transport_child and (message.get('file_identity') != self.transport_child['file_identity']
                     or args[2] != self.transport_child['child_request_id']):
                 return {'bound': False}
@@ -501,6 +561,8 @@ class PlaybackAuthority:
             setter(args[2], owner.desired['file_identity'], metadata)
             return {'registered': True}
         if operation in ('claim_start', 'claim_status'):
+            if owner.desired and owner.desired['selection_identity'].startswith('next-picker:'):
+                return {'status': 'UI_ONLY'}
             if not owner._current(*args) or self.native_epoch != self.reservation_epoch:
                 return {'status': 'STALE'}
             claim_id = message.get('claim_id')

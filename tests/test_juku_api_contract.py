@@ -352,6 +352,14 @@ def test_system_crypto_package_loader_does_not_expose_other_site_packages(tmp_pa
     existing = {name: module for name, module in sys.modules.items() if name == 'Crypto' or name.startswith('Crypto.')}
     for name in existing:
         monkeypatch.delitem(sys.modules, name)
+    # Model Kodi's excluded system site-packages even when the test runner has
+    # a real Crypto on PYTHONPATH. Only the initial normal import must miss.
+    original_import = api.importlib.import_module
+    def kodi_import(name):
+        if name.startswith('Crypto.') and 'Crypto' not in sys.modules:
+            raise ModuleNotFoundError(name)
+        return original_import(name)
+    monkeypatch.setattr(api.importlib, 'import_module', kodi_import)
     try:
         loaded = api._load_crypto_module('Crypto', 'Synthetic')
         assert loaded.value == 'only-this-package'

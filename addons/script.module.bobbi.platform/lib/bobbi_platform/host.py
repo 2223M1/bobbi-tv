@@ -27,6 +27,9 @@ class Host:
         self.root, self.report = Path(root), report
         self.stream_factory, self.native_rpc = stream_factory, native_rpc
         self.accounts = self.streams = self.engine = self.images = None
+        self.pans = None  # Optional native providers; never replaces the 115 owner.
+        self.playback_accounts = None
+        self.pan_unsubscribe = lambda: None
         self.owner = self.preparation = None
         self.preparation_attempted = False
         self.preparation_root = None
@@ -49,6 +52,8 @@ class Host:
     def start(self):
         def prepare():
             self.accounts = AccountManager(self.root / '115-os_linux.json')
+            from .playback_accounts import PlaybackAccounts
+            self.playback_accounts = PlaybackAccounts(self.accounts, lambda: self.pans)
             self.unsubscribe = self.accounts.subscribe(self._account_changed)
         self.runtime.start(prepare=prepare)
         try:
@@ -108,6 +113,31 @@ class Host:
                         account=self.accounts, progressive=progressive)
             return self.streams
 
+    def _pans(self):
+        with self.lock:
+            if self.stopping.is_set():
+                raise ValueError('RUNTIME_NOT_READY')
+            if self.pans is None:
+                from .pan_service import PanService
+                self.pans = PanService(self.root, self.accounts)
+                self.pan_unsubscribe = self.pans.accounts.subscribe(self._pan_account_changed)
+            return self.pans
+
+    def _pan_account_changed(self, previous, current):
+        # Same serialized playback owner as 115. No global player Stop from
+        # an HTTP worker, and no revocation of another provider's selection.
+        self.account_changes.set()
+        streams = self.pans.streams if self.pans is not None else None
+        if streams is None:
+            return
+        with streams.lock:
+            hashes = {e.transport_hash for e in streams.records.values() if e.scope == previous and e.transport_hash}
+        if hashes:
+            try:
+                self.revocations.put_nowait(hashes)
+            except Full:
+                self.report('PAN_STOP_QUEUE_FULL')
+
     def bind_owner(self, dispatch, account_changed=None):
         self.owner = dispatch  # Called on the native owner thread, never via IPC.
         self.owner_account_changed = account_changed
@@ -159,6 +189,8 @@ class Host:
             raise ValueError('RUNTIME_NOT_READY')
         if not isinstance(body, dict):
             raise ValueError('RUNTIME_FIELDS')
+        if isinstance(action, str) and action.startswith('pan_'):
+            return self._pans().dispatch(action, body)
         if action == 'quiesce' and body == {'protocol': 1} and type(body['protocol']) is int:
             # Serialized with playback, never decide isPlaying on an HTTP
             # worker. The existing per-instance bearer token scopes this call.
@@ -503,6 +535,10 @@ class Host:
                 break
             job.error = True
             job.done.set()
+        with self.lock:
+            pans = self.pans
+        if pans is not None:
+            drain(pans.close, 'NATIVE_CLOUD')
         drain(lambda: self.runtime.close(release_lease=False), 'RUNTIME')
         playback = getattr(self, 'playback', None)
         if playback is not None:
@@ -511,6 +547,7 @@ class Host:
             if component is not None:
                 drain(component.close, label)
         drain(self.unsubscribe, 'ACCOUNT_SUBSCRIPTION')
+        drain(self.pan_unsubscribe, 'PAN_ACCOUNT_SUBSCRIPTION')
         with self.engine_lock:
             engine = self.engine
         if engine is not None:

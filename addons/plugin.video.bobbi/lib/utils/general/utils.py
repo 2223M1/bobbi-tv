@@ -380,6 +380,15 @@ def build_list_item(label, icon="", poster_path=""):
 
 
 def make_listing(data):
+    if data.get('_pan_file') is True:
+        # An explicitly chosen personal file is not a catalog movie/episode.
+        # Avoid fabricated IDs and optional metadata IO on this direct path.
+        item = make_list_item(label=data['title'])
+        item.setContentLookup(False)
+        item.setProperty('IsPlayable', 'true')
+        item.getVideoInfoTag().setTitle(data['title'])
+        item.getVideoInfoTag().setMediaType('video')
+        return item
     title = data.get("title")
     ids = data.get("ids", {})
     tv_data = data.get("tv_data", {})
@@ -958,6 +967,10 @@ def build_media_metadata(ids, mode: str, enrich_art=True, details=None) -> dict:
 
 
 def set_watched_file(data, database=None):
+    if data.get('_pan_file'):
+        # Unclassified personal files have no proved title/season identity.
+        # Never persist their expiring stream URL as a resumable catalog item.
+        return
     title = data.get("title", "")
     if isinstance(title, str):
         title = unquote(title)

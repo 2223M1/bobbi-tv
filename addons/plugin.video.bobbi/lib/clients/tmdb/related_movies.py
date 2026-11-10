@@ -354,9 +354,13 @@ def load(identifier, show=None, deadline=None, cancelled=lambda: False, quiet=Fa
     from lib.db.cached import cache
     from lib.clients.tmdb.utils.utils import tmdb_get
     key = CACHE_PREFIX + str(identifier)
-    value, stale = discover(identifier, tmdb_get, cache.get(key), show=show,
+    cached = cache.get(key)
+    value, stale = discover(identifier, tmdb_get, cached, show=show,
                             deadline=deadline, cancelled=cancelled, quiet=quiet)
-    if not cancelled():
+    # A fresh hit or unchanged failure fallback is the original snapshot.
+    # Reading it must not extend its expiry or invalidate unrelated L1 keys.
+    # New partial progress (including cursor/completeness) is still persisted.
+    if value is not cached and not cancelled():
         cache.set(key, value, timedelta(days=7))
     return dict(value, stale=stale)
 

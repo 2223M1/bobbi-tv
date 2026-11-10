@@ -240,6 +240,15 @@ class SourceSelect(BaseWindow):
         self._auto_select_pending = False  # Manual source selection is product policy.
 
     def onInit(self) -> None:
+        guard = getattr(self, '_next_picker_guard', None)
+        if guard is not None:
+            from lib.utils.player.next_source_picker import picker_status
+            self._next_picker_guard = None
+            snapshot = picker_status(guard)
+            if snapshot is None:
+                self.close()
+                return
+            self._control_snapshot = snapshot
         # Kodi recreates controls when a closed resolver returns to this dialog.
         self._rendered_cards = {}
         self._rendered_card_values = {}
@@ -318,14 +327,31 @@ class SourceSelect(BaseWindow):
         from lib.native_support import available
         self._native_owner = available()
         if not self._native_owner:
+            if '_next_picker_context' in self.item_information:
+                return False  # An EOF permit cannot downgrade to an unguarded portable UI.
             from lib.portable import manual_modal
             return manual_modal(self, lambda: super(SourceSelect, self).doModal())
+        # An automatic EOF entry is not a fresh user click. Preserve its CAS
+        # snapshot and reject superseded GUI/account intent before first show.
+        next_picker = self.item_information.pop('_next_picker_context', None)
+        if next_picker is not None:
+            from lib.utils.player.next_source_picker import picker_status
+            self._next_picker_guard = dict(_next_picker_context=next_picker,
+                                          _account=self.item_information.get('_account'))
         prepared_retry = None
         prepared_retry_cancelled = None
         while True:
             from lib.cinema.playback_request import read_snapshot
             try:
-                self._control_snapshot = read_snapshot()
+                if next_picker is not None:
+                    # Recheck after window construction, not just before search.
+                    self._control_snapshot = picker_status(dict(
+                        _next_picker_context=next_picker, _account=self.item_information.get('_account')))
+                    next_picker = None
+                    if self._control_snapshot is None:
+                        return False
+                else:
+                    self._control_snapshot = read_snapshot()
             except (OSError, ValueError, RuntimeError):
                 self.last_error = '播放器尚未就绪，请稍后重试'
                 self.setProperty('playback_error', self.last_error)

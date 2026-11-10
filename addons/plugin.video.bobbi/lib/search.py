@@ -1692,7 +1692,6 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
     from lib.cinema.source_list_session import SourceListSession
     from lib.cinema.progressive_search import ProgressiveSearch
     from lib.utils.general.cinema_source_rank import rank_sources
-    from lib.clients.bobi_library import load_index, find_sources
     from bobbi_core.provider_cache import ProviderResultCache
     from lib.clients.catalog_providers import provider_for, submit_catalogs
     from lib.utils.kodi.settings import get_cache_expiration, is_cache_enabled
@@ -1724,18 +1723,14 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
         session.publish(session.epoch, 'local-entry', catalog_sources)
     if preferred:
         session.publish(session.epoch, 'preferred', _prepare_stremio_results(preferred))
-    if not scoped_addon_url and not jackgram_only:
-        # An optional exact-ID catalogue in the same ranked pool as all others.
-        from lib.clients.mdsub_provider import find_sources as mdsub_sources
-        session.publish(session.epoch, '漫迪 MDsub',
-                        mdsub_sources(ids, mode, season, episode))
-    if not scoped_addon_url and not jackgram_only:
-        try:
-            clouds = find_sources(load_index(), ids.get('tmdb_id'), mode, season, episode)
-            session.publish(session.epoch, '115-local-index', clouds)
-        except (ValueError, OSError, KeyError, TypeError) as error:
-            session.publish(session.epoch, '115-local-index', state='FAILED', error=type(error).__name__)
-    phase('LOCAL_READY')
+    local_catalogs = not scoped_addon_url and not jackgram_only
+    if local_catalogs:
+        # Register before starting the coordinator: cancellation can terminalize
+        # these producers even while a local read/validation is still running.
+        # No catalog IO belongs to the caller's pre-window construction path.
+        for provider in ('漫迪 MDsub', '115-local-index'):
+            session.publish(session.epoch, provider, state='PENDING')
+    phase('SESSION_READY')
 
     def transform(rows):
         # Exact-file catalogue rows have already passed their independent
@@ -1761,11 +1756,41 @@ def _create_source_search(params, query, ids, mode, media_type, tv_data,
 
     ready_setup = []
 
+    def local_live(manager):
+        if manager.cancelled.is_set():
+            return False
+        if monotonic() >= manager.deadline:
+            for provider in ('漫迪 MDsub', '115-local-index'):
+                session.publish(session.epoch, provider, state='TIMEOUT', error='SEARCH_DEADLINE')
+            return False
+        return True
+
     def setup(manager):
         phase('SETUP_BEGIN')
         if manager.retrying and ready_setup:
             manager.query_result_cache.resume_cached_queries()
             return ready_setup[0](manager)
+        if local_catalogs:
+            if not local_live(manager):
+                return
+            from lib.clients.mdsub_provider import find_sources as mdsub_sources
+            session.publish(session.epoch, '漫迪 MDsub', state='RUNNING')
+            rows = mdsub_sources(ids, mode, season, episode)
+            if not local_live(manager):
+                return
+            session.publish(session.epoch, '漫迪 MDsub', rows)
+            from lib.clients.bobi_library import load_index, find_sources
+            session.publish(session.epoch, '115-local-index', state='RUNNING')
+            try:
+                clouds = find_sources(load_index(), ids.get('tmdb_id'), mode, season, episode)
+                if not local_live(manager):
+                    return
+                session.publish(session.epoch, '115-local-index', clouds)
+            except (ValueError, OSError, KeyError, TypeError) as error:
+                session.publish(session.epoch, '115-local-index', state='FAILED', error=type(error).__name__)
+            if not local_live(manager):
+                return
+        phase('LOCAL_READY')
         reconcile_source_selection(cache_backend=cache, settings_getter=get_setting,
                                    stremio_addons_getter=get_selected_stream_addons)
         configuration = _build_search_cache_scope(scoped_addon_url)
@@ -1861,12 +1886,70 @@ def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
         pump.cancel()
 
 
-def show_next_sources(data):
+def create_next_source_search(data, budget=30):
+    """Read-only prefetch and visible picker share one session and provider work."""
+    return _create_source_search({'force_select': True}, data.get('query', ''),
+        data.get('ids', {}), data.get('mode', 'tv'), data.get('media_type', ''),
+        data.get('tv_data', {}), False, '', SearchVariant.DEFAULT,
+        _normalize_title_language_mode(get_setting('search_title_language_mode', TITLE_LANGUAGE_LOCALIZED_FIRST)),
+        None, False, {'playnext_context': True, 'direct_play': True}, [], budget=budget)
+
+
+def _show_reserved_next_sources(reservation, job):
+    from lib.utils.player.next_source_picker import picker_status
+    monitor = xbmc.Monitor()
+    if job is None:
+        return False
+    # Prefetch normally has a first card by EOF. A slow result may wait only
+    # within this job's original budget and while the exact UI permit survives.
+    while not monitor.abortRequested() and not job.closed.is_set() and not job.stopped.is_set():
+        if picker_status(reservation) is None:
+            return False
+        account = job.account_scope()
+        if account is None:
+            if not job.finished.is_set():
+                if monotonic() >= job.deadline or monitor.waitForAbort(.12):
+                    return False
+                continue
+            # Capture can complete between the first scope read and finished.
+            account = job.account_scope()
+            if account is None:
+                return False  # Failed capture is not an empty source list.
+        if account != reservation.get('_account'):
+            # The job may finish account capture after EOF admission. It must
+            # never relabel old personal results with the new permit's scope.
+            job.cancel()
+            return False
+        entry = job.snapshot()
+        if entry:
+            data, session, pump = entry
+            initial = [source for _, source in session.snapshot()['entries']]
+            if initial:
+                context = dict(playnext_context=True, direct_play=True, direct_playback_handoff=True,
+                    _next_picker_context=reservation['_next_picker_context'], _account=reservation.get('_account'))
+                return show_source_select(initial, data['mode'], data['ids'], data['tv_data'],
+                    data.get('query', ''), data.get('media_type', ''), False,
+                    playback_context=context, source_metadata={}, source_session=session,
+                    source_pump=pump, auto_select_sources=False)
+            if not pump.thread.is_alive():
+                break
+        elif job.finished.is_set():
+            break
+        if monotonic() >= job.deadline or monitor.waitForAbort(.12):
+            break
+    if not monitor.abortRequested() and not job.stopped.is_set() and picker_status(reservation) is not None:
+        notification('本集已播完，未找到已播出的下一集可选片源', heading='波比TV', time=5000)
+    return False
+
+
+def show_next_sources(data, next_picker=None):
     """Legacy next-entry adapter; never display an opaque aggregate cache.
 
     The shared per-query cache seeds current candidates and supplements expired
     or failed queries, including after an account/source configuration change.
     """
+    if '_next_picker_context' in data:
+        return _show_reserved_next_sources(data, next_picker)
     return _run_progressive_source_entry({'force_select': True}, data.get('query', ''),
         data.get('ids', {}), data.get('mode', 'tv'), data.get('media_type', ''),
         data.get('tv_data', {}), False, '', SearchVariant.DEFAULT,

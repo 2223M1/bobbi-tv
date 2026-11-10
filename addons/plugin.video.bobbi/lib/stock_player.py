@@ -26,8 +26,13 @@ class JacktookPLayer:
         request = data.get('request_id') or uuid4().hex
         account = data.get('_account') or call('account_status', {})
         data.update(request_id=request, _account=account, selection_policy='exact')
-        call('standard_playback', dict(operation='select', request_id=request, account=account))
-        call('standard_playback', dict(operation='subtitle_start', request_id=request, data=data))
+        if data.get('_ui_reserved_request') == request:
+            if call('standard_playback', dict(operation='current', request_id=request)).get('current') is not True:
+                return
+        else:
+            call('standard_playback', dict(operation='select', request_id=request, account=account))
+        if not data.get('_pan_file'):
+            call('standard_playback', dict(operation='subtitle_start', request_id=request, data=data))
         data = resolve_selected(data, self._cinema_cancel.is_set)
         result = call('standard_playback', dict(operation='register', request_id=request, data=data))
         if not result.get('accepted'):

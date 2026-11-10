@@ -316,6 +316,7 @@ def upgrade_profile_snapshot(check_stopped=True):
             or abi['subtitle_abi'] != 'ce-f9' or not known_ce_native(abi['native_sha256'])):
         raise ValueError('CE_UPGRADE_NATIVE_ABI')
     names = ('script.module.bobbi.platform/115-os_linux.json',
+             'script.module.bobbi.platform/pan-accounts-v1.json',
              'script.module.bobbi.platform/preparation.json',
              'plugin.video.bobbi/runtime-paths.json', 'plugin.video.bobbi/settings.xml',
              'plugin.video.bobbi/database.pickle', 'plugin.video.bobbi/bobi-library.json',

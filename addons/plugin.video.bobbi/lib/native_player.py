@@ -224,7 +224,7 @@ class JacktookPLayer(xbmc.Player):
         self._preav_control_error = ''
         self.set_constants(data)
         data = self.data
-        if data.get('selection_policy') == 'exact':
+        if data.get('selection_policy') == 'exact' and not data.get('_pan_file'):
             try:
                 from lib.cinema.preparation_client import capture_account
                 capture_account(data, allow_capture=not (
@@ -303,6 +303,8 @@ class JacktookPLayer(xbmc.Player):
             self.run_error(e)
 
         if self._was_superseded or self._cinema_cancel.is_set():
+            from lib.utils.player.next_source_picker import discard
+            discard(self, JacktookPLayer._nextep_queue)
             kodilog("[PLAYER] run() superseded; skipping PlayNext queue drain")
             return
 
@@ -323,10 +325,25 @@ class JacktookPLayer(xbmc.Player):
 
         while JacktookPLayer._nextep_queue:
             if self._cinema_cancel.is_set() or self.kodi_monitor.abortRequested():
+                from lib.utils.player.next_source_picker import discard
+                discard(self, JacktookPLayer._nextep_queue)
                 return False
             entry = JacktookPLayer._nextep_queue.pop(0)
             data = entry.get("data", {})
             results = entry.get("results")
+            if 'next_picker' in entry:
+                # UI-only EOF reservation. No candidate is an autoplay payload,
+                # and cancelling this picker must not close a newer user's UI.
+                from lib.search import show_next_sources
+                from lib.utils.player.next_source_picker import release
+                job = entry['next_picker']
+                try:
+                    show_next_sources(data, next_picker=job)
+                finally:
+                    if job:
+                        job.cancel()
+                    release(data)
+                return True
             kodilog(
                 f"[PLAYNEXT] _drain_nextep_queue: "
                 f"title={data.get('title', '')}, "
@@ -430,7 +447,8 @@ class JacktookPLayer(xbmc.Player):
                     self._cinema_phase('BIND_AND_CLAIM_BEGIN')
                     self._owner_context = bind_and_claim(
                         self.playback_session_id, identity, self.url, self._cinema_cancel.is_set,
-                        'player_play' if self.data.get('direct_playback_handoff') else 'resolved_url')
+                        'player_play' if self.data.get('direct_playback_handoff') else 'resolved_url',
+                        **({'file_evidence': 'USER_CONFIRMED_FILE'} if self.data.get('_pan_file') else {}))
                     self._cinema_phase('BIND_AND_CLAIM_END')
                     # Only the already cached, exact ASS font working set is
                     # installed here. Extraction/download stays on the idle lane.
@@ -898,6 +916,9 @@ class JacktookPLayer(xbmc.Player):
             kodilog('[PLAYER] monitor failed: ' + type(error).__name__, level=xbmc.LOGERROR)
             self.kill_dialog()
         finally:
+            picker = getattr(self, '_cinema_picker_search', None)
+            if picker and not getattr(self, '_cinema_picker_queued', False):
+                picker.cancel()
             recovery = getattr(self, '_transport_recovery', None)
             if recovery:
                 recovery.close()
@@ -2166,6 +2187,8 @@ class JacktookPLayer(xbmc.Player):
         self._cinema_warm_started = False
         self._cinema_warm_job = None
         self._cinema_next_data = None
+        self._cinema_picker_search = None
+        self._cinema_picker_queued = False
         self._cinema_warm_result = None
         self._cinema_prepare_ticket = None
         self._cinema_prepare_sent = False
@@ -2427,6 +2450,11 @@ class JacktookPLayer(xbmc.Player):
             return
         if self._cinema_cancel.is_set() or self.total_time < 60 or self.current_time < 20:
             return
+        if (self.data.get('selection_policy') == 'exact' and not self._cinema_next_data
+                and 0 < self.total_time - self.current_time <= 120
+                and not get_visibility('Player.Paused') and not get_visibility('Player.Caching')):
+            from lib.utils.player.next_source_picker import prefetch
+            prefetch(self)
         now = monotonic()
         if now >= getattr(self, '_cinema_generation_due', 0):
             self._cinema_generation_due = now + 2
@@ -2593,6 +2621,11 @@ class JacktookPLayer(xbmc.Player):
                 and self._owns_playback_session() and not self._cinema_cancel.is_set()
                 and not self._cinema_next_data):
             kodilog('[CINEMA-NEXT] EOF_WITHOUT_VERIFIED_NEXT', level=xbmc.LOGINFO)
+            from lib.utils.player.next_source_picker import queue
+            if queue(self, JacktookPLayer._nextep_queue):
+                self._cinema_picker_queued = True
+                kodilog('[CINEMA-NEXT] NATURAL_EOF_MANUAL_PICKER_RESERVED', level=xbmc.LOGINFO)
+                return
             message = ('下一集尚未在 115 就绪，请稍后重试或手动选源'
                        if str(getattr(self, '_cinema_next_status', '')).startswith('DIRECT_CLOUD')
                        else '本集已播完，未找到同版本下一集，请手动选源')

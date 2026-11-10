@@ -435,9 +435,10 @@ def upstream_chunks(response):
 
 
 class Binding:
-    def __init__(self, body, resolve, validate_url, account=None, scope=None, diagnostic=None):
+    def __init__(self, body, resolve, validate_url, account=None, scope=None, diagnostic=None, header_check=None):
         self.body, self.resolve, self.validate_url = body, resolve, validate_url
         self.account, self.scope = account, dict(scope) if scope else None
+        self.header_check = header_check
         self.diagnostic = checked_diagnostic(diagnostic) if diagnostic is not None else None
         self.diagnostic_deadline = time.monotonic() + diagnostic['seconds'] if diagnostic is not None else None
         self._account_current_guard = None
@@ -534,9 +535,15 @@ class Binding:
             base, separator, options = address.partition('|')
             headers = parse_qs(options, strict_parsing=True)
             ua = headers.get('User-Agent', [])
-            if (not separator or set(headers) != {'User-Agent'} or len(ua) != 1
+            if (not separator or len(ua) != 1
                     or not ua[0] or len(ua[0]) > 1024 or re.search(r'[\x00-\x1f\x7f]', ua[0])
                     or not self.validate_url(base)):
+                raise ValueError('SHARE_TRANSPORT_INVALID')
+            if self.header_check is None:
+                if set(headers) != {'User-Agent'}:
+                    raise ValueError('SHARE_TRANSPORT_INVALID')
+            elif (any(len(values) != 1 for values in headers.values())
+                    or self.header_check(self.body, base, {key: values[0] for key, values in headers.items()}) is not True):
                 raise ValueError('SHARE_TRANSPORT_INVALID')
             if self.account is not None:
                 self.account.run_if_current(self.scope, lambda: setattr(self, 'address', address))
@@ -594,10 +601,14 @@ class LimitedHTTPServer(ThreadingMixIn, HTTPServer):
 class ShareStream:
     def __init__(self, validate, resolve, validate_url, report=lambda phase: None,
                  session_factory=None, segment_bytes=MAX_SEGMENT_BYTES, observer=observation_json,
-                 account=None, progressive=False, queue_bytes=PROGRESSIVE_QUEUE_BYTES):
+                 account=None, progressive=False, queue_bytes=PROGRESSIVE_QUEUE_BYTES,
+                 body_check=None, header_check=None):
         if type(segment_bytes) is not int or not 0 < segment_bytes <= MAX_SEGMENT_BYTES:
             raise ValueError('SHARE_SEGMENT_BUDGET')
         self.validate, self.resolve, self.validate_url = validate, resolve, validate_url
+        # Explicit adapter injection. The existing 115 admission and its
+        # User-Agent-only policy remain the defaults, never widened globally.
+        self.body_check, self.header_check = body_check or checked, header_check
         self._report, self.observer = report, observer
         self.observation_run = uuid4().hex[:16]
         self.http_sequence = self.gate_sequence = 0
@@ -633,7 +644,7 @@ class ShareStream:
                         gate=entry.io_lock.diagnostic_id)
 
     def register(self, body, account=None):
-        body = checked(body)
+        body = self.body_check(body)
         if self.account is not None:
             return self.account.run_if_current(account, lambda: self._register(body, account))
         return self._register(body, None)
@@ -713,7 +724,7 @@ class ShareStream:
                         raise ValueError('SHARE_BINDINGS_FULL')
                     del self.records[min(idle)[1]]
                 self.validate(body)  # Exact local catalogue binding, no network IO here.
-                entry = Binding(body, self.resolve, self.validate_url, self.account, account, diagnostic)
+                entry = Binding(body, self.resolve, self.validate_url, self.account, account, diagnostic, self.header_check)
                 # A new playback reservation of the same physical file shares
                 # the upstream gate, even while an old reservation winds down.
                 identity = BINDING_IDENTITY
@@ -1238,16 +1249,16 @@ class Handler(BaseHTTPRequestHandler):
             self.observation_stage = 'grant'
             address = self.diagnostic_call('grant_us', entry.grant)
             base, _, options = address.partition('|')
-            ua = parse_qs(options)['User-Agent'][0]
+            upstream_headers = {key: values[0] for key, values in parse_qs(options).items()}
             rejected = False
             yielded = False
             possible_close_race = False
             try:
                 self.observation_stage = 'connect'
                 range_end = '' if retry_window is not None and end == entry.body['size'] - 1 else str(end)
-                with self.diagnostic_call('connect_us', session.get, base, headers={'User-Agent': ua,
+                with self.diagnostic_call('connect_us', session.get, base, headers=dict(upstream_headers, **{
                     'Range': 'bytes={}-{}'.format(offset, range_end), 'Accept-Encoding': 'identity',
-                    'Connection': 'close'}, stream=True, allow_redirects=False, timeout=(3.05, 10)) as response:
+                    'Connection': 'close'}), stream=True, allow_redirects=False, timeout=(3.05, 10)) as response:
                     self.observation_stage = 'response_check'
                     if response.status_code != 206:
                         self.observe('upstream_status', status=response.status_code,

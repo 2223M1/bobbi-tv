@@ -1,0 +1,271 @@
+"""139 first-party QR and personal drive (legacy and PDS accounts).
+
+Protocol verified against yun.139.com web app/chunk-5111af4d, 2026-11-09.
+RSA encrypts a fresh per-attempt AES key with the server's public key. No
+borrowed app secret, device identity, arbitrary script evaluation or cloud writes.
+"""
+import base64
+from copy import deepcopy
+from datetime import datetime, timedelta, timezone
+import hashlib
+import json
+import re
+import secrets
+import string
+import time
+from urllib.parse import quote, urlencode
+
+from .pan_accounts import PanError
+from .pan_http import Session, USER_AGENT
+from .pan_tokens import identifier, listing, number, original_url, page_number, text, token
+
+API = 'https://yun.139.com/orchestration/'
+AUTH = API + 'auth-rebuild/'
+ROUTES = 'https://user-njs.yun.139.com/user/route/qryRoutePolicy'
+
+
+def random_text(length):
+    return ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(length))
+
+
+def crypto(name):
+    # Kodi may hide CE's system site-packages, or expose an incompatible
+    # Cryptodome alias. Reuse the existing exact-package, single-suite loader.
+    from bobbi_core.juku_api import crypto_module
+    try:
+        return crypto_module('Crypto.' + name)
+    except (ImportError, OSError, ValueError, TypeError, AttributeError, RuntimeError):
+        raise PanError('PAN_CRYPTO_UNAVAILABLE') from None
+
+
+def compact(value):
+    # Same bytes are signed and sent by Session, including JSON escaping.
+    return json.dumps(value, separators=(',', ':'))
+
+
+def headers(body, device, wall_clock=time.time):
+    stamp = datetime.fromtimestamp(wall_clock(), timezone(timedelta(hours=8))).strftime('%Y%m%d%H%M%S%f')[:17]
+    nonce = random_text(16)
+    encoded = ''.join(sorted(quote(compact(body), safe="~()*!.'-")))
+    md5 = lambda s: hashlib.md5(s.encode('ascii')).hexdigest()
+    digest = md5(md5(base64.b64encode(encoded.encode('ascii')).decode('ascii')) + md5(stamp + ':' + nonce)).upper()
+    info = '||9|2.0.0|chrome|130.0.0.0|' + identifier(device) + '||windows 10||zh-CN|||'
+    return {'mcloud-client': '10701', 'mcloud-sign': ','.join((stamp, nonce, digest)), 'X-Deviceinfo': info}
+
+
+def code(value):
+    if type(value) is not dict or type(value.get('data')) is not dict:
+        raise PanError('PAN_REPLY_INVALID')
+    result = value['data'].get('result')
+    value = result.get('resultCode') if type(result) is dict else value.get('code')
+    if type(value) is int:
+        value = str(value)
+    if type(value) is not str or not re.fullmatch('[0-9]{1,12}', value):
+        raise PanError('PAN_REPLY_INVALID')
+    return value
+
+
+def checked(value):
+    status = code(value)
+    if status not in ('0', '0000'):
+        raise PanError('PAN_LOGIN_REQUIRED' if status in ('401', '200000401', '200050432') else 'PAN_API_REJECTED')
+    return value['data']
+
+
+def route(value):
+    if type(value) is not str or not re.fullmatch(r'https://personal(?:-[a-z0-9]+){0,3}\.yun\.139\.com/hcy', value):
+        raise PanError('PAN_ROUTE_REJECTED')
+    return value
+
+
+def personal_route(rows):
+    if type(rows) is not list or len(rows) > 64:
+        raise PanError('PAN_ROUTE_REJECTED')
+    matches = [r for r in rows if type(r) is dict and str(r.get('modName', '')).lower() == 'personal']
+    if len(matches) != 1:
+        raise PanError('PAN_ROUTE_REJECTED')
+    return route(matches[0].get('httpsUrl'))
+
+
+def credentials(value):
+    if (type(value) is not dict or set(value) != {'provider', 'subject', 'auth_token', 'device_id', 'pds', 'route'}
+            or value['provider'] != '139' or type(value['pds']) is not bool
+            or type(value['subject']) is not str or not re.fullmatch(r'[0-9]{8,15}', value['subject'])):
+        raise PanError('PAN_CREDENTIALS_INVALID')
+    token(value['auth_token'])
+    identifier(value['device_id'])
+    if value['pds']:
+        route(value['route'])
+    elif value['route'] != '':
+        raise PanError('PAN_CREDENTIALS_INVALID')
+    return value['subject'], deepcopy(value)
+
+
+def authorization(value):
+    return 'Basic ' + base64.b64encode(('pc:' + value['subject'] + ':' + value['auth_token']).encode('ascii')).decode('ascii')
+
+
+class Login:
+    def __init__(self, session=None, clock=time.monotonic, wall_clock=time.time):
+        self.session = session if session is not None else Session('139')
+        self.clock, self.wall_clock = clock, wall_clock
+        self.device, self.sid = random_text(32), random_text(16)
+        self.key, self.secret, self.accepted = None, None, None
+        self.started, self.next_poll, self.terminal = None, 0, False
+
+    def __repr__(self):
+        return '<139 QR: temporary keys and tickets hidden>'
+
+    def cancel(self):
+        self.key = self.secret = self.sid = self.accepted = None
+        self.terminal = True
+
+    def begin(self):
+        if self.terminal or self.started is not None:
+            raise PanError('PAN_QR_FINISHED')
+        PKCS1_v1_5, RSA = crypto('Cipher.PKCS1_v1_5'), crypto('PublicKey.RSA')
+        body = dict(clientCode='10701', type=1)
+        value = checked(self.session.request(AUTH + 'key/v1.0/getRsaPublicKey', body=body,
+            headers=headers(body, self.device, self.wall_clock)))
+        try:
+            public = text(value.get('publicKey'), 4096)
+            key = RSA.import_key(base64.b64decode(public, validate=True))
+            if key.has_private() or not 1024 <= key.size_in_bits() <= 4096:
+                raise ValueError
+            self.key = random_text(16).encode('ascii')
+            self.secret = base64.b64encode(PKCS1_v1_5.new(key).encrypt(self.key)).decode('ascii')
+        except (ValueError, TypeError, IndexError):
+            raise PanError('PAN_QR_KEY_INVALID') from None
+        self.started = self.clock()
+        return 'https://yun.139.com/w/#/qrcLogin?' + urlencode(dict(sID=self.sid, dID=self.device, cType=9))
+
+    def poll(self):
+        if self.terminal or self.started is None:
+            raise PanError('PAN_QR_FINISHED')
+        if self.clock() - self.started >= 180:
+            self.cancel()
+            raise PanError('PAN_QR_EXPIRED')
+        if self.clock() < self.next_poll:
+            return 'waiting', None
+        self.next_poll = self.clock() + 2
+        if self.accepted is None:
+            AES, pad = crypto('Cipher.AES'), crypto('Util.Padding').pad
+            inner = compact(dict(dycPwd=self.sid, loginStyle='QRCode', clientEnv='3', setCookie=0)).encode('ascii')
+            cipher = AES.new(self.key, AES.MODE_ECB).encrypt(pad(inner, 16))
+            body = dict(encryptMsg=base64.b64encode(cipher).decode('ascii'), clientId='10701', returnToken=True)
+            h = dict(headers(body, self.device, self.wall_clock), **{'mcloud-skey': self.secret})
+            value = self.session.request(AUTH + 'permission/v1.0/login', body=body, headers=h)
+            status = code(value)
+            # Outer success/code=0 ALSO accompanies pending replies. The
+            # nested resultCode is authoritative (541 observed anonymously).
+            if status in ('200059541', '200059548'):
+                return 'waiting', None
+            if status in ('200059542', '200059543', '200059545', '200059546', '200059547', '200059549'):
+                self.cancel()
+                raise PanError('PAN_QR_EXPIRED')
+            data = checked(value)
+            try:
+                account = base64.b64decode(text(data.get('encryptAccount'), 128), validate=True).decode('ascii')
+            except (ValueError, UnicodeError):
+                raise PanError('PAN_REPLY_INVALID') from None
+            if type(data.get('cutoverStatus')) not in (int, str) or str(data['cutoverStatus']) not in ('0', '1'):
+                raise PanError('PAN_REPLY_INVALID')
+            saved = dict(provider='139', subject=account, auth_token=token(data.get('authToken')),
+                         device_id=self.device, pds=str(data['cutoverStatus']) == '1', route='')
+            # Identity validation precedes every credential-bearing route call.
+            credentials(dict(saved, pds=False))
+            self.accepted = (saved, identifier(data.get('userDomainId')), data.get('routerInfo'))
+        saved, user_id, routes = self.accepted
+        if saved['pds']:
+            if not routes:
+                body = dict(userInfo=dict(userDomainId=user_id), modAddrType=1)
+                h = dict(headers(body, self.device, self.wall_clock), Authorization=authorization(saved))
+                routes = checked(self.session.request(ROUTES, body=body, headers=h)).get('routePolicyList')
+            saved = dict(saved, route=personal_route(routes))
+        result = credentials(saved)[1]
+        self.cancel()
+        return 'ready', result
+
+
+def entry(row, pds, directory=None):
+    if type(row) is not dict:
+        raise PanError('PAN_REPLY_INVALID')
+    if pds:
+        if row.get('type') not in ('file', 'folder'):
+            raise PanError('PAN_REPLY_INVALID')
+        directory = row['type'] == 'folder'
+        return dict(file_id=identifier(row.get('fileId')), name=text(row.get('name')), directory=directory,
+                    size=0 if directory else number(row.get('size')), modified=text(row.get('updatedAt'), 64))
+    prefix = 'catalog' if directory else 'content'
+    return dict(file_id=identifier(row.get(prefix + 'ID')), name=text(row.get(prefix + 'Name')),
+                directory=directory, size=0 if directory else number(row.get('contentSize')),
+                modified=text(row.get('updateTime'), 64))
+
+
+class Client:
+    def __init__(self, saved, session=None):
+        self.saved = credentials(saved)[1]
+        self.session = session if session is not None else Session('139')
+
+    def __repr__(self):
+        return '<139 personal drive: credentials hidden>'
+
+    def _call(self, endpoint, body):
+        h = headers(body, self.saved['device_id'])
+        h.update(Authorization=authorization(self.saved), **{'x-yun-api-version': 'v1',
+            'x-yun-module-type': '100', 'x-yun-app-channel': '10000034',
+            'x-yun-client-info': h['X-Deviceinfo'], 'x-yun-svc-type': '1'})
+        return checked(self.session.request(endpoint, body=body, headers=h))
+
+    def list_files(self, parent='0', page=1, size=10, cursor=''):
+        page_number(page, size)
+        identifier(parent)
+        if type(cursor) is not str or len(cursor) > 2048 or (page == 1 and cursor):
+            raise PanError('PAN_PAGE_INVALID')
+        pds = self.saved['pds']
+        if pds:
+            if page > 1 and not cursor:
+                raise PanError('PAN_PAGE_INVALID')
+            data = self._call(self.saved['route'] + '/file/list', dict(parentFileId='/' if parent == '0' else parent,
+                orderBy='updated_at', orderDirection='DESC', pageInfo=dict(pageCursor=cursor, pageSize=size)))
+            rows, next_cursor = data.get('items'), data.get('nextPageCursor')
+            if type(next_cursor) is not str or len(next_cursor) > 2048 or next_cursor and next_cursor == cursor:
+                raise PanError('PAN_REPLY_INVALID')
+            result = listing(rows, page * size + (1 if next_cursor else 0), page, size, lambda r: entry(r, True))
+            result['next_cursor'] = next_cursor
+        else:
+            if cursor:
+                raise PanError('PAN_PAGE_INVALID')
+            data = self._call(API + 'personalCloud/catalog/v1.0/getDisk', dict(catalogID='root' if parent == '0' else parent,
+                sortDirection=1, startNumber=(page - 1) * size + 1, endNumber=page * size,
+                filterType=0, catalogSortType=0, contentSortType=0,
+                commonAccountInfo=dict(account=self.saved['subject'], accountType=1))).get('getDiskResult')
+            if type(data) is not dict or type(data.get('catalogList')) is not list or type(data.get('contentList')) is not list:
+                raise PanError('PAN_REPLY_INVALID')
+            rows = [(r, True) for r in data['catalogList']] + [(r, False) for r in data['contentList']]
+            result = listing(rows, data.get('nodeCount'), page, size, lambda r: entry(r[0], False, r[1]))
+        for item in result['items']:
+            if not item['directory']:
+                item['listing'] = dict(parent=parent, page=page, size=size, cursor=cursor)
+        return result
+
+    def resolve_original(self, selected):
+        if (type(selected) is not dict or set(selected) != {'file_id', 'name', 'size', 'directory', 'modified', 'listing'}
+                or selected['directory'] is not False):
+            raise PanError('PAN_SELECTION_INVALID')
+        fid, size = identifier(selected['file_id']), number(selected['size'], 1)
+        location = selected['listing']
+        if type(location) is not dict or set(location) != {'parent', 'page', 'size', 'cursor'}:
+            raise PanError('PAN_SELECTION_INVALID')
+        matches = [r for r in self.list_files(**location)['items'] if r['file_id'] == fid]
+        if len(matches) != 1 or matches[0] != selected:
+            raise PanError('PAN_FILE_CHANGED')
+        if self.saved['pds']:
+            data = self._call(self.saved['route'] + '/file/getDownloadUrl', dict(fileId=fid))
+            url = data.get('cdnUrl') if data.get('cdnSwitch') is True and data.get('cdnUrl') else data.get('url')
+        else:
+            data = self._call(API + 'personalCloud/uploadAndDownload/v1.0/downloadRequest', dict(appName='', contentID=fid,
+                commonAccountInfo=dict(account=self.saved['subject'], accountType=1)))
+            url = data.get('downloadURL')
+        return dict(url=original_url(url, ('139.com', 'caiyun.feixin.10086.cn')), size=size,
+                    original=True, headers={'User-Agent': USER_AGENT})

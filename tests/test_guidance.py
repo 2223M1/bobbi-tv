@@ -73,7 +73,7 @@ def test_risky_maintenance_guidance_keeps_data_and_restart_consequences():
 
 def test_primary_guidance_avoids_developer_jargon_and_obsolete_entry_name():
     base = 'addons/script.module.bobbi.platform/lib/bobbi_platform/'
-    names = ('cloud_ui.py', 'account_dialog.py', 'cloud_hub.py', 'onboarding.py',
+    names = ('cloud_ui.py', 'account_dialog.py', 'cloud_hub.py', 'pan_ui.py', 'onboarding.py',
              'library_ui.py', 'ce_install_ui.py', 'ce_recovery.py', 'ce_storage.py')
     for name in names:
         for text in strings(base + name):

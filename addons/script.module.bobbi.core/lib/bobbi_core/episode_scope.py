@@ -70,7 +70,7 @@ def _consume_aliases(text, aliases):
     return text, found
 
 
-def release_scope(title, aliases, season, year=None, allow_pack=True, filename=False):
+def _release_scope(title, aliases, season, year=None, allow_pack=True, filename=False):
     """Return matched/conflict/unknown without inventing a release identity."""
     from .anime_range_candidates import _technical, _tokens
     if (not isinstance(title, str) or not 0 < len(title) <= 4096
@@ -158,6 +158,31 @@ def release_scope(title, aliases, season, year=None, allow_pack=True, filename=F
         if not _technical(token, years[0] if years else None):
             return 'unknown'
     return 'matched' if named else 'context'
+
+
+_cached_release_scope = lru_cache(maxsize=512)(_release_scope)
+
+
+def release_scope(title, aliases, season, year=None, allow_pack=True, filename=False):
+    """Reuse only the pure lexical projection, keyed by every input.
+
+    Provider objects, account state, selected files and playback permission are
+    never retained. A new title/alias/season/year/policy re-runs the same grammar.
+    Keep custom or oversized input on the original uncached path.
+    """
+    # Snapshot a caller-owned list once; validate exactly the immutable values
+    # used in the key, even if another worker later mutates the original list.
+    names = tuple(aliases) if type(aliases) in (list, tuple) else aliases
+    years = year if type(year) is tuple else (() if year is None else (year,))
+    if (type(title) is str and 0 < len(title) <= 4096
+            and type(names) is tuple and 0 < len(names) <= 128
+            and all(type(alias) is str and len(alias) <= 512 for alias in names)
+            and sum(map(len, names)) <= 8192
+            and type(season) is int and 0 <= season <= 100000
+            and len(years) <= 2 and all(type(y) is int and 1000 <= y <= 2999 for y in years)
+            and type(allow_pack) is bool and type(filename) is bool):
+        return _cached_release_scope(title, names, season, years, allow_pack, filename)
+    return _release_scope(title, names, season, year, allow_pack, filename)
 
 
 def check_episode_scope(path, releases, aliases, season, year=None, require_work=True):
