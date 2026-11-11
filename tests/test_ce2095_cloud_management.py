@@ -105,7 +105,17 @@ def test_details_library_navigation_closes_both_parent_menus(context, monkeypatc
     assert context.builtins == ['ActivateWindow(Videos,plugin://plugin.video.bobbi.library/,return)']
 
 
-@pytest.mark.parametrize('choice', [-1, 7, 100])
+def test_preparation_details_reuses_existing_read_only_task_observer(ui, monkeypatch):
+    from bobbi_platform import catalog_ui
+    watched = []
+    monkeypatch.setattr(catalog_ui, 'watch_preparation', lambda **kw: watched.append(kw['dialog']))
+    ui.choices = [7, -1]
+    assert cloud_hub.details(ui.dialog) is None
+    assert watched == [ui.dialog]
+    assert not ui.messages and ui.calls == ['cloud_status', 'cloud_status']
+
+
+@pytest.mark.parametrize('choice', [-1, 8, 100])
 def test_cancel_or_invalid_details_action_is_noop(ui, choice):
     ui.choices = [choice]
     assert cloud_hub.details(ui.dialog) is None
