@@ -10,6 +10,7 @@ import json
 import os
 import socket
 import threading
+import time
 from datetime import timedelta
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlsplit, urlunsplit
@@ -352,23 +353,79 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
         super().setup()
         self.connection.settimeout(3)
 
+    def handle_one_request(self):
+        self._management_body_attempted = False
+        self._management_body_deadline = time.monotonic() + 3
+        return super().handle_one_request()
+
+    def _management_body_length(self):
+        from lib.services.phone_management import MAX_BODY
+        lengths = self.headers.get_all('Content-Length', [])
+        if self.headers.get('Transfer-Encoding') is not None or len(lengths) != 1:
+            return None
+        length = lengths[0]
+        if not length.isascii() or not length.isdecimal() or len(length) > 10:
+            return None
+        length = int(length)
+        return length if 0 < length <= MAX_BODY else None
+
+    def _management_read_body(self, length):
+        # A rejected small request must not leave bytes unread when closing the
+        # socket: Windows may otherwise reset it before delivering the reply.
+        # Never make a second read after EOF, timeout, or a partially read POST.
+        self._management_body_attempted = True
+        chunks = []
+        remaining = length
+        previous_timeout = self.connection.gettimeout()
+        try:
+            while remaining:
+                timeout = self._management_body_deadline - time.monotonic()
+                if timeout <= 0:
+                    raise TimeoutError('management request deadline')
+                self.connection.settimeout(timeout)
+                chunk = self.rfile.read1(remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            return b''.join(chunks)
+        finally:
+            self.connection.settimeout(previous_timeout)
+
+    def _management_discard_body(self):
+        if self._management_body_attempted:
+            return
+        length = self._management_body_length()
+        if length is not None:
+            try:
+                self._management_read_body(length)
+            except OSError:
+                pass  # Preserve the already chosen rejection, without retrying.
+
+    def send_error(self, code, message=None, explain=None):
+        if (getattr(self.server, 'phone_management', None) is not None and
+                hasattr(self, 'headers')):
+            self._management_discard_body()
+        return super().send_error(code, message, explain)
+
     def _management_reply(self, value, status=200, cookie=None, content_type='application/json; charset=utf-8'):
         from lib.services.phone_management import encode
         body = value if type(value) is bytes else encode(value)
+        self._management_discard_body()
         self.send_response(status)
         self.send_header('Content-Type', content_type)
         self.send_header('Content-Length', str(len(body)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('Referrer-Policy', 'no-referrer')
         self.send_header('X-Content-Type-Options', 'nosniff')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://image.tmdb.org; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
         if cookie:
             self.send_header('Set-Cookie', cookie)
         self.end_headers()
         self.wfile.write(body)
 
     def _management(self, post=False):
-        from lib.services.phone_management import MAX_BODY, PhoneError
+        from lib.services.phone_management import PhoneError
         manager = getattr(self.server, 'phone_management', None)
         if manager is None:
             self.send_error(404)
@@ -386,11 +443,11 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
             if (self.headers.get('Transfer-Encoding') is not None or
                     self.headers.get('Content-Type', '').split(';')[0] != 'application/json'):
                 raise PhoneError('INVALID_REQUEST', 400)
-            length = self.headers.get('Content-Length', '')
-            if not length.isdecimal() or not 0 < int(length) <= MAX_BODY:
+            length = self._management_body_length()
+            if length is None:
                 raise PhoneError('REQUEST_TOO_LARGE', 413)
-            raw = self.rfile.read(int(length))
-            if len(raw) != int(length):
+            raw = self._management_read_body(length)
+            if len(raw) != length:
                 raise PhoneError('INVALID_REQUEST', 400)
             result, cookie = manager.handle(self.path, self.headers, raw)
             self._management_reply(result, cookie=cookie)

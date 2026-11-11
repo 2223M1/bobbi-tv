@@ -608,16 +608,9 @@ def _catalog_item(result, mode, title_map):
     if not is_folder:
         from lib.clients.cinema_ui import catalog_playable_property
         list_item.setProperty("IsPlayable", catalog_playable_property())
-    url = _build_url(
-        "am6b_open_streaming_item",
-        mode=mode,
-        submode="",
-        id=tmdb_id,
-        title=display_title,
-        original=original,
-        media_type="movie" if mode == "movies" else "tv",
-    )
-    return url, list_item, is_folder
+    from lib.cinema.focus_anchor import public_card, public_target
+    list_item.setProperty('Bobi.CardKey', public_card(mode, tmdb_id))
+    return public_target(mode, tmdb_id), list_item, is_folder
 
 
 def _is_animation(result):
@@ -684,16 +677,9 @@ def _generic_item(result, forced_section=None):
     if not is_folder:
         from lib.clients.cinema_ui import catalog_playable_property
         list_item.setProperty("IsPlayable", catalog_playable_property())
-    url = _build_url(
-        "am6b_open_streaming_item",
-        mode=mode,
-        submode="",
-        id=tmdb_id,
-        title=display_title,
-        original=original,
-        media_type=media_type,
-    )
-    return url, list_item, is_folder
+    from lib.cinema.focus_anchor import public_card, public_target
+    list_item.setProperty('Bobi.CardKey', public_card(mode, tmdb_id))
+    return public_target(mode, tmdb_id), list_item, is_folder
 
 
 def _preferred_source_title(metadata, mode, fallback_title=""):
@@ -819,7 +805,7 @@ def _add_next_item(directory_items, action, page, label="下一页", **params):
     directory_items.append((_build_url(action, **params), next_item, True))
 
 
-def _render_directory(data, item_builder, category_label, content_type, next_action=None, page=1, next_params=None):
+def _render_directory(data, item_builder, category_label, content_type, next_action=None, page=1, next_params=None, rail=''):
     handle = _plugin_handle()
     xbmcplugin.setContent(handle, content_type)
     xbmcplugin.setPluginCategory(handle, category_label)
@@ -839,12 +825,13 @@ def _render_directory(data, item_builder, category_label, content_type, next_act
             retry = xbmcgui.ListItem(label="加载失败 · 选择重试")
             retry.setProperty("IsPlayable", "false")
             retry.setProperty("AM6B.Directory.error", "provider_unavailable")
+            retry.setProperty('Bobi.Rail.State', 'error')
             retry.getVideoInfoTag().setPlot(
                 "列表加载失败。选择此项重试，或返回修改搜索。"
             )
-            xbmcplugin.addDirectoryItems(handle, [
-                (_build_url(retry_action, **retry_params), retry, True),
-            ])
+            target = (_build_url('bobi_retry_rail', rail=rail) if rail
+                      else _build_url(retry_action, **retry_params))
+            xbmcplugin.addDirectoryItems(handle, [(target, retry, not bool(rail))])
             kodilog("AM6B directory provider unavailable; retry row retained", xbmc.LOGWARNING)
             xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
         else:
@@ -859,7 +846,14 @@ def _render_directory(data, item_builder, category_label, content_type, next_act
                 directory_items.append(item)
 
     total_pages = _positive_int(_am6b_value(data, "total_pages", 0), 0)
-    if next_action and total_pages > page:
+    from lib.cinema.frontend_contract import apply_rail_state
+    apply_rail_state(directory_items, 'ready')
+    if rail and not directory_items:
+        item = xbmcgui.ListItem(label='当前片单为空 · 选择重试')
+        item.setProperty('IsPlayable', 'false')
+        directory_items = [(_build_url('bobi_retry_rail', rail=rail), item, False)]
+        apply_rail_state(directory_items, 'empty')
+    if next_action and total_pages > page and not rail:
         _add_next_item(directory_items, next_action, page, **(next_params or {}))
     xbmcplugin.addDirectoryItems(handle, directory_items)
     xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
@@ -910,6 +904,7 @@ def handle_am6b_anime_catalog(params, next_page=False):
             "submode": submode,
             "category": category,
         },
+        rail=params.get('rail', ''),
     )
     _schedule_missing_catalog_locales(category, submode, page, localized)
     return rendered
@@ -935,6 +930,7 @@ def handle_am6b_streaming_catalog(params, next_page=False):
         next_action="am6b_streaming_catalog",
         page=page,
         next_params={"section": section},
+        rail=params.get('rail', ''),
     )
 
 

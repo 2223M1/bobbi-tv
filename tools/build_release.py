@@ -8,9 +8,11 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import xml.etree.ElementTree as ET
 import zipfile
 from delivery_policy import require_clean
+from generate_home_rails import check_generated
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / 'release/source-inventory.json'
@@ -46,6 +48,7 @@ def files(root):
 
 
 def refresh():
+    check_generated(ROOT)  # Never bless a stale generated skin by refreshing its hash.
     content = {key: files(root) for key, root in sources().items()}
     with INVENTORY.open('w', encoding='utf-8', newline='\n') as output:
         output.write(json.dumps({'schema': 1, 'components': content}, indent=2) + '\n')
@@ -93,7 +96,25 @@ def project_resource(roots):
     return raw
 
 
+def source_provenance():
+    """Identify reviewed bytes even for a dirty tree or an offline source copy."""
+    result = dict(head_commit=None, head_tree=None, worktree_dirty=None,
+        inventory_sha256=hashlib.sha256(INVENTORY.read_bytes()).hexdigest(),
+        build_tool_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+    try:
+        def git(*args):
+            return subprocess.check_output(['git', '-C', str(ROOT), *args],
+                text=True, stderr=subprocess.DEVNULL, timeout=5).strip()
+        commit, tree = git('rev-parse', 'HEAD'), git('rev-parse', 'HEAD^{tree}')
+        dirty = bool(git('status', '--porcelain=v1', '--untracked-files=normal'))
+    except (OSError, subprocess.SubprocessError):
+        return result  # Null means unavailable; never pretend an archive is clean.
+    result.update(head_commit=commit, head_tree=tree, worktree_dirty=dirty)
+    return result
+
+
 def build(destination, *, source_check=False):
+    home_rails = check_generated(ROOT)  # Read-only, before any output or inventory work.
     from vendor_licenses import verify, verify_component_archive
     notices = verify()
     destination = Path(destination)
@@ -107,6 +128,8 @@ def build(destination, *, source_check=False):
     local_resource = None if source_check else project_resource(roots)
     manifest = {'version': '0.2.0-private.1', 'channel': 'private-candidate', 'device_verified': False, 'components': []}
     manifest['notices'] = notices
+    manifest['source'] = source_provenance()
+    manifest['source_generation'] = {'home_rails': home_rails}
     manifest['distribution_cleared'] = not notices['unresolved_components']
     if source_check:
         manifest.update(channel='source-check', installable=False)

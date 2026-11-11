@@ -38,8 +38,12 @@ def play(params, reservation=None):
         from bobbi_core.file_ref import locator, same_file
         file_ref = claimed.get('file_ref')
         stable_locator = locator(file_ref) if file_ref is not None else selected_body['locator']
-        if reservation is not None and (file_ref is None or not same_file(reservation['file_ref'], file_ref)):
-            raise PanError('PAN_FILE_CHANGED')
+        if reservation is not None:
+            if file_ref is None or (reservation.get('object_id') is not None
+                                   and reservation['object_id'] != file_ref['id']):
+                raise PanError('PAN_FILE_CHANGED')
+            if reservation.get('file_ref') is not None and not same_file(reservation['file_ref'], file_ref):
+                raise PanError('PAN_FILE_CHANGED')
         data = dict(request_id=ticket, _ui_reserved_request=ticket, _account=expected,
             _pan_file=True, _pan_locator=stable_locator, url=stable_locator,
             title=selected['name'], source_title=selected['name'], size=selected['size'],
@@ -112,6 +116,56 @@ def play(params, reservation=None):
                 pass  # Scoped cancellation only; never global Stop/playlist changes.
 
 
+def _prepare_ticket(action, body, request, title):
+    """One bounded, cancelable UI wait shared by trusted history and indexed files."""
+    import xbmc
+    import xbmcgui
+    progress, monitor, job = xbmcgui.DialogProgress(), xbmc.Monitor(), {}
+    progress.create(title, '核验原账号与文件；可按返回取消。')
+    def verify():
+        try:
+            job['reply'] = call(action, body, timeout=28)
+        except Exception as error:
+            job['error'] = error
+    try:
+        worker = Thread(target=verify, name='bobbi-file-verify', daemon=True)
+        worker.start()
+        deadline = time.monotonic() + 29
+        while worker.is_alive():
+            if progress.iscanceled() or monitor.waitForAbort(.1) or time.monotonic() >= deadline:
+                return False
+        worker.join()
+        if progress.iscanceled() or monitor.abortRequested():
+            return False
+        if 'error' in job:
+            raise job['error']
+        if job.get('reply', {}).get('ticket') != request:
+            raise PanError('PAN_REPLY_INVALID')
+        return True
+    finally:
+        progress.close()
+
+
+def _cancel_prepared(expected, request, native, owner):
+    from bobbi_core.playback_ipc import call as owner_call
+    if expected is None:
+        return
+    for action, body in (
+        ('pan_cancel_operation', dict(expected=expected, operation_id=request)),
+        ('pan_close_stream', dict(expected=expected, request_id=request))):
+        try:
+            call(action, body)
+        except (OSError, ValueError, RuntimeError):
+            pass
+    try:
+        if native and owner is not None:
+            owner_call(dict(owner, operation='cancel'))
+        elif not native:
+            call('standard_playback', dict(operation='cancel', request_id=request))
+    except (OSError, ValueError, RuntimeError):
+        pass
+
+
 def resume(params):
     """Reserve user intent before remote verification; routes carry only an ID."""
     import xbmc
@@ -121,7 +175,6 @@ def resume(params):
     from lib.native_support import available
     from bobbi_core.file_ref import locator
     from bobbi_core.playback_request import context, data_identity, read_snapshot, select
-    from bobbi_core.playback_ipc import call as owner_call
     from bobbi_platform.pan_ui import _failure
 
     identifier = params.get('history_id')
@@ -129,7 +182,6 @@ def resume(params):
         return
     request, expected, owner = uuid4().hex, None, None
     handed, native = False, available()
-    progress, monitor = xbmcgui.DialogProgress(), xbmc.Monitor()
     try:
         record = FileHistory().get(identifier)
         ref = record['file_ref']
@@ -147,52 +199,68 @@ def resume(params):
             owner = context(select(read_snapshot(), request, identity, account_scope=expected), request)
         else:
             call('standard_playback', dict(operation='select', request_id=request, account=expected))
-        progress.create('继续观看原文件', '核验原账号与文件；可按返回取消。')
-        job = {}
-        def verify():
-            try:
-                job['reply'] = call('pan_prepare_history_play',
-                    dict(history_id=identifier, request_id=request), timeout=28)
-            except Exception as error:
-                job['error'] = error
-        worker = Thread(target=verify, name='bobbi-pan-history-verify', daemon=True)
-        worker.start()
-        deadline = time.monotonic() + 29
-        while worker.is_alive():
-            if progress.iscanceled() or monitor.waitForAbort(.1) or time.monotonic() >= deadline:
-                return
-        worker.join()
-        if progress.iscanceled() or monitor.abortRequested():
+        if not _prepare_ticket('pan_prepare_history_play',
+                dict(history_id=identifier, request_id=request), request, '继续观看原文件'):
             return
-        if 'error' in job:
-            raise job['error']
-        if job.get('reply', {}).get('ticket') != request:
-            raise PanError('PAN_REPLY_INVALID')
-        progress.close()
         reservation = dict(account=expected, owner=owner, file_ref=ref,
             position=0 if params.get('start_over') == 'true' else record['position'])
         play(dict(ticket=request), reservation=reservation)
         handed = True
     except (OSError, ValueError, RuntimeError, KeyError, TypeError) as error:
-        progress.close()
         label = ('本地记录暂不可用，请从“我的文件”重新选择。'
                  if str(error).startswith('FILE_HISTORY_') else _failure(error))
         xbmcgui.Dialog().ok('未恢复原文件', label)
     finally:
-        progress.close()
-        if expected is not None and not handed:
-            try:
-                call('pan_cancel_operation', dict(expected=expected, operation_id=request))
-            except (OSError, ValueError, RuntimeError):
-                pass
-            try:
-                call('pan_close_stream', dict(expected=expected, request_id=request))
-            except (OSError, ValueError, RuntimeError):
-                pass
-            try:
-                if native and owner is not None:
-                    owner_call(dict(owner, operation='cancel'))
-                elif not native:
-                    call('standard_playback', dict(operation='cancel', request_id=request))
-            except (OSError, ValueError, RuntimeError):
-                pass
+        if not handed:
+            _cancel_prepared(expected, request, native, owner)
+
+
+def indexed(params):
+    """Reserve explicit user intent before IO; the index itself grants no playback right."""
+    import xbmcgui
+    from uuid import uuid4
+    from lib.db.file_history import FileHistory
+    from lib.native_support import available
+    from lib.utils.views.personal_catalog import account_for
+    from bobbi_core.playback_request import context, data_identity, read_snapshot, select
+    from bobbi_platform.pan_ui import _failure
+    identifier = params.get('object_id')
+    if type(identifier) is not str or not re.fullmatch('[0-9a-f]{64}', identifier):
+        return
+    request, expected, owner = uuid4().hex, None, None
+    native, handed = available(), False
+    try:
+        accounts = [scope(row['account'], authenticated=True) for row in call('pan_status', {})['providers']
+                    if row['provider'] != '115' and row['account'].get('authenticated')]
+        expected = account_for(params, accounts)
+        position, history_ref = 0, None
+        try:
+            previous = FileHistory().get(identifier)
+        except (ValueError, OSError, RuntimeError):
+            previous = None
+        if previous and previous['position'] > 0 and previous['completion_reason'] != 'NATURAL_EOF':
+            choice = xbmcgui.Dialog().select('打开原文件', ['继续上次位置', '从头播放'])
+            if choice not in (0, 1):
+                return
+            if choice == 0:
+                position, history_ref = previous['position'], previous['file_ref']
+        locator = 'bobbipan://%s/%s' % (expected['provider'], identifier)
+        if native:
+            identity = data_identity(dict(_pan_file=True, _pan_locator=locator, url=locator))
+            owner = context(select(read_snapshot(), request, identity, account_scope=expected), request)
+        else:
+            call('standard_playback', dict(operation='select', request_id=request, account=expected))
+        if not _prepare_ticket('catalog_prepare_play', dict(expected=expected, object_id=identifier,
+                request_id=request, intent='play'), request, '正在核验片库原文件'):
+            return
+        play(dict(ticket=request), reservation=dict(account=expected, owner=owner,
+            object_id=identifier, file_ref=history_ref, position=position))
+        handed = True
+    except (OSError, ValueError, RuntimeError, KeyError, TypeError) as error:
+        labels = {'CATALOG_RECHECK_INCOMPLETE': '有限检查内未能确认原文件，请从“我的文件”回原目录选择。',
+                  'CATALOG_SOURCE_UNAVAILABLE': '索引来源暂不可用，原文件与观看记录仍保留。',
+                  'PAN_ACCOUNT_CHANGED': '账号已变化，请返回片库重新选择。'}
+        xbmcgui.Dialog().ok('未打开片库文件', labels.get(str(error), _failure(error)))
+    finally:
+        if not handed:
+            _cancel_prepared(expected, request, native, owner)

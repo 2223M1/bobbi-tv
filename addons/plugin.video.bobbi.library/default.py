@@ -67,6 +67,9 @@ def listing_with_metadata(path):
 def execute(handle, params):
     action = params.get('action', 'root')
     handoff = None
+    if action.startswith('mounted_'):
+        from bobbi_platform.mounted_catalog_ui import execute as mounted_execute
+        return mounted_execute(handle, params, item)
     if action == 'manage':
         xbmc.executebuiltin('RunScript(script.bobbi.setup,libraries)')
         xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
@@ -91,6 +94,12 @@ def execute(handle, params):
             rows.append(item('我的文件 · 原生网盘', route(action='native_files'),
                 label2='扫码登录的个人网盘 · 待实机验证',
                 properties={'Bobi.Library.Kind': 'native_pan'}))
+            rows.append(item('我的作品片库', 'plugin://plugin.video.bobbi/?action=personal_catalog',
+                label2='已索引的作品、季集与文件版本',
+                properties={'Bobi.Library.Kind': 'personal_catalog'}))
+            rows.append(item('CD2 索引片库', route(action='mounted_root'),
+                label2='现有本机挂载 · 无需二次登录 · 未真机验收',
+                properties={'Bobi.Library.Kind': 'mounted_catalog'}))
         elif action in ('browse', 'play'):
             source = store.get(params.get('source', ''))
             relative = relative_path(params.get('relative', ''))

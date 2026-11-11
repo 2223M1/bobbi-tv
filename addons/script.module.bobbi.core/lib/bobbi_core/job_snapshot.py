@@ -10,6 +10,8 @@ PREPARATION_STATES = {
 
 
 def owner(scope):
+    if scope.get('reference_kind') == 'mounted_path':
+        return sha256(('mounted_path\n' + scope['source_id']).encode()).hexdigest()
     return sha256((scope.get('provider', '115') + '\n' + scope['account_id']).encode()).hexdigest()
 
 
@@ -23,7 +25,7 @@ def preparation(row, scope):
 
 def scan(row):
     return dict(schema=1, kind='scan', task_id=row['id'], owner=owner(row['scope']),
-        epoch=row['scope']['epoch'], state=row['state'], stage='directory_scan',
+        epoch=row['scope'].get('epoch', 0), state=row['state'], stage='directory_scan',
         counts=dict(pages=row['pages'], scanned=row['scanned'], discovered=row['discovered']),
         updated_at=row['updated'], cancel_requested=bool(row['cancel_requested']),
         result_summary=row['reason'])

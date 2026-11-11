@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "rails": [
+    {"key": "continue_watching", "control_id": 9810, "title": "继续观看", "layout": "wide", "route": "continue_watching", "params": {}, "limit": 20, "preloaditems": 2},
+    {"key": "personal_library", "control_id": 9820, "title": "我的片库", "layout": "poster", "route": "personal_catalog", "params": {"mode": "rail"}, "limit": 20, "preloaditems": 2},
+    {"key": "popular_tv", "control_id": 9830, "title": "热门剧集", "layout": "poster", "route": "catalog", "params": {"section": "tv", "page": 1}, "limit": 20, "preloaditems": 2},
+    {"key": "popular_movies", "control_id": 9840, "title": "热门电影", "layout": "poster", "route": "catalog", "params": {"section": "movie", "page": 1}, "limit": 20, "preloaditems": 2},
+    {"key": "current_anime", "control_id": 9850, "title": "当季新番", "layout": "poster", "route": "anime_catalog", "params": {"category": "current_quarter"}, "limit": 20, "preloaditems": 2},
+    {"key": "anime_movies", "control_id": 9860, "title": "动漫电影", "layout": "poster", "route": "anime_catalog", "params": {"category": "movies_new"}, "limit": 20, "preloaditems": 2}
+  ]
+}

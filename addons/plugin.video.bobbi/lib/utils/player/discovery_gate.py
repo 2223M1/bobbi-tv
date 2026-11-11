@@ -13,6 +13,11 @@ class DiscoveryGate:
         self._due = 0.0
         self._ready = False
 
+    def inflight(self):
+        """Read-only presentation of an actual, current discovery attempt."""
+        with self._lock:
+            return self._pending is not None and self._pending[0] == self._revision
+
     def begin(self, now):
         with self._lock:
             if self._pending is not None or self._ready or now < self._due:

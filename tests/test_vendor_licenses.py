@@ -44,6 +44,15 @@ def test_checkout_retains_locked_notices_without_claiming_release_clearance():
     assert notices.require_distribution(ROOT, ['script.module.requests'])['documents'] == 9
 
 
+def test_inherited_fonts_are_exactly_inventoried_without_borrowing_skin_license():
+    assert notices.verify_skin_evidence(ROOT) == {'fonts': 15, 'distribution_clearance': False}
+    data = json.loads((ROOT / 'licenses/skin-reference-evidence.json').read_text(encoding='utf-8'))
+    matched = [row for row in data['fonts'] if row['status'] == 'exact-archive-match-license-unresolved']
+    assert len(matched) == 1 and matched[0]['path'].endswith('/BobiAF-Solid.ttf')
+    assert matched[0]['sha256'] == 'f960c6b83e1a6cc1eac4e6cbe0169b57dad4ce7ecc628664c326e4e6a4ca7904'
+    assert data['references'][0]['version'] == '27.3.1.13'
+
+
 @pytest.mark.parametrize('field,value', [
     ('commit', 'main'), ('source_url', 'https://example.invalid/LICENSE'),
     ('file', '../escape'), ('file', 'licenses/vendor/../../escape'),

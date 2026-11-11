@@ -120,6 +120,10 @@ def apply(item, identifier, mode, data=None, titles=None, projection=None):
     if mode not in ('movie', 'movies', 'tv', 'tvshow', 'season', 'episode'):
         return
     kind = 'movie' if mode in ('movie', 'movies') else 'tv'
+    if identifier:
+        from urllib.parse import urlencode
+        item.setProperty('Bobi.Relationships', 'plugin://plugin.video.bobbi/?' + urlencode(
+            dict(action='bobi_relationships', id=identifier, kind=kind)))
     season = integer(data.get('season', data.get('season_number')))
     view = (projection if isinstance(projection, EpisodeProjection)
             and mode == 'episode' and projection.identifier == identifier

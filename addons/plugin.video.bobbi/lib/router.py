@@ -316,6 +316,35 @@ def addon_router():
         params = dict(parse.parse_qsl(param_string))
         action = params.get("action", "")
 
+        if action == 'bobi_relationships':
+            from lib.clients.tmdb.people_client import PeopleClient
+            PeopleClient.relationships(params)
+            return
+
+        if action == 'bobi_resume_card':
+            from lib.utils.views.continue_watching import open_resume_card
+            open_resume_card(params)
+            return
+
+        if action == 'bobi_retry_rail':
+            from lib.cinema.focus_anchor import bump
+            import xbmcgui
+            bump(xbmcgui.Window(10000), params.get('rail', ''))
+            return
+
+        if action == 'personal_catalog':
+            from lib.utils.views.personal_catalog import execute
+            execute(params)
+            return
+        if action == 'personal_catalog_play':
+            from lib.pan_playback import indexed
+            indexed(params)
+            return
+        if action == 'personal_catalog_manage':
+            from bobbi_platform.catalog_ui import manage
+            manage()
+            return
+
         if action == 'pan_play':
             from lib.pan_playback import play
             play(params)

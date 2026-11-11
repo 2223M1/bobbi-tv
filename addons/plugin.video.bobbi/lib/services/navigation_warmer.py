@@ -57,7 +57,7 @@ def target_from_url(url):
     fields = {key: values[0] for key, values in parse_qs(parsed.query).items() if len(values) == 1}
     action = fields.get('action')
     if action in ('am6b_open_streaming_item', 'show_tmdb_item', 'show_episodes_details',
-                  'show_seasons_details', 'search'):
+                  'show_seasons_details', 'search', 'bobi_resume_card'):
         return target(fields)
     if action == 'play_media' and fields.get('continue_watching') == 'true':
         try:

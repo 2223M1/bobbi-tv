@@ -20,8 +20,8 @@ def disc_pipeline(*args, title='Fixture.iso', diagnostic=None, **kwargs):
         service, _, calls, events, resolves, peak = values
         original = next(iter(service.records.values()))
         body = dict(original.body, request_id='b'*32, title=title)
-        ready = (service.register(body) if diagnostic is None else
-                 service.register_diagnostic(body, None, diagnostic))
+        ready = (service.register(body, account=original.scope) if diagnostic is None else
+                 service.register_diagnostic(body, original.scope, diagnostic))
         url = urlsplit(ready['url'])
 
         def connect(value=None):
@@ -206,3 +206,56 @@ def test_disc_revoke_and_shutdown_close_partial_response_without_fake_eof(stop):
             connection.close()
         wait_end(events)
         assert events[-1]['outcome'] != 'complete'
+
+
+@pytest.mark.parametrize('mode', ['wrong_range', 'wrong_length', 'encoding', 'overflow'])
+def test_disc_rejects_corrupt_upstream_without_complete_eof(mode):
+    with disc_pipeline(False, mode) as (_, connect, _, events, _, _):
+        connection, response = connect('bytes=17-99999')
+        try:
+            if mode == 'overflow':
+                with pytest.raises(IncompleteRead):
+                    response.read()
+            else:
+                assert response.status == 503
+                response.read()
+        finally:
+            response.close()
+            connection.close()
+        wait_end(events)
+        assert events[-1]['outcome'] == 'failed'
+        assert events[-1]['delivered'] < 99983
+
+
+@pytest.mark.parametrize('transition', ['logout', 'switch'])
+def test_disc_real_account_epoch_revokes_live_bytes_and_old_url(tmp_path, transition):
+    from test_accounts import logged_in, credential
+    from bobbi_platform.account_manager import AccountError
+    manager, scope = logged_in(tmp_path)
+    with disc_pipeline(False, delay=.006, account=manager, scope=scope) as (
+            service, connect, _, events, _, _):
+        entry = service.records['b'*32]
+        assert entry.iso_passthrough and entry.scope == scope
+        connection, response = connect()
+        try:
+            assert response.read(32768) == PAYLOAD[:32768]
+            if transition == 'logout':
+                manager.logout(scope)
+            else:
+                manager.install(credential('456'), scope)
+            with pytest.raises((IncompleteRead, ConnectionError, OSError)):
+                response.read()
+        finally:
+            response.close()
+            connection.close()
+        wait_end(events)
+        wait_for(lambda: not service.producers)
+        assert events[-1]['outcome'] != 'complete' and entry.cancelled()
+        late, missing = connect('bytes=0-1')
+        try:
+            assert missing.status == 404
+        finally:
+            missing.close()
+            late.close()
+        with pytest.raises(AccountError):
+            service.register(dict(entry.body, request_id='c'*32), account=scope)

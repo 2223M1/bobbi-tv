@@ -1,0 +1,248 @@
+{
+  "schema": 1,
+  "baseline": "35591f5679cdd0cf18c2a5d7a780841d5a66cd44",
+  "status": "evidence-not-distribution-clearance",
+  "references": [
+    {
+      "id": "fuse3-review-archive",
+      "file": "skin.arctic.fuse.3.nara-cpm-3.1.13.zip",
+      "version": "27.3.1.13",
+      "bytes": 66286576,
+      "sha256": "e590532d23e771e1a8cf38c9bac253a81278a9133df9b6ba718f355a0c25d26e",
+      "verified": "local archive SHA256 and addon/LICENSE/font member hashes; other member hashes from review evidence",
+      "license_declaration": "CC BY-NC-SA 4.0; not a grant for unrelated fonts or all Bobbi",
+      "files": [
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/addon.xml",
+          "sha256": "78523d25cf8dac40f124992dbab83995e4b9792c8a537c70fa22d675af1fb30d",
+          "bytes": 2597,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/shortcuts/skinvariables-shortcut-homewidgets.json",
+          "sha256": "ecefa05f14f5ef5c54877d5e9fec793c1f350827279d0afc7bf9ccfa00b0d6a2",
+          "bytes": 403,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/shortcuts/generator/data/parts/widgets_row.xmltemplate",
+          "sha256": "aea67a8643de5b035d4faf51e7340ce8d91972b76fc2b3101ef656092a028a0a",
+          "bytes": 1612,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/1080i/Includes_Widgets.xml",
+          "sha256": "65f6a384d96c4c485178c28ac1570bc9df0b96f0927d8c28083afc4d6f8bb7d8",
+          "bytes": 31931,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/1080i/Includes_Actions.xml",
+          "sha256": "b7d1b23dc1c50597d00586794a5638101e39b0ba7f136cf86f7d7e40cc432279",
+          "bytes": 31087,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/1080i/Includes_DialogInfo.xml",
+          "sha256": "b7f4a2626937dfe32253237a2967abaeb9fbba6bda1597430141e6d55d059398",
+          "bytes": 119566,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/1080i/Custom_1143_OSD_NextOverlay.xml",
+          "sha256": "d53c9ba55e3e5816d129e40ce8915812579a2c2d0b7b98d00deec99af20f3958",
+          "bytes": 4395,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/LICENSE.txt",
+          "sha256": "95cc16779fa07b82bb7069b50fd6a788db75f3ab53426d0f3692c7be34d18b4c",
+          "bytes": 303,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        },
+        {
+          "path": "skin.arctic.fuse.3.nara-omega.cpm/1080i/Includes_Hubs.xml",
+          "sha256": "8a3514477dfa55faf6e2e9aba51a482d3b5c60186e37c4bb596b17ab6fd2e04d",
+          "bytes": 57326,
+          "use": "behavior/structure reference only in this iteration; not copied runtime code"
+        }
+      ]
+    },
+    {
+      "id": "fuse3-upstream-reference",
+      "repository": "https://github.com/jurialmunkey/skin.arctic.fuse.3",
+      "commit": "254f7fadd688e434b473d443f8b9d49b71ec0102",
+      "version": "3.4.22",
+      "gui": "5.18.0",
+      "use": "previous investigation reference; distinct from supplied Hybrid archive; not shipped"
+    },
+    {
+      "id": "juku-review-archive",
+      "file": "Juku-0.81-full-static-arm64-x64(1).zip",
+      "bytes": 114403485,
+      "sha256": "4bfa8d02286bbe7862ad3fa665bf8f1bb73305616e41bcf7e491eb75580dc369",
+      "verified": "hash reported by review version_lock.json; original archive not rehashed this iteration",
+      "use": "UI hierarchy and management behavior described in review; no decompiled source or credentials copied"
+    }
+  ],
+  "changes": [
+    {
+      "files": [
+        "ui/rails/home_rails.json",
+        "tools/generate_home_rails.py",
+        "addons/skin.bobbi.cinema/1080p/Includes_HomeRails.generated.xml"
+      ],
+      "kind": "independent refactoring of Bobbi baseline declarations",
+      "details": "Restricted build-time generator, not Fuse runtime shortcut engine"
+    },
+    {
+      "files": [
+        "addons/plugin.video.bobbi/lib/utils/views/personal_catalog.py",
+        "addons/script.module.bobbi.core/lib/bobbi_core/catalog_query.py",
+        "addons/script.module.bobbi.core/lib/bobbi_core/next_episode_summary.py"
+      ],
+      "kind": "independent implementation on existing Bobbi contracts",
+      "details": "Existing identity/account/owner rules retained; no imported backend"
+    },
+    {
+      "files": [
+        "addons/skin.bobbi.cinema/1080p/Includes_BobiArctic.xml"
+      ],
+      "kind": "inherited adapted XML; exact upstream fragment attribution unresolved",
+      "sha256": "315a2806ab8608df6c16f5bf4400ae25be2a4cb2231ad79523caba1645402f5e",
+      "details": "BobiAF prefix does not prove original authorship; unchanged this iteration"
+    }
+  ],
+  "inherited_assets": {
+    "inventory": "release/source-inventory.json at baseline commit",
+    "groups": [
+      "addons/skin.bobbi.cinema/media",
+      "addons/skin.bobbi.cinema/icon.png",
+      "addons/skin.bobbi.cinema/fanart.jpg"
+    ],
+    "status": "unresolved-source",
+    "details": "No new binary assets this iteration. Exact baseline inventory remains retrievable from Git; no inferred grant from filenames or similar appearance."
+  },
+  "fonts": [
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/BobiAF-Solid.ttf",
+      "bytes": 1003812,
+      "sha256": "f960c6b83e1a6cc1eac4e6cbe0169b57dad4ce7ecc628664c326e4e6a4ca7904",
+      "status": "exact-archive-match-license-unresolved",
+      "source": "fuse3-review-archive/fonts/fa-solid-900.ttf",
+      "changes": "renamed in inherited Bobbi baseline; bytes equal archive fa-solid-900.ttf; font-specific rights still unresolved"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/BobiDisplay.ttf",
+      "bytes": 6786084,
+      "sha256": "6a2b0798f26d61427d73877fe026d4610cdc2e3df7d8baa3a213b29bef37a380",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/fa-solid-900.ttf",
+      "bytes": 426112,
+      "sha256": "af19d135d3a935b3ebfbd80320716ffe1202052c5f68dc2c5f1abc57005ac605",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/fzltdhk.ttf",
+      "bytes": 7675536,
+      "sha256": "d11040a832f0256f7ac8b7dbbe5e9f75d41bd0735d6c1d3a5f0b0829381ce306",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/HarmonyOS_SansSC_Bold.ttf",
+      "bytes": 8379892,
+      "sha256": "c215d8ab1cb6709fec2e063f8213e9af86d7587d345b56325e36b67d6b947d98",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/HarmonyOS_SansSC_Medium.ttf",
+      "bytes": 8449140,
+      "sha256": "7aa97804da2fc3802d116011b73ee25791303598718cc58dc49fedc9d63e5d2a",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/HarmonyOS_SansSC_Regular.ttf",
+      "bytes": 8483132,
+      "sha256": "984cf609545acee8ef060780fb70fc3099b058c0553416331b6e863fdf7c26fa",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/MiSans-Medium.ttf",
+      "bytes": 8103840,
+      "sha256": "b03e98374e971594b0b7a9706d0704241f76e1b88556cdda79c5039ef8a638d1",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/MiSans-Regular.ttf",
+      "bytes": 8122324,
+      "sha256": "9c120f0a849bc0aa5048daae2a3c0f6eecd828b5b33fce682a9622833f5feea6",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/MiSans-Semibold.ttf",
+      "bytes": 8034980,
+      "sha256": "77c23f31ae124867778344970155a0c8d34a89897dedaab81aeee82ff00a4ce6",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/NetflixSans-Bold.ttf",
+      "bytes": 168116,
+      "sha256": "e0edbbb8e0d12a575c29e76e4dfd7eb35f74858367c085453b8b09bfaf419177",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/NetflixSans-Regular.ttf",
+      "bytes": 166844,
+      "sha256": "77e036bc57d9b1fe761aad658947997c21fc785e532ef1a245dc436f9e39800a",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/Roboto-Bold.ttf",
+      "bytes": 254084,
+      "sha256": "84c9d92e4300b4e836c9dacd61d8142f5691e3c18da6c8a37a5e02edcb240a10",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/Roboto-Regular.ttf",
+      "bytes": 254272,
+      "sha256": "9e13e7dbe6f28b2730883209e6b98a7142f27fcc8d3e4bb1645c41cc978d853a",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/RobotoCJKSC-Regular.ttf",
+      "bytes": 13079512,
+      "sha256": "f7ecc62f5657e8cff4375231322e9e73643d0e1f12e4b2dbacb0bc68cacbb66d",
+      "status": "unresolved-source",
+      "source": "inherited-bobbi-35591f5",
+      "changes": "unchanged in this iteration"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import pytest
 
 SKIN = Path(__file__).resolve().parents[1] / 'addons/skin.bobbi.cinema/1080p'
 RAILS = (9810, 9830, 9840, 9850, 9860)
+EXPANDED_RAILS = (9810, 9820, 9830, 9840, 9850, 9860)
 
 
 def document(name):
@@ -21,7 +22,7 @@ def matches(expression, populated=(), focus=0, remembered=0, updating=()):
         return True
     expression = re.sub(
         r'\$EXP\[([^]]+)\]',
-        lambda m: str(matches(document('Includes_Home.xml').find(
+        lambda m: str(matches(document('Includes_HomeRails.generated.xml').find(
             f"expression[@name='{m[1]}']").text, populated, focus, remembered, updating)),
         expression)
     expression = re.sub(r'Integer.IsGreater\(Container\((\d+)\).NumItems,0\)',
@@ -40,7 +41,7 @@ def matches(expression, populated=(), focus=0, remembered=0, updating=()):
 
 
 def destination(name, **state):
-    variable = document('Includes_Home.xml').find(f"variable[@name='{name}']")
+    variable = document('Includes_HomeRails.generated.xml').find(f"variable[@name='{name}']")
     return int(next(value.text for value in variable
                     if matches(value.get('condition'), **state)))
 
@@ -78,8 +79,11 @@ def test_dynamic_navigation_uses_explicit_builtins_and_preserves_item_offsets():
         assert control.findtext('onup') == 'SetFocus($VAR[HomeRailUp])'
         assert control.findtext('ondown') == 'SetFocus($VAR[HomeRailDown])'
         assert control.findtext('enable') == 'Integer.IsGreater(Container($PARAM[id]).NumItems,0)'
-        assert control.findtext('preloaditems') == '2'
-        assert control.find('content').get('limit') == '20'
+        assert control.findtext('preloaditems') == '$PARAM[preloaditems]'
+        assert control.find('content').get('limit') == '$PARAM[limit]'
+        template = root.find(f"include[@name='{include}']")
+        assert template.findtext("param[@name='preloaditems']") == '2'
+        assert template.findtext("param[@name='limit']") == '20'
     nav = document('Home.xml').find(".//include[@content='TopBar']/param[@name='down']")
     assert nav.get('value') == 'SetFocus($VAR[HomeContentFocus])'
 
@@ -123,8 +127,7 @@ def test_personal_preview_is_data_only_not_an_offscreen_remote_focus_target():
                                  'StageTitlePrimary', 'StageTitleSecondary',
                                  'StageSeasonLabel', 'StageEpisodeLabel', 'StageEpisodeTitle'))
 def test_stage_falls_back_when_the_remembered_row_becomes_empty(name):
-    filename = 'Includes_Home.xml' if name in {'StageArt', 'StageMeta', 'StagePlot'} else 'Includes_Titles.xml'
-    variable = document(filename).find(f"variable[@name='{name}']")
+    variable = document('Includes_HomeRails.generated.xml').find(f"variable[@name='{name}']")
     for value in variable:
         condition = value.get('condition', '')
         if '.Property(BobiRail)' in condition:
@@ -138,9 +141,23 @@ def test_stage_falls_back_when_the_remembered_row_becomes_empty(name):
 
 def test_home_does_not_add_refresh_polling_new_addons_or_duplicate_content_requests():
     root = document('Home.xml')
-    rails = [node for node in root.iter('include')
+    assert root.findtext(".//control[@id='9000']/include") == 'HomeRails'
+    rails = [node for node in document('Includes_HomeRails.generated.xml').iter('include')
              if node.get('content') in {'HomeRail', 'HomeRailWide'}]
-    assert len(rails) == 5
+    assert len(rails) == 6
+    assert [node.find("param[@name='id']").get('value') for node in rails] == [
+        '9810', '9820', '9830', '9840', '9850', '9860']
     assert root.find('defaultcontrol').get('always') == 'false'
     assert not any('Refresh' in (node.text or '') or 'AlarmClock' in (node.text or '')
                    for node in root.iter())
+
+
+@pytest.mark.parametrize('available', tuple(product((False, True), repeat=len(EXPANDED_RAILS))))
+def test_six_rail_navigation_also_covers_personal_library_and_real_recovery_cards(available):
+    populated = tuple(rail for rail, ready in zip(EXPANDED_RAILS, available) if ready)
+    for focus in populated:
+        index = populated.index(focus)
+        assert destination('HomeRailUp', populated=populated, focus=focus) == (populated[index-1] if index else 9701)
+        assert destination('HomeRailDown', populated=populated, focus=focus) == (populated[index+1] if index+1<len(populated) else focus)
+    expected = populated[0] if populated else 9870
+    assert destination('HomeContentFocus', populated=populated) == expected

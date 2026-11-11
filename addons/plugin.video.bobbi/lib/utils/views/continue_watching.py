@@ -119,8 +119,28 @@ def _resume_status(state):
     label = '还没有在看的影片' if state == 'empty' else '暂时无法读取观看记录'
     item = make_list_item(label=label)
     item.setProperty('Bobi.Resume.State', state)
+    from lib.cinema.frontend_contract import apply_rail_state
+    apply_rail_state([('', item, False)], state, scope='local-profile')
     item.setProperty('IsPlayable', 'false')
     return ('', item, False)
+
+
+def open_resume_card(params):
+    """Read the current exact record, not a progress-bearing URL from yesterday."""
+    from lib.cinema.focus_anchor import resume_key
+    wanted = params.get('card', '')
+    if not wanted.startswith('resume:') or len(wanted) != 71:
+        return
+    try:
+        matches = [data for _, data, _ in _history_snapshot(PickleDatabase())[1]
+                   if resume_key(data) == wanted]
+    except (OSError, ValueError, TypeError, AttributeError):
+        matches = []
+    if len(matches) != 1:
+        notification('记录已变化，请重新选择影片')
+        return
+    from lib.navigation import play_media
+    play_media(dict(data=json.dumps(matches[0]), continue_watching='true'))
 
 
 def _series_browse_context(data):
@@ -175,6 +195,12 @@ def _file_item(record):
         item.setProperty('Bobi.File.Duration', 'unknown')
     item.setProperty('Bobi.SourceKind', display['source'] + ' · ' + display['kind'])
     item.setProperty('Bobi.Resume.State', 'ready')
+    item.setProperty('Bobi.Rail.State', 'ready')
+    item.setProperty('Bobi.CardKey', 'file:' + record['id'])
+    from lib.cinema.focus_anchor import opaque
+    ref = record['file_ref']
+    item.setProperty('node.visible', 'String.IsEqual(Window(Home).Property(Bobi.Rail.Account.%s),%s)'
+                     % (ref['provider'], opaque(ref['account_id'])))
     item.setProperty('Bobi.File.State', display['state'])
     item.setProperty('Bobi.File.ResumeDetail', display['detail'])
     item.setProperty('IsPlayable', 'false')
@@ -194,13 +220,17 @@ def show_continue_watching(params=None):
     setContent(ADDON_HANDLE, "videos")
 
     preview = params.get('resume_preview') == 'true'
-    per_page = 1 if preview else 10
+    rail = params.get('rail') == 'continue_watching'
+    per_page = 1 if preview else 20 if rail else 10
     page = 1 if preview else int(params.get("page", 1))
 
     try:
         history, filtered_items = _history_snapshot(PickleDatabase())
     except (OSError, ValueError, TypeError, AttributeError):
-        add_directory_items_batch([_resume_status('error')])
+        error_row = _resume_status('error')
+        if rail:
+            error_row = (build_url('bobi_retry_rail', rail='continue_watching'), error_row[1], False)
+        add_directory_items_batch([error_row])
         end_of_directory(cache=False)
         return
 
@@ -209,14 +239,19 @@ def show_continue_watching(params=None):
     end = start + per_page
     items = filtered_items[start:end]
 
-    directory_items = [_resume_status('empty')] if preview and not filtered_items else []
+    directory_items = [_resume_status('empty')] if (preview or rail) and not filtered_items else []
+    if rail and directory_items:
+        row = directory_items[0]
+        directory_items[0] = (build_url('am6b_streaming_catalog', section='movie', page=1), row[1], True)
 
     for title, data, source_keys in items:
         if data.get('_file_unavailable'):
             unavailable = make_list_item(label='个人文件观看记录暂不可用')
             unavailable.setProperty('IsPlayable', 'false')
             unavailable.setProperty('Bobi.Resume.State', 'error')
-            directory_items.append(('', unavailable, False))
+            unavailable.setProperty('Bobi.Rail.State', 'error')
+            directory_items.append((build_url('bobi_retry_rail', rail='continue_watching')
+                                    if rail else '', unavailable, False))
             continue
         if '_file_record' in data:
             directory_items.append(_file_item(data['_file_record']))
@@ -239,6 +274,7 @@ def show_continue_watching(params=None):
         list_item.setProperty("PercentPlayed", str(round(progress(data))))
         list_item.setProperty('Bobi.SourceKind', _source_kind(data))
         list_item.setProperty('Bobi.Resume.State', 'ready')
+        list_item.setProperty('Bobi.Rail.State', 'ready')
 
         # This action may open the picker before any media is resolved.
         list_item.setProperty("IsPlayable", "false")
@@ -263,10 +299,33 @@ def show_continue_watching(params=None):
 
         # url to play
         url = build_url("play_media", data=json.dumps(data), continue_watching='true')
+        from lib.cinema.focus_anchor import resume_key
+        card_key = resume_key(data)
+        if card_key:
+            list_item.setProperty('Bobi.CardKey', card_key)
+            # Keep public warming fields stable; this route uses only card to
+            # re-read history and never trusts an external playback payload.
+            url = build_url('bobi_resume_card', card=card_key,
+                            id=identifier, mode='tv' if tv_data else 'movies')
+        if rail and isinstance(data.get('_account'), dict):
+            from lib.cinema.focus_anchor import opaque
+            account = data['_account']
+            provider = account.get('provider', '115')
+            try:
+                if provider == '115':
+                    from bobbi_platform.account_manager import validate_snapshot
+                    scope_token = opaque(validate_snapshot(account, authenticated=True))
+                else:
+                    from lib.utils.views.personal_catalog import scope_key
+                    scope_token = scope_key(account)
+                list_item.setProperty('node.visible',
+                    'String.IsEqual(Window(Home).Property(Bobi.Rail.Scope.%s),%s)' % (provider, scope_token))
+            except (ValueError, TypeError):
+                list_item.setProperty('node.visible', 'false')
 
         directory_items.append((url, list_item, False))
 
-    if not preview and end < total:
+    if not preview and not rail and end < total:
         list_item = make_list_item(label="下一页")
         list_item.setProperty("Bobi.NextPage", "true")
         list_item.setArt({"icon": os.path.join(ADDON_PATH, "resources", "img", "nextpage.png")})

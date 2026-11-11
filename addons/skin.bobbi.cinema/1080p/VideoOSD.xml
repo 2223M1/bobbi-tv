@@ -26,6 +26,12 @@
         <visible>Player.Paused | Player.Caching</visible>
       </control>
       <include content="OSDTitle"><param name="top">680</param></include>
+      <control type="label">
+        <left>96</left><top>638</top><width>1728</width><height>32</height>
+        <label>$INFO[Window(Home).Property(Bobi.Next.Label)]</label>
+        <font>Meta22</font><textcolor>text2</textcolor>
+        <visible>Player.HasVideo + !String.IsEmpty(Window(Home).Property(Bobi.Next.Label))</visible>
+      </control>
       <include content="OSDProgress"><param name="top">814</param></include>
       <!-- the seek slider sits exactly on the progress bar -->
       <control type="slider" id="87">
@@ -65,7 +71,7 @@
         <content>
           <item>
             <label>上一个</label><icon>bobi/icons/prev.png</icon>
-            <property name="hint">上一章 / 上一集</property>
+            <property name="hint">上一章 / 播放队列上一项</property>
             <onclick>PlayerControl(Previous)</onclick>
           </item>
           <item>
@@ -88,7 +94,7 @@
           </item>
           <item>
             <label>下一个</label><icon>bobi/icons/next.png</icon>
-            <property name="hint">下一章 / 下一集</property>
+            <property name="hint">下一章 / 播放队列下一项（不代表同版下一集）</property>
             <onclick>PlayerControl(Next)</onclick>
           </item>
           <item>

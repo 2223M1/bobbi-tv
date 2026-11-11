@@ -11,7 +11,7 @@ from bobbi_core.playback_owner import PlaybackOwner
 
 
 @pytest.mark.parametrize('fault', ['none', 'gap', 'timeout', 'eof', 'stop', 'replacement',
-                                  'cancel', 'boot', 'epoch', 'instance', 'malformed'])
+                                  'cancel', 'boot', 'epoch', 'instance', 'malformed', 'summary'])
 def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch, fault):
     # xbmc.Player must be a type, not the legacy harness's MagicMock metaclass.
     monkeypatch.setattr(sys.modules['xbmc'], 'Player', type('Player', (), {}))
@@ -61,6 +61,10 @@ def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch,
     player._record_started_history = lambda: None
     player.update_playback_progress = lambda: events.append('progress')
     player.check_cinema_stall = player._consume_next_dialog_action = lambda: False
+    if fault == 'summary':
+        def broken_projection():
+            raise RuntimeError('Optional presentation unavailable')
+        player.publish_next_summary = broken_projection
     for name in ('start_cinema_preparation', 'select_audio_stream', 'handle_subtitle_selection',
                  '_apply_simkl_resume', '_apply_trakt_resume', '_apply_nuvio_resume',
                  'check_cinema_subtitles', 'handle_trakt_pause_resume', 'check_cinema_continuity',
@@ -76,11 +80,11 @@ def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch,
         setattr(player, name, lambda name=name: events.append(name))
     player.monitor()
     assert 'kill_dialog' not in events
-    if fault in ('none', 'gap', 'eof', 'stop'):
+    if fault in ('none', 'gap', 'eof', 'stop', 'summary'):
         assert not player._was_superseded
         assert player._terminal_reason == ('STOP' if fault == 'stop' else 'NATURAL_EOF')
         assert 'handle_playback_stop' in events
-        assert ('progress' in events) is (fault in ('none', 'gap'))
+        assert ('progress' in events) is (fault in ('none', 'gap', 'summary'))
     else:
         assert 'progress' not in events and 'handle_playback_stop' not in events
         assert 'clear_playback_properties' not in events

@@ -22,6 +22,8 @@ SCOPES = frozenset(('catalog_read', 'catalog_review', 'catalog_tasks'))
 ACTION_SCOPE = {
     'catalog_sources': 'catalog_read', 'catalog_items': 'catalog_read', 'catalog_jobs': 'catalog_read',
     'catalog_history': 'catalog_read',
+    'catalog_query': 'catalog_read', 'catalog_receipt': 'catalog_review',
+    'catalog_candidates': 'catalog_read', 'catalog_group': 'catalog_read',
     'catalog_preview': 'catalog_review', 'catalog_apply': 'catalog_review',
     'catalog_cancel': 'catalog_tasks', 'catalog_scan': 'catalog_tasks',
 }
@@ -57,6 +59,9 @@ def parameters(action, args):
         'catalog_sources': {'offset', 'limit'}, 'catalog_items': {'source', 'state', 'offset', 'limit'},
         'catalog_jobs': {'task', 'offset', 'limit'}, 'catalog_preview': {'commands'},
         'catalog_history': {'offset', 'limit'},
+        'catalog_query': {'query', 'cursor', 'limit'}, 'catalog_receipt': {'request_id'},
+        'catalog_candidates': {'query', 'media_kind', 'year'},
+        'catalog_group': {'file_id', 'source_id', 'offset', 'limit', 'projection_revision'},
         'catalog_apply': {'commands', 'request_id'}, 'catalog_cancel': {'task_id'}, 'catalog_scan': {'source_id'},
     }
     if action not in allowed or not set(args) <= allowed[action]:
@@ -69,6 +74,30 @@ def parameters(action, args):
                 _id(args[key])
         if args.get('state') not in (None, 'unmatched', 'ambiguous', 'proposed', 'confirmed', 'ignored'):
             raise PhoneError('INVALID_REQUEST', 400)
+    elif action == 'catalog_candidates':
+        from lib.clients.tmdb.catalog_candidates import parameters as candidate_parameters
+        try:
+            args = candidate_parameters(args)
+        except (ValueError, TypeError):
+            raise PhoneError('INVALID_REQUEST', 400) from None
+    elif action == 'catalog_group':
+        _id(args.get('file_id'), 64)
+        args['offset'], args['limit'] = _page(args)
+        if args.get('source_id') is not None:
+            _id(args['source_id'])
+        if args.get('projection_revision') is not None and (type(args['projection_revision']) is not int or args['projection_revision'] < 0):
+            raise PhoneError('INVALID_REQUEST', 400)
+    elif action == 'catalog_query':
+        from bobbi_core.catalog_query import parameters as query_parameters
+        try:
+            args['query'] = query_parameters(args.get('query', {}))
+        except (ValueError, TypeError):
+            raise PhoneError('INVALID_REQUEST', 400) from None
+        args['limit'] = args.get('limit', 20)
+        if type(args['limit']) is not int or not 1 <= args['limit'] <= 32:
+            raise PhoneError('INVALID_REQUEST', 400)
+        if args.get('cursor') is not None:
+            _id(args['cursor'])
     elif action in ('catalog_preview', 'catalog_apply'):
         if (set(args) != allowed[action] or type(args['commands']) is not list
                 or not 1 <= len(args['commands']) <= 5):
@@ -93,18 +122,26 @@ PUBLIC_FIELDS = frozenset(('items', 'next_offset', 'id', 'name', 'parent', 'trun
     'state', 'reason', 'candidates', 'revision', 'mapping', 'provenance', 'origin', 'season',
     'episode', 'year', 'kind', 'title', 'tmdb_id', 'version', 'status', 'before', 'after', 'action',
     'schema', 'task_id', 'stage', 'counts', 'pages', 'scanned', 'discovered', 'updated_at',
-    'cancel_requested', 'result_summary', 'available', 'after_state', 'position', 'duration', 'completion_reason'))
+    'cancel_requested', 'result_summary', 'available', 'after_state', 'position', 'duration', 'completion_reason', 'index'))
+
+# Query summaries have their own read budget; this never enlarges review batches.
+QUERY_FIELDS = frozenset(('schema', 'items', 'next_cursor', 'projection_revision', 'truncated',
+    'entity_id', 'entity_kind', 'display_title', 'media_kind', 'season', 'episode', 'review_state',
+    'availability', 'variant_count', 'available_count', 'source_count'))
+CANDIDATE_FIELDS = frozenset(('items', 'media_kind', 'tmdb_id', 'title', 'original_title',
+                            'year', 'poster_path', 'basis', 'mismatch'))
+GROUP_FIELDS = PUBLIC_FIELDS | frozenset(('group_id', 'anchor_id', 'source_id', 'projection_revision'))
 
 
-def public(value, depth=0):
+def public(value, depth=0, fields=PUBLIC_FIELDS, max_items=5):
     if depth > 6:
         raise PhoneError('INVALID_REPLY', 502)
     if type(value) is dict:
-        return {key: public(item, depth + 1) for key, item in value.items() if key in PUBLIC_FIELDS}
+        return {key: public(item, depth + 1, fields, max_items) for key, item in value.items() if key in fields}
     if type(value) is list:
-        if len(value) > 5:
+        if len(value) > max_items:
             raise PhoneError('INVALID_REPLY', 502)
-        return [public(item, depth + 1) for item in value]
+        return [public(item, depth + 1, fields, max_items) for item in value]
     if value is None or type(value) in (bool, int, float):
         return value
     if type(value) is str and len(value) <= 1024 and '://' not in value:
@@ -222,7 +259,17 @@ class PhoneManagement:
             self._live()
             host_args = {} if action == 'catalog_sources' else args
             try:
-                result = self.rpc(action, dict(host_args, expected=self.expected), timeout=3)
+                if action == 'catalog_candidates':
+                    from lib.clients.tmdb.catalog_candidates import search
+                    try:
+                        result = search(**args, cancelled=self.revoked.is_set)
+                    except (ValueError, OSError, RuntimeError):
+                        self._live()
+                        raise PhoneError('CATALOG_CANDIDATE_UNAVAILABLE', 502) from None
+                else:
+                    result = self.rpc(action, dict(host_args, expected=self.expected), timeout=3)
+            except PhoneError:
+                raise
             except (ValueError, OSError, RuntimeError) as error:
                 from bobbi_platform.runtime import CATALOG_ERRORS
                 code = str(error)
@@ -236,7 +283,11 @@ class PhoneManagement:
             if action == 'catalog_sources':
                 rows, offset, limit = result['items'], args['offset'], args['limit']
                 result = dict(items=rows[offset:offset+limit], next_offset=(offset+limit if len(rows) > offset+limit else None))
-            result = public(result)
+            if action == 'catalog_query':
+                result = public(result, fields=QUERY_FIELDS, max_items=32)
+            else:
+                fields = CANDIDATE_FIELDS if action == 'catalog_candidates' else GROUP_FIELDS if action == 'catalog_group' else PUBLIC_FIELDS
+                result = public(result, fields=fields)
             if len(encode(result)) > MAX_REPLY:
                 raise PhoneError('REPLY_TOO_LARGE', 502)
             if action == 'catalog_preview':

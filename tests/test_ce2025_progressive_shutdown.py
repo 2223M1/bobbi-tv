@@ -29,7 +29,7 @@ from bobbi_core.share_stream import ShareStream
 
 
 @pytest.mark.parametrize('mode', ['progressive_fast_header',
-                                 'progressive_slow_header', 'block_slow_header'])
+                                 'progressive_slow_header', 'block_slow_header', 'iso_fast_header'])
 def test_lease_remains_owned_until_actual_upstream_reader_finishes(tmp_path, mode):
     OUTPUT = Path(os.environ.get('BOBBI_REVIEW_OUTPUT', str(tmp_path)))
     OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -72,7 +72,8 @@ def test_lease_remains_owned_until_actual_upstream_reader_finishes(tmp_path, mod
         lambda body: 'http://127.0.0.1:%d/file|User-Agent=review' % upstream.server_port,
         lambda _: True, progressive=mode.startswith('progressive'), observer=lambda _: None)
     link = host.streams.register(dict(request_id='a' * 32,
-        locator='am6bqqdocs://A1/123', guid='qqdocs:review', title='Fixture.mkv',
+        locator='am6bqqdocs://A1/123', guid='qqdocs:review',
+        title='Fixture.iso' if mode == 'iso_fast_header' else 'Fixture.mkv',
         size=1, media='movie:1:0:0'))['url']
     target = urlsplit(link)
 
@@ -107,7 +108,7 @@ def test_lease_remains_owned_until_actual_upstream_reader_finishes(tmp_path, mod
         client.start()
         assert entered.wait(3), 'origin did not receive actual HTTP request'
         producers = [t for t in threads() if t.name == 'share-stream-prefix']
-        if mode.startswith('progressive'):
+        if mode.startswith('progressive') or mode == 'iso_fast_header':
             assert len(producers) == 1
         else:
             assert not producers
@@ -120,7 +121,7 @@ def test_lease_remains_owned_until_actual_upstream_reader_finishes(tmp_path, mod
             contender.acquire()
         record('initial_replacement_lease_refused')
         row['initial_lease_retained'] = True
-        if mode == 'progressive_fast_header':
+        if mode in ('progressive_fast_header', 'iso_fast_header'):
             release.set()
             assert host_closed.wait(3)
         else:

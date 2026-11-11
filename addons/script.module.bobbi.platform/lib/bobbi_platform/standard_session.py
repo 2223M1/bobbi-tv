@@ -27,6 +27,16 @@ class StandardSession:
         return bool(not self.closed and row and row['request_id'] == request
                     and not row['cancel'].is_set() and self.accounts.is_current(row['account']))
 
+    def next_summary(self):
+        from bobbi_core.next_episode_summary import project, envelope
+        row = self.current
+        if not row or row['state'] != 'playing' or not self.current_request(row['request_id']):
+            return None
+        summary = project(row['data'] or {}, row['next_data'], preparing=bool(
+            self.job and self.job['owner'] is row), failed=row.get('next_error', False))
+        return envelope(summary, 'standard', dict(request_id=row['request_id'],
+            generation=row['generation']), row['account'], row['generation'])
+
     def retire(self, reason='SUPERSEDED'):
         row = self.current
         if row:
@@ -161,6 +171,7 @@ class StandardSession:
             job, self.worker, self.job = self.job, None, None
             if row is job['owner'] and self.current_request(row['request_id']):
                 row['next_data'] = job.get('result')
+                row['next_error'] = bool(job.get('failed'))
                 if job.get('final'):
                     row['next_final_checked'] = True
                 row['retry_at'] = self.clock() + (5, 15, 30, 30, 30)[min(row['attempts'] - 1, 4)]
@@ -194,6 +205,7 @@ class StandardSession:
                     job['result'] = self.next_loader(job['data'], cancelled)
                 except Exception:
                     job['result'] = None  # Availability never changes release policy.
+                    job['failed'] = True
             self.worker = Thread(target=work, name='bobbi-standard-next', daemon=True)
             self.worker.start()
         if row['state'] == 'ended' and not playing and self.clock() - row['terminal'] >= .25:

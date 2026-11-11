@@ -137,6 +137,9 @@ class StandardPlayback:
     def __init__(self, host):
         import xbmc
         self.host = host
+        from lib.services.next_episode_summary import Display
+        self.next_display = Display('standard')
+        self.next_display.clear()
         self.closed = False
         self.events = Queue(maxsize=64)
         self.bound = ''
@@ -189,7 +192,9 @@ class StandardPlayback:
             if result.get('accepted'):
                 result['subtitles_path'] = body['data'].get('subtitles_path', [])
             return result
-        return self.session.dispatch(body)
+        result = self.session.dispatch(body)
+        self.next_display.publish(self.session.next_summary())
+        return result
 
     def clear_subtitle_state(self):
         row = self.session.current
@@ -323,11 +328,13 @@ class StandardPlayback:
             except RuntimeError:
                 pass  # Opening/seeking is not evidence of end or error.
         self.session.tick(playing=self.player.isPlaying())
+        self.next_display.publish(self.session.next_summary())
         if self.session.current and not self.session.current_request(self.session.current['request_id']):
             self.clear_subtitle_state()
 
     def close(self):
         self.closed = True
+        self.next_display.clear()
         errors = []
         # Revoke all accepted jobs before any possibly slow drain. Cancellation
         # is not completion; their code must leave before the host releases its

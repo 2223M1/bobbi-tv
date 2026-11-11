@@ -62,6 +62,8 @@ def test_source_check_never_reads_local_key_and_cannot_be_signed(tmp_path, monke
     manifest = builder.build(first, source_check=True)
     assert manifest == builder.build(second, source_check=True)
     assert manifest['channel'] == 'source-check' and manifest['installable'] is False
+    assert manifest['source']['inventory_sha256'] == builder.hashlib.sha256(inventory.read_bytes()).hexdigest()
+    assert len(manifest['source']['build_tool_sha256']) == 64
     from check_repository import compare
     assert compare(first, second) > 0
     with zipfile.ZipFile(first / manifest['components'][0]['file']) as archive:
@@ -73,3 +75,13 @@ def test_source_check_never_reads_local_key_and_cannot_be_signed(tmp_path, monke
     # The default private build still requires its real application input.
     with pytest.raises(AssertionError, match='must never read'):
         builder.build(tmp_path / 'private')
+
+
+def test_source_archive_without_git_is_not_mislabeled_clean(monkeypatch):
+    def unavailable(*args, **kwargs):
+        raise OSError('Git unavailable')
+    monkeypatch.setattr(builder.subprocess, 'check_output', unavailable)
+    result = builder.source_provenance()
+    assert result['head_commit'] is None and result['head_tree'] is None
+    assert result['worktree_dirty'] is None
+    assert len(result['inventory_sha256']) == len(result['build_tool_sha256']) == 64

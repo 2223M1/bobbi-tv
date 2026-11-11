@@ -3,6 +3,7 @@
   <include file="Defaults.xml" />
   <include file="Variables.xml" />
   <include file="Includes_Titles.xml" />
+  <include file="Includes_HomeRails.generated.xml" />
   <include file="Includes_Views.xml" />
   <include file="Includes_Home.xml" />
   <include file="Includes_OSD.xml" />

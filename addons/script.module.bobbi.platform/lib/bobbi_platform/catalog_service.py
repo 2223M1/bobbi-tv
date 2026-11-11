@@ -1,10 +1,10 @@
 """One opt-in directory scanner, owned and drained by the existing Host."""
-from collections import deque
+from collections import deque, OrderedDict
 from threading import Event, Lock, Thread
 import time
 
 from bobbi_core.file_ref import from_selected
-from bobbi_core.media_library_index import MediaIndex, PAGE_SIZE, TERMINAL
+from bobbi_core.media_library_index import MediaIndex, PAGE_SIZE, TERMINAL, identifier
 from .libraries import Registry, VIDEO_EXTENSIONS
 from .pan_providers import descriptor
 
@@ -33,6 +33,9 @@ class CatalogService:
         self.worker = self.operation = self.task = None
         self.cancel_event = Event()
         self.max_queue = 0
+        self.play_lock, self.play_receipts = Lock(), OrderedDict()
+        from .mounted_catalog import MountedCatalog
+        self.mounted = MountedCatalog(self)
 
     def _registry(self):
         return Registry(self.root / 'libraries.sqlite3')
@@ -42,7 +45,8 @@ class CatalogService:
         # on next service opening. FileRefs, mappings and history are retained.
         store = self._registry()
         try:
-            self.index.retain_sources([row['id'] for row in store.directories()])
+            self.index.retain_sources([row['id'] for row in store.directories()] +
+                [source.id for source in store.sources() if source.kind == 'vfs'])
         finally:
             store.close()
 
@@ -60,6 +64,64 @@ class CatalogService:
         if self.stop.is_set():
             raise ValueError('CATALOG_SERVICE_CLOSED')
         return self.pans.accounts.require_current(expected)
+
+    def _play_source(self, expected, object_id):
+        self._guard(expected)
+        store = self._registry()
+        try:
+            permitted = {row['id'] for row in store.directories() if
+                         (row['provider'], row['account_id']) ==
+                         (expected['provider'], expected['account_id'])}
+        finally:
+            store.close()
+        if not permitted.intersection(self.index.file_sources(object_id)):
+            raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
+
+    def prepare_play(self, expected, object_id, request_id, intent):
+        """Only an explicit opaque selection can start bounded revalidation."""
+        from .pan_accounts import PanError
+        from .pan_history import prepare_file_play
+        identifier(object_id, 64)
+        identifier(request_id)
+        if intent != 'play':
+            raise ValueError('CATALOG_ACTION_INVALID')
+        # One indexed intent in flight, not a second player/transport owner.
+        # Repeated confirmation returns the same one-use ticket, including
+        # after it was claimed; it must never remint a consumed ticket.
+        with self.play_lock:
+            expected = self._guard(expected)
+            binding = (expected['provider'], expected['account_id'], expected['epoch'], object_id)
+            prior = self.play_receipts.get(request_id)
+            if prior is not None:
+                if prior[0] != binding:
+                    raise ValueError('CATALOG_REQUEST_REUSED')
+                if prior[1] is not None:
+                    self._play_source(expected, object_id)
+                    return dict(prior[1])
+                raise ValueError('CATALOG_RECHECK_INCOMPLETE')
+            self.play_receipts[request_id] = (binding, None)
+            while len(self.play_receipts) > 128:
+                self.play_receipts.popitem(last=False)
+            ref = self.index.trusted_file(expected, object_id)
+            self._play_source(expected, object_id)
+
+            def publish(prepare):
+                with self.lock:
+                    self._play_source(expected, object_id)
+                    # A simultaneous completed scan must not silently replace
+                    # the trusted exact-file evidence while the request waits.
+                    from bobbi_core.file_ref import same_file
+                    if not same_file(ref, self.index.trusted_file(expected, object_id)):
+                        raise PanError('PAN_FILE_CHANGED')
+                    return self.pans.accounts.run_if_current(expected, prepare)
+            try:
+                result = prepare_file_play(self.pans, ref, expected, request_id, publish)
+            except PanError as error:
+                if str(error) in ('PAN_BUDGET_EXHAUSTED', 'PAN_OPERATION_TIMEOUT', 'PAN_PAGE_EXPIRED'):
+                    raise ValueError('CATALOG_RECHECK_INCOMPLETE') from None
+                raise
+            self.play_receipts[request_id] = (binding, dict(result))
+            return result
 
     def start_scan(self, expected, source_id):
         expected = self._guard(expected)
@@ -178,6 +240,8 @@ class CatalogService:
                 self.operation = None
 
     def dispatch(self, action, body):
+        if isinstance(action, str) and action.startswith('catalog_mount_'):
+            return self.mounted.dispatch(action, body)
         expected = self._guard(body.get('expected'))
         args = {key: value for key, value in body.items() if key != 'expected'}
         if action == 'catalog_sources' and not args:
@@ -226,6 +290,14 @@ class CatalogService:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.jobs(expected, **args))
         if action == 'catalog_items' and set(args) <= {'source', 'state', 'offset', 'limit'}:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.items(expected, **args))
+        if action == 'catalog_query' and set(args) <= {'query', 'cursor', 'limit'}:
+            return self.pans.accounts.run_if_current(expected, lambda: self.index.query(expected, **args))
+        if action == 'catalog_receipt' and set(args) == {'request_id'}:
+            return self.pans.accounts.run_if_current(expected, lambda: self.index.receipt(expected, **args))
+        if action == 'catalog_group' and 'file_id' in args and set(args) <= {'file_id', 'source_id', 'offset', 'limit', 'projection_revision'}:
+            return self.pans.accounts.run_if_current(expected, lambda: self.index.group(expected, **args))
+        if action == 'catalog_prepare_play' and set(args) == {'object_id', 'request_id', 'intent'}:
+            return self.prepare_play(expected, **args)
         if action == 'catalog_preview' and set(args) == {'commands'}:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.preview(expected, args['commands']))
         if action == 'catalog_apply' and set(args) == {'request_id', 'commands'}:
@@ -235,6 +307,7 @@ class CatalogService:
     def close(self):
         with self.lock:
             self.stop.set()
+            self.mounted.close()
             self.cancel_event.set()
             worker, operation = self.worker, self.operation
             if operation is not None:

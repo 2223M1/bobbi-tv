@@ -106,7 +106,8 @@ def details(dialog):
                 ('cd2', '115 提前存片（CD2） · ' + cd2_label(value['preparation'])),
                 ('transport', '高级 · 115 读取方式'),
                 ('refresh', '刷新状态'),
-                ('native', '原生多网盘 · 接入与验证')]
+                ('native', '原生多网盘 · 接入与验证'),
+                ('preparation_tasks', '115 准备任务 · 只读实时状态')]
         choice = dialog.select('网盘详细管理', [label for _, label in rows])
         if choice < 0 or choice >= len(rows):
             return
@@ -127,6 +128,9 @@ def details(dialog):
             from .pan_ui import manage
             if manage(dialog):
                 return True
+        elif action == 'preparation_tasks':
+            from .catalog_ui import watch_preparation
+            watch_preparation(dialog=dialog)
 
 
 def show(dialog=None):

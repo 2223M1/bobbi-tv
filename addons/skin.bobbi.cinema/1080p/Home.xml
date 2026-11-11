@@ -14,31 +14,7 @@
       <scrolltime tween="cubic" easing="out">220</scrolltime>
       <usecontrolcoords>false</usecontrolcoords>
       <onup>9701</onup>
-      <include content="HomeRailWide">
-        <param name="id" value="9810" />
-        <param name="title" value="继续观看" />
-        <param name="content" value="plugin://plugin.video.bobbi/?action=continue_watching_menu" />
-      </include>
-      <include content="HomeRail">
-        <param name="id" value="9830" />
-        <param name="title" value="热门剧集" />
-        <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" />
-      </include>
-      <include content="HomeRail">
-        <param name="id" value="9840" />
-        <param name="title" value="热门电影" />
-        <param name="content" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" />
-      </include>
-      <include content="HomeRail">
-        <param name="id" value="9850" />
-        <param name="title" value="当季新番" />
-        <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" />
-      </include>
-      <include content="HomeRail">
-        <param name="id" value="9860" />
-        <param name="title" value="动漫电影" />
-        <param name="content" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=movies&amp;category=Anime_Movies_New" />
-      </include>
+      <include>HomeRails</include>
     </control>
     <!-- next-row affordance: rails move one at a time, so name what is below.
          A quiet read-only pill (disabled auto-width button) with a chevron inside it. -->

@@ -240,9 +240,10 @@
     {
       "id": "skin.bobbi.cinema",
       "documents": [],
+      "asset_evidence": "licenses/skin-reference-evidence.json",
       "status": "unresolved-source",
       "source_lock": "release/source-inventory.json#components/skin.bobbi.cinema",
-      "reason": "Inherited skin and each bundled font require exact-source rights review."
+      "reason": "Inherited skin and each bundled font require exact-source rights review. Per-font hashes and the exact inherited BobiAF-Solid archive match are recorded in asset_evidence; this does not grant distribution clearance."
     },
     {
       "id": "resource.uisounds.bobbi-modern",

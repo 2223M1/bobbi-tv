@@ -21,7 +21,8 @@ PAYLOAD = bytes(range(256)) * (4 * 1024 * 1024 // 256)
 @contextmanager
 def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024,
              payload=PAYLOAD, segment_bytes=stream.MAX_SEGMENT_BYTES,
-             body_pause=None, diagnostic=None, range_headers=None, header_pause=None):
+             body_pause=None, diagnostic=None, range_headers=None, header_pause=None,
+             account=None, scope=None):
     calls, events, resolves = [], [], []
     lock = Lock()
     active, peak = [0], [0]
@@ -99,17 +100,17 @@ def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024,
             response.close = tracked_close
             return response
 
-    def resolve(body):
+    def resolve(body, expected=None):
         resolves.append(True)
         return 'http://127.0.0.1:{}/file|User-Agent=test'.format(server.server_port)
 
     service = stream.ShareStream(lambda _: None, resolve, lambda _: True,
         session_factory=Session, progressive=progressive, queue_bytes=queue_bytes,
-        segment_bytes=segment_bytes, observer=events.append)
+        segment_bytes=segment_bytes, observer=events.append, account=account)
     body = dict(request_id='a'*32, locator='am6bqqdocs://A1/123',
         guid='qqdocs:fixture', title='Fixture.mkv', size=len(payload), media='movie:1:0:0')
-    ready = (service.register_diagnostic(body, None, diagnostic) if diagnostic is not None
-             else service.register(body))
+    ready = (service.register_diagnostic(body, scope, diagnostic) if diagnostic is not None
+             else service.register(body, account=scope))
     url = urlsplit(ready['url'])
     def connect(value=None):
         connection = HTTPConnection(url.hostname, url.port, timeout=8)

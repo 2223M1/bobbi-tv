@@ -89,6 +89,21 @@ class PlaybackAuthority:
         self.transport_attempt = None
         self.transport_child = None
         self.account_revocation = None
+        self.next_presentation = None
+
+    def next_summary_snapshot(self):
+        """No native commands/IO. The resident tick has already observed events."""
+        stored = self.next_presentation
+        if not stored:
+            return None
+        args, instance, account, value = stored
+        observed = self.owner.observed or {}
+        if (not self.owner._current(*args) or observed.get('request_id') != args[2]
+                or observed.get('native_instance') != instance
+                or (account is not None and (self.accounts is None or not self.accounts.is_current(account)))):
+            self.next_presentation = None
+            return None
+        return deepcopy(value)
 
     def configure_accounts(self, accounts):
         """One existing AccountManager, never a parallel credential owner."""
@@ -416,6 +431,28 @@ class PlaybackAuthority:
             # Do not call refresh(): observing retention must never reconcile
             # windows, pause/resume, claim playback or mutate playback authority.
             return dict(protocol=1, playback=checked)
+        if operation == 'next_summary':
+            # Presentation only: unlike normal owner commands this path does
+            # not call refresh/reconcile or issue player/window commands.
+            from bobbi_core.next_episode_summary import checked, envelope
+            value = checked(message.get('summary'))
+            args = (message.get('boot_id'), message.get('epoch'), message.get('request_id'))
+            instance = message.get('native_instance')
+            fresh = self.native.state()
+            row = receipt(fresh.get('playback')) if (isinstance(fresh, dict)
+                and type(fresh.get('protocol')) is int and fresh['protocol'] == 1
+                and fresh.get('selection_epoch') == self.reservation_epoch) else None
+            observed = self.owner.observed or {}
+            if (not self.owner._current(*args) or not row or row['phase'] != 'AV_STARTED'
+                    or row['request_id'] != args[2] or row['native_instance'] != instance
+                    or observed.get('native_instance') != instance
+                    or row.get('file_identity') != self.owner.desired.get('file_identity')
+                    or self.owner.desired.get('file_evidence') == 'USER_CONFIRMED_FILE'):
+                return {'accepted': False}
+            account = deepcopy(self.selection_account or message.get('account_scope'))
+            self.next_presentation = (args, instance, account, envelope(value, 'native',
+                dict(boot_id=args[0], epoch=args[1], request_id=args[2], native_instance=instance), account, args[1]))
+            return {'accepted': True}
         row = self.refresh()
         owner = self.owner
         if operation == 'snapshot':

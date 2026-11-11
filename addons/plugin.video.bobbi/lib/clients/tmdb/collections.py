@@ -5,7 +5,6 @@ from lib.clients.tmdb.utils.collections_utils import (
 )
 from lib.clients.tmdb.utils.utils import (
     add_kodi_dir_item,
-    get_tmdb_movie_details,
     tmdb_get,
 )
 from lib.db.pickle_db import PickleDatabase
@@ -16,7 +15,6 @@ from lib.utils.general.utils import (
     set_pluging_category,
 )
 from lib.utils.kodi.utils import (
-    add_directory_items_batch,
     apply_section_view,
     build_url,
     end_of_directory,
@@ -32,41 +30,25 @@ class TmdbCollections(BaseTmdbClient):
 
     @staticmethod
     def add_collection_details(params):
-        collection = tmdb_get("collection_details", params.get("collection_id"))
-        if not collection:
-            notification("Collection details not found.")
-            end_of_directory()
+        from lib.cinema.frontend_contract import integer
+        from lib.clients.tmdb.people_client import relationship_request, relationship_failure, relationship_works
+        identifier = integer(params.get('collection_id'))
+        if not identifier:
+            end_of_directory(cache=False)
             return
-
-        directory_items = []
-        for movie in collection.get("parts", []) or []:
-            movie_item = make_list_item(label=movie.get("title", "Untitled"))
-            movie_item.setProperty("IsPlayable", "true")
-            set_media_infoTag(movie_item, data=movie, mode="movie")
-
-            tmdb_id = movie.get("id")
-            imdb_id = ""
-            details = get_tmdb_movie_details(tmdb_id)
-            if details:
-                imdb_id = details.external_ids.get("imdb_id", "")
-
-            add_kodi_dir_item(
-                list_item=movie_item,
-                url=build_url(
-                    "search",
-                    mode="movies",
-                    media_type="movies",
-                    query=movie.get("title", "Untitled"),
-                    ids={"tmdb_id": tmdb_id, "imdb_id": imdb_id},
-                ),
-                is_folder=False,
-                batch=True,
-                directory_items=directory_items,
-            )
-
-        add_directory_items_batch(directory_items)
-        end_of_directory()
-        apply_section_view("view.movies", content_type="movies")
+        route_params = dict(collection_id=identifier, page=params.get('page', 1))
+        try:
+            collection = relationship_request('collection_details', identifier)
+        except InterruptedError:
+            end_of_directory(cache=False)
+            return
+        except Exception:
+            collection = None
+        if not isinstance(collection, dict) or str(collection.get('id')) != str(identifier):
+            relationship_failure('handle_collection_details', route_params)
+            return
+        relationship_works([dict(movie, media_type='movie') for movie in collection.get('parts', [])
+                            if isinstance(movie, dict)], 'handle_collection_details', route_params)
 
     @staticmethod
     def _add_collection_item(collection):

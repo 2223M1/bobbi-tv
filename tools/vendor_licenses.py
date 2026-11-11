@@ -182,6 +182,12 @@ def summary(data, fetched=0):
 
 def verify(root=ROOT):
     data = load_manifest(root)
+    for component in data['components']:
+        evidence = component.get('asset_evidence')
+        if evidence:
+            if evidence != 'licenses/skin-reference-evidence.json' or component['id'] != 'skin.bobbi.cinema':
+                raise ValueError('Unknown asset evidence')
+            verify_skin_evidence(root, evidence)
     actual = {path.parent.name for path in (Path(root) / 'third_party/addons').glob('*/addon.xml')}
     if not actual <= {row['id'] for row in data['components']}:
         raise ValueError('Unlisted third-party component')
@@ -210,6 +216,24 @@ def verify(root=ROOT):
             raise ValueError('Unknown notice component')
         verify_bytes(docs[delivery['document']], _destination(roots[0], delivery['path']).read_bytes())
     return summary(data)
+
+
+def verify_skin_evidence(root, name='licenses/skin-reference-evidence.json'):
+    """Exact local asset evidence, deliberately separate from license clearance."""
+    data = json.loads(_destination(root, name).read_text(encoding='utf-8'))
+    if data.get('schema') != 1 or data.get('status') != 'evidence-not-distribution-clearance':
+        raise ValueError('Invalid skin evidence')
+    rows = data['fonts']
+    actual = {p.relative_to(root).as_posix() for p in (Path(root) / 'addons/skin.bobbi.cinema/fonts').iterdir() if p.is_file()}
+    if len({row['path'] for row in rows}) != len(rows) or {row['path'] for row in rows} != actual:
+        raise ValueError('Skin font evidence inventory differs')
+    for row in rows:
+        if row['status'] not in ('unresolved-source', 'exact-archive-match-license-unresolved'):
+            raise ValueError('Unsupported font clearance claim')
+        raw = _destination(root, row['path']).read_bytes()
+        if len(raw) != row['bytes'] or hashlib.sha256(raw).hexdigest() != row['sha256']:
+            raise ValueError('Skin font evidence digest differs')
+    return {'fonts': len(rows), 'distribution_clearance': False}
 
 
 def require_distribution(root=ROOT, components=None):

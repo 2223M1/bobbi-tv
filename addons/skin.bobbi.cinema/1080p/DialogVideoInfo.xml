@@ -109,7 +109,7 @@
           <label />
           <texturefocus colordiffuse="focus" border="32">bobi/pill.png</texturefocus>
           <texturenofocus colordiffuse="accent" border="32">bobi/pill.png</texturenofocus>
-          <onright condition="Integer.IsGreater(Container(9000).NumItems,0) | Control.IsVisible(11) | Control.IsVisible(7)">9000</onright>
+          <onright condition="Integer.IsGreater(Container(9000).NumItems,0) | Control.IsVisible(11) | Control.IsVisible(7) | Control.IsVisible(984)">9000</onright>
           <ondown>50</ondown>
           <onup condition="Control.IsVisible(983)">983</onup>
           <onclick condition="!String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">SendClick(8)</onclick>
@@ -133,6 +133,16 @@
       <onup condition="Control.IsVisible(983)">983</onup>
       <ondown>50</ondown>
       <onleft>981</onleft><onright>noop</onright>
+      <control type="button" id="984">
+        <width>260</width><height>72</height>
+        <visible>!String.IsEmpty(ListItem.Property(Bobi.Relationships))</visible>
+        <label>系列与演职作品</label><font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <texturefocus colordiffuse="focus" border="32">bobi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="surface_hi" border="32">bobi/pill.png</texturenofocus>
+        <onclick>ActivateWindow(Videos,"$INFO[ListItem.Property(Bobi.Relationships)]",return)</onclick>
+        <onclick>Dialog.Close(movieinformation)</onclick>
+        <onleft>981</onleft><onup condition="Control.IsVisible(983)">983</onup><ondown>50</ondown>
+      </control>
       <include content="TextPill"><param name="id">11</param><param name="label">预告片</param><param name="width">200</param><param name="visible">!String.IsEmpty(ListItem.Trailer)</param></include>
       <include content="TextPill"><param name="id">7</param><param name="label">我的评分</param><param name="width">220</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
       <include content="TextPill"><param name="id">14</param><param name="label">版本</param><param name="width">160</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>

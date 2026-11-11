@@ -1,0 +1,200 @@
+"""One static CD2 mounted-path port, using existing Registry/mount evidence.
+
+Not an SMB/NFS/WebDAV driver or a second login service. Cancellation/deadline
+checks surround filesystem calls; Python cannot preempt a blocked FUSE syscall.
+No stat evidence is promoted to a cryptographic identity or resume guarantee.
+"""
+from contextlib import contextmanager
+import os
+from pathlib import Path
+import re
+import stat
+from threading import Event
+import time
+
+from bobbi_core import mounted_ref
+from . import cd2_mounts
+from .libraries import Registry, joined_path, VIDEO_EXTENSIONS, MAX_DIRECTORY_ITEMS
+
+
+def native_path(value):
+    """Match existing local_listing on CE builds using an ASCII FS codec."""
+    value = os.fspath(value)
+    return value.encode('utf-8') if os.name == 'posix' and isinstance(value, str) else value
+
+
+def mount_records():
+    """Mount IDs + kernel boot ID distinguish detach/re-attach at one path."""
+    try:
+        with Path('/proc/self/mountinfo').open(encoding='utf-8') as stream:
+            raw = stream.read(cd2_mounts.MAX_BYTES + 1)
+        boot = Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip()
+        if not re.fullmatch('[0-9a-f-]{36}', boot):
+            return ()
+        allowed = set(cd2_mounts.parse_mounts(raw))
+        result = []
+        for line in raw.splitlines():
+            before, _, after = line.partition(' - ')
+            fields = before.split()
+            if len(fields) < 6:
+                continue
+            path = re.sub(r'\\(040|011|012|134)', lambda m: chr(int(m.group(1), 8)), fields[4])
+            if path in allowed:
+                result.append(dict(path=path, generation=mounted_ref.digest(boot, before, after)))
+        return tuple(result)
+    except (OSError, UnicodeError, ValueError):
+        return ()
+
+
+class MountedPort:
+    capabilities = dict(reference_kind='mounted_path', identity_policy='registry_root_relative_path',
+        enumeration=True, stat=True, cancellation='between_io', completeness='closed_directory_iterators',
+        replay_cursor=False, authority='existing_cd2_mount', device_verified=False,
+        strong_content_identity=False, exact_resume=False)
+
+    def __init__(self, root, mounts=mount_records, clock=time.monotonic):
+        self.root, self.mounts, self.clock = Path(root), mounts, clock
+
+    def source(self, source_id):
+        store = Registry(self.root / 'libraries.sqlite3')
+        try:
+            return store.get(source_id)
+        finally:
+            store.close()
+
+    def describe(self, source_id):
+        source = self.source(source_id)
+        if source.kind != 'vfs' or source.username or source.password:
+            raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        root = source.location.rstrip('/\\')
+        # Only kernel-observed CD2 local mounts qualify. A similarly named
+        # folder, credential URL or ordinary registered NAS does not.
+        mounts = [row for row in self.mounts() if root == row['path'] or root.startswith(row['path'].rstrip('/') + '/')]
+        if not mounts:
+            raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
+        mount = max(mounts, key=lambda row: len(row['path']))
+        path = native_path(root)
+        if os.path.islink(path) or not os.path.isdir(path):
+            raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
+        if os.path.realpath(path) != os.path.abspath(path):
+            raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        namespace = mounted_ref.digest('cd2', source.location)
+        authority = dict(reference_kind='mounted_path', source_id=source.id, namespace=namespace,
+                         generation=mounted_ref.digest(namespace, mount['generation']))
+        return source, authority
+
+    def require(self, authority):
+        source, current = self.describe(authority['source_id'])
+        if current != authority:
+            raise ValueError('CATALOG_AUTHORITY_CHANGED')
+        return source
+
+    def path(self, source, relative):
+        mounted_ref.relative(relative, empty=True)
+        target = native_path(joined_path(source, relative))
+        root = os.path.realpath(native_path(source.location))
+        # Reject symlinks at every level, including links which happen to point
+        # back inside the root. Path-only identities have no symlink contract.
+        probe = native_path(source.location)
+        for part in relative.split('/') if relative else ():
+            probe = os.path.join(probe, native_path(part))
+            if os.path.islink(probe):
+                raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        resolved = os.path.realpath(target)
+        try:
+            if os.path.commonpath((root, resolved)) != root:
+                raise ValueError
+        except ValueError:
+            raise ValueError('CATALOG_REFERENCE_INVALID') from None
+        return target
+
+    @contextmanager
+    def open_scan(self, authority, cancel=None, seconds=1800, max_pages=1200, max_items=12000):
+        session = MountedSession(self, authority, cancel or Event(), seconds, max_pages, max_items)
+        try:
+            session.check()
+            yield session
+        finally:
+            session.close()
+
+    def stat_by_reference(self, authority, reference, check=lambda: None):
+        reference = mounted_ref.validate(reference)
+        check()
+        source = self.require(authority)
+        if (reference['source_id'], reference['namespace']) != (authority['source_id'], authority['namespace']):
+            raise ValueError('CATALOG_REFERENCE_INVALID')
+        path = self.path(source, reference['relative'])
+        info = os.stat(path, follow_symlinks=False)
+        check()
+        self.require(authority)
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError('CATALOG_FILE_CHANGED')
+        current = mounted_ref.observed(authority, reference['relative'], info)
+        if not mounted_ref.same_observation(reference, current):
+            raise ValueError('CATALOG_FILE_CHANGED')
+        return current
+
+
+class MountedSession:
+    def __init__(self, port, authority, cancelled, seconds, max_pages, max_items):
+        self.port, self.authority, self.cancelled = port, authority, cancelled
+        self.deadline = port.clock() + seconds
+        self.max_pages, self.max_items = max_pages, max_items
+        self.pages = self.items = 0
+        self.iterator = self.parent = None
+        self.directory_count = 0
+
+    def check(self, validate_authority=True):
+        if self.cancelled.is_set():
+            raise ValueError('CATALOG_SCAN_STOPPED')
+        if self.port.clock() >= self.deadline:
+            raise ValueError('CATALOG_RECHECK_INCOMPLETE')
+        if validate_authority:
+            self.port.require(self.authority)
+
+    def list_page(self, parent):
+        self.check()
+        if self.pages >= self.max_pages or self.items >= self.max_items:
+            raise ValueError('CATALOG_RECHECK_INCOMPLETE')
+        if self.iterator is None:
+            source = self.port.require(self.authority)
+            self.iterator = os.scandir(self.port.path(source, parent))
+            self.parent, self.directory_count = parent, 0
+        elif self.parent != parent:
+            raise ValueError('CATALOG_QUERY_INVALID')
+        rows, complete = [], False
+        for _ in range(20):
+            self.check(False)
+            entry = next(self.iterator, None)
+            if entry is None:
+                complete = True
+                self.close()
+                break
+            self.directory_count += 1
+            self.items += 1
+            if self.directory_count > MAX_DIRECTORY_ITEMS or self.items > self.max_items:
+                raise ValueError('CATALOG_RECHECK_INCOMPLETE')
+            name = entry.name.decode('utf-8') if isinstance(entry.name, bytes) else entry.name
+            child = parent + '/' + name if parent else name
+            mounted_ref.relative(child)
+            if entry.is_symlink():
+                raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+            # Windows DirEntry.stat reports zero inode/device in CPython;
+            # os.stat supplies the actual attributes used by the recheck.
+            # CE's native scandir attributes already have the same semantics.
+            info = (os.stat(entry.path, follow_symlinks=False) if os.name == 'nt'
+                    else entry.stat(follow_symlinks=False))
+            if stat.S_ISDIR(info.st_mode):
+                rows.append(dict(directory=True, relative=child))
+            elif stat.S_ISREG(info.st_mode) and any(name.lower().endswith(ext) for ext in VIDEO_EXTENSIONS):
+                rows.append(dict(directory=False, reference=mounted_ref.observed(self.authority, child, info)))
+            else:
+                rows.append(dict(directory=False, reference=None))
+        self.check()
+        self.pages += 1
+        return dict(items=rows, has_more=not complete)
+
+    def close(self):
+        if self.iterator is not None:
+            self.iterator.close()
+            self.iterator = None

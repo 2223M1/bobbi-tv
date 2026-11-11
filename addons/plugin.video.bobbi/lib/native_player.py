@@ -879,6 +879,10 @@ class JacktookPLayer(xbmc.Player):
                 self.start_cinema_preparation()
                 self.handle_trakt_pause_resume()
                 self.check_cinema_continuity()
+                try:
+                    self.publish_next_summary()
+                except Exception:
+                    pass  # Optional OSD projection must never stop the player.
                 self.check_autoscrape_threshold()
 
                 if not ensure_dialog_closed:
@@ -2176,6 +2180,7 @@ class JacktookPLayer(xbmc.Player):
         self._cinema_end = False
         self._cinema_progress_watchdog = None
         self._cinema_next_status = None
+        self._next_summary_sent = None
         from lib.utils.player.discovery_gate import DiscoveryGate
         self._cinema_discovery = DiscoveryGate()
         self._cinema_warm_started = False
@@ -2574,6 +2579,34 @@ class JacktookPLayer(xbmc.Player):
             except RuntimeError:
                 if self._cinema_warm_job is warm_job:
                     self._cinema_warm_job = None
+
+    def publish_next_summary(self):
+        """Project existing results; the resident authority checks current AV ownership."""
+        if (not self.data.get('cinema_continuity') or self._cinema_cancel.is_set()
+                or self.data.get('selection_policy') != 'exact' or not getattr(self, '_native_instance', None)):
+            return
+        from bobbi_core.next_episode_summary import project
+        selection = None
+        picker = getattr(self, '_cinema_picker_search', None)
+        if picker and not picker.cancelled():
+            existing = picker.snapshot()
+            if existing:
+                selection = existing[0]
+        gate = getattr(self, '_cinema_discovery', None)
+        summary = project(self.data, self._cinema_next_data,
+            preparing=bool(gate and gate.inflight()) or getattr(
+                self, '_cinema_next_status', None) == 'DIRECT_CLOUD_PREPARING',
+            failed=getattr(self, '_cinema_next_status', None) == 'DIRECT_CLOUD_FAILED', selection=selection)
+        if summary == getattr(self, '_next_summary_sent', None):
+            return
+        try:
+            from lib.cinema.playback_request import call
+            reply = call(dict(self._owner_context, operation='next_summary',
+                native_instance=self._native_instance, account_scope=self.data.get('_account'), summary=summary))
+            if reply.get('accepted'):
+                self._next_summary_sent = summary
+        except (ValueError, OSError, RuntimeError):
+            pass  # Presentation never changes continuation eligibility.
 
     def notify_cinema_resources_changed(self, request_id, generation):
         """Local index/service completion adapter; it never resolves on this thread."""

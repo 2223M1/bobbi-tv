@@ -49,10 +49,10 @@
           <onclick>RunScript(script.bobbi.setup,libraries)</onclick>
         </item>
         <item>
-          <label>片库索引</label>
-          <label2>已扫描的作品与本地文件，选中后再挑片源播放</label2>
+          <label>我的作品片库</label>
+          <label2>搜索已索引的作品、浏览季集，再选择具体文件版本</label2>
           <icon>bobi/icons/grid.png</icon>
-          <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=bobi_library&amp;section=all",return)</onclick>
+          <onclick>ActivateWindow(Videos,"plugin://plugin.video.bobbi/?action=personal_catalog",return)</onclick>
         </item>
         <item>
           <label>继续观看</label>

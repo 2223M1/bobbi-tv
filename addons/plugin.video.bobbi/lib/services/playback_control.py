@@ -379,8 +379,15 @@ class PlaybackControlServer:
         for connection, record in tuple(self.clients.items()):
             if now >= record['deadline']:
                 self._close_client(connection)
+        from lib.services.next_episode_summary import Display
+        if not hasattr(self, 'next_display'):
+            self.next_display = Display('native')
+            self.next_display.clear()
+        self.next_display.publish(None if self.refresh_pending else self.authority.next_summary_snapshot())
 
     def close(self):
+        if hasattr(self, 'next_display'):
+            self.next_display.clear()
         close_io = getattr(self.native, 'close', None)
         errors = []
         def drain(action):

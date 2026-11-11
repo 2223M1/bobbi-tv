@@ -84,6 +84,31 @@ def history_digest(data):
     return hashlib.sha256(json.dumps(data, sort_keys=True, ensure_ascii=True).encode()).hexdigest()
 
 
+RAIL_STATES = frozenset(('loading', 'ready', 'empty', 'stale', 'error', 'auth_required'))
+
+
+def rail_properties(state, *, revision='', scope='public', reason=''):
+    """Provider-owned presentation receipt, attached to this result, never global.
+
+    A zero item count is not evidence of a successful empty query. Callers must
+    explicitly classify their result. This receipt never authorizes playback.
+    """
+    if state not in RAIL_STATES:
+        raise ValueError('RAIL_STATE_INVALID')
+    if reason and not re.fullmatch('[A-Z_]{1,64}', reason):
+        raise ValueError('RAIL_REASON_INVALID')
+    return {'Bobi.Rail.State': state, 'Bobi.Rail.Revision': str(revision),
+            'Bobi.Rail.Scope': scope, 'Bobi.Rail.Reason': reason}
+
+
+def apply_rail_state(items, state, **kwargs):
+    properties = rail_properties(state, **kwargs)
+    for _, item, _ in items:
+        for key, value in properties.items():
+            item.setProperty(key, value)
+    return items
+
+
 def personal_file_projection(record, labels):
     """Display only. A ready-looking row never proves remote availability."""
     ref = record['file_ref']

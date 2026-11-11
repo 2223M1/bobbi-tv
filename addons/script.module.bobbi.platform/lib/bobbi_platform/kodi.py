@@ -39,6 +39,11 @@ def make_item(url, data):
         position = data.get('_file_resume_position', 0)
         if type(position) in (int, float) and 0 < position <= 864000:
             item.setProperty('StartOffset', str(position))
+    if data.get('_mounted_path'):
+        # Mounted stat is not a strong resume identity. Do not inherit Kodi's
+        # old same-path offset after remount/replacement. Original browsing is
+        # unchanged; exact native-pan history keeps its own behavior above.
+        item.setProperty('StartOffset', '0')
     # Do not override global audio/HDR/codec/refresh-rate/OSD settings. Original
     # language and Chinese preference are a first-run user-confirmed setting.
     return item

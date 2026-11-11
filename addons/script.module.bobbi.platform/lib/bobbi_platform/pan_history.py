@@ -33,14 +33,26 @@ def history_summary(service, expected, offset=0, limit=5, history=None):
 
 
 def prepare_history_play(service, record, request_id):
-    if type(request_id) is not str or not re.fullmatch('[0-9a-f]{32}', request_id):
-        raise PanError('PAN_SELECTION_INVALID')
     ref = validate(record['file_ref'])
     current = service.accounts.snapshot(ref['provider'])
     if current.get('authenticated') is not True:
         raise PanError('PAN_LOGIN_REQUIRED')
     expected = scope(current, authenticated=True)
-    if expected['account_id'] != ref['account_id']:
+    return prepare_file_play(service, ref, expected, request_id)
+
+
+def prepare_file_play(service, ref, expected, request_id, publish=None):
+    """Host-trusted reference, explicit account generation, shared admission.
+
+    Callers load references from their authority. No UI-supplied selected/ref
+    enters here. Even a future by-ID locator cannot replace real list_files.
+    """
+    if type(request_id) is not str or not re.fullmatch('[0-9a-f]{32}', request_id):
+        raise PanError('PAN_SELECTION_INVALID')
+    ref = validate(ref)
+    expected = scope(expected, authenticated=True)
+    service.accounts.require_current(expected)
+    if (expected['provider'], expected['account_id']) != (ref['provider'], ref['account_id']):
         raise PanError('PAN_ACCOUNT_CHANGED')
 
     def live():
@@ -73,7 +85,8 @@ def prepare_history_play(service, record, request_id):
                 # Existing fresh-directory admission and single-use claim are
                 # retained. The history row alone can never mint a ticket.
                 operation.check()
-                return service.prepare_play(expected, selected, request_id=request_id)
+                prepare = lambda: service.prepare_play(expected, selected, request_id=request_id)
+                return publish(prepare) if publish is not None else prepare()
             continuation = result.get('continuation')
             if continuation:
                 continue

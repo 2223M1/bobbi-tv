@@ -1,11 +1,14 @@
 """Optional TV detail dialogs. Default browsing and source selection stay put."""
 from uuid import uuid4
+import time
 from .runtime import call
 
 LABELS = {'queued': '排队中', 'running': '扫描中', 'completed': '扫描完成',
           'interrupted': '已中断，可重新扫描', 'failed': '未完整完成', 'canceled': '已取消',
           'unmatched': '待匹配', 'ambiguous': '身份不明确', 'proposed': '待确认建议',
-          'confirmed': '人工确认', 'ignored': '已忽略'}
+          'confirmed': '人工确认', 'ignored': '已忽略', 'uncertain': '结果待核对',
+          'unknown': '状态未知', 'suppressed': '已停止准备'}
+PREPARATION_LABELS = dict(LABELS, running='准备中', completed='准备完成')
 
 
 def _call(action, expected, **body):
@@ -53,9 +56,24 @@ def _mapping(dialog, item):
     return value
 
 
-def review_item(dialog, expected, item):
+def review_item(dialog, expected, item, source_id=None):
     choice = dialog.select(item['file']['name'], ['查看原文件与建议', '设置作品 / 自定义名称',
-        '解除绑定', '忽略此项', '撤回上次修改'])
+        '解除绑定', '忽略此项', '撤回上次修改', '搜索并选择作品候选', '同目录分集整理（逐项预览）'])
+    if choice in (5, 6):
+        candidate = choose_candidate(dialog, item)
+        if candidate is not None:
+            if choice == 6:
+                review_group(dialog, expected, item, candidate, source_id=source_id)
+            else:
+                from lib.clients.tmdb.catalog_candidates import candidate_mapping
+                try:
+                    value = candidate_mapping(candidate, item)
+                except ValueError:
+                    value = _candidate_episode(dialog, candidate)
+                if value is not None:
+                    review_entries(dialog, expected, [dict(name=item['file']['name'], command=dict(
+                        file_id=item['file']['id'], expected_revision=item['revision'], action='confirm', mapping=value))])
+        return
     if choice == 0:
         evidence = item.get('candidates') or []
         detail = item['file']['parent'] + '\n' + item['reason']
@@ -84,6 +102,168 @@ def review_item(dialog, expected, item):
               '仅修改本地元数据。' if result['status'] == 'applied' else '记录已变化或输入无效，请刷新后重试。')
 
 
+def choose_candidate(dialog, item):
+    from lib.clients.tmdb.catalog_candidates import query_hint, search
+    query = dialog.input('搜索作品（只发送关键词，不发送私有目录 / 账号）', defaultt=query_hint(item['file']['name']))
+    if not query:
+        return None
+    evidence = (item.get('candidates') or [{}])[0]
+    try:
+        import xbmc
+        candidates = search(query, year=evidence.get('year'), cancelled=xbmc.Monitor().abortRequested)['items']
+    except (ValueError, OSError, RuntimeError):
+        dialog.ok('候选搜索未完成', '可重试或返回使用手动 TMDb 编号。未修改任何记录。')
+        return None
+    if not candidates:
+        dialog.ok('没有找到候选', '请修改关键词或使用高级手动编号。')
+        return None
+    labels = [('%s · %s · %s\n%s\n%s' % ('剧集' if row['media_kind'] == 'tv' else '电影',
+        row['title'], row['year'] or '年份未知', row['original_title'], row['basis'])) for row in candidates]
+    # Native detailed select supports the same constrained public poster origin.
+    try:
+        import xbmcgui
+        choices = []
+        for label, row in zip(labels, candidates):
+            choice = xbmcgui.ListItem(label=label)
+            if row['poster_path']:
+                choice.setArt({'thumb': 'https://image.tmdb.org/t/p/w185' + row['poster_path']})
+            choices.append(choice)
+        selected = dialog.select('选择候选（尚未确认作品）', choices, useDetails=True)
+    except (AttributeError, TypeError):
+        selected = dialog.select('选择候选（尚未确认作品）', labels)
+    return candidates[selected] if 0 <= selected < len(candidates) else None
+
+
+def _candidate_episode(dialog, candidate):
+    from bobbi_core.catalog_review import mapping
+    season = dialog.input('明确季号（特别篇为 0；合集 / 多集文件请取消）')
+    episode = dialog.input('明确单集编号（未知请取消）')
+    if not season.isdecimal() or not episode.isdecimal():
+        return None
+    try:
+        return mapping(dict(kind='tv', title=candidate['title'], tmdb_id=candidate['tmdb_id'],
+                            season=int(season), episode=int(episode), version=None))
+    except ValueError:
+        return None
+
+
+def review_group(dialog, expected, anchor, candidate, source_id=None):
+    from lib.clients.tmdb.catalog_candidates import candidate_mapping, query_hint
+    if candidate['media_kind'] != 'tv':
+        dialog.ok('请先选择剧集候选', '电影不生成季集映射。')
+        return
+    rows, offset, group, revision = [], 0, None, None
+    deadline = time.monotonic() + 60
+    while True:
+        if len(rows) >= 100 or time.monotonic() >= deadline:
+            dialog.ok('目录建议未完整读取', '请缩小索引来源并分轮整理，尚未修改记录。')
+            return
+        params = dict(file_id=anchor['file']['id'], offset=offset, limit=5)
+        if source_id:
+            params['source_id'] = source_id
+        if revision is not None:
+            params['projection_revision'] = revision
+        result = _call('catalog_group', expected, **params)
+        if group is not None and (group != result['group_id'] or revision != result['projection_revision']):
+            raise ValueError('CATALOG_CURSOR_STALE')
+        group, revision, source_id = result['group_id'], result['projection_revision'], result['source_id']
+        rows.extend(result['items'])
+        following = result['next_offset']
+        if following is None:
+            break
+        if type(following) is not int or following <= offset:
+            raise ValueError('CATALOG_CURSOR_STALE')
+        offset = following
+    proposals, labels, preselect = [], [], []
+    for index, item in enumerate(rows):
+        evidence = (item.get('candidates') or [{}])[0]
+        try:
+            value = candidate_mapping(candidate, item)
+        except ValueError:
+            value = None
+        suspicious = (not value or item['state'] == 'ambiguous' or item.get('available') is False or
+            item['file'].get('truncated') or query_hint(item['file']['name']).casefold() != query_hint(anchor['file']['name']).casefold() or
+            evidence.get('year') and candidate.get('year') and evidence['year'] != candidate['year'] or
+            (item.get('mapping') or {}).get('tmdb_id') not in (None, candidate['tmdb_id']) or
+            (item.get('mapping') or {}).get('kind') not in (None, 'custom', 'tv'))
+        if not suspicious:
+            preselect.append(index)
+        proposals.append(value)
+        target = '需手动明确季集' if value is None else 'S%02dE%02d' % (value['season'], value['episode'])
+        labels.append('%s → %s %s · 修订 %s%s' % (item['file']['name'], candidate['title'], target,
+            item['revision'], ' · 存在疑点，默认未选' if suspicious else ''))
+    selected = dialog.multiselect('逐项选择：同目录不证明同作品；排除合集 / 重制版 / 多集文件', labels, preselect=preselect)
+    if not selected:
+        return
+    edit_selected = dialog.yesno('需要逐项调整季集？', '不调整则沿用上方已核对的建议。未知季集的勾选项仍需手动明确；合集 / 多集文件请排除。')
+    entries = []
+    for index in selected:
+        item, value = rows[index], proposals[index]
+        if value is None:
+            value = _candidate_episode(dialog, candidate)
+        elif edit_selected:
+            value = _candidate_episode(dialog, candidate)
+        if value is not None:
+            entries.append(dict(name=item['file']['name'], command=dict(file_id=item['file']['id'],
+                expected_revision=item['revision'], action='confirm', mapping=value)))
+    if entries:
+        return review_entries(dialog, expected, entries)
+
+
+def review_entries(dialog, expected, entries):
+    """Bounded TV batch coordinator; existing Host remains the sole writer."""
+    from lib.clients.tmdb.catalog_candidates import plan
+    chunks = plan(entries)
+    previews, receipts, saved, deadline = [], [], 0, time.monotonic() + 120
+    for chunk in chunks:
+        if time.monotonic() >= deadline:
+            dialog.ok('预览已到期限', '请重新预览，尚未提交修改。')
+            return
+        commands = [entry['command'] for entry in chunk['entries']]
+        rows = _call('catalog_preview', expected, commands=commands)['items']
+        if len(rows) != len(commands) or any(row['status'] != 'ready' for row in rows):
+            dialog.ok('预览包含冲突', '未提交任何批次，请刷新后重新选择。')
+            return
+        for entry, row in zip(chunk['entries'], rows):
+            after = row.get('after') or {}
+            previews.append('%s · 修订 %s\n原描述 %s\n拟绑定 %s · S%sE%s · 版本备注 %s' % (
+                entry['name'], entry['command']['expected_revision'], row.get('before'), after.get('title'),
+                after.get('season'), after.get('episode'), after.get('version')))
+    dialog.textviewer('逐项预览（尚未保存）', '\n\n'.join(previews))
+    if not dialog.yesno('确认分批保存？', '%s 项将分 %s 批。已保存批次不会因后续冲突自动回滚；每批开始前仍会检查修订。' % (len(entries), len(chunks))):
+        return
+    for number, chunk in enumerate(chunks):
+        if time.monotonic() >= deadline:
+            receipts.append('已到本轮等待期限，请重新读取剩余条目并预览。');break
+        if number and not dialog.yesno('继续下一批？', '已保存 %s/%s。可停止未开始批次，已保存结果保留。' % (saved, len(entries))):
+            break
+        commands = [entry['command'] for entry in chunk['entries']]
+        preview = _call('catalog_preview', expected, commands=commands)['items']
+        if len(preview) != len(commands) or any(row['status'] != 'ready' for row in preview):
+            receipts.append('后续批次出现冲突，停止提交。');break
+        try:
+            rows = _call('catalog_apply', expected, request_id=chunk['request_id'], commands=commands)['items']
+            results = dict(enumerate(rows))
+        except (ValueError, OSError, RuntimeError):
+            # A read-only receipt lookup never repeats a write on timeout.
+            try:
+                receipt = _call('catalog_receipt', expected, request_id=chunk['request_id'])
+                results = {row['index']: row for row in receipt.get('items', [])}
+            except (ValueError, OSError, RuntimeError):
+                results = {}
+        complete = True
+        for index, entry in enumerate(chunk['entries']):
+            state = results.get(index, {}).get('status')
+            saved += state == 'applied'
+            complete = complete and state == 'applied'
+            receipts.append(entry['name'] + ' · ' + {'applied': '已保存', 'conflict': '版本冲突', 'failed': '未保存'}.get(state, '提交结果待核对；请读取当前修订人工核对'))
+        if not complete:
+            if any(index not in results for index in range(len(chunk['entries']))):
+                receipts.append('待核对的原提交编号：' + chunk['request_id'])
+            break
+    dialog.textviewer('真实回执 · 已保存 %s/%s' % (saved, len(entries)), '\n'.join(receipts) + '\n未开始批次未提交，不自动回滚此前结果。')
+
+
 def _items(dialog, expected, source=None, state=None):
     offset = 0
     while True:
@@ -103,7 +283,7 @@ def _items(dialog, expected, source=None, state=None):
         if choice == len(rows):
             offset = result['next_offset']
         elif choice < len(rows):
-            review_item(dialog, expected, rows[choice])
+            review_item(dialog, expected, rows[choice], source_id=source)
 
 
 def _jobs(dialog, expected):
@@ -114,13 +294,16 @@ def _jobs(dialog, expected):
         if not rows:
             dialog.ok('暂无后台任务', '尚未提交目录扫描。')
             return
-        choice = dialog.select('扫描任务（重新进入即可刷新）', [
+        choice = dialog.select('扫描任务', [
             '%s · 已扫描 %d / 已发现 %d%s' % (LABELS.get(r['state'], r['state']),
                 r['counts']['scanned'], r['counts']['discovered'], ' · 正在取消' if r['cancel_requested'] and r['state'] in ('queued', 'running') else '')
-            for r in rows] + (['下一页'] if result['next_offset'] is not None else []))
+            for r in rows] + (['下一页'] if result['next_offset'] is not None else []) + ['实时查看本页任务（最长 2 分钟）'])
         if choice < 0:
             return
-        if choice == len(rows):
+        if choice == len(rows) + int(result['next_offset'] is not None):
+            _watch_jobs(expected, offset=offset)
+            continue
+        if choice == len(rows) and result['next_offset'] is not None:
             offset = result['next_offset']
             continue
         row = rows[choice]
@@ -128,6 +311,70 @@ def _jobs(dialog, expected):
             _call('catalog_cancel', expected, task_id=row['task_id'])
         else:
             dialog.ok('任务状态', LABELS.get(row['state'], row['state']) + '\n' + row['result_summary'])
+
+
+def watch_preparation(expected=None, dialog=None):
+    """Existing 115 authority, separate from native-pan phone/catalog sessions."""
+    import xbmcgui
+    from .account_manager import validate_snapshot
+    dialog = dialog or xbmcgui.Dialog()
+    try:
+        current = validate_snapshot(call('account_status', {}, timeout=2), authenticated=True)
+        if expected is not None and expected != current:
+            raise ValueError('ACCOUNT_CHANGED')
+        _watch_jobs(current, kind='preparation')
+    except (ValueError, OSError, RuntimeError):
+        dialog.ok('准备任务暂不可读', '请检查当前 115 登录和后台状态。未重新登录、创建或重试任何准备任务。')
+
+
+def _watch_jobs(expected, offset=0, kind='scan'):
+    """Visible, single-flight observation; closing never cancels a Host job."""
+    import xbmc
+    import xbmcgui
+    progress, monitor = xbmcgui.DialogProgress(), xbmc.Monitor()
+    progress.create('任务实时状态 · 返回仅停止查看', '只显示真实已扫描 / 已发现数量；总数未知，不估算完成百分比。')
+    deadline, delay = time.monotonic() + 120, 5
+    try:
+        while time.monotonic() < deadline and not progress.iscanceled() and not monitor.abortRequested():
+            try:
+                if kind == 'preparation':
+                    # Read current authority every observation. No pan scope is
+                    # substituted for the 115 account's independent generation.
+                    from .account_manager import validate_snapshot
+                    current = validate_snapshot(call('account_status', {}, timeout=2), authenticated=True)
+                    if current != expected:
+                        raise ValueError('CATALOG_ACCOUNT_MISMATCH')
+                    value = _call('jobs', expected, kind='preparation', offset=offset, limit=5)
+                else:
+                    value = _call('catalog_jobs', expected, offset=offset, limit=5)
+                rows = value['items']
+            except (ValueError, OSError, RuntimeError) as error:
+                if str(error) in ('CATALOG_ACCOUNT_MISMATCH', 'CATALOG_SERVICE_CLOSED', 'ACCOUNT_SCOPE_INVALID'):
+                    progress.update(0, '账号或服务已变化，已停止读取。请返回重新选择账号。')
+                    return
+                progress.update(0, '暂未取得新状态，后台任务保持原状态。返回不会取消任务。')
+                delay = min(30, delay * 2)
+            else:
+                delay = 5
+                lines = []
+                for row in rows:
+                    counts = row.get('counts') or {}
+                    state = (PREPARATION_LABELS if kind == 'preparation' else LABELS).get(row['state'], row['state'])
+                    if row.get('cancel_requested') and row['state'] in ('queued', 'running'):
+                        state += ' · 已请求取消，等待后台确认'
+                    lines.append('%s · 阶段 %s（不自动重试未知结果）' % (state, row.get('stage', 'unknown')) if kind == 'preparation' else
+                                 '%s · 已扫描 %s / 已发现 %s' % (state, counts.get('scanned', 0), counts.get('discovered', 0)))
+                # The native widget requires a numeric argument. Keep its bar
+                # at zero; no invented completion percentage enters the text.
+                progress.update(0, '\n'.join(lines or ['当前页暂无任务。']) + '\n返回只停止查看，不取消后台任务。')
+                if not rows or all(row['state'] not in ('queued', 'running') for row in rows):
+                    return
+            until = min(deadline, time.monotonic() + delay)
+            while time.monotonic() < until and not progress.iscanceled():
+                if monitor.waitForAbort(min(.1, until - time.monotonic())):
+                    return
+    finally:
+        progress.close()
 
 
 def manage():
