@@ -303,8 +303,8 @@
           <left>48</left><top>172</top><width>744</width><height>784</height>
           <orientation>vertical</orientation>
           <scrolltime tween="cubic" easing="out">160</scrolltime>
-          <pagecontrol>61</pagecontrol>
-          <onleft>noop</onleft><onright>61</onright>
+          <pagecontrol>62</pagecontrol>
+          <onleft>noop</onleft><onright>62</onright>
           <onup>6</onup><ondown>9000</ondown>
           <itemlayout width="744" height="112"><include content="SelectRowDetailed" /></itemlayout>
           <focusedlayout width="744" height="112"><include content="SelectRowDetailed"><param name="focused">true</param></include></focusedlayout>
@@ -313,15 +313,29 @@
           <left>808</left><top>176</top><width>4</width><height>776</height>
           <orientation>vertical</orientation>
           <showonepage>false</showonepage>
+          <visible>Control.IsVisible(3)</visible>
           <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
           <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
           <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
-          <onleft>3</onleft>
+          <onleft>3</onleft><onright>9000</onright>
+        </control>
+        <!-- Each native view owns its page control; a hidden view must not reset it. -->
+        <control type="scrollbar" id="62">
+          <left>808</left><top>176</top><width>4</width><height>776</height>
+          <orientation>vertical</orientation>
+          <showonepage>false</showonepage>
+          <visible>Control.IsVisible(6)</visible>
+          <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+          <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+          <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+          <onleft>6</onleft><onright>9000</onright>
         </control>
         <control type="grouplist" id="9000">
           <left>48</left><top>972</top><width>744</width><height>68</height>
           <orientation>horizontal</orientation><itemgap>12</itemgap>
-          <onup>3</onup><onleft>noop</onleft><onright>noop</onright>
+          <onup condition="Control.IsVisible(6)">6</onup>
+          <onup condition="!Control.IsVisible(6)">3</onup>
+          <onleft>noop</onleft><onright>noop</onright>
           <include content="DialogButton"><param name="id">5</param><param name="width">220</param></include>
           <include content="DialogButton"><param name="id">8</param><param name="width">220</param></include>
           <include content="DialogButton"><param name="id">7</param><param name="width">220</param></include>
@@ -351,36 +365,65 @@
         <visible>!String.IsEmpty(ListItem.Art(thumb))</visible>
       </control>
       <control type="grouplist">
-        <left>24</left><top>16</top><width>690</width><height>84</height>
+        <left>24</left><top>16</top><width>540</width><height>84</height>
         <orientation>vertical</orientation><itemgap>0</itemgap>
         <animation effect="slide" end="88,0" time="0" condition="!String.IsEmpty(ListItem.Art(thumb))">Conditional</animation>
         <control type="label">
-          <width>600</width><height>44</height>
+          <width>540</width><height>44</height>
           <label>$INFO[ListItem.Label]</label>
           <font>Label28</font><textcolor>text</textcolor><aligny>center</aligny>
           <visible>!$PARAM[focused] | !Control.HasFocus(6)</visible>
         </control>
         <control type="label">
-          <width>600</width><height>44</height>
+          <width>540</width><height>44</height>
           <label>$INFO[ListItem.Label]</label>
           <font>Label28</font><textcolor>on_focus</textcolor><aligny>center</aligny><scroll>true</scroll>
           <visible>$PARAM[focused] + Control.HasFocus(6)</visible>
         </control>
         <control type="label">
-          <width>600</width><height>36</height>
+          <width>540</width><height>36</height>
           <label>$INFO[ListItem.Label2]</label>
           <font>Meta22</font><textcolor>text3</textcolor><aligny>center</aligny>
           <visible>!$PARAM[focused] | !Control.HasFocus(6)</visible>
         </control>
         <control type="label">
-          <width>600</width><height>36</height>
+          <width>540</width><height>36</height>
           <label>$INFO[ListItem.Label2]</label>
-          <font>Meta22</font><textcolor>B30A0B0E</textcolor><aligny>center</aligny>
+          <font>Meta22</font><textcolor>B30A0B0E</textcolor><aligny>center</aligny><scroll>true</scroll>
           <visible>$PARAM[focused] + Control.HasFocus(6)</visible>
         </control>
       </control>
       <control type="image">
         <right>24</right><top>40</top><width>32</width><height>32</height>
+        <texture colordiffuse="accent">bobi/icons/check.png</texture>
+        <visible>ListItem.IsSelected</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- File manager uses native rows and selection state, not a second file model. -->
+  <include name="BobiFileManagerRow">
+    <param name="focused">false</param>
+    <param name="list">20</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>766</width><height>62</height>
+        <texture border="14">bobi/row-focus.png</texture>
+        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+      </control>
+      <control type="image">
+        <left>17</left><top>11</top><width>40</width><height>40</height>
+        <aspectratio>keep</aspectratio>
+        <texture fallback="bobi/icons/list.png">$INFO[ListItem.Icon]</texture>
+      </control>
+      <control type="label">
+        <left>78</left><top>4</top><width>612</width><height>54</height>
+        <label>$INFO[ListItem.Label]</label><font>font12</font>
+        <textcolor>text</textcolor><selectedcolor>accent_text</selectedcolor><aligny>center</aligny>
+        <!-- No scroll override: CE21's native list label scrolls only when focused. -->
+      </control>
+      <control type="image">
+        <left>710</left><top>15</top><width>32</width><height>32</height>
         <texture colordiffuse="accent">bobi/icons/check.png</texture>
         <visible>ListItem.IsSelected</visible>
       </control>

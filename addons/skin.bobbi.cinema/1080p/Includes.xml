@@ -336,27 +336,31 @@
     <param name="list" />
     <param name="focused">false</param>
     <definition>
-      <control type="image">
-        <left>0</left><top>0</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
-        <texture colordiffuse="40FFFFFF">bobi/pill.png</texture>
-        <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
-      </control>
       <control type="group">
-        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
-        <include content="Lift"><param name="zoom">108</param></include>
+        <width>$PARAM[size]</width><height>$PARAM[size]</height>
+        <animation effect="fade" start="100" end="35" time="0" condition="String.IsEqual(ListItem.Property(unavailable),true)">Conditional</animation>
         <control type="image">
           <left>0</left><top>0</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
-          <texture colordiffuse="focus">bobi/pill.png</texture>
+          <texture colordiffuse="40FFFFFF">bobi/pill.png</texture>
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+        </control>
+        <control type="group">
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+          <include content="Lift"><param name="zoom">108</param></include>
+          <control type="image">
+            <left>0</left><top>0</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
+            <texture colordiffuse="focus">bobi/pill.png</texture>
+          </control>
+          <control type="image">
+            <left>$PARAM[pad]</left><top>$PARAM[pad]</top><width>$PARAM[glyph]</width><height>$PARAM[glyph]</height>
+            <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          </control>
         </control>
         <control type="image">
           <left>$PARAM[pad]</left><top>$PARAM[pad]</top><width>$PARAM[glyph]</width><height>$PARAM[glyph]</height>
-          <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          <texture colordiffuse="text">$INFO[ListItem.Icon]</texture>
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
         </control>
-      </control>
-      <control type="image">
-        <left>$PARAM[pad]</left><top>$PARAM[pad]</top><width>$PARAM[glyph]</width><height>$PARAM[glyph]</height>
-        <texture colordiffuse="text">$INFO[ListItem.Icon]</texture>
-        <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
       </control>
     </definition>
   </include>
@@ -367,43 +371,47 @@
     <param name="list" />
     <param name="focused">false</param>
     <definition>
-      <control type="image">
-        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
-        <texture colordiffuse="33FFFFFF" border="32">bobi/pill.png</texture>
-        <visible>[!$PARAM[focused] | !Control.HasFocus($PARAM[list])] + !String.IsEqual(ListItem.Property(primary),true)</visible>
-      </control>
-      <control type="image">
-        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
-        <texture colordiffuse="accent" border="32">bobi/pill.png</texture>
-        <visible>[!$PARAM[focused] | !Control.HasFocus($PARAM[list])] + String.IsEqual(ListItem.Property(primary),true)</visible>
-      </control>
-      <control type="image">
-        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
-        <texture colordiffuse="focus" border="32">bobi/pill.png</texture>
-        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
-      </control>
       <control type="group">
-        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list]) | String.IsEqual(ListItem.Property(primary),true)</visible>
+        <width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <animation effect="fade" start="100" end="35" time="0" condition="String.IsEqual(ListItem.Property(unavailable),true)">Conditional</animation>
         <control type="image">
-          <left>22</left><top>16</top><width>32</width><height>32</height>
-          <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="33FFFFFF" border="32">bobi/pill.png</texture>
+          <visible>[!$PARAM[focused] | !Control.HasFocus($PARAM[list])] + !String.IsEqual(ListItem.Property(primary),true)</visible>
         </control>
-        <control type="label">
-          <left>66</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
-          <label>$INFO[ListItem.Label][COLOR B30A0B0E]$INFO[ListItem.Label2,  ,][/COLOR]</label>
-          <font>Button24</font><textcolor>on_focus</textcolor><aligny>center</aligny>
-        </control>
-      </control>
-      <control type="group">
-        <visible>![$PARAM[focused] + Control.HasFocus($PARAM[list]) | String.IsEqual(ListItem.Property(primary),true)]</visible>
         <control type="image">
-          <left>22</left><top>16</top><width>32</width><height>32</height>
-          <texture colordiffuse="text">$INFO[ListItem.Icon]</texture>
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="accent" border="32">bobi/pill.png</texture>
+          <visible>[!$PARAM[focused] | !Control.HasFocus($PARAM[list])] + String.IsEqual(ListItem.Property(primary),true)</visible>
         </control>
-        <control type="label">
-          <left>66</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
-          <label>$INFO[ListItem.Label][COLOR text2]$INFO[ListItem.Label2,  ,][/COLOR]</label>
-          <font>Button24</font><textcolor>text</textcolor><aligny>center</aligny>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="focus" border="32">bobi/pill.png</texture>
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+        </control>
+        <control type="group">
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list]) | String.IsEqual(ListItem.Property(primary),true)</visible>
+          <control type="image">
+            <left>22</left><top>16</top><width>32</width><height>32</height>
+            <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>66</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label][COLOR B30A0B0E]$INFO[ListItem.Label2,  ,][/COLOR]</label>
+            <font>Button24</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+        <control type="group">
+          <visible>![$PARAM[focused] + Control.HasFocus($PARAM[list]) | String.IsEqual(ListItem.Property(primary),true)]</visible>
+          <control type="image">
+            <left>22</left><top>16</top><width>32</width><height>32</height>
+            <texture colordiffuse="text">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>66</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label][COLOR text2]$INFO[ListItem.Label2,  ,][/COLOR]</label>
+            <font>Button24</font><textcolor>text</textcolor><aligny>center</aligny>
+          </control>
         </control>
       </control>
     </definition>

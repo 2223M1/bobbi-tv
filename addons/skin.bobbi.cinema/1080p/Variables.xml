@@ -174,13 +174,21 @@
     <value>$INFO[VideoPlayer.AudioCodec]$INFO[VideoPlayer.AudioChannels, · ,ch]</value>
   </variable>
   <variable name="TempoLabel">
+    <value condition="Player.Paused">已暂停</value>
     <value condition="String.IsEmpty(Player.PlaySpeed) | String.IsEqual(Player.PlaySpeed,1.00) | String.IsEqual(Player.PlaySpeed,1)">1.0×</value>
     <value>$INFO[Player.PlaySpeed]×</value>
   </variable>
-  <variable name="TempoFocusHint">
-    <value condition="Control.HasFocus(11)">减速 0.1×</value>
-    <value condition="Control.HasFocus(12)">加速 0.1×</value>
-    <value condition="Control.HasFocus(13)">恢复正常速度</value>
+  <variable name="TempoModeLabel">
+    <value condition="Player.TempoEnabled">播放倍速</value>
+    <value>快进 / 快退</value>
+  </variable>
+  <variable name="TempoNavigationHint">
+    <value condition="Player.TempoEnabled">← 减速   ·   → 加速   ·   确认 恢复正常播放</value>
+    <value>← 快退   ·   → 快进   ·   确认 恢复正常播放</value>
+  </variable>
+  <variable name="TempoStatusHint">
+    <value condition="Player.TempoEnabled">返回 完成；暂停时调整会继续播放</value>
+    <value>当前播放器不支持有声倍速[CR]快进 / 快退用于定位；返回 完成</value>
   </variable>
   <variable name="VS10Label">
     <value condition="String.IsEqual(Player.Process(video.source.hdr.type.raw),2)">不可用</value>
@@ -211,6 +219,30 @@
   <variable name="PlayPauseHint">
     <value condition="Player.Paused">继续播放</value>
     <value>暂停</value>
+  </variable>
+  <variable name="BobiSeekUnavailable">
+    <value condition="Player.SeekEnabled">false</value>
+    <value>true</value>
+  </variable>
+  <variable name="BobiPauseUnavailable">
+    <value condition="Player.PauseEnabled | Player.Forwarding | Player.Rewinding">false</value>
+    <value>true</value>
+  </variable>
+  <variable name="BobiSeekBackHint">
+    <value condition="Player.SeekEnabled">后退 10 秒</value>
+    <value>当前播放源不支持跳转</value>
+  </variable>
+  <variable name="BobiSeekForwardHint">
+    <value condition="Player.SeekEnabled">前进 30 秒</value>
+    <value>当前播放源不支持跳转</value>
+  </variable>
+  <variable name="BobiPauseHint">
+    <value condition="Player.PauseEnabled | Player.Forwarding | Player.Rewinding">$VAR[PlayPauseHint]</value>
+    <value>当前播放源不支持暂停</value>
+  </variable>
+  <variable name="BobiStreamPlaceholder">
+    <value condition="Container(2021).IsUpdating">正在读取轨道…</value>
+    <value>没有可选择的轨道</value>
   </variable>
   <variable name="PlayPauseIcon">
     <value condition="Player.Paused | Player.Forwarding | Player.Rewinding">bobi/icons/play.png</value>

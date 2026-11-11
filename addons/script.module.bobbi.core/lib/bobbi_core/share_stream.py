@@ -441,6 +441,11 @@ class Binding:
         self.header_check = header_check
         self.diagnostic = checked_diagnostic(diagnostic) if diagnostic is not None else None
         self.diagnostic_deadline = time.monotonic() + diagnostic['seconds'] if diagnostic is not None else None
+        # Disc readers reopen short, overlapping ranges. Like the upstream
+        # disc path, deliver available bytes instead of staging an 8 MiB block
+        # for every reopen. Explicit diagnostics keep their own transport.
+        self.iso_passthrough = (self.diagnostic is None
+                                and body['title'].lower().endswith('.iso'))
         self._account_current_guard = None
         if self.diagnostic is not None and self.diagnostic['mode'] == 'open_range_bound_guard':
             factory = getattr(account, 'current_guard', None)
@@ -941,7 +946,8 @@ class Handler(BaseHTTPRequestHandler):
                 outcome = 'head_complete'
                 return
             small_block = diagnostic is not None and diagnostic['mode'] == 'block_startup_1m'
-            if not small_block and (getattr(owner, 'progressive', False) or diagnostic is not None):
+            if not small_block and (getattr(owner, 'progressive', False)
+                                    or getattr(entry, 'iso_passthrough', False) or diagnostic is not None):
                 complete = self.serve_progressive(entry, start, end, status)
                 started = getattr(self, 'progressive_started', False)
                 outcome = 'complete' if complete else 'cancelled'
@@ -1090,12 +1096,13 @@ class Handler(BaseHTTPRequestHandler):
         self.progressive_started = False
         self.progressive_send_calls = 0
         diagnostic = entry.diagnostic is not None
+        open_range = diagnostic or getattr(entry, 'iso_passthrough', False)
         self.diagnostic_timings = ({key: 0 for key in ('grant_us','connect_us','read_wait_us',
             'queue_room_us','queue_put_us','queue_get_us','socket_send_us')} if diagnostic else None)
         self.diagnostic_metrics = DiagnosticMetrics() if diagnostic else None
         if diagnostic:
             self.diagnostic_metrics.begin('consumer')
-        retry_window = RetryWindow(start) if diagnostic else None
+        retry_window = RetryWindow(start) if open_range else None
         original_cancelled = self.cancelled
         queued_cancelled = lambda: pipe.stopped or original_cancelled()
         self.cancelled = ((lambda: self.diagnostic_metrics.cancel(queued_cancelled))
@@ -1116,11 +1123,12 @@ class Handler(BaseHTTPRequestHandler):
                         self.observation_holds_gate = True
                         self.observation_offset = received
                         reading = time.monotonic()
-                        # Prefix delivery does not wait for this whole range.
-                        # Use the existing cap from the first request, avoiding
-                        # the block path's forced early reconnects. Queue/gate
-                        # pressure still closes and resumes the exact suffix.
-                        upper = end if diagnostic else min(end, received + owner.segment_bytes - 1)
+                        # Disc passthrough preserves the client's range instead
+                        # of forcing block boundaries. The same bounded queue,
+                        # gate yielding and accepted-byte retry budget still
+                        # apply; no full-file buffer or diagnostic deadline.
+                        # Ordinary progressive media retains its existing cap.
+                        upper = end if open_range else min(end, received + owner.segment_bytes - 1)
                         count = 0
                         try:
                             count, _ = self.read_block(session, entry, received, upper, 0,
@@ -1300,8 +1308,9 @@ class Handler(BaseHTTPRequestHandler):
                             accepted += len(chunk)
                             if retry_window is not None and retry_window.advance(start + accepted):
                                 failures, contention_retries = retry_window.failures, retry_window.contention
-                                self.observe('window', retry_window=retry_window.index, upstream_accepted=start+accepted,
-                                    timing_scope='diagnostic_cumulative', **(self.diagnostic_timings or {}))
+                                if self.diagnostic_timings is not None:
+                                    self.observe('window', retry_window=retry_window.index, upstream_accepted=start+accepted,
+                                        timing_scope='diagnostic_cumulative', **self.diagnostic_timings)
                             if accepted and accepted < end-start+1 and entry.io_lock.contended():
                                 # Keep the sequential 64 MiB request when it is
                                 # alone. A queued seek/scanner gets the next

@@ -81,8 +81,10 @@
           <height>338</height>
           <itemgap>8</itemgap>
           <orientation>vertical</orientation>
-          <onleft>450</onleft>
-          <onright>450</onright>
+          <onleft condition="Control.IsVisible(451)">451</onleft>
+          <onleft condition="!Control.IsVisible(451)">450</onleft>
+          <onright condition="Control.IsVisible(451)">451</onright>
+          <onright condition="!Control.IsVisible(451)">450</onright>
           <onup>9000</onup>
           <ondown>9000</ondown>
           <control type="button" id="413">
@@ -223,10 +225,10 @@
           <width>930</width>
           <height>843</height>
           <onleft>9000</onleft>
-          <onright>60</onright>
+          <onright>61</onright>
           <onup>451</onup>
           <ondown>451</ondown>
-          <pagecontrol>60</pagecontrol>
+          <pagecontrol>61</pagecontrol>
           <scrolltime>180</scrolltime>
           <itemlayout height="60" width="930">
             <control type="image">
@@ -307,8 +309,18 @@
           <textureslidernibfocus colordiffuse="00000000">am6b/white.png</textureslidernibfocus>
           <onleft>450</onleft>
           <onright>9000</onright>
+          <visible>Control.IsVisible(450)</visible>
           <showonepage>false</showonepage>
           <orientation>vertical</orientation>
+        </control>
+        <control type="scrollbar" id="61">
+          <left>960</left><top>135</top><width>8</width><height>843</height>
+          <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+          <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+          <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+          <onleft>451</onleft><onright>9000</onright>
+          <visible>Control.IsVisible(451)</visible>
+          <showonepage>false</showonepage><orientation>vertical</orientation>
         </control>
         <control type="label">
           <description>Page label</description>

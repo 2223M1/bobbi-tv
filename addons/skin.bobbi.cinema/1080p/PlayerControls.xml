@@ -30,8 +30,8 @@
         <texturenofocus>am6b/icon-previous.png</texturenofocus>
         <onleft>609</onleft>
         <onright>601</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Previous)</onclick>
         <visible>!VideoPlayer.Content(LiveTV)</visible>
       </control>
@@ -45,9 +45,10 @@
         <texturenofocus>am6b/icon-rewind.png</texturenofocus>
         <onleft>600</onleft>
         <onright>603</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Rewind)</onclick>
+        <enable>Player.SeekEnabled</enable>
         <visible>!VideoPlayer.Content(LiveTV)</visible>
       </control>
       <control type="togglebutton" id="603">
@@ -63,9 +64,10 @@
         <alttexturenofocus>am6b/icon-play.png</alttexturenofocus>
         <onleft>601</onleft>
         <onright>602</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Play)</onclick>
+        <enable>Player.PauseEnabled | Player.Forwarding | Player.Rewinding</enable>
         <visible>!VideoPlayer.Content(LiveTV)</visible>
       </control>
       <control type="button" id="602">
@@ -78,8 +80,8 @@
         <texturenofocus>am6b/icon-stop.png</texturenofocus>
         <onleft>603</onleft>
         <onright>604</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>down</onclick>
         <onclick>PlayerControl(Stop)</onclick>
         <visible>!VideoPlayer.Content(LiveTV)</visible>
@@ -94,9 +96,10 @@
         <texturenofocus>am6b/icon-forward.png</texturenofocus>
         <onleft>602</onleft>
         <onright>605</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Forward)</onclick>
+        <enable>Player.SeekEnabled</enable>
         <visible>!VideoPlayer.Content(LiveTV)</visible>
       </control>
       <control type="button" id="605">
@@ -109,8 +112,8 @@
         <texturenofocus>am6b/icon-next.png</texturenofocus>
         <onleft>604</onleft>
         <onright>606</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Next)</onclick>
         <visible>!VideoPlayer.Content(LiveTV)</visible>
       </control>
@@ -124,8 +127,8 @@
         <texturenofocus>am6b/icon-record.png</texturenofocus>
         <onleft>605</onleft>
         <onright>607</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PVR.ToggleRecordPlayingChannel</onclick>
         <enable>PVR.CanRecordPlayingChannel</enable>
         <animation effect="fade" start="100" end="30" time="75" condition="[!PVR.CanRecordPlayingChannel] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
@@ -268,12 +271,12 @@
         <texturenofocus>am6b/icon-rewind.png</texturenofocus>
         <onleft>706</onleft>
         <onright>702</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Rewind)</onclick>
         <visible>VideoPlayer.Content(LiveTV)</visible>
         <enable>Player.SeekEnabled</enable>
-        <animation effect="fade" start="100" end="50" time="75" condition="[true] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <animation effect="fade" start="100" end="50" time="75" condition="[!Player.SeekEnabled] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
       </control>
       <control type="button" id="702">
         <left>60</left>
@@ -285,8 +288,8 @@
         <texturenofocus>am6b/icon-stop.png</texturenofocus>
         <onleft>701</onleft>
         <onright>703</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>down</onclick>
         <onclick>PlayerControl(Stop)</onclick>
         <visible>VideoPlayer.Content(LiveTV)</visible>
@@ -304,13 +307,12 @@
         <alttexturenofocus>am6b/icon-play.png</alttexturenofocus>
         <onleft>702</onleft>
         <onright>704</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Play)</onclick>
         <visible>VideoPlayer.Content(LiveTV)</visible>
-        <enable>false</enable>
         <enable>Player.PauseEnabled</enable>
-        <animation effect="fade" start="100" end="50" time="75" condition="[true] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <animation effect="fade" start="100" end="50" time="75" condition="[!Player.PauseEnabled] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
       </control>
       <control type="button" id="704">
         <left>180</left>
@@ -322,12 +324,12 @@
         <texturenofocus>am6b/icon-forward.png</texturenofocus>
         <onleft>703</onleft>
         <onright>700</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PlayerControl(Forward)</onclick>
         <visible>VideoPlayer.Content(LiveTV)</visible>
         <enable>Player.SeekEnabled</enable>
-        <animation effect="fade" start="100" end="50" time="75" condition="[true] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
+        <animation effect="fade" start="100" end="50" time="75" condition="[!Player.SeekEnabled] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
       </control>
       <control type="button" id="700">
         <left>300</left>
@@ -339,8 +341,8 @@
         <texturenofocus>am6b/icon-up.png</texturenofocus>
         <onleft>704</onleft>
         <onright>705</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>ChannelDown</onclick>
         <visible>VideoPlayer.Content(LiveTV)</visible>
       </control>
@@ -354,8 +356,8 @@
         <texturenofocus>am6b/icon-down.png</texturenofocus>
         <onleft>700</onleft>
         <onright>706</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>ChannelUp</onclick>
         <visible>VideoPlayer.Content(LiveTV)</visible>
       </control>
@@ -369,8 +371,8 @@
         <texturenofocus>am6b/icon-record.png</texturenofocus>
         <onleft>705</onleft>
         <onright>707</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>PVR.ToggleRecordPlayingChannel</onclick>
         <enable>PVR.CanRecordPlayingChannel</enable>
         <animation effect="fade" start="100" end="30" time="75" condition="[!PVR.CanRecordPlayingChannel] + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
@@ -386,8 +388,8 @@
         <texturenofocus>am6b/icon-info.png</texturenofocus>
         <onleft>706</onleft>
         <onright>701</onright>
-        <onup>300</onup>
-        <ondown>200</ondown>
+        <onup>noop</onup>
+        <ondown>noop</ondown>
         <onclick>ActivateWindow(PVRRadioRDSInfo)</onclick>
         <visible>VideoPlayer.Content(LiveTV) + RDS.HasRadiotextPlus</visible>
       </control>

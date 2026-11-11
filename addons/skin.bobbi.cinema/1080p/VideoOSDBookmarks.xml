@@ -43,9 +43,8 @@
       <control type="list" id="11">
         <onleft>11</onleft>
         <onright>11</onright>
-        <onup>100</onup>
         <ondown>2</ondown>
-        <onup>close</onup>
+        <onup>Close</onup>
         <scrolltime>180</scrolltime>
         <orientation>horizontal</orientation>
         <itemlayout height="280" width="467">

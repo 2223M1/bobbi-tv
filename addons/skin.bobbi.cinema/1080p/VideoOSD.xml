@@ -31,17 +31,17 @@
       <control type="slider" id="87">
         <left>96</left><top>854</top><width>1728</width><height>32</height>
         <action>seek</action>
+        <info>Player.Progress</info>
+        <enable>Player.SeekEnabled</enable>
         <texturesliderbar />
         <textureslidernib colordiffuse="00FFFFFF">bobi/dot.png</textureslidernib>
         <textureslidernibfocus colordiffuse="focus">bobi/dot.png</textureslidernibfocus>
         <onup>noop</onup>
         <ondown>600</ondown>
-        <onleft>StepBack</onleft>
-        <onright>StepForward</onright>
       </control>
       <control type="label">
         <left>96</left><top>890</top><width>1728</width><height>28</height>
-        <label>← → 快退 / 快进   ·   确认 跳转到此处</label>
+        <label>← → 调整播放位置   ·   ↓ 返回控制栏</label>
         <font>Meta22</font><textcolor>text3</textcolor><align>center</align>
         <visible>Control.HasFocus(87)</visible>
       </control>
@@ -51,7 +51,8 @@
         <left>96</left><top>924</top><width>624</width><height>88</height>
         <orientation>horizontal</orientation>
         <scrolltime>0</scrolltime>
-        <onup>87</onup>
+        <onup condition="Player.SeekEnabled">87</onup>
+        <onup condition="!Player.SeekEnabled">noop</onup>
         <ondown>noop</ondown>
         <onleft>noop</onleft>
         <onright>700</onright>
@@ -69,18 +70,21 @@
           </item>
           <item>
             <label>后退</label><icon>bobi/icons/rewind.png</icon>
-            <property name="hint">后退 10 秒</property>
-            <onclick>Seek(-10)</onclick>
+            <property name="hint">$VAR[BobiSeekBackHint]</property>
+            <property name="unavailable">$VAR[BobiSeekUnavailable]</property>
+            <onclick condition="Player.SeekEnabled">Seek(-10)</onclick>
           </item>
           <item>
             <label>播放</label><icon>$VAR[PlayPauseIcon]</icon>
-            <property name="hint">$VAR[PlayPauseHint]</property>
-            <onclick>PlayerControl(Play)</onclick>
+            <property name="hint">$VAR[BobiPauseHint]</property>
+            <property name="unavailable">$VAR[BobiPauseUnavailable]</property>
+            <onclick condition="Player.PauseEnabled | Player.Forwarding | Player.Rewinding">PlayerControl(Play)</onclick>
           </item>
           <item>
             <label>前进</label><icon>bobi/icons/forward.png</icon>
-            <property name="hint">前进 30 秒</property>
-            <onclick>Seek(30)</onclick>
+            <property name="hint">$VAR[BobiSeekForwardHint]</property>
+            <property name="unavailable">$VAR[BobiSeekUnavailable]</property>
+            <onclick condition="Player.SeekEnabled">Seek(30)</onclick>
           </item>
           <item>
             <label>下一个</label><icon>bobi/icons/next.png</icon>
@@ -106,7 +110,8 @@
         <left>776</left><top>936</top><width>684</width><height>64</height>
         <orientation>horizontal</orientation>
         <scrolltime>0</scrolltime>
-        <onup>87</onup>
+        <onup condition="Player.SeekEnabled">87</onup>
+        <onup condition="!Player.SeekEnabled">noop</onup>
         <ondown>noop</ondown>
         <onleft>600</onleft>
         <onright>710</onright>
@@ -135,7 +140,8 @@
         <left>1460</left><top>936</top><width>364</width><height>64</height>
         <orientation>horizontal</orientation>
         <scrolltime>0</scrolltime>
-        <onup>87</onup>
+        <onup condition="Player.SeekEnabled">87</onup>
+        <onup condition="!Player.SeekEnabled">noop</onup>
         <ondown>noop</ondown>
         <onleft>700</onleft>
         <onright>noop</onright>
@@ -153,7 +159,7 @@
           </item>
           <item>
             <label>更多</label><icon>bobi/icons/sliders.png</icon>
-            <property name="hint">杜比视界 VS10 · 播放速度 · 书签 · 信号信息</property>
+            <property name="hint">杜比视界 VS10 · $VAR[TempoModeLabel] · 书签 · 信号信息</property>
             <onclick>ActivateWindow(1114)</onclick>
           </item>
         </content>

@@ -23,12 +23,14 @@
           <visible>System.Platform.Linux</visible>
         </item>
         <item>
-          <label>播放速度</label><label2>$VAR[TempoLabel]</label2><icon>bobi/icons/speed.png</icon>
+          <label>$VAR[TempoModeLabel]</label><label2>$VAR[TempoLabel]</label2><icon>bobi/icons/speed.png</icon>
           <onclick>ActivateWindow(1115)</onclick>
+          <visible>Player.TempoEnabled | Player.SeekEnabled</visible>
         </item>
         <item>
           <label>书签</label><label2>保存 / 跳转画面位置</label2><icon>bobi/icons/bookmark.png</icon>
           <onclick>ActivateWindow(videobookmarks)</onclick>
+          <visible>Player.SeekEnabled</visible>
         </item>
         <item>
           <label>信号信息</label><label2>$VAR[ResolutionLabel]$INFO[VideoPlayer.VideoCodec,  ·  ]  ·  $VAR[HDRLabel]</label2><icon>bobi/icons/signal.png</icon>

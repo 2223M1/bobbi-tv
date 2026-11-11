@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window type="dialog" id="1145">
-  <defaultcontrol always="true">2021</defaultcontrol>
+  <defaultcontrol always="true">2024</defaultcontrol>
   <depth>DepthOSD</depth>
   <onload>SetProperty(BobiStreamReload,$INFO[System.Time(HH:mm:ss)],Home)</onload>
   <controls>

@@ -25,6 +25,7 @@
       <orientation>vertical</orientation>
       <scrolltime tween="cubic" easing="out">180</scrolltime>
       <onup>9701</onup>
+      <ondown>noop</ondown>
       <onleft>noop</onleft>
       <onright condition="String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)">9110</onright>
       <onright condition="!String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)">9101</onright>
@@ -79,6 +80,8 @@
     <control type="list" id="9130">
       <left>-4000</left><top>-4000</top><width>1</width><height>1</height>
       <orientation>vertical</orientation>
+      <enable>false</enable>
+      <hitrect x="0" y="0" w="0" h="0" />
       <itemlayout width="1" height="1" />
       <focusedlayout width="1" height="1" />
       <content target="videos" limit="1" browse="never">plugin://plugin.video.bobbi/?action=continue_watching_menu&amp;resume_preview=true</content>
@@ -172,6 +175,7 @@
       <onup condition="!String.IsEqual(Container(9130).ListItem.Property(Bobi.Resume.State),ready)">9701</onup>
       <onleft>9100</onleft>
       <onright>noop</onright>
+      <ondown>noop</ondown>
       <itemlayout width="814" height="72">
         <include content="HubRow"><param name="compact">true</param><param name="w">814</param><param name="h">68</param></include>
       </itemlayout>

@@ -77,9 +77,6 @@
           <onclick>ActivateWindow(SystemInfo)</onclick>
         </item>
         <item>
-          <label>CoreELEC</label><label2>系统更新、网络连接与硬件设置</label2><icon>bobi/icons/settings.png</icon>
-          </item>
-        <item>
           <label>文件管理</label><label2>浏览与复制本地和网络文件</label2><icon>bobi/icons/folder.png</icon>
           <onclick>ActivateWindow(FileManager)</onclick>
         </item>

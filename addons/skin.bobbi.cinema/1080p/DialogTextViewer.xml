@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window>
-  <defaultcontrol always="true">5</defaultcontrol>
+  <!-- A native textbox cannot take focus; its page control handles remote scrolling. -->
+  <defaultcontrol always="true">60</defaultcontrol>
   <depth>DepthDialog</depth>
   <controls>
     <include>DialogScrim</include>
@@ -23,13 +24,24 @@
       </control>
       <control type="scrollbar" id="60">
         <left>1368</left><top>132</top><width>4</width><height>672</height>
-        <orientation>vertical</orientation><showonepage>false</showonepage>
+        <orientation>vertical</orientation><showonepage>true</showonepage>
         <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
         <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
         <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+        <onleft>9001</onleft><onright>9001</onright>
+      </control>
+      <control type="button" id="9001">
+        <left>64</left><top>816</top><width>180</width><height>48</height>
+        <label>关闭</label><font>Button24</font>
+        <textcolor>text2</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="24">bobi/pill.png</texturefocus>
+        <texturenofocus />
+        <onclick>Close</onclick>
+        <onup>60</onup><onleft>60</onleft><onright>60</onright><ondown>60</ondown>
       </control>
       <control type="label">
-        <left>64</left><top>820</top><width>1312</width><height>40</height>
+        <left>264</left><top>820</top><width>1112</width><height>40</height>
         <label>↑↓ 翻页   ·   返回 关闭</label>
         <font>Meta22</font><textcolor>text3</textcolor><align>right</align><aligny>center</aligny>
       </control>

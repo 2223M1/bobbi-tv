@@ -55,7 +55,7 @@
       <orientation>vertical</orientation><itemgap>4</itemgap>
       <pagecontrol>60</pagecontrol>
       <scrolltime tween="cubic" easing="out">160</scrolltime>
-      <onleft>3</onleft><onright>noop</onright>
+      <onleft>3</onleft><onright>60</onright>
       <onup>5</onup><ondown>5</ondown>
     </control>
     <control type="scrollbar" id="60">
@@ -64,7 +64,7 @@
       <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
       <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
       <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
-      <onleft>5</onleft>
+      <onleft>5</onleft><onright>5</onright>
     </control>
     <control type="image">
       <left>624</left><top>892</top><width>1200</width><height>2</height>
@@ -73,6 +73,7 @@
     <control type="textbox" id="6">
       <left>652</left><top>912</top><width>1144</width><height>112</height>
       <font>Meta24</font><textcolor>text2</textcolor>
+      <autoscroll delay="5000" time="2000" repeat="6000">ControlGroup(5).HasFocus</autoscroll>
     </control>
     <control type="group">
       <left>-3000</left>

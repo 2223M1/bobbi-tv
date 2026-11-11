@@ -68,7 +68,7 @@
       <control type="image">
         <left>20</left><top>16</top><width>40</width><height>40</height>
         <texture colordiffuse="accent">bobi/spinner.png</texture>
-        <animation effect="rotate" end="-360" center="40,36" time="900" loop="true" condition="Player.Caching">Conditional</animation>
+        <animation effect="rotate" end="-360" center="40,36" time="900" loop="true" condition="Player.Caching + !Skin.HasSetting(BobiReduceMotion)">Conditional</animation>
       </control>
       <control type="label">
         <left>72</left><top>0</top><width>140</width><height>72</height>

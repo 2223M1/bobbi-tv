@@ -65,6 +65,7 @@
       <width>754</width>
       <height>48</height>
       <label />
+      <haspath>true</haspath>
       <font>font12</font>
       <textcolor>FFB3B3B3</textcolor>
     </control>
@@ -73,64 +74,31 @@
       <top>367</top>
       <width>766</width>
       <height>564</height>
-      <onleft>20</onleft>
+      <onleft>60</onleft>
       <onright>21</onright>
       <onup>20</onup>
       <ondown>20</ondown>
       <scrolltime>180</scrolltime>
+      <pagecontrol>60</pagecontrol>
       <itemlayout width="766" height="68">
-        <control type="image">
-          <left>0</left>
-          <top>0</top>
-          <width>766</width>
-          <height>62</height>
-          <texture colordiffuse="00161616" border="12">am6b/cinema/rounded.png</texture>
-        </control>
-        <control type="image">
-          <left>17</left>
-          <top>11</top>
-          <width>40</width>
-          <height>40</height>
-          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
-        </control>
-        <control type="label">
-          <left>78</left>
-          <top>4</top>
-          <width>668</width>
-          <height>54</height>
-          <label>$INFO[ListItem.Label]</label>
-          <font>font12</font>
-          <textcolor>FFB3B3B3</textcolor>
-          <aligny>center</aligny>
-        </control>
+        <include content="BobiFileManagerRow"><param name="list">20</param></include>
       </itemlayout>
       <focusedlayout width="766" height="68">
-        <control type="image">
-          <left>0</left>
-          <top>0</top>
-          <width>766</width>
-          <height>62</height>
-          <visible>Control.HasFocus(20)</visible>
-          <texture colordiffuse="FF404040" border="12">am6b/cinema/rounded.png</texture>
-        </control>
-        <control type="image">
-          <left>17</left>
-          <top>11</top>
-          <width>40</width>
-          <height>40</height>
-          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
-        </control>
-        <control type="label">
-          <left>78</left>
-          <top>4</top>
-          <width>668</width>
-          <height>54</height>
-          <label>$INFO[ListItem.Label]</label>
-          <font>font12</font>
-          <textcolor>FFF5F5F5</textcolor>
-          <aligny>center</aligny>
-        </control>
+        <include content="BobiFileManagerRow"><param name="list">20</param><param name="focused">true</param></include>
       </focusedlayout>
+    </control>
+    <control type="label">
+      <left>122</left><top>332</top><width>754</width><height>30</height>
+      <font>Meta22</font><textcolor>text3</textcolor>
+      <label>$INFO[Container(20).NumItems,, 项] · $INFO[Container(20).CurrentPage]/$INFO[Container(20).NumPages] 页</label>
+    </control>
+    <control type="scrollbar" id="60">
+      <left>102</left><top>367</top><width>6</width><height>564</height>
+      <orientation>vertical</orientation><showonepage>false</showonepage>
+      <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+      <onleft>20</onleft><onright>20</onright>
     </control>
     <control type="image">
       <left>1018</left>
@@ -145,6 +113,7 @@
       <width>754</width>
       <height>48</height>
       <label />
+      <haspath>true</haspath>
       <font>font12</font>
       <textcolor>FFB3B3B3</textcolor>
     </control>
@@ -154,70 +123,37 @@
       <width>766</width>
       <height>564</height>
       <onleft>20</onleft>
-      <onright>21</onright>
+      <onright>61</onright>
       <onup>21</onup>
       <ondown>21</ondown>
       <scrolltime>180</scrolltime>
+      <pagecontrol>61</pagecontrol>
       <itemlayout width="766" height="68">
-        <control type="image">
-          <left>0</left>
-          <top>0</top>
-          <width>766</width>
-          <height>62</height>
-          <texture colordiffuse="00161616" border="12">am6b/cinema/rounded.png</texture>
-        </control>
-        <control type="image">
-          <left>17</left>
-          <top>11</top>
-          <width>40</width>
-          <height>40</height>
-          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
-        </control>
-        <control type="label">
-          <left>78</left>
-          <top>4</top>
-          <width>668</width>
-          <height>54</height>
-          <label>$INFO[ListItem.Label]</label>
-          <font>font12</font>
-          <textcolor>FFB3B3B3</textcolor>
-          <aligny>center</aligny>
-        </control>
+        <include content="BobiFileManagerRow"><param name="list">21</param></include>
       </itemlayout>
       <focusedlayout width="766" height="68">
-        <control type="image">
-          <left>0</left>
-          <top>0</top>
-          <width>766</width>
-          <height>62</height>
-          <visible>Control.HasFocus(21)</visible>
-          <texture colordiffuse="FF404040" border="12">am6b/cinema/rounded.png</texture>
-        </control>
-        <control type="image">
-          <left>17</left>
-          <top>11</top>
-          <width>40</width>
-          <height>40</height>
-          <texture colordiffuse="FFF5F5F5">am6b/cinema/folder.png</texture>
-        </control>
-        <control type="label">
-          <left>78</left>
-          <top>4</top>
-          <width>668</width>
-          <height>54</height>
-          <label>$INFO[ListItem.Label]</label>
-          <font>font12</font>
-          <textcolor>FFF5F5F5</textcolor>
-          <aligny>center</aligny>
-        </control>
+        <include content="BobiFileManagerRow"><param name="list">21</param><param name="focused">true</param></include>
       </focusedlayout>
+    </control>
+    <control type="label">
+      <left>1042</left><top>332</top><width>754</width><height>30</height>
+      <font>Meta22</font><textcolor>text3</textcolor>
+      <label>$INFO[Container(21).NumItems,, 项] · $INFO[Container(21).CurrentPage]/$INFO[Container(21).NumPages] 页</label>
+    </control>
+    <control type="scrollbar" id="61">
+      <left>1810</left><top>367</top><width>6</width><height>564</height>
+      <orientation>vertical</orientation><showonepage>false</showonepage>
+      <texturesliderbackground colordiffuse="1AFFFFFF">bobi/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="66FFFFFF">bobi/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFFFFFFF">bobi/white.png</texturesliderbarfocus>
+      <onleft>21</onleft><onright>21</onright>
     </control>
     <control type="label">
       <left>100</left>
       <top>1005</top>
       <width>1710</width>
       <height>35</height>
-      <label>左右键切换面板 · 长按打开文件操作 · 返回键回到上一级</label>
+      <label>内侧方向键切换面板 · 外侧方向键进入翻页 · 菜单键打开文件操作 · 返回上一级</label>
       <font>font10</font>
       <textcolor>FFB3B3B3</textcolor>
     </control>

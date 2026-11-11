@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window>
   <defaultcontrol always="true">100</defaultcontrol>
-  <onload condition="!MusicPlayer.Content(LiveTV)">SetFocus(602)</onload>
+  <onload condition="Player.PauseEnabled">SetFocus(602)</onload>
+  <onload condition="!Player.PauseEnabled">SetFocus(603)</onload>
   <include>dialogeffect</include>
   <depth>DepthOSD</depth>
   <coordinates>
@@ -16,9 +17,11 @@
       <top>123r</top>
       <width>1080</width>
       <height>24</height>
-      <onup>702</onup>
-      <ondown>26</ondown>
+      <onup>100</onup>
+      <ondown>100</ondown>
       <action>seek</action>
+      <info>Player.Progress</info>
+      <enable>Player.SeekEnabled</enable>
       <texturesliderbar>seekslider2.png</texturesliderbar>
       <textureslidernib>osd_slider_nibNF.png</textureslidernib>
       <textureslidernibfocus>osd_slider_nib.png</textureslidernibfocus>
@@ -28,7 +31,9 @@
     <control type="grouplist" id="100">
       <left>488</left>
       <top>90r</top>
-      <ondown>Dialog.Close(all)</ondown>
+      <onup condition="Player.SeekEnabled">87</onup>
+      <onup condition="!Player.SeekEnabled">noop</onup>
+      <ondown>Dialog.Close(MusicOSD)</ondown>
       <ondown>ActivateWindow(musicplaylist)</ondown>
       <orientation>horizontal</orientation>
       <itemgap>0</itemgap>
@@ -127,7 +132,7 @@
         <texturefocus>am6b/icon-list-focus.png</texturefocus>
         <texturenofocus>am6b/icon-list.png</texturenofocus>
         <visible>!MusicPlayer.Content(LiveTV)</visible>
-        <onclick>Dialog.Close(all)</onclick>
+        <onclick>Dialog.Close(MusicOSD)</onclick>
         <onclick>ActivateWindow(musicplaylist)</onclick>
       </control>
       <control type="button" id="306">
