@@ -19,6 +19,22 @@ controller = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(controller)
 
 
+@pytest.mark.parametrize('args,timeout', [
+    (('systemctl','stop','kodi.service'), 120),
+    (('systemctl','stop','bobitv-preparation.service'), 120),
+    (('systemctl','start','kodi.service'), 60),
+    (('systemctl','show','kodi.service'), 60),
+])
+def test_service_stop_has_a_bounded_budget_for_all_systemd_stop_phases(monkeypatch, args, timeout):
+    seen = []
+    def run(command, **kwargs):
+        seen.append((command, kwargs['timeout']))
+        return types.SimpleNamespace(returncode=0, stdout=b'active\n')
+    monkeypatch.setattr(controller.subprocess, 'run', run)
+    assert controller.command(*args) == 'active'
+    assert seen == [(list(args), timeout)]
+
+
 def make_installed(path):
     with sqlite3.connect(path) as db:
         db.execute('CREATE TABLE installed(id INTEGER PRIMARY KEY, addonID TEXT UNIQUE, enabled INTEGER, '

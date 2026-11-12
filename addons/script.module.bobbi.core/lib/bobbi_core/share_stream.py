@@ -26,6 +26,7 @@ DELIVERY_CHUNK_BYTES = 128 * 1024
 DIAGNOSTIC_BATCH_SECONDS = .002
 DELIVERY_POLL_SECONDS = 1
 FETCH_CHUNK_BYTES = 32 * 1024
+BLOCK_DELIVERY_SECONDS = 1.0
 PROGRESSIVE_QUEUE_BYTES = 8 * 1024**2
 BINDING_IDENTITY = ('locator', 'guid', 'title', 'size')
 NEGATIVE_GRANT_SECONDS = 30
@@ -69,7 +70,7 @@ OBSERVATION_ENUMS = {
     'reason': OBSERVATION_REASONS | frozenset((
         'none', 'invalid_range', 'gate_cancelled', 'after_fetch',
         'delivery_incomplete', 'range_complete', 'before_fetch',
-        'unexpected_exception', 'contention', 'address_renewed', 'read_resumed')),
+        'unexpected_exception', 'contention', 'address_renewed', 'read_resumed', 'delivery_window')),
 }
 
 
@@ -1249,6 +1250,7 @@ class Handler(BaseHTTPRequestHandler):
             raise ValueError('SHARE_DIAGNOSTIC_INVALID')  # Never accumulate an extended range in memory.
         accepted = 0
         contention_retries = 0
+        delivery_started = time.monotonic()
         while start + accepted <= end and not self.cancelled():
             offset = start + accepted
             if retry_window is not None:
@@ -1260,6 +1262,7 @@ class Handler(BaseHTTPRequestHandler):
             upstream_headers = {key: values[0] for key, values in parse_qs(options).items()}
             rejected = False
             yielded = False
+            delivery_due = False
             possible_close_race = False
             try:
                 self.observation_stage = 'connect'
@@ -1311,6 +1314,14 @@ class Handler(BaseHTTPRequestHandler):
                                 if self.diagnostic_timings is not None:
                                     self.observe('window', retry_window=retry_window.index, upstream_accepted=start+accepted,
                                         timing_scope='diagnostic_cumulative', **self.diagnostic_timings)
+                            if (consume is None and accepted < end-start+1
+                                    and time.monotonic() - delivery_started >= BLOCK_DELIVERY_SECONDS):
+                                # A CDN can trickle forever without hitting its
+                                # socket timeout. Flush this validated prefix,
+                                # close upstream, then fetch the exact suffix.
+                                # No second reader, extra cache, or mode change.
+                                delivery_due = yielded = True
+                                break
                             if accepted and accepted < end-start+1 and entry.io_lock.contended():
                                 # Keep the sequential 64 MiB request when it is
                                 # alone. A queued seek/scanner gets the next
@@ -1322,7 +1333,8 @@ class Handler(BaseHTTPRequestHandler):
                 if yielded:
                     entry.io_lock.note_yield()
                     owner.report('READ_YIELDED bytes={} remaining={}'.format(accepted, end-start+1-accepted))
-                    self.observe('yield', bytes=accepted, remaining=end-start+1-accepted, block_end=end)
+                    self.observe('yield', bytes=accepted, remaining=end-start+1-accepted, block_end=end,
+                                 **({'reason':'delivery_window'} if delivery_due else {}))
                     return (accepted if consume is not None else data), failures
                 # Exit response context before resolving/retrying a signature;
                 # the rejected socket must not compete with its own replacement.

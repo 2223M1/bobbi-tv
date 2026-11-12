@@ -72,6 +72,8 @@ def main():
     parser.add_argument('mode', choices=('status', 'block', 'progressive'))
     parser.add_argument('--transport-source', type=Path, required=True)
     args = parser.parse_args()
+    report = ROOT / 'review-evidence/ce-20261020' / ('transport-'+args.mode+'-'+str(time.time_ns())+'.json')
+    report.parent.mkdir(parents=True, exist_ok=True)
     sys.path.insert(0, str(args.transport_source / 'ui-redesign/runtime/ssh-python'))
     spec = importlib.util.spec_from_file_location('transport_mode_device', args.transport_source / 'ui-redesign/tools/device_transport.py')
     module = importlib.util.module_from_spec(spec)
@@ -81,7 +83,6 @@ def main():
         code, result, diagnostic = wire.readonly(client, ('MODE='+repr(args.mode)+'\n'+REMOTE).encode(), deadline_seconds=100)
     finally:
         client.close()
-    report = ROOT / 'review-evidence/ce-20261020' / ('transport-'+args.mode+'-'+str(time.time_ns())+'.json')
     report.write_text(json.dumps(dict(result=result,exit_code=code,diagnostic_present=bool(diagnostic)), indent=2)+'\n', encoding='utf-8')
     print(json.dumps(dict(evidence=str(report),result=result)))
     if code or diagnostic:

@@ -385,13 +385,13 @@ def manage():
     try:
         accounts = [r for r in _status() if r['provider'] != '115' and r['account']['authenticated']]
         if not accounts:
-            from .library_ui import cd2_mounts, open_existing_cd2, open_library
+            from .library_ui import cd2_mounts, open_library
             mounted = bool(cd2_mounts.discover())
             if dialog.yesno('目录索引支持范围',
-                    '当前索引仅支持已原生登录的个人网盘（115 除外）。CD2 / WebDAV / SMB / NFS / 本机目录暂不支持此索引。'
-                    '\n已有挂载和片库可直接浏览、播放，无需为此再次扫码。',
-                    yeslabel='浏览 CD2' if mounted else '浏览片库', nolabel='返回'):
-                return open_existing_cd2(dialog) if mounted else open_library(dialog)
+                    '个人网盘作品索引需要原生登录（115 除外）。现有 CD2 本机挂载可在片库的“CD2 索引片库”中登记与扫描。'
+                    '\nWebDAV / SMB / NFS / 普通本机目录仍使用原文件浏览；已有挂载无需为此再次扫码。',
+                    yeslabel='片库与 CD2 索引' if mounted else '浏览片库', nolabel='返回'):
+                return open_library(dialog)
             return
         selected = dialog.select('选择当前账号的片库', [NAMES[r['provider']] for r in accounts]) if len(accounts) > 1 else 0
         if not 0 <= selected < len(accounts):

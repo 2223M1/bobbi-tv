@@ -14,6 +14,8 @@ import urllib.request
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 TESTS={
+    'dog_day_afternoon': {'title': 'Dog Day Afternoon', 'tmdb_id': 968, 'kind': 'movie', 'year': 1975},
+    'galactic_heroes': {'title': 'Legend of the Galactic Heroes', 'tmdb_id': 27660, 'kind': 'tv', 'year': 1988, 'season': 1, 'episode': 1, 'animation': True},
     'paris_texas': {'title': 'Paris, Texas', 'tmdb_id': 655, 'kind': 'movie', 'year': 1984},
     'millennium_actress': {'title': 'Millennium Actress', 'tmdb_id': 33320, 'kind': 'movie', 'year': 2002, 'animation': True},
     'straight_story': {'title': 'The Straight Story', 'tmdb_id': 404, 'kind': 'movie', 'year': 1999},
@@ -423,6 +425,32 @@ def sample(record):
     return value
 
 
+def capture_startup_trace(record, budget=40):
+    """Keep bounded evidence on read failure; never retry past an owner change."""
+    assert 0 < budget <= 40
+    trace = []
+    deadline = time.monotonic() + budget
+    while time.monotonic() < deadline:
+        began = time.monotonic()
+        try:
+            current = sample(record)
+        except Exception as error:
+            # Exception messages may contain signed URLs. Do not export them,
+            # and do not discard the already observed startup interval.
+            return trace, dict(type=type(error).__name__,
+                reason='STARTUP_OBSERVATION_INTERRUPTED', samples_retained=len(trace))
+        compact = {key: current[key] for key in (
+            'wall', 'phase', 'seconds', 'speed', 'caching', 'observation_times',
+            'cancelled', 'failure', 'subtitleenabled', 'decoder_counters',
+            'decoder_counter_source', 'decoder') if key in current}
+        compact['native'] = {key: current.get('native', {}).get(key) for key in (
+            'native_instance', 'request_id', 'subtitle_file_applied',
+            'subtitle_file_sha256', 'subtitle_intent', 'user_intent', 'sequence')}
+        trace.append(compact)
+        time.sleep(max(0, min(.5 - (time.monotonic() - began), deadline - time.monotonic())))
+    return trace, None
+
+
 def startup_coverage(samples, health):
     """Coverage is additional to, never a replacement for, the old predicate."""
     from copy import deepcopy
@@ -776,29 +804,20 @@ else:
             cards.append(card)
             rpc('Input.Down');time.sleep(.1)
         trace=[]
+        trace_error=None
         if chosen and globals().get('TRACE') is True:
             # One uninterrupted, bounded acquisition starts immediately after
             # Select. Separate tool-call latency must not hide subtitle startup.
-            deadline=time.monotonic()+40
-            while time.monotonic()<deadline:
-                began=time.monotonic()
-                current=sample(record)
-                # Keep every temporal/ownership sample, but omit repeated GUI
-                # labels and static stream metadata from the bounded transport.
-                compact={key:current[key] for key in ('wall','phase','seconds','speed','caching','observation_times',
-                    'cancelled','failure','subtitleenabled','decoder_counters','decoder_counter_source','decoder') if key in current}
-                compact['native']={key:current.get('native',{}).get(key) for key in (
-                    'native_instance','request_id','subtitle_file_applied','subtitle_file_sha256',
-                    'subtitle_intent','user_intent','sequence')}
-                trace.append(compact)
-                time.sleep(max(0,min(.5-(time.monotonic()-began),deadline-time.monotonic())))
+            trace,trace_error=capture_startup_trace(record)
         result=dict(name=NAME,operation=OP,cards=cards if OP=='cards' else [],selected=chosen, picker_start=traversal_start,
-                    samples=trace,record=record if trace else None)
-        if trace:
+                    samples=trace,record=record if trace or trace_error else None)
+        if trace_error:
+            result.update(error=trace_error['type'],reason=trace_error['reason'],trace_error=trace_error)
+        if trace or trace_error:
             result['trace_health']=startup_health(trace)
             result['trace_signal_diagnostics']=startup_signal_diagnostics(trace)
             result['trace_coverage']=startup_coverage(trace, result['trace_health'])
-            result['trace_passed']=result['trace_coverage']['passed'] is True
+            result['trace_passed']=not trace_error and result['trace_coverage']['passed'] is True
             with record_path.with_suffix('.startup.json').open('x') as output:
                 json.dump(result,output)
             path=record_path.with_suffix('.startup.json')

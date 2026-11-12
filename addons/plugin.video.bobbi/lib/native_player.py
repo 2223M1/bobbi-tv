@@ -1396,6 +1396,7 @@ class JacktookPLayer(xbmc.Player):
                 self.data["progress"] = self.watched_percentage
                 self.data["current_time"] = self.current_time
                 self.data["total_time"] = self.total_time
+                self._progress_observed_at = monotonic()
                 self._simkl_resume_playback_observed = True
                 self._trakt_resume_playback_observed = True
         except Exception as e:
@@ -2214,6 +2215,7 @@ class JacktookPLayer(xbmc.Player):
         self.watched_percentage = self.data.get("progress", 0.0)
         self.total_time = 0
         self.current_time = 0
+        self._progress_observed_at = None
         self.playback_started_properly = False
         self.autoscrape_started = False
         self.next_dialog = get_setting("playnext_dialog_enabled")
@@ -2839,7 +2841,19 @@ class JacktookPLayer(xbmc.Player):
                 if isinstance(event, dict) and event.get('session') == self.playback_session_id:
                     self._terminal_reason = event.get('reason', 'UNKNOWN')
                     if event.get('end') is True:
-                        self._cinema_end = True
+                        # Native demuxer exhaustion can report NATURAL_EOF after
+                        # an HTTP read timeout. Keep the native receipt intact,
+                        # but do not complete history or reserve another episode
+                        # without a recent same-session observation at the end.
+                        from bobbi_core.playback_completion import observed_end
+                        natural = observed_end(getattr(self, 'current_time', None),
+                            getattr(self, 'total_time', None),
+                            getattr(self, '_progress_observed_at', None), monotonic(), max_age=5)
+                        self._cinema_end = natural
+                        if not natural:
+                            self._terminal_reason = 'ERROR'
+                            self._cinema_cancel.set()
+                            kodilog('[CINEMA-TERMINAL] EARLY_OR_UNPROVED_EOF_REJECTED')
                     elif event.get('end') is False:
                         self._cinema_cancel.set()
                     return

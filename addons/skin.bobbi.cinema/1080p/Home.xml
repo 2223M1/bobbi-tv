@@ -1,20 +1,26 @@
 <?xml version='1.0' encoding='utf-8'?>
 <window>
-  <defaultcontrol always="false">9000</defaultcontrol>
+  <defaultcontrol always="false">9711</defaultcontrol>
   <onload>SetProperty(BobiSection,home,Home)</onload>
   <include>PageOpen</include>
   <controls>
     <include>Canvas</include>
     <include>HomeStage</include>
-    <!-- rails: vertical grouplist; the focused rail scrolls to the top of the rail zone -->
-    <control type="grouplist" id="9000">
+    <!-- One visible rail slot. Providers stay alive offscreen; an empty leading
+         group must not make Kodi's first-focusable ScrollTo(0) show a blank. -->
+    <control type="group" id="9000">
       <left>0</left><top>580</top><width>1920</width><height>420</height>
-      <orientation>vertical</orientation>
-      <itemgap>0</itemgap>
-      <scrolltime tween="cubic" easing="out">220</scrolltime>
-      <usecontrolcoords>false</usecontrolcoords>
       <onup>9701</onup>
       <include>HomeRails</include>
+    </control>
+    <control type="label" id="9791">
+      <left>-2000</left><top>0</top><width>800</width><height>1</height>
+      <label>$VAR[HomeContentFocus]</label>
+    </control>
+    <control type="label">
+      <left>96</left><top>640</top><width>1600</width><height>48</height>
+      <label>正在加载片单…</label><font>Body26</font><textcolor>text3</textcolor>
+      <visible>$EXP[BobiHomeUpdating] + !$EXP[BobiHomeHasItems]</visible>
     </control>
     <!-- next-row affordance: rails move one at a time, so name what is below.
          A quiet read-only pill (disabled auto-width button) with a chevron inside it. -->

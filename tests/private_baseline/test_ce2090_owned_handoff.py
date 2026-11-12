@@ -154,6 +154,10 @@ def boundary_case(monkeypatch, tmp_path, variant, change, kind='natural'):
             elif change == 'native_stop':
                 native.current['user_intent'] += 1
         else:
+            # Natural completion needs end-position corroboration in addition
+            # to the native receipt; this fixture models an already watched end.
+            actors[0].current_time, actors[0].total_time = (2 if change == 'early_eof' else 99), 100
+            actors[0]._progress_observed_at = time.monotonic()
             reason = {'native_error': 'ERROR', 'native_stop': 'STOP'}.get(change, 'NATURAL_EOF')
             native.current.update(phase='TERMINAL', reason=reason, sequence=2)
 
@@ -260,8 +264,11 @@ def boundary_case(monkeypatch, tmp_path, variant, change, kind='natural'):
         assert not opened, 'Cancellation, replacement or abort must never dispatch a child'
         if change == 'ui_cancel':
             assert explicit.is_set(), 'Never clear the resolver/user cancellation Event'
-        if change in ('native_stop', 'native_error'):
+        if change in ('native_stop', 'native_error', 'early_eof'):
             assert commands.count('reserve_child') == 0
+        if change == 'early_eof':
+            assert actor._terminal_reason == 'ERROR' and not actor._cinema_end
+            assert state['desired']['request_id'] == parent_id
         if change in ('replacement', 'external_audio', 'child_cancelled'):
             assert commands.count('bind_file') == 0
         if change == 'account_logout':
@@ -320,6 +327,10 @@ def multi_case(monkeypatch, change):
 @pytest.mark.parametrize('kind', ['natural', 'transport'])
 def test_owned_handoff_boundary(monkeypatch, tmp_path, variant, change, kind):
     boundary_case(monkeypatch, tmp_path, variant, change, kind)
+
+
+def test_early_native_eof_cannot_reserve_or_dispatch_next_episode(monkeypatch, tmp_path):
+    boundary_case(monkeypatch, tmp_path, 'current', 'early_eof', 'natural')
 
 
 @pytest.mark.parametrize('change', ['manual_picker_cancel', 'child_cancel', 'child_superseded'])

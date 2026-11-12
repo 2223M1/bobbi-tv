@@ -109,7 +109,11 @@ def migrate_torrent_backend(manifest):
 
 
 def command(*args):
-    result = subprocess.run(list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
+    # systemd can spend TimeoutStopSec on more than one shutdown phase. Do
+    # not race its completion with rollback at the old 60-second boundary.
+    # This is only the controller wait; no unit timeout or kill policy changes.
+    timeout = 120 if args[:2] == ('systemctl', 'stop') else 60
+    result = subprocess.run(list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
     if result.returncode:
         raise RuntimeError('CE_COMMAND_' + args[0])
     return result.stdout.decode().strip()

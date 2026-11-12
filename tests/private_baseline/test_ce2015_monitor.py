@@ -33,6 +33,9 @@ def test_monitor_distinguishes_current_terminal_retired_and_unknown(monkeypatch,
     player._owner_context = dict(boot_id=owner.boot_id, epoch=owner.epoch, request_id=rid)
     player._cinema_cancel, player._cinema_end = Event(), False
     player._was_superseded, player._terminal_reason, player.skip_intro_enabled = False, 'UNKNOWN', False
+    # This owner/IPC fixture ends at the observed final second. Early demuxer
+    # exhaustion is independently rejected by test_ce2112_early_eof.
+    player.current_time, player.total_time, player._progress_observed_at = 99, 100, clock[0]
     def transport(body, **kwargs):
         calls.append(body)
         if fault in ('timeout', 'malformed') or (fault == 'gap' and len(calls) <= 3):

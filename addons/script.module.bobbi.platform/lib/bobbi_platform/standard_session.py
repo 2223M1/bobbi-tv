@@ -137,10 +137,9 @@ class StandardSession:
             return False
         # Standard Ended can also mean an early read failure. A recent observed
         # end position is required; a percent threshold alone is not EOF.
-        natural = (kind == 'ENDED' and row['duration'] > 0
-            and row['duration'] - row['position'] <= 3
-            and row['progress_observed'] is not None
-            and 0 <= self.clock() - row['progress_observed'] <= 3)
+        from bobbi_core.playback_completion import observed_end
+        natural = (kind == 'ENDED' and observed_end(row['position'], row['duration'],
+            row['progress_observed'], self.clock()))
         reason = 'NATURAL_EOF' if natural else ('STOP' if kind == 'STOPPED' else 'ERROR')
         row.update(state='ended' if natural else 'retired', terminal=self.clock())
         self._save(row, reason)

@@ -88,7 +88,8 @@ def test_actual_terminal_wait_survives_busy_read_without_guessing_eof(monkeypatc
     exec(compile(ast.Module(body=[method], type_ignores=[]), str(path), 'exec'), env)
     player = SimpleNamespace(data=dict(selection_policy='exact'), playback_session_id='a'*32,
         _cinema_cancel=Event(), _cinema_end=False, _owner_context=original, _native_instance='native',
-        _terminal_reason='UNKNOWN', _owns_playback_session=lambda: pytest.fail('do not collapse an unavailable read to false'))
+        _terminal_reason='UNKNOWN', current_time=99, total_time=100, _progress_observed_at=100.,
+        _owns_playback_session=lambda: pytest.fail('do not collapse an unavailable read to false'))
     env['wait_cinema_terminal'](player, 3)
     assert player._terminal_reason == 'NATURAL_EOF' and player._cinema_end
     assert len(calls) == 2 and not player._cinema_cancel.is_set()

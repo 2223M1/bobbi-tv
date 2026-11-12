@@ -69,10 +69,16 @@
     <definition>
       <control type="group">
         <width>1920</width><height>420</height>
-        <visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
+        <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id])">Conditional</animation>
+        <!-- Keep the provider owner alive: Kodi evaluates node.visible one
+             tick after DONE. Hiding this group on zero items prevents that
+             tick and permanently hides account-filtered cards. Navigation
+             still skips empty lists. Inactive rails are translated offscreen,
+             not hidden, so they keep processing without occupying scroll slots. -->
         <control type="label">
           <left>96</left><top>0</top><width>1100</width><height>48</height>
           <label>$PARAM[title]</label>
+          <visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
           <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
         </control>
         <control type="label">
@@ -159,10 +165,13 @@
     <definition>
       <control type="group">
         <width>1920</width><height>420</height>
-        <visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
+        <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id])">Conditional</animation>
+        <!-- Same provider-lifetime rule as HomeRail; do not gate its parent
+             processing on the result of the provider itself. -->
         <control type="label">
           <left>96</left><top>0</top><width>1100</width><height>48</height>
           <label>$PARAM[title]</label>
+          <visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
           <font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
         </control>
         <control type="label">

@@ -110,6 +110,46 @@ def test_wide_resume_rail_explains_initial_loading_without_hiding_cached_items()
         'Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems,0)')
 
 
+@pytest.mark.parametrize('name', ['HomeRail', 'HomeRailWide'])
+def test_account_filtered_rail_keeps_provider_alive_during_first_visibility_tick(name):
+    root = document('Includes_Home.xml').find(f"include[@name='{name}']/definition/control")
+    # Kodi DirectoryProvider DONE first Fetch can be empty: node.visible is
+    # evaluated on its next Update. A hidden parent never processes children,
+    # so hiding the owner on NumItems==0 permanently prevents that next tick.
+    assert root.findtext('visible', 'true') == 'true'
+    title = next(node for node in root.findall('control')
+                 if node.findtext('label') == '$PARAM[title]')
+    assert title.findtext('visible') == (
+        'Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating')
+    control = root.find("control[@type='list']")
+    assert control.findtext('enable') == 'Integer.IsGreater(Container($PARAM[id]).NumItems,0)'
+
+
+def test_home_rails_share_one_viewport_without_empty_group_scroll_slots():
+    root = document('Home.xml')
+    viewport = root.find(".//control[@id='9000']")
+    assert viewport.get('type') == 'group'
+    assert viewport.findtext('top') == '580'
+    assert viewport.findtext('height') == '420'
+    assert viewport.find('visible') is None  # Directory providers must still tick.
+    selector = root.find(".//control[@id='9791']")
+    assert selector is not None and selector.findtext('label') == '$VAR[HomeContentFocus]'
+    for name in ('HomeRail', 'HomeRailWide'):
+        rail = document('Includes_Home.xml').find(f"include[@name='{name}']/definition/control")
+        hidden = rail.find('animation')
+        assert hidden is not None and hidden.text == 'Conditional'
+        assert hidden.attrib == dict(effect='slide', start='0,0', end='0,2160', time='0',
+            condition='!String.IsEqual(Control.GetLabel(9791),$PARAM[id])')
+    loading = root.find(".//control[label='正在加载片单…']")
+    assert loading.findtext('visible') == '$EXP[BobiHomeUpdating] + !$EXP[BobiHomeHasItems]'
+
+
+def test_cold_home_has_a_visible_default_before_async_rails_arrive():
+    node = document('Home.xml').find('defaultcontrol')
+    assert node.text == '9711'  # Always-present Home tab, not an empty group.
+    assert node.get('always') == 'false'  # Returning retains the existing card.
+
+
 def test_personal_preview_is_data_only_not_an_offscreen_remote_focus_target():
     root = document('Custom_1197_BobiPersonal.xml')
     preview = root.find(".//control[@id='9130']")

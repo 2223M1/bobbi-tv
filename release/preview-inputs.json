@@ -165,6 +165,7 @@
       "lib/bobbi_core/pack_media_equivalence.py",
       "lib/bobbi_core/pack_parser.py",
       "lib/bobbi_core/playback_authority.py",
+      "lib/bobbi_core/playback_completion.py",
       "lib/bobbi_core/playback_ipc.py",
       "lib/bobbi_core/playback_owner.py",
       "lib/bobbi_core/playback_request.py",

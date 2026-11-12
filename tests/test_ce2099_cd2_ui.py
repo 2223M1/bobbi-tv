@@ -126,14 +126,16 @@ def test_no_mount_does_not_offer_or_claim_cd2_access(ui):
     assert 'CD2' not in repr(ui.menus) and not ui.opened
 
 
-@pytest.mark.parametrize('mounted,opened,label', [(True, 'cd2', '浏览 CD2'), (False, 'library', '浏览片库')])
-def test_index_explains_unimplemented_mount_support_and_preserves_file_access(ui, mounted, opened, label):
+@pytest.mark.parametrize('mounted,label', [(True, '片库与 CD2 索引'), (False, '浏览片库')])
+def test_index_explains_supported_cd2_and_preserves_file_access(ui, mounted, label):
     ui.mounts = ui.mounts if mounted else ()
     ui.confirmations = [True]
     assert catalog_ui.manage() is True
-    assert ui.opened == [opened]
+    assert ui.opened == ['library']
     _, message, buttons = ui.prompts[0]
-    assert '115 除外' in message and 'CD2 / WebDAV / SMB / NFS / 本机目录暂不支持此索引' in message
+    assert '115 除外' in message and 'CD2 索引片库' in message
+    assert 'CD2 / WebDAV / SMB / NFS / 本机目录暂不支持此索引' not in message
+    assert 'WebDAV / SMB / NFS / 普通本机目录仍使用原文件浏览' in message
     assert '无需为此再次扫码' in message and buttons['yeslabel'] == label
 
 
@@ -161,8 +163,5 @@ def test_index_browse_navigation_closes_all_parent_management_menus(context, mon
     assert cloud_hub.show(context.dialog) is True
     assert len(context.builtins) == 1
     assert context.builtins[0].startswith('ActivateWindow(Videos,plugin://plugin.video.bobbi.library/')
-    if mounted:
-        assert 'action=browse' in context.builtins[0]
-        assert context.store.sources()[0].location == '/mounted-fixture/'
-    else:
-        assert context.builtins[0] == 'ActivateWindow(Videos,plugin://plugin.video.bobbi.library/,return)'
+    assert context.builtins[0] == 'ActivateWindow(Videos,plugin://plugin.video.bobbi.library/,return)'
+    assert not context.store.sources()  # Opening management must not register/scan a mount.

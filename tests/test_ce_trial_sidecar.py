@@ -21,6 +21,14 @@ def test_sidecar_preserves_raw_channels_and_failure():
     assert cli.result_exit_code(value,operation='collect')!=0
 
 
+def test_interrupted_trace_is_failure_even_after_good_samples():
+    value = dict(name='movie', operation='select', selected=True,
+                 error='RuntimeError', reason='STARTUP_OBSERVATION_INTERRUPTED',
+                 trace_passed=False, trace_coverage={'passed': True})
+    assert cli.result_exit_code(value, operation='select') != 0
+    assert cli.result_exit_code(value, operation='collect') != 0
+
+
 @pytest.mark.parametrize('field,value', [('artifact','/wrong.json'),('sha256','bad'),('bytes',0)])
 def test_reject_changed_transport_descriptor(field,value):
     _,raw,descriptor=fixture();descriptor[field]=value

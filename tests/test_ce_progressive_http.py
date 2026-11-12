@@ -85,6 +85,10 @@ def pipeline(progressive=True, mode='normal', delay=0, queue_bytes=128*1024,
     thread.start()
 
     class Session(requests.Session):
+        def __init__(self):
+            super().__init__()
+            self.trust_env = False
+
         def get(self, *args, **kwargs):
             response = super().get(*args, **kwargs)
             with lock:
@@ -138,6 +142,25 @@ def wait_end(events, count=1):
     raise AssertionError('HTTP worker did not terminate')
 
 
+def test_loopback_fixture_ignores_environment_proxies(monkeypatch):
+    # The fixture must use the same proxy isolation as ShareStream.session().
+    # A host proxy can rewrite chunk framing and manufacture transport failures.
+    for key in ('http_proxy', 'HTTP_PROXY', 'https_proxy', 'HTTPS_PROXY',
+                'all_proxy', 'ALL_PROXY'):
+        monkeypatch.setenv(key, 'http://127.0.0.1:1')
+    for key in ('no_proxy', 'NO_PROXY'):
+        monkeypatch.setenv(key, '')
+    with pipeline(mode='chunked') as (_, connect, _, events, _, _):
+        connection, response = connect('bytes=17-99999')
+        try:
+            assert response.status == 206
+            assert response.read() == PAYLOAD[17:100000]
+        finally:
+            connection.close()
+        wait_end(events)
+        assert events[-1]['outcome'] == 'complete'
+
+
 @pytest.mark.parametrize('progressive', [False, True])
 @pytest.mark.parametrize('mode', ['normal', 'short_once', 'expired'])
 def test_real_http_exact_range_short_read_and_renewal(progressive, mode):
@@ -180,6 +203,26 @@ def test_progressive_first_byte_precedes_whole_block(record_property):
     record_property('block_first_byte_ms', round(timings[False]*1000))
     record_property('progressive_first_byte_ms', round(timings[True]*1000))
     assert timings[True] < timings[False] / 2
+
+
+def test_block_mode_delivers_available_prefix_before_slow_block_is_complete():
+    # A steadily trickling peer does not hit the socket no-progress timeout.
+    # It must not hold a whole 8/64 MiB block while Kodi sees zero new bytes.
+    with pipeline(False, mode='trickle', delay=.004, payload=PAYLOAD[:800]) as (
+            service, connect, calls, events, _, peak):
+        began = time.monotonic()
+        connection, response = connect()
+        try:
+            assert response.read(1) == PAYLOAD[:1]
+            assert time.monotonic() - began < 2.5
+            assert response.read() == PAYLOAD[1:800]
+        finally:
+            connection.close()
+        wait_end(events)
+        assert len(calls) > 1 and peak[0] == 1
+        assert events[-1]['outcome'] == 'complete'
+        assert any(r.get('reason') == 'delivery_window' for r in events)
+        assert not service.producers  # Preserve synchronous block mode.
 
 
 def test_pause_releases_gate_for_auxiliary_range_without_killing_first(monkeypatch):

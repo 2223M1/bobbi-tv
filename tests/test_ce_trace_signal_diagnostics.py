@@ -25,6 +25,39 @@ def row(wall, seconds, frames, caching=False, phase='AV_STARTED', instance='one'
                 decoder_counters={'frame count': frames})
 
 
+@pytest.mark.parametrize('failure_at', [0, 2])
+@pytest.mark.parametrize('error_type', [RuntimeError, AssertionError, TimeoutError])
+def test_startup_capture_retains_partial_samples_and_stops_on_any_owner_read_failure(failure_at, error_type):
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        if len(calls) > failure_at:
+            raise error_type('private://signed-secret-must-not-be-exported')
+        result = row(clock[0], clock[0] + 1, len(calls) * 10)
+        result['labels'] = {'private': 'omitted'}
+        return result
+    ns.update(sample=sample, time=SimpleNamespace(
+        monotonic=lambda: clock[0], sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)))
+    trace, failure = ns['capture_startup_trace']({'owned': True})
+    assert len(calls) == failure_at + 1  # No retry through an ownership failure.
+    assert len(trace) == failure_at
+    assert all('labels' not in item for item in trace)
+    assert failure == dict(type=error_type.__name__, reason='STARTUP_OBSERVATION_INTERRUPTED',
+                          samples_retained=failure_at)
+    assert 'secret' not in repr((trace, failure))
+
+
+def test_startup_capture_finishes_within_original_budget():
+    ns = functions('capture_startup_trace')
+    clock = [0.0]
+    ns.update(sample=lambda _: row(clock[0], clock[0] + 1, int(clock[0] * 24)),
+        time=SimpleNamespace(monotonic=lambda: clock[0],
+            sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)))
+    trace, failure = ns['capture_startup_trace']({}, budget=2)
+    assert len(trace) == 4 and clock[0] == 2 and failure is None
+
+
 def test_clock_only_stationarity_is_separate_from_real_caching_without_rewriting_failure():
     ns = functions('startup_health', 'startup_coverage', 'startup_signal_diagnostics')
     samples = [row(i / 2, 1.114, 70 + i * 12) for i in range(6)]
