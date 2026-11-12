@@ -100,6 +100,8 @@ class MediaIndex:
                     'CREATE TABLE IF NOT EXISTS catalog_meta(singleton INTEGER PRIMARY KEY,schema INTEGER NOT NULL,generation TEXT NOT NULL,revision INTEGER NOT NULL)',
                     'CREATE TABLE IF NOT EXISTS catalog_sources(source TEXT PRIMARY KEY,active INTEGER NOT NULL)',
                     'CREATE TABLE IF NOT EXISTS typed_objects(id TEXT PRIMARY KEY,source TEXT NOT NULL,namespace TEXT NOT NULL,ref TEXT NOT NULL)',
+                    'CREATE TABLE IF NOT EXISTS catalog_scope_revisions(provider TEXT NOT NULL,account TEXT NOT NULL,namespace TEXT NOT NULL,revision INTEGER NOT NULL,PRIMARY KEY(provider,account,namespace))',
+                    'CREATE TABLE IF NOT EXISTS typed_observations(file TEXT NOT NULL,digest TEXT NOT NULL,ref TEXT NOT NULL,observed REAL NOT NULL,PRIMARY KEY(file,digest))',
                 ):
                     self.db.execute(sql)
                 self.db.execute('INSERT OR IGNORE INTO object_times SELECT id,NULL,0 FROM objects')
@@ -107,7 +109,7 @@ class MediaIndex:
                 self.db.execute('INSERT OR IGNORE INTO catalog_sources SELECT DISTINCT source,1 FROM memberships')
                 catalog_query.create_projection(self.db)
                 meta = self.db.execute('SELECT * FROM catalog_meta WHERE singleton=1').fetchone()
-                rebuild = (meta is None or meta['schema'] != 4 or self.db.execute(
+                rebuild = (meta is None or meta['schema'] != 5 or self.db.execute(
                     'SELECT count(*) FROM catalog_rows').fetchone()[0] != self.db.execute(
                     'SELECT (SELECT count(*) FROM objects)+(SELECT count(*) FROM typed_objects)').fetchone()[0])
                 if rebuild:
@@ -152,17 +154,30 @@ class MediaIndex:
         self.db.execute('CREATE INDEX catalog_rows_scope ON catalog_rows(provider,account,title_sort,id)')
         self.db.execute('CREATE INDEX catalog_rows_work ON catalog_rows(provider,account,work_id,season_id,episode_id)')
         self.db.execute('CREATE INDEX catalog_rows_group ON catalog_rows(group_key,id)')
-        self.db.execute('INSERT OR REPLACE INTO catalog_meta VALUES(1,4,?,?)', (uuid4().hex, revision))
+        self.db.execute('INSERT OR REPLACE INTO catalog_meta VALUES(1,5,?,?)', (uuid4().hex, revision))
 
     def rebuild_projection(self):
         with self.transaction():
             self._rebuild_projection()
 
-    def _changed(self):
+    def _changed(self, expected):
         self.db.execute('UPDATE catalog_meta SET revision=revision+1 WHERE singleton=1')
+        self.db.execute('INSERT INTO catalog_scope_revisions VALUES(?,?,?,1) '
+            'ON CONFLICT(provider,account,namespace) DO UPDATE SET revision=revision+1',
+            catalog_query.revision_key(expected))
+
+    def scope_revision(self, expected):
+        row = self.db.execute('SELECT revision FROM catalog_scope_revisions WHERE provider=? AND account=? AND namespace=?',
+            catalog_query.revision_key(expected)).fetchone()
+        return row[0] if row else 0
 
     def query(self, expected, **args):
         return self.query_reader.query(expected, **args)
+
+    def has_mounted_items(self, source_id, namespace):
+        with self.lock:
+            return self.db.execute('SELECT 1 FROM typed_objects WHERE source=? AND namespace=? LIMIT 1',
+                (identifier(source_id), identifier(namespace, 64))).fetchone() is not None
 
     def trusted_file(self, expected, object_id):
         """Host-only reference lookup, not a public query response."""
@@ -178,6 +193,30 @@ class MediaIndex:
                 raise ValueError('CATALOG_FILE_NOT_FOUND')
             return mounted_validate(json.loads(row[0]))
 
+    def _remember_observation(self, reference):
+        """Retain old evidence for diagnosis; history is not a playback permit."""
+        raw = encode(reference)
+        self.db.execute('INSERT OR IGNORE INTO typed_observations VALUES(?,?,?,?)',
+            (reference['id'], hashlib.sha256(raw.encode()).hexdigest(), raw, self.now()))
+        self.db.execute('DELETE FROM typed_observations WHERE file=? AND rowid NOT IN '
+            '(SELECT rowid FROM typed_observations WHERE file=? ORDER BY observed DESC,rowid DESC LIMIT 32)',
+            (reference['id'], reference['id']))
+
+    def observe_mounted(self, authority, reference):
+        """Publish an explicitly reselected current observation, never progress."""
+        from .mounted_ref import validate as mounted_validate
+        reference = mounted_validate(reference)
+        with self.transaction():
+            previous = self.trusted_mounted_file(authority, reference['id'])
+            if (reference['source_id'], reference['namespace'], reference['mount_generation']) != (
+                    authority['source_id'], authority['namespace'], authority['generation']):
+                raise ValueError('CATALOG_AUTHORITY_CHANGED')
+            self._remember_observation(previous)
+            self._remember_observation(reference)
+            self.db.execute('UPDATE typed_objects SET ref=? WHERE id=?', (encode(reference), reference['id']))
+            catalog_query.project(self.db, reference['id'])
+            self._changed(authority)
+
     def file_sources(self, object_id):
         with self.lock:
             return [row[0] for row in self.db.execute('SELECT m.source FROM memberships m '
@@ -190,7 +229,7 @@ class MediaIndex:
             rows = self.db.execute('SELECT r.item,r.result FROM review_receipts r '
                 'JOIN review_receipt_scopes s ON s.request=r.request AND s.item=r.item '
                 'WHERE r.request=? AND s.provider=? AND s.account=? ORDER BY r.item',
-                (request_id, expected['provider'], expected['account_id'])).fetchall()
+                (request_id, *self._receipt_scope(expected))).fetchall()
             return dict(status='found' if rows else 'missing', items=[
                 dict(json.loads(row['result']), index=row['item']) for row in rows])
 
@@ -201,7 +240,7 @@ class MediaIndex:
         if projection_revision is not None and (type(projection_revision) is not int or projection_revision < 0):
             raise ValueError('CATALOG_QUERY_INVALID')
         with self.lock:
-            ref = self.trusted_file(expected, file_id)
+            ref = self._item(file_id, expected)['file_ref']
             sources = self.file_sources(file_id)
             if source_id is None:
                 if len(sources) != 1:
@@ -209,15 +248,15 @@ class MediaIndex:
                 source_id = sources[0]
             elif identifier(source_id) not in sources:
                 raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
-            revision = self.db.execute('SELECT revision FROM catalog_meta WHERE singleton=1').fetchone()[0]
+            revision = self.scope_revision(expected)
             if projection_revision is not None and projection_revision != revision:
                 raise ValueError('CATALOG_CURSOR_STALE')
-            group_key = catalog_query.opaque(ref['provider'], ref['account_id'], ref['namespace'], ref['parent'])
+            group_key = catalog_query.opaque(*catalog_query.scope_key(expected)[:2], ref['namespace'], ref['parent'])
             rows = self.db.execute('SELECT p.id FROM catalog_rows p WHERE p.group_key=? AND '
                 'EXISTS(SELECT 1 FROM memberships m WHERE m.file=p.id AND m.source=?) ORDER BY p.id LIMIT ? OFFSET ?',
                 (group_key, source_id, limit + 1, offset)).fetchall()
             result = dict(items=[], next_offset=None, group_id=catalog_query.opaque(
-                expected['provider'], expected['account_id'], expected['epoch'], source_id, group_key),
+                *catalog_query.scope_key(expected), source_id, group_key),
                           anchor_id=file_id, projection_revision=revision, source_id=source_id)
             for row in rows[:limit]:
                 item = self._public(self._item(row[0], expected))
@@ -252,7 +291,12 @@ class MediaIndex:
             else:
                 self.db.execute('UPDATE memberships SET available=0')
             if previous != set(sources):
-                self._changed()
+                changed_sources = previous.symmetric_difference(sources)
+                for row in self.db.execute('SELECT DISTINCT p.provider,p.account,p.namespace FROM catalog_rows p '
+                        'JOIN memberships m ON m.file=p.id WHERE m.source IN (' +
+                        ','.join('?' for _ in changed_sources) + ')', tuple(changed_sources)).fetchall():
+                    self._changed(dict(reference_kind='mounted_path', source_id=row['account'], namespace=row['namespace'])
+                        if row['provider'] == 'mounted_path' else dict(provider=row['provider'], account_id=row['account']))
 
     def _scan(self, task, expected=None):
         row = self.db.execute('SELECT * FROM scans WHERE id=?', (identifier(task),)).fetchone()
@@ -342,6 +386,12 @@ class MediaIndex:
                 if identity_scope != (run['provider'], run['account']):
                     raise ValueError('CATALOG_ACCOUNT_MISMATCH')
                 if mounted:
+                    if (ref['namespace'], ref['mount_generation']) != (run['scope']['namespace'], run['scope']['generation']):
+                        raise ValueError('CATALOG_AUTHORITY_CHANGED')
+                    previous_ref = self.db.execute('SELECT ref FROM typed_objects WHERE id=?', (ref['id'],)).fetchone()
+                    if previous_ref:
+                        self._remember_observation(json.loads(previous_ref[0]))
+                    self._remember_observation(ref)
                     self.db.execute('INSERT INTO typed_objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
                         (ref['id'], ref['source_id'], ref['namespace'], encode(ref)))
                 else:
@@ -358,7 +408,7 @@ class MediaIndex:
                     (ref['id'], self.now(), self.now()))
                 catalog_query.project(self.db, ref['id'])
             if refs:
-                self._changed()
+                self._changed(run['scope'])
             self.db.execute('UPDATE scans SET pages=pages+1,scanned=scanned+?,discovered=discovered+?,checkpoint=?,updated=? WHERE id=?',
                 (scanned, discovered, checkpoint_raw, self.now(), task))
             self.db.execute('INSERT INTO scan_batches VALUES(?,?)', (task, batch_id))
@@ -374,7 +424,7 @@ class MediaIndex:
                 state, reason = 'canceled', 'CANCEL_CONFIRMED'
             if state == 'completed':
                 self.db.execute('UPDATE memberships SET available=0 WHERE source=? AND generation!=?', (row['source'], task))
-                self._changed()
+                self._changed(row['scope'])
             self.db.execute('UPDATE scans SET state=?,reason=?,updated=? WHERE id=?', (state, reason, self.now(), task))
             return scan_snapshot(self._scan(task))
 
@@ -412,15 +462,31 @@ class MediaIndex:
                 next_offset=offset + limit if len(rows) > offset + limit else None)
 
     def _item(self, file, expected):
-        row = self.db.execute('SELECT o.ref,r.* FROM objects o JOIN reviews r ON o.id=r.file WHERE o.id=? AND o.provider=? AND o.account=?',
-            (identifier(file, 64), expected['provider'], expected['account_id'])).fetchone()
+        if expected.get('reference_kind') == 'mounted_path':
+            row = self.db.execute('SELECT o.ref,r.* FROM typed_objects o JOIN reviews r ON o.id=r.file '
+                'WHERE o.id=? AND o.source=? AND o.namespace=?',
+                (identifier(file, 64), expected['source_id'], expected['namespace'])).fetchone()
+        else:
+            row = self.db.execute('SELECT o.ref,r.* FROM objects o JOIN reviews r ON o.id=r.file WHERE o.id=? AND o.provider=? AND o.account=?',
+                (identifier(file, 64), expected['provider'], expected['account_id'])).fetchone()
         if row is None:
             raise ValueError('CATALOG_FILE_NOT_FOUND')
-        available = bool(self.db.execute('SELECT 1 FROM memberships WHERE file=? AND available=1 LIMIT 1', (file,)).fetchone())
+        available = bool(self.db.execute('SELECT 1 FROM memberships m JOIN catalog_sources s ON s.source=m.source '
+            'WHERE m.file=? AND m.available=1 AND s.active=1 LIMIT 1', (file,)).fetchone())
         return dict(file_ref=json.loads(row['ref']), state=row['state'], reason=row['reason'],
                     candidates=json.loads(row['candidates']), revision=row['revision'],
                     mapping=json.loads(row['mapping']) if row['mapping'] else None, provenance=row['provenance'],
                     available=available)
+
+    def item(self, expected, file_id):
+        with self.lock:
+            return self._public(self._item(file_id, expected))
+
+    @staticmethod
+    def _receipt_scope(expected):
+        if expected.get('reference_kind') == 'mounted_path':
+            return ('mounted_path', catalog_query.opaque(expected['source_id'], expected['namespace']))
+        return expected['provider'], expected['account_id']
 
     @staticmethod
     def _public(item):
@@ -431,7 +497,9 @@ class MediaIndex:
 
     def items(self, expected, source=None, state=None, offset=0, limit=PAGE_SIZE):
         page(offset, limit)
-        where, args = 'o.provider=? AND o.account=?', [expected['provider'], expected['account_id']]
+        mounted = expected.get('reference_kind') == 'mounted_path'
+        where, args = ('o.source=? AND o.namespace=?', [expected['source_id'], expected['namespace']]) if mounted else (
+            'o.provider=? AND o.account=?', [expected['provider'], expected['account_id']])
         if source is not None:
             where += ' AND EXISTS(SELECT 1 FROM memberships m WHERE m.file=o.id AND m.source=? AND m.available=1)'
             args.append(identifier(source))
@@ -441,7 +509,8 @@ class MediaIndex:
             where += ' AND r.state=?'
             args.append(state)
         with self.lock:
-            rows = self.db.execute('SELECT o.id FROM objects o JOIN reviews r ON r.file=o.id WHERE ' + where + ' ORDER BY o.id LIMIT ? OFFSET ?',
+            rows = self.db.execute('SELECT o.id FROM ' + ('typed_objects' if mounted else 'objects') +
+                ' o JOIN reviews r ON r.file=o.id WHERE ' + where + ' ORDER BY o.id LIMIT ? OFFSET ?',
                 tuple(args + [limit + 1, offset])).fetchall()
             items = []
             for row in rows[:limit]:
@@ -490,7 +559,8 @@ class MediaIndex:
         identifier(request_id)
         if type(commands) is not list or not 1 <= len(commands) <= PAGE_SIZE:
             raise ValueError('CATALOG_BATCH_LIMIT')
-        envelope = hashlib.sha256(encode([expected['provider'], expected['account_id'], commands]).encode()).hexdigest()
+        receipt_scope = self._receipt_scope(expected)
+        envelope = hashlib.sha256(encode([*receipt_scope, commands]).encode()).hexdigest()
         with self.transaction():
             prior = self.db.execute('SELECT digest FROM review_requests WHERE request=?', (request_id,)).fetchone()
             legacy = prior is None and self.db.execute('SELECT 1 FROM review_receipts WHERE request=? LIMIT 1', (request_id,)).fetchone()
@@ -501,7 +571,7 @@ class MediaIndex:
                 '(SELECT rowid FROM review_requests ORDER BY rowid DESC LIMIT -1 OFFSET 1024)')
         results = []
         for index, raw in enumerate(commands):
-            digest = hashlib.sha256(encode([expected['provider'], expected['account_id'], raw]).encode()).hexdigest()
+            digest = hashlib.sha256(encode([*receipt_scope, raw]).encode()).hexdigest()
             with self.transaction():
                 receipt = self.db.execute('SELECT digest,result FROM review_receipts WHERE request=? AND item=?', (request_id, index)).fetchone()
                 if receipt:
@@ -524,13 +594,13 @@ class MediaIndex:
                         self.db.execute('DELETE FROM review_changes WHERE file=? AND revision<?', (cmd['file_id'], revision - 31))
                         self.db.execute('UPDATE object_times SET updated=? WHERE file=?', (self.now(), cmd['file_id']))
                         catalog_query.project(self.db, cmd['file_id'])
-                        self._changed()
+                        self._changed(expected)
                         result = dict(status='applied', revision=revision)
                 except ValueError:
                     result = dict(status='failed', reason='INVALID_OR_MISSING_ITEM')
                 self.db.execute('INSERT INTO review_receipts VALUES(?,?,?,?,?)', (request_id, index, digest, encode(result), self.now()))
                 self.db.execute('INSERT INTO review_receipt_scopes VALUES(?,?,?,?)',
-                    (request_id, index, expected['provider'], expected['account_id']))
+                    (request_id, index, *receipt_scope))
                 self.db.execute('DELETE FROM review_receipts WHERE rowid IN (SELECT rowid FROM review_receipts ORDER BY updated DESC,rowid DESC LIMIT -1 OFFSET 1024)')
                 self.db.execute('DELETE FROM review_receipt_scopes WHERE NOT EXISTS('
                     'SELECT 1 FROM review_receipts r WHERE r.request=review_receipt_scopes.request AND r.item=review_receipt_scopes.item)')

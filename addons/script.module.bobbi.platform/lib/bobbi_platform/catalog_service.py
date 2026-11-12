@@ -1,12 +1,10 @@
 """One opt-in directory scanner, owned and drained by the existing Host."""
 from collections import deque, OrderedDict
 from threading import Event, Lock, Thread
-import time
 
-from bobbi_core.file_ref import from_selected
-from bobbi_core.media_library_index import MediaIndex, PAGE_SIZE, TERMINAL, identifier
-from .libraries import Registry, VIDEO_EXTENSIONS
-from .pan_providers import descriptor
+from bobbi_core.media_library_index import MediaIndex, TERMINAL, identifier
+from .libraries import Registry
+from .scan_sources import NativePort
 
 # A 10k tree fits without whole-tree materialization. Current adapters cap
 # provider pages at 20, independent of the interactive UI's 10 item window.
@@ -64,6 +62,24 @@ class CatalogService:
         if self.stop.is_set():
             raise ValueError('CATALOG_SERVICE_CLOSED')
         return self.pans.accounts.require_current(expected)
+
+    def scope(self, expected):
+        """Validate only the local edit scope, never manufacture a permit."""
+        if type(expected) is dict and expected.get('reference_kind') == 'mounted_path':
+            self.mounted.live()
+            scope = self.mounted.port.scope(identifier(expected.get('source_id')))
+            if scope['namespace'] != expected.get('namespace'):
+                raise ValueError('CATALOG_AUTHORITY_CHANGED')
+            return scope
+        return self._guard(expected)
+
+    def run_in_scope(self, expected, operation):
+        expected = self.scope(expected)
+        if expected.get('reference_kind') == 'mounted_path':
+            with self.lock:
+                self.scope(expected)
+                return operation()
+        return self.pans.accounts.run_if_current(expected, operation)
 
     def _play_source(self, expected, object_id):
         self._guard(expected)
@@ -129,24 +145,35 @@ class CatalogService:
             if self.stop.is_set() or self.worker is not None and self.worker.is_alive():
                 raise ValueError('CATALOG_SCAN_BUSY')
             source = self._source(source_id, expected)
-            # Persist admission under the account CAS; no stale account can
-            # publish a task after logout, even before the worker starts.
-            task = self.pans.accounts.run_if_current(expected, lambda: self.index.start(source_id, expected))
-            self.task, self.cancel_event, self.max_queue = task, Event(), 1
-            try:
-                self.worker = Thread(target=self._scan, args=(task, source, expected), name='bobbi-library-scan', daemon=True)
-                self.worker.start()
-            except Exception:
-                self.worker = self.task = None
-                self.index.finish(task, 'failed', 'WORKER_START_FAILED')
-                raise RuntimeError('CATALOG_WORKER_UNAVAILABLE') from None
+            return self._admit(NativePort(self.pans), expected, source_id, source['parent'])
+
+    def start_mounted_scan(self, authority):
+        port = self.mounted.port
+        port.require(authority)  # Potentially blocking FUSE validation stays outside the owner lock.
+        with self.lock:
+            self.mounted.live()
+            if self.worker is not None and self.worker.is_alive():
+                raise ValueError('CATALOG_SCAN_BUSY')
+            return self._admit(port, authority, authority['source_id'], '')
+
+    def _admit(self, port, expected, source_id, parent):
+        # Called under the sole worker lock; each port supplies its own CAS.
+        task = port.publish(expected, lambda: self.index.start(source_id, expected))
+        self.task, self.cancel_event, self.max_queue = task, Event(), 1
+        try:
+            self.worker = Thread(target=self._scan, args=(task, port, parent, expected), name='bobbi-library-scan', daemon=True)
+            self.worker.start()
+        except Exception:
+            self.worker = self.task = None
+            self.index.finish(task, 'failed', 'WORKER_START_FAILED')
+            raise RuntimeError('CATALOG_WORKER_UNAVAILABLE') from None
         return dict(task_id=task)
 
-    def _scan(self, task, source, expected):
+    def _scan(self, task, port, root_parent, expected):
         state, reason = 'failed', 'SCAN_UNAVAILABLE'
         try:
             self.index.begin(task)
-            with self.pans.scan_operation(expected, task, max_pages=MAX_PAGES, max_items=MAX_ITEMS,
+            with port.scan(expected, task, self.cancel_event, max_pages=MAX_PAGES, max_items=MAX_ITEMS,
                     max_requests=MAX_REQUESTS, seconds=MAX_SECONDS) as operation:
                 with self.lock:
                     self.operation = operation
@@ -160,38 +187,38 @@ class CatalogService:
                         with self.lock:
                             if self.stop.is_set() or self.cancel_event.is_set():
                                 operation.cancelled.set()
-                            operation.check()
+                            port.check(operation, local=True)
                             return write()
-                    return self.pans.accounts.run_if_current(expected, guarded)
-                pending = deque([(source['parent'], 0)])
-                visited = {source['parent']}
+                    return port.publish(expected, guarded)
+                pending = deque([(root_parent, 0)])
+                visited = {root_parent}
                 while pending:
-                    operation.check()
+                    port.check(operation, local=True)
                     parent, depth = pending.popleft()
                     page, cursor, seen_cursors, seen_pages = 1, None, set(), set()
                     while True:
                         if self.stop.is_set() or self.cancel_event.is_set():
                             operation.cancelled.set()
-                        operation.check()
+                        port.check(operation, local=True)
                         # Yield between requests, more aggressively during
                         # playback; never monopolize a provider's client lock.
                         if self.cancel_event.wait(.05 if self.playing() else .001):
                             operation.cancelled.set()
-                        operation.check()
-                        result = self.pans.list_for_scan(expected, parent, page, cursor,
-                            operation=operation, size=SCAN_WINDOW)
-                        operation.check()
+                        port.check(operation, local=True)
+                        result = port.page(operation, expected, parent, page, cursor)
+                        port.check(operation)
                         rows = result['items']
                         if type(rows) is not list or len(rows) > SCAN_WINDOW:
                             raise ValueError('SCAN_INVALID_PAGE')
-                        signature = tuple((r.get('file_id'), r.get('directory')) for r in rows)
+                        signature = result['signature']
                         if signature and signature in seen_pages:
                             raise ValueError('SCAN_PAGE_CYCLE')
-                        seen_pages.add(signature)
+                        if signature:
+                            seen_pages.add(signature)
                         refs = []
                         for row in rows:
-                            if row.get('directory') is True:
-                                folder = row[descriptor(expected['provider']).parent_field]
+                            if row['directory'] is not None:
+                                folder = row['directory']
                                 if folder in visited:
                                     continue
                                 if depth >= MAX_DEPTH or len(visited) >= MAX_DIRECTORIES:
@@ -199,14 +226,13 @@ class CatalogService:
                                 visited.add(folder)
                                 pending.append((folder, depth + 1))
                                 self.max_queue = max(self.max_queue, len(pending))
-                            elif any(row.get('name', '').lower().endswith(ext) for ext in VIDEO_EXTENSIONS):
-                                # Invalid video metadata makes the generation
-                                # incomplete, never a successful silent skip.
-                                refs.append(from_selected(expected, row, parent))
+                            elif row['reference'] is not None:
+                                refs.append(row['reference'])
                         checkpoint = dict(parent=parent, page=page, cursor=cursor,
                             queued=len(pending), depth=depth)
-                        operation.check()
-                        commit(lambda: self.index.batch(task, refs, checkpoint, len(rows)))
+                        port.check(operation, local=True)
+                        write_batch = self.index.mounted_batch if port.mounted else self.index.batch
+                        commit(lambda: write_batch(task, refs, checkpoint, len(rows)))
                         if result.get('has_more') is not True:
                             break
                         if not rows:
@@ -218,7 +244,7 @@ class CatalogService:
                             seen_cursors.add(next_cursor)
                             cursor = next_cursor
                         page += 1
-                operation.check()
+                port.check(operation)
                 # Account CAS also encloses the absence inference boundary.
                 commit(lambda: self.index.finish(task, 'completed'))
                 return
@@ -227,13 +253,14 @@ class CatalogService:
                 state, reason = 'interrupted', 'SERVICE_STOPPED'
             elif self.cancel_event.is_set():
                 state, reason = 'canceled', 'CANCEL_CONFIRMED'
-            elif not self.pans.accounts.is_current(expected):
+            elif port.revoked(expected):
                 state, reason = 'interrupted', 'ACCOUNT_REVOKED'
             else:
                 code = str(error)
                 reason = code if code in {'SCAN_INVALID_PAGE', 'SCAN_PAGE_CYCLE', 'SCAN_DIRECTORY_LIMIT',
                     'SCAN_CURSOR_CYCLE', 'SCAN_INCOMPLETE_PAGE', 'PAN_BUDGET_EXHAUSTED',
-                    'PAN_OPERATION_TIMEOUT', 'PAN_RATE_LIMITED'} else 'SCAN_UNAVAILABLE'
+                    'PAN_OPERATION_TIMEOUT', 'PAN_RATE_LIMITED', 'CATALOG_SOURCE_UNAVAILABLE',
+                    'CATALOG_AUTHORITY_CHANGED', 'CATALOG_RECHECK_INCOMPLETE', 'CATALOG_SOURCE_UNSUPPORTED'} else 'SCAN_UNAVAILABLE'
             self.index.finish(task, state, reason)
         finally:
             with self.lock:
@@ -290,6 +317,8 @@ class CatalogService:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.jobs(expected, **args))
         if action == 'catalog_items' and set(args) <= {'source', 'state', 'offset', 'limit'}:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.items(expected, **args))
+        if action == 'catalog_item' and set(args) == {'file_id'}:
+            return self.pans.accounts.run_if_current(expected, lambda: self.index.item(expected, **args))
         if action == 'catalog_query' and set(args) <= {'query', 'cursor', 'limit'}:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.query(expected, **args))
         if action == 'catalog_receipt' and set(args) == {'request_id'}:

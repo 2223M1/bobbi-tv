@@ -7,12 +7,14 @@ from collections import OrderedDict
 import hashlib
 import json
 import re
+import time
 import unicodedata
 from uuid import uuid4
 
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 32
 REPLY_BYTES = 15000
+CURSOR_SECONDS = 600
 VIEWS = ('works', 'seasons', 'episodes', 'files')
 AVAILABILITY = ('observed_present', 'observed_absent', 'source_unavailable', 'unverified')
 STATES = ('unmatched', 'ambiguous', 'proposed', 'confirmed', 'ignored')
@@ -20,7 +22,8 @@ ROW_SCHEMA = ('id TEXT PRIMARY KEY,provider TEXT NOT NULL,account TEXT NOT NULL,
     'work_id TEXT NOT NULL,season_id TEXT,episode_id TEXT,title TEXT NOT NULL,'
     'filename TEXT NOT NULL,title_sort TEXT NOT NULL,search_text TEXT NOT NULL,'
     'media_kind TEXT NOT NULL,season INTEGER,episode INTEGER,review_state TEXT NOT NULL,'
-    'first_seen REAL,updated REAL NOT NULL,group_key TEXT NOT NULL,namespace TEXT NOT NULL,authority_generation TEXT NOT NULL')
+    'first_seen REAL,updated REAL NOT NULL,group_key TEXT NOT NULL,namespace TEXT NOT NULL,authority_generation TEXT NOT NULL,'
+    'metadata_key TEXT,year INTEGER')
 
 
 def wire(value):
@@ -39,8 +42,15 @@ def scope_key(value):
     # SQL partition labels are not a fabricated authenticated cloud account.
     # Host checks the corresponding native-account or mounted authority first.
     if value.get('reference_kind') == 'mounted_path':
-        return ('mounted_path', value['source_id'], value['generation'])
+        return ('mounted_path', value['source_id'], value['namespace'])
     return (value['provider'], value['account_id'], value['epoch'])
+
+
+def revision_key(value):
+    """Persistent local scope; native login epochs remain cursor-only CAS."""
+    if value.get('reference_kind') == 'mounted_path':
+        return scope_key(value)
+    return (value['provider'], value['account_id'], '')
 
 
 def parameters(value):
@@ -77,7 +87,7 @@ def create_projection(db, table='catalog_rows'):
 
 def project(db, file_id, table='catalog_rows'):
     assert table in ('catalog_rows', 'catalog_rows_build')
-    row = db.execute('SELECT o.provider,o.account,o.ref,r.state,r.mapping,t.first_seen,t.updated '
+    row = db.execute('SELECT o.provider,o.account,o.ref,r.state,r.mapping,r.candidates,t.first_seen,t.updated '
         "FROM (SELECT id,provider,account,ref FROM objects UNION ALL SELECT id,'mounted_path',source,ref FROM typed_objects) o "
         'JOIN reviews r ON r.file=o.id LEFT JOIN object_times t ON t.file=o.id '
         'WHERE o.id=?', (file_id,)).fetchone()
@@ -85,20 +95,25 @@ def project(db, file_id, table='catalog_rows'):
     mapping = json.loads(row['mapping']) if row['mapping'] else None
     title, kind, season, episode = ref['name'], 'unknown', None, None
     work, season_id, episode_id = file_id, None, None
+    metadata_key = None
+    years = {candidate.get('year') for candidate in json.loads(row['candidates'])
+             if type(candidate.get('year')) is int}
+    year = next(iter(years)) if len(years) == 1 else None
     if mapping:
         title = mapping['title']
         if row['state'] == 'confirmed' and mapping['kind'] in ('movie', 'tv'):
             kind, season, episode = mapping['kind'], mapping['season'], mapping['episode']
+            metadata_key = 'tmdb:%s:%d' % (kind, mapping['tmdb_id'])
             work = opaque(row['provider'], row['account'], kind, mapping['tmdb_id'])
             if kind == 'tv':
                 season_id = opaque(work, 'season', season)
                 episode_id = opaque(work, 'episode', season, episode)
-    db.execute('INSERT OR REPLACE INTO ' + table + ' VALUES(' + ','.join('?' for _ in range(19)) + ')',
+    db.execute('INSERT OR REPLACE INTO ' + table + ' VALUES(' + ','.join('?' for _ in range(21)) + ')',
         (file_id, row['provider'], row['account'], work, season_id, episode_id, title,
          ref['name'], normalized(title), normalized(title + '\n' + ref['name']), kind,
          season, episode, row['state'], row['first_seen'], row['updated'] or 0,
          opaque(row['provider'], row['account'], ref['namespace'], ref['parent']),
-         ref['namespace'], ref.get('mount_generation', '')))
+         ref['namespace'], ref.get('mount_generation', ''), metadata_key, year))
 
 
 class CatalogQuery:
@@ -106,6 +121,7 @@ class CatalogQuery:
     def __init__(self, index):
         self.index = index
         self.cursors = OrderedDict()
+        self.clock = time.monotonic
 
     def query(self, expected, query=None, cursor=None, limit=DEFAULT_LIMIT):
         query = parameters({} if query is None else query)
@@ -118,17 +134,19 @@ class CatalogQuery:
         with self.index.lock:
             db = self.index.db
             meta = db.execute('SELECT generation,revision FROM catalog_meta WHERE singleton=1').fetchone()
-            binding = (scope, digest, meta['generation'], meta['revision'])
+            revision = self.index.scope_revision(expected)
+            # Mount availability is an observation, not the descriptor scope.
+            binding = (scope, digest, meta['generation'], revision, expected.get('generation'))
             after = None
             if cursor:
                 saved = self.cursors.get(cursor)
-                if saved is None or saved[0] != binding:
+                if saved is None or saved[0] != binding or self.clock() >= saved[2]:
                     raise ValueError('CATALOG_CURSOR_STALE')
                 after = saved[1]
             sql, args = self._sql(expected, query, after)
             rows = db.execute(sql, args + [limit + 1]).fetchall()
             result = dict(schema=1, items=[], next_cursor=None,
-                          projection_revision=meta['revision'], truncated=False)
+                          projection_revision=revision, truncated=False)
             continuation = uuid4().hex
             last = None
             for row in rows[:limit]:
@@ -144,7 +162,7 @@ class CatalogQuery:
                 result['truncated'] |= item['truncated']
             if len(rows) > len(result['items']):
                 result['next_cursor'] = continuation
-                self.cursors[continuation] = (binding, last)
+                self.cursors[continuation] = (binding, last, self.clock() + CURSOR_SECONDS)
                 while len(self.cursors) > 128:
                     self.cursors.popitem(last=False)
             if len(wire(result)) > REPLY_BYTES:
@@ -166,7 +184,8 @@ class CatalogQuery:
             episode=row['episode'] if view in ('episodes', 'files') else None,
             review_state=row['review_state'], availability=row['availability'],
             variant_count=row['variant_count'], available_count=row['available_count'],
-            source_count=row['source_count'], truncated=len(title) > 160)
+            source_count=row['source_count'], truncated=len(title) > 160,
+            metadata_key=row['metadata_key'], year=row['year'], art={})
 
     @staticmethod
     def _sql(expected, query, after):
@@ -175,8 +194,8 @@ class CatalogQuery:
         conditions = ['p.provider=?', 'p.account=?', 'p.' + key + ' IS NOT NULL']
         args = list(scope_key(expected)[:2])
         if expected.get('reference_kind') == 'mounted_path':
-            conditions.extend(['p.namespace=?', 'p.authority_generation=?'])
-            args.extend([expected['namespace'], expected['generation']])
+            conditions.append('p.namespace=?')
+            args.append(expected['namespace'])
         for field, column in (('review_state', 'review_state'), ('media_kind', 'media_kind')):
             if query[field] is not None:
                 conditions.append('p.' + column + '=?')
@@ -198,6 +217,17 @@ class CatalogQuery:
             "WHERE m.file=p.id AND s.active=1) THEN 'observed_absent' "
             "WHEN EXISTS(SELECT 1 FROM memberships m WHERE m.file=p.id) THEN 'source_unavailable' "
             "ELSE 'unverified' END")
+        if expected.get('reference_kind') == 'mounted_path':
+            generation = expected.get('generation', '')
+            if generation:
+                # Only hex digests produced by the mounted port reach this
+                # internal read model; use parameters even for those digests.
+                availability = ("CASE WHEN p.authority_generation!=? AND EXISTS(SELECT 1 FROM memberships m "
+                    "JOIN catalog_sources s ON s.source=m.source WHERE m.file=p.id AND s.active=1) "
+                    "THEN 'unverified' ELSE " + availability + ' END')
+                args.insert(0, generation)
+            else:
+                availability = "'source_unavailable'"
         sql = 'WITH selected AS (SELECT p.*, ' + availability + ' AS availability FROM catalog_rows p WHERE ' + ' AND '.join(conditions) + ')'
         if query['availability']:
             sql += ', filtered AS (SELECT * FROM selected WHERE availability=?)'
@@ -212,6 +242,7 @@ class CatalogQuery:
             sort = "printf('%06d:%06d',MIN(p.season),COALESCE(MIN(p.episode),0))"
         sql += (', grouped AS (SELECT p.' + key + ' AS entity_id,MIN(p.title) AS title,MIN(p.filename) AS filename,'
             'MIN(p.media_kind) AS media_kind,MIN(p.season) AS season,MIN(p.episode) AS episode,'
+            'MIN(p.metadata_key) AS metadata_key,MIN(p.year) AS year,'
             'MIN(p.review_state) AS review_state,COUNT(DISTINCT p.id) AS variant_count,'
             "COUNT(DISTINCT CASE WHEN p.availability='observed_present' THEN p.id END) AS available_count,"
             'COUNT(DISTINCT CASE WHEN m.available=1 AND s.active=1 THEN m.source END) AS source_count,'

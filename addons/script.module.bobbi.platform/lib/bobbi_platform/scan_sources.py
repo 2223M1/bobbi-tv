@@ -13,8 +13,10 @@ from threading import Event
 import time
 
 from bobbi_core import mounted_ref
+from bobbi_core.file_ref import from_selected
 from . import cd2_mounts
 from .libraries import Registry, joined_path, VIDEO_EXTENSIONS, MAX_DIRECTORY_ITEMS
+from .pan_providers import descriptor
 
 
 def native_path(value):
@@ -46,7 +48,44 @@ def mount_records():
         return ()
 
 
+class NativePort:
+    """Source-specific account CAS and native pagination proof, no traversal."""
+    mounted = False
+
+    def __init__(self, pans):
+        self.pans = pans
+
+    def scan(self, expected, task, cancel, **budget):
+        return self.pans.scan_operation(expected, task, **budget)
+
+    def check(self, operation, local=False):
+        operation.check()
+
+    def publish(self, expected, write):
+        return self.pans.accounts.run_if_current(expected, write)
+
+    def revoked(self, expected):
+        return not self.pans.accounts.is_current(expected)
+
+    def page(self, operation, expected, parent, page, cursor):
+        result = self.pans.list_for_scan(expected, parent, page, cursor, operation=operation, size=20)
+        rows = result['items']
+        if type(rows) is not list or len(rows) > 20:
+            raise ValueError('SCAN_INVALID_PAGE')
+        entries = []
+        for row in rows:
+            if row.get('directory') is True:
+                entries.append(dict(directory=row[descriptor(expected['provider']).parent_field], reference=None))
+            else:
+                reference = (from_selected(expected, row, parent)
+                    if any(row.get('name', '').lower().endswith(ext) for ext in VIDEO_EXTENSIONS) else None)
+                entries.append(dict(directory=None, reference=reference))
+        return dict(items=entries, signature=tuple((r.get('file_id'), r.get('directory')) for r in rows),
+                    has_more=result.get('has_more') is True, next_cursor=result.get('next_cursor'))
+
+
 class MountedPort:
+    mounted = True
     capabilities = dict(reference_kind='mounted_path', identity_policy='registry_root_relative_path',
         enumeration=True, stat=True, cancellation='between_io', completeness='closed_directory_iterators',
         replay_cursor=False, authority='existing_cd2_mount', device_verified=False,
@@ -62,10 +101,56 @@ class MountedPort:
         finally:
             store.close()
 
+    def scope(self, source_id):
+        """Local descriptor permission; no FUSE call or playback authority."""
+        return self.source_scope(self.source(source_id))
+
+    @staticmethod
+    def source_scope(source):
+        if (source.kind != 'vfs' or source.username or source.password or
+                not (source.location.startswith('/') or re.match(r'^[A-Za-z]:[/\\]', source.location))):
+            raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        return dict(reference_kind='mounted_path', source_id=source.id,
+                    namespace=mounted_ref.digest('cd2', source.location), generation='')
+
+    def snapshot(self, expected):
+        source = self.source(expected['source_id'])
+        current = self.source_scope(source)
+        if current['namespace'] != expected['namespace']:
+            raise ValueError('CATALOG_AUTHORITY_CHANGED')
+        root = source.location.rstrip('/\\')
+        mounts = [row for row in self.mounts() if root == row['path'] or root.startswith(row['path'].rstrip('/') + '/')]
+        if mounts:
+            mount = max(mounts, key=lambda row: len(row['path']))
+            current['generation'] = mounted_ref.digest(current['namespace'], mount['generation'])
+        return current
+
+    def publish(self, expected, write):
+        current = self.snapshot(expected)
+        if expected.get('generation') and current != expected:
+            raise ValueError('CATALOG_AUTHORITY_CHANGED')
+        return write()
+
+    def revoked(self, expected):
+        return False  # Mount failures keep their explicit source error code.
+
+    def check(self, operation, local=False):
+        operation.check(validate_authority=not local)
+
+    def page(self, operation, expected, parent, page, cursor):
+        result = operation.list_page(parent)
+        return dict(items=[dict(directory=row['relative'] if row['directory'] else None,
+                    reference=row.get('reference')) for row in result['items']],
+                    # A closed iterator, not repeated filenames, proves paging.
+                    signature=None, has_more=result['has_more'], next_cursor=None)
+
+    def scan(self, expected, task, cancel, **budget):
+        return self.open_scan(expected, cancel, seconds=budget['seconds'],
+                              max_pages=budget['max_pages'], max_items=budget['max_items'])
+
     def describe(self, source_id):
         source = self.source(source_id)
-        if source.kind != 'vfs' or source.username or source.password:
-            raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        scope = self.source_scope(source)
         root = source.location.rstrip('/\\')
         # Only kernel-observed CD2 local mounts qualify. A similarly named
         # folder, credential URL or ordinary registered NAS does not.
@@ -78,7 +163,7 @@ class MountedPort:
             raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
         if os.path.realpath(path) != os.path.abspath(path):
             raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
-        namespace = mounted_ref.digest('cd2', source.location)
+        namespace = scope['namespace']
         authority = dict(reference_kind='mounted_path', source_id=source.id, namespace=namespace,
                          generation=mounted_ref.digest(namespace, mount['generation']))
         return source, authority
