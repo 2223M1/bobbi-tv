@@ -62,10 +62,11 @@ def save(record):
     record_path.write_text(json.dumps(record, ensure_ascii=True))
 
 
-def state(record, require=False):
-    authority = snapshot()
+def state(record, require=False, observe=None):
+    observe = observe or (lambda channel, read: read())
+    authority = observe('OWNER_SNAPSHOT', snapshot)
     desired = authority.get('desired') or {}
-    native = rpc('Player.BobiState')
+    native = observe('NATIVE_STATE', lambda: rpc('Player.BobiState'))
     row = native.get('playback') or {}
     rid = desired.get('request_id')
     if not record.get('request_id') and rid and rid != record.get('prior_request'):
@@ -351,29 +352,46 @@ def request_status(record, desired):
 
 def sample(record):
     observation_times = dict(sample_started=time.monotonic())
-    authority, native, row = state(record)
+    read_observations = []
+    def observe(channel, read):
+        # One fixed set of read stages, scoped to this sample. No raw exception
+        # body, URL, account, command parameter or extra RPC is recorded.
+        stage = dict(channel=channel, started=time.monotonic(), status='ok')
+        try:
+            return read()
+        except Exception as error:
+            stage['status'] = 'error'
+            error.trial_read_diagnostic = dict(channel=channel, stages=read_observations)
+            raise
+        finally:
+            stage['completed'] = time.monotonic()
+            stage['elapsed_seconds'] = max(0, stage['completed']-stage['started'])
+            read_observations.append(stage)
+    authority, native, row = state(record, observe=observe)
     desired = authority.get('desired') or {}
     value = dict(wall=time.monotonic(), phase=row.get('phase'), native=row,
                  **request_status(record, desired))
-    active = rpc('Player.GetActivePlayers')
+    active = observe('ACTIVE_PLAYERS', lambda: rpc('Player.GetActivePlayers'))
     if active and row.get('phase') == 'AV_STARTED':
         observation_times['player_time_started'] = time.monotonic()
-        properties = rpc('Player.GetProperties', dict(playerid=1, properties=['time', 'totaltime', 'speed',
-            'subtitleenabled', 'currentsubtitle', 'currentvideostream', 'currentaudiostream']))
+        properties = observe('PLAYER_PROPERTIES', lambda: rpc('Player.GetProperties', dict(playerid=1,
+            properties=['time', 'totaltime', 'speed', 'subtitleenabled', 'currentsubtitle',
+                        'currentvideostream', 'currentaudiostream'])))
         observation_times['player_time_completed'] = time.monotonic()
         value['seconds'] = seconds(properties.pop('time'))
         value['duration'] = seconds(properties.pop('totaltime'))
         value.update(properties)
         observation_times['caching_started'] = time.monotonic()
-        value['caching'] = rpc('XBMC.GetInfoBooleans', {'booleans': ['Player.Caching']})['Player.Caching']
+        value['caching'] = observe('CACHING', lambda: rpc('XBMC.GetInfoBooleans',
+            {'booleans': ['Player.Caching']}))['Player.Caching']
         observation_times['caching_completed'] = time.monotonic()
     labels = ['Container(1000).ListItem.Label', 'Container(1000).NumItems',
               'Container(1000).ListItem.Property(source_site)', 'Window(10000).Property(AM6B.SubtitleState)',
               'Window.Property(playback_error)', 'Window.Property(source_count)']
-    value['labels'] = rpc('XBMC.GetInfoLabels', {'labels': labels})
-    value['window'] = rpc('GUI.GetProperties', {'properties': ['currentwindow']})
+    value['labels'] = observe('LABELS', lambda: rpc('XBMC.GetInfoLabels', {'labels': labels}))
+    value['window'] = observe('GUI', lambda: rpc('GUI.GetProperties', {'properties': ['currentwindow']}))
     observation_times['decoder_started'] = time.monotonic()
-    decoder=Path('/sys/class/vdec/vdec_status').read_text()
+    decoder=observe('DECODER', lambda: Path('/sys/class/vdec/vdec_status').read_text())
     observation_times['decoder_completed'] = time.monotonic()
     value['decoder'] = decoder_snapshot(decoder, observation_times['decoder_started'],
                                         observation_times['decoder_completed'])
@@ -384,6 +402,7 @@ def sample(record):
                                        if primary else None)
     observation_times['sample_completed'] = time.monotonic()
     value['observation_times'] = observation_times
+    value['read_observations'] = read_observations
     return value
 
 
@@ -402,6 +421,24 @@ def capture_startup_trace(record, budget=40):
             # and do not discard the already observed startup interval.
             failure = dict(type=type(error).__name__,
                 reason='STARTUP_OBSERVATION_INTERRUPTED', samples_retained=len(trace))
+            # Only the local sample() schema may annotate a failure. A caller's
+            # exception attributes never become an unbounded diagnostic dump.
+            from math import isfinite
+            diagnostic = getattr(error, 'trial_read_diagnostic', None)
+            channels = {'OWNER_SNAPSHOT', 'NATIVE_STATE', 'ACTIVE_PLAYERS', 'PLAYER_PROPERTIES',
+                        'CACHING', 'LABELS', 'GUI', 'DECODER'}
+            fields = {'channel', 'started', 'completed', 'elapsed_seconds', 'status'}
+            if (type(diagnostic) is dict and set(diagnostic) == {'channel', 'stages'}
+                    and type(diagnostic['channel']) is str and diagnostic['channel'] in channels
+                    and type(diagnostic['stages']) is list
+                    and 0 < len(diagnostic['stages']) <= len(channels)
+                    and all(type(stage) is dict and set(stage) == fields and type(stage['channel']) is str
+                        and stage['channel'] in channels
+                        and stage['status'] in ('ok', 'error')
+                        and all(type(stage[key]) in (int, float) and isfinite(stage[key]) and stage[key] >= 0
+                                for key in ('started', 'completed', 'elapsed_seconds'))
+                        for stage in diagnostic['stages'])):
+                failure['read_diagnostic'] = diagnostic
             # call() emits this local constant for an unsuccessful owner reply.
             # Preserve only that exact enum, never a remote body or message prefix.
             if (type(error) is RuntimeError and len(error.args) == 1
@@ -428,6 +465,7 @@ def capture_startup_trace(record, budget=40):
             gap['recovered'] = True
         compact = {key: current[key] for key in (
             'wall', 'phase', 'seconds', 'speed', 'caching', 'observation_times',
+            'read_observations',
             'cancelled', 'failure', 'subtitleenabled', 'decoder_counters',
             'decoder_counter_source', 'decoder') if key in current}
         compact['native'] = {key: current.get('native', {}).get(key) for key in (

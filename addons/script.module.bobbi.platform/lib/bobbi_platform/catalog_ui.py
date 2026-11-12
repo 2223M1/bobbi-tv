@@ -255,6 +255,10 @@ def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
         elif edit_selected:
             value = _candidate_episode(dialog, candidate)
         if value is not None:
+            # A new work/episode proposal changes that description only. Keep
+            # each file's independent version note, as single-item and phone
+            # review already do; the explicit version editor can clear it.
+            value['version'] = (item.get('mapping') or {}).get('version')
             entries.append(dict(name=item['file']['name'], command=dict(file_id=item['file']['id'],
                 expected_revision=item['revision'], action='confirm', mapping=value)))
     if entries:

@@ -297,7 +297,7 @@ def test_sample_brackets_separate_rpc_observation_times_without_more_device_read
     def monotonic():
         clock[0] += .01
         return clock[0]
-    def state(record):
+    def state(record, observe=None):
         clock[0] += .2
         return {'desired': {'request_id': 'request'}}, {}, {'phase': 'AV_STARTED'}
     def rpc(method, params=None):

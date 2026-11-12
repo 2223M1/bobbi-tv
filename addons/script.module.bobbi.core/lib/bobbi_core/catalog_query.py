@@ -15,6 +15,7 @@ DEFAULT_LIMIT = 20
 MAX_LIMIT = 32
 REPLY_BYTES = 15000
 CURSOR_SECONDS = 600
+PROJECTION_SCHEMA = 6
 VIEWS = ('works', 'seasons', 'episodes', 'files')
 AVAILABILITY = ('observed_present', 'observed_absent', 'source_unavailable', 'unverified')
 STATES = ('unmatched', 'ambiguous', 'proposed', 'confirmed', 'ignored')
@@ -23,7 +24,7 @@ ROW_SCHEMA = ('id TEXT PRIMARY KEY,provider TEXT NOT NULL,account TEXT NOT NULL,
     'filename TEXT NOT NULL,title_sort TEXT NOT NULL,search_text TEXT NOT NULL,'
     'media_kind TEXT NOT NULL,season INTEGER,episode INTEGER,review_state TEXT NOT NULL,'
     'first_seen REAL,updated REAL NOT NULL,group_key TEXT NOT NULL,namespace TEXT NOT NULL,authority_generation TEXT NOT NULL,'
-    'metadata_key TEXT,year INTEGER')
+    'metadata_key TEXT,year INTEGER,filename_sort TEXT NOT NULL')
 
 
 def wire(value):
@@ -108,12 +109,13 @@ def project(db, file_id, table='catalog_rows'):
             if kind == 'tv':
                 season_id = opaque(work, 'season', season)
                 episode_id = opaque(work, 'episode', season, episode)
-    db.execute('INSERT OR REPLACE INTO ' + table + ' VALUES(' + ','.join('?' for _ in range(21)) + ')',
+    version = (mapping or {}).get('version') or ''
+    db.execute('INSERT OR REPLACE INTO ' + table + ' VALUES(' + ','.join('?' for _ in range(22)) + ')',
         (file_id, row['provider'], row['account'], work, season_id, episode_id, title,
-         ref['name'], normalized(title), normalized(title + '\n' + ref['name']), kind,
+         ref['name'], normalized(title), normalized(title + '\n' + ref['name'] + '\n' + version), kind,
          season, episode, row['state'], row['first_seen'], row['updated'] or 0,
          opaque(row['provider'], row['account'], ref['namespace'], ref['parent']),
-         ref['namespace'], ref.get('mount_generation', ''), metadata_key, year))
+         ref['namespace'], ref.get('mount_generation', ''), metadata_key, year, normalized(ref['name'])))
 
 
 class CatalogQuery:
@@ -154,7 +156,8 @@ class CatalogQuery:
                 item = self._summary(row, query['view'])
                 if query['view'] == 'files':
                     item.update(details[row['entity_id']])
-                    item['truncated'] |= len(row['filename']) > 160 or item.pop('_detail_truncated')
+                    detail_truncated = item.pop('_detail_truncated')
+                    item['truncated'] |= len(row['filename']) > 160 or detail_truncated
                 trial = dict(result, items=result['items'] + [item], next_cursor=continuation)
                 if len(wire(trial)) > REPLY_BYTES:
                     if not result['items']:
@@ -280,6 +283,8 @@ class CatalogQuery:
         # added date from a migration or metadata change.
         sort = {'name': 'MIN(p.title_sort)', 'recent_added': '-COALESCE(MAX(p.first_seen),0)',
                 'recent_edited': '-MAX(p.updated)'}[query['sort']]
+        if query['sort'] == 'name' and view == 'files':
+            sort = 'MIN(p.filename_sort)'
         if query['sort'] == 'name' and view in ('seasons', 'episodes'):
             sort = "printf('%06d:%06d',MIN(p.season),COALESCE(MIN(p.episode),0))"
         # Count source memberships separately. Joining them into file aggregation

@@ -87,6 +87,65 @@ test(expectBug?'baseline: 41 files lose the first authorization in the real eigh
 });
 
 if(!expectBug) {
+  test('reachable filters keep source and hierarchy through actual browser phone and SQLite queries',async()=>{
+    const server=await backend(3);
+    try {
+      const originals=(await server.request('query')).items;
+      for(const [number,row] of originals.entries())await server.request('mutate',{command:{file_id:row.entity_id,
+        expected_revision:0,action:'confirm',mapping:{kind:number<2?'tv':'movie',title:number<2?'Show':'Movie',
+          tmdb_id:number<2?123:456,season:number<2?1:null,episode:number<2?number+1:null,version:'版本 '+number}}});
+      const ui=await boot({filename:path.join(repo,'addons/plugin.video.bobbi/resources/web/manage.js'),hash:'#'+server.code,transport:server.fetch});
+      await waitUntil(()=>ui.element('rows').children.length===2);
+      await ui.click('sourcesTab');await find(ui.element('rows'),'查看此来源').fire();
+      ui.element('mediaKind').value='tv';await ui.element('mediaKind').fire('change');
+      ui.element('availability').value='observed_present';await ui.element('availability').fire('change');
+      ui.element('sort').value='recent_edited';await ui.element('sort').fire('change');
+      ui.element('keyword').value='Show';await ui.click('search');
+      await find(ui.element('rows'),'查看季').fire();await find(ui.element('rows'),'查看分集').fire();
+      await find(ui.element('rows').children[0],'查看具体文件').fire();
+      const parent=calls(ui,'catalog_query').at(-1).body.params.query.parent_entity_id;
+      ui.element('sort').value='name';await ui.element('sort').fire('change');
+      let query=calls(ui,'catalog_query').at(-1).body.params;
+      assert.equal(query.query.view,'files');assert.equal(query.query.parent_entity_id,parent);assert.equal(query.cursor,null);
+      assert.equal(query.query.source_id,'a'.repeat(32));assert.equal(query.query.media_kind,'tv');
+      assert.equal(query.query.availability,'observed_present');assert.equal(query.query.text,'Show');
+      assert.equal(query.query.sort,'name');assert.equal(ui.element('rows').children.length,1);
+      assert.match(ui.text('scopeStatus'),/测试收藏目录.*剧集.*已收录.*按名称/);
+      ui.element('availability').value='observed_absent';await ui.element('availability').fire('change');
+      assert.match(ui.text('rows'),/此范围暂无作品/);
+      assert.equal(calls(ui,'catalog_query').at(-1).body.params.query.parent_entity_id,parent);
+      await ui.click('clearFilters');query=calls(ui,'catalog_query').at(-1).body.params;
+      assert.equal(query.query.view,'works');assert.equal(query.cursor,null);assert.equal(query.query.source_id,'a'.repeat(32));
+      assert.equal(query.query.availability,null);assert.equal(query.query.media_kind,null);
+      assert.equal(ui.element('rows').children.length,2);assert.match(ui.text('scopeStatus'),/测试收藏目录/);
+      ui.element('keyword').value='中'.repeat(160);await ui.click('search');
+      assert.equal(calls(ui,'catalog_query').at(-1).body.params.query.text.length,160);
+      assert.equal(ui.element('status').classList.contains('error'),false);
+      await ui.click('clearFilters');assert.equal(ui.element('rows').children.length,2);
+      assert.equal(calls(ui,'catalog_apply').length,0);assert.equal(calls(ui,'catalog_item').length,0);
+    } finally {await server.close();}
+  });
+
+  test('filter requests lock editable controls and late results stay hidden after authorization ends',async()=>{
+    const server=await backend(2), delayed=deferred();let hold=false,waiting=false;
+    try {
+      const ui=await boot({filename:path.join(repo,'addons/plugin.video.bobbi/resources/web/manage.js'),hash:'#'+server.code,
+        transport:async(url,body,options)=>{
+          const result=await server.fetch(url,body,options);
+          if(hold&&body.action==='catalog_query'){waiting=true;await delayed.promise;}
+          return result;
+        }});
+      await waitUntil(()=>ui.element('rows').children.length===2);
+      const previous=ui.element('rows').children;hold=true;
+      ui.element('availability').value='observed_absent';const request=ui.element('availability').fire('change');
+      await waitUntil(()=>waiting);
+      for(const name of ['keyword','state','mediaKind','availability','sort','search','clearFilters'])assert.equal(ui.element(name).disabled,true);
+      await ui.click('revoke');delayed.resolve();await request;
+      assert.equal(ui.element('workspace').classList.contains('hidden'),true);
+      assert.equal(ui.element('rows').children,previous);assert.equal(calls(ui,'catalog_apply').length,0);
+    } finally {delayed.resolve();await server.close();}
+  });
+
   test('file version descriptions survive actual SQLite -> PhoneManagement -> browser rendering',async()=>{
     const server=await backend(3);
     try {

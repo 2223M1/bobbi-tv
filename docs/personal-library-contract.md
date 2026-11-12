@@ -1,6 +1,6 @@
 # 个人片库实现边界
 
-本轮已构建集成候选，并在一台 CoreELEC 设备进行有限验收；不代表所有账号、格式或平台均已验证。具体源码身份、回执和未覆盖项见 [本轮验收记录](review-d030e04-validation.md)。选源界面、唯一播放 owner、115 PreparationQueue、账号凭据库和来源 Registry 继续复用。原生网盘与 CD2 挂载共享 MediaIndex、CatalogService 的唯一扫描循环、worker 和任务管理。
+已构建的集成候选及有限单台 CoreELEC 验收分别记录于 [d030e04 审查轮](review-d030e04-validation.md) 和 [95a140b 审查轮](review-95a140b-validation.md)。设备结果绑定其中各自的源码和组件身份；当前发现与筛选改动另做本地回归和后续设备验收。选源界面、唯一播放 owner、115 PreparationQueue、账号凭据库和来源 Registry 继续复用。原生网盘与 CD2 挂载共享 MediaIndex、CatalogService 的唯一扫描循环、worker 和任务管理。
 
 ## 索引与扫描
 
@@ -42,6 +42,14 @@ CD2 描述范围固定为已登记的 `source_id + namespace`，不再按当前 
 
 ## 人工元数据与历史
 
+### 可达筛选与版本搜索
+
+TV 片库根菜单、卡片上下文与空结果页共用一个筛选动作；手机沿原管理页提供类型、整理状态、来源观察、排序与关键词。筛选范围受当前账号或固定 mounted source/namespace 约束；清除筛选保留当前来源，清除来源仍限于当前授权。卡片内修改筛选保留作品/季/集父实体，只重置游标；根入口从作品或待整理文件根开始。取消以及原目录或授权变化后结束动作，保留当前界面。手机请求期间锁定编辑控件，继续沿用原授权和请求生命周期。
+
+文本检索在同一 SQL 标量投影中覆盖作品名、原文件名和已有版本备注，统一 NFKC/casefold 与 LIKE 转义。版本备注修改、撤回和解绑随原整理事务更新投影；不触发远端目录或元数据抓取。文件页按名称排序使用规范化原文件名，同名以稳定实体 ID 排序；作品标题、季集编号、最近加入和最近整理保持各自语义。每页 32 项、15000 UTF-8 字节及现有 scope/cursor 约束保持。
+
+TV 同目录逐集确认沿用各文件已有的版本备注，候选作品和季集选择只修改对应描述；清空版本备注通过明确的版本编辑完成。
+
 文件名只产生保守建议。自定义名称仍标记未匹配；TMDb 类型、编号和季集均为人工描述，不自动获得同发行版、下一集或可播放证明。单项和批量操作先预览，带 expected_revision 提交，返回每项真实结果；安全重试复用请求 ID。撤回仅在修订匹配时恢复前值，不覆盖后续编辑。
 
 FileRef 与 MountedRef 通过同一 typed lookup 进入既有 reviews、review_changes、receipts 和 CAS，不另建 mounted_reviews。电视与手机均可对具体原文件执行候选确认、解绑、忽略和撤回；只读单条入口不需要遍历整页索引。CD2 整理验证本地登记范围，不要求 FUSE stat 成功；它不会打开文件或生成播放票据。
@@ -56,7 +64,7 @@ FileRef 与 MountedRef 通过同一 typed lookup 进入既有 reviews、review_c
 
 ## 手机与回退
 
-文件版本页复用原 reviews 的 version 与稳定文件记录，按需提供截短名称、大小、最多三个来源名称和文件历史身份摘要；不新增投影数据库字段。私人作品/分集详情的“选择文件版本”仍指向同一 scope 的文件查询。四种待整理状态共享 personal_catalog，旧管理入口仅转译；未知提交只查询原 request_id 回执。手机仍使用原有有界计划与逐批预览。
+文件版本页复用原 reviews 的 version 与稳定文件记录，按需提供截短名称、大小、最多三个来源名称和文件历史身份摘要，查询继续使用同一可重建投影。私人作品/分集详情的“选择文件版本”仍指向同一 scope 的文件查询。四种待整理状态共享 personal_catalog，旧管理入口仅转译；未知提交只查询原 request_id 回执。手机仍使用原有有界计划与逐批预览。
 
 未确认类型的作品使用“原文件 / 查看原文件”，不推断为电影或剧集。详情文件夹动作先捕获当前路径再关闭弹窗；已有 Videos 窗口更新目录且保留返回历史，其他窗口激活 Videos。片库搜索入口只负责一次性输入，结果页 URL 保存关键词，不在返回或刷新时重新询问；输入结束及账号/root 复核后仍检查原目录，避免迟到结果切走当前页面。整理改变聚合身份而使旧下钻页为空时，仅显示同 scope/source 的返回作品与继续整理入口，不自动迁移目标。TV 逐项预览显示中文操作、前后描述、季集、版本备注及状态，实际 review/CAS 命令保持不变。
 
@@ -66,7 +74,7 @@ FileRef 与 MountedRef 通过同一 typed lookup 进入既有 reviews、review_c
 
 一次性 fragment 配对、严格 Host/Origin、HttpOnly cookie、CSRF 和固定 RPC 白名单共同限制访问。仅可信局域网使用，HTTP 不提供传输加密。关闭二维码立即撤销管理授权，不取消后台扫描。原 Stremio 和字幕入口保留，管理模式不开放旧的匿名修改路由。
 
-不打开详细管理即可继续原文件浏览。新增 scope revision 和 typed observation 表是辅助元数据；原 objects、typed_objects、reviews 与历史不逆向删除，FileRef v1 与 MountedRef 稳定键语义不变。当前索引 user_version 保持 2，读取投影 schema 为 5；升级在事务内重建投影，失败可回滚并重试。支持 schema 2 的旧版本可重建自己的读取投影，辅助表和用户记录保留；不支持的索引 schema 继续拒绝写入。没有设备和真实账号证据的网盘能力继续标记 `not_device_verified`。
+不打开详细管理即可继续原文件浏览。新增 scope revision 和 typed observation 表是辅助元数据；原 objects、typed_objects、reviews 与历史不逆向删除，FileRef v1 与 MountedRef 稳定键语义不变。当前索引 user_version 保持 2，读取投影 schema 为 6，统一由 catalog_query.PROJECTION_SCHEMA 声明；本次加入 filename_sort，并重建包含版本备注的 search_text。升级在原事务内重建投影，失败可回滚并重试。支持 schema 2 的旧版本可重建自己的读取投影，辅助表和用户记录保留；已用独立进程验证当前 6→9446e59 基线 5→6 往返，权威表逻辑摘要保持一致。不支持的索引 schema 继续拒绝写入。没有设备和真实账号证据的网盘能力继续标记 `not_device_verified`。
 
 ## 首页与播放摘要
 
@@ -87,6 +95,8 @@ FileRef 与 MountedRef 通过同一 typed lookup 进入既有 reviews、review_c
 2116 后续独立切片补到 1× 同实例有效 EOF 与 exact history=100%，以及新实例 Stop 后保持未完成。不同集数与代际不合并成速率配对；next 精确 handoff 归属仍未补齐。首页原生列表在 Fetch 同锁发布边界求值可见性，12 项生产方法/两组负控及一次 40 秒真实刷新观察通过，未新增焦点轮询或放宽账户可见性。
 
 ## 测量边界
+
+设备 metrics 用单调截止时间限制新采样准入，已错过的一秒槽位跳过；在途读取结束后保留实际耗时、未启动点与窗口超出时间。少于两个有效点继续返回未通过，部分回执保留。起播采集在原有八个读取通道上记录开始、结束、耗时与状态，失败时携带有界固定字段的通道诊断；不额外发送 RPC、重试或播放控制。此诊断用于定位起播缓冲和快照超时，实际设备收益由后续同条件验证给出。
 
 `BLOCK_DELIVERY_SECONDS=1.0` 是收到可用前缀后的交付检查窗口，不是连接、DNS、首字节、系统调用或整次请求的硬超时。现有 `raw.read1` 与精确 suffix 续取继续保留；本轮不因短样本推断而新增缓存、transport 或调度器。
 

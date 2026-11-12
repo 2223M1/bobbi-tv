@@ -3,6 +3,19 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {boot,calls,deferred,find,flush,response,row,text}=require('./catalog_test_dom.cjs');
 
+test('mounted filter reset keeps the fixed grant and exposes no all-source switch',async()=>{
+  const source='d'.repeat(32);
+  const ui=await boot({handlers:{'/manage/api/pair':()=>response({csrf:'test-csrf',catalog_kind:'mounted',source_id:source})}});
+  assert.equal(ui.element('clearSource').disabled,true);assert.match(ui.text('clearSource'),/固定来源/);
+  assert.equal(ui.element('historyTab').classList.contains('hidden'),true);
+  ui.element('availability').value='observed_present';await ui.element('availability').fire('change');
+  ui.element('sort').value='recent_edited';await ui.element('sort').fire('change');
+  await ui.click('clearFilters');await ui.click('clearSource');
+  assert.ok(calls(ui,'catalog_query').every(request=>request.body.params.query.source_id===source));
+  assert.equal(calls(ui,'catalog_query').at(-1).body.params.query.sort,'name');
+  assert.equal(calls(ui,'catalog_sources').length,0);assert.equal(calls(ui,'catalog_apply').length,0);
+});
+
 for(const stage of ['preview','apply'])test(stage+' clear in flight cannot erase immutable batch or real receipt',async()=>{
   const ui=await boot();await ui.add();
   if(stage==='apply')await ui.click('preview');

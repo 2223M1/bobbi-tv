@@ -5,6 +5,97 @@ import re
 import sys
 from urllib.parse import urlencode
 
+FILTER_FIELDS = ('source_id', 'review_state', 'availability', 'media_kind', 'text', 'sort')
+FILTER_CHOICES = {
+    'media_kind': ('作品类型', ((None, '全部类型'), ('movie', '电影'), ('tv', '剧集'), ('unknown', '尚未确认作品'))),
+    'review_state': ('整理状态', ((None, '全部状态'), ('unmatched', '待匹配'), ('ambiguous', '身份不明确'),
+        ('proposed', '待确认建议'), ('confirmed', '人工确认'), ('ignored', '已忽略'))),
+    'availability': ('来源观察', ((None, '全部观察状态'), ('observed_present', '已收录 · 播放前核验'),
+        ('observed_absent', '来源未发现此文件'), ('source_unavailable', '来源暂不可用'), ('unverified', '待确认来源'))),
+    'sort': ('排序', (('name', '按名称'), ('recent_added', '最近加入'), ('recent_edited', '最近整理'))),
+}
+
+
+def filter_target(expected, query=None, review=False):
+    return route(action='personal_catalog_manage', mode='filters', review='true' if review else None,
+                 **scope_params(expected), **{key: value for key, value in (query or {}).items()
+                    if key in FILTER_FIELDS + ('view', 'parent_entity_id')})
+
+
+def filter_summary(query):
+    labels = [dict(choices).get(query.get(key), '') for key, (_, choices) in FILTER_CHOICES.items()
+              if query.get(key) and not (key == 'sort' and query[key] == 'name')]
+    if query.get('source_id'):
+        labels.insert(0, '已选来源')
+    if query.get('text'):
+        text = query['text']
+        labels.append('关键词：' + text[:24] + ('…' if len(text) > 24 else ''))
+    return ' · '.join(labels)
+
+
+def filters(dialog, params, expected, origin, rpc):
+    """Edit existing query fields, then open one stable scope-bound directory."""
+    import xbmc
+    from bobbi_core.catalog_query import parameters
+    mounted = expected.get('reference_kind') == 'mounted_path'
+    selected = {key: params[key] for key in FILTER_FIELDS if params.get(key)}
+    selected.setdefault('sort', 'name')
+    if mounted:
+        selected['source_id'] = expected['source_id']
+    source_name = '当前 CD2 来源' if mounted else '已选来源' if selected.get('source_id') else '当前账号全部来源'
+    while True:
+        fields = ([] if mounted else ['source_id']) + list(FILTER_CHOICES) + ['text']
+        labels = []
+        for key in fields:
+            if key == 'source_id':
+                labels.append('目录来源 · ' + source_name)
+            elif key == 'text':
+                labels.append('关键词 · ' + (selected.get('text') or '全部作品 / 原文件 / 版本备注'))
+            else:
+                title, choices = FILTER_CHOICES[key]
+                labels.append(title + ' · ' + dict(choices).get(selected.get(key), choices[0][1]))
+        action = dialog.select('片库筛选与排序' + (' · 当前 CD2 来源' if mounted else ''),
+            labels + ['应用筛选', '清除筛选（保留当前来源）'])
+        if action < 0:
+            return
+        if action == len(fields) + 1:
+            selected = {key: value for key, value in selected.items() if key == 'source_id'}
+            selected['sort'] = 'name'
+            continue
+        if action == len(fields):
+            # Start this directory at page one. Keep its work/season parent so
+            # sorting a file-version page does not jump out to the whole library.
+            review = params.get('review') == 'true'
+            query = parameters(dict(selected, view=params.get('view') or ('files' if review else 'works'),
+                                    parent_entity_id=params.get('parent_entity_id')))
+            if origin_is_current(params, expected, origin, rpc):
+                target = route(action='personal_catalog', mode='review' if review else None,
+                               **scope_params(expected), **query)
+                xbmc.executebuiltin('Container.Update("' + target + '")')
+            return
+        if not 0 <= action < len(fields):
+            return
+        key = fields[action]
+        if key == 'source_id':
+            rows = rpc('catalog_sources', dict(expected=expected))['items']
+            options = [(None, '当前账号全部来源')] + [(row['id'], row['name']) for row in rows]
+        elif key == 'text':
+            text = dialog.input('搜索作品 / 原文件 / 版本备注（最多 160 字）', defaultt=selected.get('text', '')).strip()
+            if text:
+                if len(text) > 160 or re.search(r'[\x00-\x1f\x7f]', text):
+                    dialog.ok('关键词过长或含控制字符', '请使用 160 字以内的关键词。当前筛选保留。')
+                else:
+                    selected['text'] = text
+            continue
+        else:
+            options = FILTER_CHOICES[key][1]
+        chosen = dialog.select('选择' + ('目录来源' if key == 'source_id' else FILTER_CHOICES[key][0]),
+                               [label for _, label in options])
+        if 0 <= chosen < len(options):
+            selected[key] = options[chosen][0]
+            if key == 'source_id':
+                source_name = options[chosen][1]
+
 
 def scope_key(account):
     if account.get('reference_kind') == 'mounted_path':
@@ -120,6 +211,8 @@ def manage(params=None, rpc=None):
         expected = (mounted_for(params, rpc) if params.get('source') else account_for(params,
             [scope(row['account'], authenticated=True) for row in rpc('pan_status', {})['providers']
              if row['provider'] != '115' and row['account'].get('authenticated')]))
+        if params.get('mode') == 'filters':
+            return filters(xbmcgui.Dialog(), params, expected, origin, rpc)
         if params.get('mode') == 'search':
             text = xbmcgui.Dialog().input('搜索自己的片库', defaultt=params.get('text', '')).strip()
             if text and origin_is_current(params, expected, origin, rpc):
@@ -204,8 +297,7 @@ def card_target(card, account, query=None):
              'season': 'episodes', 'episode': 'files'}
     if kind not in views:
         raise ValueError('CATALOG_REPLY_INVALID')
-    filters = {key: value for key, value in (query or {}).items() if key in (
-        'source_id', 'review_state', 'availability', 'media_kind', 'text', 'sort')}
+    filters = {key: value for key, value in (query or {}).items() if key in FILTER_FIELDS}
     return route(action='personal_catalog', view=views[kind], parent_entity_id=identifier,
                  **base, **filters), True
 
@@ -213,8 +305,7 @@ def card_target(card, account, query=None):
 def variants_target(card, account, query=None):
     if card['entity_kind'] not in ('work', 'episode') or card.get('media_kind') not in ('movie', 'tv'):
         return None
-    filters = {key: value for key, value in (query or {}).items() if key in (
-        'source_id', 'review_state', 'availability', 'media_kind', 'text', 'sort')}
+    filters = {key: value for key, value in (query or {}).items() if key in FILTER_FIELDS}
     return route(action='personal_catalog', view='files', parent_entity_id=card['entity_id'],
                  **scope_params(account), **filters)
 
@@ -305,6 +396,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                 for state_name, label in (('unmatched', '未匹配原文件'), ('ambiguous', '身份不明确'),
                         ('proposed', '待确认建议'), ('ignored', '已忽略原文件')):
                     entry(label, route(**base, view='files', review_state=state_name, source_id=params.get('source_id')))
+                entry('筛选与排序', filter_target(account, params, review=True), False)
                 entry('当前片库管理与原提交查询', route(action='personal_catalog_manage', **scope_params(account)), False)
             elif not params.get('view') and mode != 'rail' and not params.get('search'):
                 for label, values in (
@@ -317,6 +409,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     entry(label, route(**base, **values, **(dict(mode='review') if values.get('review_state') else {})))
                 entry('搜索片库', route(action='personal_catalog_manage', mode='search',
                     source_id=params.get('source_id'), **scope_params(account)), False)
+                entry('筛选与排序', filter_target(account, params), False)
                 entry('继续观看', route(action='continue_watching_menu'))
                 if mounted:
                     entry('扫描 / 更新当前 CD2 来源', route(action='personal_catalog_manage',
@@ -329,6 +422,9 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     'availability', 'media_kind', 'text', 'parent_entity_id', 'sort') if params.get(key)}
                 query.setdefault('view', 'works')
                 query.setdefault('sort', 'recent_added' if mode == 'rail' else 'name')
+                summary = filter_summary(query)
+                if summary and not rail:
+                    category += ' · ' + summary
                 # Reuse the skin's season captions and episode rows. Public
                 # metadata may give every card the same work title; the native
                 # content type supplies the visible season/episode distinction.
@@ -430,6 +526,9 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                             source_id=query.get('source_id'), **scope_params(account)) + ')')])
                     elif variants and hasattr(item, 'addContextMenuItems'):
                         item.addContextMenuItems([('选择文件版本', 'ActivateWindow(Videos,"' + variants + '",return)')])
+                    if not rail and hasattr(item, 'addContextMenuItems'):
+                        item.addContextMenuItems([('筛选与排序', 'RunPlugin(' + filter_target(
+                            account, query, review=mode == 'review') + ')')])
                 if page.get('next_cursor') and mode != 'rail':
                     entry('下一页', route(**base, **query, cursor=page['next_cursor']),
                           properties={'Bobi.NextPage': 'true'})
@@ -442,8 +541,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                               detail='此分组暂时没有文件，整理后的作品可能已归入新分组')
                         entry('继续整理当前来源', route(**recovery, mode='review'))
                     else:
-                        entry('当前筛选没有作品 · 打开整理与扫描', route(
-                            action='personal_catalog_manage', **scope_params(account)), False)
+                        entry('当前筛选没有作品 · 调整筛选', filter_target(account, query, review=mode == 'review'), False)
                 try:
                     from lib.clients.tmdb.frontend_metadata import flush
                     flush()

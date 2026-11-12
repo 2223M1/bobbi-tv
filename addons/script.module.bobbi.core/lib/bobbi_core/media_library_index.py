@@ -114,7 +114,7 @@ class MediaIndex:
                 self.db.execute('INSERT OR IGNORE INTO catalog_sources SELECT DISTINCT source,1 FROM memberships')
                 catalog_query.create_projection(self.db)
                 meta = self.db.execute('SELECT * FROM catalog_meta WHERE singleton=1').fetchone()
-                rebuild = (meta is None or meta['schema'] != 5 or self.db.execute(
+                rebuild = (meta is None or meta['schema'] != catalog_query.PROJECTION_SCHEMA or self.db.execute(
                     'SELECT count(*) FROM catalog_rows').fetchone()[0] != self.db.execute(
                     'SELECT (SELECT count(*) FROM objects)+(SELECT count(*) FROM typed_objects)').fetchone()[0])
                 if rebuild:
@@ -159,7 +159,8 @@ class MediaIndex:
         self.db.execute('CREATE INDEX catalog_rows_scope ON catalog_rows(provider,account,title_sort,id)')
         self.db.execute('CREATE INDEX catalog_rows_work ON catalog_rows(provider,account,work_id,season_id,episode_id)')
         self.db.execute('CREATE INDEX catalog_rows_group ON catalog_rows(group_key,id)')
-        self.db.execute('INSERT OR REPLACE INTO catalog_meta VALUES(1,5,?,?)', (uuid4().hex, revision))
+        self.db.execute('INSERT OR REPLACE INTO catalog_meta VALUES(1,?,?,?)',
+            (catalog_query.PROJECTION_SCHEMA, uuid4().hex, revision))
 
     def rebuild_projection(self):
         with self.transaction():

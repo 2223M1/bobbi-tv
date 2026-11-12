@@ -186,10 +186,21 @@ def collect():
     pid,installed=binding()  # Hashing overhead precedes the measured interval.
     tail=TraceTail('/storage/.kodi/temp/kodi.log');samples=[];errors=[]
     began=time.monotonic();utc_started=time.time();original_start=None
+    deadline=began+DURATION;stopped_reason='schedule_complete';skipped_points=0
     for index in range(DURATION+1):
         time.sleep(max(0,began+index-time.monotonic()))
+        admitted=time.monotonic()
+        if admitted>deadline:
+            stopped_reason='deadline'
+            break
+        # Each scheduled point owns one second. A slow prior read may consume
+        # whole slots; never issue a burst of reads to replay those old slots.
+        if admitted>=began+index+1:
+            skipped_points+=1
+            continue
         try:
             row=process_sample(pid)
+            row['schedule_lag_seconds']=max(0,admitted-(began+index))
             if original_start is None:original_start=row['start_ticks']
             if row['start_ticks']!=original_start:raise ValueError('KODI_PROCESS_REPLACED')
             if samples:
@@ -200,12 +211,18 @@ def collect():
             row.update(activity())
             samples.append(row)
         except (OSError,ValueError,IndexError) as error:
-            errors.append(dict(sample=index,error=type(error).__name__,reason='PROCESS_SAMPLE_UNAVAILABLE'));break
+            errors.append(dict(sample=index,error=type(error).__name__,reason='PROCESS_SAMPLE_UNAVAILABLE'))
+            stopped_reason='sample_error';break
         tail.poll(began,time.monotonic(),EXPECTED_FILE)
     ended=time.monotonic();elapsed=ended-began
     return dict(schema=1,mode='readonly',sample_name=SAMPLE_NAME,condition=CONDITION,
         cache_state=CACHE_STATE,repeat=REPEAT,requested_seconds=DURATION,sample_interval_seconds=1,utc_started=utc_started,utc_ended=time.time(),
         monotonic_started=began,monotonic_ended=ended,elapsed_seconds=elapsed,
+        sampling=dict(admission_deadline_monotonic=deadline,planned_points=DURATION+1,
+            collected_points=len(samples),skipped_points=skipped_points,
+            unstarted_points=DURATION+1-len(samples)-len(errors)-skipped_points,
+            stopped_reason=stopped_reason,overrun_seconds=max(0,ended-deadline),
+            qualification='Deadline bounds new sample admission. Expired one-second slots are skipped; unstarted_points counts the remaining slots after stop. An in-flight bounded read finishes with its actual elapsed time; missed points are not replayed.'),
         source_tree=SOURCE_TREE,source_tree_binding='operator-supplied label; compare installed_source_sha256 against that tree separately',
         installed=installed,samples=samples,errors=errors,trace=trace_summary(tail,elapsed),
         limitations=['Condition/cache labels are operator supplied; scans/player observations independently describe sampled activity.',
@@ -340,6 +357,7 @@ def summarize(paths, repo):
                 and re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', row.get('native_instance') or '')}),
             player_unavailable_points=sum(bool(row.get('player_unavailable')) for row in result['samples']),
             scans_unavailable_points=sum(bool(row.get('scans_unavailable')) for row in result['samples']),
+            sampling=result.get('sampling'),
             trace=result['trace']))
     return dict(schema=1, operation='summarize', state='measured', device_contacted=False,
         samples=results, same_build_and_boot=len(identities)==1,

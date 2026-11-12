@@ -6,7 +6,7 @@
     canceled:'已取消',interrupted:'已中断',unmatched:'待匹配',ambiguous:'身份不明确',
     proposed:'待确认建议',confirmed:'人工确认',ignored:'已忽略',ready:'可提交',
     conflict:'版本冲突，请刷新',applied:'已保存',cancel_requested:'已请求取消，等待后台确认'};
-  let csrf = '', tab = 'items', offset = 0, nextOffset = null, source = null;
+  let csrf = '', tab = 'items', offset = 0, nextOffset = null, source = null, sourceName = '';
   let pageStarts = [0], pageIndex = 0;
   let query = {view:'works'}, cursor = null, nextCursor = null, queryStarts = [null], queryPage = 0;
   let trail = [], editing = null, selectedEntity = null, mountedSource = null;
@@ -60,6 +60,8 @@
   function unknown() {return batch && ['unknown','unknown_expired'].includes(batch.phase);}
   function controls() {
     const locked=Boolean(busy)||authClosed;
+    for(const control of ['keyword','state','mediaKind','availability','sort','search','clearFilters'])byId(control).disabled=locked;
+    byId('clearSource').disabled=locked||Boolean(mountedSource);
     byId('clear').disabled=locked||Boolean(unknown());
     byId('preview').disabled=locked||Boolean(unknown());
     byId('apply').disabled=locked||Boolean(operation&&operation.canceled)||!(batch&&batch.phase==='ready'||operation&&operation.phase==='paused');
@@ -111,7 +113,8 @@
   }
   const rpc = (action,params={}) => post('/manage/api',{action,params});
   function resetPage() { offset=0;pageStarts=[0];pageIndex=0; }
-  function resetQuery() {cursor=null;nextCursor=null;queryStarts=[null];queryPage=0;trail=[];query={view:'works'};editing=null;}
+  function resetQueryPage() {cursor=null;nextCursor=null;queryStarts=[null];queryPage=0;editing=null;}
+  function resetQuery() {resetQueryPage();trail=[];query={view:'works'};selectedEntity=null;}
   function button(text, action) {
     const result = node('button',text);
     result.addEventListener('click',() => guarded(action));
@@ -307,7 +310,7 @@
     const open=button(direct?'整理此文件':next==='seasons'?'查看季':next==='episodes'?'查看分集':'查看具体文件',async()=>{
       if(direct){await editFile(row);return;}
       trail.push({query:{...query},cursor,queryStarts:[...queryStarts],queryPage,selectedEntity:row.entity_id});
-      query={...query,view:next,parent_entity_id:row.entity_id};cursor=null;queryStarts=[null];queryPage=0;
+      query={...query,view:next,parent_entity_id:row.entity_id};resetQueryPage();
       selectedEntity=null;await load();
     });
     if(row.entity_id===selectedEntity&&open.focus)setTimeout(()=>open.focus(),0);
@@ -336,7 +339,7 @@
       if(observation.availability==='source_unavailable')card.append(node('small','来源离线，已保存的整理记录保留。'));
       else if(observation.recheck_required)card.append(node('small','观察范围待复核，可重新扫描；播放前仍核验。'));
     }
-    card.append(button('查看此来源',async()=>{source=row.id;tab='items';resetQuery();await load();}));
+    card.append(button('查看此来源',async()=>{source=row.id;sourceName=row.name;tab='items';resetQuery();await load();}));
     card.append(button('重新完整扫描',async()=>{
       if (!confirm('重新扫描此已登记目录？不修改云端文件。')) return;
       await rpc('catalog_scan',{source_id:row.id});tab='jobs';resetPage();await load();
@@ -370,7 +373,14 @@
     byId('back').disabled=tab!=='items'||!trail.length;
     if(tab==='items') {
       const filters={...query,text:byId('keyword').value.trim(),review_state:byId('state').value||null,
-        media_kind:byId('mediaKind').value||null,source_id:source||mountedSource};
+        media_kind:byId('mediaKind').value||null,availability:byId('availability').value||null,
+        sort:byId('sort').value||'name',source_id:source||mountedSource};
+      const available={observed_present:'已收录 · 播放前核验',observed_absent:'来源未发现此文件',
+        source_unavailable:'来源暂不可用',unverified:'待确认来源'};
+      byId('scopeStatus').textContent='当前来源：'+(sourceName||(mountedSource?'本次授权的 CD2 来源':source?'所选目录来源':'当前账号全部来源'))+
+        ' · '+({movie:'电影',tv:'剧集',unknown:'尚未确认作品'}[filters.media_kind]||'全部类型')+
+        ' · '+(labels[filters.review_state]||'全部整理状态')+' · '+(available[filters.availability]||'全部观察状态')+
+        ' · '+({name:'按名称',recent_added:'最近加入',recent_edited:'最近整理'}[filters.sort]||'按名称');
       let value;
       try {value=await rpc('catalog_query',{query:filters,cursor,limit:32});}
       catch(error) {
@@ -380,7 +390,7 @@
       }
       nextCursor=value.next_cursor;
       byId('rows').replaceChildren(...(value.items||[]).map(summaryCard));
-      if(!value.items.length)byId('rows').append(node('p','此范围暂无作品；可调整关键词或待整理筛选。'));
+      if(!value.items.length)byId('rows').append(node('p','此范围暂无作品；可调整筛选，或清除筛选后查看当前来源。'));
       byId('previous').disabled=queryPage===0;byId('next').disabled=nextCursor==null;
       status('作品检索 · 第 '+(queryPage+1)+' 页 · 每页最多 32 项；点击具体文件才读取整理记录。');return;
     }
@@ -399,8 +409,13 @@
   ['items','sources','jobs','history'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
   byId('refresh').addEventListener('click',()=>guarded(load));
   for(const control of ['state','mediaKind'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQuery();await load();}));
+  for(const control of ['availability','sort'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQueryPage();await load();}));
   byId('search').addEventListener('click',()=>guarded(async()=>{resetQuery();await load();}));
-  byId('clearSource').addEventListener('click',()=>guarded(async()=>{source=null;resetQuery();await load();}));
+  byId('clearSource').addEventListener('click',()=>guarded(async()=>{source=null;sourceName='';resetQuery();await load();}));
+  byId('clearFilters').addEventListener('click',()=>guarded(async()=>{
+    for(const control of ['keyword','state','mediaKind','availability'])byId(control).value='';
+    byId('sort').value='name';resetQuery();await load();
+  }));
   byId('back').addEventListener('click',()=>guarded(async()=>{
     if(editing){editing=null;await load();return;}
     const previous=trail.pop();if(previous){({query,cursor,queryStarts,queryPage,selectedEntity}=previous);await load();}
@@ -590,6 +605,7 @@
     history.replaceState(null,'',location.pathname);
     const session=await post(code?'/manage/api/pair':'/manage/api/session',code?{code}:{});
     csrf=session.csrf;mountedSource=session.source_id||null;
+    if(mountedSource){byId('clearSource').disabled=true;byId('clearSource').textContent='当前授权已固定来源';}
     byId('historyTab').classList.toggle('hidden',session.catalog_kind==='mounted');
     byId('workspace').classList.remove('hidden');await load();
   });

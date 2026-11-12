@@ -97,7 +97,7 @@ def test_projection_upgrade_failure_preserves_original_records_and_retries(tmp_p
     index = MediaIndex(path)
     try:
         assert index.item(scope(), ref()['id'])['mapping']['title'] == 'Custom'
-        assert index.db.execute('SELECT schema FROM catalog_meta').fetchone()[0] == 5
+        assert index.db.execute('SELECT schema FROM catalog_meta').fetchone()[0] == catalog_query.PROJECTION_SCHEMA
     finally:
         index.close()
 

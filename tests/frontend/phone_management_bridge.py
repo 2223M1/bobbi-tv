@@ -52,6 +52,8 @@ def main():
                     writes.append(dict(request_id=params['request_id'], commands=params['commands']))
                 if action == 'catalog_query':
                     params['source_names'] = {'a'*32: '测试收藏目录'}
+                if action == 'catalog_sources':
+                    return dict(items=[dict(id='a'*32, name='测试收藏目录')])
                 return getattr(index, action.removeprefix('catalog_'))(expected, **params)
 
             manager = phone.PhoneManagement(expected, origin, rpc=rpc, clock=lambda: now[0])
