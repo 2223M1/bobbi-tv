@@ -267,21 +267,12 @@ class JacktookMOnitor(xbmc.Monitor):
         self._auxiliary_status = 'NOT_STARTED'
         self._auxiliary_workers = []
         self._control = None
-        self._rail_lifecycle = None
-        self._rail_host = None
 
-    def run_owner_loop(self, host=None):
+    def run_owner_loop(self, host=None, presentation_tick=None):
         from lib.services.playback_control import PlaybackControlServer
         control = PlaybackControlServer(events=self._playback_events)
         self._control = control
         if host is not None:
-            self._rail_host = host
-            try:
-                import xbmcgui
-                from lib.cinema.focus_anchor import HomeRailLifecycle
-                self._rail_lifecycle = HomeRailLifecycle(host, xbmcgui.Window(10000))
-            except Exception:
-                kodilog('Home rail lifecycle unavailable; playback owner unchanged')
             host.playback = self
             control.authority.configure_accounts(getattr(host, 'playback_accounts', host.accounts))
             host.bind_owner(control.authority.dispatch, control.authority.account_changed)
@@ -301,11 +292,8 @@ class JacktookMOnitor(xbmc.Monitor):
                 control.tick()
                 if host is not None:
                     host.tick()
-                if self._rail_lifecycle is not None:
-                    try:
-                        self._rail_lifecycle.tick()
-                    except Exception:
-                        pass  # Presentation must never stop account revocation.
+                if presentation_tick is not None:
+                    presentation_tick()
                 # Kodi dispatches pending Python notifications in waitForAbort,
                 # not abortRequested or Python's selector.select. Keep this on
                 # the owner interpreter/thread so window/terminal events reach
@@ -315,11 +303,6 @@ class JacktookMOnitor(xbmc.Monitor):
                     break
         finally:
             self._owner_stopped.set()
-            if self._rail_lifecycle is not None:
-                try:
-                    self._rail_lifecycle.close()
-                except Exception:
-                    pass
             if host is not None:
                 host.bind_owner(None)
             if host is None:
@@ -407,16 +390,6 @@ class JacktookMOnitor(xbmc.Monitor):
             AutoStartService().run()
         except Exception as e:
             kodilog(f"AutoStart failed: {e}", level=xbmc.LOGERROR)
-        if self._owner_stopped.is_set() or self.abortRequested():
-            return
-        try:
-            from lib.services.widget_refresh import WidgetRefreshService
-
-            self._auxiliary_workers.append(self._start_worker(WidgetRefreshService(
-                self._worker_monitor(), host=self._rail_host).run))
-        except Exception as e:
-            kodilog(f"WidgetRefresh failed: {e}", level=xbmc.LOGERROR)
-
     def onScreensaverActivated(self):
         set_property_no_fallback(pause_services_prop, "true")
         kodilog("PAUSING services due to device sleep", level=xbmc.LOGINFO)

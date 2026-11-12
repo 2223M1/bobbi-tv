@@ -3,7 +3,7 @@
 Kodi 21 GUIBaseContainer::UpdateListProvider reidentifies the CURRENT item by
 path synchronously on the GUI thread. We deliberately do not schedule SetFocus:
 directions/select/back issued during a fetch therefore win without a Python
-input poller. DirectoryProvider's job ID is the navigation-generation gate.
+input poller. DirectoryProvider cancels superseded jobs through JobManager.
 Existing-window Python wrappers cannot intercept native window key presses.
 """
 import hashlib
@@ -74,9 +74,10 @@ class HomeRailLifecycle:
     creation. Account callbacks immediately hide old cards; a later owner tick
     publishes only the new scope. Failed presentation cannot stop revocation.
     """
-    def __init__(self, host, window):
+    def __init__(self, host, window, refresh=None):
         from bobbi_platform.pan_accounts import PROVIDERS
         self.host, self.window = host, window
+        self.refresh = refresh
         self.providers = tuple(key for key, _ in PROVIDERS)
         self.pans, self.unsubscribe, self.dirty = None, lambda: None, True
         self.clear()
@@ -96,6 +97,11 @@ class HomeRailLifecycle:
         self.window.setProperty('Bobi.Rail.Account.' + provider, '')
 
     def tick(self):
+        self._publish_scope()
+        if self.refresh is not None:
+            self.refresh()
+
+    def _publish_scope(self):
         pans = self.host.pans
         if pans is not self.pans:
             self.unsubscribe()
@@ -122,6 +128,7 @@ class HomeRailLifecycle:
                         opaque(account['account_id']) if account['authenticated'] else '')
                 continue
             self.window.setProperty('Bobi.Rail.Scope.' + provider, value)
+            self.window.setProperty('Bobi.Rail.Account.' + provider, '')
         bump(self.window, 'personal_library')
         bump(self.window, 'continue_watching')
 

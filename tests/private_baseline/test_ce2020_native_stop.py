@@ -36,8 +36,9 @@ def test_native_owner_and_auxiliary_monitor_exit_without_kodi_disable(tmp_path, 
         actor._auxiliary_workers.append(actor._start_worker(work))
     monkeypatch.setattr(actor,'_start_auxiliary_services',auxiliary)
     errors=[]
+    presentation_ticks=[]
     def service():
-        try: actor.run_owner_loop(host=server)
+        try: actor.run_owner_loop(host=server, presentation_tick=lambda:presentation_ticks.append(True))
         except BaseException as error: errors.append(error)
         finally: server.close()
     worker=Thread(target=service); worker.start()
@@ -52,6 +53,7 @@ def test_native_owner_and_auxiliary_monitor_exit_without_kodi_disable(tmp_path, 
         worker.join(3)
         assert not worker.is_alive() and not errors and done.is_set()
         assert calls == ['control_drained'] and server._shutdown_complete
+        assert presentation_ticks
     finally:
         server.stopping.set(); actor._owner_stopped.set()
         worker.join(4); server.close()

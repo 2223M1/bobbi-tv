@@ -12,12 +12,15 @@ FIELDS = {'schema', 'state', 'reason_code', 'current_media_ref', 'next_media_ref
 
 
 def media(data):
-    if data.get('mode') not in ('tv', 'anime', 'episode'):
+    if type(data) is not dict or data.get('mode') not in ('tv', 'anime', 'episode'):
+        return None
+    # Playback accepts some legacy metadata shapes. This optional projection
+    # only describes an already structured identity; unknown shapes stay quiet.
+    ids, tv_data = data.get('ids'), data.get('tv_data')
+    if type(ids) is not dict or type(tv_data) is not dict:
         return None
     try:
-        values = [(data.get('ids') or {}).get('tmdb_id'),
-                  (data.get('tv_data') or {}).get('season'),
-                  (data.get('tv_data') or {}).get('episode')]
+        values = [ids.get('tmdb_id'), tv_data.get('season'), tv_data.get('episode')]
         if any(type(value) not in (str, int) or not str(value).isdecimal() for value in values):
             return None
         tmdb, season, episode = map(int, values)

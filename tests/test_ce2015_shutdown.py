@@ -48,6 +48,11 @@ def test_real_entry_drains_consumers_before_replacement(product, monkeypatch, tm
             host.refresh_worker.start()
         return actor
     monkeypatch.setitem(sys.modules, 'lib.services.standard_playback', SimpleNamespace(StandardPlayback=factory))
+    # Isolate the unrelated shared Home reader from this playback-worker lease
+    # test. Its real slow-read/drain path has a separate dual-adapter main test.
+    monkeypatch.setitem(sys.modules, 'lib.services.widget_refresh', SimpleNamespace(
+        WidgetRefreshService=lambda **kw: SimpleNamespace(start=lambda: None,
+            tick=lambda: None, close=lambda: None)))
     monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **kw: host))
     monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a, **kw: tmp_path))
     monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(configure=lambda *a, **kw: None, native_subtitle_abi=lambda *a: None))

@@ -286,10 +286,29 @@ class MediaIndex:
 
     def cancel(self, task, expected):
         with self.transaction():
-            row = self._scan(task, expected)
-            if row['state'] not in TERMINAL:
-                self.db.execute('UPDATE scans SET cancel_requested=1,updated=? WHERE id=?', (self.now(), task))
-            return scan_snapshot(self._scan(task))
+            return self._request_cancel(self._scan(task, expected))
+
+    def _request_cancel(self, row):
+        if row['state'] not in TERMINAL:
+            self.db.execute('UPDATE scans SET cancel_requested=1,updated=? WHERE id=?', (self.now(), row['id']))
+        return scan_snapshot(self._scan(row['id']))
+
+    @staticmethod
+    def _mounted_task_matches(row, source_id, namespace):
+        """Task control binds its saved root, not a live mount generation."""
+        scope = row['scope']
+        return (row['provider'], row['account'], row['source']) == ('mounted_path', source_id, source_id) and (
+            scope.get('reference_kind'), scope.get('source_id'), scope.get('namespace')) == (
+                'mounted_path', source_id, namespace)
+
+    def cancel_mounted(self, task, source_id, namespace):
+        identifier(source_id)
+        identifier(namespace, 64)
+        with self.transaction():
+            row = self._scan(task)
+            if not self._mounted_task_matches(row, source_id, namespace):
+                raise ValueError('CATALOG_ACCOUNT_MISMATCH')
+            return self._request_cancel(row)
 
     def batch(self, task, refs, checkpoint, scanned):
         return self._batch(task, refs, checkpoint, scanned, mounted=False)
@@ -368,6 +387,29 @@ class MediaIndex:
                 (*catalog_query.scope_key(expected)[:2], limit + 1, offset)).fetchall()
             return dict(items=[scan_snapshot(self._scan(row[0])) for row in ids[:limit]],
                         next_offset=offset + limit if len(ids) > limit else None)
+
+    def mounted_jobs(self, source_id, namespace, task=None, offset=0, limit=PAGE_SIZE):
+        """Observe saved tasks without granting file-read or playback authority.
+
+        A Registry source ID may be edited to a different root. Match the saved
+        namespace as well; remounting the same root does not hide its old jobs.
+        Job history is independently bounded by MAX_JOBS, not the media count.
+        """
+        identifier(source_id)
+        identifier(namespace, 64)
+        page(offset, limit)
+        with self.lock:
+            if task is not None:
+                row = self._scan(task)
+                if not self._mounted_task_matches(row, source_id, namespace):
+                    raise ValueError('CATALOG_ACCOUNT_MISMATCH')
+                return dict(items=[scan_snapshot(row)], next_offset=None)
+            ids = self.db.execute("SELECT id FROM scans WHERE provider='mounted_path' AND account=? AND source=? "
+                'ORDER BY updated DESC,id DESC LIMIT ?', (source_id, source_id, MAX_JOBS)).fetchall()
+            rows = [self._scan(row[0]) for row in ids]
+            rows = [row for row in rows if self._mounted_task_matches(row, source_id, namespace)]
+            return dict(items=[scan_snapshot(row) for row in rows[offset:offset + limit]],
+                next_offset=offset + limit if len(rows) > offset + limit else None)
 
     def _item(self, file, expected):
         row = self.db.execute('SELECT o.ref,r.* FROM objects o JOIN reviews r ON o.id=r.file WHERE o.id=? AND o.provider=? AND o.account=?',

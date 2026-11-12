@@ -23,6 +23,14 @@ class MountedCatalog:
         self.live()
         return self.port.describe(identifier(source_id))[1]
 
+    @staticmethod
+    def task_namespace(source):
+        # Local Registry ownership permits observing/canceling a saved job even
+        # when its mount is offline. It is never a file or playback authority.
+        if source.kind != 'vfs' or source.username or source.password:
+            raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        return mounted_ref.digest('cd2', source.location)
+
     def dispatch(self, action, body):
         self.live()
         if action == 'catalog_mount_sources' and not body:
@@ -31,13 +39,28 @@ class MountedCatalog:
                 sources = store.sources()
             finally:
                 store.close()
+            # /proc mount evidence is local and bounded. Do not stat a FUSE
+            # path merely to expose its saved jobs: a hung mount must not hide
+            # the cancellation entry. This flag is only a presentation hint;
+            # browse, scan admission and playback still call full describe.
+            try:
+                mounts = self.port.mounts()
+            except (ValueError, OSError):
+                mounts = []
             items = []
             for source in sources:
                 try:
-                    self.port.describe(source.id)
+                    namespace = self.task_namespace(source)
                 except (ValueError, OSError):
                     continue
-                items.append(dict(id=source.id, name=source.name, reference_kind='mounted_path', device_verified=False))
+                root = source.location.rstrip('/\\')
+                available = any(root == row['path'] or root.startswith(row['path'].rstrip('/') + '/')
+                                for row in mounts)
+                has_jobs = bool(self.owner.index.mounted_jobs(source.id, namespace, limit=1)['items'])
+                if not available and not has_jobs:
+                    continue
+                items.append(dict(id=source.id, name=source.name, reference_kind='mounted_path',
+                                  device_verified=False, available=available, has_jobs=has_jobs))
             return dict(items=items)
         if action == 'catalog_mount_claim' and set(body) == {'ticket'}:
             return self.claim(body['ticket'])
@@ -58,25 +81,31 @@ class MountedCatalog:
             return dict(cancelled=True)
         if 'source_id' not in body:
             raise ValueError('CATALOG_ACTION_INVALID')
-        authority = self.authority(body['source_id'])
         args = {key: value for key, value in body.items() if key != 'source_id'}
+        if (action == 'catalog_mount_jobs' and set(args) <= {'task', 'offset', 'limit'} or
+                action == 'catalog_mount_cancel' and set(args) == {'task_id'}):
+            # These operations use the registered source and persisted task
+            # binding. They must remain reachable while current mount checks
+            # fail, without synthesizing a generation acceptable to playback.
+            with self.owner.lock:
+                source = self.port.source(identifier(body['source_id']))
+                namespace = self.task_namespace(source)
+                if action == 'catalog_mount_jobs':
+                    return self.owner.index.mounted_jobs(source.id, namespace, **args)
+                result = self.owner.index.cancel_mounted(args['task_id'], source.id, namespace)
+                if self.owner.task == args['task_id'] and result['state'] in ('queued', 'running'):
+                    self.owner.cancel_event.set()
+                    if self.owner.operation is not None:
+                        self.owner.operation.cancelled.set()
+                return result
+        authority = self.authority(body['source_id'])
         if action == 'catalog_mount_query' and set(args) <= {'query', 'cursor', 'limit'}:
             result = self.owner.index.query(authority, **args)
             self.port.require(authority)
             self.live()
             return result
-        if action == 'catalog_mount_jobs' and set(args) <= {'task', 'offset', 'limit'}:
-            return self.owner.index.jobs(authority, **args)
         if action == 'catalog_mount_scan' and not args:
             return self.start(authority)
-        if action == 'catalog_mount_cancel' and set(args) == {'task_id'}:
-            with self.owner.lock:
-                result = self.owner.index.cancel(args['task_id'], authority)
-                if self.owner.task == args['task_id']:
-                    self.owner.cancel_event.set()
-                    if self.owner.operation is not None:
-                        self.owner.operation.cancelled.set()
-                return result
         if action == 'catalog_mount_prepare' and set(args) == {'object_id', 'request_id', 'intent'}:
             return self.prepare(authority, **args)
         if action == 'catalog_mount_verify' and set(args) == {'object_id', 'request_id'}:
@@ -87,9 +116,9 @@ class MountedCatalog:
         raise ValueError('CATALOG_ACTION_INVALID')
 
     def start(self, authority):
+        self.port.require(authority)
         with self.owner.lock:
             self.live()
-            self.port.require(authority)
             if self.owner.worker is not None and self.owner.worker.is_alive():
                 raise ValueError('CATALOG_SCAN_BUSY')
             task = self.owner.index.start(authority['source_id'], authority)
@@ -126,15 +155,19 @@ class MountedCatalog:
                                 pending.append((row['relative'], depth + 1))
                             elif row['reference'] is not None:
                                 refs.append(row['reference'])
+                        # Complete source checks may enter a blocking FUSE
+                        # stat. Keep them outside the shared task-state lock.
+                        session.check()
                         with self.owner.lock:
                             self.live()
-                            session.check()
+                            session.check(validate_authority=False)
                             self.owner.index.mounted_batch(task, refs, dict(parent=parent, page=session.pages), len(page['items']))
                         if not page['has_more']:
                             break
+                session.check()
                 with self.owner.lock:
                     self.live()
-                    session.check()
+                    session.check(validate_authority=False)
                     self.owner.index.finish(task, 'completed')
         except Exception as error:
             if self.owner.stop.is_set():
@@ -192,9 +225,10 @@ class MountedCatalog:
                     if selected is None and not page['has_more']:
                         raise ValueError('CATALOG_FILE_CHANGED')
                 self.port.stat_by_reference(authority, selected, session.check)
+                session.check()
                 with self.owner.lock:
                     self.live()
-                    session.check()
+                    session.check(validate_authority=False)
                     self.tickets[request_id] = (time.monotonic() + 120, authority, selected, cancelled)
                     self.attempts[request_id] = (authority, object_id, cancelled, True)
                     while len(self.tickets) > 32:

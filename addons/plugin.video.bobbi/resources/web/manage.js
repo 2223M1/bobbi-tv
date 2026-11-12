@@ -410,17 +410,19 @@
     while(plan.index<plan.chunks.length&&!plan.canceled) {
       if(Date.now()>=deadline){plan.phase='paused';status('本轮已到等待期限，已保存结果保留。可继续后续批次。');return;}
       const original=plan.chunks[plan.index];
-      if(!batch||batch.snapshot!==original||batch.phase!=='ready') {
-        batch={snapshot:original,phase:'previewing'};
-        let value;
-        try {value=await rpc('catalog_preview',{commands:original.commands});}
-        catch(error) {plan.phase='paused';if(batch)batch.phase='editing';throw error;}
-        if(plan.canceled)break;
-        if(!Array.isArray(value.items)||value.items.length!==original.entries.length||!value.items.every(row=>row.status==='ready')) {
-          batch.phase='editing';plan.phase='conflict';status('后续批次修订已变化，已停止保存。此前真实回执保留，请重新选择冲突项。',true);return;
-        }
-        batch.phase='ready';batch.previewUntil=Date.now()+PREVIEW_MS;
+      // Every unsent chunk refreshes its own preview just before submission.
+      // The full-plan preview may exceed the server's bounded preview cache or
+      // expire while the user reviews it. Keep the original commands and ID;
+      // unknown submissions still use the separate receipt/retry path below.
+      batch={snapshot:original,phase:'previewing'};
+      let value;
+      try {value=await rpc('catalog_preview',{commands:original.commands});}
+      catch(error) {plan.phase='paused';if(batch)batch.phase='editing';throw error;}
+      if(plan.canceled)break;
+      if(!Array.isArray(value.items)||value.items.length!==original.entries.length||!value.items.every(row=>row.status==='ready')) {
+        batch.phase='editing';plan.phase='conflict';status('本批修订已变化，已停止保存。此前真实回执保留，请重新选择冲突项。',true);return;
       }
+      batch.phase='ready';batch.previewUntil=Date.now()+PREVIEW_MS;
       await submit(original);
       if(authClosed)return;
       if(batch.phase!=='applied'){plan.phase=batch.phase;return;}

@@ -4,6 +4,7 @@ from pathlib import Path
 import socket
 import sys
 import time
+from threading import RLock
 from types import SimpleNamespace
 
 import pytest
@@ -88,13 +89,24 @@ def test_startup_does_not_schedule_removed_background_refresh(tmp_path, monkeypa
     runtime = plugin_module('portable_runtime.py')
     closed = []
     playback = [False]
+    properties = {}
     host = SimpleNamespace(start=lambda: None, configure_preparation=lambda *a: None,
         configure_catalog_refresh=unexpected, close=lambda: closed.append(True),
-        stopping=SimpleNamespace(is_set=lambda: False))
+        stopping=SimpleNamespace(is_set=lambda: False), report=lambda code: None, pans=None,
+        accounts=SimpleNamespace(lock=RLock(), subscribe=lambda callback: lambda: None,
+            snapshot=lambda: dict(account_id='', epoch=0, authenticated=False)))
     monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(
         Player=lambda: SimpleNamespace(isPlaying=lambda: playback[0]),
         Monitor=lambda: SimpleNamespace(waitForAbort=lambda _: True),
         getGlobalIdleTime=lambda: 60, log=lambda *args: None, LOGINFO=1))
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Window=lambda _: SimpleNamespace(
+        getProperty=lambda key: properties.get(key, ''),
+        setProperty=lambda key, value: properties.update({key: value}))))
+    # This test guards retired remote catalogue startup, not Home dependency IO.
+    # The shared worker's actual start/drain is covered by the presentation suite.
+    monkeypatch.setitem(sys.modules, 'lib.services.widget_refresh', SimpleNamespace(
+        WidgetRefreshService=lambda **kw: SimpleNamespace(start=lambda: None,
+            tick=lambda: None, close=lambda: None)))
     monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **k: host))
     monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a: tmp_path))
     monkeypatch.setitem(sys.modules, 'bobbi_platform.kodi', SimpleNamespace(rpc=lambda *a: None))

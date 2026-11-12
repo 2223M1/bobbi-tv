@@ -99,6 +99,16 @@ def test_existing_115_account_changes_and_shutdown_also_revoke(lifecycle):
     assert all(not value for key, value in state.props.items() if '.Scope.' in key or '.Account.' in key)
 
 
+def test_removing_pan_runtime_revokes_both_scope_and_file_history_account(lifecycle):
+    state = lifecycle
+    assert state.props['Bobi.Rail.Account.quark']
+    state.host.pans = None
+    state.controller.tick()
+    assert state.props['Bobi.Rail.Scope.quark'] == ''
+    assert state.props['Bobi.Rail.Account.quark'] == ''
+    assert not state.pans.listeners
+
+
 def test_unchanged_tick_never_refreshes_or_polls_focus(lifecycle):
     before = dict(lifecycle.props)
     for _ in range(50):

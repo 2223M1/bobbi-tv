@@ -16,6 +16,7 @@ from .pan_http import Session
 
 QR_CALLBACK = 'bd__cbs__cupstt'
 IDENTITY_URL = 'https://mbd.baidu.com/userx/v1/info/get'
+MAX_JSON_DEPTH = 64  # Container depth, including the root exchange object.
 
 
 def _exchange_object(raw):
@@ -52,6 +53,16 @@ def _exchange_object(raw):
         value = json.loads(text, object_pairs_hook=unique, parse_constant=invalid_constant)
         if type(value) is not dict:
             raise ValueError
+        # JSON decoder recursion limits differ across Python versions. Keep
+        # this exchange contract explicit without parsing JSON syntax again.
+        pending = [(value, 1)]
+        while pending:
+            node, depth = pending.pop()
+            if depth > MAX_JSON_DEPTH:
+                raise ValueError
+            children = node.values() if type(node) is dict else node
+            pending.extend((child, depth + 1) for child in children
+                           if type(child) in (dict, list))
         return value
     except (ValueError, UnicodeError, RecursionError):
         raise PanError('PAN_REPLY_INVALID') from None

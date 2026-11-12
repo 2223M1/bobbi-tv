@@ -976,8 +976,6 @@ class JacktookPLayer(xbmc.Player):
                     or getattr(self, '_cinema_cancel', None) is not cancel
                     or cancel is None or cancel.is_set())
 
-        if exact and (cancelled() or not self._owns_playback_session()):
-            return
         # Skip subtitle handling during autoplay unless subtitles can be handled without dialogs.
         if (self.data.get("autoplay") and not self.data.get("stream_subtitles")
                 and not self.data.get("subtitles_path")):

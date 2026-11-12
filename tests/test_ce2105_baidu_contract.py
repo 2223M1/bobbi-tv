@@ -131,6 +131,30 @@ def test_callback_parser_rejects_scripts_malformed_and_unbounded_nesting(raw):
         pan_baidu._exchange_object(raw)
 
 
+@pytest.mark.parametrize('shape', ['dict', 'list', 'mixed'])
+@pytest.mark.parametrize('depth', [3, 64, 65], ids=['shallow', 'limit', 'over-limit'])
+def test_callback_parser_enforces_container_depth_independently_of_python(shape, depth):
+    nested = 'leaf'
+    # The exchange object itself is depth one; strings do not add depth.
+    for level in range(depth - 1):
+        nested = ({'child': nested} if shape == 'dict' or
+                  (shape == 'mixed' and level % 2 == 0) else [nested])
+    value = dict(errInfo={'no': 0}, data={'user': {'userId': '123'}}, extra=nested)
+    raw = json.dumps(value).encode()
+    if depth > 64:
+        with pytest.raises(PanError, match='^PAN_REPLY_INVALID$'):
+            pan_baidu._exchange_object(raw)
+    else:
+        assert pan_baidu._exchange_object(raw) == value
+        assert pan_baidu._exchange_subject(raw) == '123'
+
+
+def test_callback_parser_does_not_count_brackets_inside_strings_as_depth():
+    value = dict(errInfo={'no': 0}, data={'user': {'userId': '123'}},
+                 note='[{' * 8000 + '}]' * 8000 + ' "quoted" \\ text')
+    assert pan_baidu._exchange_object(json.dumps(value).encode()) == value
+
+
 @pytest.mark.parametrize('raw', [
     b'{"errInfo":{"no":1,"no":0},"data":{}}',
     b'{"errInfo":{"no":0},"data":{},\'data\':{}}',

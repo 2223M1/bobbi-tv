@@ -91,6 +91,7 @@ def execute(handle, params, item):
     import xbmc
     import xbmcgui
     import xbmcplugin
+    from .catalog_ui import LABELS
     action, source = params.get('action'), params.get('source', '')
     if action == 'mounted_play':
         return play(handle, source, params.get('object', ''))
@@ -98,8 +99,12 @@ def execute(handle, params, item):
         rows = []
         if action == 'mounted_root':
             for entry in call('catalog_mount_sources', {})['items']:
-                rows.append(item(entry['name'], route(action='mounted_browse', source=entry['id']),
-                    label2='CD2 路径索引 · 复用挂载 · 未真机验收'))
+                offline = entry.get('available') is False
+                rows.append(item(entry['name'], route(action='mounted_jobs' if offline else 'mounted_browse', source=entry['id']),
+                    label2='挂载暂不可用 · 查看扫描任务' if offline else '已检测 CD2 挂载 · 打开时核验目录'))
+                if not offline and entry.get('has_jobs'):
+                    rows.append(item(entry['name'] + ' · 扫描任务', route(action='mounted_jobs', source=entry['id']),
+                        label2='直接查看或请求取消 · 无需读取挂载目录'))
             if not rows:
                 xbmcgui.Dialog().ok('CD2 索引片库', '先在“管理片库来源”选择现有 CD2 本机挂载目录。无需重新登录网盘；SMB/WebDAV 仍使用原浏览入口。')
         elif action == 'mounted_scan':
@@ -111,11 +116,14 @@ def execute(handle, params, item):
         elif action == 'mounted_jobs':
             jobs = call('catalog_mount_jobs', dict(source_id=source))['items']
             for job in jobs:
-                label = '%s · 已发现 %d 个文件' % (job['state'], job['counts']['discovered'])
+                label = '%s · 已发现 %d 个文件' % (LABELS.get(job['state'], job['state']), job['counts']['discovered'])
                 target = route(action='mounted_jobs', source=source)
                 if job['state'] in ('queued', 'running'):
-                    label += ' · 选择取消'
-                    target = route(action='mounted_cancel', source=source, task=job['task_id'])
+                    if job.get('cancel_requested'):
+                        label += ' · 已请求取消，等待后台确认'
+                    else:
+                        label += ' · 选择取消'
+                        target = route(action='mounted_cancel', source=source, task=job['task_id'])
                 rows.append(item(label, target))
         elif action == 'mounted_cancel':
             call('catalog_mount_cancel', dict(source_id=source, task_id=params.get('task', '')))

@@ -193,8 +193,17 @@ class StandardPlayback:
                 result['subtitles_path'] = body['data'].get('subtitles_path', [])
             return result
         result = self.session.dispatch(body)
-        self.next_display.publish(self.session.next_summary())
+        self._publish_next_summary()
         return result
+
+    def _publish_next_summary(self):
+        try:
+            summary = self.session.next_summary()
+        except Exception:
+            # Presentation has no playback authority. Clear an old caption and
+            # keep observing the actual session if its projection is unavailable.
+            summary = None
+        self.next_display.publish(summary)
 
     def clear_subtitle_state(self):
         row = self.session.current
@@ -328,7 +337,7 @@ class StandardPlayback:
             except RuntimeError:
                 pass  # Opening/seeking is not evidence of end or error.
         self.session.tick(playing=self.player.isPlaying())
-        self.next_display.publish(self.session.next_summary())
+        self._publish_next_summary()
         if self.session.current and not self.session.current_request(self.session.current['request_id']):
             self.clear_subtitle_state()
 

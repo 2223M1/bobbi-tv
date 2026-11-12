@@ -45,6 +45,58 @@ def test_projection_drops_all_source_and_secret_fields():
         checked(dict(value, url='https://injected.example'))
 
 
+@pytest.mark.parametrize('field,value', [
+    ('ids', '{"tmdb_id":123}'), ('ids', [123]), ('ids', 123),
+    ('tv_data', '{"season":0,"episode":1}'), ('tv_data', [0, 1]),
+])
+def test_legacy_or_unstructured_identity_stays_unavailable(field, value):
+    current = episode()
+    current[field] = value
+    assert project(current)['state'] == 'unavailable'
+    assert project(episode(), current)['next_media_ref'] is None
+
+
+@pytest.mark.parametrize('current', [None, [], 'episode'])
+def test_absent_structured_current_has_no_summary(current):
+    assert project(current)['state'] == 'unavailable'
+
+
+def test_actual_standard_handoff_survives_legacy_json_ids(product):
+    product.actor.session.next_loader = None
+    data = selected(product)
+    data['ids'] = '{"tmdb_id":123}'
+    handoff(product, data)
+    assert product.actor.session.current['state'] == 'playing'
+    assert product.state.saved[-1]['terminal_reason'] == 'STARTED'
+    assert product.state.props['Bobi.Next.State'] == 'unavailable'
+    assert len(product.state.opened) == 1
+
+
+def test_projection_exception_clears_caption_and_preserves_real_session(product, monkeypatch):
+    product.actor.session.next_loader = None
+    data = selected(product)
+    data['ids'] = {'tmdb_id': 123}
+    handoff(product, data)
+    product.actor.session.current['next_data'] = episode(2, prepared_version_key='a'*64, _next_transport='bt')
+    product.actor.tick()
+    assert product.state.props['Bobi.Next.State'] == 'preparing'
+    project_summary = product.actor.session.next_summary
+    def fail():
+        raise RuntimeError('Optional projection failed')
+    monkeypatch.setattr(product.actor.session, 'next_summary', fail)
+    product.state.position = 12
+    product.actor.tick()
+    assert product.actor.session.current['state'] == 'playing'
+    assert not any(key.startswith('Bobi.Next.') for key in product.state.props)
+    assert len(product.state.opened) == 1
+    assert product.actor.dispatch(dict(operation='current', request_id=data['request_id'])) == {'current': True}
+    assert product.actor.dispatch(dict(operation='snapshot'))['desired']['request_id'] == data['request_id']
+    monkeypatch.setattr(product.actor.session, 'next_summary', project_summary)
+    product.actor.tick()
+    assert product.state.props['Bobi.Next.State'] == 'preparing'
+    assert len(product.state.opened) == 1
+
+
 @pytest.mark.parametrize('invalidate', ['stop', 'account', 'replacement', 'close'])
 def test_real_standard_session_clears_summary_without_consuming_next(actor, invalidate):
     data = begin(actor)
