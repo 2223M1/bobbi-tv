@@ -11,7 +11,7 @@ from bobbi_platform import catalog_ui
 @pytest.fixture
 def ui(monkeypatch):
     state = SimpleNamespace(choices=[], inputs=[], confirmations=[], responses=[],
-                            events=[], calls=[], menus=[], messages=[], prompts=[])
+                            events=[], calls=[], menus=[], messages=[], prompts=[], views=[])
     state.expected = dict(provider='baidu', account_id='baidu:' + 'a' * 64, epoch=7)
 
     def select(title, labels):
@@ -40,7 +40,8 @@ def ui(monkeypatch):
         assert action == expected_action
         return deepcopy(result)
 
-    state.dialog = SimpleNamespace(select=select, input=input_value, yesno=yesno, ok=ok)
+    state.dialog = SimpleNamespace(select=select, input=input_value, yesno=yesno, ok=ok,
+                                   textviewer=lambda title,body:state.views.append((title,body)))
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Dialog=lambda: state.dialog))
     monkeypatch.setattr(catalog_ui, 'call', call)
     return state
@@ -59,21 +60,22 @@ def preview(title='Preview title', status='ready'):
 
 
 def test_preview_precedes_confirmation_and_same_revision_apply(ui, item):
-    ui.choices, ui.inputs, ui.confirmations = [1, 0], ['Requested title'], [True]
+    ui.choices, ui.inputs, ui.confirmations = [5, 0], ['Requested title'], [True]
     ui.responses = [('catalog_preview', preview()),
+                    ('catalog_preview', preview()),
                     ('catalog_apply', dict(items=[dict(status='applied')]))]
     catalog_ui.review_item(ui.dialog, ui.expected, item)
 
     assert [event for event in ui.events if event[0] in ('call', 'confirm')] == [
-        ('call', 'catalog_preview'), ('confirm', '确认修改本地描述？'), ('call', 'catalog_apply')]
-    first, second = (body for _, body in ui.calls)
-    assert first['commands'] == second['commands'] == [dict(
+        ('call', 'catalog_preview'), ('confirm', '确认分批保存？'), ('call', 'catalog_preview'), ('call', 'catalog_apply')]
+    first, refreshed, second = (body for _, body in ui.calls)
+    assert first['commands'] == refreshed['commands'] == second['commands'] == [dict(
         file_id=item['file']['id'], expected_revision=4, action='confirm',
         mapping=dict(kind='custom', title='Requested title', tmdb_id=None,
                      season=None, episode=None, version=None))]
     assert len(second['request_id']) == 32 and int(second['request_id'], 16) >= 0
-    assert 'Preview title' in ui.prompts[0][1]
-    assert ui.messages == [('已保存', '仅修改本地元数据。')]
+    assert 'Preview title' in ui.views[0][1]
+    assert '已保存 1/1' in ui.views[-1][0]
 
 
 def test_stale_preview_refuses_confirmation_and_write(ui, item):
@@ -82,8 +84,8 @@ def test_stale_preview_refuses_confirmation_and_write(ui, item):
     catalog_ui.review_item(ui.dialog, ui.expected, item)
     assert [action for action, _ in ui.calls] == ['catalog_preview']
     assert not ui.prompts
-    assert ui.messages[0][0] == '记录已变化'
-    assert '未覆盖较新的修改' in ui.messages[0][1]
+    assert ui.messages[0][0] == '预览包含冲突'
+    assert '未提交任何批次' in ui.messages[0][1]
 
 
 def test_cancelled_confirmation_does_not_apply(ui, item):
@@ -99,24 +101,26 @@ def test_cancelled_confirmation_does_not_apply(ui, item):
 def test_undo_confirmation_displays_actual_restored_preview_title(ui, item):
     ui.choices, ui.confirmations = [4], [True]
     ui.responses = [('catalog_preview', preview('Earlier restored title')),
+                    ('catalog_preview', preview('Earlier restored title')),
                     ('catalog_apply', dict(items=[dict(status='applied')]))]
     catalog_ui.review_item(ui.dialog, ui.expected, item)
     assert ui.calls[0][1]['commands'][0]['action'] == 'undo'
     assert ui.calls[0][1]['commands'][0]['mapping'] is None
-    message = ui.prompts[0][1]
+    message = ui.views[0][1]
     assert 'Earlier restored title' in message and 'Current title' not in message
     assert '解除描述' not in message
-    assert ui.messages[0][0] == '已保存'
+    assert '已保存 1/1' in ui.views[-1][0]
 
 
 def test_revision_change_after_preview_is_not_reported_as_saved(ui, item):
     ui.choices, ui.confirmations = [2], [True]
     ui.responses = [('catalog_preview', dict(items=[dict(
         status='ready', after=None, after_state='unmatched')])),
+        ('catalog_preview', dict(items=[dict(status='ready', after=None, after_state='unmatched')])),
         ('catalog_apply', dict(items=[dict(status='conflict', revision=5)]))]
     catalog_ui.review_item(ui.dialog, ui.expected, item)
     assert ui.calls[1][1]['commands'][0]['expected_revision'] == item['revision']
-    assert ui.messages == [('未保存', '记录已变化或输入无效，请刷新后重试。')]
+    assert '已保存 0/1' in ui.views[-1][0] and '版本冲突' in ui.views[-1][1]
 
 
 @pytest.mark.parametrize('filter_state,title,body', [

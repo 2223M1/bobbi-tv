@@ -111,3 +111,18 @@ def test_tv_group_does_not_derive_episodes_for_movie_candidate(tv):
     catalog_ui.review_group(tv.dialog, tv.expected, anchor, candidate)
     assert tv.messages[0][0] == '请先选择剧集候选'
     assert not tv.calls
+
+
+def test_tv_group_over_100_uses_explicit_rounds_and_preserves_prior_real_receipts(tv):
+    files = [ref(number+1, name='Show.2020.S00E%03d.mkv' % (number+1)) for number in range(105)]
+    task = tv.index.start('a' * 32, tv.expected)
+    tv.index.begin(task)
+    for offset in range(0, len(files), 20):
+        tv.index.batch(task, files[offset:offset + 20], dict(page=offset // 20 + 1), len(files[offset:offset + 20]))
+    tv.index.finish(task, 'completed')
+    anchor = tv.index.item(tv.expected, files[0]['id'])
+    catalog_ui.review_group(tv.dialog, tv.expected, anchor, dict(media_kind='tv', title='Show', tmdb_id=123, year=2020))
+    assert [len(body['commands']) for body in writes(tv)] == [5] * 21
+    assert all(tv.index.item(tv.expected, row['id'])['revision'] == 1 for row in files)
+    assert [title for title, _ in tv.views if title.startswith('真实回执')] == [
+        '真实回执 · 已保存 100/100', '真实回执 · 已保存 5/5']

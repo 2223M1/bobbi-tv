@@ -3,13 +3,8 @@
 No provider locator, account, URL resolution, transfer or playback crosses this
 boundary. A suggestion must still go through the ordinary review CAS contract.
 """
-from copy import deepcopy
-import json
 import re
 import time
-from uuid import uuid4
-
-MAX_GROUP = 100
 
 
 def parameters(value):
@@ -98,32 +93,3 @@ def candidate_mapping(candidate, item):
                  season=evidence.get('season') if kind == 'tv' else None,
                  episode=evidence.get('episode') if kind == 'tv' else None, version=None)
     return mapping(value)
-
-
-def plan(entries):
-    """Independent immutable-by-copy chunks, including the complete HTTP envelope."""
-    from bobbi_core.catalog_review import command
-    if not isinstance(entries, list) or not 1 <= len(entries) <= MAX_GROUP:
-        raise ValueError('CATALOG_BATCH_LIMIT')
-    chunks, current = [], None
-    for entry in entries:
-        item = dict(name=entry['name'], command=command(entry['command']))
-        if current is None:
-            current = dict(request_id=uuid4().hex, entries=[])
-        trial = current['entries'] + [item]
-        envelope = dict(action='catalog_apply', params=dict(request_id=current['request_id'],
-                        commands=[row['command'] for row in trial]))
-        size = len(json.dumps(envelope, ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode('utf-8'))
-        if len(trial) > 5 or size > 8192:
-            if not current['entries']:
-                raise ValueError('CATALOG_BATCH_LIMIT')
-            chunks.append(current);current = dict(request_id=uuid4().hex, entries=[])
-            # A single entry is bounded by the mapping schema, but validate the
-            # exact envelope again instead of relying on that implementation detail.
-            envelope['params'] = dict(request_id=current['request_id'], commands=[item['command']])
-            if len(json.dumps(envelope, ensure_ascii=False, separators=(',', ':')).encode('utf-8')) > 8192:
-                raise ValueError('CATALOG_BATCH_LIMIT')
-        current['entries'].append(deepcopy(item))
-    if current:
-        chunks.append(current)
-    return deepcopy(chunks)

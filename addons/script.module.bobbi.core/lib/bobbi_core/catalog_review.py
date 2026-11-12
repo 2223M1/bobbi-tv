@@ -1,5 +1,8 @@
 """Bounded descriptive metadata only. No playback or same-release authority."""
 import re
+from copy import deepcopy
+import json
+from uuid import uuid4
 
 from .filename_semantics import parse_filename
 
@@ -63,3 +66,30 @@ def command(value):
     elif value['mapping'] is not None:
         raise ValueError('CATALOG_REVIEW_INVALID')
     return result
+
+
+def plan(entries):
+    """Copy one review round into stable-ID bounded wire batches, without metadata IO."""
+    if not isinstance(entries, list) or not 1 <= len(entries) <= 100:
+        raise ValueError('CATALOG_BATCH_LIMIT')
+    chunks, current = [], None
+    for entry in entries:
+        item = dict(name=entry['name'], command=command(entry['command']))
+        if current is None:
+            current = dict(request_id=uuid4().hex, entries=[])
+        trial = current['entries'] + [item]
+        envelope = dict(action='catalog_apply', params=dict(request_id=current['request_id'],
+                        commands=[row['command'] for row in trial]))
+        size = len(json.dumps(envelope, ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode('utf-8'))
+        if len(trial) > 5 or size > 8192:
+            if not current['entries']:
+                raise ValueError('CATALOG_BATCH_LIMIT')
+            chunks.append(current)
+            current = dict(request_id=uuid4().hex, entries=[])
+            envelope['params'] = dict(request_id=current['request_id'], commands=[item['command']])
+            if len(json.dumps(envelope, ensure_ascii=False, separators=(',', ':')).encode('utf-8')) > 8192:
+                raise ValueError('CATALOG_BATCH_LIMIT')
+        current['entries'].append(deepcopy(item))
+    if current:
+        chunks.append(current)
+    return deepcopy(chunks)

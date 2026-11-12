@@ -88,9 +88,10 @@ def entry(index=0, title='作品', version=None):
 
 
 def test_plan_12_items_5_5_2_fixed_ids_copied_commands_and_real_utf8_envelopes(candidates):
+    from bobbi_core.catalog_review import plan
     entries = [entry(index, '影😀'*120, '版😀'*40) for index in range(12)]
     original = deepcopy(entries)
-    chunks = candidates.plan(entries)
+    chunks = plan(entries)
     assert [len(chunk['entries']) for chunk in chunks] == [5, 5, 2]
     assert len({chunk['request_id'] for chunk in chunks}) == 3
     for chunk in chunks:
@@ -103,20 +104,22 @@ def test_plan_12_items_5_5_2_fixed_ids_copied_commands_and_real_utf8_envelopes(c
 
 
 def test_plan_rejects_illegal_mapping_and_never_repairs_multi_episode_implicitly(candidates):
+    from bobbi_core.catalog_review import plan
     invalid = entry();invalid['command']['mapping']['episode'] = [1, 2]
     with pytest.raises(ValueError):
-        candidates.plan([invalid])
+        plan([invalid])
     with pytest.raises(ValueError):
-        candidates.plan([entry()]*101)
+        plan([entry()]*101)
 
 
 def test_valid_large_unicode_envelopes_split_below_five_when_full_wire_budget_requires(candidates):
+    from bobbi_core.catalog_review import plan
     # The existing revision schema permits arbitrary nonnegative integers.
     # This deliberately large (but valid) revision exercises the byte bound
     # separately from the normal five-item cap, without weakening field limits.
     entries=[entry(index,'😀'*240,'😀'*80) for index in range(12)]
     for item in entries:item['command']['expected_revision']=10**200
-    chunks=candidates.plan(entries)
+    chunks=plan(entries)
     assert [len(chunk['entries']) for chunk in chunks]==[4,4,4]
     for chunk in chunks:
         body=dict(action='catalog_apply',params=dict(request_id=chunk['request_id'],commands=[row['command'] for row in chunk['entries']]))

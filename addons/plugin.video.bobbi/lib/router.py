@@ -341,8 +341,8 @@ def addon_router():
             indexed(params)
             return
         if action == 'personal_catalog_manage':
-            from bobbi_platform.catalog_ui import manage
-            manage()
+            from lib.utils.views.personal_catalog import manage
+            manage(params)
             return
 
         if action == 'pan_play':

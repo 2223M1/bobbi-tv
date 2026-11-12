@@ -9,7 +9,7 @@ from pathlib import Path
 import tempfile
 import time
 from types import MappingProxyType
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit, parse_qsl
 from bobbi_core.image_cache import image_batch
 
 from lib.cinema.frontend_contract import chinese, clean_title, image_url, integer, season_name, text, translations
@@ -299,6 +299,24 @@ def _fetch(key):
     return result
 
 
+def _refresh_catalog(start, current, selected_key, updated_keys, selected_season_key=''):
+    """A completed public description may refresh only its still-visible directory."""
+    if not start or start != current or not selected_key:
+        return False
+    season_updated = (selected_key.startswith('tv:')
+        and selected_season_key.startswith(selected_key + ':season:')
+        and _valid_key(selected_season_key) and selected_season_key in updated_keys)
+    if selected_key not in updated_keys and not season_updated:
+        return False
+    try:
+        url = urlsplit(current)
+        params = dict(parse_qsl(url.query, max_num_fields=20))
+        return (url.scheme == 'plugin' and url.netloc == 'plugin.video.bobbi'
+                and params.get('action') == 'personal_catalog')
+    except ValueError:
+        return False
+
+
 def hydrate(_params=None):
     import xbmc
     import xbmcgui
@@ -308,6 +326,9 @@ def hydrate(_params=None):
     acquired = False
     completed = False
     updated = False
+    updated_keys = set()
+    label = getattr(xbmc, 'getInfoLabel', lambda _: '')
+    catalog_path = label('Container.FolderPath')
     try:
         with _lock('worker') as acquired:
             if not acquired:
@@ -327,7 +348,9 @@ def hydrate(_params=None):
                 try:
                     data = _fetch(key)
                     delay = 86400
-                    updated = updated or data != previous.get('data')
+                    if data != previous.get('data'):
+                        updated = True
+                        updated_keys.add(key)
                 except Exception as error:
                     data, delay = previous.get('data'), 300
                     kodilog('Bobi metadata deferred {} {}'.format(key, type(error).__name__), xbmc.LOGWARNING)
@@ -340,7 +363,15 @@ def hydrate(_params=None):
             remaining = _queue() if completed else None
             if remaining and remaining['pending']:
                 _wake()
-            elif updated and not xbmc.Player().isPlayingVideo() and xbmc.getCondVisibility('Window.IsActive(home)'):
-                # No notification and no navigation; only the visible Home can refresh.
-                xbmc.executebuiltin('Container.Refresh')
+            if updated and not xbmc.Player().isPlayingVideo():
+                home_ready = ((not remaining or not remaining['pending'])
+                              and xbmc.getCondVisibility('Window.IsActive(home)'))
+                catalog_ready = _refresh_catalog(
+                    catalog_path, label('Container.FolderPath'),
+                    label('ListItem.Property(Bobi.Metadata.Key)'), updated_keys,
+                    label('ListItem.Property(Bobi.Metadata.SeasonKey)'))
+                if home_ready or catalog_ready:
+                    # Kodi reidentifies the CURRENT stable path. No SetFocus or
+                    # window navigation can restore a previously selected card.
+                    xbmc.executebuiltin('Container.Refresh')
     return updated

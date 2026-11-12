@@ -3,6 +3,7 @@
 No live CD2 account or device is used; capability remains not_device_verified.
 """
 from copy import deepcopy
+import importlib.util
 import io
 import os
 from pathlib import Path
@@ -70,10 +71,21 @@ def mounted_ui(cd2, plugin, monkeypatch, request):
     """Real owner state/select commands; only Kodi and mount evidence are fake."""
     from bobbi_core.playback_owner import PlaybackOwner
     from bobbi_platform.standard_session import StandardSession
-    from bobbi_platform import mounted_catalog_ui, library_ui
+    from bobbi_platform import library_ui
+    root = Path(__file__).resolve().parents[1] / 'addons/plugin.video.bobbi'
+    monkeypatch.syspath_prepend(str(root))
+    def load(name, relative):
+        spec = importlib.util.spec_from_file_location(name, root / relative)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        monkeypatch.setitem(sys.modules, name, module)
+        return module
+    catalog = load('lib.utils.views.personal_catalog', 'lib/utils/views/personal_catalog.py')
+    playback = load('mounted_playback_test', 'lib/pan_playback.py')
     service = cd2[0]
     state = SimpleNamespace(plugin=plugin, adapter=request.param, calls=[], cancelled=False,
-        closed=0, after_action=None, account=dict(account_id='', epoch=0, authenticated=False))
+        closed=0, after_action=None, catalog=catalog, playback=playback, confirmed=True,
+        account=dict(account_id='', epoch=0, authenticated=False))
     def require(account, authenticated=False):
         assert authenticated is False  # Mounted playback never requires login.
         if account != state.account:
@@ -82,6 +94,8 @@ def mounted_ui(cd2, plugin, monkeypatch, request):
         SimpleNamespace(require_current=require, is_current=lambda value: value == state.account)))
     def dispatch(action, body, **kwargs):
         state.calls.append((action, deepcopy(body)))
+        if action == 'pan_status':
+            return dict(providers=[])
         if action == 'account_status':
             return deepcopy(state.account)
         if action == 'playback':
@@ -110,7 +124,11 @@ def mounted_ui(cd2, plugin, monkeypatch, request):
         return dispatch('playback', body)
     state.select_other = select_other
     state.dispatch = dispatch
-    monkeypatch.setattr(mounted_catalog_ui, 'call', dispatch)
+    monkeypatch.setattr(playback, 'call', dispatch)
+    state.play = lambda identifier: playback.mounted(dict(source=cd2[1].id, object_id=identifier), handle=17)
+    original_dialog = sys.modules['xbmcgui'].Dialog
+    monkeypatch.setattr(sys.modules['xbmcgui'], 'Dialog', lambda: SimpleNamespace(
+        ok=original_dialog().ok, yesno=lambda *args: state.confirmed))
     monkeypatch.setattr(library_ui, 'registry', lambda _: Registry(service.root / 'libraries.sqlite3'))
     monkeypatch.setattr(sys.modules['xbmcgui'], 'DialogProgress', lambda: SimpleNamespace(
         create=lambda *args: None, iscanceled=lambda: state.cancelled,
@@ -153,7 +171,8 @@ def test_rename_root_change_and_remount_never_inherit_reference_or_cursor(cd2):
     new = next(row for row in query(cd2, query=dict(view='files'))['items'] if row['display_title'] == 'Renamed.mkv')
     assert new['entity_id'] != old
     mounts[0]['generation'] = 'b' * 64
-    assert query(cd2)['items'] == []  # Never expose the previous authority view.
+    assert query(cd2)['items']  # Descriptions survive; observations grant no permit.
+    assert all(row['availability'] == 'unverified' for row in query(cd2)['items'])
     with pytest.raises(ValueError, match='CURSOR_STALE'):
         query(cd2, cursor=first['next_cursor'], limit=1)
     with pytest.raises(ValueError, match='AUTHORITY_CHANGED'):
@@ -270,9 +289,9 @@ def test_real_ui_handoff_uses_trusted_selection_and_no_old_path_resume(cd2, moun
     service, source, media, mounts = cd2
     scan(cd2)
     plugin = mounted_ui.plugin
-    plugin.module.execute(17, dict(action='mounted_play', source=source.id, object=movie(cd2)['entity_id']))
+    mounted_ui.play(movie(cd2)['entity_id'])
     assert [action for action, body in mounted_ui.calls if action.startswith('catalog_')] == [
-        'catalog_mount_prepare', 'catalog_mount_claim', 'catalog_mount_verify']
+        'catalog_mount_scope', 'catalog_mount_prepare', 'catalog_mount_claim', 'catalog_mount_verify']
     assert len(plugin.resolved) == 1 and plugin.resolved[0][1] is True
     assert Path(plugin.resolved[0][2].path) == media / 'Movie.mkv'
     assert plugin.resolved[0][2].properties['StartOffset'] == '0'
@@ -291,7 +310,7 @@ def test_ui_late_change_never_hands_off_old_file(cd2, mounted_ui, change):
         else:
             mounts[0]['generation'] = 'f' * 64
     plugin.on_make = changed
-    plugin.module.execute(17, dict(action='mounted_play', source=source.id, object=movie(cd2)['entity_id']))
+    mounted_ui.play(movie(cd2)['entity_id'])
     assert len(plugin.resolved) == 1 and plugin.resolved[0][1] is False
     assert not service.mounted.tickets
 
@@ -305,7 +324,7 @@ def test_real_other_entry_select_revokes_late_mounted_handoff(cd2, mounted_ui, p
         if action == phase:
             mounted_ui.select_other(newer)  # Same real select operation used by pan/native entry.
     mounted_ui.after_action = replace
-    plugin.module.execute(17, dict(action='mounted_play', source=source.id, object=movie(cd2)['entity_id']))
+    mounted_ui.play(movie(cd2)['entity_id'])
     assert len(plugin.resolved) == 1 and plugin.resolved[0][1] is False
     snapshot = mounted_ui.dispatch('playback', dict(operation='snapshot'))
     assert snapshot['desired']['request_id'] == newer and not snapshot['desired']['cancelled']
@@ -316,7 +335,7 @@ def test_mounted_selection_revokes_older_pending_entry_without_native_claim(cd2,
     service, source, media, mounts = cd2
     scan(cd2)
     previous = mounted_ui.select_other('8' * 32)
-    mounted_ui.plugin.module.execute(17, dict(action='mounted_play', source=source.id, object=movie(cd2)['entity_id']))
+    mounted_ui.play(movie(cd2)['entity_id'])
     assert mounted_ui.plugin.resolved[0][1] is True
     if mounted_ui.adapter == 'native':
         assert not mounted_ui.owner.bind_file(previous['boot_id'], previous['epoch'], '8' * 32,
@@ -339,8 +358,7 @@ def test_cancel_progress_before_late_result_never_opens(cd2, mounted_ui, phase):
             assert release.wait(3)
             completed.set()
     mounted_ui.after_action = delayed
-    thread = Thread(target=mounted_ui.plugin.module.execute,
-        args=(17, dict(action='mounted_play', source=source.id, object=movie(cd2)['entity_id'])))
+    thread = Thread(target=mounted_ui.play, args=(movie(cd2)['entity_id'],))
     thread.start()
     try:
         assert started.wait(3)
@@ -360,7 +378,6 @@ def test_cancel_progress_before_late_result_never_opens(cd2, mounted_ui, phase):
 
 
 def test_unknown_selection_reply_is_never_reselected_and_only_own_intent_is_cancelled(cd2, mounted_ui, monkeypatch):
-    from bobbi_platform import mounted_catalog_ui
     service, source, media, mounts = cd2
     scan(cd2)
     def dropped(action, body, **kwargs):
@@ -368,8 +385,8 @@ def test_unknown_selection_reply_is_never_reselected_and_only_own_intent_is_canc
         if action == 'playback' and body['operation'] == 'select':
             raise RuntimeError('lost select acknowledgement')
         return result
-    monkeypatch.setattr(mounted_catalog_ui, 'call', dropped)
-    mounted_ui.plugin.module.execute(17, dict(action='mounted_play', source=source.id, object=movie(cd2)['entity_id']))
+    monkeypatch.setattr(mounted_ui.playback, 'call', dropped)
+    mounted_ui.play(movie(cd2)['entity_id'])
     assert not any(row[1] for row in mounted_ui.plugin.resolved)
     assert len([body for action, body in mounted_ui.calls
                 if action == 'playback' and body['operation'] == 'select']) == 1

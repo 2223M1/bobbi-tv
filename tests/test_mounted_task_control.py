@@ -6,6 +6,7 @@ evidence is synthetic; this is not a live CD2/CoreELEC verification claim.
 from pathlib import Path
 import sys
 from threading import Event, Thread
+from types import SimpleNamespace
 from urllib.parse import parse_qsl, urlsplit
 
 import pytest
@@ -98,7 +99,7 @@ def test_removed_or_rebound_registration_does_not_inherit_old_task_control(cd2, 
     assert not service.index._scan(task)['cancel_requested']
 
 
-def test_offline_task_access_never_authorizes_index_reads_scans_or_playback(cd2):
+def test_offline_descriptions_and_tasks_never_authorize_scans_or_playback(cd2):
     service, source, _, mounts = cd2
     completed = scan(cd2)
     selected = movie(cd2)['entity_id']
@@ -107,8 +108,9 @@ def test_offline_task_access_never_authorizes_index_reads_scans_or_playback(cd2)
     service.dispatch('catalog_mount_claim', dict(ticket=claimed))
     mounts.clear()
     assert service.dispatch('catalog_mount_jobs', dict(source_id=source.id))['items'][0]['task_id'] == completed['task_id']
+    rows = service.dispatch('catalog_mount_query', dict(source_id=source.id))['items']
+    assert rows and all(row['availability'] == 'source_unavailable' for row in rows)
     for action, body in [
-        ('catalog_mount_query', dict(source_id=source.id)),
         ('catalog_mount_scan', dict(source_id=source.id)),
         ('catalog_mount_prepare', dict(source_id=source.id, object_id=selected, request_id='c' * 32, intent='play')),
         ('catalog_mount_claim', dict(ticket=unclaimed)),
@@ -122,23 +124,27 @@ def test_offline_task_access_never_authorizes_index_reads_scans_or_playback(cd2)
     assert not service.cancel_event.is_set()  # Completed task cannot cancel a later worker.
 
 
-def test_offline_root_reaches_jobs_and_pending_cancel_is_truthful(cd2, mounted_ui, paused_scan):
+def test_offline_root_reaches_jobs_and_pending_cancel_is_truthful(cd2, mounted_ui, paused_scan, monkeypatch):
     service, source, _, mounts = cd2
     task, _ = paused_scan
     mounts.clear()
     ui = mounted_ui.plugin
-    ui.module.execute(17, dict(action='mounted_root'))
-    assert len(ui.rows) == 1
-    target, item, _ = ui.rows[0]
-    assert dict(parse_qsl(urlsplit(target).query)) == dict(action='mounted_jobs', source=source.id)
-    assert item.label2 == '挂载暂不可用 · 查看扫描任务'
+    mounted_ui.catalog.execute({}, 17, mounted_ui.dispatch)
+    task_rows = [row for row in ui.rows if dict(parse_qsl(urlsplit(row[0]).query)).get('mode') == 'jobs']
+    assert len(task_rows) == 1
+    target, item, _ = task_rows[0]
+    assert dict(parse_qsl(urlsplit(target).query)) == dict(
+        action='personal_catalog_manage', source=source.id, mode='jobs')
+    assert '无需读取挂载目录' in item.label2
     service.dispatch('catalog_mount_cancel', dict(source_id=source.id, task_id=task))
-    ui.rows.clear()
-    ui.module.execute(17, dict(action='mounted_jobs', source=source.id))
-    assert len(ui.rows) == 1
-    target, item, _ = ui.rows[0]
-    assert '扫描中' in item.label and '已请求取消，等待后台确认' in item.label
-    assert dict(parse_qsl(urlsplit(target).query))['action'] == 'mounted_jobs'
+    from bobbi_platform import catalog_ui
+    labels = []
+    monkeypatch.setattr(catalog_ui, 'call', mounted_ui.dispatch)
+    monkeypatch.setattr(sys.modules['xbmcgui'], 'Dialog', lambda: SimpleNamespace(
+        select=lambda title, rows: labels.extend(rows) or -1,
+        ok=lambda *args: pytest.fail('Expected readable persisted task')))
+    mounted_ui.catalog.manage(dict(parse_qsl(urlsplit(target).query)), mounted_ui.dispatch)
+    assert any('扫描中' in label and ('正在取消' in label or '等待后台确认' in label) for label in labels)
 
 
 def test_kernel_mounted_but_unreadable_source_has_direct_root_task_route(cd2, mounted_ui, paused_scan, monkeypatch):
@@ -149,16 +155,15 @@ def test_kernel_mounted_but_unreadable_source_has_direct_root_task_route(cd2, mo
     with monkeypatch.context() as patch:
         patch.setattr(service.mounted.port, 'describe',
                       lambda *_: pytest.fail('Root/task navigation must not probe the unreadable mount'))
-        ui.module.execute(17, dict(action='mounted_root'))
+        mounted_ui.catalog.execute({}, 17, mounted_ui.dispatch)
         routes = [dict(parse_qsl(urlsplit(row[0]).query)) for row in ui.rows]
-        assert routes == [dict(action='mounted_browse', source=source.id),
-                          dict(action='mounted_jobs', source=source.id)]
-        assert ui.rows[1][1].label == source.name + ' · 扫描任务'
-        ui.rows.clear()
-        ui.module.execute(17, routes[1])
-        target = dict(parse_qsl(urlsplit(ui.rows[0][0]).query))
-        assert target == dict(action='mounted_cancel', source=source.id, task=task)
-        ui.module.execute(17, target)
+        assert dict(action='personal_catalog', source=source.id) in routes
+        assert dict(action='personal_catalog_manage', source=source.id, mode='jobs') in routes
+        from bobbi_platform import catalog_ui
+        patch.setattr(catalog_ui, 'call', mounted_ui.dispatch)
+        patch.setattr(sys.modules['xbmcgui'], 'Dialog', lambda: SimpleNamespace(
+            select=lambda *args: -1, ok=lambda *args: pytest.fail('Expected available task control')))
+        mounted_ui.catalog.manage(dict(source=source.id, mode='cancel', task=task), mounted_ui.dispatch)
         assert service.cancel_event.is_set()
         assert service.index._scan(task)['state'] == 'running'
 

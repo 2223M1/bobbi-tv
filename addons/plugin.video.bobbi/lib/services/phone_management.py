@@ -22,7 +22,7 @@ SCOPES = frozenset(('catalog_read', 'catalog_review', 'catalog_tasks'))
 ACTION_SCOPE = {
     'catalog_sources': 'catalog_read', 'catalog_items': 'catalog_read', 'catalog_jobs': 'catalog_read',
     'catalog_history': 'catalog_read',
-    'catalog_query': 'catalog_read', 'catalog_receipt': 'catalog_review',
+    'catalog_query': 'catalog_read', 'catalog_item': 'catalog_read', 'catalog_receipt': 'catalog_review',
     'catalog_candidates': 'catalog_read', 'catalog_group': 'catalog_read',
     'catalog_preview': 'catalog_review', 'catalog_apply': 'catalog_review',
     'catalog_cancel': 'catalog_tasks', 'catalog_scan': 'catalog_tasks',
@@ -59,7 +59,7 @@ def parameters(action, args):
         'catalog_sources': {'offset', 'limit'}, 'catalog_items': {'source', 'state', 'offset', 'limit'},
         'catalog_jobs': {'task', 'offset', 'limit'}, 'catalog_preview': {'commands'},
         'catalog_history': {'offset', 'limit'},
-        'catalog_query': {'query', 'cursor', 'limit'}, 'catalog_receipt': {'request_id'},
+        'catalog_query': {'query', 'cursor', 'limit'}, 'catalog_item': {'file_id'}, 'catalog_receipt': {'request_id'},
         'catalog_candidates': {'query', 'media_kind', 'year'},
         'catalog_group': {'file_id', 'source_id', 'offset', 'limit', 'projection_revision'},
         'catalog_apply': {'commands', 'request_id'}, 'catalog_cancel': {'task_id'}, 'catalog_scan': {'source_id'},
@@ -112,7 +112,7 @@ def parameters(action, args):
     else:
         if set(args) != allowed[action]:
             raise PhoneError('INVALID_REQUEST', 400)
-        _id(next(iter(args.values())))
+        _id(next(iter(args.values())), 64 if action == 'catalog_item' else 32)
     return args
 
 
@@ -127,7 +127,7 @@ PUBLIC_FIELDS = frozenset(('items', 'next_offset', 'id', 'name', 'parent', 'trun
 # Query summaries have their own read budget; this never enlarges review batches.
 QUERY_FIELDS = frozenset(('schema', 'items', 'next_cursor', 'projection_revision', 'truncated',
     'entity_id', 'entity_kind', 'display_title', 'media_kind', 'season', 'episode', 'review_state',
-    'availability', 'variant_count', 'available_count', 'source_count'))
+    'availability', 'variant_count', 'available_count', 'source_count', 'metadata_key', 'year', 'art', 'poster', 'thumb', 'fanart'))
 CANDIDATE_FIELDS = frozenset(('items', 'media_kind', 'tmdb_id', 'title', 'original_title',
                             'year', 'poster_path', 'basis', 'mismatch'))
 GROUP_FIELDS = PUBLIC_FIELDS | frozenset(('group_id', 'anchor_id', 'source_id', 'projection_revision'))
@@ -153,7 +153,14 @@ class PhoneManagement:
     def __init__(self, expected, origin, rpc=None, clock=time.monotonic, scopes=SCOPES):
         from bobbi_platform.pan_accounts import scope
         from bobbi_platform.runtime import call
-        self.expected = scope(expected, authenticated=True)
+        self.mounted = type(expected) is dict and expected.get('reference_kind') == 'mounted_path'
+        if self.mounted:
+            if set(expected) - {'reference_kind', 'source_id', 'namespace', 'generation'}:
+                raise PhoneError('INVALID_REQUEST', 400)
+            self.expected = dict(reference_kind='mounted_path', source_id=_id(expected.get('source_id')),
+                                 namespace=_id(expected.get('namespace'), 64), generation='')
+        else:
+            self.expected = scope(expected, authenticated=True)
         parts = urlsplit(origin)
         try:
             address = ipaddress.ip_address(parts.hostname)
@@ -193,13 +200,41 @@ class PhoneManagement:
 
     def _account(self):
         try:
-            rows = self.rpc('pan_status', {}, timeout=2)['providers']
-            current = next(row['account'] for row in rows if row['provider'] == self.expected['provider'])
-            if current != self.expected:
-                raise ValueError
+            if self.mounted:
+                current = self.rpc('catalog_mount_scope', {'source_id': self.expected['source_id']}, timeout=2)
+                if type(current) is not dict:
+                    raise ValueError
+                current = current.get('scope', current)
+                if type(current) is not dict:
+                    raise ValueError
+                if any(current.get(key) != self.expected[key] for key in ('reference_kind', 'source_id', 'namespace')):
+                    raise ValueError
+            else:
+                rows = self.rpc('pan_status', {}, timeout=2)['providers']
+                current = next(row['account'] for row in rows if row['provider'] == self.expected['provider'])
+                if current != self.expected:
+                    raise ValueError
         except (ValueError, OSError, KeyError, TypeError, StopIteration, RuntimeError):
             self.revoke()
             raise PhoneError('ACCOUNT_OR_SERVICE_CHANGED', 401) from None
+
+    def _host(self, action, args):
+        if not self.mounted:
+            return self.rpc(action, dict(args, expected=self.expected), timeout=3)
+        if action == 'catalog_history':
+            raise PhoneError('ACTION_FORBIDDEN')
+        for value in (args.get('source'), args.get('source_id'), (args.get('query') or {}).get('source_id')):
+            if value is not None and value != self.expected['source_id']:
+                raise PhoneError('ACTION_FORBIDDEN')
+        if action == 'catalog_sources':
+            return dict(items=[dict(id=self.expected['source_id'], name='本次授权的本地片库')])
+        params = dict(args, source_id=self.expected['source_id'], namespace=self.expected['namespace'])
+        return self.rpc(action.replace('catalog_', 'catalog_mount_', 1), params, timeout=3)
+
+    def _session_description(self):
+        return dict(csrf=self._csrf, expires_in=int(self.expires - self.clock()),
+                    catalog_kind='mounted' if self.mounted else 'native',
+                    source_id=self.expected['source_id'] if self.mounted else None)
 
     def _authorize(self, headers, csrf=True):
         self._live()
@@ -238,12 +273,12 @@ class PhoneManagement:
                 self._account()
                 self._challenge = None
                 self._session, self._csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
-                return dict(csrf=self._csrf, expires_in=int(self.expires - self.clock())), (
+                return self._session_description(), (
                     COOKIE + '=' + self._session + '; HttpOnly; SameSite=Strict; Path=/manage/api; Max-Age=900')
             self._authorize(headers, csrf=path != '/manage/api/session')
             self._account()
             if path == '/manage/api/session' and not body:
-                return dict(csrf=self._csrf, expires_in=int(self.expires - self.clock())), None
+                return self._session_description(), None
             if path == '/manage/api/revoke' and not body:
                 self.revoke()
                 return dict(revoked=True), COOKIE + '=; HttpOnly; SameSite=Strict; Path=/manage/api; Max-Age=0'
@@ -267,7 +302,7 @@ class PhoneManagement:
                         self._live()
                         raise PhoneError('CATALOG_CANDIDATE_UNAVAILABLE', 502) from None
                 else:
-                    result = self.rpc(action, dict(host_args, expected=self.expected), timeout=3)
+                    result = self._host(action, host_args)
             except PhoneError:
                 raise
             except (ValueError, OSError, RuntimeError) as error:

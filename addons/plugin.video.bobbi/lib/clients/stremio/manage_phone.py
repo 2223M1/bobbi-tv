@@ -11,8 +11,11 @@ def catalog_manage_phone(expected):
     import xbmcgui
     from lib.services.phone_management import PhoneManagement
     dialog = xbmcgui.Dialog()
+    mounted = expected.get('reference_kind') == 'mounted_path'
+    description = ('仅授权此已登记本地来源及其 namespace，不授权其他挂载或网盘账号。\n'
+                   '来源：%s\n范围：%s\n' % (expected['source_id'], expected['namespace'])) if mounted else '仅授权当前原生网盘账号。\n'
     if not dialog.yesno('允许手机管理当前片库？',
-            '仅在可信局域网使用。扫码者可查看当前账号的本地索引、整理作品和取消扫描，不能播放或读取网盘登录。'
+            description + '仅在可信局域网使用。扫码者可查看所选片库的本地索引、整理作品和取消扫描，不能播放或读取网盘登录。'
             '授权最多 15 分钟，关闭此二维码窗口立即撤销；后台扫描不会被取消。'):
         return False
     origin = 'http://%s:%d' % (get_local_ip(), _SERVER_PORT)

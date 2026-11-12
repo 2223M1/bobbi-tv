@@ -6,7 +6,7 @@ const assert=require('node:assert/strict');
 const {spawn}=require('node:child_process');
 const path=require('node:path');
 const readline=require('node:readline');
-const {boot,calls,deferred,response}=require('./catalog_test_dom.cjs');
+const {boot,calls,deferred,response,find}=require('./catalog_test_dom.cjs');
 const repo=path.resolve(process.env.BOBBI_FRONTEND_REPO||path.join(__dirname,'../..'));
 const expectBug=process.env.BOBBI_EXPECT_BASELINE_BUG==='1';
 
@@ -56,7 +56,7 @@ async function scene(count) {
   let interceptor=null;
   const ui=await boot({filename:path.join(repo,'addons/plugin.video.bobbi/resources/web/manage.js'),hash:'#'+server.code,
     transport:(url,body,options)=>interceptor?interceptor(url,body,options):server.fetch(url,body,options)});
-  await waitUntil(()=>ui.element('rows').children.length===Math.min(count,5));
+  await waitUntil(()=>ui.element('rows').children.length===Math.min(count,32));
   let selected=0;
   while(selected<count) {
     for(let index=0;index<ui.element('rows').children.length;index++){await ui.add(index);selected++;}
@@ -87,6 +87,37 @@ test(expectBug?'baseline: 41 files lose the first authorization in the real eigh
 });
 
 if(!expectBug) {
+  test('real work -> season -> episode -> file -> review returns to the same filtered work',async()=>{
+    const server=await backend(3);
+    try {
+      const originals=(await server.request('query')).items;
+      for(const [number,row] of originals.entries())await server.request('mutate',{command:{file_id:row.entity_id,
+        expected_revision:0,action:'confirm',mapping:{kind:'tv',title:'Show',tmdb_id:123,season:0,episode:number+1,version:null}}});
+      const ui=await boot({hash:'#'+server.code,transport:server.fetch});
+      await waitUntil(()=>ui.element('rows').children.length===1);
+      assert.equal(calls(ui,'catalog_items').length,0);assert.equal(calls(ui,'catalog_item').length,0);
+      assert.equal(calls(ui,'catalog_query')[0].body.params.limit,32);
+      ui.element('keyword').value='Show';await ui.click('search');
+      await find(ui.element('rows'),'查看季').fire();
+      const work=calls(ui,'catalog_query').at(-1).body.params.query.parent_entity_id;
+      await find(ui.element('rows'),'查看分集').fire();
+      await find(ui.element('rows').children[0],'查看具体文件').fire();
+      const originalQuery=calls(ui,'catalog_query').at(-1).body.params.query;
+      await ui.edit(0);assert.equal(calls(ui,'catalog_item').length,1);
+      ui.field(0,'显示名称').value='Show reviewed';await ui.add();
+      await ui.click('preview');await ui.click('apply');await ui.click('refresh');
+      assert.deepEqual(calls(ui,'catalog_query').at(-1).body.params.query,originalQuery);
+      assert.equal(ui.element('keyword').value,'Show');
+      assert.match(ui.text('receipts'),/已保存/);
+      await ui.click('back');await ui.click('back');
+      assert.equal(calls(ui,'catalog_query').at(-1).body.params.query.parent_entity_id,work);
+      await ui.click('back');
+      const same=(await server.request('query')).items;
+      assert.equal(same.length,1);assert.equal(same[0].entity_id,work);
+      assert.equal(calls(ui,'catalog_items').length,0);
+    } finally {await server.close();}
+  });
+
   test('100 files keep twenty original chunks after all initial previews expire',async()=>{
     const {ui,server}=await scene(100);
     try {

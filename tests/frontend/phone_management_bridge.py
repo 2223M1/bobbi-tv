@@ -65,6 +65,8 @@ def main():
                 elif operation == 'state':
                     result = dict(saved=index.db.execute("SELECT count(*) FROM reviews WHERE provenance='manual'").fetchone()[0],
                                   preview_cache=len(manager.previews), writes=writes)
+                elif operation == 'query':
+                    result = index.query(expected, query=message.get('query', {}), limit=32)
                 elif operation == 'advance':
                     now[0] += message['seconds']
                     result = dict(advanced=True)

@@ -39,8 +39,11 @@ async function boot(overrides={}) {
     async expire(){await api.tick(15001);},
     advance(ms){now+=ms;},text:id=>text(element(id)),
     click:id=>element(id).fire(),
-    async add(index=0){const card=element('rows').children[index];await find(card,'加入本批修改').fire();},
-    field(index,label){return find(element('rows').children[index],label).children[0];}};
+    async edit(index=0){if(api.editingIndex===index&&!element('editorRows').classList.contains('hidden'))return;
+      await find(element('rows').children[index],'整理此文件').fire();api.editingIndex=index;},
+    async add(index=0){await api.edit(index);await find(element('editorRows'),'加入本批修改').fire();
+      if(!element('status').classList.contains('error')){await api.click('back');api.editingIndex=null;}},
+    field(index,label){return find(element('editorRows'),label).children[0];}};
   Object.assign(api,overrides);
   const document={getElementById:element,createElement:tag=>new Element(tag),hidden:false,listeners:{},addEventListener(name,handler){this.listeners[name]=handler;}};
   api.visibility=hidden=>{document.hidden=hidden;document.listeners.visibilitychange();};
@@ -57,6 +60,9 @@ async function boot(overrides={}) {
       if(body.action==='catalog_preview')return response({items:body.params.commands.map(()=>({status:'ready',before:null,after:{kind:'custom'}}))});
       if(body.action==='catalog_apply')return response({items:body.params.commands.map(()=>({status:'applied',revision:1}))});
       if(body.action==='catalog_receipt')return response({status:'missing',items:[]});
+      if(body.action==='catalog_query')return response({items:api.rows.map(row=>({entity_id:row.file.id,entity_kind:'file',
+        display_title:row.file.name,media_kind:'unknown',review_state:row.state,availability:'observed_present',variant_count:1})),next_cursor:null});
+      if(body.action==='catalog_item')return response(api.rows.find(row=>row.file.id===body.params.file_id));
       return response({items:api.rows,next_offset:null});
     }};
   vm.runInNewContext(source,context,{filename});await flush();return api;

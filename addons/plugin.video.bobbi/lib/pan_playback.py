@@ -1,5 +1,6 @@
 """Manual personal-file entry using the existing native/stock playback owner."""
 from threading import Event, Thread
+from hashlib import sha256
 import re
 import time
 
@@ -116,32 +117,44 @@ def play(params, reservation=None):
                 pass  # Scoped cancellation only; never global Stop/playlist changes.
 
 
-def _prepare_ticket(action, body, request, title):
-    """One bounded, cancelable UI wait shared by trusted history and indexed files."""
-    import xbmc
-    import xbmcgui
-    progress, monitor, job = xbmcgui.DialogProgress(), xbmc.Monitor(), {}
-    progress.create(title, '核验原账号与文件；可按返回取消。')
+def _wait_result(action, body, timeout, progress, current, rpc=None):
+    """One bounded IO wait for history, native files and mounted selections."""
+    rpc, finished, job = rpc or call, Event(), {}
     def verify():
         try:
-            job['reply'] = call(action, body, timeout=28)
+            job['reply'] = rpc(action, body, timeout=timeout)
         except Exception as error:
             job['error'] = error
+        finally:
+            finished.set()
+    if progress.iscanceled() or not current():
+        raise PanError('CATALOG_SELECTION_CANCELLED')
+    Thread(target=verify, name='bobbi-file-verify', daemon=True).start()
+    deadline = time.monotonic() + timeout + 1
+    while not finished.wait(.1):
+        if progress.iscanceled() or not current() or time.monotonic() >= deadline:
+            raise PanError('CATALOG_SELECTION_CANCELLED')
+    if progress.iscanceled() or not current():
+        raise PanError('CATALOG_SELECTION_CANCELLED')
+    if 'error' in job:
+        raise job['error']
+    return job.get('reply', {})
+
+
+def _prepare_ticket(action, body, request, title):
+    import xbmc
+    import xbmcgui
+    progress, monitor = xbmcgui.DialogProgress(), xbmc.Monitor()
+    progress.create(title, '核验原账号与文件；可按返回取消。')
     try:
-        worker = Thread(target=verify, name='bobbi-file-verify', daemon=True)
-        worker.start()
-        deadline = time.monotonic() + 29
-        while worker.is_alive():
-            if progress.iscanceled() or monitor.waitForAbort(.1) or time.monotonic() >= deadline:
-                return False
-        worker.join()
-        if progress.iscanceled() or monitor.abortRequested():
-            return False
-        if 'error' in job:
-            raise job['error']
-        if job.get('reply', {}).get('ticket') != request:
+        reply = _wait_result(action, body, 28, progress, lambda: not monitor.abortRequested())
+        if reply.get('ticket') != request:
             raise PanError('PAN_REPLY_INVALID')
         return True
+    except PanError as error:
+        if str(error) != 'CATALOG_SELECTION_CANCELLED':
+            raise
+        return False
     finally:
         progress.close()
 
@@ -217,6 +230,8 @@ def resume(params):
 
 def indexed(params):
     """Reserve explicit user intent before IO; the index itself grants no playback right."""
+    if params.get('source'):
+        return mounted(params)
     import xbmcgui
     from uuid import uuid4
     from lib.db.file_history import FileHistory
@@ -264,3 +279,127 @@ def indexed(params):
     finally:
         if not handed:
             _cancel_prepared(expected, request, native, owner)
+
+
+MOUNTED_MESSAGES = {
+    'CATALOG_CURSOR_STALE': '片库已更新，请返回刷新后继续。',
+    'CATALOG_RECHECK_INCOMPLETE': '有限检查内未找到原文件，请回原目录选择。',
+    'CATALOG_SOURCE_UNAVAILABLE': 'CD2 挂载或来源不可用，原有索引已保留。',
+    'CATALOG_AUTHORITY_CHANGED': '挂载已变化，请重新扫描；不会继承旧文件进度。',
+    'CATALOG_FILE_CHANGED': '原路径的文件或挂载已变化，请重新扫描后选择。',
+    'CATALOG_SOURCE_UNSUPPORTED': '此入口仅支持现有 CD2 本机挂载，不跟随符号链接。',
+    'CATALOG_SCAN_BUSY': '已有扫描正在进行，可在扫描进度中查看或取消。',
+}
+
+
+def _reserve_mounted(request, source_id, object_id, rpc):
+    """Reuse the resident selection barrier, never claim native AV ownership."""
+    snapshot = rpc('playback', dict(operation='snapshot'), timeout=2)
+    if snapshot.get('adapter') == 'standard':
+        # A real, possibly unauthenticated Host scope guards this lifecycle.
+        # It is not a CD2 credential and no second cloud login is required.
+        account = rpc('account_status', {}, timeout=2)
+        rpc('playback', dict(operation='select', request_id=request, account=account), timeout=2)
+        return dict(adapter='standard', request_id=request)
+    identity = 'transport:' + sha256(('mounted:' + source_id + ':' + object_id).encode()).hexdigest()
+    selected = rpc('playback', dict(operation='select', boot_id=snapshot['boot_id'],
+        epoch=snapshot['epoch'], request_id=request, selection_identity=identity), timeout=2)
+    from bobbi_core.playback_request import context
+    return dict(context(selected, request), adapter='native')
+
+
+def _owner_current(selection, rpc):
+    snapshot = rpc('playback', dict(operation='snapshot'), timeout=2)
+    desired = snapshot.get('desired') or {}
+    if desired.get('request_id') != selection['request_id'] or desired.get('cancelled') is not False:
+        return False
+    if selection['adapter'] == 'standard':
+        return snapshot.get('adapter') == 'standard'
+    return all(snapshot.get(key) == selection[key] for key in ('boot_id', 'epoch'))
+
+
+def _cancel_owner(request, rpc):
+    # A lost select reply is not retried. Read once to cancel only our own
+    # accepted request if present; never cancel a newer owner or global player.
+    snapshot = rpc('playback', dict(operation='snapshot'), timeout=2)
+    desired = snapshot.get('desired') or {}
+    if desired.get('request_id') != request or desired.get('cancelled'):
+        return
+    body = dict(operation='cancel', request_id=request)
+    if snapshot.get('adapter') != 'standard':
+        body.update(boot_id=snapshot['boot_id'], epoch=snapshot['epoch'])
+    rpc('playback', body, timeout=2)
+
+
+def mounted(params, handle=None, rpc=None):
+    import sys
+    from uuid import uuid4
+    from lib.utils.views.personal_catalog import mounted_for
+    handle = int(sys.argv[1]) if handle is None else handle
+    rpc = rpc or call
+    source_id, object_id = params.get('source', ''), params.get('object_id', '')
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    import xbmcvfs
+    from bobbi_platform.library_ui import registry
+    from bobbi_platform.libraries import joined_path
+    from bobbi_platform.kodi import standard_handoff
+    request = uuid4().hex
+    window = xbmcgui.Window(10000)
+    progress, monitor = xbmcgui.DialogProgress(), xbmc.Monitor()
+    handoff = None
+    selection_attempted = False
+    store = None
+    failure = None
+    def current():
+        return not monitor.abortRequested() and window.getProperty('bobbi.portable_selection') == request
+    try:
+        expected = mounted_for(params, rpc)
+        if not xbmcgui.Dialog().yesno('选择当前文件并从头播放？',
+                '将重新核验当前挂载和原文件。旧路径观察与进度仅作历史保留，不继承到当前文件。'):
+            return
+        window.setProperty('bobbi.portable_selection', request)
+        progress.create('正在核验 CD2 原文件', '核对当前挂载与文件，可按返回取消。')
+        selection_attempted = True
+        selection = _reserve_mounted(request, source_id, object_id, rpc)
+        ticket = _wait_result('catalog_mount_prepare', dict(source_id=source_id, namespace=expected['namespace'], object_id=object_id,
+            request_id=request, intent='play_from_start'), 28, progress, current, rpc)['ticket']
+        if ticket != request or not current() or not _owner_current(selection, rpc):
+            raise ValueError('CATALOG_SELECTION_CANCELLED')
+        selected = _wait_result('catalog_mount_claim', dict(ticket=ticket), 28, progress, current, rpc)
+        if (selected['source_id'] != source_id or selected['object_id'] != object_id
+                or not current() or not _owner_current(selection, rpc)):
+            raise ValueError('CATALOG_SELECTION_CANCELLED')
+        store = registry(xbmcvfs.translatePath)
+        source = store.get(source_id)
+        url = joined_path(source, selected['relative'])
+        def ready():
+            if not current() or not _owner_current(selection, rpc) or store.get(source_id) != source:
+                return False
+            valid = _wait_result('catalog_mount_verify', dict(source_id=source_id, namespace=expected['namespace'], object_id=object_id,
+                request_id=request), 8, progress, current, rpc)
+            return (valid.get('valid') is True and current() and _owner_current(selection, rpc)
+                    and store.get(source_id) == source and current() and not progress.iscanceled())
+        handoff = standard_handoff(selected['identity'], handle, ready=ready)
+        result = handoff.submit(selected['identity'], dict(url=url, title=selected['title'], _mounted_path=True))
+        if not result['opened']:
+            raise ValueError('CATALOG_SELECTION_CANCELLED')
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError) as error:
+        if handoff is None or handoff.state in ('selected', 'cancelled'):
+            xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
+        failure = str(error)
+    finally:
+        progress.close()
+        if selection_attempted and (handoff is None or handoff.state in ('selected', 'cancelled')):
+            for cancel in (
+                lambda: rpc('catalog_mount_cancel_play', dict(source_id=source_id, request_id=request), timeout=2),
+                lambda: _cancel_owner(request, rpc)):
+                try:
+                    cancel()
+                except (ValueError, OSError, RuntimeError, KeyError, TypeError):
+                    pass
+        if store is not None:
+            store.close()
+    if failure is not None and failure != 'CATALOG_SELECTION_CANCELLED':
+        xbmcgui.Dialog().ok('CD2 原文件播放', MOUNTED_MESSAGES.get(failure, '本次未确认打开原文件；不会自动换源或重复提交。'))

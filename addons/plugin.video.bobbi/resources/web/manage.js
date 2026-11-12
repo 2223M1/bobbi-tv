@@ -8,6 +8,8 @@
     conflict:'版本冲突，请刷新',applied:'已保存',cancel_requested:'已请求取消，等待后台确认'};
   let csrf = '', tab = 'items', offset = 0, nextOffset = null, source = null;
   let pageStarts = [0], pageIndex = 0;
+  let query = {view:'works'}, cursor = null, nextCursor = null, queryStarts = [null], queryPage = 0;
+  let trail = [], editing = null, selectedEntity = null, mountedSource = null;
   const REQUEST_MS = 15000, PREVIEW_MS = 110000, MAX_BODY = 8192;
   let queued = [], batch = null, batchGeneration = 0, busy = null;
   let authGeneration = 0, authClosed = false;
@@ -109,6 +111,7 @@
   }
   const rpc = (action,params={}) => post('/manage/api',{action,params});
   function resetPage() { offset=0;pageStarts=[0];pageIndex=0; }
+  function resetQuery() {cursor=null;nextCursor=null;queryStarts=[null];queryPage=0;trail=[];query={view:'works'};editing=null;}
   function button(text, action) {
     const result = node('button',text);
     result.addEventListener('click',() => guarded(action));
@@ -137,7 +140,7 @@
   }
   function titleHint(name) {return name.replace(/\.[a-z0-9]{2,5}$/i,'').split(/(?:[ ._-]s\d+[ ._-]*e\d+|[ ._-]\d{1,2}x\d+)/i)[0].replace(/\[[^\]]*\]|\([^)]*\)|\b(?:19|20)\d{2}\b/g,' ').replace(/[._\s-]+/g,' ').trim().slice(0,120);}
   function candidateEditor(card,item,fields) {
-    const section=node('details');section.append(node('summary','搜索作品候选 / 同目录分集整理'));
+    const section=node('section');section.append(node('h3','作品候选（优先）'));
     const evidence=(item.candidates||[])[0]||{};
     const query=field(section,'候选搜索关键词（仅发送此关键词）','text',titleHint(item.file.name));query.maxLength=120;
     const year=field(section,'候选年份（可选，重制版需核对）','number',evidence.year);
@@ -162,7 +165,7 @@
           }
           row.append(button('采用此候选（尚未保存）',()=>{
             if(page!==viewGeneration||generation!==candidateGeneration)throw new Error('候选已过期，请重新搜索。');
-            selected=candidate;fields.kind.value=candidate.media_kind;fields.title.value=candidate.title;fields.tmdb.value=candidate.tmdb_id;
+            selected=candidate;fields.candidate=candidate;fields.kind.value=candidate.media_kind;fields.title.value=candidate.title;fields.tmdb.value=candidate.tmdb_id;
             if(candidate.media_kind==='tv') {fields.season.value=evidence.season==null?'':evidence.season;fields.episode.value=evidence.episode==null?'':evidence.episode;}
             message.textContent='已填入候选，尚未修改记录。请核对季集，再加入修改并预览。';
           }));results.append(row);
@@ -172,7 +175,7 @@
     }
     const searchButton=node('button','搜索作品候选');searchButton.addEventListener('click',searchCandidates);
     for(const input of [query,year])input.addEventListener('input',()=>{
-      cancelCandidates();selected=null;results.replaceChildren();message.textContent='关键词已变化，旧候选失效。';
+      cancelCandidates();selected=null;fields.candidate=null;results.replaceChildren();message.textContent='关键词已变化，旧候选失效。';
       candidateTimer=setTimeout(searchCandidates,350);
     });
     section.append(searchButton,message,results,button('查看同目录逐集整理建议',async()=>{
@@ -181,18 +184,23 @@
       await groupEditor(item,selected);
     }));card.append(section);
   }
-  async function groupEditor(anchor,candidate) {
-    const deadline=Date.now()+60000, rows=[];let next=0,identity=null,revision=null;
+  async function groupEditor(anchor,candidate,start=0) {
+    if(unknown())throw new Error('请先核对原提交结果，不能覆盖未知批次。');
+    const deadline=Date.now()+60000, rows=[];let next=start,identity=null,revision=null;
     const params={file_id:anchor.file.id,limit:5};if(source)params.source_id=source;
+    if(start) {
+      const fresh=await rpc('catalog_group',{...params,offset:0});
+      identity=fresh.group_id;revision=fresh.projection_revision;params.source_id=fresh.source_id;
+    }
     do {
-      if(rows.length>=100||Date.now()>=deadline)throw new Error('同目录条目超出本轮 100 项或等待期限，请缩小来源后分轮整理。');
+      if(Date.now()>=deadline)throw new Error('同目录读取已到等待期限，请重新获取建议。');
       const value=await rpc('catalog_group',{...params,offset:next,...(revision===null?{}:{projection_revision:revision})});
       if(Date.now()>=deadline)throw new Error('同目录读取已到等待期限，请重新获取建议。');
       if(identity!==null&&(identity!==value.group_id||revision!==value.projection_revision))throw new Error('目录记录已变化，请重新获取建议。');
       identity=value.group_id;revision=value.projection_revision;params.source_id=value.source_id;
       rows.push(...value.items);const previous=next;next=value.next_offset;
       if(next!==null&&(!Number.isInteger(next)||next<=previous))throw new Error('目录分页未完整，请重新读取。');
-    }while(next!==null);
+    }while(next!==null&&rows.length<100);
     const panel=byId('groupRows');panel.replaceChildren(node('h2','同目录逐项建议 · '+candidate.title),
       node('p','同目录不证明同一作品。请核对每个文件，排除重制版、合集和多集文件；特别篇保留 S00。只有勾选项加入计划。'));
     const editors=[];
@@ -218,7 +226,13 @@
       }
       if(!entries.length)throw new Error('请至少勾选一项。');
       queued=entries;changedBatch();status('已加入 '+entries.length+' 项建议。请预览全部逐项修改后，再确认分批保存。');
-    }));status('已读取 '+rows.length+' 个同目录文件，尚未确认作品或提交修改。');
+    }));
+    if(next!==null)panel.append(button('下一轮同目录文件（保留已保存回执）',async()=>{
+      if(unknown()||queued.length&&(!operation||operation.phase!=='complete'))throw new Error('请先完成本轮或明确清空未提交选择；原回执和未知提交不能被覆盖。');
+      if(queued.length){queued=[];changedBatch();}
+      await groupEditor(anchor,candidate,next);
+    }));
+    status('已读取本轮第 '+(start+1)+'–'+(start+rows.length)+' 个同目录文件'+(next!==null?'；尚有后续轮次。':'。')+'尚未自动确认或提交。');
   }
   function itemCard(item) {
     const card=node('article',undefined,'card');card.append(node('h2',item.file.name));
@@ -228,13 +242,16 @@
     if (item.candidates && item.candidates.length) card.append(node('pre',JSON.stringify(item.candidates,null,2),'muted'));
     const current=item.mapping||{};
     const action=select(card,'操作',[['confirm','设置作品 / 自定义名称'],['unbind','解除绑定'],['ignore','忽略此项'],['undo','撤回上次修改']],'confirm');
-    const kind=select(card,'描述类型',[['custom','自定义名称'],['movie','电影 TMDb'],['tv','剧集 TMDb']],current.kind||'custom');
-    const title=field(card,'显示名称','text',current.title||item.file.name);
-    const tmdb=field(card,'TMDb 编号（仅电影 / 剧集）','number',current.tmdb_id);
+    const advanced=node('details');advanced.append(node('summary','高级：手填编号 / 自定义名称'));
+    const kind=select(advanced,'描述类型',[['custom','自定义名称'],['movie','电影 TMDb'],['tv','剧集 TMDb']],current.kind||'custom');
+    const title=field(advanced,'显示名称','text',current.title||item.file.name);
+    const tmdb=field(advanced,'TMDb 编号（仅电影 / 剧集）','number',current.tmdb_id);
     const season=field(card,'季号（剧集，特别篇为 0）','number',current.season);
     const episode=field(card,'集号（剧集）','number',current.episode);
     const version=field(card,'版本备注（可选，不作为同源续播证明）','text',current.version);
     version.maxLength=80;
+    const fields={kind,title,tmdb,season,episode,version};
+    candidateEditor(card,item,fields);card.append(advanced);
     card.append(button('加入本批修改',() => {
       if (unknown()) throw new Error('上一批提交结果待核对，请先核对原提交，不能覆盖未知结果。');
       if (queued.length>=100 && !queued.some(q=>q.command.file_id===item.file.id)) throw new Error('每轮最多 100 项，请分轮整理。');
@@ -246,11 +263,33 @@
         if (!mapping.title || kind.value!=='custom' && !tmdb.value || kind.value==='tv' && (!season.value || !episode.value)) throw new Error('请填写所选描述需要的编号与季集。');
       }
       queued=queued.filter(q=>q.command.file_id!==item.file.id);
-      queued.push({name:item.file.name,command:{file_id:item.file.id,expected_revision:item.revision,action:action.value,mapping}});
+      const candidate=fields.candidate&&mapping&&fields.candidate.tmdb_id===mapping.tmdb_id&&fields.candidate.media_kind===mapping.kind?fields.candidate:null;
+      queued.push({name:item.file.name,anchor:item,candidate,command:{file_id:item.file.id,expected_revision:item.revision,action:action.value,mapping}});
       changedBatch();status('已加入本批，尚未写入。请预览后确认。');
     }));
-    candidateEditor(card,item,{kind,title,tmdb,season,episode,version});
     return card;
+  }
+  async function editFile(entity) {
+    selectedEntity=entity.entity_id;cancelCandidates();viewGeneration++;
+    const result=await rpc('catalog_item',{file_id:entity.entity_id});
+    editing=result.item||result;
+    byId('editorRows').replaceChildren(itemCard(editing));byId('rows').classList.add('hidden');
+    byId('editorRows').classList.remove('hidden');byId('back').disabled=false;
+    status('仅按需读取此原文件。候选只是建议，修改仍需逐项预览。');
+  }
+  function summaryCard(row) {
+    const card=node('article',undefined,'card');card.append(node('h2',row.display_title),
+      node('small',(labels[row.review_state]||row.review_state)+' · '+row.variant_count+' 个原文件 · '+row.availability));
+    const direct=row.entity_kind==='file'||row.entity_kind==='work'&&row.media_kind==='unknown';
+    const next=row.entity_kind==='work'?(row.media_kind==='tv'?'seasons':'files'):row.entity_kind==='season'?'episodes':'files';
+    const open=button(direct?'整理此文件':next==='seasons'?'查看季':next==='episodes'?'查看分集':'查看具体文件',async()=>{
+      if(direct){await editFile(row);return;}
+      trail.push({query:{...query},cursor,queryStarts:[...queryStarts],queryPage,selectedEntity:row.entity_id});
+      query={...query,view:next,parent_entity_id:row.entity_id};cursor=null;queryStarts=[null];queryPage=0;
+      selectedEntity=null;await load();
+    });
+    if(row.entity_id===selectedEntity&&open.focus)setTimeout(()=>open.focus(),0);
+    card.append(open);return card;
   }
   function jobCard(job) {
     const card=node('article',undefined,'card');card.append(node('h2',labels[job.state]||job.state));
@@ -266,7 +305,7 @@
   }
   function sourceCard(row) {
     const card=node('article',undefined,'card');card.append(node('h2',row.name));
-    card.append(button('查看此来源',async()=>{source=row.id;tab='items';resetPage();await load();}));
+    card.append(button('查看此来源',async()=>{source=row.id;tab='items';resetQuery();await load();}));
     card.append(button('重新完整扫描',async()=>{
       if (!confirm('重新扫描此已登记目录？不修改云端文件。')) return;
       await rpc('catalog_scan',{source_id:row.id});tab='jobs';resetPage();await load();
@@ -296,14 +335,31 @@
     viewGeneration++;cancelCandidates();byId('groupRows').replaceChildren();
     status('正在读取电视上的当前状态…');
     byId('filters').classList.toggle('hidden',tab!=='items');
+    byId('editorRows').classList.add('hidden');byId('rows').classList.remove('hidden');editing=null;
+    byId('back').disabled=tab!=='items'||!trail.length;
+    if(tab==='items') {
+      const filters={...query,text:byId('keyword').value.trim(),review_state:byId('state').value||null,
+        media_kind:byId('mediaKind').value||null,source_id:source||mountedSource};
+      let value;
+      try {value=await rpc('catalog_query',{query:filters,cursor,limit:32});}
+      catch(error) {
+        if(error.code!=='CATALOG_CURSOR_STALE'||cursor===null)throw error;
+        cursor=null;queryStarts=[null];queryPage=0;
+        value=await rpc('catalog_query',{query:filters,cursor:null,limit:32});
+      }
+      nextCursor=value.next_cursor;
+      byId('rows').replaceChildren(...(value.items||[]).map(summaryCard));
+      if(!value.items.length)byId('rows').append(node('p','此范围暂无作品；可调整关键词或待整理筛选。'));
+      byId('previous').disabled=queryPage===0;byId('next').disabled=nextCursor==null;
+      status('作品检索 · 第 '+(queryPage+1)+' 页 · 每页最多 32 项；点击具体文件才读取整理记录。');return;
+    }
     const params={offset,limit:5};
-    if (tab==='items') {if(source)params.source=source;if(byId('state').value)params.state=byId('state').value;}
     const currentTab=tab;let value;
     try {value=await rpc('catalog_'+currentTab,params);}
     catch(error) {if(currentTab==='jobs'){jobsActive=true;scheduleJobs(!automatic,true);}throw error;}
     nextOffset=value.next_offset;
     const rows=value.items||[];
-    byId('rows').replaceChildren(...rows.map(currentTab==='items'?itemCard:currentTab==='jobs'?jobCard:currentTab==='history'?historyCard:sourceCard));
+    byId('rows').replaceChildren(...rows.map(currentTab==='jobs'?jobCard:currentTab==='history'?historyCard:sourceCard));
     if (!rows.length) byId('rows').append(node('p','此页暂无记录。扫描未完成时仅显示已提交部分。'));
     byId('previous').disabled=offset===0;byId('next').disabled=nextOffset==null;
     status('已读取当前状态 · 第 '+(pageIndex+1)+' 页。关闭浏览器不会取消后台任务。');
@@ -311,10 +367,21 @@
   }
   ['items','sources','jobs','history'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
   byId('refresh').addEventListener('click',()=>guarded(load));
-  byId('state').addEventListener('change',()=>guarded(async()=>{resetPage();await load();}));
-  byId('clearSource').addEventListener('click',()=>guarded(async()=>{source=null;resetPage();await load();}));
-  byId('next').addEventListener('click',()=>guarded(async()=>{if(nextOffset!=null){pageStarts=pageStarts.slice(0,pageIndex+1);pageStarts.push(nextOffset);pageIndex++;offset=nextOffset;await load();}}));
-  byId('previous').addEventListener('click',()=>guarded(async()=>{pageIndex=Math.max(0,pageIndex-1);offset=pageStarts[pageIndex];await load();}));
+  for(const control of ['state','mediaKind'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQuery();await load();}));
+  byId('search').addEventListener('click',()=>guarded(async()=>{resetQuery();await load();}));
+  byId('clearSource').addEventListener('click',()=>guarded(async()=>{source=null;resetQuery();await load();}));
+  byId('back').addEventListener('click',()=>guarded(async()=>{
+    if(editing){editing=null;await load();return;}
+    const previous=trail.pop();if(previous){({query,cursor,queryStarts,queryPage,selectedEntity}=previous);await load();}
+  }));
+  byId('next').addEventListener('click',()=>guarded(async()=>{
+    if(tab==='items'){if(nextCursor!=null){queryStarts=queryStarts.slice(0,queryPage+1);queryStarts.push(nextCursor);queryPage++;cursor=nextCursor;await load();}}
+    else if(nextOffset!=null){pageStarts=pageStarts.slice(0,pageIndex+1);pageStarts.push(nextOffset);pageIndex++;offset=nextOffset;await load();}
+  }));
+  byId('previous').addEventListener('click',()=>guarded(async()=>{
+    if(tab==='items'){queryPage=Math.max(0,queryPage-1);cursor=queryStarts[queryPage];}
+    else{pageIndex=Math.max(0,pageIndex-1);offset=pageStarts[pageIndex];}await load();
+  }));
   byId('clear').addEventListener('click',()=>{
     if(busy||authClosed||unknown())return;
     queued=[];changedBatch();status('本批已清空，重新选择后请重新预览。已提交回执仍保留。');
@@ -358,6 +425,10 @@
     const complete=original.entries.every((entry,index)=>indexedRows.has(index));
     const all=complete&&original.entries.every((entry,index)=>indexedRows.get(index).status==='applied');
     const card=node('article',undefined,'card');card.append(node('h3','提交回执'),...messages.map(text=>node('p',text)));
+    if(all) {
+      const entry=original.entries.find(entry=>entry.anchor&&entry.command.action==='confirm'&&entry.command.mapping.kind==='tv');
+      if(entry)card.append(button('继续整理本剧',()=>groupEditor(entry.anchor,entry.candidate||{...entry.command.mapping,media_kind:'tv'})));
+    }
     const old=receipts.findIndex(receipt=>receipt.requestId===original.requestId);
     if(old>=0)receipts.splice(old,1);
     receipts.unshift({requestId:original.requestId,card});receipts.splice(20);
@@ -487,6 +558,8 @@
     const code=location.hash.slice(1);
     history.replaceState(null,'',location.pathname);
     const session=await post(code?'/manage/api/pair':'/manage/api/session',code?{code}:{});
-    csrf=session.csrf;byId('workspace').classList.remove('hidden');await load();
+    csrf=session.csrf;mountedSource=session.source_id||null;
+    byId('historyTab').classList.toggle('hidden',session.catalog_kind==='mounted');
+    byId('workspace').classList.remove('hidden');await load();
   });
 })();

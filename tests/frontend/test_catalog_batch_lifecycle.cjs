@@ -27,7 +27,7 @@ test('preview deadline releases busy; late preview cannot replace a newer previe
   ui.handlers.catalog_preview=()=>delayed.promise;
   const pending=ui.click('preview');await flush();await ui.expire();await pending;
   assert.equal(ui.element('apply').disabled,true);assert.equal(ui.element('clear').disabled,false);
-  await ui.click('clear');ui.field(0,'显示名称').value='New title';await ui.add();
+  await ui.click('clear');await ui.edit();ui.field(0,'显示名称').value='New title';await ui.add();
   delete ui.handlers.catalog_preview;await ui.click('preview');const before=ui.text('previewRows');
   delayed.resolve(response({items:[{status:'ready',after:{title:'OLD LATE RESULT'}}]}));await flush();
   assert.equal(ui.text('previewRows'),before);assert.equal(ui.element('apply').disabled,false);
@@ -63,7 +63,8 @@ test('expired/missing receipt cannot become new blind write; reload requires man
   const pending=ui.click('apply');await flush();await ui.expire();await pending;ui.advance(120000);
   await ui.click('retry');assert.equal(calls(ui,'catalog_apply').length,1);
   assert.match(ui.text('status'),/原回执不可用/);assert.equal(ui.element('reviewAgain').disabled,false);
-  ui.rows=[row(0,2)];await ui.click('reviewAgain');assert.equal(calls(ui,'catalog_items').length,2);
+  ui.rows=[row(0,2)];await ui.click('reviewAgain');assert.equal(calls(ui,'catalog_items').length,0);
+  assert.ok(calls(ui,'catalog_query').length>=2);
   assert.match(ui.text('status'),/修订变化不证明原提交成功/);
   await ui.add();await ui.click('preview');
   assert.equal(calls(ui,'catalog_preview').at(-1).body.params.commands[0].expected_revision,2);
@@ -81,7 +82,7 @@ test('partial receipt stays visible when missing indices expire',async()=>{
 });
 
 test('independent revoke interrupts hung read and isolates all late results',async()=>{
-  const ui=await boot();const delayed=deferred();ui.handlers.catalog_items=()=>delayed.promise;
+  const ui=await boot();const delayed=deferred();ui.handlers.catalog_query=()=>delayed.promise;
   const reading=ui.click('refresh');await flush();await ui.click('revoke');await reading;
   assert.equal(ui.requests.filter(request=>request.url==='/manage/api/revoke').length,1);
   assert.equal(ui.element('workspace').classList.contains('hidden'),true);
@@ -117,6 +118,7 @@ test('expired preview rejected before a first write requires preview again rathe
 test('oversized editor payload is split by complete UTF-8 envelope, not just item count',async()=>{
   const ui=await boot({rows:Array.from({length:5},(_,index)=>row(index))});
   for(let index=0;index<5;index++){
+    await ui.edit(index);
     ui.field(index,'显示名称').value='影'.repeat(240);
     ui.field(index,'版本备注（可选，不作为同源续播证明）').value='版'.repeat(240);
     await ui.add(index);
@@ -136,9 +138,10 @@ async function seasonPlan(size=12,changes={}) {
   ui.handlers.catalog_candidates=()=>response({items:[candidate]});
   ui.handlers.catalog_group=body=>{const start=body.params.offset;return response({items:items.slice(start,start+5),next_offset:start+5<size?start+5:null,
     group_id:'a'.repeat(64),anchor_id:items[0].file.id,source_id:'b'.repeat(32),projection_revision:4});};
-  await find(ui.element('rows'),'搜索作品候选').fire();
-  await find(ui.element('rows'),'采用此候选（尚未保存）').fire();
-  await find(ui.element('rows'),'查看同目录逐集整理建议').fire();
+  await ui.edit(0);
+  await find(ui.element('editorRows'),'搜索作品候选').fire();
+  await find(ui.element('editorRows'),'采用此候选（尚未保存）').fire();
+  await find(ui.element('editorRows'),'查看同目录逐集整理建议').fire();
   return {ui,items};
 }
 async function acceptGroup(ui){await find(ui.element('groupRows'),'将勾选项加入分批预览').fire();await ui.click('preview');}
@@ -154,6 +157,20 @@ test('12 real selected files are previewed completely and written as 5/5/2 indep
   assert.equal((ui.text('receipts').match(/已保存/g)||[]).length,12);
   const groupCalls=calls(ui,'catalog_group');assert.equal(groupCalls.length,3);
   assert.equal(groupCalls[1].body.params.projection_revision,4);assert.equal(groupCalls[1].body.params.source_id,'b'.repeat(32));
+});
+
+test('105 same-directory items use explicit 100/5 rounds and keep completed receipts',async()=>{
+  const {ui,items}=await seasonPlan(105);await acceptGroup(ui);
+  assert.equal(calls(ui,'catalog_preview').length,20);
+  await find(ui.element('groupRows'),'下一轮同目录文件（保留已保存回执）').fire();
+  assert.match(ui.text('status'),/请先完成本轮/);assert.equal(calls(ui,'catalog_apply').length,0);
+  await ui.click('apply');assert.match(ui.text('planStatus'),/已保存 100\/100/);
+  await find(ui.element('groupRows'),'下一轮同目录文件（保留已保存回执）').fire();
+  assert.match(ui.text('status'),/第 101–105/);assert.match(ui.text('receipts'),/已保存/);
+  await acceptGroup(ui);await ui.click('apply');
+  const writes=calls(ui,'catalog_apply');assert.equal(writes.length,21);
+  assert.deepEqual(writes.at(-1).body.params.commands.map(row=>row.file_id),items.slice(100).map(row=>row.file.id));
+  assert.match(ui.text('planStatus'),/已保存 5\/5/);
 });
 
 test('cancel during a real write stops only unstarted chunks and retains the first receipt',async()=>{
@@ -196,7 +213,7 @@ test('S00 survives group selection; remakes, multiple episodes and type conflict
 
 test('candidate response after switching page cannot populate or select another file',async()=>{
   const ui=await boot();const delayed=deferred();ui.handlers.catalog_candidates=()=>delayed.promise;
-  const searching=find(ui.element('rows'),'搜索作品候选').fire();await flush();
+  await ui.edit();const searching=find(ui.element('editorRows'),'搜索作品候选').fire();await flush();
   ui.rows=[row(3)];await ui.click('itemsTab');
   delayed.resolve(response({items:[candidate]}));await searching;
   assert.equal(find(ui.element('rows'),'采用此候选（尚未保存）'),null);
@@ -206,12 +223,12 @@ test('candidate response after switching page cannot populate or select another 
 test('candidate typing is debounced and stale earlier query never overwrites newer results',async()=>{
   const ui=await boot();const delayed=deferred();let count=0;
   ui.handlers.catalog_candidates=()=>++count===1?delayed.promise:response({items:[{...candidate,title:'New match'}]});
-  const old=find(ui.element('rows'),'搜索作品候选').fire();await flush();
+  await ui.edit();const old=find(ui.element('editorRows'),'搜索作品候选').fire();await flush();
   const query=ui.field(0,'候选搜索关键词（仅发送此关键词）');query.value='New';await query.fire('input');
   query.value='New match';await query.fire('input');await ui.tick(349);assert.equal(count,1);
   await ui.tick(1);assert.equal(count,2);
   delayed.resolve(response({items:[{...candidate,title:'Old match'}]}));await old;
-  assert.match(ui.text('rows'),/New match/);assert.doesNotMatch(ui.text('rows'),/Old match/);
+  assert.match(ui.text('editorRows'),/New match/);assert.doesNotMatch(ui.text('editorRows'),/Old match/);
 });
 
 test('job polling is single-flight, hidden-aware, bounded, and stops on a terminal state',async()=>{

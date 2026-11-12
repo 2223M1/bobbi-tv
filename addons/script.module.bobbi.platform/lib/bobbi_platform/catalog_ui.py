@@ -1,5 +1,4 @@
 """Optional TV detail dialogs. Default browsing and source selection stay put."""
-from uuid import uuid4
 import time
 from .runtime import call
 
@@ -12,6 +11,9 @@ PREPARATION_LABELS = dict(LABELS, running='准备中', completed='准备完成')
 
 
 def _call(action, expected, **body):
+    if expected.get('reference_kind') == 'mounted_path':
+        return call(action.replace('catalog_', 'catalog_mount_', 1),
+                    dict(body, source_id=expected['source_id'], namespace=expected['namespace']), timeout=2)
     return call(action, dict(expected=expected, **body), timeout=2)
 
 
@@ -57,24 +59,24 @@ def _mapping(dialog, item):
 
 
 def review_item(dialog, expected, item, source_id=None):
-    choice = dialog.select(item['file']['name'], ['查看原文件与建议', '设置作品 / 自定义名称',
-        '解除绑定', '忽略此项', '撤回上次修改', '搜索并选择作品候选', '同目录分集整理（逐项预览）'])
-    if choice in (5, 6):
+    choice = dialog.select(item['file']['name'], ['搜索并选择作品候选', '查看原文件与建议',
+        '解除绑定', '忽略此项', '撤回上次修改', '高级：手填编号 / 自定义名称', '同目录分集整理（逐项预览）'])
+    candidate = None
+    if choice in (0, 6):
         candidate = choose_candidate(dialog, item)
-        if candidate is not None:
-            if choice == 6:
-                review_group(dialog, expected, item, candidate, source_id=source_id)
-            else:
-                from lib.clients.tmdb.catalog_candidates import candidate_mapping
-                try:
-                    value = candidate_mapping(candidate, item)
-                except ValueError:
-                    value = _candidate_episode(dialog, candidate)
-                if value is not None:
-                    review_entries(dialog, expected, [dict(name=item['file']['name'], command=dict(
-                        file_id=item['file']['id'], expected_revision=item['revision'], action='confirm', mapping=value))])
-        return
-    if choice == 0:
+        if candidate is None:
+            return
+        if choice == 6:
+            return review_group(dialog, expected, item, candidate, source_id=source_id)
+        from lib.clients.tmdb.catalog_candidates import candidate_mapping
+        try:
+            value = candidate_mapping(candidate, item)
+        except ValueError:
+            value = _candidate_episode(dialog, candidate)
+        if value is None:
+            return
+        action = 'confirm'
+    elif choice == 1:
         evidence = item.get('candidates') or []
         detail = item['file']['parent'] + '\n' + item['reason']
         if evidence and evidence[0].get('season') is not None:
@@ -83,23 +85,19 @@ def review_item(dialog, expected, item, source_id=None):
             detail += '\n名称或目录显示已截短，原始记录保留。'
         dialog.ok('原文件与建议', detail)
         return
-    if choice not in (1, 2, 3, 4):
+    elif choice in (2, 3, 4, 5):
+        value = _mapping(dialog, item) if choice == 5 else None
+        if choice == 5 and value is None:
+            return
+        action = {5: 'confirm', 2: 'unbind', 3: 'ignore', 4: 'undo'}[choice]
+    else:
         return
-    value = _mapping(dialog, item) if choice == 1 else None
-    if choice == 1 and value is None:
-        return
-    command = dict(file_id=item['file']['id'], expected_revision=item['revision'],
-        action={1: 'confirm', 2: 'unbind', 3: 'ignore', 4: 'undo'}[choice], mapping=value)
-    preview = _call('catalog_preview', expected, commands=[command])['items'][0]
-    if preview['status'] != 'ready':
-        dialog.ok('记录已变化', '请刷新后重新选择，未覆盖较新的修改。')
-        return
-    if not dialog.yesno('确认修改本地描述？', item['file']['name'] + '\n' +
-            (preview['after']['title'] if preview['after'] else '解除描述 / ' + preview['after_state']) + '\n不修改文件、观看进度或播放授权。'):
-        return
-    result = _call('catalog_apply', expected, request_id=uuid4().hex, commands=[command])['items'][0]
-    dialog.ok('已保存' if result['status'] == 'applied' else '未保存',
-              '仅修改本地元数据。' if result['status'] == 'applied' else '记录已变化或输入无效，请刷新后重试。')
+    result = review_entries(dialog, expected, [dict(name=item['file']['name'], command=dict(
+        file_id=item['file']['id'], expected_revision=item['revision'], action=action, mapping=value))])
+    if (result and result['complete'] and candidate and candidate['media_kind'] == 'tv' and
+            dialog.yesno('继续整理本剧？', '本集已保存。只读取同目录逐项建议，不会自动绑定其他文件。')):
+        review_group(dialog, expected, item, candidate, source_id=source_id)
+    return result
 
 
 def choose_candidate(dialog, item):
@@ -147,15 +145,18 @@ def _candidate_episode(dialog, candidate):
         return None
 
 
-def review_group(dialog, expected, anchor, candidate, source_id=None):
+def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
     from lib.clients.tmdb.catalog_candidates import candidate_mapping, query_hint
     if candidate['media_kind'] != 'tv':
         dialog.ok('请先选择剧集候选', '电影不生成季集映射。')
         return
-    rows, offset, group, revision = [], 0, None, None
+    rows, offset, group, revision = [], start, None, None
     deadline = time.monotonic() + 60
+    if start:
+        fresh = _call('catalog_group', expected, file_id=anchor['file']['id'], source_id=source_id, offset=0, limit=5)
+        group, revision, source_id = fresh['group_id'], fresh['projection_revision'], fresh['source_id']
     while True:
-        if len(rows) >= 100 or time.monotonic() >= deadline:
+        if time.monotonic() >= deadline:
             dialog.ok('目录建议未完整读取', '请缩小索引来源并分轮整理，尚未修改记录。')
             return
         params = dict(file_id=anchor['file']['id'], offset=offset, limit=5)
@@ -169,7 +170,7 @@ def review_group(dialog, expected, anchor, candidate, source_id=None):
         group, revision, source_id = result['group_id'], result['projection_revision'], result['source_id']
         rows.extend(result['items'])
         following = result['next_offset']
-        if following is None:
+        if following is None or len(rows) >= 100:
             break
         if type(following) is not int or following <= offset:
             raise ValueError('CATALOG_CURSOR_STALE')
@@ -194,6 +195,8 @@ def review_group(dialog, expected, anchor, candidate, source_id=None):
             item['revision'], ' · 存在疑点，默认未选' if suspicious else ''))
     selected = dialog.multiselect('逐项选择：同目录不证明同作品；排除合集 / 重制版 / 多集文件', labels, preselect=preselect)
     if not selected:
+        if following is not None and dialog.yesno('跳过本轮并查看下一轮？', '本轮未选择任何修改；后续仍逐项核对，每轮最多 100 项。'):
+            return review_group(dialog, expected, anchor, candidate, source_id, start=following)
         return
     edit_selected = dialog.yesno('需要逐项调整季集？', '不调整则沿用上方已核对的建议。未知季集的勾选项仍需手动明确；合集 / 多集文件请排除。')
     entries = []
@@ -207,12 +210,16 @@ def review_group(dialog, expected, anchor, candidate, source_id=None):
             entries.append(dict(name=item['file']['name'], command=dict(file_id=item['file']['id'],
                 expected_revision=item['revision'], action='confirm', mapping=value)))
     if entries:
-        return review_entries(dialog, expected, entries)
+        result = review_entries(dialog, expected, entries)
+        if result and result['complete'] and following is not None and dialog.yesno('继续下一轮同目录整理？',
+                '本轮真实回执已显示；下一轮重新读取当前修订，不会自动提交。'):
+            return review_group(dialog, expected, anchor, candidate, source_id, start=following)
+        return result
 
 
 def review_entries(dialog, expected, entries):
     """Bounded TV batch coordinator; existing Host remains the sole writer."""
-    from lib.clients.tmdb.catalog_candidates import plan
+    from bobbi_core.catalog_review import plan
     chunks = plan(entries)
     previews, receipts, saved, deadline = [], [], 0, time.monotonic() + 120
     for chunk in chunks:
@@ -226,9 +233,9 @@ def review_entries(dialog, expected, entries):
             return
         for entry, row in zip(chunk['entries'], rows):
             after = row.get('after') or {}
-            previews.append('%s · 修订 %s\n原描述 %s\n拟绑定 %s · S%sE%s · 版本备注 %s' % (
+            previews.append('%s · 修订 %s\n原描述 %s\n拟绑定 %s · S%sE%s · 版本备注 %s\n操作 %s · 修改后状态 %s' % (
                 entry['name'], entry['command']['expected_revision'], row.get('before'), after.get('title'),
-                after.get('season'), after.get('episode'), after.get('version')))
+                after.get('season'), after.get('episode'), after.get('version'), entry['command']['action'], row.get('after_state')))
     dialog.textviewer('逐项预览（尚未保存）', '\n\n'.join(previews))
     if not dialog.yesno('确认分批保存？', '%s 项将分 %s 批。已保存批次不会因后续冲突自动回滚；每批开始前仍会检查修订。' % (len(entries), len(chunks))):
         return
@@ -262,6 +269,7 @@ def review_entries(dialog, expected, entries):
                 receipts.append('待核对的原提交编号：' + chunk['request_id'])
             break
     dialog.textviewer('真实回执 · 已保存 %s/%s' % (saved, len(entries)), '\n'.join(receipts) + '\n未开始批次未提交，不自动回滚此前结果。')
+    return dict(saved=saved, total=len(entries), complete=saved == len(entries))
 
 
 def _items(dialog, expected, source=None, state=None):
@@ -375,6 +383,20 @@ def _watch_jobs(expected, offset=0, kind='scan'):
                     return
     finally:
         progress.close()
+
+
+def manage_scope(expected, dialog=None):
+    """One scoped management entry for native and registered mounted catalogs."""
+    import xbmcgui
+    dialog = dialog or xbmcgui.Dialog()
+    choice = dialog.select('当前片库管理', ['后台任务', '实时查看任务', '手机详细管理'])
+    if choice == 0:
+        return _jobs(dialog, expected)
+    if choice == 1:
+        return _watch_jobs(expected)
+    if choice == 2:
+        from lib.clients.stremio.manage_phone import catalog_manage_phone
+        return catalog_manage_phone(expected)
 
 
 def manage():
