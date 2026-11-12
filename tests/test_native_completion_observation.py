@@ -156,6 +156,66 @@ def test_actual_native_consumer_uses_one_result_for_history_and_next(monkeypatch
     assert actor._cinema_end is (mode == 'actual_tail')
     assert (actor._terminal_reason == 'NATURAL_EOF') is actor._cinema_end
     assert actor._cinema_cancel.is_set() is (not actor._cinema_end)
+    if mode == 'actual_tail':
+        assert actor.current_time == actor.data['current_time'] == 99.96
+        assert actor.total_time == actor.data['total_time'] == 100
+        assert actor.watched_percentage == actor.data['progress'] == 100
+    else:
+        assert actor.current_time == 100-speed
+        assert not {'current_time', 'total_time', 'progress'} & set(actor.data)
+
+
+@pytest.mark.parametrize('position,expected', [(1446764, 1446.764), (1446980, 1446.98), (1449000, 1446.98)])
+def test_final_history_snapshot_uses_accepted_native_position_not_fast_forward_poll(monkeypatch, position, expected):
+    source = ROOT/'addons/plugin.video.bobbi/lib/native_player.py'
+    cls = next(node for node in ast.parse(source.read_text(encoding='utf-8')).body
+               if isinstance(node, ast.ClassDef) and node.name == 'JacktookPLayer')
+    method = next(node for node in cls.body if isinstance(node, ast.FunctionDef)
+                  and node.name == 'wait_cinema_terminal')
+    terminal = dict(reason='NATURAL_EOF', completion_observation=changed(
+        position_ms=position, duration_ms=1446980, age_us=30762))
+    monkeypatch.setitem(sys.modules, 'lib.cinema.playback_request', playback_request)
+    monkeypatch.setattr(playback_request, 'terminal_state', lambda *a:deepcopy(terminal))
+    env = dict(monotonic=lambda:100., TERMINAL_RECONCILIATION_SECONDS=3,
+               sleep=lambda _:None, kodilog=lambda *a,**k:None)
+    exec(compile(ast.Module(body=[method], type_ignores=[]),str(source),'exec'),env)
+    actor = SimpleNamespace(data=dict(selection_policy='exact', current_time=1498.534,
+        total_time=1446.98, progress=103.6), playback_session_id='a'*32,
+        _cinema_cancel=Event(), _cinema_end=False, _owner_context={}, _native_instance='instance',
+        _terminal_reason='UNKNOWN', current_time=1498.534, total_time=1446.98, _progress_observed_at=99.)
+    env['wait_cinema_terminal'](actor)
+    history = {}
+    history_source = ROOT/'addons/plugin.video.bobbi/lib/services/playback_history.py'
+    exec(compile(history_source.read_text(encoding='utf-8'), str(history_source), 'exec'), history)
+    written = []
+    assert history['submit_native'](actor.data, reason=actor._terminal_reason,
+                                    save=lambda row:written.append(row) or True)
+    assert actor._cinema_end and written[0]['completed'] is True
+    assert written[0]['terminal_reason'] == 'NATURAL_EOF'
+    assert written[0]['current_time'] == expected
+    assert written[0]['total_time'] == 1446.98
+    assert 0 <= written[0]['progress'] <= 100
+    assert written[0]['current_time'] <= written[0]['total_time']
+
+
+def test_legacy_positive_fallback_does_not_invent_native_final_position(monkeypatch):
+    source = ROOT/'addons/plugin.video.bobbi/lib/native_player.py'
+    cls = next(node for node in ast.parse(source.read_text(encoding='utf-8')).body
+               if isinstance(node, ast.ClassDef) and node.name == 'JacktookPLayer')
+    method = next(node for node in cls.body if isinstance(node, ast.FunctionDef)
+                  and node.name == 'wait_cinema_terminal')
+    monkeypatch.setitem(sys.modules, 'lib.cinema.playback_request', playback_request)
+    monkeypatch.setattr(playback_request, 'terminal_state', lambda *a:{'reason':'NATURAL_EOF'})
+    env = dict(monotonic=lambda:100., TERMINAL_RECONCILIATION_SECONDS=3,
+               sleep=lambda _:None, kodilog=lambda *a,**k:None)
+    exec(compile(ast.Module(body=[method], type_ignores=[]),str(source),'exec'),env)
+    actor = SimpleNamespace(data=dict(selection_policy='exact',current_time=99.,total_time=100.,progress=99.),
+        playback_session_id='a'*32,_cinema_cancel=Event(),_cinema_end=False,_owner_context={},
+        _native_instance='instance',_terminal_reason='UNKNOWN',current_time=99.,total_time=100.,
+        _progress_observed_at=99.)
+    before = deepcopy(actor.data)
+    env['wait_cinema_terminal'](actor)
+    assert actor._cinema_end and actor.data == before and actor.current_time == 99.
 
 
 def test_legacy_window_property_cannot_supply_native_completion():

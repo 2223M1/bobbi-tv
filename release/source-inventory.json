@@ -2,7 +2,7 @@
   "schema": 1,
   "components": {
     "plugin.video.bobbi": {
-      "addon.xml": "a02b9b3e8fc14ebd32672e6cfa777aecd8ed922c0ffbdbfb571836fde10cd486",
+      "addon.xml": "b1ab6c4784dec8ec963fe91a64aa0f6714f6ebdf5ec455ce088b0fbcdbc68919",
       "bobbi.py": "f55942677347027b3cf3013b082bb5fe3c7a3186996452bf333a12c2bdb88afc",
       "bobbi.select.json": "cfbffb55a9c01049dd335dc17d9d7436656e57896c2608f06bd09dabc627c6b7",
       "fanart.png": "65e37420e8595145d77d54cbd42f303aeebaf14b5d13916b39c47c5d00822162",
@@ -271,7 +271,7 @@
       "lib/jacktook/provider_base.py": "763cbec954fa0ab99cb0cc9b102cc2fd744b72f9ce291b60613b344d975eae13",
       "lib/jacktook/providers.py": "d1588e98dd31f6fb3e0fff1c4f837fbba72e97ac6acec70bd9e17152b00b254d",
       "lib/jacktook/utils.py": "e5d406d6512ed102de661bf3a06a02b6b94808f4fbaac47335dfd353e64766cb",
-      "lib/native_player.py": "af311f3a02eba56621e657ec03f98e1a1fdcf10d89090af34ae7df8f504f8316",
+      "lib/native_player.py": "d6356a3cc32e5b40e62c6fe29588130a44d80c77a18e399909d6a5048878913a",
       "lib/native_support.py": "0dbe9b6f500b5177ccf321778552acfc465a412661ca5e9cfd38572cd6e21bde",
       "lib/nav/__init__.py": "626c8ae0d21a9e8ebcc5d79b03b802c4d701d29f95721318f098abf83d19740d",
       "lib/nav/debrid.py": "3919cc086143c8633ff7790d1b0aa760897f3ba6952b663785994f693f8b17af",

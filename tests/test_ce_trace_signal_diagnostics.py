@@ -1,6 +1,8 @@
 """Tool-only signal characterization; no imports of the remote device entrypoint."""
 import ast
 from copy import deepcopy
+import io
+import json
 from pathlib import Path
 import re
 from types import SimpleNamespace
@@ -45,6 +47,87 @@ def test_startup_capture_retains_partial_samples_and_stops_on_any_owner_read_fai
     assert all('labels' not in item for item in trace)
     assert failure == dict(type=error_type.__name__, reason='STARTUP_OBSERVATION_INTERRUPTED',
                           samples_retained=failure_at)
+    assert 'secret' not in repr((trace, failure))
+
+
+@pytest.mark.parametrize('failure_at', [0, 2])
+def test_owner_unavailable_reply_keeps_only_controlled_cause_without_retry(failure_at):
+    ns = functions('call', 'snapshot', 'capture_startup_trace')
+    clock, requests, sleeps = [0.0], [], []
+    private = 'https://signed.invalid/movie?token=private-reply-secret'
+
+    def read_config(path):
+        assert path == '/storage/.kodi/userdata/addon_data/script.module.bobbi.platform/runtime.json'
+        return SimpleNamespace(read_text=lambda: json.dumps(
+            {'port': 12345, 'token': 'private-config-secret'}))
+
+    def open_request(request, timeout):
+        requests.append(request)
+        assert request.url == 'http://127.0.0.1:12345/control'
+        assert json.loads(request.data) == {'action': 'playback', 'body': {'operation': 'snapshot'}}
+        assert timeout == .3
+        if len(requests) > failure_at:
+            reply = {'ok': False, 'error': {'message': private, 'token': 'private-reply-secret'}}
+        else:
+            result = row(clock[0], clock[0] + 1, len(requests) * 10)
+            result['labels'] = {'private': private}
+            reply = {'ok': True, 'result': result}
+        return io.StringIO(json.dumps(reply))
+
+    def sleep(seconds):
+        sleeps.append(seconds)
+        clock[0] += seconds
+
+    request_api = SimpleNamespace(
+        Request=lambda url, **kwargs: SimpleNamespace(url=url, **kwargs),
+        ProxyHandler=lambda proxies: proxies,
+        build_opener=lambda _: SimpleNamespace(open=open_request))
+    ns.update(Path=read_config, json=json, urllib=SimpleNamespace(request=request_api),
+              sample=lambda _: ns['snapshot'](),
+              time=SimpleNamespace(monotonic=lambda: clock[0], sleep=sleep))
+
+    trace, failure = ns['capture_startup_trace']({'owned': True})
+
+    assert len(requests) == failure_at + 1
+    assert sleeps == [.5] * failure_at  # The owner failure adds no retry or delay.
+    assert len(trace) == failure_at
+    assert failure == dict(type='RuntimeError', reason='STARTUP_OBSERVATION_INTERRUPTED',
+                          samples_retained=failure_at, cause='PLAYBACK_OWNER_UNAVAILABLE')
+    exported = json.dumps({'samples': trace, 'trace_error': failure})
+    assert 'private' not in exported and 'signed.invalid' not in exported
+    assert all('labels' not in item for item in trace)
+
+
+@pytest.mark.parametrize('error', [
+    RuntimeError('PLAYBACK_OWNER_UNAVAILABLE https://signed.invalid/?token=private-secret'),
+    RuntimeError('https://signed.invalid/?token=private-secret PLAYBACK_OWNER_UNAVAILABLE'),
+    RuntimeError('PLAYBACK_OWNER_UNAVAILABLE\n'),
+    RuntimeError(' PLAYBACK_OWNER_UNAVAILABLE'),
+    RuntimeError('playback_owner_unavailable'),
+    RuntimeError('UNKNOWN_OWNER_FAILURE'),
+    RuntimeError('PLAYBACK_OWNER_UNAVAILABLE', 'token=private-secret'),
+    RuntimeError(),
+    AssertionError('PLAYBACK_OWNER_UNAVAILABLE'),
+    TimeoutError('PLAYBACK_OWNER_UNAVAILABLE'),
+], ids=['url-suffix', 'url-prefix', 'newline', 'space-prefix', 'different-case',
+        'unknown', 'multiple-args', 'no-args', 'assertion', 'timeout'])
+def test_startup_capture_does_not_export_uncontrolled_cause(error):
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+
+    def sample(record):
+        calls.append(record)
+        if len(calls) > 2:
+            raise error
+        return row(clock[0], clock[0] + 1, len(calls) * 10)
+
+    ns.update(sample=sample, time=SimpleNamespace(
+        monotonic=lambda: clock[0], sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)))
+    trace, failure = ns['capture_startup_trace']({'owned': True})
+
+    assert len(calls) == 3 and len(trace) == 2 and clock[0] == 1
+    assert failure == dict(type=type(error).__name__, reason='STARTUP_OBSERVATION_INTERRUPTED',
+                          samples_retained=2)
     assert 'secret' not in repr((trace, failure))
 
 

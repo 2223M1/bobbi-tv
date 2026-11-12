@@ -2849,6 +2849,16 @@ class JacktookPLayer(xbmc.Player):
                             getattr(self, 'total_time', None),
                             getattr(self, '_progress_observed_at', None), monotonic())
                         self._cinema_end = natural
+                        if natural and exact and 'completion_observation' in terminal:
+                            # The same accepted receipt drives completion and
+                            # its final history/scrobble snapshot. Fast-forward
+                            # polling can overshoot duration after demux EOF.
+                            observed = terminal['completion_observation']
+                            self.total_time = observed['duration_ms'] / 1000.
+                            self.current_time = min(observed['position_ms'], observed['duration_ms']) / 1000.
+                            self.watched_percentage = round(self.current_time / self.total_time * 100, 1)
+                            self.data.update(current_time=self.current_time, total_time=self.total_time,
+                                             progress=self.watched_percentage)
                         if not natural:
                             self._terminal_reason = 'ERROR'
                             self._cinema_cancel.set()

@@ -389,8 +389,14 @@ def capture_startup_trace(record, budget=40):
         except Exception as error:
             # Exception messages may contain signed URLs. Do not export them,
             # and do not discard the already observed startup interval.
-            return trace, dict(type=type(error).__name__,
+            failure = dict(type=type(error).__name__,
                 reason='STARTUP_OBSERVATION_INTERRUPTED', samples_retained=len(trace))
+            # call() emits this local constant for an unsuccessful owner reply.
+            # Preserve only that exact enum, never a remote body or message prefix.
+            if (type(error) is RuntimeError and len(error.args) == 1
+                    and type(error.args[0]) is str and error.args[0] == 'PLAYBACK_OWNER_UNAVAILABLE'):
+                failure['cause'] = 'PLAYBACK_OWNER_UNAVAILABLE'
+            return trace, failure
         compact = {key: current[key] for key in (
             'wall', 'phase', 'seconds', 'speed', 'caching', 'observation_times',
             'cancelled', 'failure', 'subtitleenabled', 'decoder_counters',

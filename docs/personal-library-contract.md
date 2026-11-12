@@ -1,6 +1,6 @@
 # 个人片库实现边界
 
-本轮为本地源码候选，不代表已完成真机或真实账号验收。选源界面、唯一播放 owner、115 PreparationQueue、账号凭据库和来源 Registry 继续复用。原生网盘与 CD2 挂载共享 MediaIndex、CatalogService 的唯一扫描循环、worker 和任务管理。
+本轮已构建集成候选，并在一台 CoreELEC 设备进行有限验收；不代表所有账号、格式或平台均已验证。具体源码身份、回执和未覆盖项见 [本轮验收记录](review-d030e04-validation.md)。选源界面、唯一播放 owner、115 PreparationQueue、账号凭据库和来源 Registry 继续复用。原生网盘与 CD2 挂载共享 MediaIndex、CatalogService 的唯一扫描循环、worker 和任务管理。
 
 ## 索引与扫描
 
@@ -32,7 +32,7 @@ CD2 任务查看和取消绑定已登记来源、保存的任务及原根目录 
 
 `CatalogQuery` 是 MediaIndex 同一数据库中的可重建 SQL 投影，提供作品、季、集、原文件四级查询。查询不解包全库 FileRef。游标绑定查询条件、账号代际或本地来源范围、投影 generation、scope revision 及最后排序键，保留最多 128 个、有效期 10 分钟。scope revision 与对应对象、成员关系或映射变更在同一写事务内更新；其他账号写入不打断当前分页。同范围变更、投影重建、重启、挂载观察变化或超时会明确返回 `CATALOG_CURSOR_STALE`，界面保留筛选条件重新查询，不承诺跨并发写入的 MVCC 快照。
 
-CD2 描述范围固定为已登记的 `source_id + namespace`，不再按当前 mount generation 隐藏旧卡。掉线时标记 `source_unavailable`；同根重挂或重启后旧观察标记 `unverified`，待当前文件复核。原始描述、人工整理和观察历史保留，任务历史淘汰也不隐藏仍有作品的来源。改根目录不会继承旧 namespace，删除来源也不会让旧授权扩展到其他来源。
+CD2 描述范围固定为已登记的 `source_id + namespace`，不再按当前 mount generation 隐藏旧卡。掉线时标记 `source_unavailable`；同根重挂或设备重启使挂载观察变化后，旧观察标记 `unverified`，待当前文件复核。仅重启 Host/Kodi 而 kernel boot/mount 观察不变，不会凭空制造新的挂载代际；播放仍需 fresh-list/stat。原始描述、人工整理和观察历史保留，任务历史淘汰也不隐藏仍有作品的来源。改根目录不会继承旧 namespace，删除来源也不会让旧授权扩展到其他来源。
 
 电视的原生网盘与 CD2 入口共用 `personal_catalog` 的作品/季/集/文件 renderer、检索、分页与整理路由。旧 mounted URL 保留短重定向，原目录浏览仍可用。确认后的公开 metadata key 经已有 metadata 缓存/队列补充展示；年份和海报等描述不携带私有 URL、selected 或播放票据，也不证明两个文件属于同发行版。
 
@@ -66,10 +66,24 @@ FileRef 与 MountedRef 通过同一 typed lookup 进入既有 reviews、review_c
 
 下一集摘要复用已有续播状态，只提供显示。旧格式或非结构化元数据使摘要保持 unavailable；展示投影异常会清理旧标签，实际播放观察与终态处理继续执行。
 
+## 原生片尾证据
+
+既有 TERMINAL receipt 可携带同实例 `completion_observation`，严格限定 `schema=1`、`position_ms`、`duration_ms`、`age_us` 和 `valid`。位置与时长来自相同媒体时基，年龄由 native 内部单调时钟计算；Python 不跨时钟原点相减，也不在终态后查询新播放器来证明旧实例。receipt 仍须通过原有 request/instance/账号与取消边界，位置字段不能创建 EOF 或控制权限。
+
+历史完成与一次性下一集共同消费 `playback_completion.terminal_end`。只有匹配的 `NATURAL_EOF`、有效已知时长、距尾不超过 3000 ms 且年龄不超过 5000000 μs 才可完成。新字段存在但 unavailable、过期或不完整时失败关闭；只有旧 native 完全缺少该字段才使用唯一保守轮询兼容分支（近尾 3 秒、观察年龄最多 5 秒）。不能把新旧证据 OR 在一起放宽完成条件。
+
+当前新证据针对普通、静态、已知时长视频。ISO/display-time、live/menu、ITimes、EDL、非零 PTS offset 和未知时长返回 unavailable，不宣称已支持这些时基的终态完成。canonical patch apply、受影响 C++ 编译、CE 完整链接、封装、部署和真实 EOF/历史/next 闭环分别记录；编译或 native EOF 单项通过不等于整条闭环验收完成。
+
+## 测量边界
+
+`BLOCK_DELIVERY_SECONDS=1.0` 是收到可用前缀后的交付检查窗口，不是连接、DNS、首字节、系统调用或整次请求的硬超时。现有 `raw.read1` 与精确 suffix 续取继续保留；本轮不因短样本推断而新增缓存、transport 或调度器。
+
+已采单台设备首页暖态及普通视频短窗口的 CPU、进程 RSS 和既有稀疏 trace，并绑定实际 tree、组件与 native 哈希。冷/暖配对、充分覆盖真实扫描 running 的同素材对照、精确首帧/seek/输入延迟及精确 Range/上游流量尚需分别验收。CPU 以单核 100% 为进程口径；RSS 不等于 Python tracemalloc，短时增长也不能单独证明泄漏。无足够样本时不作“最快”或性能优化完成的结论。
+
 ## 本地验证
 
 新增测试覆盖事务故障、重复页、重叠来源、跨账号、取消与迟到回包、重启、修订冲突、撤回、Unicode 消息边界及手机会话。合成一万文件、多层目录采用 511 页；实际测量另存执行回执。Python tracemalloc 峰值不等于进程总 RSS，模拟吞吐不等于真实网盘性能。
 
-四组 pytest 分进程运行，另外执行 IPC/安装残留探针和两次 source-check 构建比较。真实账号、TV/Android 设备、生产签名与正式发布单独验收，不以本地测试替代。
+四组 pytest 分进程运行，其中包含 IPC/安装残留等边界用例，另执行两次 source-check 构建比较。没有独立回执的探针不另计一次验收。真实账号、TV/Android 设备、生产签名与正式发布单独验收，不以本地测试替代；本轮设备扫描、分页、取消及部分 UI/播放结果按 [验收记录](review-d030e04-validation.md) 的精确范围列出。
 
 设备试播清单统一保存在 `tools/ce_trial_cases.json`，CLI、远端脚本注入和只读身份核验共用该声明，产品 runtime 不导入设备脚本。已删除无调用者且会覆盖现有远端实现的旧一次性导入器 `tools/import_playback_trial.py`；其 SHA256 为 `a093b2e5aef4d11249e915073626dc8cfc34fbc5d6075dfc3438ab1790ad0dfe`，原审阅来源 `release317/trial.py` 的 SHA256 为 `d92d7c33c74027b6c6ca0ceb2b4c4e5625d621c3f670f8fd00b7b0d15aa6a87f`。两者仅为来源记录，不重新生成或覆盖当前工具。
