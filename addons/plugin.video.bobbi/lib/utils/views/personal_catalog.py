@@ -92,11 +92,13 @@ def decorate(item, card, projections=None):
 
 
 def manage(params=None, rpc=None):
+    import xbmc
     import xbmcgui
     from bobbi_platform import catalog_ui
     from bobbi_platform.runtime import call
     from bobbi_platform.pan_accounts import scope
     params, rpc = params or {}, rpc or call
+    origin = xbmc.getInfoLabel('Container.FolderPath')
     if not params.get('provider') and not params.get('source'):
         return catalog_ui.manage()
     try:
@@ -110,7 +112,22 @@ def manage(params=None, rpc=None):
                     namespace=expected['namespace'], **values))
             else:
                 record = rpc('catalog_item', dict(expected=expected, **values))
-            return catalog_ui.review_item(xbmcgui.Dialog(), expected, record)
+            result = catalog_ui.review_item(xbmcgui.Dialog(), expected, record, source_id=params.get('source_id'))
+            if result:
+                if result.get('pending_request_id') and xbmcgui.Dialog().yesno(
+                        '查询原提交回执？', '结果尚待核对。只查询原提交编号，不重新写入；也可稍后从片库管理继续查询。'):
+                    catalog_ui.query_receipt(xbmcgui.Dialog(), expected, result['pending_request_id'])
+                if origin and xbmc.getInfoLabel('Container.FolderPath') == origin:
+                    # A dialog result must not refresh a different account/root
+                    # after the user or another frontend changed ownership.
+                    if expected.get('reference_kind') == 'mounted_path':
+                        mounted_for(dict(params, **scope_params(expected)), rpc)
+                    else:
+                        account_for(params, [scope(row['account'], authenticated=True)
+                            for row in rpc('pan_status', {})['providers']
+                            if row['provider'] != '115' and row['account'].get('authenticated')])
+                    xbmc.executebuiltin('Container.Refresh')
+            return result
         mode = params.get('mode')
         if mode in ('scan', 'cancel') and expected.get('reference_kind') == 'mounted_path':
             body = dict(source_id=expected['source_id'], namespace=expected['namespace'])
@@ -143,6 +160,14 @@ def file_progress(items, account, history):
             if (ref['id'] != identifier or ref['provider'] != account['provider']
                     or ref['account_id'] != account['account_id']):
                 continue
+            if item.get('history_key'):
+                from bobbi_core.catalog_query import opaque
+                # Mirror same_file: a previously known hash must still match;
+                # learning a hash for the first time does not invalidate progress.
+                same = (ref['size'] == item.get('file_size') if ref.get('fingerprint') is None else
+                        item['history_key'] == opaque(ref['id'], ref['size'], ref['fingerprint']))
+                if not same:
+                    continue  # A known replacement must not display the old file's progress.
             if row['duration']:
                 result[identifier] = min(100, round(100 * row['position'] / row['duration']))
         except (ValueError, TypeError, KeyError):
@@ -165,6 +190,24 @@ def card_target(card, account, query=None):
         'source_id', 'review_state', 'availability', 'media_kind', 'text', 'sort')}
     return route(action='personal_catalog', view=views[kind], parent_entity_id=identifier,
                  **base, **filters), True
+
+
+def variants_target(card, account, query=None):
+    if card['entity_kind'] not in ('work', 'episode') or card.get('media_kind') not in ('movie', 'tv'):
+        return None
+    filters = {key: value for key, value in (query or {}).items() if key in (
+        'source_id', 'review_state', 'availability', 'media_kind', 'text', 'sort')}
+    return route(action='personal_catalog', view='files', parent_entity_id=card['entity_id'],
+                 **scope_params(account), **filters)
+
+
+def file_size(value):
+    if type(value) is not int or value <= 0:
+        return ''
+    for suffix in ('B', 'KiB', 'MiB', 'GiB', 'TiB'):
+        if value < 1024 or suffix == 'TiB':
+            return ('%.1f' % value).rstrip('0').rstrip('.') + ' ' + suffix
+        value /= 1024
 
 
 def execute(params, handle=None, rpc=None, rail_cache=None):
@@ -213,9 +256,11 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                 entry(NAMES.get(account['provider'], account['provider']), route(
                     action='personal_catalog', provider=account['provider'], scope=scope_key(account)))
             for source in mounts:
+                from bobbi_platform.catalog_ui import source_status
+                observed = source_status(source)
                 entry(source['name'] + ' · CD2', route(action='personal_catalog', source=source['id']),
-                      detail='复用已有挂载 · 描述保留，播放时复核' if source.get('available') else
-                             '挂载暂不可用 · 已有作品和任务仍可查看')
+                      detail=observed or ('复用已有挂载 · 描述保留，播放时复核' if source.get('available') else
+                             '挂载暂不可用 · 已有作品和任务仍可查看'))
                 if source.get('has_jobs'):
                     entry(source['name'] + ' · 扫描任务', route(action='personal_catalog_manage',
                         source=source['id'], mode='jobs'), False, '直接查看或取消，无需读取挂载目录')
@@ -229,14 +274,24 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             account = mounted_for(params, rpc) if mounted else account_for(params, accounts)
             presentation_scope = scope_key(account)
             base = dict(action='personal_catalog', **scope_params(account))
-            if not params.get('view') and mode != 'rail' and not params.get('search'):
+            if mode == 'review':
+                base['mode'] = 'review'
+            if mode == 'review' and not params.get('view'):
+                category = '待整理工作台'
+                for state_name, label in (('unmatched', '未匹配原文件'), ('ambiguous', '身份不明确'),
+                        ('proposed', '待确认建议'), ('ignored', '已忽略原文件')):
+                    entry(label, route(**base, view='files', review_state=state_name, source_id=params.get('source_id')))
+                entry('当前片库管理与原提交查询', route(action='personal_catalog_manage', **scope_params(account)), False)
+            elif not params.get('view') and mode != 'rail' and not params.get('search'):
                 for label, values in (
                     ('全部作品', dict(view='works', sort='name')),
                     ('最近加入', dict(view='works', sort='recent_added')),
                     ('未匹配原文件', dict(view='files', review_state='unmatched')),
-                    ('待确认与纠错', dict(view='files', review_state='proposed')),
+                    ('身份不明确', dict(view='files', review_state='ambiguous')),
+                    ('待确认建议', dict(view='files', review_state='proposed')),
+                    ('已忽略原文件', dict(view='files', review_state='ignored')),
                     ('搜索片库', dict(search='true'))):
-                    entry(label, route(**base, **values))
+                    entry(label, route(**base, **values, **(dict(mode='review') if values.get('review_state') else {})))
                 entry('继续观看', route(action='continue_watching_menu'))
                 if mounted:
                     entry('扫描 / 更新当前 CD2 来源', route(action='personal_catalog_manage',
@@ -297,22 +352,46 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                 projections = {}  # One immutable work/season view per directory render.
                 for card in page['items']:
                     target, folder = card_target(card, account, query)
+                    if mode == 'review' and card['entity_kind'] == 'file':
+                        target = route(action='personal_catalog_manage', object_id=card['entity_id'],
+                                       source_id=query.get('source_id'), **scope_params(account))
                     title = card['display_title']
                     detail = availability.get(card.get('availability'), '待确认来源')
+                    if mode == 'review':
+                        from bobbi_platform.catalog_ui import LABELS
+                        detail = LABELS.get(card.get('review_state'), '待整理') + ' · ' + detail
                     if card['entity_kind'] != 'file':
                         detail += ' · %d 个文件版本' % card.get('variant_count', 0)
                     else:
                         detail += ' · ' + ('CD2 · 从头播放，不继承旧路径进度' if mounted else
                                           NAMES.get(account['provider'], account['provider']))
+                        descriptions = [card.get('version_label'), file_size(card.get('file_size'))]
+                        sources = card.get('sources') or []
+                        descriptions.extend(row['name'] for row in sources)
+                        if card.get('source_total', 0) > len(sources):
+                            descriptions.append('等 %d 个来源' % card['source_total'])
+                        detail += ''.join(' · ' + value for value in descriptions if value)
+                        if card.get('truncated'):
+                            detail += ' · 显示已截短，原记录保留'
                     properties = {'Bobi.CardKey': 'catalog:' + scope_key(account) + ':' + card['entity_id'],
                         'Bobi.File.State': card.get('availability', 'unverified'),
                         'Bobi.Review.State': card.get('review_state', ''),
                         'Bobi.Title.zh': title}
+                    variants = variants_target(card, account, query)
+                    if variants:
+                        properties['Bobi.Catalog.Variants'] = variants
                     if rail and not mounted:
                         properties['node.visible'] = ('String.IsEqual(Window(Home).Property(Bobi.Rail.Scope.%s),%s)'
                             % (account['provider'], presentation_scope))
                     if card['entity_id'] in progress:
                         properties['PercentPlayed'] = progress[card['entity_id']]
+                        detail += ' · 本文件已观看 %d%%' % progress[card['entity_id']]
+                    properties['Bobi.Catalog.ActionLabel'] = (
+                        '整理原文件' if mode == 'review' and card['entity_kind'] == 'file' else
+                        ('从头播放本文件' if mounted else '继续播放本文件' if card['entity_id'] in progress else '播放本文件')
+                        if card['entity_kind'] == 'file' else
+                        '选择文件版本' if card['entity_kind'] == 'episode' or card.get('media_kind') == 'movie' else
+                        '选择分集' if card['entity_kind'] == 'season' else '选择季集')
                     item = entry(title, target, folder, detail, properties)
                     info = dict(title=title, mediatype={'work': 'tvshow' if card.get('media_kind') == 'tv'
                         else 'movie', 'season': 'season', 'episode': 'episode'}.get(card['entity_kind'], 'video'))
@@ -327,7 +406,9 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     if card['entity_kind'] == 'file' and hasattr(item, 'addContextMenuItems'):
                         item.addContextMenuItems([('整理这个原文件', 'RunPlugin(' + route(
                             action='personal_catalog_manage', object_id=card['entity_id'],
-                            **scope_params(account)) + ')')])
+                            source_id=query.get('source_id'), **scope_params(account)) + ')')])
+                    elif variants and hasattr(item, 'addContextMenuItems'):
+                        item.addContextMenuItems([('选择文件版本', 'ActivateWindow(Videos,"' + variants + '",return)')])
                 if page.get('next_cursor') and mode != 'rail':
                     entry('下一页', route(**base, **query, cursor=page['next_cursor']),
                           properties={'Bobi.NextPage': 'true'})

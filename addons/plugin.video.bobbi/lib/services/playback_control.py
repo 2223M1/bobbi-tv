@@ -137,6 +137,29 @@ class KodiNative:
             request_id, native_instance, reason), xbmc.LOGINFO)
         return True
 
+    @staticmethod
+    def continuation_diagnostic(value):
+        """Bounded causal IDs/hashes only; no grant token, source URL or account."""
+        import re
+        import xbmc
+        from bobbi_core.native_receipt import UUID, SHA
+        keys = {'schema', 'stage', 'kind', 'parent_request_id', 'parent_native_instance',
+                'selection_sha256', 'child_request_id'}
+        if (type(value) is not dict or set(value) != keys or type(value['schema']) is not int
+                or value['schema'] != 1 or value['stage'] not in ('GRANTED', 'CHILD_RESERVED')
+                or value['kind'] not in ('natural', 'manual', 'transport')
+                or not isinstance(value['parent_request_id'], str)
+                or not re.fullmatch('[0-9a-f]{32}', value['parent_request_id'])
+                or not isinstance(value['parent_native_instance'], str)
+                or not UUID.fullmatch(value['parent_native_instance'])
+                or not isinstance(value['selection_sha256'], str) or not SHA.fullmatch(value['selection_sha256'])
+                or not isinstance(value['child_request_id'], str)
+                or not re.fullmatch('[0-9a-f]{32}' if value['stage'] == 'CHILD_RESERVED' else '',
+                                    value['child_request_id'])):
+            return False
+        xbmc.log('[BOBBI-CONTINUATION] '+json.dumps(value, sort_keys=True, separators=(',', ':')), xbmc.LOGINFO)
+        return True
+
     def subtitles(self):
         return self.rpc('Player.BobiSubtitles')
 

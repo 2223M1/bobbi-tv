@@ -123,17 +123,19 @@ def test_revision_change_after_preview_is_not_reported_as_saved(ui, item):
     assert '已保存 0/1' in ui.views[-1][0] and '版本冲突' in ui.views[-1][1]
 
 
-@pytest.mark.parametrize('filter_state,title,body', [
-    ('unmatched', '当前筛选暂无条目', '可返回查看全部条目。'),
-    (None, '尚无索引条目', '先在网盘文件目录选择'),
-])
-def test_filtered_empty_is_distinct_from_empty_catalog(ui, filter_state, title, body):
-    ui.responses = [('catalog_items', dict(items=[], next_offset=None))]
-    catalog_ui._items(ui.dialog, ui.expected, state=filter_state)
-    assert ui.messages[0][0] == title and body in ui.messages[0][1]
-    assert ui.calls[0][1] == dict(expected=ui.expected, source=None,
-                                  state=filter_state, offset=0)
-    assert not ui.menus and not ui.prompts
+def test_version_note_edit_uses_same_preview_and_cas_writer(ui, item):
+    item['mapping'].update(tmdb_id=None, season=None, episode=None, version='Old note')
+    ui.choices, ui.inputs, ui.confirmations = [7], ['影院加长版'], [True]
+    ui.responses = [('catalog_preview', preview()), ('catalog_preview', preview()),
+                    ('catalog_apply', dict(items=[dict(status='applied')]))]
+    catalog_ui.review_item(ui.dialog, ui.expected, item)
+    commands = [body['commands'][0] for _, body in ui.calls]
+    assert all(row['mapping']['version'] == '影院加长版' and row['expected_revision'] == 4 for row in commands)
+    assert all(row['mapping']['title'] == 'Current title' for row in commands)
+
+
+def test_legacy_offset_browser_is_retired():
+    assert not hasattr(catalog_ui, '_items')
 
 
 def test_cancel_task_remains_request_state_until_backend_confirms(ui):

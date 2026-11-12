@@ -87,6 +87,25 @@ test(expectBug?'baseline: 41 files lose the first authorization in the real eigh
 });
 
 if(!expectBug) {
+  test('file version descriptions survive actual SQLite -> PhoneManagement -> browser rendering',async()=>{
+    const server=await backend(3);
+    try {
+      const originals=(await server.request('query')).items;
+      for(const [number,row] of originals.entries())await server.request('mutate',{command:{file_id:row.entity_id,
+        expected_revision:0,action:'confirm',mapping:{kind:'movie',title:'Movie',tmdb_id:123,season:null,episode:null,version:'手工版本 '+number}}});
+      const ui=await boot({hash:'#'+server.code,transport:server.fetch});
+      await waitUntil(()=>ui.element('rows').children.length===1);
+      await find(ui.element('rows'),'查看具体文件').fire();
+      assert.equal(ui.element('rows').children.length,3);
+      for(let number=0;number<3;number++)assert.match(ui.text('rows'),new RegExp('手工版本 '+number));
+      assert.match(ui.text('rows'),/Show\.S01E001\.mkv/);
+      assert.match(ui.text('rows'),/1,024 字节/);
+      assert.match(ui.text('rows'),/测试收藏目录/);
+      assert.equal(calls(ui,'catalog_item').length,0);
+      assert.equal(calls(ui,'catalog_apply').length,0);
+    } finally {await server.close();}
+  });
+
   test('real work -> season -> episode -> file -> review returns to the same filtered work',async()=>{
     const server=await backend(3);
     try {

@@ -9,6 +9,9 @@ from uuid import uuid4
 
 
 def main():
+    # Node IPC is UTF-8 on every host, independently of the Windows console code page.
+    sys.stdin.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8')
     parser = argparse.ArgumentParser()
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--count', type=int, required=True)
@@ -47,6 +50,8 @@ def main():
                 params = {key: value for key, value in body.items() if key != 'expected'}
                 if action == 'catalog_apply':
                     writes.append(dict(request_id=params['request_id'], commands=params['commands']))
+                if action == 'catalog_query':
+                    params['source_names'] = {'a'*32: '测试收藏目录'}
                 return getattr(index, action.removeprefix('catalog_'))(expected, **params)
 
             manager = phone.PhoneManagement(expected, origin, rpc=rpc, clock=lambda: now[0])

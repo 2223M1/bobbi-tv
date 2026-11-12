@@ -115,11 +115,17 @@ class MountedPort:
 
     def snapshot(self, expected):
         source = self.source(expected['source_id'])
-        current = self.source_scope(source)
+        current = self.source_snapshot(source, self.mounts())
         if current['namespace'] != expected['namespace']:
             raise ValueError('CATALOG_AUTHORITY_CHANGED')
+        return current
+
+    @classmethod
+    def source_snapshot(cls, source, mounts):
+        """Reuse one kernel mount snapshot without stat/listing the FUSE root."""
+        current = cls.source_scope(source)
         root = source.location.rstrip('/\\')
-        mounts = [row for row in self.mounts() if root == row['path'] or root.startswith(row['path'].rstrip('/') + '/')]
+        mounts = [row for row in mounts if root == row['path'] or root.startswith(row['path'].rstrip('/') + '/')]
         if mounts:
             mount = max(mounts, key=lambda row: len(row['path']))
             current['generation'] = mounted_ref.digest(current['namespace'], mount['generation'])
@@ -150,22 +156,17 @@ class MountedPort:
 
     def describe(self, source_id):
         source = self.source(source_id)
-        scope = self.source_scope(source)
+        authority = self.source_snapshot(source, self.mounts())
         root = source.location.rstrip('/\\')
         # Only kernel-observed CD2 local mounts qualify. A similarly named
         # folder, credential URL or ordinary registered NAS does not.
-        mounts = [row for row in self.mounts() if root == row['path'] or root.startswith(row['path'].rstrip('/') + '/')]
-        if not mounts:
+        if not authority['generation']:
             raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
-        mount = max(mounts, key=lambda row: len(row['path']))
         path = native_path(root)
         if os.path.islink(path) or not os.path.isdir(path):
             raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
         if os.path.realpath(path) != os.path.abspath(path):
             raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
-        namespace = scope['namespace']
-        authority = dict(reference_kind='mounted_path', source_id=source.id, namespace=namespace,
-                         generation=mounted_ref.digest(namespace, mount['generation']))
         return source, authority
 
     def require(self, authority):

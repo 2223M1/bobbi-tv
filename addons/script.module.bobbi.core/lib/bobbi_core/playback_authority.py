@@ -166,6 +166,19 @@ class PlaybackAuthority:
             except Exception:
                 pass  # Optional diagnostics cannot change playback ownership.
 
+    def _continuation_note(self, stage, grant, child_request_id=''):
+        """Observe accepted causal boundaries, never expose the one-use token."""
+        report = getattr(self.native, 'continuation_diagnostic', None)
+        if report is not None:
+            try:
+                from hashlib import sha256
+                report(dict(schema=1, stage=stage, kind=grant['kind'],
+                    parent_request_id=grant['request_id'], parent_native_instance=grant['native_instance'],
+                    selection_sha256=sha256(grant['selection_identity'].encode('utf-8')).hexdigest(),
+                    child_request_id=child_request_id))
+            except Exception:
+                pass  # Missing/broken logging must not alter the accepted owner transition.
+
     def _loading_window(self, dialog_id, token):
         read = getattr(self.native, 'loading_window', None)
         if read is None:
@@ -749,6 +762,7 @@ class PlaybackAuthority:
                 gui_user_intent=self.gui_state.get('gui_user_intent'),
                 kind='natural' if operation == 'authorize_next' else 'manual',
                 account_scope=deepcopy(message.get('account_scope')))
+            self._continuation_note('GRANTED', self.continuation)
             return {'authorized': True, 'token': self.continuation['token']}
         if operation == 'reserve_child':
             row = self._continuation_receipt(row)
@@ -778,6 +792,7 @@ class PlaybackAuthority:
                 request_id=message.get('child_request_id'), selection_identity=grant['selection_identity'],
                 account_scope=grant.get('account_scope')))
             self.reserved_continuation = True
+            self._continuation_note('CHILD_RESERVED', grant, result['desired']['request_id'])
             if transport:
                 self.transport_child = dict(child_request_id=grant['child_request_id'],
                     file_identity=grant['file_identity'], capsule=capsule['token'], position_ms=capsule['position_ms'])

@@ -39,3 +39,12 @@ def test_retained_sidecar_still_requires_exact_identity_and_bound():
     _,raw,_=fixture()
     with pytest.raises(ValueError):cli.decode_trace(raw,dict(artifact='/exact.json'),'/exact.json','other',True)
     with pytest.raises(ValueError):cli.decode_trace(b' '* (4*1024*1024+1),dict(artifact='/exact.json'),'/exact.json','movie',True)
+
+
+def test_metrics_and_next_need_positive_complete_evidence():
+    assert cli.result_exit_code({}, operation='metrics') != 0
+    assert cli.result_exit_code({'samples': [{}, {}]}, operation='metrics') == 0
+    assert cli.result_exit_code({'samples': [{}, {}], 'errors': ['failed']}, operation='metrics') != 0
+    assert cli.result_exit_code({}, operation='next_watch') != 0
+    assert cli.result_exit_code({'passed': False}, operation='next_watch') != 0
+    assert cli.result_exit_code({'passed': True}, operation='next_watch') == 0

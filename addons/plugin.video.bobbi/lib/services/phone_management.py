@@ -122,12 +122,14 @@ PUBLIC_FIELDS = frozenset(('items', 'next_offset', 'id', 'name', 'parent', 'trun
     'state', 'reason', 'candidates', 'revision', 'mapping', 'provenance', 'origin', 'season',
     'episode', 'year', 'kind', 'title', 'tmdb_id', 'version', 'status', 'before', 'after', 'action',
     'schema', 'task_id', 'stage', 'counts', 'pages', 'scanned', 'discovered', 'updated_at',
-    'cancel_requested', 'result_summary', 'available', 'after_state', 'position', 'duration', 'completion_reason', 'index'))
+    'cancel_requested', 'result_summary', 'available', 'after_state', 'position', 'duration', 'completion_reason', 'index',
+    'observation', 'coverage', 'availability', 'recheck_required', 'indexed_count', 'latest_state'))
 
 # Query summaries have their own read budget; this never enlarges review batches.
 QUERY_FIELDS = frozenset(('schema', 'items', 'next_cursor', 'projection_revision', 'truncated',
     'entity_id', 'entity_kind', 'display_title', 'media_kind', 'season', 'episode', 'review_state',
-    'availability', 'variant_count', 'available_count', 'source_count', 'metadata_key', 'year', 'art', 'poster', 'thumb', 'fanart'))
+    'availability', 'variant_count', 'available_count', 'source_count', 'metadata_key', 'year', 'art', 'poster', 'thumb', 'fanart',
+    'file_name', 'file_size', 'version_label', 'sources', 'source_total', 'id', 'name'))
 CANDIDATE_FIELDS = frozenset(('items', 'media_kind', 'tmdb_id', 'title', 'original_title',
                             'year', 'poster_path', 'basis', 'mismatch'))
 GROUP_FIELDS = PUBLIC_FIELDS | frozenset(('group_id', 'anchor_id', 'source_id', 'projection_revision'))
@@ -227,7 +229,10 @@ class PhoneManagement:
             if value is not None and value != self.expected['source_id']:
                 raise PhoneError('ACTION_FORBIDDEN')
         if action == 'catalog_sources':
-            return dict(items=[dict(id=self.expected['source_id'], name='本次授权的本地片库')])
+            listed = self.rpc('catalog_mount_sources', {}, timeout=3)
+            # The browser grant covers exactly one registered namespace. Keep
+            # other source names and observations out of its public response.
+            return dict(items=[row for row in listed['items'] if row['id'] == self.expected['source_id']])
         params = dict(args, source_id=self.expected['source_id'], namespace=self.expected['namespace'])
         return self.rpc(action.replace('catalog_', 'catalog_mount_', 1), params, timeout=3)
 

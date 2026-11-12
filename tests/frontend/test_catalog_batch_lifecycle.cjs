@@ -146,6 +146,26 @@ async function seasonPlan(size=12,changes={}) {
 }
 async function acceptGroup(ui){await find(ui.element('groupRows'),'将勾选项加入分批预览').fire();await ui.click('preview');}
 
+test('overlapping source suggestions wait for explicit trusted-source selection',async()=>{
+  const ui=await boot();await ui.edit();
+  const anchor=ui.rows[0];anchor.file.name='Show.S01E01.mkv';
+  anchor.candidates=[{season:1,episode:1,year:2020}];
+  ui.handlers.catalog_candidates=()=>response({items:[{media_kind:'tv',title:'Show',tmdb_id:123,year:2020,basis:'public'}]});
+  ui.handlers.catalog_sources=()=>response({items:[{id:'a'.repeat(32),name:'宽目录'},{id:'b'.repeat(32),name:'可信目录'}],next_offset:null});
+  ui.handlers.catalog_group=body=>body.params.source_id?response({items:[anchor],next_offset:null,
+    group_id:'c'.repeat(64),source_id:body.params.source_id,projection_revision:1}):response({error:'CATALOG_GROUP_AMBIGUOUS'},400);
+  await find(ui.element('editorRows'),'搜索作品候选').fire();
+  await find(ui.element('editorRows'),'采用此候选（尚未保存）').fire();
+  await find(ui.element('editorRows'),'查看同目录逐集整理建议').fire();
+  assert.match(ui.text('groupRows'),/请选择可信来源/);
+  assert.equal(calls(ui,'catalog_group').length,1);
+  assert.equal(calls(ui,'catalog_preview').length,0);assert.equal(calls(ui,'catalog_apply').length,0);
+  await find(ui.element('groupRows'),'可信目录 · bbbbbbbb').fire();
+  assert.equal(calls(ui,'catalog_group').at(-1).body.params.source_id,'b'.repeat(32));
+  assert.match(ui.text('groupRows'),/同目录逐项建议/);
+  assert.equal(calls(ui,'catalog_apply').length,0);
+});
+
 test('12 real selected files are previewed completely and written as 5/5/2 independent snapshots',async()=>{
   const {ui}=await seasonPlan();await acceptGroup(ui);
   assert.equal((ui.text('batchPreview').match(/修改前/g)||[]).length,12);

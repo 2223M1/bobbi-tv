@@ -2,7 +2,7 @@
 from collections import deque, OrderedDict
 from threading import Event, Lock, Thread
 
-from bobbi_core.media_library_index import MediaIndex, TERMINAL, identifier
+from bobbi_core.media_library_index import MediaIndex, TERMINAL, REPLY_BYTES, encode, identifier
 from .libraries import Registry
 from .scan_sources import NativePort
 
@@ -15,6 +15,25 @@ MAX_PAGES = 1200
 MAX_REQUESTS = 2400
 MAX_SECONDS = 1800
 SCAN_WINDOW = 20
+
+
+def source_list(items):
+    """Keep all bounded Registry identities; shorten only display names."""
+    result = dict(items=items)
+    if len(encode(result).encode('utf-8')) <= REPLY_BYTES:
+        return result
+    result = dict(items=[dict(row, name='') for row in items], truncated=True)
+    budget = (REPLY_BYTES - len(encode(result).encode('utf-8'))) // len(items)
+    if budget < 3:
+        raise ValueError('CATALOG_REPLY_LIMIT')
+    for row, original in zip(result['items'], items):
+        name = original['name']
+        if len(encode(name).encode('utf-8')) - 2 > budget:
+            while len(encode(name + '…').encode('utf-8')) - 2 > budget:
+                name = name[:-1]
+            name += '…'
+        row['name'] = name
+    return result
 
 
 class CatalogService:
@@ -57,6 +76,34 @@ class CatalogService:
         if (source['provider'], source['account_id']) != (expected['provider'], expected['account_id']):
             raise ValueError('CATALOG_ACCOUNT_MISMATCH')
         return source
+
+    def query(self, expected, **args):
+        # Names are presentation only. Keep the allowlisted Registry partition
+        # local; never attach credentials/locations or read the remote tree.
+        store = self._registry()
+        try:
+            if expected.get('reference_kind') == 'mounted_path':
+                source = store.get(expected['source_id'])
+                source_names = {source.id: source.name}
+            else:
+                source_names = {row['id']: row['name'] for row in store.directories()
+                    if (row['provider'], row['account_id']) == (expected['provider'], expected['account_id'])}
+        finally:
+            store.close()
+        return self.index.query(expected, source_names=source_names, **args)
+
+    def source_observation(self, expected, source_id):
+        observation = self.index.source_observation(expected, source_id)
+        latest = observation.pop('latest_job')
+        # Full task identities/reasons/cancellation remain on the existing job
+        # routes. Source cards need only this small, consistent summary.
+        observation.pop('present_count')
+        observation.pop('absent_count')
+        observation['latest_state'] = latest['state'] if latest else 'none'
+        observation['counts'] = latest['counts'] if latest else dict(pages=0, scanned=0, discovered=0)
+        if latest and latest['cancel_requested'] and latest['state'] in ('queued', 'running'):
+            observation['latest_state'] = 'cancel_requested'
+        return observation
 
     def _guard(self, expected):
         if self.stop.is_set():
@@ -281,8 +328,9 @@ class CatalogService:
                         (expected['provider'], expected['account_id'])]
             finally:
                 store.close()
-            return self.pans.accounts.run_if_current(expected, lambda: dict(items=[
-                dict(id=r['id'], name=r['name']) for r in rows]))
+            return self.pans.accounts.run_if_current(expected, lambda: source_list([
+                dict(id=r['id'], name=r['name'], observation=self.source_observation(expected, r['id']))
+                for r in rows]))
         if action == 'catalog_add' and set(args) == {'name', 'parent'}:
             def add():
                 store = self._registry()
@@ -323,7 +371,7 @@ class CatalogService:
         if action == 'catalog_item' and set(args) == {'file_id'}:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.item(expected, **args))
         if action == 'catalog_query' and set(args) <= {'query', 'cursor', 'limit'}:
-            return self.pans.accounts.run_if_current(expected, lambda: self.index.query(expected, **args))
+            return self.pans.accounts.run_if_current(expected, lambda: self.query(expected, **args))
         if action == 'catalog_receipt' and set(args) == {'request_id'}:
             return self.pans.accounts.run_if_current(expected, lambda: self.index.receipt(expected, **args))
         if action == 'catalog_group' and 'file_id' in args and set(args) <= {'file_id', 'source_id', 'offset', 'limit', 'projection_revision'}:

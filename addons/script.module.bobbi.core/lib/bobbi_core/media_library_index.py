@@ -218,12 +218,14 @@ class MediaIndex:
                 raise ValueError('CATALOG_AUTHORITY_CHANGED')
             self._remember_observation(previous)
             self._remember_observation(reference)
-            self.db.execute('UPDATE typed_objects SET ref=? WHERE id=?', (encode(reference), reference['id']))
+            ref_changed = previous != reference
+            if ref_changed:
+                self.db.execute('UPDATE typed_objects SET ref=? WHERE id=?', (encode(reference), reference['id']))
             # An explicit fresh-list/stat observation can rediscover a file
             # absent from the last closed scan. Restore only this membership;
             # its scan generation remains unchanged, and no sibling becomes
             # present merely because this file was selected.
-            self.db.execute('UPDATE memberships SET available=1 WHERE source=? AND file=?',
+            restored = self.db.execute('UPDATE memberships SET available=1 WHERE source=? AND file=? AND available=0',
                 (authority['source_id'], reference['id']))
             for row in self.db.execute("SELECT id FROM scans WHERE state IN ('queued','running')").fetchall():
                 run = self._scan(row['id'])
@@ -231,8 +233,11 @@ class MediaIndex:
                         and run['scope'].get('generation') == authority['generation']):
                     self.db.execute('INSERT OR IGNORE INTO temp.scan_point_observations VALUES(?,?)',
                         (run['id'], reference['id']))
-            catalog_query.project(self.db, reference['id'])
-            self._changed(authority)
+            if ref_changed:
+                self.db.execute('UPDATE object_times SET updated=? WHERE file=?', (self.now(), reference['id']))
+                catalog_query.project(self.db, reference['id'])
+            if ref_changed or restored.rowcount:
+                self._changed(authority)
 
     def file_sources(self, object_id):
         with self.lock:
@@ -398,12 +403,19 @@ class MediaIndex:
             batch_id = hashlib.sha256(checkpoint_raw.encode()).hexdigest()
             if self.db.execute('SELECT 1 FROM scan_batches WHERE task=? AND digest=?', (task, batch_id)).fetchone():
                 return
-            discovered = 0
+            discovered, changed = 0, False
+            active = self.db.execute('SELECT active FROM catalog_sources WHERE source=?', (run['source'],)).fetchone()
             self.db.execute('INSERT INTO catalog_sources VALUES(?,1) ON CONFLICT(source) DO UPDATE SET active=1', (run['source'],))
+            if active and not active[0]:
+                # Reactivating a registered source changes availability for
+                # existing memberships even if this first page is empty.
+                changed = self.db.execute('SELECT 1 FROM memberships WHERE source=? LIMIT 1',
+                    (run['source'],)).fetchone() is not None
             for ref in refs:
                 identity_scope = ('mounted_path', ref['source_id']) if mounted else (ref['provider'], ref['account_id'])
                 if identity_scope != (run['provider'], run['account']):
                     raise ValueError('CATALOG_ACCOUNT_MISMATCH')
+                ref_changed = False
                 if mounted:
                     if (ref['namespace'], ref['mount_generation']) != (run['scope']['namespace'], run['scope']['generation']):
                         raise ValueError('CATALOG_AUTHORITY_CHANGED')
@@ -414,22 +426,29 @@ class MediaIndex:
                         if previous_ref:
                             self._remember_observation(json.loads(previous_ref[0]))
                         self._remember_observation(ref)
-                        self.db.execute('INSERT INTO typed_objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
-                            (ref['id'], ref['source_id'], ref['namespace'], encode(ref)))
+                        ref_changed = previous_ref is None or json.loads(previous_ref[0]) != ref
+                        if ref_changed:
+                            self.db.execute('INSERT INTO typed_objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
+                                (ref['id'], ref['source_id'], ref['namespace'], encode(ref)))
                 else:
-                    self.db.execute('INSERT INTO objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
-                        (ref['id'], ref['provider'], ref['account_id'], encode(ref)))
-                previous = self.db.execute('SELECT generation FROM memberships WHERE source=? AND file=?', (run['source'], ref['id'])).fetchone()
+                    previous_ref = self.db.execute('SELECT ref FROM objects WHERE id=?', (ref['id'],)).fetchone()
+                    ref_changed = previous_ref is None or json.loads(previous_ref[0]) != ref
+                    if ref_changed:
+                        self.db.execute('INSERT INTO objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
+                            (ref['id'], ref['provider'], ref['account_id'], encode(ref)))
+                previous = self.db.execute('SELECT generation,available FROM memberships WHERE source=? AND file=?', (run['source'], ref['id'])).fetchone()
                 discovered += int(previous is None or previous[0] != task)
                 self.db.execute('INSERT INTO memberships VALUES(?,?,?,1) ON CONFLICT(source,file) DO UPDATE SET generation=excluded.generation,available=1',
                     (run['source'], ref['id'], task))
                 state, reason, candidates = review.suggestion(ref['name'])
                 self.db.execute("INSERT OR IGNORE INTO reviews VALUES(?,?,?,?,0,NULL,'filename')",
                     (ref['id'], state, reason, encode(candidates)))
-                self.db.execute('INSERT INTO object_times VALUES(?,?,?) ON CONFLICT(file) DO UPDATE SET updated=excluded.updated',
-                    (ref['id'], self.now(), self.now()))
-                catalog_query.project(self.db, ref['id'])
-            if refs:
+                if ref_changed:
+                    self.db.execute('INSERT INTO object_times VALUES(?,?,?) ON CONFLICT(file) DO UPDATE SET updated=excluded.updated',
+                        (ref['id'], self.now(), self.now()))
+                    catalog_query.project(self.db, ref['id'])
+                changed = changed or ref_changed or previous is None or not previous['available']
+            if changed:
                 self._changed(run['scope'])
             self.db.execute('UPDATE scans SET pages=pages+1,scanned=scanned+?,discovered=discovered+?,checkpoint=?,updated=? WHERE id=?',
                 (scanned, discovered, checkpoint_raw, self.now(), task))
@@ -445,10 +464,11 @@ class MediaIndex:
             if row['cancel_requested'] and state == 'completed':
                 state, reason = 'canceled', 'CANCEL_CONFIRMED'
             if state == 'completed':
-                self.db.execute('UPDATE memberships SET available=0 WHERE source=? AND generation!=? AND NOT EXISTS('
+                missing = self.db.execute('UPDATE memberships SET available=0 WHERE source=? AND generation!=? AND available=1 AND NOT EXISTS('
                     'SELECT 1 FROM temp.scan_point_observations p WHERE p.task=? AND p.file=memberships.file)',
                     (row['source'], task, task))
-                self._changed(row['scope'])
+                if missing.rowcount:
+                    self._changed(row['scope'])
             self.db.execute('DELETE FROM temp.scan_point_observations WHERE task=?', (task,))
             self.db.execute('UPDATE scans SET state=?,reason=?,updated=? WHERE id=?', (state, reason, self.now(), task))
             return scan_snapshot(self._scan(task))
@@ -485,6 +505,50 @@ class MediaIndex:
             rows = [row for row in rows if self._mounted_task_matches(row, source_id, namespace)]
             return dict(items=[scan_snapshot(row) for row in rows[offset:offset + limit]],
                 next_offset=offset + limit if len(rows) > offset + limit else None)
+
+    def source_observation(self, expected, source_id):
+        """Bounded saved observation, not a live directory or playback probe.
+
+        Coverage describes the latest retained task only. A point recheck can
+        restore a file, but cannot turn a partial traversal into a full one.
+        Kernel mount generation is presentation evidence supplied by the host.
+        """
+        source_id = identifier(source_id)
+        provider, account, namespace = catalog_query.scope_key(expected)
+        mounted = provider == 'mounted_path'
+        if mounted and source_id != account:
+            raise ValueError('CATALOG_ACCOUNT_MISMATCH')
+        with self.lock:
+            ids = self.db.execute('SELECT id FROM scans WHERE provider=? AND account=? AND source=? '
+                'ORDER BY updated DESC,id DESC LIMIT ?', (provider, account, source_id, MAX_JOBS)).fetchall()
+            runs = (self._scan(row[0]) for row in ids)
+            latest = next((row for row in runs if not mounted or
+                self._mounted_task_matches(row, source_id, namespace)), None)
+            job = scan_snapshot(latest) if latest else None
+            clauses, args = ['p.provider=?', 'p.account=?', 'm.source=?'], [provider, account, source_id]
+            if mounted:
+                clauses.append('p.namespace=?')
+                args.append(namespace)
+            # Start at this source's indexed memberships, not the account-wide
+            # projection for every card in a multi-source account.
+            counts = self.db.execute('SELECT COUNT(*),COALESCE(SUM(m.available),0),'
+                'COALESCE(SUM(m.available=1 AND p.authority_generation!=?),0) FROM memberships m '
+                'CROSS JOIN catalog_rows p ON p.id=m.file WHERE ' + ' AND '.join(clauses),
+                [expected.get('generation', '')] + args).fetchone()
+            generation_changed = bool(mounted and expected.get('generation') and (counts[2] or
+                latest and latest['scope'].get('generation') != expected['generation']))
+            unavailable = mounted and not expected.get('generation')
+            availability = ('source_unavailable' if unavailable else 'unverified'
+                if generation_changed or not latest else 'observed_present')
+            # A failed remote read is not proof of an empty source. Keep the
+            # saved files and mark the observation as requiring another scan.
+            if latest and latest['state'] in ('failed', 'interrupted') and not unavailable:
+                availability = 'unverified'
+            return dict(latest_job=job, coverage='never' if not latest else
+                'complete' if latest['state'] == 'completed' else 'partial',
+                availability=availability, recheck_required=bool(unavailable or generation_changed or
+                    not latest or latest['state'] != 'completed'), indexed_count=counts[0],
+                present_count=counts[1], absent_count=counts[0] - counts[1])
 
     def _item(self, file, expected):
         if expected.get('reference_kind') == 'mounted_path':

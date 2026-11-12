@@ -171,3 +171,22 @@ def test_tv_review_scope_adapter_keeps_namespace_on_every_call(monkeypatch):
     assert [action for action,_ in calls] == ['catalog_mount_preview', 'catalog_mount_jobs']
     assert all(body['source_id'] == expected['source_id'] and body['namespace'] == expected['namespace']
                and 'expected' not in body for _,body in calls)
+
+
+def test_mounted_source_observation_is_real_but_never_exposes_another_grant(mounted, cd2):
+    service, source, media, mounts = cd2
+    registry = Registry(service.root / 'libraries.sqlite3')
+    try:
+        registry.save(vfs_source('Private other source', (media/'other').as_posix()))
+    finally:
+        registry.close()
+    value = invoke(mounted, 'catalog_sources')
+    assert len(value['items']) == 1 and value['items'][0]['id'] == source.id
+    assert value['items'][0]['name'] == source.name
+    observation = value['items'][0]['observation']
+    assert observation['coverage'] == 'complete' and observation['latest_state'] == 'completed'
+    assert observation['counts']['discovered'] > 0
+    mounts.clear()
+    offline = invoke(mounted, 'catalog_sources')['items'][0]
+    assert offline['observation']['availability'] == 'source_unavailable'
+    assert 'Private other source' not in repr(offline)

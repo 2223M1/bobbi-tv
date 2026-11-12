@@ -11,7 +11,9 @@ import time
 from urllib.parse import urlencode, parse_qsl, urlsplit
 import urllib.request
 
-BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
+RUN_ID=globals().get('RUN_ID', '20261020')
+assert type(RUN_ID) is str and re.fullmatch('[A-Za-z0-9_-]{1,64}', RUN_ID), 'TRIAL_RUN_SCOPE'
+BASE=Path('/storage/.local/share/bobbi-private-trials')/RUN_ID
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
 # TESTS and OPERATIONS are injected from the one tool-side manifest by the CLI.
 assert NAME in TESTS and OP in OPERATIONS, 'TRIAL_SCOPE'
@@ -671,6 +673,205 @@ def can_start_trial(initial):
         and terminal.get('file_identity') == desired.get('file_identity'))
 
 
+def next_native_row(value):
+    """Keep identity evidence, never the original locator or native URL."""
+    if (type(value) is not dict or not re.fullmatch('[0-9a-f]{32}', str(value.get('request_id', '')))
+            or not re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', str(value.get('native_instance', '')), re.I)
+            or value.get('phase') not in ('OPEN', 'AV_STARTED', 'TERMINAL')
+            or type(value.get('sequence')) is not int or value['sequence'] < 0
+            or type(value.get('file_identity')) is not str or not 0 < len(value['file_identity']) <= 1024):
+        return None
+    result = {key: value[key] for key in ('request_id', 'native_instance', 'phase', 'sequence')}
+    result['file_sha256'] = hashlib.sha256(value['file_identity'].encode()).hexdigest()
+    if result['phase'] == 'TERMINAL':
+        result['reason'] = value.get('reason') if value.get('reason') in ('NATURAL_EOF', 'STOP', 'ERROR', 'CANCEL', 'SUPERSEDED') else 'UNKNOWN'
+        result['completion_observation_present'] = 'completion_observation' in value
+        observation = value.get('completion_observation')
+        fields = {'schema', 'position_ms', 'duration_ms', 'age_us', 'valid'}
+        if (type(observation) is dict and set(observation) == fields and type(observation['valid']) is bool
+                and observation['schema'] == 1 and all(type(observation[key]) is int
+                    and 0 <= observation[key] <= 2**53-1 for key in fields-{'valid'})):
+            result['completion_observation'] = dict(observation)
+    return result
+
+
+def next_log_rows(raw):
+    result = []
+    keys = {'schema', 'stage', 'kind', 'parent_request_id', 'parent_native_instance',
+            'selection_sha256', 'child_request_id'}
+    for line in raw.splitlines():
+        if '[BOBBI-CONTINUATION]' not in line:
+            continue
+        try:
+            row = json.loads(line.split('[BOBBI-CONTINUATION]', 1)[1])
+        except ValueError:
+            continue
+        if (type(row) is dict and set(row) == keys and type(row['schema']) is int and row['schema'] == 1
+                and row['stage'] in ('GRANTED', 'CHILD_RESERVED') and row['kind'] == 'natural'
+                and all(type(row[key]) is str for key in keys-{'schema'})
+                and re.fullmatch('[0-9a-f]{32}', row['parent_request_id'])
+                and re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', row['parent_native_instance'], re.I)
+                and re.fullmatch('[0-9a-f]{64}', row['selection_sha256'])
+                and re.fullmatch('[0-9a-f]{32}' if row['stage'] == 'CHILD_RESERVED' else '', row['child_request_id'])):
+            result.append(row)
+    return result
+
+
+def next_chain_evidence(parent, native_rows, selections, log_rows):
+    """Every edge must carry exact IDs. Interval coincidence is never a grant."""
+    from bobbi_core.playback_completion import terminal_end
+    def parent_matches(row):
+        return all(row.get(key) == parent.get(key) for key in ('request_id', 'native_instance', 'file_sha256'))
+    terminals = [row for row in native_rows if parent_matches(row) and row.get('phase') == 'TERMINAL']
+    eof = next((row for row in terminals if row.get('reason') == 'NATURAL_EOF'), None)
+    grants = [row for row in log_rows if row.get('stage') == 'GRANTED' and row.get('kind') == 'natural'
+              and row.get('parent_request_id') == parent['request_id']
+              and row.get('parent_native_instance') == parent['native_instance']]
+    grant = grants[0] if len(grants) == 1 else None
+    reservations = [row for row in log_rows if grant and row.get('stage') == 'CHILD_RESERVED'
+                    and all(row.get(key) == grant.get(key) for key in
+                            ('kind', 'parent_request_id', 'parent_native_instance', 'selection_sha256'))
+                    and log_rows.index(row) > log_rows.index(grant)]
+    reservation = reservations[0] if len(reservations) == 1 else None
+    child = reservation.get('child_request_id') if reservation else None
+    selected = [row for row in selections if grant and child and row.get('request_id') == child
+                and row.get('selection_sha256') == grant.get('selection_sha256') and row.get('file_sha256')]
+    targets = {(row['request_id'], row['selection_sha256'], row['file_sha256']) for row in selected}
+    target = selected[0] if len(targets) == 1 else None
+    opened = [row for row in native_rows if target and row.get('phase') == 'OPEN'
+              and row.get('request_id') == child and row.get('file_sha256') == target['file_sha256']
+              and row.get('native_instance') != parent['native_instance']]
+    starts = [(a, b) for a in opened for b in native_rows if b.get('phase') == 'AV_STARTED'
+              and all(a.get(key) == b.get(key) for key in ('request_id', 'native_instance', 'file_sha256'))
+              and b.get('sequence', -1) > a.get('sequence', -1)]
+    chain = starts[0] if len({(a['request_id'], a['native_instance']) for a, _ in starts}) == 1 else None
+    missing = [name for name, value in (('parent_terminal_eof', eof), ('continuation_grant', grant),
+               ('child_reservation', reservation), ('child_target', target), ('child_open_av', chain)) if not value]
+    present = bool(eof and (eof.get('completion_observation_present') or 'completion_observation' in eof))
+    qualified = (terminal_end(eof, None, None, None, None) if 'completion_observation' in (eof or {})
+                 else False if present else None)
+    return dict(passed=not missing and qualified is True, causal_chain_passed=not missing,
+        attribution='exact_causal_chain' if not missing else 'incomplete',
+        missing=missing, parent=parent, terminal=eof or (terminals[0] if terminals else None),
+        grant=grant, reservation=reservation, target=target,
+        child_open=chain[0] if chain else None, child_av_started=chain[1] if chain else None,
+        completion_observation_available=bool(eof and 'completion_observation' in eof),
+        completion_observation_qualified=qualified,
+        note='Causal IDs and native completion are separate checks. No polling fallback is used here; final history requires separate verification.')
+
+
+def watch_next(record, duration=45):
+    """Bounded read-only acquisition; never seek, authorize, reserve or stop."""
+    import socket
+    import threading
+    assert type(duration) in (int, float) and 1 <= duration <= 60, 'NEXT_WATCH_BUDGET'
+    native_rows, selections = [], []
+    errors = []
+    done = threading.Event()
+    subscribed = threading.Event()
+    connection = None
+    thread = None
+    path = Path('/storage/.kodi/temp/kodi.log')
+    stat = path.stat()
+    offset, inode = stat.st_size, stat.st_ino
+    deadline = time.monotonic()+duration
+
+    def keep(raw):
+        row = next_native_row(raw)
+        if row and row not in native_rows:
+            if len(native_rows) < 64:
+                native_rows.append(row)
+            elif 'NATIVE_EVENT_LIMIT' not in errors:
+                errors.append('NATIVE_EVENT_LIMIT')
+
+    def events():
+        buffer = ''
+        decoder = json.JSONDecoder()
+        while not done.is_set() and time.monotonic() < deadline:
+            try:
+                chunk = connection.recv(65536)
+            except socket.timeout:
+                continue
+            except OSError:
+                if not done.is_set(): errors.append('NATIVE_EVENT_READ_FAILED')
+                return
+            if not chunk:
+                errors.append('NATIVE_EVENT_EOF')
+                return
+            buffer += chunk.decode('utf-8', errors='replace')
+            if len(buffer) > 262144:
+                errors.append('NATIVE_EVENT_BUFFER_LIMIT')
+                return
+            while buffer.strip():
+                buffer = buffer.lstrip()
+                try:
+                    message, end = decoder.raw_decode(buffer)
+                except ValueError:
+                    break
+                buffer = buffer[end:]
+                if message.get('id') == 1 and 'result' in message: subscribed.set()
+                if message.get('method') == 'Player.OnBobiState':
+                    keep(message.get('params', {}).get('data'))
+
+    try:
+        connection = socket.create_connection(('127.0.0.1', 9090), timeout=1)
+        connection.settimeout(.2)
+        connection.sendall(json.dumps(dict(jsonrpc='2.0', id=1, method='JSONRPC.SetConfiguration',
+            params={'notifications': {'Player': True}})).encode()+b'\n')
+        thread = threading.Thread(target=events, daemon=True)
+        thread.start()
+        if not subscribed.wait(1): errors.append('NATIVE_SUBSCRIPTION_UNCONFIRMED')
+        _, _, raw = state(record, require=True)
+        parent = next_native_row(raw)
+        assert parent and parent['phase'] == 'AV_STARTED', 'NEXT_PARENT_UNAVAILABLE'
+        keep(raw)
+        while time.monotonic() < deadline:
+            authority = snapshot()
+            desired = authority.get('desired') or {}
+            identity = desired.get('selection_identity')
+            file_identity = desired.get('file_identity')
+            if (type(identity) is str and 0 < len(identity) <= 1024 and type(file_identity) is str
+                    and 0 < len(file_identity) <= 1024 and desired.get('file_bound') is True):
+                selection = dict(request_id=desired.get('request_id'),
+                    selection_sha256=hashlib.sha256(identity.encode()).hexdigest(),
+                    file_sha256=hashlib.sha256(file_identity.encode()).hexdigest())
+                if selection not in selections:
+                    assert len(selections) < 16, 'SELECTION_OBSERVATION_LIMIT'
+                    selections.append(selection)
+            keep((rpc('Player.BobiState') or {}).get('playback'))
+            time.sleep(min(.2, max(0, deadline-time.monotonic())))
+    except (OSError, ValueError, AssertionError, RuntimeError) as error:
+        errors.append(type(error).__name__)  # No raw response, locator or credentials.
+    finally:
+        done.set()
+        if connection: connection.close()
+        if thread: thread.join(.5)
+    logs = []
+    if path.stat().st_ino != inode or path.stat().st_size < offset:
+        errors.append('LOG_ROTATED')
+    else:
+        with path.open('rb') as stream:
+            stream.seek(offset)
+            raw_log = stream.read(262145)
+        if len(raw_log) > 262144:
+            errors.append('LOG_LIMIT')
+        else:
+            logs = next_log_rows(raw_log.decode('utf-8', errors='replace'))
+            if len(logs) > 32:
+                errors.append('CONTINUATION_EVENT_LIMIT')
+                logs = logs[:32]
+    parent = locals().get('parent') or dict(request_id=record.get('request_id'),
+        native_instance=record.get('native_instance'), file_sha256=None)
+    result = next_chain_evidence(parent, native_rows, selections, logs)
+    result.update(operation='next_watch', native_events=native_rows, selections=selections,
+                  continuation_events=logs, acquisition_errors=errors, mutation_performed=False)
+    if errors:
+        result.update(passed=False, attribution='incomplete')
+    if not result['passed']:
+        result['state'] = 'failed' if result['completion_observation_qualified'] is False else 'not_tested'
+    return result
+
+
 if OP in ('start','requery'):
     assert rpc('Player.GetActivePlayers') == [], 'ACTIVE_PLAYER'
     initial = snapshot()
@@ -728,7 +929,9 @@ if OP in ('start','requery'):
 else:
     record=json.loads(record_path.read_text())
     assert record.get('test') == TESTS[NAME], 'TRIAL_MEDIA_MISMATCH'
-    if OP=='cancel':
+    if OP=='next_watch':
+        print(json.dumps(dict(name=NAME, **watch_next(record, globals().get('DURATION', 45))), ensure_ascii=True))
+    elif OP=='cancel':
         cancel_pending(record)
         print(json.dumps(dict(name=NAME,operation=OP,cancelled=True,request_id=record['request_id'])))
     elif OP in ('cards','select'):

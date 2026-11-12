@@ -47,13 +47,14 @@ visibility_spec.loader.exec_module(visibility_harness)
 visibility_path, visibility_result = visibility_harness.run(args.source, run)
 report['tests'].append(dict(name='directory_visibility', passed=visibility_result['passed'],
     result=str(visibility_path), sha256=hashlib.sha256(visibility_path.read_bytes()).hexdigest()))
+inputs = (source/'cores/BobiHandoff.h', source/'dialogs/BobiHandoffFile.h',
+          source/'cores/VideoPlayer/BobiOriginalAudio.h', source/'cores/VideoPlayer/VideoPlayer.cpp',
+          source/'cores/VideoPlayer/BobiCompletion.h', source/'utils/Variant.cpp', source/'utils/Variant.h')
 report['sources'] = {str(file.relative_to(args.source)): hashlib.sha256(file.read_bytes()).hexdigest()
-                     for file in (source/'cores/BobiHandoff.h', source/'dialogs/BobiHandoffFile.h',
-                                  source/'cores/VideoPlayer/BobiOriginalAudio.h', source/'cores/VideoPlayer/VideoPlayer.cpp',
-                                  source/'cores/VideoPlayer/BobiCompletion.h', source/'utils/Variant.cpp',
-                                  source/'utils/Variant.h')}
+                     for file in inputs if file.is_file()}
+report['missing_sources'] = [str(file.relative_to(args.source)) for file in inputs if not file.is_file()]
 report['fixtures'] = {'completion_observation_test.cpp': hashlib.sha256(
     (HERE/'completion_observation_test.cpp').read_bytes()).hexdigest()}
 (run/'result.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
 print(json.dumps(report, ensure_ascii=False))
-raise SystemExit(0 if all(test['passed'] for test in report['tests']) else 1)
+raise SystemExit(0 if not report['missing_sources'] and all(test['passed'] for test in report['tests']) else 1)

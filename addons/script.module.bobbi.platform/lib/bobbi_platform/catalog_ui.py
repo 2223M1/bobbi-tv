@@ -1,4 +1,6 @@
 """Optional TV detail dialogs. Default browsing and source selection stay put."""
+import json
+import re
 import time
 from .runtime import call
 
@@ -8,6 +10,24 @@ LABELS = {'queued': '排队中', 'running': '扫描中', 'completed': '扫描完
           'confirmed': '人工确认', 'ignored': '已忽略', 'uncertain': '结果待核对',
           'unknown': '状态未知', 'suppressed': '已停止准备'}
 PREPARATION_LABELS = dict(LABELS, running='准备中', completed='准备完成')
+
+
+def source_status(source):
+    """One bounded source observation; task details still use the existing jobs UI."""
+    observation = source.get('observation') or {}
+    if not observation:
+        return ''
+    state = observation.get('latest_state', 'none')
+    counts = observation.get('counts') or {}
+    lines = [{'none': '尚未扫描', 'cancel_requested': '已请求取消，等待后台确认'}.get(state, LABELS.get(state, state)),
+        {'never': '未观察范围', 'partial': '仅已提交部分', 'complete': '上次完整扫描'}.get(observation.get('coverage'), '范围待核对'),
+        '已扫描 %s 项 / 发现 %s 文件 · 已收录 %s' % (counts.get('scanned', 0),
+            counts.get('discovered', 0), observation.get('indexed_count', 0))]
+    if observation.get('availability') == 'source_unavailable':
+        lines.append('来源离线，保留整理记录')
+    elif observation.get('recheck_required'):
+        lines.append('观察范围待复核，可重新扫描；播放前仍核验')
+    return ' · '.join(lines)
 
 
 def _call(action, expected, **body):
@@ -43,7 +63,7 @@ def _mapping(dialog, item):
     if not title:
         return None
     value = dict(kind=('custom', 'movie', 'tv')[kind], title=title,
-                 tmdb_id=None, season=None, episode=None, version=None)
+                 tmdb_id=None, season=None, episode=None, version=current.get('version'))
     if kind:
         raw = dialog.input('TMDb 数字编号（人工描述，不用于自动续播证明）')
         if not raw.isdecimal():
@@ -60,7 +80,7 @@ def _mapping(dialog, item):
 
 def review_item(dialog, expected, item, source_id=None):
     choice = dialog.select(item['file']['name'], ['搜索并选择作品候选', '查看原文件与建议',
-        '解除绑定', '忽略此项', '撤回上次修改', '高级：手填编号 / 自定义名称', '同目录分集整理（逐项预览）'])
+        '解除绑定', '忽略此项', '撤回上次修改', '高级：手填编号 / 自定义名称', '同目录分集整理（逐项预览）', '编辑文件版本备注'])
     candidate = None
     if choice in (0, 6):
         candidate = choose_candidate(dialog, item)
@@ -75,6 +95,7 @@ def review_item(dialog, expected, item, source_id=None):
             value = _candidate_episode(dialog, candidate)
         if value is None:
             return
+        value['version'] = (item.get('mapping') or {}).get('version')
         action = 'confirm'
     elif choice == 1:
         evidence = item.get('candidates') or []
@@ -85,6 +106,14 @@ def review_item(dialog, expected, item, source_id=None):
             detail += '\n名称或目录显示已截短，原始记录保留。'
         dialog.ok('原文件与建议', detail)
         return
+    elif choice == 7:
+        value = dict(item.get('mapping') or dict(kind='custom', title=item['file']['name'],
+            tmdb_id=None, season=None, episode=None, version=None))
+        version = dialog.input('版本备注（最多 80 字，不作为续播证明）', defaultt=value.get('version') or '').strip()
+        if len(version) > 80:
+            dialog.ok('备注过长', '请缩短到 80 字以内。未修改记录。')
+            return
+        value['version'], action = version or None, 'confirm'
     elif choice in (2, 3, 4, 5):
         value = _mapping(dialog, item) if choice == 5 else None
         if choice == 5 and value is None:
@@ -164,7 +193,26 @@ def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
             params['source_id'] = source_id
         if revision is not None:
             params['projection_revision'] = revision
-        result = _call('catalog_group', expected, **params)
+        try:
+            result = _call('catalog_group', expected, **params)
+        except ValueError as error:
+            if str(error) != 'CATALOG_GROUP_AMBIGUOUS' or source_id is not None:
+                raise
+            # Overlapping registrations are not evidence of a trusted group.
+            # Let the user choose one; core still checks anchor membership.
+            sources = _call('catalog_sources', expected)['items']
+            choice = dialog.select('目录被多个来源收录，请明确选择可信来源',
+                                   [row['name'] + ' · ' + row['id'][:8] for row in sources])
+            if not 0 <= choice < len(sources):
+                return
+            source_id = sources[choice]['id']
+            try:
+                result = _call('catalog_group', expected, **dict(params, source_id=source_id))
+            except ValueError as changed:
+                if str(changed) != 'CATALOG_SOURCE_UNAVAILABLE':
+                    raise
+                dialog.ok('所选来源不包含此文件', '未扩大整理范围，请返回明确选择收录此文件的来源。')
+                return
         if group is not None and (group != result['group_id'] or revision != result['projection_revision']):
             raise ValueError('CATALOG_CURSOR_STALE')
         group, revision, source_id = result['group_id'], result['projection_revision'], result['source_id']
@@ -222,6 +270,7 @@ def review_entries(dialog, expected, entries):
     from bobbi_core.catalog_review import plan
     chunks = plan(entries)
     previews, receipts, saved, deadline = [], [], 0, time.monotonic() + 120
+    pending_request_id = None
     for chunk in chunks:
         if time.monotonic() >= deadline:
             dialog.ok('预览已到期限', '请重新预览，尚未提交修改。')
@@ -267,31 +316,76 @@ def review_entries(dialog, expected, entries):
         if not complete:
             if any(index not in results for index in range(len(chunk['entries']))):
                 receipts.append('待核对的原提交编号：' + chunk['request_id'])
+                pending_request_id = chunk['request_id']
+                _pending_receipts(expected, request_id=pending_request_id, count=len(chunk['entries']))
             break
     dialog.textviewer('真实回执 · 已保存 %s/%s' % (saved, len(entries)), '\n'.join(receipts) + '\n未开始批次未提交，不自动回滚此前结果。')
-    return dict(saved=saved, total=len(entries), complete=saved == len(entries))
+    return dict(saved=saved, total=len(entries), complete=saved == len(entries),
+                pending_request_id=pending_request_id)
 
 
-def _items(dialog, expected, source=None, state=None):
-    offset = 0
-    while True:
-        result = _call('catalog_items', expected, source=source, state=state, offset=offset)
-        rows = result['items']
-        if not rows:
-            dialog.ok('当前筛选暂无条目' if state else '尚无索引条目',
-                '可返回查看全部条目。' if state else '先在网盘文件目录选择“将此目录加入片库”。扫描未完成时只显示已提交部分。')
-            return
-        labels = [('来源已不包含 · ' if not r['available'] else '') +
-                  LABELS.get(r['state'], r['state']) + ' · ' + r['file']['name'] for r in rows]
-        if result['next_offset'] is not None:
-            labels.append('下一页')
-        choice = dialog.select('片库整理 · 元数据不代表已可播', labels)
-        if choice < 0:
-            return
-        if choice == len(rows):
-            offset = result['next_offset']
-        elif choice < len(rows):
-            review_item(dialog, expected, rows[choice], source_id=source)
+def _open_catalog(expected, **query):
+    """Legacy management URLs enter the sole cursor-based directory renderer."""
+    import xbmc
+    from lib.utils.views.personal_catalog import route, scope_params
+    xbmc.executebuiltin('ActivateWindow(Videos,"' + route(
+        action='personal_catalog', **scope_params(expected), **query) + '",return)')
+
+
+def _pending_receipts(expected, request_id=None, count=None, remove=False):
+    """A bounded UI reminder, not a receipt or mutation authority."""
+    try:
+        import xbmcgui
+        from bobbi_core.catalog_query import opaque, scope_key
+        window = xbmcgui.Window(10000)
+        key = 'Bobi.Catalog.Pending.' + opaque(*scope_key(expected))
+        raw = window.getProperty(key)
+        rows = json.loads(raw) if raw else []
+        if type(rows) is not list:
+            rows = []
+        rows = [row for row in rows if type(row) is dict and
+                re.fullmatch('[0-9a-f]{32}', str(row.get('request_id', ''))) and
+                type(row.get('count')) is int and 1 <= row['count'] <= 5]
+        if request_id:
+            rows = [row for row in rows if row['request_id'] != request_id]
+            if not remove:
+                rows.append(dict(request_id=request_id, count=count))
+            rows = rows[-20:]
+            window.setProperty(key, json.dumps(rows))
+        return rows
+    except (ImportError, AttributeError, TypeError, ValueError, RuntimeError):
+        return []
+
+
+def query_receipt(dialog, expected, request_id=None):
+    """Recover only the original request. Never make a new plan or write."""
+    pending = _pending_receipts(expected)
+    if request_id is None:
+        if pending:
+            choice = dialog.select('查询待核对的原提交', [row['request_id'] for row in pending])
+            if not 0 <= choice < len(pending):
+                return
+            request_id = pending[choice]['request_id']
+        else:
+            request_id = dialog.input('原提交编号（仅查询，不重新提交）').strip()
+    if type(request_id) is not str or not re.fullmatch('[0-9a-f]{32}', request_id):
+        return
+    try:
+        receipt = _call('catalog_receipt', expected, request_id=request_id)
+    except (ValueError, OSError, RuntimeError):
+        dialog.ok('原提交仍待核对', '暂未读取到回执，未重新提交。可稍后在当前片库管理中继续查询。')
+        return
+    rows = receipt.get('items', [])
+    lines = ['原提交编号：' + request_id]
+    lines.extend('第 %s 项 · %s' % (row['index'] + 1,
+        {'applied': '已保存', 'conflict': '修订冲突', 'failed': '未保存'}.get(row['status'], '待核对')) for row in rows)
+    if not rows:
+        lines.append('尚未查到回执，不能据此认定未写入；未重新提交。')
+    expected_count = next((row['count'] for row in pending if row['request_id'] == request_id), None)
+    if expected_count and {row['index'] for row in rows if row['status'] in ('applied', 'conflict', 'failed')} == set(range(expected_count)):
+        _pending_receipts(expected, request_id=request_id, remove=True)
+    dialog.textviewer('原提交回执', '\n'.join(lines))
+    return receipt
 
 
 def _jobs(dialog, expected):
@@ -389,7 +483,8 @@ def manage_scope(expected, dialog=None):
     """One scoped management entry for native and registered mounted catalogs."""
     import xbmcgui
     dialog = dialog or xbmcgui.Dialog()
-    choice = dialog.select('当前片库管理', ['后台任务', '实时查看任务', '手机详细管理'])
+    choice = dialog.select('当前片库管理', ['后台任务', '实时查看任务', '手机详细管理',
+        '待整理工作台', '查询待核对的原提交', '管理索引来源'])
     if choice == 0:
         return _jobs(dialog, expected)
     if choice == 1:
@@ -397,6 +492,33 @@ def manage_scope(expected, dialog=None):
     if choice == 2:
         from lib.clients.stremio.manage_phone import catalog_manage_phone
         return catalog_manage_phone(expected)
+    if choice == 3:
+        return _open_catalog(expected, mode='review')
+    if choice == 4:
+        return query_receipt(dialog, expected)
+    if choice == 5:
+        return manage_sources(expected, dialog)
+
+
+def manage_sources(expected, dialog):
+    if expected.get('reference_kind') == 'mounted_path':
+        from .library_ui import open_library
+        return open_library(dialog)
+    sources = _call('catalog_sources', expected)['items']
+    selected = dialog.select('索引来源（新增来源请在原文件目录操作）',
+        [row['name'] + ('\n' + source_status(row) if source_status(row) else '') for row in sources])
+    if not 0 <= selected < len(sources):
+        return
+    source = sources[selected]
+    choice = dialog.select(source['name'], ['查看作品', '待整理工作台', '重新完整扫描', '移除此索引来源'])
+    if choice in (0, 1):
+        return _open_catalog(expected, source_id=source['id'],
+                             **(dict(mode='review') if choice == 1 else dict(view='works')))
+    if choice == 2:
+        _call('catalog_scan', expected, source_id=source['id'])
+        dialog.ok('已提交扫描', '关闭此页面不影响后台任务。')
+    elif choice == 3 and dialog.yesno('移除此索引来源？', '请先停止扫描。仅移除本机目录登记；网盘文件、观看历史和人工描述保留。'):
+        _call('catalog_remove', expected, source_id=source['id'])
 
 
 def manage():
@@ -420,31 +542,6 @@ def manage():
         if not 0 <= selected < len(accounts):
             return
         expected = accounts[selected]['account']
-        while True:
-            sources = _call('catalog_sources', expected)['items']
-            choice = dialog.select('片库索引与任务', ['查看全部 / 待确认', '后台任务', '手机详细管理'] +
-                [s['name'] for s in sources])
-            if choice < 0:
-                return
-            if choice == 0:
-                states = [None, 'unmatched', 'ambiguous', 'proposed', 'confirmed', 'ignored']
-                selected_state = dialog.select('查看范围', ['全部条目'] + [LABELS[s] for s in states[1:]])
-                if 0 <= selected_state < len(states):
-                    _items(dialog, expected, state=states[selected_state])
-            elif choice == 1:
-                _jobs(dialog, expected)
-            elif choice == 2:
-                from lib.clients.stremio.manage_phone import catalog_manage_phone
-                catalog_manage_phone(expected)
-            else:
-                source = sources[choice - 3]
-                action = dialog.select(source['name'], ['查看已索引条目', '重新完整扫描', '移除此索引来源'])
-                if action == 0:
-                    _items(dialog, expected, source['id'])
-                elif action == 1:
-                    _call('catalog_scan', expected, source_id=source['id'])
-                    dialog.ok('已提交扫描', '关闭此页面不影响后台任务。')
-                elif action == 2 and dialog.yesno('移除此索引来源？', '请先停止扫描。仅移除本机目录登记；网盘文件、观看历史和人工描述保留。'):
-                    _call('catalog_remove', expected, source_id=source['id'])
+        return _open_catalog(expected, mode='review')
     except (ValueError, OSError, RuntimeError, ImportError):
         dialog.ok('片库管理暂不可用', '请检查服务和当前账号后重试。索引、文件和已保存的修改均保留。')

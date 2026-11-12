@@ -360,9 +360,14 @@
     "cancel",
     "seek",
     "manual_off",
-    "font_switch"
+    "font_switch",
+    "next_watch",
+    "metrics",
+    "summarize"
   ],
   "local_operations": [
-    "collect"
+    "collect",
+    "metrics",
+    "summarize"
   ]
 }

@@ -123,7 +123,7 @@ class CatalogQuery:
         self.cursors = OrderedDict()
         self.clock = time.monotonic
 
-    def query(self, expected, query=None, cursor=None, limit=DEFAULT_LIMIT):
+    def query(self, expected, query=None, cursor=None, limit=DEFAULT_LIMIT, source_names=None):
         query = parameters({} if query is None else query)
         if type(limit) is not int or not 1 <= limit <= MAX_LIMIT:
             raise ValueError('CATALOG_PAGE_INVALID')
@@ -149,8 +149,12 @@ class CatalogQuery:
                           projection_revision=revision, truncated=False)
             continuation = uuid4().hex
             last = None
+            details = self._file_details(db, rows[:limit], source_names or {}) if query['view'] == 'files' else {}
             for row in rows[:limit]:
                 item = self._summary(row, query['view'])
+                if query['view'] == 'files':
+                    item.update(details[row['entity_id']])
+                    item['truncated'] |= len(row['filename']) > 160 or item.pop('_detail_truncated')
                 trial = dict(result, items=result['items'] + [item], next_cursor=continuation)
                 if len(wire(trial)) > REPLY_BYTES:
                     if not result['items']:
@@ -168,6 +172,44 @@ class CatalogQuery:
             if len(wire(result)) > REPLY_BYTES:
                 raise ValueError('CATALOG_REPLY_LIMIT')
             return result
+
+    @staticmethod
+    def _file_details(db, rows, source_names):
+        # Decode only the bounded file page. Works/seasons/episodes retain the
+        # scalar read path; no new schema or second metadata authority is needed.
+        ids = [row['entity_id'] for row in rows]
+        if not ids:
+            return {}
+        marks = ','.join('?' for _ in ids)
+        names = {identifier: [] for identifier in ids}
+        totals = {row['file']: row['total'] for row in db.execute(
+            'SELECT file,COUNT(*) AS total FROM memberships WHERE file IN (' + marks + ') GROUP BY file', ids)}
+        # Removed registrations remain historical memberships. Bound retrieval
+        # as well as output, even after many add/remove cycles over years.
+        source_select = ('SELECT file,source FROM (SELECT m.file,m.source FROM memberships m '
+            'LEFT JOIN catalog_sources s ON s.source=m.source WHERE m.file=? '
+            'ORDER BY COALESCE(s.active,0) DESC,m.source LIMIT 3)')
+        sources_sql = ' UNION ALL '.join(source_select for _ in ids)
+        for membership in db.execute(sources_sql, ids):
+            source = membership['source']
+            names[membership['file']].append((source, source_names.get(source, '已移除或未命名来源')))
+        references = db.execute('SELECT o.id,o.ref,r.mapping FROM (SELECT id,ref FROM objects WHERE id IN (' + marks +
+            ') UNION ALL SELECT id,ref FROM typed_objects WHERE id IN (' + marks +
+            ')) o JOIN reviews r ON r.file=o.id', ids + ids)
+        result = {}
+        for row in references:
+            ref = json.loads(row['ref'])
+            mapping = json.loads(row['mapping']) if row['mapping'] else {}
+            version = (mapping or {}).get('version') or ''
+            sources = names[row['id']]
+            detail = dict(file_name=ref['name'][:160], file_size=ref['size'], version_label=version[:80],
+                sources=[dict(id=source, name=name[:80]) for source, name in sources[:3]],
+                source_total=totals.get(row['id'], 0), _detail_truncated=len(version) > 80 or totals.get(row['id'], 0) > 3 or any(len(name) > 80 for _, name in sources))
+            if ref.get('reference_kind') != 'mounted_path' and 'provider' in ref:
+                # Display-only match with the saved observation, never a play permit.
+                detail['history_key'] = opaque(ref['id'], ref['size'], ref.get('fingerprint'))
+            result[row['id']] = detail
+        return result
 
     @staticmethod
     def _summary(row, view):
@@ -240,18 +282,24 @@ class CatalogQuery:
                 'recent_edited': '-MAX(p.updated)'}[query['sort']]
         if query['sort'] == 'name' and view in ('seasons', 'episodes'):
             sort = "printf('%06d:%06d',MIN(p.season),COALESCE(MIN(p.episode),0))"
+        # Count source memberships separately. Joining them into file aggregation
+        # repeats the correlated presence checks once per historical membership.
+        sql += (', source_counts AS (SELECT p.' + key + ' AS entity_id,'
+            'COUNT(DISTINCT CASE WHEN m.available=1 AND s.active=1 THEN m.source END) AS source_count '
+            'FROM filtered p LEFT JOIN memberships m ON m.file=p.id '
+            'LEFT JOIN catalog_sources s ON s.source=m.source GROUP BY p.' + key + ')')
         sql += (', grouped AS (SELECT p.' + key + ' AS entity_id,MIN(p.title) AS title,MIN(p.filename) AS filename,'
             'MIN(p.media_kind) AS media_kind,MIN(p.season) AS season,MIN(p.episode) AS episode,'
             'MIN(p.metadata_key) AS metadata_key,MIN(p.year) AS year,'
             'MIN(p.review_state) AS review_state,COUNT(DISTINCT p.id) AS variant_count,'
             "COUNT(DISTINCT CASE WHEN p.availability='observed_present' THEN p.id END) AS available_count,"
-            'COUNT(DISTINCT CASE WHEN m.available=1 AND s.active=1 THEN m.source END) AS source_count,'
             "CASE WHEN MAX(p.availability='observed_present') THEN 'observed_present' "
             "WHEN MAX(p.availability='observed_absent') THEN 'observed_absent' "
             "WHEN MAX(p.availability='source_unavailable') THEN 'source_unavailable' ELSE 'unverified' END AS availability,"
-            + sort + ' AS sort_key FROM filtered p LEFT JOIN memberships m ON m.file=p.id '
-            'LEFT JOIN catalog_sources s ON s.source=m.source GROUP BY p.' + key + ') SELECT * FROM grouped')
+            + sort + ' AS sort_key FROM filtered p GROUP BY p.' + key + ') '
+            'SELECT g.*,COALESCE(sc.source_count,0) AS source_count FROM grouped g '
+            'LEFT JOIN source_counts sc ON sc.entity_id=g.entity_id')
         if after is not None:
-            sql += ' WHERE (sort_key>? OR (sort_key=? AND entity_id>?))'
+            sql += ' WHERE (g.sort_key>? OR (g.sort_key=? AND g.entity_id>?))'
             args.extend([after[0], after[0], after[1]])
-        return sql + ' ORDER BY sort_key,entity_id LIMIT ?', args
+        return sql + ' ORDER BY g.sort_key,g.entity_id LIMIT ?', args

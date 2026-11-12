@@ -32,6 +32,7 @@ class MountedCatalog:
     def dispatch(self, action, body):
         self.live()
         if action == 'catalog_mount_sources' and not body:
+            from .catalog_service import source_list
             store = self.owner._registry()
             try:
                 sources = store.sources()
@@ -48,19 +49,19 @@ class MountedCatalog:
             items = []
             for source in sources:
                 try:
-                    namespace = self.task_namespace(source)
+                    scope = self.port.source_snapshot(source, mounts)
                 except (ValueError, OSError):
                     continue
-                root = source.location.rstrip('/\\')
-                available = any(root == row['path'] or root.startswith(row['path'].rstrip('/') + '/')
-                                for row in mounts)
-                has_jobs = bool(self.owner.index.mounted_jobs(source.id, namespace, limit=1)['items'])
-                has_items = self.owner.index.has_mounted_items(source.id, namespace)
+                available = bool(scope['generation'])
+                observation = self.owner.source_observation(scope, source.id)
+                has_jobs = observation['latest_state'] != 'none'
+                has_items = bool(observation['indexed_count'])
                 if not available and not has_jobs and not has_items:
                     continue
                 items.append(dict(id=source.id, name=source.name, reference_kind='mounted_path',
-                                  device_verified=False, available=available, has_jobs=has_jobs, has_items=has_items))
-            return dict(items=items)
+                    device_verified=False, available=available, has_jobs=has_jobs, has_items=has_items,
+                    observation=observation))
+            return source_list(items)
         if action == 'catalog_mount_claim' and set(body) == {'ticket'}:
             return self.claim(body['ticket'])
         if action == 'catalog_mount_cancel_play' and set(body) == {'source_id', 'request_id'}:
@@ -104,7 +105,7 @@ class MountedCatalog:
                         self.owner.operation.cancelled.set()
                 return result
         if action == 'catalog_mount_query' and set(args) <= {'query', 'cursor', 'limit'}:
-            return self.owner.run_in_scope(scope, lambda: self.owner.index.query(self.port.snapshot(scope), **args))
+            return self.owner.run_in_scope(scope, lambda: self.owner.query(self.port.snapshot(scope), **args))
         index_actions = {
             'catalog_mount_item': ({'file_id'}, self.owner.index.item),
             'catalog_mount_items': ({'source', 'state', 'offset', 'limit'}, self.owner.index.items),

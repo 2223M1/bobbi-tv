@@ -107,6 +107,7 @@
 
   <!-- detail page -->
   <variable name="DetailPrimaryLabel">
+    <value condition="!String.IsEmpty(ListItem.Property(Bobi.Catalog.ActionLabel))">$INFO[ListItem.Property(Bobi.Catalog.ActionLabel)]</value>
     <value condition="ListItem.IsFolder + String.IsEqual(ListItem.DBType,season)">选集</value>
     <value condition="ListItem.IsFolder">选择季集</value>
     <value condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]">继续 · 选片源</value>
