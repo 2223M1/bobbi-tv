@@ -2843,10 +2843,11 @@ class JacktookPLayer(xbmc.Player):
                         # an HTTP read timeout. Keep the native receipt intact,
                         # but do not complete history or reserve another episode
                         # without a recent same-session observation at the end.
-                        from bobbi_core.playback_completion import observed_end
-                        natural = observed_end(getattr(self, 'current_time', None),
+                        from bobbi_core.playback_completion import terminal_end
+                        natural = terminal_end(terminal if exact else {'reason': event.get('reason')},
+                            getattr(self, 'current_time', None),
                             getattr(self, 'total_time', None),
-                            getattr(self, '_progress_observed_at', None), monotonic(), max_age=5)
+                            getattr(self, '_progress_observed_at', None), monotonic())
                         self._cinema_end = natural
                         if not natural:
                             self._terminal_reason = 'ERROR'

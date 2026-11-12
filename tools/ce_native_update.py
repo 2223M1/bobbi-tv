@@ -18,6 +18,21 @@ HANDOFF_CANDIDATE = '632758f5d1ca5494e9b049446d3908bead70589b4d18640bb5d06e830a2
 ENTRY_GENERATION_PATH = '/storage/.kodi/userdata/addon_data/script.bobbi.start/installation.json'
 LEGACY_GENERATION_PATH = '/storage/.local/share/bobbi-private-updates/state.json'
 PROFILES = {
+    'completion2114': dict(build_kind='completion',
+        candidate='4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a',
+        sequence=2026102114, tag='2114', base='/storage/.local/share/bobbi-native/2026102114',
+        layout=ROOT.parent/'ce-native-completion-20261112/current-overlay.json',
+        reports=ROOT.parent/'ce-native-completion-20261112', deadline=390,
+        generation_kind='private_complete', generation_path=LEGACY_GENERATION_PATH,
+        minimum_versions={'plugin.video.bobbi':'0.1.58','script.module.bobbi.core':'0.1.59',
+                          'script.module.bobbi.platform':'0.1.67'},
+        build_proof_sha256='0b54e0b6b3e982dd9e02f2867cdbc6fc3df36afd7709e7cf4c368ec655651f7c',
+        canonical_patch_sha256='c7647dcbb94a4f2bc6e19f4deff3f3677e835a95b8a6771d10aa42860244fe2a',
+        predecessor=dict(binary='ba03279546193a8a5e6299b257e1321833dbf5b7b3ecc087ba67ed7dd2eb1991',
+            conf='0501d0f0c6dbdc71c0ebcaa0082a3f23aac696a92d6a913a352fbda850127191',
+            launch='8ef01e1eb6882f550e229b2791e285459fcfecafe0a13a0bfb4813afa976f42d',
+            binary_path='/storage/.local/share/bobbi-native/2026102043/kodi.bin',
+            launch_path='/storage/.local/share/bobbi-native/2026102043/launch.py')),
     'schema2043': dict(candidate='ba03279546193a8a5e6299b257e1321833dbf5b7b3ecc087ba67ed7dd2eb1991',
         sequence=2026102043, tag='2043', base='/storage/.local/share/bobbi-native/2026102043',
         layout=ROOT.parent/'ce2029-results-20261021/ce2043-native-predecessor8bb2.json',
@@ -69,7 +84,9 @@ def sha(p):
  with p.open('rb') as stream:
   for b in iter(lambda:stream.read(1024*1024),b''):h.update(b)
  return h.hexdigest()
-def command(*args):return subprocess.check_output(args,timeout=30).decode().strip()
+def command(*args):
+ timeout=120 if args[:2]==('systemctl','stop') else 30
+ return subprocess.check_output(args,timeout=timeout).decode().strip()
 def rpc(method,params=None):
  req=urllib.request.Request('http://127.0.0.1:8080/jsonrpc',json.dumps(dict(jsonrpc='2.0',id=1,method=method,params=params or {})).encode(),{'Content-Type':'application/json'})
  with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(req,timeout=2) as r:return json.load(r)['result']
@@ -161,7 +178,8 @@ elif MODE in ('apply','reapply'):
  REMOTE_STAGE='generation'
  generation_path=pathlib.Path(globals().get('GENERATION_PATH','/storage/.local/share/bobbi-private-updates/state.json'))
  entry_generation=globals().get('GENERATION_KIND','legacy')=='entry_complete'
- if entry_generation:
+ private_generation=globals().get('GENERATION_KIND','legacy')=='private_complete'
+ if entry_generation or private_generation:
   assert not generation_path.is_symlink() and generation_path.is_file() and generation_path.stat().st_size<=1024*1024,'ENTRY_INSTALLATION_UNSAFE'
  generation_bytes=generation_path.read_bytes()
  generation=json.loads(generation_bytes)
@@ -173,6 +191,38 @@ elif MODE in ('apply','reapply'):
   tx=generation.get('tx')
   assert isinstance(tx,str) and len(tx)==32 and all(c in '0123456789abcdef' for c in tx),'ENTRY_INSTALLATION_INVALID'
   out['generation']=dict(source='entry_complete',sequence=generation['sequence'],high_watermark=generation['high_watermark'],phase='complete',tx=tx)
+ generation_guards={generation_path:hashlib.sha256(generation_bytes).hexdigest()}
+ if private_generation:
+  import re,xml.etree.ElementTree as ET
+  pending=generation_path.parent/'journal.json'
+  assert not pending.exists() and not pending.is_symlink(),'PROGRAM_UPDATE_PENDING'
+  assert (isinstance(generation,dict) and set(generation)=={'sequence','versions'}
+   and type(generation.get('sequence')) is int and isinstance(generation.get('versions'),dict)
+   and all(isinstance(k,str) and isinstance(v,str) for k,v in generation['versions'].items())),'PRIVATE_GENERATION_INVALID'
+  minimum=globals().get('MINIMUM_VERSIONS',{})
+  assert set(minimum)=={'plugin.video.bobbi','script.module.bobbi.core','script.module.bobbi.platform'},'PRIVATE_COMPONENTS_INVALID'
+  for ident,version in minimum.items():
+   installed=generation['versions'].get(ident)
+   assert isinstance(installed,str) and re.fullmatch(r'[0-9]+(?:\.[0-9]+){1,3}',installed),'PRIVATE_COMPONENTS_INVALID'
+   def parts(value):return tuple((list(map(int,value.split('.')))+[0]*4)[:4])
+   assert parts(installed)>=parts(version),'INSTALL_COMPATIBLE_ADDONS_FIRST'
+   manifest=pathlib.Path('/storage/.kodi/addons')/ident/'addon.xml'
+   assert not manifest.is_symlink() and manifest.is_file() and manifest.stat().st_size<=1024*1024,'PRIVATE_COMPONENTS_INVALID'
+   body=manifest.read_bytes()
+   addon=ET.fromstring(body)
+   assert addon.tag=='addon' and addon.get('id')==ident and addon.get('version')==installed,'PRIVATE_COMPONENTS_INVALID'
+   generation_guards[manifest]=hashlib.sha256(body).hexdigest()
+  entry=pathlib.Path('/storage/.kodi/userdata/addon_data/script.bobbi.start/installation.json')
+  assert not entry.is_symlink(),'ENTRY_INSTALLATION_UNSAFE'
+  if entry.exists():
+   assert entry.is_file() and entry.stat().st_size<=1024*1024,'ENTRY_INSTALLATION_UNSAFE'
+   entry_bytes=entry.read_bytes()
+   prior=json.loads(entry_bytes)
+   assert (isinstance(prior,dict) and type(prior.get('schema')) is int and prior['schema']==1
+    and prior.get('phase')=='complete' and prior.get('host_pending') is None),'ENTRY_INSTALLATION_INCOMPLETE'
+   generation_guards[entry]=hashlib.sha256(entry_bytes).hexdigest()
+  out['generation']=dict(source='private_complete',sequence=generation['sequence'],
+   state_sha256=hashlib.sha256(generation_bytes).hexdigest(),components={k:generation['versions'][k] for k in minimum})
  assert type(generation.get('sequence')) is int and generation['sequence']>=required_sequence,'INSTALL_COMPATIBLE_ADDONS_FIRST'
  if MODE=='apply':assert generation['sequence']==required_sequence,'INITIAL_GENERATION_CHANGED'
  REMOTE_STAGE='addon_abi'
@@ -195,7 +245,9 @@ elif MODE in ('apply','reapply'):
   command('systemctl','stop','kodi.service')
   REMOTE_STAGE='apply_replace'
   assert sha(conf)==OLD_CONF,'CONCURRENT_CONFIGURATION_CHANGE'
-  if entry_generation:assert sha(generation_path)==hashlib.sha256(generation_bytes).hexdigest(),'PROGRAM_GENERATION_CHANGED'
+  if entry_generation or private_generation:
+   assert all(not p.is_symlink() and sha(p)==digest for p,digest in generation_guards.items()),'PROGRAM_GENERATION_CHANGED'
+  if private_generation:assert not pending.exists() and not pending.is_symlink(),'PROGRAM_UPDATE_PENDING'
   next_conf=(base/'next.conf').read_bytes()
   assert hashlib.sha256(next_conf).hexdigest()==HASHES['next.conf'],'STAGED_HASH_MISMATCH'
   atomic(conf,next_conf)
@@ -204,6 +256,9 @@ elif MODE in ('apply','reapply'):
   command('systemctl','start','kodi.service')
   REMOTE_STAGE='apply_ready'
   assert ready(HASHES['kodi.bin']),'NEW_NATIVE_NOT_READY'
+  if private_generation:
+   assert all(not p.is_symlink() and sha(p)==digest for p,digest in generation_guards.items()),'PROGRAM_GENERATION_CHANGED'
+   assert not pending.exists() and not pending.is_symlink(),'PROGRAM_UPDATE_PENDING'
   record=transition(record,'applied',action=MODE)
  except Exception as error:
   REMOTE_STAGE='recovery_stop'
@@ -257,6 +312,7 @@ REMOTE_ERROR_CODES = frozenset((
     'BASELINE_CHANGED', 'OLD_LAUNCH_CHANGED', 'OLD_BINARY_CHANGED', 'INSTALL_COMPATIBLE_ADDONS_FIRST',
     'INITIAL_GENERATION_CHANGED', 'ENTRY_INSTALLATION_UNSAFE', 'ENTRY_INSTALLATION_INVALID',
     'ENTRY_INSTALLATION_INCOMPLETE', 'PROGRAM_GENERATION_CHANGED', 'UNREVIEWED_NATIVE',
+    'PROGRAM_UPDATE_PENDING', 'PRIVATE_GENERATION_INVALID', 'PRIVATE_COMPONENTS_INVALID',
     'STOP_PLAYBACK_BEFORE_NATIVE_MAINTENANCE', 'NEW_NATIVE_NOT_READY',
     'CONCURRENT_CONFIGURATION_CHANGE', 'OLD_NATIVE_NOT_READY', 'ROLLBACK_STATE_INVALID'))
 
@@ -294,6 +350,32 @@ def local_artifact_path(reference):
 
 
 def checked_build(build_result, profile):
+    if profile.get('build_kind') == 'completion':
+        # This successor inherits the already verified schema host, not a
+        # reconstruction from the historical pre-handoff runtime generation.
+        assert sha_file(build_result) == profile['build_proof_sha256'], 'BUILD_PROOF_CHANGED'
+        result = json.loads(build_result.read_text())
+        previous = predecessor(profile)['binary']
+        assert (result.get('state') == 'BUILT_NOT_DEPLOYED'
+                and result.get('original_tree_unchanged') is True
+                and result.get('predecessor_sha256') == previous
+                and result.get('predecessor-relink_sha256') == previous), 'PREDECESSOR_RELINK_CHANGED'
+        assert (result.get('architecture_and_dependencies_unchanged') is True
+                and result.get('binary_bobicontrol_schema_unchanged') is True
+                and result.get('canonical_patch_sha256') == profile['canonical_patch_sha256']), 'NATIVE_ABI_NOT_VERIFIED'
+        units = {'xbmc/cores/VideoPlayer/VideoPlayer.cpp', 'xbmc/application/ApplicationPlayer.cpp',
+                 'xbmc/cores/playercorefactory/PlayerCoreConfig.cpp'}
+        assert set(result.get('objects', {})) == units, 'NATIVE_LAYOUT_CONSUMERS_CHANGED'
+        for source, item in result['objects'].items():
+            obj = build_result.parent / (Path(source).name + '.o')
+            assert sha_file(obj) == item['sha256'], 'NATIVE_OBJECT_CHANGED'
+            assert sha_file(Path(str(obj) + '.d')) == item['depfile_sha256'], 'NATIVE_DEPENDENCIES_CHANGED'
+        snapshot = build_result.parent / 'source-candidate'
+        assert {str(p.relative_to(snapshot)).replace('\\', '/'): sha_file(p)
+                for p in snapshot.rglob('*') if p.is_file()} == result['source_sha256'], 'NATIVE_SOURCE_CHANGED'
+        binary = build_result.parent / 'candidate.bin'
+        assert result['candidate_sha256'] == profile['candidate'] == sha_file(binary), 'CANDIDATE_ARTIFACT_CHANGED'
+        return result, binary
     if 'build_proof_sha256' in profile:
         assert sha_file(build_result) == profile['build_proof_sha256'], 'BUILD_PROOF_CHANGED'
     result = json.loads(build_result.read_text())
@@ -426,7 +508,8 @@ def main():
                     OLD_BINARY_PATH=previous['binary_path'],OLD_LAUNCH_PATH=previous['launch_path'],
                     BASE=base,REQUIRED_SEQUENCE=profile['sequence'],PROFILE_TAG=profile['tag'],
                     GENERATION_KIND=profile.get('generation_kind','legacy'),
-                    GENERATION_PATH=profile.get('generation_path',LEGACY_GENERATION_PATH))
+                    GENERATION_PATH=profile.get('generation_path',LEGACY_GENERATION_PATH),
+                    MINIMUM_VERSIONS=profile.get('minimum_versions',{}))
         script=remote_script(params)
         report['phase']='remote'
         rc,value,diagnostic=wire.readonly(client,script.encode(),deadline_seconds=profile['deadline'])

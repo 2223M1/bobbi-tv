@@ -24,6 +24,8 @@ CE_F9_REVIEWED_PATCHES = frozenset((
     '8bb2a99e2154432a4403ac55a81e3c253d7ab74f0e15369b85085f1a8bf4fd14',
     # CE2043 registers the complete handoff RPC schema; other 8bb2 objects unchanged.
     'ba03279546193a8a5e6299b257e1321833dbf5b7b3ecc087ba67ed7dd2eb1991',
+    # R05 completion observation; all VideoPlayer layout consumers rebuilt.
+    '4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a',
 ))
 CONFIG = 'runtime-paths.json'
 

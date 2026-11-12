@@ -1,6 +1,7 @@
 """Validate immutable native receipts; generic Player.OnPlay carries no authority."""
 from copy import deepcopy
 import re
+from .playback_completion import completion_observation
 
 SHA = re.compile('[0-9a-f]{64}')
 UUID = re.compile('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
@@ -28,6 +29,15 @@ def receipt(value):
     if 'audio_intent' in value and (type(value['audio_intent']) is not int or value['audio_intent'] < 0):
         return None
     if type(value.get('paused')) is not bool:
+        return None
+    if 'completion_observation' in value:
+        if (value['phase'] != 'TERMINAL'
+                or completion_observation(value['completion_observation']) is None):
+            return None
+    if 'read_error' in value and type(value['read_error']) is not int:
+        return None
+    if (value.get('reason') == 'NATURAL_EOF'
+            and type(value.get('read_error')) is int and value['read_error'] < 0):
         return None
     return deepcopy(value)
 

@@ -20,6 +20,10 @@
     {
       "file": "0005-bobbi-android-fonts.patch",
       "sha256": "68c542bfd6864cb77e394018f0f6bee727aba5a65f1f2fba1d77de45922f90f9"
+    },
+    {
+      "file": "0006-bobbi-completion-observation.patch",
+      "sha256": "c7647dcbb94a4f2bc6e19f4deff3f3677e835a95b8a6771d10aa42860244fe2a"
     }
   ],
   "clean_apply_verified": true,

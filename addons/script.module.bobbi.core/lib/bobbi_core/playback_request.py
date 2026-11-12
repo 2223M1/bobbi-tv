@@ -1,5 +1,6 @@
 """Thin request adapter. Local IPC never grants rights through window properties."""
 import hashlib
+from copy import deepcopy
 import json
 import re
 import time
@@ -286,4 +287,7 @@ def terminal_state(original, native_instance):
         return None
     if reason == 'NATURAL_EOF' and desired.get('cancelled'):
         reason = 'CANCEL'
-    return {'reason': reason}
+    result = {'reason': reason}
+    if 'completion_observation' in terminal:
+        result['completion_observation'] = deepcopy(terminal['completion_observation'])
+    return result

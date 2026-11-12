@@ -254,6 +254,8 @@ class PlaybackAuthority:
             if owner.observed and owner.observed['native_instance'] == row['native_instance']:
                 owner.observe_terminal(row['native_instance'], row['reason'])
                 terminal = owner.terminal
+                if 'completion_observation' in row:
+                    terminal['completion_observation'] = deepcopy(row['completion_observation'])
                 explicit_next = (self.continuation and self.continuation['kind'] == 'manual'
                     and self.continuation['request_id'] == terminal['request_id']
                     and self.continuation['native_instance'] == terminal['native_instance']
