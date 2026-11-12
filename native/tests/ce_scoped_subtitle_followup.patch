@@ -1,0 +1,51 @@
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.cpp b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+@@ -3843,3 +3843,5 @@
+-void CVideoPlayer::QueueSubtitleSwitchSeek(const SelectionStream& stream)
++void CVideoPlayer::QueueSubtitleSwitchSeek(const SelectionStream& stream,
++                                          const CVariant& command,
++                                          const CVariant& claim)
+ {
+   // if (!m_subtitleSeekGate.IsTimePast())
+@@ -3861,5 +3863,21 @@
+   mode.accurate = true;
+   mode.trickplay = true;
+   mode.sync = true;
+-  m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
++  if (!command.isObject())
++  {
++    m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
++    return;
++  }
++  // CE's subtitle resync is part of the original track operation, not a
++  // second user seek. Preserve the original actor and claimed intent even
++  // when decoder work allowed a later manual command to arrive.
++  auto sync = command;
++  sync["action"] = "seek";
++  sync["audio_sync"] = true;
++  sync["position_ms"] = static_cast<int64_t>(mode.time);
++  sync["expected_sequence"] = claim["sequence"];
++  for (const auto* key : {"user_intent", "subtitle_intent", "audio_intent"})
++    sync[key] = claim[key];
++  m_messenger.Put(std::make_shared<CDVDMsgType<CVariant>>(CDVDMsg::PLAYER_BOBI_CONTROL, sync));
+ }
+@@ -4957,5 +4975,5 @@
+           scopedApplied = OpenStream(m_CurrentSubtitle, st.demuxerId, st.id, st.source);
+           if (scopedApplied)
+           {
+-            QueueSubtitleSwitchSeek(st);
++            QueueSubtitleSwitchSeek(st, scopedCommand, scopedIntentClaim);
+             if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_BLURAY) && m_pDemuxer)
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.h b/xbmc/cores/VideoPlayer/VideoPlayer.h
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.h
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.h
+@@ -519,5 +519,7 @@
+   void UpdateContent();
+   void UpdateContentState();
+-  void QueueSubtitleSwitchSeek(const SelectionStream& stream);
++  void QueueSubtitleSwitchSeek(const SelectionStream& stream,
++                               const CVariant& command = CVariant(),
++                               const CVariant& claim = CVariant());
+ 
+   void UpdateFileItemStreamDetails(CFileItem& item);

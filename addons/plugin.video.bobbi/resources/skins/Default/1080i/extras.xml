@@ -205,7 +205,7 @@
             <height>48</height>
             <onfocus>SetProperty(active_tab,overview)</onfocus>
             <onright>21</onright>
-            <onleft>26</onleft>
+            <onleft>27</onleft>
             <onup>10</onup>
             <ondown>2000</ondown>
             <label>剧情简介</label>
@@ -318,7 +318,7 @@
             <width min="140">auto</width>
             <height>48</height>
             <onfocus>SetProperty(active_tab,more)</onfocus>
-            <onright>20</onright>
+            <onright>27</onright>
             <onleft>25</onleft>
             <onup>10</onup>
             <ondown>2061</ondown>
@@ -332,6 +332,15 @@
             <aligny>center</aligny>
             <textoffsetx>30</textoffsetx>
             <textallowoverflow>false</textallowoverflow>
+          </control>
+          <control type="button" id="27">
+            <width>240</width><height>48</height>
+            <onright>20</onright><onleft>26</onleft><onup>10</onup><ondown>27</ondown>
+            <label>个人补充视频</label><font>font13</font>
+            <textcolor>FF999999</textcolor><focusedcolor>FFFFFFFF</focusedcolor>
+            <texturefocus colordiffuse="33FFFFFF" border="8">panel-256-box.png</texturefocus>
+            <texturenofocus>-</texturenofocus><align>center</align><aligny>center</aligny>
+            <visible>String.IsEqual(Window.Property(personal_supplements),true)</visible>
           </control>
         </control>
         <control type="image">

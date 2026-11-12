@@ -31,22 +31,25 @@ def source_status(source):
 
 
 def _call(action, expected, **body):
-    if expected.get('reference_kind') == 'mounted_path':
-        return call(action.replace('catalog_', 'catalog_mount_', 1),
+    if expected.get('reference_kind') in ('mounted_path', 'local_path'):
+        prefix = 'catalog_local_' if expected['reference_kind'] == 'local_path' else 'catalog_mount_'
+        return call(action.replace('catalog_', prefix, 1),
                     dict(body, source_id=expected['source_id'], namespace=expected['namespace']), timeout=2)
     return call(action, dict(expected=expected, **body), timeout=2)
 
 
-def add_directory(expected, parent):
+def add_directory(expected, parent, context=None):
     import xbmcgui
+    binding, invoke = context or _review_context(expected)
+    binding.require_current()
     dialog = xbmcgui.Dialog()
     name = dialog.input('片库名称', defaultt='我的网盘片库')
     if not name or not dialog.yesno('索引此目录？',
             '仅扫描当前目录及其子目录，建立本地索引；不转存、不移动、不删除网盘文件。关闭页面不会取消扫描。'):
         return False
     try:
-        result = _call('catalog_add', expected, name=name, parent=parent)
-        _call('catalog_scan', expected, source_id=result['source_id'])
+        result = invoke('catalog_add', name=name, parent=parent)
+        invoke('catalog_scan', source_id=result['source_id'])
         dialog.ok('已提交后台扫描', '可在“片库索引与任务”查看进度和整理作品；原文件浏览仍可使用。')
         return True
     except (ValueError, OSError, RuntimeError):
@@ -78,16 +81,20 @@ def _mapping(dialog, item):
     return value
 
 
-def review_item(dialog, expected, item, source_id=None):
+def review_item(dialog, expected, item, source_id=None, context=None):
+    context = context or _review_context(expected)
+    binding, invoke = context
+    binding.require_current()
     choice = dialog.select(item['file']['name'], ['搜索并选择作品候选', '查看原文件与建议',
         '解除绑定', '忽略此项', '撤回上次修改', '高级：手填编号 / 自定义名称', '同目录分集整理（逐项预览）', '编辑文件版本备注'])
+    binding.require_current()
     candidate = None
     if choice in (0, 6):
         candidate = choose_candidate(dialog, item)
         if candidate is None:
             return
         if choice == 6:
-            return review_group(dialog, expected, item, candidate, source_id=source_id)
+            return review_group(dialog, expected, item, candidate, source_id=source_id, context=context)
         from lib.clients.tmdb.catalog_candidates import candidate_mapping
         try:
             value = candidate_mapping(candidate, item)
@@ -122,10 +129,11 @@ def review_item(dialog, expected, item, source_id=None):
     else:
         return
     result = review_entries(dialog, expected, [dict(name=item['file']['name'], command=dict(
-        file_id=item['file']['id'], expected_revision=item['revision'], action=action, mapping=value))])
+        file_id=item['file']['id'], expected_revision=item['revision'], action=action, mapping=value))],
+        invoke=invoke, scope_check=binding.require_current, profile_root=binding.root())
     if (result and result['complete'] and candidate and candidate['media_kind'] == 'tv' and
             dialog.yesno('继续整理本剧？', '本集已保存。只读取同目录逐项建议，不会自动绑定其他文件。')):
-        review_group(dialog, expected, item, candidate, source_id=source_id)
+        review_group(dialog, expected, item, candidate, source_id=source_id, context=context)
     return result
 
 
@@ -174,15 +182,18 @@ def _candidate_episode(dialog, candidate):
         return None
 
 
-def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
+def review_group(dialog, expected, anchor, candidate, source_id=None, start=0, context=None):
     from lib.clients.tmdb.catalog_candidates import candidate_mapping, query_hint
+    context = context or _review_context(expected)
+    binding, invoke = context
+    binding.require_current()
     if candidate['media_kind'] != 'tv':
         dialog.ok('请先选择剧集候选', '电影不生成季集映射。')
         return
     rows, offset, group, revision = [], start, None, None
     deadline = time.monotonic() + 60
     if start:
-        fresh = _call('catalog_group', expected, file_id=anchor['file']['id'], source_id=source_id, offset=0, limit=5)
+        fresh = invoke('catalog_group', file_id=anchor['file']['id'], source_id=source_id, offset=0, limit=5)
         group, revision, source_id = fresh['group_id'], fresh['projection_revision'], fresh['source_id']
     while True:
         if time.monotonic() >= deadline:
@@ -194,20 +205,20 @@ def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
         if revision is not None:
             params['projection_revision'] = revision
         try:
-            result = _call('catalog_group', expected, **params)
+            result = invoke('catalog_group', **params)
         except ValueError as error:
             if str(error) != 'CATALOG_GROUP_AMBIGUOUS' or source_id is not None:
                 raise
             # Overlapping registrations are not evidence of a trusted group.
             # Let the user choose one; core still checks anchor membership.
-            sources = _call('catalog_sources', expected)['items']
+            sources = invoke('catalog_sources')['items']
             choice = dialog.select('目录被多个来源收录，请明确选择可信来源',
                                    [row['name'] + ' · ' + row['id'][:8] for row in sources])
             if not 0 <= choice < len(sources):
                 return
             source_id = sources[choice]['id']
             try:
-                result = _call('catalog_group', expected, **dict(params, source_id=source_id))
+                result = invoke('catalog_group', **dict(params, source_id=source_id))
             except ValueError as changed:
                 if str(changed) != 'CATALOG_SOURCE_UNAVAILABLE':
                     raise
@@ -244,7 +255,7 @@ def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
     selected = dialog.multiselect('逐项选择：同目录不证明同作品；排除合集 / 重制版 / 多集文件', labels, preselect=preselect)
     if not selected:
         if following is not None and dialog.yesno('跳过本轮并查看下一轮？', '本轮未选择任何修改；后续仍逐项核对，每轮最多 100 项。'):
-            return review_group(dialog, expected, anchor, candidate, source_id, start=following)
+            return review_group(dialog, expected, anchor, candidate, source_id, start=following, context=context)
         return
     edit_selected = dialog.yesno('需要逐项调整季集？', '不调整则沿用上方已核对的建议。未知季集的勾选项仍需手动明确；合集 / 多集文件请排除。')
     entries = []
@@ -262,10 +273,11 @@ def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
             entries.append(dict(name=item['file']['name'], command=dict(file_id=item['file']['id'],
                 expected_revision=item['revision'], action='confirm', mapping=value)))
     if entries:
-        result = review_entries(dialog, expected, entries)
+        result = review_entries(dialog, expected, entries, invoke=invoke,
+            scope_check=binding.require_current, profile_root=binding.root())
         if result and result['complete'] and following is not None and dialog.yesno('继续下一轮同目录整理？',
                 '本轮真实回执已显示；下一轮重新读取当前修订，不会自动提交。'):
-            return review_group(dialog, expected, anchor, candidate, source_id, start=following)
+            return review_group(dialog, expected, anchor, candidate, source_id, start=following, context=context)
         return result
 
 
@@ -284,49 +296,99 @@ def _mapping_description(value):
     return ' · '.join(parts)
 
 
-def review_entries(dialog, expected, entries):
+def _review_context(expected, *, binding=None, rpc=None):
+    from .paths import ProfileBinding
+    from .runtime import bind_call
+    binding = binding or ProfileBinding()
+    rpc = rpc or bind_call(binding.root() / 'runtime.json')
+
+    def invoke(action, **body):
+        binding.require_current()
+        if expected.get('reference_kind') in ('mounted_path', 'local_path'):
+            prefix = 'catalog_local_' if expected['reference_kind'] == 'local_path' else 'catalog_mount_'
+            result = rpc(action.replace('catalog_', prefix, 1),
+                dict(body, source_id=expected['source_id'], namespace=expected['namespace']), timeout=2)
+        else:
+            result = rpc(action, dict(expected=expected, **body), timeout=2)
+        binding.require_current()
+        return result
+
+    return binding, invoke
+
+
+def review_entries(dialog, expected, entries, invoke=None, scope_check=None, profile_root=None):
     """Bounded TV batch coordinator; existing Host remains the sole writer."""
     from bobbi_core.catalog_review import plan
+    if invoke is None:
+        binding, invoke = _review_context(expected)
+        scope_check, profile_root = binding.require_current, binding.root()
+    elif profile_root is None:
+        from .paths import profile_root as current_root
+        profile_root = current_root()
+    scope_check = scope_check or (lambda: None)
+    scope_check()
     chunks = plan(entries)
     previews, receipts, saved, deadline = [], [], 0, time.monotonic() + 120
     pending_request_id = None
     for chunk in chunks:
+        scope_check()
         if time.monotonic() >= deadline:
             dialog.ok('预览已到期限', '请重新预览，尚未提交修改。')
             return
         commands = [entry['command'] for entry in chunk['entries']]
-        rows = _call('catalog_preview', expected, commands=commands)['items']
+        rows = invoke('catalog_preview', commands=commands)['items']
         if len(rows) != len(commands) or any(row['status'] != 'ready' for row in rows):
             dialog.ok('预览包含冲突', '未提交任何批次，请刷新后重新选择。')
             return
         for entry, row in zip(chunk['entries'], rows):
-            action = {'confirm': '保存描述', 'unbind': '解除绑定', 'ignore': '忽略此项', 'undo': '撤回上次修改'}
+            action = {'confirm': '保存描述', 'unbind': '解除绑定', 'ignore': '忽略此项', 'undo': '撤回上次修改',
+                      'supplement': '关联补充内容', 'detach_supplement': '移除补充内容关联'}
             previews.append('%s\n记录修订 %s\n原描述 %s\n修改后描述 %s\n操作 %s · 修改后状态 %s' % (
                 entry['name'], entry['command']['expected_revision'], _mapping_description(row.get('before')),
                 _mapping_description(row.get('after')), action.get(entry['command']['action'], '待核对'),
                 LABELS.get(row.get('after_state'), '状态未知')))
+            if 'after_supplement' in row:
+                def relation_label(value):
+                    if not value:
+                        return '无补充关系'
+                    return '%s · %s · %s · %s' % (value['metadata_key'], value['kind'], value['title'],
+                        '指定文件版本 ' + value['parent_file_id'][:12] if value.get('parent_file_id') else '整个作品')
+                previews[-1] += '\n原补充关系 %s\n修改后补充关系 %s' % (
+                    relation_label(row.get('before_supplement')), relation_label(row.get('after_supplement')))
+    scope_check()
     dialog.textviewer('逐项预览（尚未保存）', '\n\n'.join(previews))
     if not dialog.yesno('确认分批保存？', '%s 项将分 %s 批。已保存批次不会因后续冲突自动回滚；每批开始前仍会检查修订。' % (len(entries), len(chunks))):
         return
     for number, chunk in enumerate(chunks):
+        scope_check()
         if time.monotonic() >= deadline:
             receipts.append('已到本轮等待期限，请重新读取剩余条目并预览。');break
         if number and not dialog.yesno('继续下一批？', '已保存 %s/%s。可停止未开始批次，已保存结果保留。' % (saved, len(entries))):
             break
         commands = [entry['command'] for entry in chunk['entries']]
-        preview = _call('catalog_preview', expected, commands=commands)['items']
+        preview = invoke('catalog_preview', commands=commands)['items']
         if len(preview) != len(commands) or any(row['status'] != 'ready' for row in preview):
             receipts.append('后续批次出现冲突，停止提交。');break
         try:
-            rows = _call('catalog_apply', expected, request_id=chunk['request_id'], commands=commands)['items']
+            rows = invoke('catalog_apply', request_id=chunk['request_id'], commands=commands)['items']
             results = dict(enumerate(rows))
         except (ValueError, OSError, RuntimeError):
             # A read-only receipt lookup never repeats a write on timeout.
             try:
-                receipt = _call('catalog_receipt', expected, request_id=chunk['request_id'])
+                receipt = invoke('catalog_receipt', request_id=chunk['request_id'])
                 results = {row['index']: row for row in receipt.get('items', [])}
             except (ValueError, OSError, RuntimeError):
                 results = {}
+        try:
+            scope_check()
+        except (ValueError, OSError, RuntimeError):
+            # The write may have committed before a profile switch hid its
+            # reply. Keep only the original ID under the admission profile;
+            # never display its result or redirect its receipt lookup to B.
+            if any(index not in results for index in range(len(chunk['entries']))):
+                _pending_receipts(expected, request_id=chunk['request_id'], count=len(chunk['entries']),
+                                  profile_root=profile_root)
+            raise
         complete = True
         for index, entry in enumerate(chunk['entries']):
             state = results.get(index, {}).get('status')
@@ -337,7 +399,7 @@ def review_entries(dialog, expected, entries):
             if any(index not in results for index in range(len(chunk['entries']))):
                 receipts.append('待核对的原提交编号：' + chunk['request_id'])
                 pending_request_id = chunk['request_id']
-                _pending_receipts(expected, request_id=pending_request_id, count=len(chunk['entries']))
+                _pending_receipts(expected, request_id=pending_request_id, count=len(chunk['entries']), profile_root=profile_root)
             break
     dialog.textviewer('真实回执 · 已保存 %s/%s' % (saved, len(entries)), '\n'.join(receipts) + '\n未开始批次未提交，不自动回滚此前结果。')
     return dict(saved=saved, total=len(entries), complete=saved == len(entries),
@@ -352,13 +414,16 @@ def _open_catalog(expected, **query):
         action='personal_catalog', **scope_params(expected), **query) + '",return)')
 
 
-def _pending_receipts(expected, request_id=None, count=None, remove=False):
+def _pending_receipts(expected, request_id=None, count=None, remove=False, profile_root=None):
     """A bounded UI reminder, not a receipt or mutation authority."""
     try:
         import xbmcgui
         from bobbi_core.catalog_query import opaque, scope_key
+        if profile_root is None:
+            from .paths import profile_root as current_root
+            profile_root = current_root()
         window = xbmcgui.Window(10000)
-        key = 'Bobi.Catalog.Pending.' + opaque(*scope_key(expected))
+        key = 'Bobi.Catalog.Pending.' + opaque(str(profile_root), *scope_key(expected))
         raw = window.getProperty(key)
         rows = json.loads(raw) if raw else []
         if type(rows) is not list:
@@ -377,9 +442,11 @@ def _pending_receipts(expected, request_id=None, count=None, remove=False):
         return []
 
 
-def query_receipt(dialog, expected, request_id=None):
+def query_receipt(dialog, expected, request_id=None, context=None):
     """Recover only the original request. Never make a new plan or write."""
-    pending = _pending_receipts(expected)
+    binding, invoke = context or _review_context(expected)
+    binding.require_current()
+    pending = _pending_receipts(expected, profile_root=binding.root())
     if request_id is None:
         if pending:
             choice = dialog.select('查询待核对的原提交', [row['request_id'] for row in pending])
@@ -391,7 +458,8 @@ def query_receipt(dialog, expected, request_id=None):
     if type(request_id) is not str or not re.fullmatch('[0-9a-f]{32}', request_id):
         return
     try:
-        receipt = _call('catalog_receipt', expected, request_id=request_id)
+        binding.require_current()
+        receipt = invoke('catalog_receipt', request_id=request_id)
     except (ValueError, OSError, RuntimeError):
         dialog.ok('原提交仍待核对', '暂未读取到回执，未重新提交。可稍后在当前片库管理中继续查询。')
         return
@@ -403,15 +471,19 @@ def query_receipt(dialog, expected, request_id=None):
         lines.append('尚未查到回执，不能据此认定未写入；未重新提交。')
     expected_count = next((row['count'] for row in pending if row['request_id'] == request_id), None)
     if expected_count and {row['index'] for row in rows if row['status'] in ('applied', 'conflict', 'failed')} == set(range(expected_count)):
-        _pending_receipts(expected, request_id=request_id, remove=True)
+        binding.require_current()
+        _pending_receipts(expected, request_id=request_id, remove=True, profile_root=binding.root())
     dialog.textviewer('原提交回执', '\n'.join(lines))
     return receipt
 
 
-def _jobs(dialog, expected):
+def _jobs(dialog, expected, context=None):
+    context = context or _review_context(expected)
+    binding, invoke = context
+    binding.require_current()
     offset = 0
     while True:
-        result = _call('catalog_jobs', expected, offset=offset)
+        result = invoke('catalog_jobs', offset=offset)
         rows = result['items']
         if not rows:
             dialog.ok('暂无后台任务', '尚未提交目录扫描。')
@@ -420,17 +492,18 @@ def _jobs(dialog, expected):
             '%s · 已扫描 %d / 已发现 %d%s' % (LABELS.get(r['state'], r['state']),
                 r['counts']['scanned'], r['counts']['discovered'], ' · 正在取消' if r['cancel_requested'] and r['state'] in ('queued', 'running') else '')
             for r in rows] + (['下一页'] if result['next_offset'] is not None else []) + ['实时查看本页任务（最长 2 分钟）'])
+        binding.require_current()
         if choice < 0:
             return
         if choice == len(rows) + int(result['next_offset'] is not None):
-            _watch_jobs(expected, offset=offset)
+            _watch_jobs(expected, offset=offset, context=context)
             continue
         if choice == len(rows) and result['next_offset'] is not None:
             offset = result['next_offset']
             continue
         row = rows[choice]
         if row['state'] in ('running', 'queued') and dialog.yesno('请求取消扫描？', '仅停止本次扫描，已有索引和云端文件保留；后台确认停止后才会显示已取消。'):
-            _call('catalog_cancel', expected, task_id=row['task_id'])
+            invoke('catalog_cancel', task_id=row['task_id'])
         else:
             dialog.ok('任务状态', LABELS.get(row['state'], row['state']) + '\n' + row['result_summary'])
 
@@ -449,7 +522,7 @@ def watch_preparation(expected=None, dialog=None):
         dialog.ok('准备任务暂不可读', '请检查当前 115 登录和后台状态。未重新登录、创建或重试任何准备任务。')
 
 
-def _watch_jobs(expected, offset=0, kind='scan'):
+def _watch_jobs(expected, offset=0, kind='scan', context=None):
     """Visible, single-flight observation; closing never cancels a Host job."""
     import xbmc
     import xbmcgui
@@ -468,10 +541,12 @@ def _watch_jobs(expected, offset=0, kind='scan'):
                         raise ValueError('CATALOG_ACCOUNT_MISMATCH')
                     value = _call('jobs', expected, kind='preparation', offset=offset, limit=5)
                 else:
-                    value = _call('catalog_jobs', expected, offset=offset, limit=5)
+                    value = (context[1]('catalog_jobs', offset=offset, limit=5) if context else
+                             _call('catalog_jobs', expected, offset=offset, limit=5))
                 rows = value['items']
             except (ValueError, OSError, RuntimeError) as error:
-                if str(error) in ('CATALOG_ACCOUNT_MISMATCH', 'CATALOG_SERVICE_CLOSED', 'ACCOUNT_SCOPE_INVALID'):
+                if str(error) in ('CATALOG_ACCOUNT_MISMATCH', 'CATALOG_SERVICE_CLOSED', 'ACCOUNT_SCOPE_INVALID',
+                                  'PROFILE_CHANGED', 'RUNTIME_INSTANCE_CHANGED'):
                     progress.update(0, '账号或服务已变化，已停止读取。请返回重新选择账号。')
                     return
                 progress.update(0, '暂未取得新状态，后台任务保持原状态。返回不会取消任务。')
@@ -499,55 +574,68 @@ def _watch_jobs(expected, offset=0, kind='scan'):
         progress.close()
 
 
-def manage_scope(expected, dialog=None):
+def manage_scope(expected, dialog=None, context=None):
     """One scoped management entry for native and registered mounted catalogs."""
     import xbmcgui
+    context = context or _review_context(expected)
+    binding, _ = context
+    binding.require_current()
     dialog = dialog or xbmcgui.Dialog()
     choice = dialog.select('当前片库管理', ['后台任务', '实时查看任务', '手机详细管理',
         '待整理工作台', '查询待核对的原提交', '管理索引来源'])
+    binding.require_current()
     if choice == 0:
-        return _jobs(dialog, expected)
+        return _jobs(dialog, expected, context=context)
     if choice == 1:
-        return _watch_jobs(expected)
+        return _watch_jobs(expected, context=context)
     if choice == 2:
         from lib.clients.stremio.manage_phone import catalog_manage_phone
         return catalog_manage_phone(expected)
     if choice == 3:
         return _open_catalog(expected, mode='review')
     if choice == 4:
-        return query_receipt(dialog, expected)
+        return query_receipt(dialog, expected, context=context)
     if choice == 5:
-        return manage_sources(expected, dialog)
+        return manage_sources(expected, dialog, context=context)
 
 
-def manage_sources(expected, dialog):
-    if expected.get('reference_kind') == 'mounted_path':
+def manage_sources(expected, dialog, context=None):
+    context = context or _review_context(expected)
+    binding, invoke = context
+    binding.require_current()
+    if expected.get('reference_kind') in ('mounted_path', 'local_path'):
         from .library_ui import open_library
         return open_library(dialog)
-    sources = _call('catalog_sources', expected)['items']
+    sources = invoke('catalog_sources')['items']
     selected = dialog.select('索引来源（新增来源请在原文件目录操作）',
         [row['name'] + ('\n' + source_status(row) if source_status(row) else '') for row in sources])
     if not 0 <= selected < len(sources):
         return
     source = sources[selected]
     choice = dialog.select(source['name'], ['查看作品', '待整理工作台', '重新完整扫描', '移除此索引来源'])
+    binding.require_current()
     if choice in (0, 1):
         return _open_catalog(expected, source_id=source['id'],
                              **(dict(mode='review') if choice == 1 else dict(view='works')))
     if choice == 2:
-        _call('catalog_scan', expected, source_id=source['id'])
+        invoke('catalog_scan', source_id=source['id'])
         dialog.ok('已提交扫描', '关闭此页面不影响后台任务。')
     elif choice == 3 and dialog.yesno('移除此索引来源？', '请先停止扫描。仅移除本机目录登记；网盘文件、观看历史和人工描述保留。'):
-        _call('catalog_remove', expected, source_id=source['id'])
+        invoke('catalog_remove', source_id=source['id'])
 
 
-def manage():
+def manage(scope_check=None):
     import xbmcgui
     from .pan_ui import _status
     from .pan_accounts import NAMES
     dialog = xbmcgui.Dialog()
     try:
+        if scope_check is None:
+            from .paths import ProfileBinding
+            scope_check = ProfileBinding().require_current
+        scope_check()
         accounts = [r for r in _status() if r['provider'] != '115' and r['account']['authenticated']]
+        scope_check()
         if not accounts:
             from .library_ui import cd2_mounts, open_library
             mounted = bool(cd2_mounts.discover())
@@ -556,11 +644,13 @@ def manage():
                     '随后在“我的作品片库”选择 CD2 来源并扫描。'
                     '\nWebDAV / SMB / NFS / 普通本机目录仍使用原文件浏览；已有挂载无需为此再次扫码。',
                     yeslabel='片库与 CD2 索引' if mounted else '浏览片库', nolabel='返回'):
+                scope_check()
                 return open_library(dialog)
             return
         selected = dialog.select('选择当前账号的片库', [NAMES[r['provider']] for r in accounts]) if len(accounts) > 1 else 0
         if not 0 <= selected < len(accounts):
             return
+        scope_check()
         expected = accounts[selected]['account']
         return _open_catalog(expected, mode='review')
     except (ValueError, OSError, RuntimeError, ImportError):

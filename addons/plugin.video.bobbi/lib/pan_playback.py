@@ -223,9 +223,29 @@ def resume(params):
         label = ('本地记录暂不可用，请从“我的文件”重新选择。'
                  if str(error).startswith('FILE_HISTORY_') else _failure(error))
         xbmcgui.Dialog().ok('未恢复原文件', label)
+        if str(error) not in ('PAN_ACCOUNT_CHANGED', 'PAN_LOGIN_REQUIRED', 'PROFILE_CHANGED',
+                              'CATALOG_SELECTION_CANCELLED'):
+            _offer_history_versions(identifier)
     finally:
         if not handed:
             _cancel_prepared(expected, request, native, owner)
+
+
+def _offer_history_versions(identifier):
+    """Recovery is explicit navigation; the failed original history is untouched."""
+    import xbmc
+    import xbmcgui
+    from lib.utils.views.personal_catalog import route, scope_params
+    try:
+        rows = call('catalog_history_links', dict(history_ids=[identifier]))['items']
+        match = next((row for row in rows if row['entity_id'] == identifier and row.get('parent_entity_id')), None)
+        if match and not xbmc.Monitor().abortRequested() and xbmcgui.Dialog().yesno(
+                '查看其他文件版本？', '原文件的观看记录仍保留。仅打开版本列表，由你决定是否选择另一文件。'):
+            target = route(action='personal_catalog', view='files', parent_entity_id=match['parent_entity_id'],
+                           **scope_params(match['expected']))
+            xbmc.executebuiltin('ActivateWindow(Videos,"' + target + '",return)')
+    except (ValueError, OSError, RuntimeError, KeyError, TypeError):
+        pass
 
 
 def indexed(params):
@@ -354,20 +374,22 @@ def mounted(params, handle=None, rpc=None):
     failure = None
     def current():
         return not monitor.abortRequested() and window.getProperty('bobbi.portable_selection') == request
+    prefix = 'catalog_local_' if params.get('reference_kind') == 'local_path' else 'catalog_mount_'
+    source_label = '本地目录' if prefix == 'catalog_local_' else 'CD2'
     try:
         expected = mounted_for(params, rpc)
         if not xbmcgui.Dialog().yesno('选择当前文件并从头播放？',
-                '将重新核验当前挂载和原文件。旧路径观察与进度仅作历史保留，不继承到当前文件。'):
+                '将重新核验当前来源和原文件。旧路径观察与进度仅作历史保留，不继承到当前文件。'):
             return
         window.setProperty('bobbi.portable_selection', request)
-        progress.create('正在核验 CD2 原文件', '核对当前挂载与文件，可按返回取消。')
+        progress.create('正在核验' + source_label + '原文件', '核对当前来源与文件，可按返回取消。')
         selection_attempted = True
         selection = _reserve_mounted(request, source_id, object_id, rpc)
-        ticket = _wait_result('catalog_mount_prepare', dict(source_id=source_id, namespace=expected['namespace'], object_id=object_id,
+        ticket = _wait_result(prefix + 'prepare', dict(source_id=source_id, namespace=expected['namespace'], object_id=object_id,
             request_id=request, intent='play_from_start'), 28, progress, current, rpc)['ticket']
         if ticket != request or not current() or not _owner_current(selection, rpc):
             raise ValueError('CATALOG_SELECTION_CANCELLED')
-        selected = _wait_result('catalog_mount_claim', dict(ticket=ticket), 28, progress, current, rpc)
+        selected = _wait_result(prefix + 'claim', dict(ticket=ticket), 28, progress, current, rpc)
         if (selected['source_id'] != source_id or selected['object_id'] != object_id
                 or not current() or not _owner_current(selection, rpc)):
             raise ValueError('CATALOG_SELECTION_CANCELLED')
@@ -377,7 +399,7 @@ def mounted(params, handle=None, rpc=None):
         def ready():
             if not current() or not _owner_current(selection, rpc) or store.get(source_id) != source:
                 return False
-            valid = _wait_result('catalog_mount_verify', dict(source_id=source_id, namespace=expected['namespace'], object_id=object_id,
+            valid = _wait_result(prefix + 'verify', dict(source_id=source_id, namespace=expected['namespace'], object_id=object_id,
                 request_id=request), 8, progress, current, rpc)
             return (valid.get('valid') is True and current() and _owner_current(selection, rpc)
                     and store.get(source_id) == source and current() and not progress.iscanceled())
@@ -393,7 +415,7 @@ def mounted(params, handle=None, rpc=None):
         progress.close()
         if selection_attempted and (handoff is None or handoff.state in ('selected', 'cancelled')):
             for cancel in (
-                lambda: rpc('catalog_mount_cancel_play', dict(source_id=source_id, request_id=request), timeout=2),
+                lambda: rpc(prefix + 'cancel_play', dict(source_id=source_id, request_id=request), timeout=2),
                 lambda: _cancel_owner(request, rpc)):
                 try:
                     cancel()
@@ -402,4 +424,4 @@ def mounted(params, handle=None, rpc=None):
         if store is not None:
             store.close()
     if failure is not None and failure != 'CATALOG_SELECTION_CANCELLED':
-        xbmcgui.Dialog().ok('CD2 原文件播放', MOUNTED_MESSAGES.get(failure, '本次未确认打开原文件；不会自动换源或重复提交。'))
+        xbmcgui.Dialog().ok(source_label + '原文件播放', MOUNTED_MESSAGES.get(failure, '本次未确认打开原文件；不会自动换源或重复提交。'))

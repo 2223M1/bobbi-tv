@@ -18,6 +18,26 @@ HANDOFF_CANDIDATE = '632758f5d1ca5494e9b049446d3908bead70589b4d18640bb5d06e830a2
 ENTRY_GENERATION_PATH = '/storage/.kodi/userdata/addon_data/script.bobbi.start/installation.json'
 LEGACY_GENERATION_PATH = '/storage/.local/share/bobbi-private-updates/state.json'
 PROFILES = {
+    'scoped2122': dict(build_kind='scoped_controls',
+        candidate='7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c',
+        sequence=2026102122, tag='2122', base='/storage/.local/share/bobbi-native/2026102122',
+        layout=ROOT.parent/'AM6B/tmp/bobbi-review-9446e59-20261112/results/native-layout-before-scoped.json',
+        reports=ROOT.parent/'AM6B/tmp/bobbi-review-9446e59-20261112/results', deadline=390,
+        generation_kind='private_complete', generation_path=LEGACY_GENERATION_PATH,
+        minimum_versions={'plugin.video.bobbi':'0.1.64','script.module.bobbi.core':'0.1.64',
+                          'script.module.bobbi.platform':'0.1.73'},
+        build_proof_sha256='86d981e935ff6968c54373724682fb7bd80f24edecc40c3ba0f45e2953df2c0b',
+        predecessor_proof_sha256='8de56368ca0f4d47f5a3e0207201d0c29bf67866b0cc60d93c7d4803930d9993',
+        canonical_patch_sha256='e2dc7818da99ee2db8d7dcbee7b0f1f21ac8bde3ecacf0e826c44df6febbed1a',
+        ce_context_patch_sha256='c0853d684ed084b4ce451459b25fd045f38c7770a34715cfd13f68d819a6c530',
+        platform_patch_sha256='15aea1fda940539463e67ab6c8d5582600ba847a34ce5c55905be7f11475ebbc',
+        actor_proof='/opt/bobbi-native-c04-build-20261112/ce-actor/scoped-actor-d2ik7kef/result.json',
+        actor_proof_sha256='1948c1d954182733bbe1625c5e1b719a1122f2f646a639f890ca310bc3445921',
+        predecessor=dict(binary='591fa655fa6a507145c7fd90163a18eee91266b98fe89315268e1a5bd32be032',
+            conf='e9a1d780043af37b7c53cd5c3a72c2a6acb2583eb121879187ae41e4bf36d3b5',
+            launch='1865a5a768cfaa90f3a7029f05215f2b1a8b974f801be8f15c1464cb23377e2b',
+            binary_path='/storage/.local/share/bobbi-native/2026102116/kodi.bin',
+            launch_path='/storage/.local/share/bobbi-native/2026102116/launch.py')),
     'homefocus2116': dict(build_kind='home_focus',
         candidate='591fa655fa6a507145c7fd90163a18eee91266b98fe89315268e1a5bd32be032',
         sequence=2026102116, tag='2116', base='/storage/.local/share/bobbi-native/2026102116',
@@ -355,18 +375,93 @@ def sha_file(path):
     return digest.hexdigest()
 
 
-def local_artifact_path(reference):
-    # The reviewed builder runs in WSL; its recorded /mnt/<drive> artifacts are
-    # the same files when this maintainer is invoked from Windows.
-    if os.name == 'nt' and reference.startswith('/mnt/'):
+def local_artifact_path(reference, *, windows=None):
+    """Resolve local access only; never rewrite a recorded proof/reference.
+
+    Linux /opt artifacts belong to the one pinned build distro. A Windows
+    rooted path or mixed separators must not turn a proof into another share,
+    drive, alternate data stream or parent directory.
+    """
+    reference = reference.as_posix() if isinstance(reference, Path) else reference
+    assert isinstance(reference, str) and reference and '\x00' not in reference, 'INVALID_ARTIFACT_REFERENCE'
+    windows = os.name == 'nt' if windows is None else windows
+    distro = '//wsl.localhost/AM6B-F9-Build-20260905'
+    if windows and reference.startswith('//wsl.'):
+        assert reference.startswith(distro + '/'), 'UNREVIEWED_BUILD_DISTRO'
+        reference = reference[len(distro):]
+    if windows and reference.startswith('/') and not reference.startswith('//'):
         parts = reference.split('/')
-        assert len(parts) > 3 and len(parts[2]) == 1 and parts[2].isalpha(), 'INVALID_ARTIFACT_REFERENCE'
-        return Path(parts[2].upper() + ':/' + '/'.join(parts[3:]))
+        assert (all(part and part not in ('.', '..') and not any(char in part for char in '\\:<>"|?*')
+                    and not part.endswith((' ', '.')) for part in parts[1:])
+                and all(ord(char) >= 32 for char in reference)), 'INVALID_ARTIFACT_REFERENCE'
+        if parts[1] == 'mnt':
+            assert len(parts) > 3 and len(parts[2]) == 1 and parts[2] in 'abcdefghijklmnopqrstuvwxyz', 'INVALID_ARTIFACT_REFERENCE'
+            return Path(parts[2].upper() + ':/' + '/'.join(parts[3:]))
+        assert parts[1] == 'opt' and len(parts) > 2, 'INVALID_ARTIFACT_REFERENCE'
+        return Path(distro + reference)
     return Path(reference)
 
 
+def checked_scoped_build(build_result, result, profile):
+    """The scoped successor changes the wire schema and CE subtitle actor."""
+    video = 'xbmc/cores/VideoPlayer/VideoPlayer.cpp'
+    layout = {video, 'xbmc/application/ApplicationPlayer.cpp',
+              'xbmc/cores/playercorefactory/PlayerCoreConfig.cpp'}
+    rpc = 'xbmc/interfaces/json-rpc/'
+    schema_sources = {rpc+'JSONRPC.cpp', rpc+'JSONServiceDescription.cpp'}
+    units = layout | schema_sources | {rpc+'PlayerOperations.cpp'}
+    assert (result.get('build_kind') == 'scoped_controls'
+            and result.get('predecessor_unchanged') is True
+            and result.get('predecessor_proof_sha256') == profile['predecessor_proof_sha256']
+            and len(result.get('recompiled_units', [])) == len(units)
+            and set(result['recompiled_units']) == units), 'SCOPED_CONSUMERS_CHANGED'
+    assert (result.get('binary_bobicontrol_schema_unchanged') is False
+            and result.get('binary_bobicontrol_schema_matches_source') is True
+            and result.get('schema_changed_methods') == ['Player.BobiControl']
+            and set(result.get('schema_include_sources', [])) == schema_sources
+            and set(result.get('schema_consumers', [])) == {
+                'build/interfaces/json-rpc/CMakeFiles/jsonrpc_interface.dir/JSONRPC.cpp.o',
+                'build/interfaces/json-rpc/CMakeFiles/jsonrpc_interface.dir/JSONServiceDescription.cpp.o'}), 'SCOPED_SCHEMA_NOT_VERIFIED'
+    for field in ('ce_context_patch_sha256', 'platform_patch_sha256'):
+        assert result.get(field) == profile[field], 'SCOPED_PLATFORM_PATCH_CHANGED'
+    assert result.get('platform_variants') == ['preserve-ce-subtitle-switch-and-bluray'], 'SCOPED_PLATFORM_VARIANT_CHANGED'
+    snapshot = build_result.parent/'source-candidate'
+    methods = json.loads((snapshot/(rpc+'schema/methods.json')).read_text())
+    method = methods['Player.BobiControl']
+    assert method == result.get('binary_bobicontrol'), 'SCOPED_SCHEMA_SOURCE_CHANGED'
+    params = {row['name']: row for row in method['params']}
+    assert ({'seek', 'audio_stream', 'manual_subtitle_stream', 'subtitle_visible'} <= set(params['action']['enum'])
+            and params['control_protocol']['maximum'] == 1 and 'audio_sync' not in params), 'SCOPED_SCHEMA_INCOMPLETE'
+    header = build_result.parent/'generated/ServiceDescription.h'
+    assert sha_file(header) == result.get('generated_header_sha256'), 'SCOPED_GENERATED_HEADER_CHANGED'
+    proof = local_artifact_path(profile['actor_proof'])
+    assert sha_file(proof) == profile['actor_proof_sha256'], 'SCOPED_ACTOR_PROOF_CHANGED'
+    actor = json.loads(proof.read_text())
+    cases = {'seek_receipt', 'seek_failed', 'stale_cas', 'stream_key', 'duplicate', 'manual_subtitle_off',
+        'audio_failed', 'audio_resync', 'resync_replacement', 'same_id_replacement', 'pending_manual',
+        'gate_contention', 'decoder_intent_lock', 'resync_new_manual', 'ce_subtitle_resync',
+        'ce_subtitle_replacement', 'ce_subtitle_new_manual', 'ce_subtitle_original_mode', 'ce_subtitle_non_demux'}
+    rows = actor.get('tests', [])
+    assert (actor.get('compiled') is True and actor.get('passed') is True and len(rows) == len(cases)
+            and {row.get('name') for row in rows} == cases
+            and all(row.get('passed') is True for row in rows)), 'SCOPED_ACTOR_CASES_MISSING'
+    assert local_artifact_path(actor['source']).resolve() == snapshot.resolve(), 'SCOPED_ACTOR_SOURCE_REFERENCE_CHANGED'
+    for relative in (video, 'xbmc/cores/VideoPlayer/BobiScopedControl.h'):
+        assert actor['source_sha256'][relative] == result['source_sha256'][relative], 'SCOPED_ACTOR_SOURCE_CHANGED'
+    for filename, field in (('actual_scoped_actor.inc', 'extracted_sha256'), ('scoped-actor-test', 'binary_sha256')):
+        assert sha_file(proof.parent/filename) == actor[field], 'SCOPED_ACTOR_ARTIFACT_CHANGED'
+    for source in layout | schema_sources:
+        dependency = build_result.parent/(Path(source).name+'.o.d')
+        required = (actor['source']+'/xbmc/cores/VideoPlayer/VideoPlayer.h' if source in layout else
+                    actor['source'].rsplit('/', 1)[0]+'/generated/ServiceDescription.h')
+        assert required in dependency.read_text().replace('\\\n', ' ').split(), 'SCOPED_HEADER_DEPENDENCY_MISSING'
+    assert result.get('retained_archive_members', {}).get('build/guilib_listproviders/guilib_listproviders.a'), 'SCOPED_HOME_ARCHIVE_MISSING'
+    return units
+
+
 def checked_build(build_result, profile):
-    if profile.get('build_kind') in ('completion', 'home_focus'):
+    build_result = local_artifact_path(build_result)
+    if profile.get('build_kind') in ('completion', 'home_focus', 'scoped_controls'):
         # This successor inherits the already verified schema host, not a
         # reconstruction from the historical pre-handoff runtime generation.
         assert sha_file(build_result) == profile['build_proof_sha256'], 'BUILD_PROOF_CHANGED'
@@ -377,9 +472,11 @@ def checked_build(build_result, profile):
                 and result.get('predecessor_sha256') == previous
                 and result.get('predecessor-relink_sha256') == previous), 'PREDECESSOR_RELINK_CHANGED'
         assert (result.get('architecture_and_dependencies_unchanged') is True
-                and result.get('binary_bobicontrol_schema_unchanged') is True
+                and (profile['build_kind'] == 'scoped_controls' or result.get('binary_bobicontrol_schema_unchanged') is True)
                 and result.get('canonical_patch_sha256') == profile['canonical_patch_sha256']), 'NATIVE_ABI_NOT_VERIFIED'
-        if profile['build_kind'] == 'home_focus':
+        if profile['build_kind'] == 'scoped_controls':
+            units = checked_scoped_build(build_result, result, profile)
+        elif profile['build_kind'] == 'home_focus':
             units = {'xbmc/guilib/listproviders/DirectoryProvider.cpp'}
             assert (result.get('build_kind') == 'home_focus'
                     and result.get('predecessor_unchanged') is True
@@ -495,6 +592,7 @@ def predecessor(profile):
 
 def staged_files(build_result, profile, layout_path):
     result, binary = checked_build(build_result, profile)
+    layout_path = local_artifact_path(layout_path)
     layout = json.loads(layout_path.read_text())
     previous = predecessor(profile)
     launch = layout['files'][previous['launch_path']]['source'].encode()
@@ -515,7 +613,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--transport-source', type=Path, required=True)
     parser.add_argument('--mode', choices=('stage','apply','reapply','status','rollback'), required=True)
-    parser.add_argument('--build-result', type=Path, required=True)
+    parser.add_argument('--build-result', type=local_artifact_path, required=True)
     parser.add_argument('--profile', choices=tuple(PROFILES), default='directory1908')
     parser.add_argument('--baseline-layout', type=Path)
     parser.add_argument('--report-dir', type=Path)

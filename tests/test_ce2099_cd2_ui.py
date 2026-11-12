@@ -11,7 +11,7 @@ from test_library_ui import context
 
 
 @pytest.fixture
-def ui(monkeypatch):
+def ui(monkeypatch, tmp_path):
     state = SimpleNamespace(choices=[], confirmations=[], menus=[], messages=[], prompts=[],
                             opened=[], mounts=('/mounted-fixture',), rows=[], unavailable=False)
     state.row = dict(provider='quark', account=empty_scope('quark'),
@@ -40,6 +40,7 @@ def ui(monkeypatch):
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Dialog=lambda: state.dialog))
     monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Monitor=lambda: SimpleNamespace(
         abortRequested=lambda: False)))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(tmp_path)))
     monkeypatch.setattr(cd2_mounts, 'discover', lambda: state.mounts)
     monkeypatch.setattr(pan_ui, '_status', status)
     monkeypatch.setattr(pan_ui, 'login', forbidden)

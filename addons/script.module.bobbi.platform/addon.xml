@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="script.module.bobbi.platform" version="0.1.72" name="bobbi Platform" provider-name="bobbi TV contributors">
-  <requires><import addon="script.module.bobbi.core" version="0.1.63"/><import addon="xbmc.python" version="3.0.1"/><import addon="script.module.pycryptodome" version="3.4.3"/></requires>
+<addon id="script.module.bobbi.platform" version="0.1.73" name="bobbi Platform" provider-name="bobbi TV contributors">
+  <requires><import addon="script.module.bobbi.core" version="0.1.64"/><import addon="xbmc.python" version="3.0.1"/><import addon="script.module.pycryptodome" version="3.4.3"/></requires>
   <extension point="xbmc.python.module" library="lib"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="zh_CN">独立平台配置、能力探测与发行校验</summary>

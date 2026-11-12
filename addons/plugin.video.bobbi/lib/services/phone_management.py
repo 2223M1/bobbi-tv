@@ -19,6 +19,7 @@ MAX_REPLY = 16384
 SESSION_SECONDS = 900
 COOKIE = 'bobbi_management'
 SCOPES = frozenset(('catalog_read', 'catalog_review', 'catalog_tasks'))
+PLAYBACK_SCOPES = frozenset(('playback_read', 'playback_control'))
 ACTION_SCOPE = {
     'catalog_sources': 'catalog_read', 'catalog_items': 'catalog_read', 'catalog_jobs': 'catalog_read',
     'catalog_history': 'catalog_read',
@@ -26,6 +27,8 @@ ACTION_SCOPE = {
     'catalog_candidates': 'catalog_read', 'catalog_group': 'catalog_read',
     'catalog_preview': 'catalog_review', 'catalog_apply': 'catalog_review',
     'catalog_cancel': 'catalog_tasks', 'catalog_scan': 'catalog_tasks',
+    'playback_presentation': 'playback_read', 'playback_receipt': 'playback_read',
+    'playback_command': 'playback_control',
 }
 
 
@@ -54,6 +57,18 @@ def _page(args):
 
 def parameters(action, args):
     if type(args) is not dict or len(encode(args)) > MAX_BODY:
+        raise PhoneError('INVALID_REQUEST', 400)
+    if action in ('playback_presentation', 'playback_receipt', 'playback_command'):
+        from bobbi_core.playback_presentation import command, expected
+        try:
+            if action == 'playback_presentation' and not args:
+                return {}
+            if action == 'playback_command':
+                return command(args)
+            if action == 'playback_receipt' and set(args) == {'expected', 'command_id'}:
+                return dict(expected=expected(args['expected']), command_id=_id(args['command_id']))
+        except (ValueError, TypeError, KeyError):
+            pass
         raise PhoneError('INVALID_REQUEST', 400)
     allowed = {
         'catalog_sources': {'offset', 'limit'}, 'catalog_items': {'source', 'state', 'offset', 'limit'},
@@ -123,16 +138,26 @@ PUBLIC_FIELDS = frozenset(('items', 'next_offset', 'id', 'name', 'parent', 'trun
     'episode', 'year', 'kind', 'title', 'tmdb_id', 'version', 'status', 'before', 'after', 'action',
     'schema', 'task_id', 'stage', 'counts', 'pages', 'scanned', 'discovered', 'updated_at',
     'cancel_requested', 'result_summary', 'available', 'after_state', 'position', 'duration', 'completion_reason', 'index',
-    'observation', 'coverage', 'availability', 'recheck_required', 'indexed_count', 'latest_state'))
+    'observation', 'coverage', 'availability', 'recheck_required', 'indexed_count', 'latest_state',
+    'work_title', 'version_label', 'description', 'navigation', 'view', 'parent_entity_id',
+    'supplement', 'before_supplement', 'after_supplement', 'metadata_key', 'parent_file_id',
+    'parent_revision', 'parent_evidence', 'observation_key', 'needs_review'))
 
 # Query summaries have their own read budget; this never enlarges review batches.
 QUERY_FIELDS = frozenset(('schema', 'items', 'next_cursor', 'projection_revision', 'truncated',
     'entity_id', 'entity_kind', 'display_title', 'media_kind', 'season', 'episode', 'review_state',
     'availability', 'variant_count', 'available_count', 'source_count', 'metadata_key', 'year', 'art', 'poster', 'thumb', 'fanart',
-    'file_name', 'file_size', 'version_label', 'sources', 'source_total', 'id', 'name'))
+    'file_name', 'file_size', 'version_label', 'sources', 'source_total', 'id', 'name',
+    'review_revision', 'observation_key', 'supplement', 'kind', 'title', 'parent_file_id',
+    'parent_revision', 'parent_evidence', 'state'))
 CANDIDATE_FIELDS = frozenset(('items', 'media_kind', 'tmdb_id', 'title', 'original_title',
                             'year', 'poster_path', 'basis', 'mismatch'))
 GROUP_FIELDS = PUBLIC_FIELDS | frozenset(('group_id', 'anchor_id', 'source_id', 'projection_revision'))
+PLAYBACK_FIELDS = frozenset(('available', 'reason', 'expected', 'boot_id', 'epoch', 'request_id',
+    'native_instance', 'file_sha256', 'selection_epoch', 'expected_sequence', 'user_intent',
+    'subtitle_intent', 'audio_intent', 'position_ms', 'duration_ms', 'can_seek', 'subtitle_visible',
+    'subtitle_status', 'audio_status', 'audio', 'subtitles', 'chapters', 'name', 'language', 'index',
+    'stream_key', 'selected', 'audio_truncated', 'subtitles_truncated', 'chapters_truncated', 'command_id', 'status'))
 
 
 def public(value, depth=0, fields=PUBLIC_FIELDS, max_items=5):
@@ -152,10 +177,19 @@ def public(value, depth=0, fields=PUBLIC_FIELDS, max_items=5):
 
 
 class PhoneManagement:
-    def __init__(self, expected, origin, rpc=None, clock=time.monotonic, scopes=SCOPES):
+    def __init__(self, expected, origin, rpc=None, clock=time.monotonic, scopes=SCOPES, profile_binding=None):
         from bobbi_platform.pan_accounts import scope
-        from bobbi_platform.runtime import call
+        from bobbi_platform.paths import ProfileBinding
+        from bobbi_platform.runtime import bind_call
+        # An injected transport may supply its own binding in fixtures. The
+        # production path always captures both Kodi roots and this exact Host.
+        self.profile_binding = profile_binding or (ProfileBinding() if rpc is None else None)
+        if rpc is None:
+            rpc = bind_call(self.profile_binding.root('script.module.bobbi.platform') / 'runtime.json')
+            self.profile_binding.require_current()
         self.mounted = type(expected) is dict and expected.get('reference_kind') == 'mounted_path'
+        if self.mounted and set(scopes) & PLAYBACK_SCOPES:
+            raise PhoneError('ACTION_FORBIDDEN')
         if self.mounted:
             if set(expected) - {'reference_kind', 'source_id', 'namespace', 'generation'}:
                 raise PhoneError('INVALID_REQUEST', 400)
@@ -170,9 +204,10 @@ class PhoneManagement:
             raise PhoneError('ORIGIN_FORBIDDEN') from None
         if (parts.scheme != 'http' or not (address.is_private or address.is_loopback)
                 or parts.path or parts.query or parts.fragment or parts.username or parts.password
-                or not parts.port or not 1 <= parts.port <= 65535 or not set(scopes) <= SCOPES):
+                or not parts.port or not 1 <= parts.port <= 65535 or not set(scopes) <= SCOPES | PLAYBACK_SCOPES
+                or ('playback_control' in scopes and 'playback_read' not in scopes)):
             raise PhoneError('ORIGIN_FORBIDDEN')
-        self.origin, self.host, self.rpc, self.clock = origin, parts.netloc, rpc or call, clock
+        self.origin, self.host, self.rpc, self.clock = origin, parts.netloc, rpc, clock
         self.scopes, self.lock = frozenset(scopes), RLock()
         self.revoked = Event()
         self.previews = {}
@@ -196,14 +231,29 @@ class PhoneManagement:
             raise PhoneError('ORIGIN_FORBIDDEN')
 
     def _live(self):
+        self._profile()
         if self.revoked.is_set() or self.closed or self.clock() >= self.expires:
             self.revoke()
             raise PhoneError('SESSION_EXPIRED', 401)
 
+    def _profile(self):
+        try:
+            if self.profile_binding is not None:
+                self.profile_binding.require_current()
+        except (OSError, ValueError, RuntimeError):
+            self.revoke()
+            raise PhoneError('ACCOUNT_OR_SERVICE_CHANGED', 401) from None
+
+    def _rpc(self, action, args, timeout):
+        self._profile()
+        result = self.rpc(action, args, timeout=timeout)
+        self._profile()
+        return result
+
     def _account(self):
         try:
             if self.mounted:
-                current = self.rpc('catalog_mount_scope', {'source_id': self.expected['source_id']}, timeout=2)
+                current = self._rpc('catalog_mount_scope', {'source_id': self.expected['source_id']}, timeout=2)
                 if type(current) is not dict:
                     raise ValueError
                 current = current.get('scope', current)
@@ -212,7 +262,7 @@ class PhoneManagement:
                 if any(current.get(key) != self.expected[key] for key in ('reference_kind', 'source_id', 'namespace')):
                     raise ValueError
             else:
-                rows = self.rpc('pan_status', {}, timeout=2)['providers']
+                rows = self._rpc('pan_status', {}, timeout=2)['providers']
                 current = next(row['account'] for row in rows if row['provider'] == self.expected['provider'])
                 if current != self.expected:
                     raise ValueError
@@ -221,23 +271,32 @@ class PhoneManagement:
             raise PhoneError('ACCOUNT_OR_SERVICE_CHANGED', 401) from None
 
     def _host(self, action, args):
+        self._profile()
+        if action in ('playback_presentation', 'playback_command', 'playback_receipt'):
+            body = dict(operation=action, account_scope=self.expected)
+            if action == 'playback_command':
+                body['command'] = args
+            else:
+                body.update(args)
+            return self._rpc('playback', body, timeout=3)
         if not self.mounted:
-            return self.rpc(action, dict(args, expected=self.expected), timeout=3)
+            return self._rpc(action, dict(args, expected=self.expected), timeout=3)
         if action == 'catalog_history':
             raise PhoneError('ACTION_FORBIDDEN')
         for value in (args.get('source'), args.get('source_id'), (args.get('query') or {}).get('source_id')):
             if value is not None and value != self.expected['source_id']:
                 raise PhoneError('ACTION_FORBIDDEN')
         if action == 'catalog_sources':
-            listed = self.rpc('catalog_mount_sources', {}, timeout=3)
+            listed = self._rpc('catalog_mount_sources', {}, timeout=3)
             # The browser grant covers exactly one registered namespace. Keep
             # other source names and observations out of its public response.
             return dict(items=[row for row in listed['items'] if row['id'] == self.expected['source_id']])
         params = dict(args, source_id=self.expected['source_id'], namespace=self.expected['namespace'])
-        return self.rpc(action.replace('catalog_', 'catalog_mount_', 1), params, timeout=3)
+        return self._rpc(action.replace('catalog_', 'catalog_mount_', 1), params, timeout=3)
 
     def _session_description(self):
         return dict(csrf=self._csrf, expires_in=int(self.expires - self.clock()),
+                    scopes=sorted(self.scopes),
                     catalog_kind='mounted' if self.mounted else 'native',
                     source_id=self.expected['source_id'] if self.mounted else None)
 
@@ -323,7 +382,9 @@ class PhoneManagement:
             if action == 'catalog_sources':
                 rows, offset, limit = result['items'], args['offset'], args['limit']
                 result = dict(items=rows[offset:offset+limit], next_offset=(offset+limit if len(rows) > offset+limit else None))
-            if action == 'catalog_query':
+            if action in ('playback_presentation', 'playback_command', 'playback_receipt'):
+                result = public(result, fields=PLAYBACK_FIELDS, max_items=32)
+            elif action == 'catalog_query':
                 result = public(result, fields=QUERY_FIELDS, max_items=32)
             else:
                 fields = CANDIDATE_FIELDS if action == 'catalog_candidates' else GROUP_FIELDS if action == 'catalog_group' else PUBLIC_FIELDS

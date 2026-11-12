@@ -19,6 +19,7 @@ from ce_115_direct_kodi import ROUTES, TOOL_REVISION, checked_route
 
 
 def checked_inspection(inspection, target):
+    shared.checked_target(target)
     shared.require(isinstance(inspection, dict) and inspection.get('state') == 'validated'
         and inspection.get('mode') == 'read_only' and inspection.get('operation') == 'inspect'
         and inspection.get('diagnostic_only') is True and inspection.get('product_proof') is False
@@ -26,8 +27,16 @@ def checked_inspection(inspection, target):
         and inspection.get('baseline_request') == target['request_id']
         and inspection.get('selection_identity') == target['selection_identity']
         and inspection.get('source_key') == target['source_key']
-        and inspection.get('title') == target['title'] and inspection.get('size') == target['size']
+        and inspection.get('title') == target['title'] and type(inspection.get('size')) is int
+        and 0 < inspection['size'] <= 512 * 1024**3
+        and (target['size'] is None or inspection['size'] == target['size'])
         and inspection.get('media') == target['media'], 'INSPECT_CHANGED')
+    shared.checked_catalog_scope(inspection.get('catalog_scope'))
+    if target.get('schema') == 2:
+        shared.require(inspection.get('schema') == 2 and inspection.get('baseline_sha256') == target['baseline_sha256']
+            and inspection.get('size_evidence') == 'retained_tuple_and_exact_history'
+            and inspection.get('history') == dict(exact_request=True, exact_pointer=True, same_account_epoch=True),
+            'INSPECT_CHANGED')
     return inspection
 
 
@@ -76,6 +85,9 @@ def decode_result(raw, descriptor, receipt):
                    'DIAGNOSTIC_SCOPE')
     shared.require(checked_route(result.get('route', 'direct')) == checked_route(receipt.get('route', 'direct')),
                    'DIAGNOSTIC_SCOPE')
+    if receipt.get('target_schema') == 2:
+        shared.require(all(result.get(key) == receipt.get(key) for key in ('target_schema', 'baseline_sha256',
+            'baseline_request', 'selection_identity', 'source_key', 'media', 'size')), 'DIAGNOSTIC_SCOPE')
     return result
 
 
@@ -118,7 +130,8 @@ def run_once(source, output, parameters, sender=driver.dispatch):
                       tool_revision=TOOL_REVISION)
     receipt = dict(schema=1, operation='start', state='unconfirmed', run_id=parameters['run_id'],
                    request_id=parameters['request_id'], route=parameters['route'], tool_revision=TOOL_REVISION,
-                   retry_allowed=False, diagnostic_only=True, product_proof=False)
+                   retry_allowed=False, diagnostic_only=True, product_proof=False,
+                   **shared.target_evidence(parameters['target']))
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open('x', encoding='utf-8') as stream:
         json.dump(receipt, stream)
@@ -139,6 +152,7 @@ def main():
     parser.add_argument('--transport-source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--baseline', type=Path)
+    parser.add_argument('--target-version', type=int, choices=(1, 2), default=1)
     parser.add_argument('--inspect', dest='inspection', type=Path)
     parser.add_argument('--receipt', type=Path)
     parser.add_argument('--attended', action='store_true', help='Explicit supervised diagnostic playback')
@@ -149,12 +163,14 @@ def main():
     try:
         if args.operation == 'start':
             shared.require(args.attended and args.baseline and args.inspection and not args.receipt, 'DIAGNOSTIC_SCOPE')
-            target = driver.target_from_baseline(args.baseline)
+            target = driver.target_from_baseline(args.baseline, args.target_version)
             inspection = checked_inspection(json.loads(args.inspection.read_text(encoding='utf-8')), target)
+            target = dict(target, size=inspection['size'])
             result = run_once(args.transport_source, args.output, dict(run_id=uuid4().hex, request_id=uuid4().hex,
                 target=target, inspection=inspection, duration=args.duration, route=args.route))
         else:
             shared.require(args.receipt and not args.baseline and not args.inspection
+                           and args.target_version == 1
                            and args.route == 'direct'
                            and (args.attended if args.operation == 'stop' else not args.attended), 'DIAGNOSTIC_SCOPE')
             receipt = json.loads(args.receipt.read_text(encoding='utf-8'))

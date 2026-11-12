@@ -16,6 +16,7 @@ import ce_115_direct_trial as driver
 @pytest.fixture(autouse=True)
 def restore_baseline(monkeypatch):
     monkeypatch.setattr(remote, 'BASELINE', dict(remote.BASELINE))
+    monkeypatch.setattr(remote, 'profile_status', lambda: dict(label='Fixture'))
 
 
 def fixture(tmp_path):
@@ -27,8 +28,13 @@ def fixture(tmp_path):
     target = dict(request_id='a' * 32, selection_identity='transport:' + remote.digest('am6bjuku://' + key),
                   source_key='b' * 64, title=row['name'], size=row['size'], media='movies:782:0:0', year=1997)
     remote.BASELINE.update({key: target[key] for key in remote.BASELINE})
-    path = tmp_path / 'userdata/addon_data/plugin.video.bobbi/juku/catalog.sqlite3'
+    profile = tmp_path / 'userdata/addon_data/plugin.video.bobbi'
+    path = profile / 'source-libraries' / remote.digest('https://example.invalid') / 'catalog.sqlite3'
     path.parent.mkdir(parents=True)
+    (tmp_path / 'userdata/profiles.xml').write_text(
+        '<profiles><profile><name>Fixture</name><directory>special://masterprofile/</directory></profile></profiles>')
+    (profile / 'source-library.json').write_text(json.dumps(dict(schema=1,
+        endpoint='https://example.invalid', generation='1' * 32)))
     db = sqlite3.connect(path)
     db.execute('CREATE TABLE selections (key TEXT, media TEXT, payload TEXT)')
     db.execute('INSERT INTO selections VALUES (?,?,?)', (key, target['media'], json.dumps(row)))
@@ -38,7 +44,7 @@ def fixture(tmp_path):
     history = {'jt:lfh': {'test': dict(request_id=target['request_id'], source_title=row['name'],
         mode='movies', ids={'tmdb_id': 782}, _share=dict(locator='am6bjuku://' + key, guid='juku:' + key,
         title=row['name'], size=row['size'], media=target['media'], account=account))}}
-    (path.parent.parent / 'database.pickle').write_bytes(pickle.dumps(history))
+    (profile / 'database.pickle').write_bytes(pickle.dumps(history))
     return target, row, account, path
 
 

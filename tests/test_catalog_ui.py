@@ -9,10 +9,11 @@ from bobbi_platform import catalog_ui
 
 
 @pytest.fixture
-def ui(monkeypatch):
+def ui(monkeypatch, tmp_path):
     state = SimpleNamespace(choices=[], inputs=[], confirmations=[], responses=[],
                             events=[], calls=[], menus=[], messages=[], prompts=[], views=[])
     state.expected = dict(provider='baidu', account_id='baidu:' + 'a' * 64, epoch=7)
+    state.profile, state.bound_paths = tmp_path, []
 
     def select(title, labels):
         state.events.append(('select', title))
@@ -44,6 +45,15 @@ def ui(monkeypatch):
                                    textviewer=lambda title,body:state.views.append((title,body)))
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(Dialog=lambda: state.dialog))
     monkeypatch.setattr(catalog_ui, 'call', call)
+    # Keep the real ProfileBinding and review coordinator. Only Kodi's profile
+    # translation and the bound IPC transport are doubles in this UI test.
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
+        translatePath=lambda value: str(state.profile / value.rsplit('/', 1)[-1])))
+    from bobbi_platform import runtime
+    def bind(path):
+        state.bound_paths.append(path)
+        return call
+    monkeypatch.setattr(runtime, 'bind_call', bind)
     return state
 
 
@@ -76,6 +86,7 @@ def test_preview_precedes_confirmation_and_same_revision_apply(ui, item):
     assert len(second['request_id']) == 32 and int(second['request_id'], 16) >= 0
     assert 'Preview title' in ui.views[0][1]
     assert '已保存 1/1' in ui.views[-1][0]
+    assert ui.bound_paths == [ui.profile / 'script.module.bobbi.platform/runtime.json']
 
 
 def test_stale_preview_refuses_confirmation_and_write(ui, item):
@@ -96,6 +107,22 @@ def test_cancelled_confirmation_does_not_apply(ui, item):
     assert [action for action, _ in ui.calls] == ['catalog_preview']
     assert ui.calls[0][1]['commands'][0]['action'] == 'ignore'
     assert len(ui.prompts) == 1 and not ui.messages
+
+
+def test_profile_switch_during_confirmation_stops_real_bound_review(ui, item):
+    admission = ui.profile
+    ui.choices = [3]
+    ui.responses = [('catalog_preview', dict(items=[dict(
+        status='ready', after=None, after_state='ignored')]))]
+    def switch_profile(*args):
+        ui.profile = admission/'another-profile'
+        return True
+    ui.dialog.yesno = switch_profile
+    with pytest.raises(ValueError, match='PROFILE_CHANGED'):
+        catalog_ui.review_item(ui.dialog, ui.expected, item)
+    assert [action for action, _ in ui.calls] == ['catalog_preview']
+    assert ui.bound_paths == [admission/'script.module.bobbi.platform/runtime.json']
+    assert not ui.profile.exists()
 
 
 def test_undo_confirmation_displays_actual_restored_preview_title(ui, item):

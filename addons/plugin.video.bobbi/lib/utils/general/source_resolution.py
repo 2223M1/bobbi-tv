@@ -28,6 +28,27 @@ class ResolutionFacts:
     caution: str = ''
 
 
+def source_resolution_label(source, facts=None):
+    """Display the resolution class without inventing a scan-mode claim.
+
+    Dimensions (including prepared probes) establish a size, not progressive
+    scan. Preserve one compatible explicit filename p/i tag; contradictory
+    scan tags remain a neutral numeric class. Ranking facts are unchanged.
+    """
+    facts = source_resolution(source) if facts is None else facts
+    resolution = facts.resolution
+    if not resolution:
+        return '未知'
+    title = str(getattr(source, 'title', '') or '')
+    scans = {(int(height), scan.lower()) for height, scan in re.findall(
+        r'(?<![a-z0-9])(4320|2160|1080|720|576|480)([pi])(?![a-z0-9])', title, re.I)}
+    if len(scans) == 1:
+        height, scan = next(iter(scans))
+        if height == resolution or height == 576 and resolution == 480:
+            return str(height) + scan
+    return {4320: '8K', 2160: '4K'}.get(resolution, str(resolution))
+
+
 def _media_id(identity):
     if not isinstance(identity, dict) or identity.get('mode') not in ('movies', 'tv'):
         raise ValueError('Exact catalogue identity required')

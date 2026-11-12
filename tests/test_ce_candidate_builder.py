@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -74,3 +75,51 @@ def test_legacy_entries_have_one_shared_pipeline_and_keep_pinned_generation():
         assert not any(isinstance(node, (ast.FunctionDef, ast.ClassDef)) for node in ast.walk(tree))
         assert 'from ce_candidate_builder import main' in path.read_text()
     assert '0b54e0b6b3e982dd9e02f2867cdbc6fc3df36afd7709e7cf4c368ec655651f7c' in path.read_text()
+
+
+def test_schema_delta_requires_exact_declared_changed_methods():
+    before = {'Player.BobiControl': {'actions': ['stop']}, 'Unchanged': {'x': 1}}
+    after = dict(before, **{'Player.BobiControl': {'actions': ['stop', 'seek']}})
+    assert builder.schema_delta(before, after, ['Player.BobiControl']) == ['Player.BobiControl']
+    with pytest.raises(AssertionError, match='UNDECLARED_SCHEMA_DELTA'):
+        builder.schema_delta(before, dict(after, Unchanged={}), ['Player.BobiControl'])
+    with pytest.raises(AssertionError, match='SCHEMA_METHOD_REMOVED'):
+        builder.schema_delta(before, {'Unchanged': {'x': 1}}, ['Player.BobiControl'])
+    with pytest.raises(AssertionError, match='UNDECLARED_SCHEMA_DELTA'):
+        builder.schema_delta(before, before, ['Player.BobiControl'])
+
+
+def test_historical_script_location_never_changes_expected_bytes(tmp_path):
+    original, archived = tmp_path/'working.py', tmp_path/'frozen.py'
+    original.write_text('old')
+    archived.write_text('old')
+    previous = dict(inputs={str(original): sha(original)})
+    original.write_text('new')
+    profile = dict(historical_inputs={str(original): str(archived)})
+    assert builder.predecessor_inputs(profile, previous, sha) == {str(archived): sha(archived)}
+    archived.write_text('changed')
+    with pytest.raises(AssertionError, match='HISTORICAL_INPUT_CHANGED'):
+        builder.predecessor_inputs(profile, previous, sha)
+    with pytest.raises(AssertionError, match='FROZEN_INPUT_CHANGED'):
+        builder.predecessor_inputs({}, previous, sha)
+
+
+def test_platform_semantic_delta_requires_explicit_exact_named_hunk(tmp_path):
+    patch = tmp_path/'original.patch'
+    patch.write_text('+upstream\n')
+    with pytest.raises(AssertionError, match='CANONICAL_ADDITION_CHANGED'):
+        builder.patch_bytes(patch, [('+upstream', '+downstream')])
+    assert builder.patch_bytes(patch, [], [('ce-preserves-extra-behavior', '+upstream', '+downstream')]) == b'+downstream\n'
+    with pytest.raises(AssertionError, match='PLATFORM_VARIANT_DRIFT'):
+        builder.patch_bytes(patch, [], [('ce', '+absent', '+downstream')])
+
+
+def test_next_overlay_inherits_home_archive_instead_of_original(tmp_path):
+    legacy = SimpleNamespace(ARCHIVES=('build/video.a',), BUILD=tmp_path/'original')
+    previous = {'retained_archive_members': {'build/video.a': {}, 'build/home.a': {}}}
+    origins = builder.archive_origins(legacy, previous, {'extra_archives': ('build/new.a',)}, tmp_path/'previous')
+    assert origins == {'build/video.a': tmp_path/'previous/video.a',
+                       'build/home.a': tmp_path/'previous/home.a',
+                       'build/new.a': tmp_path/'original/build/new.a'}
+    with pytest.raises(AssertionError, match='ARCHIVE_NAME_COLLISION'):
+        builder.archive_origins(legacy, previous, {'extra_archives': ('elsewhere/home.a',)}, tmp_path)

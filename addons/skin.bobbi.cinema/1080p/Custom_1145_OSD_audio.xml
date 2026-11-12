@@ -3,6 +3,7 @@
   <defaultcontrol always="true">2024</defaultcontrol>
   <depth>DepthOSD</depth>
   <onload>SetProperty(BobiStreamReload,$INFO[System.Time(HH:mm:ss)],Home)</onload>
+  <onload>RunPlugin(plugin://plugin.video.bobbi/?action=playback_details)</onload>
   <controls>
     <include content="OSDScrim"><param name="top">400</param></include>
     <include content="StreamPicker">

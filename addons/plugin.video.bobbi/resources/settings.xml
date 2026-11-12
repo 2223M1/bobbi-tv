@@ -1230,13 +1230,10 @@
                     <control type="toggle" />
                 </setting>
                 <setting id="skip_intro_auto" type="boolean" label="90167" help="90168">
+                    <!-- Keep stored values compatible; public timestamps only permit manual suggestions. -->
+                    <visible>false</visible>
                     <default>false</default>
                     <control type="toggle" />
-                    <dependencies>
-                        <dependency type="visible">
-                            <condition operator="is" setting="skip_intro_enabled">true</condition>
-                        </dependency>
-                    </dependencies>
                 </setting>
             </group>
             <group id="stinger" label="90179">

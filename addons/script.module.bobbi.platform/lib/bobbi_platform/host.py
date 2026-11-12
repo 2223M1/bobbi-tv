@@ -23,8 +23,12 @@ class _Call:
 
 
 class Host:
-    def __init__(self, root, report=lambda code: None, stream_factory=None, native_rpc=None):
+    def __init__(self, root, report=lambda code: None, stream_factory=None, native_rpc=None,
+                 profile_current=None, plugin_root=None):
         self.root, self.report = Path(root), report
+        self.profile_current = profile_current or (lambda: True)
+        self.plugin_root = Path(plugin_root) if plugin_root is not None else None
+        self.profile_revoked = False
         self.stream_factory, self.native_rpc = stream_factory, native_rpc
         self.accounts = self.streams = self.engine = self.images = None
         self.pans = None  # Optional native providers; never replaces the 115 owner.
@@ -51,6 +55,8 @@ class Host:
         self.unsubscribe = lambda: None
 
     def start(self):
+        if not self.check_profile():
+            raise ValueError('PROFILE_CHANGED')
         def prepare():
             self.accounts = AccountManager(self.root / '115-os_linux.json')
             from .playback_accounts import PlaybackAccounts
@@ -195,21 +201,50 @@ class Host:
             raise ValueError('NATIVE_OWNER_REJECTED')
         return job.result
 
+    def check_profile(self):
+        """Revoke this host permanently; the owning loop performs its drain."""
+        if not self.profile_revoked:
+            try:
+                if self.profile_current() is not True:
+                    self.profile_revoked = True
+            except (OSError, ValueError, RuntimeError):
+                self.profile_revoked = True
+            if self.profile_revoked:
+                self.stopping.set()
+                try:
+                    self.report('PROFILE_CHANGED')
+                except Exception:
+                    pass
+        return not self.profile_revoked
+
+    def _file_history(self):
+        from lib.db.file_history import FileHistory
+        if self.plugin_root is None:
+            return FileHistory()
+        from lib.db.pickle_db import PickleDatabase
+        return FileHistory(PickleDatabase(profile_root=self.plugin_root))
+
     def dispatch(self, action, body):
+        if not self.check_profile():
+            raise OSError('PROFILE_CHANGED')
+        result = self._dispatch(action, body)
+        if not self.check_profile():
+            raise OSError('PROFILE_CHANGED')
+        return result
+
+    def _dispatch(self, action, body):
         if self.stopping.is_set() or self.accounts is None:
             raise ValueError('RUNTIME_NOT_READY')
         if not isinstance(body, dict):
             raise ValueError('RUNTIME_FIELDS')
         if action == 'pan_prepare_history_play' and set(body) == {'history_id', 'request_id'}:
-            from lib.db.file_history import FileHistory
             from .pan_history import prepare_history_play
-            return prepare_history_play(self._pans(), FileHistory().get(body['history_id']), body['request_id'])
+            return prepare_history_play(self._pans(), self._file_history().get(body['history_id']), body['request_id'])
         if isinstance(action, str) and action.startswith('pan_'):
             result = self._pans().dispatch(action, body)
             if action == 'pan_claim_play' and isinstance(result, dict) and result.get('file_ref'):
                 try:
-                    from lib.db.file_history import FileHistory
-                    history = FileHistory().begin(result['file_ref'])
+                    history = self._file_history().begin(result['file_ref'])
                     result = dict(result, history={key: history[key] for key in ('generation', 'session_id')}
                                   if history else None)
                 except (ImportError, ValueError, OSError, RuntimeError):
@@ -217,7 +252,13 @@ class Host:
             return result
         if action == 'catalog_history' and 'expected' in body and set(body) <= {'expected', 'offset', 'limit'}:
             from .pan_history import history_summary
-            return history_summary(self._pans(), **body)
+            return history_summary(self._pans(), history=self._file_history(), catalog=self._catalog(), **body)
+        if action == 'catalog_history_links' and set(body) == {'history_ids'}:
+            from .catalog_navigation import history_links
+            return history_links(self._catalog(), self._pans(), history=self._file_history(), **body)
+        if action == 'catalog_public_holdings' and set(body) == {'identities'}:
+            from .catalog_navigation import public_holdings
+            return public_holdings(self._catalog(), self._pans(), **body)
         if isinstance(action, str) and action.startswith('catalog_'):
             return self._catalog().dispatch(action, body)
         if action == 'jobs' and set(body) <= {'kind', 'expected', 'task', 'offset', 'limit'}:
@@ -417,7 +458,7 @@ class Host:
         return isinstance(result, dict) and result.get('queued') is True
 
     def tick(self):
-        if self.stopping.is_set():
+        if not self.check_profile() or self.stopping.is_set():
             return
         # Revoke old scopes before accepting later opens/continuations. The
         # authority also guards each scoped command under AccountManager CAS.
@@ -439,13 +480,13 @@ class Host:
                     job.error = 'unavailable'
                 else:
                     try:
+                        if not self.check_profile() or self.stopping.is_set():
+                            raise OSError('NATIVE_OWNER_UNAVAILABLE')
                         if job.lifecycle:
                             if self.can_quiesce() is not True:
                                 raise ValueError('PLAYBACK_ACTIVE_OR_UNKNOWN')
                             self.stopping.set()
                             job.result = {'accepted': True}
-                        elif self.stopping.is_set():
-                            raise OSError('NATIVE_OWNER_UNAVAILABLE')
                         else:
                             job.result = self.owner(job.value)
                     except OSError:

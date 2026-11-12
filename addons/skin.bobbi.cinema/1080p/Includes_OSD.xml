@@ -182,9 +182,19 @@
           <label>[COLOR accent]●[/COLOR]  当前   ·   ↑↓ 选择   ·   确认 应用</label>
           <font>Meta22</font><textcolor>text3</textcolor>
         </control>
+        <control type="label">
+          <left>40</left><top>110</top><width>640</width><height>28</height>
+          <label>$INFO[Window(Home).Property(AM6B.SubtitleState)]</label>
+          <font>Meta22</font><textcolor>text3</textcolor><visible>$PARAM[issub]</visible>
+        </control>
+        <control type="label">
+          <left>40</left><top>110</top><width>640</width><height>28</height>
+          <label>$INFO[Window(Home).Property(AM6B.AudioState)]</label>
+          <font>Meta22</font><textcolor>text3</textcolor><visible>!$PARAM[issub]</visible>
+        </control>
         <!-- A real focus target while the plugin loads or returns no tracks. -->
         <control type="button" id="2020">
-          <left>20</left><top>124</top><width>680</width><height>72</height>
+          <left>20</left><top>148</top><width>680</width><height>72</height>
           <label>$VAR[BobiStreamPlaceholder]</label>
           <font>Label28</font><textcolor>text3</textcolor><focusedcolor>text</focusedcolor>
           <textoffsetx>20</textoffsetx><aligny>center</aligny>
@@ -195,7 +205,7 @@
           <visible>Integer.IsEqual(Container(2021).NumItems,0)</visible>
         </control>
         <control type="list" id="2021">
-          <left>20</left><top>124</top><width>680</width><height>412</height>
+          <left>20</left><top>148</top><width>680</width><height>388</height>
           <orientation>vertical</orientation>
           <enable>Integer.IsGreater(Container(2021).NumItems,0)</enable>
           <scrolltime tween="cubic" easing="out">160</scrolltime>

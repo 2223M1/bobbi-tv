@@ -73,23 +73,32 @@ def _plain_source_label(value):
 
 def _quality_key(value):
     value = _plain_source_label(value).strip().casefold()
-    return '4k' if value in {'4k', '2160p'} else value if value in {'1080p', '720p'} else 'n/a'
+    # Retain stable filter keys while grouping by size, not display scan mode.
+    if value in {'4k', '2160', '2160p', '2160i'}:
+        return '4k'
+    if value in {'1080', '1080p', '1080i'}:
+        return '1080p'
+    if value in {'720', '720p', '720i'}:
+        return '720p'
+    return 'n/a'
 
 
 def _source_quality(source):
     value = _plain_source_label(getattr(source, 'quality', '')).strip()
-    if value.casefold() not in ('', 'n/a', 'unknown', '未知'):
+    # A class-derived upstream badge can say "1080p" for a 1080i filename or
+    # dimensions alone. Use the same conservative display as the rank reason.
+    if (value.casefold() not in ('', 'n/a', 'unknown', '未知')
+            and not re.fullmatch(r'(?:[48]k|(?:4320|2160|1080|720|576|480)[pi]?)', value, re.I)):
         return value
-    from lib.utils.general.source_resolution import source_resolution
-    facts = source_resolution(source)
-    return {4320: '8K', 2160: '2160p', 1080: '1080p', 720: '720p', 480: '480p'}.get(facts.resolution, '未知')
+    from lib.utils.general.source_resolution import source_resolution_label
+    return source_resolution_label(source)
 
 
 def _quality_tabs(sources):
     from collections import Counter
     counts = Counter(_quality_key(_source_quality(source)) for source in sources)
     return [('全部', '__all__', len(sources))] + [(label, key, counts[key]) for label, key in
-            [('4K', '4k'), ('1080p', '1080p'), ('720p', '720p'), ('其他', 'n/a')] if counts[key]]
+            [('4K', '4k'), ('1080', '1080p'), ('720', '720p'), ('其他', 'n/a')] if counts[key]]
 
 
 def _plain_source_badges(value):

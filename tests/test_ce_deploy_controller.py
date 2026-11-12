@@ -14,6 +14,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'addons/script.module.bobbi.core/lib'))
+sys.path.insert(0, str(ROOT / 'tools'))
 spec = importlib.util.spec_from_file_location('ce_deploy_controller', ROOT / 'tools/deploy_ce_remote.py')
 controller = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(controller)

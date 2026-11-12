@@ -266,9 +266,19 @@ def manage(legacy_root=''):
                         return True
                 else:
                     source = sources[choice - 2]
-                    action = dialog.select(source.name, ['检查连接' if source.kind == 'vfs' else '检查片库格式',
+                    actions = ['检查连接' if source.kind == 'vfs' else '检查片库格式',
                         '修改连接' if source.kind == 'vfs' else '重新导入片库',
-                        '移除来源'])
+                        '移除来源']
+                    local_source = False
+                    if source.kind == 'vfs':
+                        from .scan_sources import LocalPort
+                        try:
+                            LocalPort.source_scope(source)
+                            local_source = True
+                            actions.append('作品、整理与扫描')
+                        except ValueError:
+                            pass
+                    action = dialog.select(source.name, actions)
                     if action == 0:
                         check_source(dialog, xbmcvfs, source)
                     elif action == 1:
@@ -278,6 +288,18 @@ def manage(legacy_root=''):
                         store.remove(source.id)
                         changed = True
                         dialog.ok('来源已移除', '媒体文件保留，需要时可重新添加。')
+                    elif action == 3 and local_source:
+                        # The sole personal catalog chooses the proven source
+                        # lane. Immediate browsing remains unchanged.
+                        from .runtime import call
+                        local_rows = call('catalog_local_sources', {}, timeout=2)['items']
+                        params = dict(action='personal_catalog', source=source.id)
+                        if any(row['id'] == source.id for row in local_rows):
+                            params['reference_kind'] = 'local_path'
+                        target = 'plugin://plugin.video.bobbi/?' + urlencode(params)
+                        xbmc.executebuiltin('ActivateWindow(Videos,"' + target + '",return)')
+                        navigated = True
+                        return True
             except (LibraryError, OSError, RuntimeError) as error:
                 dialog.ok('未完成', message(error))
     except (LibraryError, OSError, RuntimeError, ValueError) as error:

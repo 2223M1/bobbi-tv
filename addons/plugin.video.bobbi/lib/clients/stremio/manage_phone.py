@@ -9,7 +9,7 @@ _SERVER_PORT = 8081
 def catalog_manage_phone(expected):
     """Explicit optional TV approval; close QR dialog to revoke the session."""
     import xbmcgui
-    from lib.services.phone_management import PhoneManagement
+    from lib.services.phone_management import PhoneManagement, SCOPES
     dialog = xbmcgui.Dialog()
     mounted = expected.get('reference_kind') == 'mounted_path'
     description = ('仅授权此已登记本地来源及其 namespace，不授权其他挂载或网盘账号。\n'
@@ -18,8 +18,20 @@ def catalog_manage_phone(expected):
             description + '仅在可信局域网使用。扫码者可查看所选片库的本地索引、整理作品和取消扫描，不能播放或读取网盘登录。'
             '授权最多 15 分钟，关闭此二维码窗口立即撤销；后台扫描不会被取消。'):
         return False
+    # Local/mounted grants identify a catalog namespace, not a playback account.
+    # Do not advertise a command scope that the existing owner cannot execute.
+    permission = 0 if mounted else dialog.select('手机权限（仅本次授权）', ['仅整理片库', '片库 + 查看当前播放', '片库 + 查看并控制当前播放'])
+    if permission < 0:
+        return False
+    scopes = SCOPES | (frozenset(('playback_read',)) if permission >= 1 else frozenset())
+    if permission == 2:
+        if not dialog.yesno('允许手机控制当前播放？',
+                '扫码者可查看当前音轨和字幕，并拖动进度、切换音轨或字幕。仅对当前授权账号的已确认播放生效；'
+                '旧内核不支持时不会开放控制。关闭二维码窗口立即撤销。'):
+            return False
+        scopes |= frozenset(('playback_control',))
     origin = 'http://%s:%d' % (get_local_ip(), _SERVER_PORT)
-    manager = PhoneManagement(expected, origin)
+    manager = PhoneManagement(expected, origin, scopes=scopes)
     server = StremioWebServer(port=_SERVER_PORT, phone_management=manager)
     server.start()
     if not server.is_running:

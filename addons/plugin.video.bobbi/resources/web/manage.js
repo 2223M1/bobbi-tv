@@ -15,6 +15,8 @@
   let authGeneration = 0, authClosed = false;
   let operation = null, viewGeneration = 0, candidateGeneration = 0, candidateRequest = null, candidateTimer = null;
   let pollTimer=null, pollUntil=0, pollDelay=5000, jobsActive=true;
+  let grantedScopes=[], playbackBusy=false;
+  let supplementParent=null;
   const requests = new Set(), receipts = [];
   function node(tag, text, className) {
     const value = document.createElement(tag);
@@ -71,6 +73,7 @@
   }
   function closeAuthorization() {
     authGeneration++;authClosed=true;csrf='';batch=null;busy=null;
+    supplementParent=null;
     cancelCandidates();if(operation)operation.canceled=true;
     clearTimeout(pollTimer);pollTimer=null;
     requests.forEach(request=>request.abort());
@@ -260,7 +263,16 @@
     if (item.available === false) card.append(node('p','当前来源未发现此文件；本地描述和观看记录仍保留。','error'));
     if (item.candidates && item.candidates.length) card.append(node('pre',JSON.stringify(item.candidates,null,2),'muted'));
     const current=item.mapping||{};
-    const action=select(card,'操作',[['confirm','设置作品 / 自定义名称'],['unbind','解除绑定'],['ignore','忽略此项'],['undo','撤回上次修改']],'confirm');
+    const action=select(card,'操作',[['confirm','设置作品 / 自定义名称'],['supplement','设为补充视频'],
+      ['detach_supplement','解除补充关系'],['unbind','解除绑定'],['ignore','忽略此项'],['undo','撤回上次修改']],'confirm');
+    if(item.supplement)card.append(node('p','补充关系：'+item.supplement.title+(item.supplement.state==='verification_required'?' · 父版本已变化，需重新核对':'')));
+    if(!item.supplement && item.file.observation_key && (item.state==='confirmed'||current.kind==='custom'&&item.provenance==='manual')) {
+      card.append(button('选作补充视频的父版本',()=>{
+        supplementParent=frozen({file_id:item.file.id,revision:item.revision,evidence:item.file.observation_key,
+          metadata_key:['movie','tv'].includes(current.kind)?'tmdb:'+current.kind+':'+current.tmdb_id:null,title:current.title||item.file.name});
+        status('已选父版本「'+supplementParent.title+'」。返回并整理补充视频，选择“设为补充视频”；尚未保存关系。');
+      }));
+    }
     const advanced=node('details');advanced.append(node('summary','高级：手填编号 / 自定义名称'));
     const kind=select(advanced,'描述类型',[['custom','自定义名称'],['movie','电影 TMDb'],['tv','剧集 TMDb']],current.kind||'custom');
     const title=field(advanced,'显示名称','text',current.title||item.file.name);
@@ -271,6 +283,15 @@
     version.maxLength=80;
     const fields={kind,title,tmdb,season,episode,version};
     candidateEditor(card,item,fields);card.append(advanced);
+    const relation=node('details');relation.append(node('summary','补充视频关系'));
+    const chosenParent=supplementParent;
+    const target=select(relation,'关联范围',chosenParent?[['version','已选父版本：'+chosenParent.title],['work','作品共有（使用作品候选 / 编号）']]:
+      [['work','作品共有（使用作品候选 / 编号）']],chosenParent?'version':'work');
+    if(chosenParent)relation.append(button('清除已选父版本',()=>{supplementParent=null;target.value='work';status('已清除父版本选择；当前编辑改为作品共有关系。');}));
+    else relation.append(node('p','精确关联到某个版本或无 TMDb 的自建内容时，请先打开父文件并选择“选作补充视频的父版本”。'));
+    const supplementKind=select(relation,'补充类型',[['bonus','花絮'],['interview','访谈'],['deleted','删减片段'],['trailer','预告'],['other','其他']],(item.supplement||{}).kind||'bonus');
+    const supplementTitle=field(relation,'补充视频名称','text',(item.supplement||{}).title||item.file.name);
+    card.append(relation);
     card.append(button('加入本批修改',() => {
       if (unknown()) throw new Error('上一批提交结果待核对，请先核对原提交，不能覆盖未知结果。');
       if (queued.length>=100 && !queued.some(q=>q.command.file_id===item.file.id)) throw new Error('每轮最多 100 项，请分轮整理。');
@@ -280,6 +301,15 @@
           season:kind.value==='tv'?Number(season.value):null,episode:kind.value==='tv'?Number(episode.value):null,
           version:version.value.trim()||null};
         if (!mapping.title || kind.value!=='custom' && !tmdb.value || kind.value==='tv' && (!season.value || !episode.value)) throw new Error('请填写所选描述需要的编号与季集。');
+      } else if(action.value==='supplement') {
+        const parent=target.value==='version'?chosenParent:null;
+        if(parent&&parent.file_id===item.file.id)throw new Error('补充视频不能关联自己。');
+        if(!parent&&(!['movie','tv'].includes(kind.value)||!Number.isSafeInteger(Number(tmdb.value))||Number(tmdb.value)<1))
+          throw new Error('作品共有关系需要明确电影 / 剧集候选或 TMDb 编号；自建内容请选择父版本。');
+        if(!supplementTitle.value.trim())throw new Error('请填写补充视频名称。');
+        mapping={metadata_key:parent?parent.metadata_key:'tmdb:'+kind.value+':'+Number(tmdb.value),
+          parent_file_id:parent?parent.file_id:null,parent_revision:parent?parent.revision:null,
+          parent_evidence:parent?parent.evidence:null,kind:supplementKind.value,title:supplementTitle.value.trim()};
       }
       queued=queued.filter(q=>q.command.file_id!==item.file.id);
       const candidate=fields.candidate&&mapping&&fields.candidate.tmdb_id===mapping.tmdb_id&&fields.candidate.media_kind===mapping.kind?fields.candidate:null;
@@ -314,7 +344,13 @@
       selectedEntity=null;await load();
     });
     if(row.entity_id===selectedEntity&&open.focus)setTimeout(()=>open.focus(),0);
-    card.append(open);return card;
+    card.append(open);
+    if(!row.supplement&&['work','file'].includes(row.entity_kind))card.append(button('查看补充视频',async()=>{
+      trail.push({query:{...query},cursor,queryStarts:[...queryStarts],queryPage,selectedEntity:row.entity_id});
+      query={...query,view:'supplements',parent_entity_id:row.entity_id};resetQueryPage();selectedEntity=null;await load();
+    }));
+    if(row.supplement)card.append(node('small','补充视频 · '+row.supplement.title+(row.supplement.state==='verification_required'?' · 关系待核对':'')));
+    return card;
   }
   function jobCard(job) {
     const card=node('article',undefined,'card');card.append(node('h2',labels[job.state]||job.state));
@@ -346,11 +382,75 @@
     }));return card;
   }
   function historyCard(row) {
-    const card=node('article',undefined,'card');card.append(node('h2',row.name));
+    const card=node('article',undefined,'card');card.append(node('h2',row.work_title||row.name));
     function clock(seconds) {const value=Math.max(0,Math.floor(seconds));return Math.floor(value/60)+':'+String(value%60).padStart(2,'0');}
     card.append(node('p','已观看 '+clock(row.position)+(row.duration==null?' · 总时长未知':' / '+clock(row.duration))));
     card.append(node('small','仅展示当前账号的继续观看摘要，请在电视选择续播。'));
+    if(row.description)card.append(node('small',row.description));
+    if(row.navigation&&row.navigation.view==='files')card.append(button('查看文件版本',async()=>{
+      tab='items';query={...query,view:'files',parent_entity_id:row.navigation.parent_entity_id};resetQueryPage();await load();
+    }));
     return card;
+  }
+  async function loadPlayback() {
+    const value=await rpc('playback_presentation',{});
+    const card=node('article',undefined,'card');byId('rows').replaceChildren(card);
+    byId('previous').disabled=true;byId('next').disabled=true;
+    if(!value.available){card.append(node('p','当前播放不属于本次授权，或内核不支持安全控制。请在电视操作。'));status('播放控制不可用');return;}
+    const expected=frozen(JSON.parse(JSON.stringify(value.expected)));
+    const generation=viewGeneration;
+    const editable=grantedScopes.includes('playback_control');
+    const controls=[];
+    let used=false;
+    const detail=node('p',value.subtitle_status||'字幕状态尚未确认');
+    card.append(node('h2','当前播放'),node('p',value.audio_status),detail);
+    if(!editable)card.append(node('small','本次只授权查看；如需控制，请在电视重新选择权限。'));
+    const commandStatus=node('p','操作仅提交一次；“已发送”不代表执行成功。');
+    async function send(action,params) {
+      if(!editable||used||playbackBusy||generation!==viewGeneration||authClosed)return;
+      used=true;playbackBusy=true;controls.forEach(control=>control.disabled=true);
+      const command={expected,command_id:id(),action,params};
+      try {
+        let result=await rpc('playback_command',command);
+        for(let attempt=0;['queued','unknown'].includes(result.status)&&attempt<6;attempt++) {
+          commandStatus.textContent='已发送，等待原生播放器确认…';
+          await new Promise(resolve=>setTimeout(resolve,500));
+          if(generation!==viewGeneration||authClosed)return;
+          result=await rpc('playback_receipt',{expected,command_id:command.command_id});
+        }
+        if(generation!==viewGeneration||authClosed)return;
+        commandStatus.textContent=({applied:'原生播放器已执行。',rejected:'播放状态已变化，操作未执行。',failed:'播放器执行失败。'})[result.status]||'执行结果未知，请刷新核对；不会自动重发。';
+        status(commandStatus.textContent,result.status!=='applied');
+      } catch(error) {
+        if(generation===viewGeneration&&!authClosed){commandStatus.textContent='连接中断或结果未知，请刷新核对；不会自动重发。';status(commandStatus.textContent,true);}
+      } finally {playbackBusy=false;}
+    }
+    function timeLabel(ms){const seconds=Math.max(0,Math.floor(ms/1000));return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');}
+    const slider=node('input');slider.type='range';slider.min='0';slider.max=String(Math.max(0,value.duration_ms-1));slider.step='1000';slider.value=String(value.position_ms);
+    slider.disabled=!editable||!value.can_seek;slider.setAttribute('aria-label','播放进度');
+    const position=node('p',timeLabel(value.position_ms)+' / '+timeLabel(value.duration_ms));
+    slider.addEventListener('input',()=>position.textContent=timeLabel(Number(slider.value))+' / '+timeLabel(value.duration_ms));
+    // Only the committed change event writes. input/pointer/keyboard previews
+    // never each submit their own request, and a used control stays disabled.
+    slider.addEventListener('change',()=>send('seek',{position_ms:Number(slider.value)}));
+    controls.push(slider);card.append(position,slider);
+    function tracks(title,rows,action,truncated) {
+      card.append(node('h3',title));
+      rows.forEach(row=>{
+        const choose=button((row.selected?'✓ ':'')+(row.name||row.language||'轨道 '+(row.index+1)),()=>send(action,{index:row.index,stream_key:row.stream_key}));
+        choose.disabled=!editable;controls.push(choose);card.append(choose);
+      });
+      if(truncated)card.append(node('small','轨道较多，其余请在电视选择。'));
+    }
+    tracks('音轨',value.audio,'audio_stream',value.audio_truncated);
+    tracks('字幕',value.subtitles,'manual_subtitle_stream',value.subtitles_truncated);
+    const visibility=button(value.subtitle_visible?'关闭字幕':'显示字幕',()=>send('subtitle_visible',{visible:!value.subtitle_visible}));
+    visibility.disabled=!editable;controls.push(visibility);card.append(visibility);
+    if(value.chapters.length){card.append(node('h3','原生章节'));value.chapters.forEach(chapter=>{
+      const choose=button((chapter.name||'章节')+' · '+timeLabel(chapter.position_ms),()=>send('seek',{position_ms:chapter.position_ms}));
+      choose.disabled=!editable||!value.can_seek;controls.push(choose);card.append(choose);
+    });}
+    card.append(commandStatus);status('已读取当前实例；播放或轨道变化后请刷新。');
   }
   function scheduleJobs(reset=false,failed=false) {
     clearTimeout(pollTimer);pollTimer=null;
@@ -371,6 +471,7 @@
     byId('filters').classList.toggle('hidden',tab!=='items');
     byId('editorRows').classList.add('hidden');byId('rows').classList.remove('hidden');editing=null;
     byId('back').disabled=tab!=='items'||!trail.length;
+    if(tab==='playback'){await loadPlayback();return;}
     if(tab==='items') {
       const filters={...query,text:byId('keyword').value.trim(),review_state:byId('state').value||null,
         media_kind:byId('mediaKind').value||null,availability:byId('availability').value||null,
@@ -406,7 +507,7 @@
     status('已读取当前状态 · 第 '+(pageIndex+1)+' 页。关闭浏览器不会取消后台任务。');
     if(currentTab==='jobs') {jobsActive=rows.some(row=>['queued','running'].includes(row.state));pollDelay=5000;scheduleJobs(!automatic);}
   }
-  ['items','sources','jobs','history'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
+  ['items','sources','jobs','history','playback'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
   byId('refresh').addEventListener('click',()=>guarded(load));
   for(const control of ['state','mediaKind'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQuery();await load();}));
   for(const control of ['availability','sort'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQueryPage();await load();}));
@@ -446,7 +547,9 @@
         if(!batch||batch.snapshot!==original||original.generation!==batchGeneration)return;
         for(const [index,row] of (value.items||[]).entries()) {
           const card=node('div',undefined,'card');card.append(node('h3',(original.entries[index]||{name:'未知条目'}).name+' · '+(labels[row.status]||row.status)));
-          card.append(node('pre','修改前\n'+JSON.stringify(row.before,null,2)+'\n修改后\n'+JSON.stringify(row.after,null,2)));cards.push(card);
+          card.append(node('pre','修改前\n'+JSON.stringify(row.before,null,2)+'\n修改后\n'+JSON.stringify(row.after,null,2)));
+          if('before_supplement' in row||'after_supplement' in row)card.append(node('pre','补充关系修改前\n'+JSON.stringify(row.before_supplement,null,2)+'\n补充关系修改后\n'+JSON.stringify(row.after_supplement,null,2)));
+          cards.push(card);
         }
         ready=ready&&Array.isArray(value.items)&&value.items.length===original.entries.length&&value.items.every(row=>row.status==='ready');
       }
@@ -605,6 +708,7 @@
     history.replaceState(null,'',location.pathname);
     const session=await post(code?'/manage/api/pair':'/manage/api/session',code?{code}:{});
     csrf=session.csrf;mountedSource=session.source_id||null;
+    grantedScopes=session.scopes||[];byId('playbackTab').classList.toggle('hidden',!grantedScopes.includes('playback_read'));
     if(mountedSource){byId('clearSource').disabled=true;byId('clearSource').textContent='当前授权已固定来源';}
     byId('historyTab').classList.toggle('hidden',session.catalog_kind==='mounted');
     byId('workspace').classList.remove('hidden');await load();

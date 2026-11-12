@@ -79,7 +79,9 @@ def resident(product, monkeypatch, tmp_path):
     host.configure_preparation = lambda *a: None
     host.tick, host.close = host_tick, host_close
     monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **kw: host))
-    monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a: '/test-profile'))
+    monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(
+        ProfileBinding=lambda: SimpleNamespace(root=lambda *a: tmp_path,
+                                               is_current=lambda: True)))
     monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(
         configure=lambda *a, **kw: None, native_subtitle_abi=lambda *a: None))
     xbmc = sys.modules['xbmc']
@@ -121,14 +123,14 @@ def test_real_main_publishes_scopes_local_revisions_and_drains_on_close(resident
     revoked = []
     def on_tick():
         if state.ticks == 1:
-            until(lambda: state.sampler.observed.get('personal_library') == ('boot', 1))
+            until(lambda: state.sampler.observed.get('personal_library', ())[:2] == ('boot', 1))
         if state.ticks == 2:
             old = state.sampler.observed['continue_watching']
             state.history['jt:lfh']['record'] = {'progress': 50}
             state.path.write_bytes(b'changed history')
             with state.host.catalog.index.lock:
                 state.db.execute('UPDATE catalog_meta SET revision=2')
-            until(lambda: state.sampler.observed.get('personal_library') == ('boot', 2)
+            until(lambda: state.sampler.observed.get('personal_library', ())[:2] == ('boot', 2)
                   and state.sampler.observed.get('continue_watching') != old)
         if state.ticks == 3:
             state.pans.change('quark', epoch=2)

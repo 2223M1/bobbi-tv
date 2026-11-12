@@ -93,7 +93,7 @@ def test_projection_upgrade_failure_preserves_original_records_and_retries(tmp_p
         assert old.execute('SELECT * FROM objects').fetchall() == originals
         assert old.execute('SELECT * FROM reviews').fetchall() == reviews
         assert old.execute('SELECT schema FROM catalog_meta').fetchone()[0] == 4
-        assert old.execute('PRAGMA user_version').fetchone()[0] == 2
+        assert old.execute('PRAGMA user_version').fetchone()[0] == 3
     index = MediaIndex(path)
     try:
         assert index.item(scope(), ref()['id'])['mapping']['title'] == 'Custom'

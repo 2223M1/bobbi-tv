@@ -40,14 +40,57 @@ class ServiceRejected(ValueError):
     code = 'SELECTION_UNVERIFIED'
 
 
-def call(action, body, timeout=3):
-    path = profile(name='runtime.json')
+def _registration(path):
+    path = Path(path)
     if not path.is_file() or path.is_symlink() or path.stat().st_size > 4096:
         raise OSError('bobbi runtime is not ready')
     data = json.loads(path.read_text(encoding='utf-8'))
     if (set(data) != {'port', 'token'} or type(data['port']) is not int or not 1024 <= data['port'] <= 65535
             or not isinstance(data['token'], str) or len(data['token']) != 64):
         raise ValueError('Invalid local runtime configuration')
+    return data
+
+
+def bind_call(path):
+    """Bind an existing session to one runtime, never to a later profile/host."""
+    path = Path(path)
+    if not path.is_absolute():
+        raise ValueError('Absolute runtime path required')
+    token = _registration(path)['token']
+    revoked = False
+    def bound(action, body, timeout=3):
+        nonlocal revoked
+        if revoked:
+            raise OSError('RUNTIME_INSTANCE_CHANGED')
+        try:
+            return call(action, body, timeout=timeout, path=path, expected_token=token)
+        except OSError as error:
+            if str(error) == 'RUNTIME_INSTANCE_CHANGED':
+                revoked = True
+            raise
+    return bound
+
+
+def _bound_registration(path, token):
+    try:
+        data = _registration(path)
+        if not hmac.compare_digest(data['token'].encode('utf-8'), token.encode('utf-8')):
+            raise ValueError('changed')
+        return data
+    except (OSError, ValueError, TypeError, KeyError):
+        raise OSError('RUNTIME_INSTANCE_CHANGED') from None
+
+
+def call(action, body, timeout=3, *, path=None, expected_token=None):
+    if (path is None) != (expected_token is None):
+        raise ValueError('Runtime binding requires path and token')
+    if path is None:
+        path = profile(name='runtime.json')
+    elif (not Path(path).is_absolute() or type(expected_token) is not str
+            or len(expected_token) != 64):
+        raise ValueError('Invalid runtime binding')
+    data = (_bound_registration(path, expected_token) if expected_token is not None
+            else _registration(path))
     raw = encode_message({'action': action, 'body': body})
     if len(raw) > MAX_MESSAGE_BYTES:
         raise ValueError('Local request too large')
@@ -55,6 +98,8 @@ def call(action, body, timeout=3):
         headers={'Authorization': 'Bearer ' + data['token'], 'Content-Type': 'application/json'})
     with build_opener(ProxyHandler({}), NoRedirect()).open(request, timeout=timeout) as response:
         reply = response.read(MAX_MESSAGE_BYTES + 1)
+    if expected_token is not None:
+        _bound_registration(path, expected_token)
     if len(reply) > MAX_MESSAGE_BYTES:
         raise ValueError('Local reply too large')
     result = json.loads(reply)

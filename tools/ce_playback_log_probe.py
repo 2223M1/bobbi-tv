@@ -32,14 +32,14 @@ def diagnostic_scope(path, request):
             and value.get('operation')=='start' and rid(value.get('run_id'))
             and rid(request) and value.get('request_id')==request
             and isinstance(native,str) and re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',native)
-            and type(value.get('tool_revision')) is int and value['tool_revision'] in (4,5,6,7,8)
+            and type(value.get('tool_revision')) is int and value['tool_revision'] in (4,5,6,7,8,9,10,11)
             and value.get('route') in ('direct','sharestream','sharestream-open-range','sharestream-open-range-microbatch',
                                       'sharestream-open-range-bound-guard','sharestream-block-startup-1m')
             and (value['route']!='sharestream-open-range' or value['tool_revision']>=5)
             and (value['route']!='sharestream-open-range-microbatch' or value['tool_revision']>=6)
             and (value['route']!='sharestream-open-range-bound-guard' or value['tool_revision']>=7)
             and (value['route']!='sharestream-block-startup-1m' or value['tool_revision']>=8)
-            and value.get('state') in ('observing','completed','stop_unconfirmed','unconfirmed')
+            and value.get('state') in ('observing','completed','completed_with_gaps','stop_unconfirmed','unconfirmed')
             and value.get('diagnostic_only') is True and value.get('product_proof') is False
             and value.get('retry_allowed') is False and value.get('open_call_returned') is True
             and isinstance(owner,dict) and owner.get('request_id')==request and rid(owner.get('boot_id'))

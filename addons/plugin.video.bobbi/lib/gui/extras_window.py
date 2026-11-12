@@ -85,6 +85,7 @@ class ExtrasWindow(BaseWindow):
         self.setProperty("display_extra_ratings", "false")
         # Tab system
         self.setProperty("active_tab", "overview")
+        self.setProperty("personal_supplements", "true" if self.tmdb_id and self.media_type in ('movie', 'tv') else "false")
 
     def _fetch_after_details(self):
         """Wait for TMDB details fetch, then populate sections that depend on it."""
@@ -820,6 +821,14 @@ class ExtrasWindow(BaseWindow):
         elif control_id == 17:  # Refresh
             notification(translation(90402))
             self.close()
+
+        elif control_id == 27 and self.tmdb_id and self.media_type in ('movie', 'tv'):
+            # The existing personal catalog chooses/revalidates its source. No
+            # stored locator, guessed association or automatic media playback.
+            metadata_key = 'tmdb:%s:%d' % (self.media_type, int(self.tmdb_id))
+            self.close()
+            execute_builtin('ActivateWindow(Videos,%s,return)' % build_url('personal_catalog',
+                mode='owned', metadata_key=metadata_key, section='supplements'))
 
         # ── YouTube video click ──
         elif control_id == self.youtube_list_id:

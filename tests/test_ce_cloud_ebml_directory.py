@@ -201,8 +201,7 @@ def test_default_account_path_real_runtime_dispatch_needs_no_xbmcvfs(scene,monke
     from bobbi_platform.host import Host
     monkeypatch.setitem(sys.modules,'xbmcvfs',None)  # A real missing Kodi module, not a substitute.
     calls=[]
-    host=Host.__new__(Host)
-    host.stopping=Event()
+    host=Host(scene.root)
     host.accounts=SimpleNamespace(snapshot=lambda:calls.append('account_status') or deepcopy(SCOPE))
     runtime=Runtime(host.dispatch,scene.root/'runtime.json')
     runtime.start()

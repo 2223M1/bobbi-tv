@@ -44,6 +44,7 @@ def identifier(value, length=32):
 class MediaIndex:
     def __init__(self, path, now=time.time):
         self.path, self.now, self.lock = Path(path), now, RLock()
+        self.migration_backup_path = None
         if any(p.is_symlink() for p in (self.path, *self.path.parents)):
             raise ValueError('CATALOG_STORAGE_UNSAFE')
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -53,37 +54,12 @@ class MediaIndex:
         self.db = sqlite3.connect(str(self.path), timeout=.15, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         try:
-            version = self.db.execute('PRAGMA user_version').fetchone()[0]
-            if version not in (0, 1, 2):
-                raise ValueError('CATALOG_SCHEMA_UNSUPPORTED')
-            if version == 1:
-                # Additive migration. Old binaries reject schema 2 instead of
-                # accidentally writing stale projections. Keep a consistent
-                # pre-migration backup; never overwrite a prior recovery point.
-                backup = Path(str(self.path) + '.schema1.bak')
-                if backup.is_symlink():
-                    raise ValueError('CATALOG_STORAGE_UNSAFE')
-                if not backup.exists():
-                    fd = os.open(str(backup), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-                    os.close(fd)
-                    target = sqlite3.connect(str(backup))
-                    try:
-                        self.db.backup(target)
-                    finally:
-                        target.close()
-                # A failed/interrupted earlier copy may have left an empty or
-                # partial destination. Its existence alone is not a recovery
-                # point and must never allow a later attempt to migrate.
-                target = sqlite3.connect(backup.resolve().as_uri() + '?mode=ro', uri=True)
-                try:
-                    if (target.execute('PRAGMA user_version').fetchone()[0] != 1
-                            or target.execute('PRAGMA quick_check').fetchone()[0] != 'ok'):
-                        raise ValueError('CATALOG_STORAGE_UNSAFE')
-                except sqlite3.Error:
-                    raise ValueError('CATALOG_STORAGE_UNSAFE') from None
-                finally:
-                    target.close()
             with self.transaction():
+                version = self.db.execute('PRAGMA user_version').fetchone()[0]
+                if version not in (0, 1, 2, 3):
+                    raise ValueError('CATALOG_SCHEMA_UNSUPPORTED')
+                if version in (1, 2):
+                    self._backup_for_migration(version)
                 for sql in (
                     'CREATE TABLE IF NOT EXISTS objects(id TEXT PRIMARY KEY,provider TEXT NOT NULL,account TEXT NOT NULL,ref TEXT NOT NULL)',
                     'CREATE TABLE IF NOT EXISTS memberships(source TEXT NOT NULL,file TEXT NOT NULL,generation TEXT NOT NULL,available INTEGER NOT NULL,PRIMARY KEY(source,file))',
@@ -102,6 +78,9 @@ class MediaIndex:
                     'CREATE TABLE IF NOT EXISTS typed_objects(id TEXT PRIMARY KEY,source TEXT NOT NULL,namespace TEXT NOT NULL,ref TEXT NOT NULL)',
                     'CREATE TABLE IF NOT EXISTS catalog_scope_revisions(provider TEXT NOT NULL,account TEXT NOT NULL,namespace TEXT NOT NULL,revision INTEGER NOT NULL,PRIMARY KEY(provider,account,namespace))',
                     'CREATE TABLE IF NOT EXISTS typed_observations(file TEXT NOT NULL,digest TEXT NOT NULL,ref TEXT NOT NULL,observed REAL NOT NULL,PRIMARY KEY(file,digest))',
+                    'CREATE TABLE IF NOT EXISTS file_supplements(file TEXT PRIMARY KEY,work_id TEXT NOT NULL,parent_file TEXT,detail TEXT NOT NULL)',
+                    'CREATE INDEX IF NOT EXISTS supplement_work ON file_supplements(work_id,parent_file,file)',
+                    'CREATE TABLE IF NOT EXISTS supplement_changes(file TEXT NOT NULL,revision INTEGER NOT NULL,before_relation TEXT,after_relation TEXT,PRIMARY KEY(file,revision))',
                 ):
                     self.db.execute(sql)
                 # A point recheck outranks an already-started mounted scan.
@@ -119,11 +98,58 @@ class MediaIndex:
                     'SELECT (SELECT count(*) FROM objects)+(SELECT count(*) FROM typed_objects)').fetchone()[0])
                 if rebuild:
                     self._rebuild_projection()
-                self.db.execute('PRAGMA user_version=2')
+                self.db.execute('PRAGMA user_version=3')
             self.query_reader = catalog_query.CatalogQuery(self)
         except BaseException:
             self.db.close()
             raise
+
+    def _backup_for_migration(self, version):
+        """Publish a complete, exclusive recovery point for this exact upgrade.
+
+        The caller holds BEGIN IMMEDIATE before any DDL. A second read-only
+        connection sees the same committed state while no other writer can
+        change it. Older recovery points remain untouched, including after a
+        rollback to schema 2 and subsequent manual edits there.
+        """
+        def check(path):
+            if path.is_symlink():
+                raise ValueError('CATALOG_STORAGE_UNSAFE')
+            target = sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True)
+            try:
+                if (target.execute('PRAGMA user_version').fetchone()[0] != version or
+                        target.execute('PRAGMA quick_check').fetchone()[0] != 'ok'):
+                    raise ValueError('CATALOG_STORAGE_UNSAFE')
+            except sqlite3.Error:
+                raise ValueError('CATALOG_STORAGE_UNSAFE') from None
+            finally:
+                target.close()
+
+        backup = Path(str(self.path) + '.schema%d.bak' % version)
+        if backup.is_symlink():
+            raise ValueError('CATALOG_STORAGE_UNSAFE')
+        if backup.exists():
+            check(backup)  # Never treat a prior partial copy as recoverable.
+            backup = Path(str(self.path) + '.schema%d.%s.bak' % (version, uuid4().hex))
+        staged = Path(str(backup) + '.' + uuid4().hex + '.tmp')
+        fd = os.open(str(staged), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        os.close(fd)
+        source = sqlite3.connect(self.path.resolve().as_uri() + '?mode=ro', uri=True)
+        target = sqlite3.connect(str(staged))
+        try:
+            source.backup(target)
+        finally:
+            target.close()
+            source.close()
+        check(staged)
+        # A hard link publishes the complete file atomically and fails if the
+        # final path already exists. Neither legacy backups nor a racing writer
+        # can be overwritten; an interrupted .tmp is never a recovery point.
+        with staged.open('r+b') as stream:
+            os.fsync(stream.fileno())
+        os.link(staged, backup)
+        staged.unlink()
+        self.migration_backup_path = backup
 
     @contextmanager
     def transaction(self):
@@ -180,6 +206,53 @@ class MediaIndex:
     def query(self, expected, **args):
         return self.query_reader.query(expected, **args)
 
+    def describe_files(self, expected, file_ids):
+        return self.query_reader.describe_files(expected, file_ids)
+
+    def parent_descriptor(self, expected, parent_id):
+        return self.query_reader.parent_descriptor(expected, parent_id)
+
+    def holdings(self, expected, identities):
+        return self.query_reader.holdings(expected, identities)
+
+    def manual_records(self, expected, file_ids=None, offset=0, limit=5, projection_revision=None):
+        """Host-only bounded migration descriptions, retaining exact stored evidence."""
+        page(offset, limit)
+        if file_ids is not None and (type(file_ids) is not list or not 1 <= len(file_ids) <= 5):
+            raise ValueError('CATALOG_PAGE_INVALID')
+        with self.lock:
+            revision = self.scope_revision(expected)
+            if projection_revision is not None and projection_revision != revision:
+                raise ValueError('CATALOG_CURSOR_STALE')
+            where, args = self.query_reader._partition(expected)
+            excluded = self.db.execute('SELECT COUNT(*) FROM catalog_rows p JOIN reviews r ON r.file=p.id '
+                'WHERE ' + where + " AND r.provenance='manual' AND EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id)",
+                args).fetchone()[0]
+            if file_ids is None:
+                ids = [row[0] for row in self.db.execute('SELECT p.id FROM catalog_rows p '
+                    'JOIN reviews r ON r.file=p.id WHERE ' + where +
+                    " AND r.provenance='manual' AND NOT EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id) "
+                    'ORDER BY p.id LIMIT ? OFFSET ?', args + [limit + 1, offset])]
+            else:
+                requested = list(dict.fromkeys(identifier(value, 64) for value in file_ids))
+                where, args = self.query_reader._partition(expected)
+                ids = [row[0] for row in self.db.execute('SELECT p.id FROM catalog_rows p WHERE ' + where +
+                    ' AND p.id IN (' + ','.join('?' for _ in requested) + ') ORDER BY p.id', args + requested)]
+            items = []
+            for identifier_value in ids[:limit]:
+                item = self._item(identifier_value, expected)
+                public = {key: item[key] for key in ('file_ref', 'state', 'mapping', 'revision', 'provenance', 'available')}
+                if item.get('supplement'):
+                    public['supplement'] = item['supplement']
+                if len(encode(dict(items=items + [public], projection_revision=revision,
+                        next_offset=offset + len(items) + 1, excluded_supplements=excluded)).encode('utf-8')) > REPLY_BYTES:
+                    if not items:
+                        raise ValueError('CATALOG_REPLY_LIMIT')
+                    break
+                items.append(public)
+            return dict(items=items, projection_revision=revision, excluded_supplements=excluded,
+                next_offset=offset + len(items) if len(ids) > len(items) else None)
+
     def has_mounted_items(self, source_id, namespace):
         with self.lock:
             return self.db.execute('SELECT 1 FROM typed_objects WHERE source=? AND namespace=? LIMIT 1',
@@ -191,7 +264,7 @@ class MediaIndex:
             return validate(self._item(object_id, expected)['file_ref'])
 
     def trusted_mounted_file(self, authority, object_id):
-        from .mounted_ref import validate as mounted_validate
+        from .typed_ref import validate as mounted_validate
         with self.lock:
             row = self.db.execute('SELECT ref FROM typed_objects WHERE id=? AND source=? AND namespace=?',
                 (identifier(object_id, 64), authority['source_id'], authority['namespace'])).fetchone()
@@ -210,11 +283,13 @@ class MediaIndex:
 
     def observe_mounted(self, authority, reference):
         """Publish an explicitly reselected current observation, never progress."""
-        from .mounted_ref import validate as mounted_validate
+        from .typed_ref import validate as mounted_validate
         reference = mounted_validate(reference)
         with self.transaction():
             previous = self.trusted_mounted_file(authority, reference['id'])
-            if (reference['source_id'], reference['namespace'], reference['mount_generation']) != (
+            generation = reference.get('mount_generation', reference.get('source_generation'))
+            if (reference['reference_kind'], reference['source_id'], reference['namespace'], generation) != (
+                    authority['reference_kind'],
                     authority['source_id'], authority['namespace'], authority['generation']):
                 raise ValueError('CATALOG_AUTHORITY_CHANGED')
             self._remember_observation(previous)
@@ -319,8 +394,8 @@ class MediaIndex:
                 for row in self.db.execute('SELECT DISTINCT p.provider,p.account,p.namespace FROM catalog_rows p '
                         'JOIN memberships m ON m.file=p.id WHERE m.source IN (' +
                         ','.join('?' for _ in changed_sources) + ')', tuple(changed_sources)).fetchall():
-                    self._changed(dict(reference_kind='mounted_path', source_id=row['account'], namespace=row['namespace'])
-                        if row['provider'] == 'mounted_path' else dict(provider=row['provider'], account_id=row['account']))
+                    self._changed(dict(reference_kind=row['provider'], source_id=row['account'], namespace=row['namespace'])
+                        if row['provider'] in ('mounted_path', 'local_path') else dict(provider=row['provider'], account_id=row['account']))
 
     def _scan(self, task, expected=None):
         row = self.db.execute('SELECT * FROM scans WHERE id=?', (identifier(task),)).fetchone()
@@ -366,9 +441,9 @@ class MediaIndex:
     def _mounted_task_matches(row, source_id, namespace):
         """Task control binds its saved root, not a live mount generation."""
         scope = row['scope']
-        return (row['provider'], row['account'], row['source']) == ('mounted_path', source_id, source_id) and (
+        return row['provider'] in ('mounted_path', 'local_path') and (row['account'], row['source']) == (source_id, source_id) and (
             scope.get('reference_kind'), scope.get('source_id'), scope.get('namespace')) == (
-                'mounted_path', source_id, namespace)
+                row['provider'], source_id, namespace)
 
     def cancel_mounted(self, task, source_id, namespace):
         identifier(source_id)
@@ -389,7 +464,7 @@ class MediaIndex:
         if type(refs) is not list or len(refs) > 20 or type(scanned) is not int or not 0 <= scanned <= 20:
             raise ValueError('CATALOG_BATCH_INVALID')
         if mounted:
-            from .mounted_ref import validate as ref_validate
+            from .typed_ref import validate as ref_validate
         else:
             ref_validate = validate
         refs = [ref_validate(ref) for ref in refs]
@@ -413,12 +488,12 @@ class MediaIndex:
                 changed = self.db.execute('SELECT 1 FROM memberships WHERE source=? LIMIT 1',
                     (run['source'],)).fetchone() is not None
             for ref in refs:
-                identity_scope = ('mounted_path', ref['source_id']) if mounted else (ref['provider'], ref['account_id'])
+                identity_scope = (ref['reference_kind'], ref['source_id']) if mounted else (ref['provider'], ref['account_id'])
                 if identity_scope != (run['provider'], run['account']):
                     raise ValueError('CATALOG_ACCOUNT_MISMATCH')
                 ref_changed = False
                 if mounted:
-                    if (ref['namespace'], ref['mount_generation']) != (run['scope']['namespace'], run['scope']['generation']):
+                    if (ref['namespace'], ref.get('mount_generation', ref.get('source_generation'))) != (run['scope']['namespace'], run['scope']['generation']):
                         raise ValueError('CATALOG_AUTHORITY_CHANGED')
                     point = self.db.execute('SELECT 1 FROM temp.scan_point_observations WHERE task=? AND file=?',
                         (task, ref['id'])).fetchone()
@@ -500,7 +575,7 @@ class MediaIndex:
                 if not self._mounted_task_matches(row, source_id, namespace):
                     raise ValueError('CATALOG_ACCOUNT_MISMATCH')
                 return dict(items=[scan_snapshot(row)], next_offset=None)
-            ids = self.db.execute("SELECT id FROM scans WHERE provider='mounted_path' AND account=? AND source=? "
+            ids = self.db.execute("SELECT id FROM scans WHERE provider IN ('mounted_path','local_path') AND account=? AND source=? "
                 'ORDER BY updated DESC,id DESC LIMIT ?', (source_id, source_id, MAX_JOBS)).fetchall()
             rows = [self._scan(row[0]) for row in ids]
             rows = [row for row in rows if self._mounted_task_matches(row, source_id, namespace)]
@@ -516,7 +591,7 @@ class MediaIndex:
         """
         source_id = identifier(source_id)
         provider, account, namespace = catalog_query.scope_key(expected)
-        mounted = provider == 'mounted_path'
+        mounted = provider in ('mounted_path', 'local_path')
         if mounted and source_id != account:
             raise ValueError('CATALOG_ACCOUNT_MISMATCH')
         with self.lock:
@@ -551,8 +626,8 @@ class MediaIndex:
                     not latest or latest['state'] != 'completed'), indexed_count=counts[0],
                 present_count=counts[1], absent_count=counts[0] - counts[1])
 
-    def _item(self, file, expected):
-        if expected.get('reference_kind') == 'mounted_path':
+    def _item(self, file, expected, include_supplement=True):
+        if expected.get('reference_kind') in ('mounted_path', 'local_path'):
             row = self.db.execute('SELECT o.ref,r.* FROM typed_objects o JOIN reviews r ON o.id=r.file '
                 'WHERE o.id=? AND o.source=? AND o.namespace=?',
                 (identifier(file, 64), expected['source_id'], expected['namespace'])).fetchone()
@@ -563,10 +638,19 @@ class MediaIndex:
             raise ValueError('CATALOG_FILE_NOT_FOUND')
         available = bool(self.db.execute('SELECT 1 FROM memberships m JOIN catalog_sources s ON s.source=m.source '
             'WHERE m.file=? AND m.available=1 AND s.active=1 LIMIT 1', (file,)).fetchone())
-        return dict(file_ref=json.loads(row['ref']), state=row['state'], reason=row['reason'],
+        result = dict(file_ref=json.loads(row['ref']), state=row['state'], reason=row['reason'],
                     candidates=json.loads(row['candidates']), revision=row['revision'],
                     mapping=json.loads(row['mapping']) if row['mapping'] else None, provenance=row['provenance'],
                     available=available)
+        if (expected.get('reference_kind') in ('mounted_path', 'local_path') and
+                result['file_ref'].get('reference_kind') != expected['reference_kind']):
+            raise ValueError('CATALOG_FILE_NOT_FOUND')
+        if include_supplement:
+            from .catalog_supplements import stored, summary
+            relation = stored(self, file)
+            if relation:
+                result['supplement'] = summary(self, expected, relation)
+        return result
 
     def item(self, expected, file_id):
         with self.lock:
@@ -574,8 +658,8 @@ class MediaIndex:
 
     @staticmethod
     def _receipt_scope(expected):
-        if expected.get('reference_kind') == 'mounted_path':
-            return ('mounted_path', catalog_query.opaque(expected['source_id'], expected['namespace']))
+        if expected.get('reference_kind') in ('mounted_path', 'local_path'):
+            return (expected['reference_kind'], catalog_query.opaque(expected['source_id'], expected['namespace']))
         return expected['provider'], expected['account_id']
 
     @staticmethod
@@ -583,11 +667,12 @@ class MediaIndex:
         ref = item['file_ref']
         return dict({k: v for k, v in item.items() if k != 'file_ref'}, file=dict(
             id=ref['id'], name=ref['name'][:240], parent=ref['parent'][:240],
+            observation_key=catalog_query.opaque(ref),
             truncated=len(ref['name']) > 240 or len(ref['parent']) > 240))
 
     def items(self, expected, source=None, state=None, offset=0, limit=PAGE_SIZE):
         page(offset, limit)
-        mounted = expected.get('reference_kind') == 'mounted_path'
+        mounted = expected.get('reference_kind') in ('mounted_path', 'local_path')
         where, args = ('o.source=? AND o.namespace=?', [expected['source_id'], expected['namespace']]) if mounted else (
             'o.provider=? AND o.account=?', [expected['provider'], expected['account_id']])
         if source is not None:
@@ -622,9 +707,14 @@ class MediaIndex:
                     cmd = review.command(raw)
                     item = self._item(cmd['file_id'], expected)
                     state, after = self._target(cmd, item)
-                    results.append(dict(status='ready' if item['revision'] == cmd['expected_revision'] else 'conflict',
+                    from .catalog_supplements import stored, target, summary
+                    relation = target(self, expected, cmd, item)
+                    result = dict(status='ready' if item['revision'] == cmd['expected_revision'] else 'conflict',
                         file=self._public(item)['file'], revision=item['revision'], before=item['mapping'],
-                        after=after, after_state=state, action=cmd['action']))
+                        after=after, after_state=state, action=cmd['action'])
+                    if relation or item.get('supplement') or cmd['action'] in ('supplement', 'detach_supplement'):
+                        result.update(before_supplement=item.get('supplement'), after_supplement=summary(self, expected, relation))
+                    results.append(result)
                 except ValueError:
                     results.append(dict(status='failed', reason='INVALID_OR_MISSING_ITEM'))
         result = dict(items=results)
@@ -633,6 +723,8 @@ class MediaIndex:
         return result
 
     def _target(self, cmd, item):
+        if cmd['action'] in ('supplement', 'detach_supplement'):
+            return item['state'], item['mapping']
         state = {'confirm': 'confirmed', 'ignore': 'ignored', 'unbind': 'unmatched', 'undo': 'unmatched'}[cmd['action']]
         after = cmd['mapping']
         if after is not None and after['kind'] == 'custom':
@@ -674,12 +766,16 @@ class MediaIndex:
                         result = dict(status='conflict', revision=item['revision'])
                     else:
                         state, after = self._target(cmd, item)
+                        from .catalog_supplements import stored, target, write
+                        relation_before = stored(self, cmd['file_id'])
+                        relation_after = target(self, expected, cmd, item)
                         revision = item['revision'] + 1
                         self.db.execute('INSERT INTO review_changes VALUES(?,?,?,?,?,?)',
                             (cmd['file_id'], revision, item['state'], encode(item['mapping']) if item['mapping'] else None,
                              state, encode(after) if after else None))
                         self.db.execute("UPDATE reviews SET state=?,mapping=?,revision=?,provenance='manual',reason='MANUAL_METADATA_ONLY' WHERE file=?",
                             (state, encode(after) if after else None, revision, cmd['file_id']))
+                        write(self, cmd['file_id'], revision, relation_before, relation_after)
                         # The newest 32 revisions suffice for bounded per-file undo.
                         self.db.execute('DELETE FROM review_changes WHERE file=? AND revision<?', (cmd['file_id'], revision - 31))
                         self.db.execute('UPDATE object_times SET updated=? WHERE file=?', (self.now(), cmd['file_id']))

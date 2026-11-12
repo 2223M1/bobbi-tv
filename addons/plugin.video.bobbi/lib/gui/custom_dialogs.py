@@ -25,6 +25,15 @@ from lib.utils.kodi.utils import (
 )
 
 
+def publish_playback_details(params):
+    """OSD reads the same resident projection as the phone; no player actions."""
+    from lib.cinema.playback_ipc import call
+    try:
+        return call(dict(operation='playback_presentation'))
+    except (OSError, RuntimeError, ValueError):
+        return dict(available=False)
+
+
 class CustomWindow(WindowXML):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -215,6 +224,7 @@ def run_skip_intro_dialog(params):
     window = None
     try:
         segment_data = json.loads(params.get("segment_data", "{}"))
+        context = json.loads(params.get("segment_context", "null"))
         label = params.get("skip_label", translation(90160))
 
         from lib.gui.skip_intro_window import SkipIntroWindow
@@ -224,6 +234,7 @@ def run_skip_intro_dialog(params):
             ADDON_PATH,
             segment_data=segment_data,
             label=label,
+            context=context,
         )
         window.doModal()
     except Exception as e:

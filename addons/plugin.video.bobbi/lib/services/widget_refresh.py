@@ -16,6 +16,7 @@ class WidgetRefreshService:
         self.revisions, self.observed = {}, {}
         self.pending = None
         self.history_stamp = self.history_database = None
+        self.catalog_views_revision = ''
 
     def start(self):
         if self.worker is None and not self.stop.is_set():
@@ -30,7 +31,7 @@ class WidgetRefreshService:
             self.worker.join()
 
     def _offer(self, values):
-        if self.stop.is_set() or not values:
+        if self.stop.is_set() or not values or not self._profile_current():
             return
         self.observed.update(values)  # worker-owned snapshot, at most two keys
         try:
@@ -44,6 +45,9 @@ class WidgetRefreshService:
 
     def tick(self):
         """Owner thread: one bounded mailbox read and at most two Window writes."""
+        if not self._profile_current():
+            self.pending = None
+            return
         try:
             self.pending = self.mailbox.get_nowait()
         except Empty:
@@ -59,20 +63,25 @@ class WidgetRefreshService:
 
     def refresh_dependencies(self):
         """Worker only: local reads may be slow; never run on the playback owner."""
+        if not self._profile_current():
+            return
         from lib.db.pickle_db import PickleDatabase
         from lib.db.file_history import KEY
+        from lib.db.catalog_views import KEY as VIEWS_KEY
         from lib.cinema.frontend_contract import history_digest
         import os
         values = {}
         try:
             if self.history_database is None:
-                self.history_database = PickleDatabase()
+                root = getattr(self.host, 'plugin_root', None)
+                self.history_database = PickleDatabase(profile_root=root) if root is not None else PickleDatabase()
             database = self.history_database
             stat = os.stat(database._database_path)
             stamp = stat.st_mtime_ns, stat.st_size
             if stamp != self.history_stamp:
-                snapshot = database.get_keys_checked(('jt:lfh', KEY))
-                values['continue_watching'] = history_digest(snapshot)
+                snapshot = database.get_keys_checked(('jt:lfh', KEY, VIEWS_KEY))
+                values['continue_watching'] = history_digest({key: value for key, value in snapshot.items() if key != VIEWS_KEY})
+                self.catalog_views_revision = history_digest(snapshot.get(VIEWS_KEY))
                 self.history_stamp = stamp
         except (OSError, ValueError):
             pass
@@ -86,11 +95,18 @@ class WidgetRefreshService:
                 try:
                     row = catalog.index.db.execute('SELECT generation,revision FROM catalog_meta WHERE singleton=1').fetchone()
                     if row is not None:
-                        values['personal_library'] = (row['generation'], row['revision'])
+                        values['personal_library'] = (row['generation'], row['revision'], self.catalog_views_revision)
                 finally:
                     catalog.index.lock.release()
         finally:
             self._offer(values)
+
+    def _profile_current(self):
+        check = getattr(self.host, 'check_profile', None)
+        try:
+            return check() if check is not None else True
+        except (OSError, ValueError, RuntimeError):
+            return False
 
     def _wait(self, monitor):
         deadline = monotonic() + self.interval

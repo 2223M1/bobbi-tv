@@ -28,6 +28,8 @@ CE_F9_REVIEWED_PATCHES = frozenset((
     '4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a',
     # R03 locked directory publication; playback objects and subtitle ABI unchanged.
     '591fa655fa6a507145c7fd90163a18eee91266b98fe89315268e1a5bd32be032',
+    # C04 scoped controls; six units and both generated-schema consumers rebuilt.
+    '7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c',
 ))
 CONFIG = 'runtime-paths.json'
 

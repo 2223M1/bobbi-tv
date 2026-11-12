@@ -108,7 +108,9 @@ def test_startup_does_not_schedule_removed_background_refresh(tmp_path, monkeypa
         WidgetRefreshService=lambda **kw: SimpleNamespace(start=lambda: None,
             tick=lambda: None, close=lambda: None)))
     monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **k: host))
-    monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a: tmp_path))
+    # Use the real ProfileBinding; only Kodi's path translation is synthetic.
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
+        translatePath=lambda value: str(tmp_path / value.rsplit('/', 1)[-1])))
     monkeypatch.setitem(sys.modules, 'bobbi_platform.kodi', SimpleNamespace(rpc=lambda *a: None))
     monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(
         configure=lambda *a, **k: None, native_subtitle_abi=lambda *a: None))

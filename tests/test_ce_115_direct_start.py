@@ -71,7 +71,9 @@ class FakeRuntime:
         self.row = dict(provider='juku', name='sample', fid='123', size=55, media='movie',
                         locator='private', guid='private', share=dict(code='private', password='private'))
         self.proof = dict(account_fingerprint='b' * 64, account_epoch=3,
-                          tuple_sha256=shared.digest(shared.encoded(self.row)))
+                          tuple_sha256=shared.digest(shared.encoded(self.row)),
+                          catalog_scope={key: 'a' * 64 for key in ('profile_sha256',
+                              'source_config_sha256', 'endpoint_sha256', 'source_generation_sha256')})
         self.authority = dict(boot_id='boot', epoch=1, desired=None, observed=None, terminal=None)
         self.native = dict(selection_epoch=7, playback=None)
         self.players = []
@@ -91,6 +93,8 @@ class FakeRuntime:
         return dict(self.scope)
     def tuple(self, target):
         return deepcopy(self.row)
+    def require_catalog_scope(self, expected):
+        shared.require(expected == self.proof['catalog_scope'], 'STATE_CHANGED')
     def save(self, record):
         self.saved.append(deepcopy(record))
     def settings(self):
@@ -270,7 +274,8 @@ def test_tagged_item_uses_original_native_contract_and_address(monkeypatch):
             return SimpleNamespace(setResumePoint=lambda *args: None)
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(ListItem=Item))
     monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Player=lambda: SimpleNamespace(play=lambda *args, **kwargs: plays.append((args, kwargs)))))
-    kodi.Runtime.play(SimpleNamespace(abort_requested=lambda: False), ADDRESS, REQUEST, 'identity')
+    kodi.Runtime.play(SimpleNamespace(abort_requested=lambda: False, catalog_binding={},
+        require_catalog_scope=lambda scope: None), ADDRESS, REQUEST, 'identity')
     assert properties['bobitv.request_id'] == REQUEST and properties['bobitv.file_identity'] == 'identity'
     assert properties['StartOffset'] == properties['StartPercent'] == '0'
     assert len(plays) == 1 and plays[0][0][0] == ADDRESS
@@ -366,6 +371,21 @@ def test_abort_in_player_construction_never_calls_player_play(monkeypatch):
     monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(ListItem=lambda **kwargs: item))
     monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Player=player))
     with pytest.raises(kodi.HostAbort):
+        kodi.Runtime.play(runtime, ADDRESS, REQUEST, 'identity')
+    assert plays == []
+
+
+def test_scope_change_before_native_opener_never_calls_player_play(monkeypatch):
+    plays = []
+    item = SimpleNamespace(setProperty=lambda *args: None,
+        getVideoInfoTag=lambda: SimpleNamespace(setResumePoint=lambda *args: None))
+    def changed(scope):
+        raise shared.DiagnosticError('STATE_CHANGED')
+    runtime = SimpleNamespace(abort_requested=lambda: False, catalog_binding={}, require_catalog_scope=changed)
+    monkeypatch.setitem(sys.modules, 'xbmcgui', SimpleNamespace(ListItem=lambda **kwargs: item))
+    monkeypatch.setitem(sys.modules, 'xbmc', SimpleNamespace(Player=lambda: SimpleNamespace(
+        play=lambda *args, **kwargs: plays.append(args))))
+    with pytest.raises(shared.DiagnosticError, match='STATE_CHANGED'):
         kodi.Runtime.play(runtime, ADDRESS, REQUEST, 'identity')
     assert plays == []
 

@@ -338,10 +338,9 @@ def test_maximum_batch_fits_actual_runtime_request_and_reply_wrappers(tmp_path, 
              for index in range(128)]
     assert len(proofs(batch)) == 128
     config = dict(port=12345, token='a' * 64)
-    monkeypatch.setattr(runtime, 'profile', lambda **kwargs: SimpleNamespace(
-        is_file=lambda: True, is_symlink=lambda: False,
-        stat=lambda: SimpleNamespace(st_size=128),
-        read_text=lambda **kwargs: json.dumps(config)))
+    registration = tmp_path / 'runtime.json'
+    registration.write_text(json.dumps(config), encoding='utf-8')
+    monkeypatch.setattr(runtime, 'profile', lambda **kwargs: registration)
     wires = {}
     def open_request(request, timeout):
         # Execute the actual server handler and both runtime serializers without a socket.

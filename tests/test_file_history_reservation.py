@@ -1,7 +1,5 @@
 """The real ticket claim must reserve a writer without relabelling old progress."""
 from copy import deepcopy
-from threading import Event
-from types import SimpleNamespace
 import sys
 
 import pytest
@@ -14,7 +12,7 @@ from bobbi_platform.pan_accounts import PanError
 
 
 def test_claiming_changed_file_preserves_old_resume_evidence_until_new_report(database, service, monkeypatch):
-    storage, _ = database
+    storage, root = database
     owner, expected, state = service
     files = history.FileHistory(storage.PickleDatabase())
     original = from_selected(expected, FILE, '0')
@@ -26,9 +24,14 @@ def test_claiming_changed_file_preserves_old_resume_evidence_until_new_report(da
     state.items = [selected]
     owner.list_files(expected, '0', 1, refresh=True)
     ticket = owner.prepare_play(expected, selected)['ticket']
-    monkeypatch.setitem(sys.modules, 'lib.db.file_history', SimpleNamespace(FileHistory=lambda: files))
-    host = SimpleNamespace(stopping=Event(), accounts=owner.accounts, _pans=lambda: owner)
-    claimed = Host.dispatch(host, 'pan_claim_play', {'ticket': ticket})
+    monkeypatch.setitem(sys.modules, 'lib.db.file_history', history)
+    monkeypatch.setitem(sys.modules, 'lib.db.pickle_db', storage)
+    # Exercise the real dispatch/profile guard and captured-root history
+    # adapter; only provider IO remains supplied by the service fixture.
+    host = Host(root/'platform', plugin_root=root)
+    host.pans, host.accounts = owner, owner.accounts
+    assert host._file_history().database._database_path == str(root/'database.pickle')
+    claimed = host.dispatch('pan_claim_play', {'ticket': ticket})
     assert claimed['file_ref']['size'] == 201
     reserved = history.FileHistory(storage.PickleDatabase()).get(original['id'])
     # The next resume must still reject replacement content, even after a claim.

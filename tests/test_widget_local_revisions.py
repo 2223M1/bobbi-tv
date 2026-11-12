@@ -106,3 +106,68 @@ def test_mailbox_coalesces_changes_and_failed_window_write_retries(widgets, monk
     widgets.service.tick()
     assert widgets.props['Bobi.Rail.Revision.personal_library'] == '1'
     assert widgets.service.revisions['personal_library'] == ('generation', 49)
+
+
+def catalog_dependency(widgets, lock=None):
+    db = sqlite3.connect(':memory:')
+    db.row_factory = sqlite3.Row
+    db.execute('CREATE TABLE catalog_meta(singleton,generation,revision)')
+    db.execute("INSERT INTO catalog_meta VALUES(1,'boot',1)")
+    widgets.host.catalog = SimpleNamespace(index=SimpleNamespace(db=db, lock=lock or RLock()))
+    return db
+
+
+def test_named_views_change_only_personal_library_revision(widgets):
+    from lib.db.catalog_views import KEY
+    db = catalog_dependency(widgets)
+    widgets.sample()
+    widgets.values[KEY] = {'schema': 1, 'items': [], 'active': 'a'*32}
+    widgets.path.write_bytes(b'named view updated')
+    widgets.sample()
+    assert widgets.props == {'Bobi.Rail.Revision.continue_watching': '1',
+                             'Bobi.Rail.Revision.personal_library': '2'}
+    assert widgets.reads == 2
+    widgets.sample()
+    assert widgets.reads == 2 and widgets.props['Bobi.Rail.Revision.personal_library'] == '2'
+    db.close()
+
+
+def test_busy_index_defers_view_revision_until_real_catalog_snapshot(widgets):
+    from lib.db.catalog_views import KEY
+    locked = [False]
+    lock = SimpleNamespace(acquire=lambda **kw: not locked[0], release=lambda: None)
+    db = catalog_dependency(widgets, lock)
+    widgets.sample()
+    original = widgets.service.revisions['personal_library']
+    locked[0] = True
+    widgets.values[KEY] = {'changed': True}
+    widgets.path.write_bytes(b'changed saved views with held lock')
+    widgets.sample()
+    assert widgets.service.revisions['personal_library'] == original
+    assert widgets.props['Bobi.Rail.Revision.personal_library'] == '1'
+    locked[0] = False
+    widgets.sample()
+    assert widgets.service.revisions['personal_library'][:2] == original[:2]
+    assert widgets.props['Bobi.Rail.Revision.personal_library'] == '2'
+    db.close()
+
+
+def test_profile_change_after_worker_read_cannot_publish_old_profile(widgets):
+    current = [True]
+    widgets.host.check_profile = lambda: current[0]
+    widgets.service.refresh_dependencies()
+    assert widgets.service.mailbox.qsize() == 1 and not widgets.props
+    current[0] = False
+    widgets.service.tick()
+    widgets.service.refresh_dependencies()
+    assert not widgets.props and widgets.reads == 1
+
+
+def test_dependency_database_uses_captured_host_profile_root(widgets, monkeypatch, tmp_path):
+    roots = []
+    original = sys.modules['lib.db.pickle_db'].PickleDatabase
+    monkeypatch.setattr(sys.modules['lib.db.pickle_db'], 'PickleDatabase',
+                        lambda profile_root: (roots.append(profile_root) or original()))
+    widgets.host.plugin_root = tmp_path/'captured-profile'
+    widgets.sample()
+    assert roots == [widgets.host.plugin_root]

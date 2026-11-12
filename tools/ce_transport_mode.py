@@ -3,6 +3,7 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+import re
 import sys
 import time
 
@@ -45,11 +46,12 @@ def restart(expected):
 generation=json.loads(pathlib.Path('/storage/.local/share/bobbi-private-updates/state.json').read_text())
 assert generation['sequence']>=2026102001,'INSTALL_REMEDIATION_FIRST'
 old=load(root); pin=native(); before=account()
-out=dict(mode=MODE,before='progressive' if old else 'block',native_sha256=pin)
+out=dict(mode=MODE,before='progressive' if old else 'block',native_sha256=pin,
+         run_id=TRIAL_RUN,installed_sequence=generation['sequence'])
 if MODE!='status':
  assert rpc('Player.GetActivePlayers')==[],'STOP_ATTENDED_TRIAL_FIRST'
  target=MODE=='progressive'
- receipt=pathlib.Path('/storage/.local/share/bobbi-private-trials/20261020/transport-original.json')
+ receipt=pathlib.Path('/storage/.local/share/bobbi-private-trials')/TRIAL_RUN/'transport-original.json'
  receipt.parent.mkdir(parents=True,exist_ok=True)
  if not receipt.exists():
   with receipt.open('x') as f:json.dump(dict(schema=1,mode=out['before'],native_sha256=pin,sequence=generation['sequence']),f)
@@ -71,8 +73,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mode', choices=('status', 'block', 'progressive'))
     parser.add_argument('--transport-source', type=Path, required=True)
+    parser.add_argument('--run-id', default='20261020')
+    parser.add_argument('--output-dir', type=Path)
     args = parser.parse_args()
-    report = ROOT / 'review-evidence/ce-20261020' / ('transport-'+args.mode+'-'+str(time.time_ns())+'.json')
+    if not re.fullmatch('[A-Za-z0-9_-]{1,64}', args.run_id):
+        parser.error('Safe retained run id required')
+    output = args.output_dir or ROOT / 'review-evidence' / ('ce-'+args.run_id)
+    report = output / ('transport-'+args.mode+'-'+str(time.time_ns())+'.json')
     report.parent.mkdir(parents=True, exist_ok=True)
     sys.path.insert(0, str(args.transport_source / 'ui-redesign/runtime/ssh-python'))
     spec = importlib.util.spec_from_file_location('transport_mode_device', args.transport_source / 'ui-redesign/tools/device_transport.py')
@@ -80,10 +87,12 @@ def main():
     spec.loader.exec_module(module)
     client, wire = module.connect()
     try:
-        code, result, diagnostic = wire.readonly(client, ('MODE='+repr(args.mode)+'\n'+REMOTE).encode(), deadline_seconds=100)
+        code, result, diagnostic = wire.readonly(client,
+            ('MODE='+repr(args.mode)+'\nTRIAL_RUN='+repr(args.run_id)+'\n'+REMOTE).encode(), deadline_seconds=100)
     finally:
         client.close()
-    report.write_text(json.dumps(dict(result=result,exit_code=code,diagnostic_present=bool(diagnostic)), indent=2)+'\n', encoding='utf-8')
+    with report.open('x', encoding='utf-8') as stream:
+        json.dump(dict(result=result,exit_code=code,diagnostic_present=bool(diagnostic)), stream, indent=2)
     print(json.dumps(dict(evidence=str(report),result=result)))
     if code or diagnostic:
         raise RuntimeError('Inspect existing mode receipt before retry')

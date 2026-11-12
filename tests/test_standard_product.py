@@ -237,7 +237,7 @@ def test_seek_observation_gap_is_not_foreign_takeover(product, monkeypatch, gap)
 
 @pytest.mark.parametrize('boundary,status', [('item', 'before_submission_failed'),
     ('play', 'submission_unknown')])
-def test_successor_exception_stays_in_request_and_host_keeps_running(product, monkeypatch, boundary, status):
+def test_successor_exception_stays_in_request_and_host_keeps_running(product, monkeypatch, tmp_path, boundary, status):
     import bobbi_platform.kodi as kodi
     from lib import portable_runtime
     data, successor = ended_with_next(product)
@@ -264,7 +264,8 @@ def test_successor_exception_stays_in_request_and_host_keeps_running(product, mo
         state.abort = state.ticks >= 4
         return state.abort
     monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **kw: host))
-    monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a, **kw: '/test-profile'))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
+        translatePath=lambda value: str(tmp_path / value.rsplit('/', 1)[-1])))
     monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(
         configure=lambda *a, **kw: None, native_subtitle_abi=lambda *a: None))
     monkeypatch.setattr(sys.modules['xbmc'], 'Monitor', lambda: SimpleNamespace(waitForAbort=wait), raising=False)

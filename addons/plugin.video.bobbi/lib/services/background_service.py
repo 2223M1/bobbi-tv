@@ -286,6 +286,8 @@ class JacktookMOnitor(xbmc.Monitor):
                                             name='AuxiliaryStartup', daemon=True)
             self._auxiliary_thread.start()
             while not self.abortRequested() and (host is None or not host.stopping.is_set()):
+                if host is not None and not host.check_profile():
+                    break
                 if self._playback_event_overflow:
                     # Never keep issuing playback actions after losing ordering.
                     raise RuntimeError('Playback receipt queue overflow; owner stopped')
@@ -409,7 +411,7 @@ class JacktookMOnitor(xbmc.Monitor):
         )
 
     def onNotification(self, sender, method, data):
-        if sender == 'xbmc' and method in ('Player.OnBobiState', 'Player.OnBobiWindow'):
+        if sender == 'xbmc' and method in ('Player.OnBobiState', 'Player.OnBobiWindow', 'Player.OnBobiControl'):
             from queue import Full
             try:
                 if not isinstance(data, str) or len(data) > 16384:

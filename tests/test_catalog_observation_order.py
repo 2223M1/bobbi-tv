@@ -107,7 +107,7 @@ def test_point_guard_is_cleared_on_every_terminal_and_recovery(cd2, terminal):
     assert guards(service.index) == []
     assert not service.index.db.execute("SELECT name FROM sqlite_master WHERE name='scan_point_observations'").fetchall()
     # It is connection-local TEMP state, not a new persistent schema.
-    assert service.index.db.execute('PRAGMA user_version').fetchone()[0] == 2
+    assert service.index.db.execute('PRAGMA user_version').fetchone()[0] == 3
 
 
 def test_point_guard_and_final_cleanup_rollback_with_their_transactions(cd2):

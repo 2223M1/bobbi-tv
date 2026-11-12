@@ -12,8 +12,10 @@ import pickle
 import pickletools
 import re
 import sqlite3
+import sys
 import time
 import urllib.request
+import xml.etree.ElementTree as ET
 
 BASELINE = dict(request_id='0ed3043bc7424b159264ad87fe64504d',
     selection_identity='transport:939b30906b7f9f8490cf3509ded1d4fe28c4659e9ff707ebd8dfa6decef8042e',
@@ -54,6 +56,20 @@ def safe_error(error):
 
 
 def checked_target(target):
+    if isinstance(target, dict) and target.get('schema') == 2:
+        require(type(target['schema']) is int and set(target) == {
+            'schema', 'baseline_sha256', 'request_id', 'selection_identity', 'source_key',
+            'title', 'size', 'media', 'year'}, 'TARGET_INVALID')
+        require(all(isinstance(target[key], str) and re.fullmatch(pattern, target[key]) is not None
+            for key, pattern in (('baseline_sha256', '[0-9a-f]{64}'), ('request_id', '[0-9a-f]{32}'),
+                ('selection_identity', 'transport:[0-9a-f]{64}'), ('source_key', '[0-9a-f]{64}'))), 'TARGET_INVALID')
+        require(type(target['title']) is str and 0 < len(target['title']) <= 1024
+            and not any(ord(c) < 32 or ord(c) == 127 for c in target['title'])
+            and type(target['year']) is int and 1880 <= target['year'] <= 2200
+            and (target['size'] is None or type(target['size']) is int and 0 < target['size'] <= 512 * 1024**3),
+            'TARGET_INVALID')
+        media_fields(target)
+        return target
     require(isinstance(target, dict) and set(target) == {
         'request_id', 'selection_identity', 'source_key', 'title', 'size', 'media', 'year'}, 'TARGET_INVALID')
     # A later explicitly supplied ordinary UI receipt has a new request ID.
@@ -69,6 +85,51 @@ def checked_target(target):
             and target['title'] == 'Gattaca.1997.2160p.BluRay.REMUX.HEVC.DTS-HD.MA.TrueHD.7.1.Atmos-FGT.mkv'
             and type(target['size']) is int and target['size'] == 55082330412, 'TARGET_INVALID')
     return target
+
+
+def media_fields(target):
+    """The product's existing movies/tv key, never derive episodes from title."""
+    match = re.fullmatch(r'(movies|tv):([1-9][0-9]{0,9}):(0|[1-9][0-9]{0,3}):(0|[1-9][0-9]{0,5})',
+                         str(target.get('media', '')))
+    require(match is not None, 'TARGET_INVALID')
+    mode, tmdb, season, episode = match.groups()
+    tmdb, season, episode = int(tmdb), int(season), int(episode)
+    require((mode == 'movies' and season == episode == 0) or (mode == 'tv' and episode > 0), 'TARGET_INVALID')
+    return mode, tmdb, season, episode
+
+
+def target_evidence(target):
+    """Safe v2 provenance retained even if start/collect never gets an ACK."""
+    if target.get('schema') != 2:
+        return {}
+    checked_target(target)
+    return dict(target_schema=2, baseline_sha256=target['baseline_sha256'], baseline_request=target['request_id'],
+                selection_identity=target['selection_identity'], source_key=target['source_key'],
+                media=target['media'], size=target['size'])
+
+
+def retained_context(row, target):
+    mode, tmdb, season, episode = media_fields(target)
+    require(type(row.get('tmdb')) is int and row['tmdb'] == tmdb
+        and row.get('kind') == ('movie' if mode == 'movies' else 'tv')
+        and type(row.get('season')) is int and row['season'] == season
+        and type(row.get('episode')) is int and row['episode'] == episode, 'TUPLE_MISMATCH')
+    if target.get('schema') != 2:
+        require(type(row.get('work_year')) is int and row['work_year'] == target['year'], 'TUPLE_MISMATCH')
+        return
+    # Product remember() retains the already-bound spec. Its movie years may
+    # include evidenced regional releases; TV year is not an episode identity.
+    spec = row.get('spec')
+    require(type(spec) is dict and all(spec.get(key) == value for key, value in
+        dict(mode=mode, tmdb_id=tmdb, season=season, episode=episode,
+             media_key=target['media'], year=target['year']).items())
+        and all(type(spec.get(key)) is int for key in ('tmdb_id', 'season', 'episode', 'year')), 'TUPLE_MISMATCH')
+    if mode == 'movies':
+        years = spec.get('years') or [spec['year']]
+        require(type(years) is list and 1 <= len(years) <= 32
+            and all(type(year) is int and 1880 <= year <= 2200 for year in years)
+            and type(row.get('work_year')) is int and (row['work_year'] == 0 or row['work_year'] in years),
+            'TUPLE_MISMATCH')
 
 
 def database_stamp(path):
@@ -115,13 +176,90 @@ def readonly(path):
     return db
 
 
+def bounded_document(path, limit):
+    require(path.is_file() and not path.is_symlink(), 'STATE_CHANGED')
+    def stamp():
+        value = path.stat()
+        return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns
+    before = stamp()
+    with path.open('rb') as stream:
+        raw = stream.read(limit + 1)
+    require(len(raw) <= limit and stamp() == before, 'STATE_CHANGED')
+    return raw
+
+
+def profile_status():
+    request = urllib.request.Request('http://127.0.0.1:8080/jsonrpc',
+        json.dumps(dict(jsonrpc='2.0', id=1, method='Profiles.GetCurrentProfile')).encode(),
+        {'Content-Type': 'application/json'})
+    with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(request, timeout=3) as response:
+        raw = response.read(65537)
+    require(len(raw) <= 65536, 'RPC_REJECTED')
+    value = json.loads(raw)
+    require('error' not in value and type(value.get('result')) is dict, 'RPC_REJECTED')
+    return value['result']
+
+
+def profile_scope(root, status=None):
+    """Prove this fixed CE diagnostic is reading the active default profile."""
+    raw = bounded_document(root / 'userdata/profiles.xml', 256 * 1024)
+    require(b'<!DOCTYPE' not in raw.upper() and b'<!ENTITY' not in raw.upper(), 'STATE_CHANGED')
+    label = (status or profile_status)().get('label')
+    require(type(label) is str and 0 < len(label) <= 1024, 'STATE_CHANGED')
+    matches = [item for item in ET.fromstring(raw).findall('profile') if item.findtext('name') == label]
+    require(len(matches) == 1, 'STATE_CHANGED')
+    directory = matches[0].findtext('directory')
+    require(type(directory) is str and len(directory) <= 4096 and '\\' not in directory, 'STATE_CHANGED')
+    if directory.startswith('special://masterprofile/'):
+        selected = root / 'userdata' / directory[len('special://masterprofile/'):]
+    elif directory.startswith('special://home/'):
+        selected = root / directory[len('special://home/'):]
+    else:
+        require('://' not in directory, 'STATE_CHANGED')
+        selected = Path(directory) if Path(directory).is_absolute() else root / 'userdata' / directory
+    require('..' not in selected.parts and selected.resolve() == (root / 'userdata').resolve()
+            and raw == bounded_document(root / 'userdata/profiles.xml', 256 * 1024), 'STATE_CHANGED')
+    return digest(encoded([hashlib.sha256(raw).hexdigest(), digest(label)]))
+
+
+def checked_catalog_scope(value):
+    require(type(value) is dict and set(value) == {'profile_sha256', 'source_config_sha256',
+            'endpoint_sha256', 'source_generation_sha256'} and all(type(item) is str
+            and re.fullmatch('[0-9a-f]{64}', item) is not None for item in value.values()), 'INSPECT_CHANGED')
+    return value
+
+
+def catalog_scope(root, status=None):
+    """Only the current configured endpoint; no legacy or old-source fallback."""
+    root = Path(root)
+    profile = profile_scope(root, status)
+    path = root / 'userdata/addon_data/plugin.video.bobbi/source-library.json'
+    raw = bounded_document(path, 4096)
+    value = json.loads(raw)
+    require(type(value) is dict and type(value.get('schema')) is int and value['schema'] == 1
+            and type(value.get('generation')) is str
+            and re.fullmatch('[0-9a-f]{32}', value['generation']) is not None, 'STATE_CHANGED')
+    library_path = str(root / 'addons/script.module.bobbi.core/lib')
+    if library_path not in sys.path:
+        sys.path.insert(0, library_path)
+    # This pure function does not resolve/create the live Kodi profile.
+    from bobbi_core.source_library import normalize
+    endpoint = normalize(value.get('endpoint'))
+    require(raw == bounded_document(path, 4096) and profile_scope(root, status) == profile, 'STATE_CHANGED')
+    return checked_catalog_scope(dict(profile_sha256=profile,
+        source_config_sha256=hashlib.sha256(raw).hexdigest(), endpoint_sha256=digest(endpoint),
+        source_generation_sha256=digest(value['generation'])))
+
+
 def validate_tuple(row, target):
     """Every file/share/media field participates in the fingerprint."""
     checked_target(target)
     share = row.get('share') or {}
     require(row.get('provider') in ('juku', 'qqdocs') and row.get('media') == target['media']
             and row.get('name') == target['title'] and type(row.get('size')) is int
-            and row['size'] == target['size'] and re.fullmatch('[0-9]{1,32}', str(row.get('fid', '')))
+            and 0 < row['size'] <= 512 * 1024**3
+            and (target['size'] is None or row['size'] == target['size'])
+            and re.fullmatch('[0-9]{1,32}', str(row.get('fid', '')))
             and isinstance(share.get('code'), str) and re.fullmatch('s[a-zA-Z0-9]{5,40}', share['code'])
             and isinstance(share.get('password'), str)
             and re.fullmatch('[a-zA-Z0-9]{0,16}', share['password']), 'TUPLE_MISMATCH')
@@ -141,12 +279,15 @@ def validate_tuple(row, target):
                 share=dict(code=share['code'], password=share['password']))
 
 
-def retained_tuple(root, target):
+def retained_tuple(root, target, scope=None, status=None):
     """Exact media query + observed selection hash, never LIKE or guessed URL."""
     checked_target(target)
     root = Path(root)
+    current = catalog_scope(root, status)
+    require(scope is None or checked_catalog_scope(scope) == current, 'STATE_CHANGED')
     matches = []
-    path = root / 'userdata/addon_data/plugin.video.bobbi/juku/catalog.sqlite3'
+    path = (root / 'userdata/addon_data/plugin.video.bobbi/source-libraries'
+            / current['endpoint_sha256'] / 'catalog.sqlite3')
     if path.is_file():
         db = readonly(path)
         try:
@@ -155,9 +296,8 @@ def retained_tuple(root, target):
                 if 'transport:' + digest(locator) != target['selection_identity']:
                     continue
                 row = json.loads(stored['payload'])
-                require(row.get('key') == stored['key'] and row.get('tmdb') == 782
-                        and row.get('kind') == 'movie' and row.get('season') == 0
-                        and row.get('episode') == 0 and row.get('work_year') == 1997, 'TUPLE_MISMATCH')
+                require(row.get('key') == stored['key'], 'TUPLE_MISMATCH')
+                retained_context(row, target)
                 origins = row.get('origins') or []
                 if origins:
                     require(not all(db.execute('SELECT revoked FROM library_visibility WHERE code=? AND revoked=1',
@@ -185,8 +325,8 @@ def retained_tuple(root, target):
                     shares = catalog.execute('SELECT code,password FROM shares WHERE cell=?', (row['cell'],)).fetchall()
                     require(len(shares) == 1, 'CATALOG_NOT_UNIQUE')
                     if catalog.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='share_status'").fetchone():
-                        status = catalog.execute('SELECT enabled FROM share_status WHERE cell=?', (row['cell'],)).fetchone()
-                        require(status is None or status['enabled'], 'SHARE_REVOKED')
+                        share_status = catalog.execute('SELECT enabled FROM share_status WHERE cell=?', (row['cell'],)).fetchone()
+                        require(share_status is None or share_status['enabled'], 'SHARE_REVOKED')
                     share = dict(shares[0])
                 finally:
                     catalog.close()
@@ -194,6 +334,7 @@ def retained_tuple(root, target):
                     locator=locator, guid=guid, share=share), target))
         finally:
             db.close()
+    require(catalog_scope(root, status) == current, 'STATE_CHANGED')
     require(len(matches) == 1, 'CATALOG_NOT_UNIQUE')
     return matches[0]
 
@@ -232,6 +373,7 @@ def primitive_history(raw):
 
 
 def history_proof(root, target, row, account):
+    mode, tmdb, season, episode = media_fields(target)
     path = Path(root) / 'userdata/addon_data/plugin.video.bobbi/database.pickle'
     require(path.is_file() and not path.is_symlink() and path.stat().st_size <= 64 * 1024 * 1024, 'HISTORY_INVALID')
     history = primitive_history(path.read_bytes())
@@ -243,8 +385,13 @@ def history_proof(root, target, row, account):
     require(pointer.get('locator') == row['locator'] and pointer.get('guid') == row['guid']
             and pointer.get('title') == row['name'] and pointer.get('size') == row['size']
             and pointer.get('media') == row['media'] and item.get('source_title') == row['name']
-            and str((item.get('ids') or {}).get('tmdb_id')) == '782'
-            and item.get('mode') == 'movies', 'HISTORY_MISMATCH')
+            and type(pointer.get('size')) is int
+            and str((item.get('ids') or {}).get('tmdb_id')) == str(tmdb)
+            and item.get('mode') == mode, 'HISTORY_MISMATCH')
+    if mode == 'tv':
+        tv = item.get('tv_data') or {}
+        require(isinstance(tv, dict) and str(tv.get('season')) == str(season)
+                and str(tv.get('episode')) == str(episode), 'HISTORY_MISMATCH')
     previous = pointer.get('account') or item.get('_account')
     require(isinstance(previous, dict) and previous == account, 'ACCOUNT_CHANGED')
     return dict(exact_request=True, exact_pointer=True, same_account_epoch=True)
@@ -270,24 +417,33 @@ def checked_account(account):
     return account
 
 
-def inspect(root, target, account_status=None):
+def inspect(root, target, account_status=None, status=None):
     account_status = account_status or (lambda: control('account_status', {}))
+    scope = catalog_scope(root, status)
     before = checked_account(account_status())
-    row = retained_tuple(root, target)
+    row = retained_tuple(root, target, scope, status)
     proof = history_proof(root, target, row, before)
     require(account_status() == before, 'ACCOUNT_CHANGED')
-    return dict(schema=1, operation='inspect', mode='read_only', state='validated',
+    require(catalog_scope(root, status) == scope, 'STATE_CHANGED')
+    result = dict(schema=target.get('schema', 1), operation='inspect', mode='read_only', state='validated',
         diagnostic_only=True, product_proof=False, playback_performed=False, network_media_read=False,
         baseline_request=target['request_id'], source_key=target['source_key'],
         selection_identity=target['selection_identity'], title=row['name'], size=row['size'],
         media=row['media'], provider=row['provider'], tuple_sha256=digest(encoded(row)),
         fid_sha256=digest(row['fid']), share_sha256=digest(encoded(row['share'])),
-        account_fingerprint=before['account_id'][4:], account_epoch=before['epoch'], history=proof)
+        account_fingerprint=before['account_id'][4:], account_epoch=before['epoch'], history=proof,
+        catalog_scope=scope)
+    if target.get('schema') == 2:
+        result.update(target_evidence(target), size_evidence='retained_tuple_and_exact_history')
+        result['size'] = row['size']
+    return result
 
 
 def remote_entry(parameters):
+    evidence = {}
     try:
         require(parameters.get('operation') == 'inspect', 'DIAGNOSTIC_SCOPE')
+        evidence = target_evidence(checked_target(parameters['target']))
         return inspect('/storage/.kodi', parameters['target'])
     except Exception as error:
-        return dict(state='not_validated', diagnostic_only=True, product_proof=False, **safe_error(error))
+        return dict(state='not_validated', diagnostic_only=True, product_proof=False, **evidence, **safe_error(error))

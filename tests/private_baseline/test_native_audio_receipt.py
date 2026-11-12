@@ -52,6 +52,8 @@ def test_real_native_poll_keeps_subtitle_observer_live_after_manual_audio():
     native.subtitle_lookup = SimpleNamespace(tick=lambda: None)
     native.subtitle_fallback = SimpleNamespace(key='pending', observe=observed.append)
     native.subtitle_receipt = previous
+    native.subtitle_label = ''
+    native.presentation_receipt = None
     native.subtitle_poll = 0
     native.state = lambda: dict(protocol=1, selection_epoch=4, playback=current)
     native.poll_io()

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="skin.bobbi.cinema" version="0.1.16" name="bobbi TV" provider-name="bobbi TV">
+<addon id="skin.bobbi.cinema" version="0.1.17" name="bobbi TV" provider-name="bobbi TV">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0" />
 		<import addon="script.skinvariables" version="2.2.2" />
-		<import addon="plugin.video.bobbi" version="0.1.62" />
+		<import addon="plugin.video.bobbi" version="0.1.64" />
 	</requires>
 	<extension point="xbmc.gui.skin" debugging="false" effectslowdown="1.0">
 		<res width="1920" height="1080" aspect="16:9" default="true" folder="1080p" />

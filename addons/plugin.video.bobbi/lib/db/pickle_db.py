@@ -95,10 +95,16 @@ def _atomic_save(path, database):
 
 
 class PickleDatabase:
-    def __init__(self):
-        data_dir = xbmcvfs.translatePath(os.path.join("special://profile/addon_data/", ADDON_ID))
+    def __init__(self, profile_root=None):
+        if profile_root is not None and not os.path.isabs(os.fspath(profile_root)):
+            raise ValueError('PROFILE_ROOT_INVALID')
+        data_dir = (os.fspath(profile_root) if profile_root is not None else
+                    xbmcvfs.translatePath(os.path.join("special://profile/addon_data/", ADDON_ID)))
         self._database_path = os.path.join(data_dir, "database.pickle")
-        xbmcvfs.mkdirs(data_dir)
+        if profile_root is None:
+            xbmcvfs.mkdirs(data_dir)
+        else:
+            os.makedirs(data_dir, exist_ok=True)
         self._pending = []
         self._database = {key: {} for key in _BASE_KEYS}
         self._reload()
@@ -148,6 +154,28 @@ class PickleDatabase:
 
     def set_item(self, key: str, subkey: str, value, commit: bool = True):
         return self._queue(("set", key, subkey, value), commit)
+
+    def has_pending(self):
+        """A profile-bound deferred writer must not evict unsaved operations."""
+        return bool(self._pending)
+
+    def compare_and_set_key(self, key, expected, value):
+        """Commit one descriptive namespace iff the displayed snapshot is current.
+
+        The comparison is inside the existing cross-process writer lock. Other
+        namespaces, including concurrent playback history, are always merged.
+        A conflict never discards this writer's pending operations.
+        """
+        with _writer_lock(self._database_path):
+            latest = _read(self._database_path)
+            for operation in self._pending:
+                self._apply(latest, operation)
+            if latest.get(key) != expected:
+                return False
+            latest[key] = copy.deepcopy(value)
+            _atomic_save(self._database_path, latest)
+            self._database, self._pending = latest, []
+            return True
 
     def file_report(self, key, subkey, value):
         return self._queue(('file_report', key, subkey, value), True)

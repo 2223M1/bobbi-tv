@@ -50,6 +50,7 @@ SETTINGS_XML_PATH = os.path.join(ADDON_PATH, "resources", "settings.xml")
 EXPORT_FILENAME_TEMPLATE = "jacktook-settings-backup-{timestamp}.json"
 RESTORE_SOURCE_FILE = "file"
 RESTORE_SOURCE_URL = "url"
+MAX_BACKUP_BYTES = 8 * 1024 * 1024
 
 CUSTOM_SELECTION_KEYS = {
     "stream": STREMIO_ADDONS_KEY,
@@ -388,7 +389,7 @@ def factory_reset(settings_xml_path=SETTINGS_XML_PATH):
     _clear_factory_reset_database_state()
 
 
-def _get_export_path():
+def _get_export_path(filename_template=EXPORT_FILENAME_TEMPLATE):
     folder = xbmcgui.Dialog().browse(
         0,
         translation(90268),
@@ -402,10 +403,140 @@ def _get_export_path():
         return None
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    return os.path.join(translatePath(folder), EXPORT_FILENAME_TEMPLATE.format(timestamp=timestamp))
+    return os.path.join(translatePath(folder), filename_template.format(timestamp=timestamp))
+
+
+def _catalog_context(dialog, required_scope=None):
+    """Reuse the current profile's existing Host and logged-in account only."""
+    from bobbi_platform.paths import ProfileBinding
+    from bobbi_platform.runtime import bind_call
+    binding = ProfileBinding()
+    rpc = bind_call(binding.root() / 'runtime.json')
+    binding.require_current()
+    accounts = [row for row in rpc('pan_status', {})['providers'] if
+        row['provider'] != '115' and row['account']['authenticated'] and
+        (required_scope is None or all(row['account'].get(key) == value for key, value in required_scope.items()))]
+    binding.require_current()
+    if not accounts:
+        dialog.ok('人工片库描述', '请先在当前 Kodi 用户中登录对应网盘并登记、扫描文件。此操作不会复制或切换账号。')
+        return None
+    selected = dialog.select('当前 Kodi 用户 · 选择片库账号', [row['label'] for row in accounts]) if len(accounts) > 1 else 0
+    if not 0 <= selected < len(accounts):
+        return None
+    expected = accounts[selected]['account']
+
+    def invoke(action, **body):
+        binding.require_current()
+        result = rpc(action, dict(expected=expected, **body))
+        binding.require_current()
+        return result
+
+    return expected, invoke, binding.require_current
+
+
+def _export_catalog_descriptions(dialog):
+    from bobbi_core import catalog_transfer
+    context = _catalog_context(dialog)
+    if context is None:
+        return
+    expected, invoke, scope_check = context
+    offset, revision, excluded = 0, None, 0
+    while True:
+        records, start = [], offset
+        while len(records) < catalog_transfer.MAX_ENTRIES:
+            page = invoke('catalog_manual_records', offset=offset,
+                limit=min(5, catalog_transfer.MAX_ENTRIES - len(records)), projection_revision=revision)
+            if revision is not None and page['projection_revision'] != revision:
+                raise ValueError('CATALOG_CURSOR_STALE')
+            revision = page['projection_revision']
+            excluded = max(excluded, page.get('excluded_supplements', 0))
+            records.extend(page['items'])
+            following = page['next_offset']
+            if following is None:
+                break
+            if type(following) is not int or following <= offset:
+                raise ValueError('CATALOG_CURSOR_STALE')
+            offset = following
+        if not records:
+            dialog.ok('没有可导出的人工描述', '自动候选、账号凭据、播放进度和临时授权均不导出。'
+                      + ('\n另有 %s 项补充内容关联，本版暂不迁移。' % excluded if excluded else ''))
+            return
+        raw = catalog_transfer.dumps(catalog_transfer.export_records(expected, records))
+        target = _get_export_path('bobbi-manual-descriptions-{timestamp}-' + str(start) + '.json')
+        if target is None:
+            return
+        scope_check()
+        if not os.path.isabs(target):
+            raise ValueError('Local backup file required')
+        # A distinct user-selected JSON artifact, never overwrite a database
+        # or settings backup and never bundle this with credential settings.
+        with open(target, 'x', encoding='utf-8') as stream:
+            stream.write(raw)
+        dialog.ok('已导出人工片库描述', '%s 项；不含账号凭据或观看进度。' % len(records)
+                  + ('\n另有 %s 项补充内容关联，本版暂不迁移。' % excluded if excluded else ''))
+        if following is None or not dialog.yesno('继续导出下一份？',
+                '当前文件只包含本轮最多 100 项；还有人工描述未导出。下一份继续同一只读修订。'):
+            return
+
+
+def _restore_catalog_descriptions(payload, dialog):
+    from bobbi_core import catalog_transfer
+    from bobbi_platform.catalog_ui import review_entries
+    payload = catalog_transfer.loads(json.dumps(payload, ensure_ascii=False, allow_nan=False))
+    context = _catalog_context(dialog, payload['scope'])
+    if context is None:
+        return
+    expected, invoke, scope_check = context
+    current, revision = [], None
+    ids = [row['reference']['id'] for row in payload['entries']]
+    for start in range(0, len(ids), 5):
+        pending = ids[start:start + 5]
+        while pending:
+            page = invoke('catalog_manual_records', file_ids=pending,
+                          projection_revision=revision)
+            if revision is not None and page['projection_revision'] != revision:
+                raise ValueError('CATALOG_CURSOR_STALE')
+            revision = page['projection_revision']
+            current.extend(page['items'])
+            if page['next_offset'] is None:
+                break
+            observed = {row['file_ref']['id'] for row in page['items']}
+            remainder = [file for file in pending if file not in observed]
+            if len(remainder) >= len(pending):
+                raise ValueError('CATALOG_REPLY_LIMIT')
+            pending = remainder
+    result = catalog_transfer.preview(payload, expected, current)['items']
+    labels = {'unchanged': '已有相同描述，无需修改', 'ready': '身份和内容证据匹配',
+              'review_required': '缺少内容哈希，需逐项人工核对', 'conflict': '目标已有人工修改，不覆盖',
+              'unresolved': '未找到当前文件或证据已变，不导入'}
+    scope_check()
+    dialog.textviewer('导入差异（尚未保存）', '\n'.join(row['name'] + ' · ' + labels[row['status']]
+        for row in result) + '\n\n只迁移人工描述，不导入播放授权、文件秒数、旧请求编号或账号。'
+        '\n花絮等补充关系暂不迁移，目标已有此类关系时不覆盖。')
+    candidates = [row for row in result if row['status'] in ('ready', 'review_required')]
+    if not candidates:
+        return
+    selected = dialog.multiselect('逐项选择描述；缺少内容证据的文件默认不选',
+        [row['name'] + ' · ' + labels[row['status']] for row in candidates],
+        preselect=[index for index, row in enumerate(candidates) if row['status'] == 'ready'])
+    if not selected:
+        return
+    scope_check()
+    entries = [dict(name=candidates[index]['name'], command=candidates[index]['command']) for index in selected]
+    return review_entries(dialog, expected, entries, invoke=invoke, scope_check=scope_check)
 
 
 def export_settings_backup(params=None):
+    dialog = xbmcgui.Dialog()
+    kind = dialog.select('备份内容', ['设置备份（沿用现有敏感信息选项）', '人工片库描述（不含账号凭据）'])
+    if kind not in (0, 1):
+        return
+    if kind == 1:
+        try:
+            return _export_catalog_descriptions(dialog)
+        except (ValueError, OSError, RuntimeError):
+            dialog.ok('人工描述未完成导出', '账号、文件索引或当前 Kodi 用户可能已变化；原文件和人工记录均保留，请刷新后重试。')
+        return
     export_path = _get_export_path()
     if not export_path:
         return
@@ -464,7 +595,17 @@ def _get_restore_url():
 
 def _load_backup_payload_from_file(restore_path):
     with open(restore_path, encoding="utf-8") as backup_file:
-        return json.load(backup_file)
+        raw = backup_file.read(MAX_BACKUP_BYTES + 1)
+    if len(raw.encode('utf-8')) > MAX_BACKUP_BYTES:
+        raise ValueError('Backup exceeds local file budget')
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('Duplicate backup field')
+            result[key] = value
+        return result
+    return json.loads(raw, object_pairs_hook=unique)
 
 
 def _load_backup_payload_from_url(restore_url):
@@ -497,6 +638,10 @@ def restore_settings_backup(params=None):
             payload = _load_backup_payload_from_file(restore_target)
         else:
             payload = _load_backup_payload_from_url(restore_target)
+        if type(payload) is dict and payload.get('schema') == 'bobbi-catalog-manual-v1':
+            if restore_source != RESTORE_SOURCE_FILE:
+                raise ValueError('Manual descriptions require an explicitly selected local file')
+            return _restore_catalog_descriptions(payload, xbmcgui.Dialog())
         apply_backup_payload(payload)
         notification(translation(90266))
     except ValueError:

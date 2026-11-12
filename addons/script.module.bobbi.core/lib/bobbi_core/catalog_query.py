@@ -16,7 +16,7 @@ MAX_LIMIT = 32
 REPLY_BYTES = 15000
 CURSOR_SECONDS = 600
 PROJECTION_SCHEMA = 6
-VIEWS = ('works', 'seasons', 'episodes', 'files')
+VIEWS = ('works', 'seasons', 'episodes', 'files', 'supplements')
 AVAILABILITY = ('observed_present', 'observed_absent', 'source_unavailable', 'unverified')
 STATES = ('unmatched', 'ambiguous', 'proposed', 'confirmed', 'ignored')
 ROW_SCHEMA = ('id TEXT PRIMARY KEY,provider TEXT NOT NULL,account TEXT NOT NULL,'
@@ -42,14 +42,14 @@ def opaque(*parts):
 def scope_key(value):
     # SQL partition labels are not a fabricated authenticated cloud account.
     # Host checks the corresponding native-account or mounted authority first.
-    if value.get('reference_kind') == 'mounted_path':
-        return ('mounted_path', value['source_id'], value['namespace'])
+    if value.get('reference_kind') in ('mounted_path', 'local_path'):
+        return (value['reference_kind'], value['source_id'], value['namespace'])
     return (value['provider'], value['account_id'], value['epoch'])
 
 
 def revision_key(value):
     """Persistent local scope; native login epochs remain cursor-only CAS."""
-    if value.get('reference_kind') == 'mounted_path':
+    if value.get('reference_kind') in ('mounted_path', 'local_path'):
         return scope_key(value)
     return (value['provider'], value['account_id'], '')
 
@@ -75,7 +75,7 @@ def parameters(value):
     if type(text) is not str or len(text) > 160 or re.search(r'[\x00-\x1f\x7f]', text):
         raise ValueError('CATALOG_QUERY_INVALID')
     result['text'] = normalized(text.strip())
-    if result['view'] in ('seasons', 'episodes') and result['parent_entity_id'] is None:
+    if result['view'] in ('seasons', 'episodes', 'supplements') and result['parent_entity_id'] is None:
         raise ValueError('CATALOG_QUERY_INVALID')
     return result
 
@@ -93,6 +93,7 @@ def project(db, file_id, table='catalog_rows'):
         'JOIN reviews r ON r.file=o.id LEFT JOIN object_times t ON t.file=o.id '
         'WHERE o.id=?', (file_id,)).fetchone()
     ref = json.loads(row['ref'])
+    provider = ref.get('reference_kind', row['provider'])
     mapping = json.loads(row['mapping']) if row['mapping'] else None
     title, kind, season, episode = ref['name'], 'unknown', None, None
     work, season_id, episode_id = file_id, None, None
@@ -105,17 +106,17 @@ def project(db, file_id, table='catalog_rows'):
         if row['state'] == 'confirmed' and mapping['kind'] in ('movie', 'tv'):
             kind, season, episode = mapping['kind'], mapping['season'], mapping['episode']
             metadata_key = 'tmdb:%s:%d' % (kind, mapping['tmdb_id'])
-            work = opaque(row['provider'], row['account'], kind, mapping['tmdb_id'])
+            work = opaque(provider, row['account'], kind, mapping['tmdb_id'])
             if kind == 'tv':
                 season_id = opaque(work, 'season', season)
                 episode_id = opaque(work, 'episode', season, episode)
     version = (mapping or {}).get('version') or ''
     db.execute('INSERT OR REPLACE INTO ' + table + ' VALUES(' + ','.join('?' for _ in range(22)) + ')',
-        (file_id, row['provider'], row['account'], work, season_id, episode_id, title,
+        (file_id, provider, row['account'], work, season_id, episode_id, title,
          ref['name'], normalized(title), normalized(title + '\n' + ref['name'] + '\n' + version), kind,
          season, episode, row['state'], row['first_seen'], row['updated'] or 0,
-         opaque(row['provider'], row['account'], ref['namespace'], ref['parent']),
-         ref['namespace'], ref.get('mount_generation', ''), metadata_key, year, normalized(ref['name'])))
+         opaque(provider, row['account'], ref['namespace'], ref['parent']),
+         ref['namespace'], ref.get('mount_generation', ref.get('source_generation', '')), metadata_key, year, normalized(ref['name'])))
 
 
 class CatalogQuery:
@@ -124,6 +125,80 @@ class CatalogQuery:
         self.index = index
         self.cursors = OrderedDict()
         self.clock = time.monotonic
+
+    @staticmethod
+    def _partition(expected):
+        where, args = 'p.provider=? AND p.account=?', list(scope_key(expected)[:2])
+        if expected.get('reference_kind') in ('mounted_path', 'local_path'):
+            where += ' AND p.namespace=?'
+            args.append(expected['namespace'])
+        return where, args
+
+    def parent_descriptor(self, expected, parent_id):
+        """Describe a confirmed group; persistent views retain meaning, not a grant."""
+        if type(parent_id) is not str or not re.fullmatch('[0-9a-f]{64}', parent_id):
+            raise ValueError('CATALOG_ID_INVALID')
+        where, args = self._partition(expected)
+        with self.index.lock:
+            row = self.index.db.execute('SELECT p.* FROM catalog_rows p WHERE ' + where +
+                " AND p.review_state='confirmed' AND p.metadata_key IS NOT NULL AND "
+                'NOT EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id) AND '
+                '(p.work_id=? OR p.season_id=? OR p.episode_id=?) LIMIT 1',
+                args + [parent_id] * 3).fetchone()
+            if row is None:
+                raise ValueError('CATALOG_PARENT_CHANGED')
+            kind = ('work' if row['work_id'] == parent_id else
+                    'season' if row['season_id'] == parent_id else 'episode')
+            return dict(entity_id=parent_id, entity_kind=kind, metadata_key=row['metadata_key'],
+                season=row['season'] if kind != 'work' else None,
+                episode=row['episode'] if kind == 'episode' else None)
+
+    def describe_files(self, expected, file_ids):
+        """One bounded local batch, without remote lookups, FileRefs or tickets."""
+        if (type(file_ids) is not list or not 1 <= len(file_ids) <= DEFAULT_LIMIT or
+                any(type(value) is not str or not re.fullmatch('[0-9a-f]{64}', value) for value in file_ids)):
+            raise ValueError('CATALOG_PAGE_INVALID')
+        where, args = self._partition(expected)
+        with self.index.lock:
+            rows = self.index.db.execute('SELECT p.*,p.id AS entity_id FROM catalog_rows p WHERE ' +
+                where + ' AND p.id IN (' + ','.join('?' for _ in file_ids) + ') ORDER BY p.id',
+                args + file_ids).fetchall()
+            details = self._file_details(self.index.db, rows, {}, expected)
+            result = dict(items=[], truncated=False)
+            for row in rows:
+                detail = details[row['id']]
+                detail.pop('_detail_truncated', None)
+                item = dict(detail, entity_id=row['id'], entity_kind='file',
+                    display_title=row['filename'][:160], work_title=row['title'][:160],
+                    media_kind=row['media_kind'], metadata_key=row['metadata_key'],
+                    season=row['season'], episode=row['episode'], review_state=row['review_state'],
+                    parent_entity_id=(row['episode_id'] or row['work_id']) if row['metadata_key'] else None)
+                if len(wire(dict(result, items=result['items'] + [item]))) > REPLY_BYTES:
+                    result['truncated'] = True
+                    break
+                result['items'].append(item)
+            return result
+
+    def holdings(self, expected, identities):
+        """Confirmed public identities in one SQL batch; membership is not a file."""
+        if (type(identities) is not list or not 1 <= len(identities) <= DEFAULT_LIMIT or
+                any(type(key) is not str or not re.fullmatch(r'tmdb:(movie|tv):[1-9]\d{0,8}', key)
+                    for key in identities)):
+            raise ValueError('CATALOG_PAGE_INVALID')
+        where, args = self._partition(expected)
+        with self.index.lock:
+            # An absent/unbuilt local index is unknown, not evidence of no files.
+            known = bool(self.index.db.execute('SELECT 1 FROM catalog_rows p WHERE ' + where +
+                ' LIMIT 1', args).fetchone())
+            rows = self.index.db.execute('SELECT p.metadata_key,p.work_id,COUNT(DISTINCT p.id) AS file_count,'
+                'COUNT(DISTINCT p.episode_id) AS episode_count FROM catalog_rows p WHERE ' + where +
+                " AND p.review_state='confirmed' AND NOT EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id) AND p.metadata_key IN (" +
+                ','.join('?' for _ in identities) + ') GROUP BY p.metadata_key,p.work_id', args + identities).fetchall()
+            found = {row['metadata_key']: dict(metadata_key=row['metadata_key'], entity_id=row['work_id'],
+                entity_kind='work', media_kind=row['metadata_key'].split(':')[1],
+                file_count=row['file_count'], episode_count=row['episode_count'], state='observed') for row in rows}
+            return dict(items=[found.get(key, dict(metadata_key=key, state='not_indexed' if known else 'unknown',
+                file_count=0 if known else None)) for key in dict.fromkeys(identities)])
 
     def query(self, expected, query=None, cursor=None, limit=DEFAULT_LIMIT, source_names=None):
         query = parameters({} if query is None else query)
@@ -151,10 +226,11 @@ class CatalogQuery:
                           projection_revision=revision, truncated=False)
             continuation = uuid4().hex
             last = None
-            details = self._file_details(db, rows[:limit], source_names or {}) if query['view'] == 'files' else {}
+            file_view = query['view'] in ('files', 'supplements')
+            details = self._file_details(db, rows[:limit], source_names or {}, expected) if file_view else {}
             for row in rows[:limit]:
                 item = self._summary(row, query['view'])
-                if query['view'] == 'files':
+                if file_view:
                     item.update(details[row['entity_id']])
                     detail_truncated = item.pop('_detail_truncated')
                     item['truncated'] |= len(row['filename']) > 160 or detail_truncated
@@ -176,8 +252,7 @@ class CatalogQuery:
                 raise ValueError('CATALOG_REPLY_LIMIT')
             return result
 
-    @staticmethod
-    def _file_details(db, rows, source_names):
+    def _file_details(self, db, rows, source_names, expected):
         # Decode only the bounded file page. Works/seasons/episodes retain the
         # scalar read path; no new schema or second metadata authority is needed.
         ids = [row['entity_id'] for row in rows]
@@ -196,9 +271,9 @@ class CatalogQuery:
         for membership in db.execute(sources_sql, ids):
             source = membership['source']
             names[membership['file']].append((source, source_names.get(source, '已移除或未命名来源')))
-        references = db.execute('SELECT o.id,o.ref,r.mapping FROM (SELECT id,ref FROM objects WHERE id IN (' + marks +
+        references = db.execute('SELECT o.id,o.ref,r.mapping,r.revision,s.detail AS supplement_detail FROM (SELECT id,ref FROM objects WHERE id IN (' + marks +
             ') UNION ALL SELECT id,ref FROM typed_objects WHERE id IN (' + marks +
-            ')) o JOIN reviews r ON r.file=o.id', ids + ids)
+            ')) o JOIN reviews r ON r.file=o.id LEFT JOIN file_supplements s ON s.file=o.id', ids + ids)
         result = {}
         for row in references:
             ref = json.loads(row['ref'])
@@ -206,27 +281,32 @@ class CatalogQuery:
             version = (mapping or {}).get('version') or ''
             sources = names[row['id']]
             detail = dict(file_name=ref['name'][:160], file_size=ref['size'], version_label=version[:80],
+                review_revision=row['revision'], observation_key=opaque(ref),
                 sources=[dict(id=source, name=name[:80]) for source, name in sources[:3]],
                 source_total=totals.get(row['id'], 0), _detail_truncated=len(version) > 80 or totals.get(row['id'], 0) > 3 or any(len(name) > 80 for _, name in sources))
             if ref.get('reference_kind') != 'mounted_path' and 'provider' in ref:
                 # Display-only match with the saved observation, never a play permit.
                 detail['history_key'] = opaque(ref['id'], ref['size'], ref.get('fingerprint'))
+            from .catalog_supplements import summary
+            relation = json.loads(row['supplement_detail']) if row['supplement_detail'] else None
+            if relation:
+                detail['supplement'] = summary(self.index, expected, relation)
             result[row['id']] = detail
         return result
 
     @staticmethod
     def _summary(row, view):
-        title = row['filename'] if view == 'files' else row['title']
+        title = row['filename'] if view in ('files', 'supplements') else row['title']
         if view == 'seasons':
             title = '%s · S%02d' % (title, row['season'])
         elif view == 'episodes':
             title = '%s · S%02dE%02d' % (title, row['season'], row['episode'])
         # A display-only limit. Stable identities, mapping and cursor are intact.
         return dict(entity_id=row['entity_id'], entity_kind={
-            'works': 'work', 'seasons': 'season', 'episodes': 'episode', 'files': 'file'}[view],
+            'works': 'work', 'seasons': 'season', 'episodes': 'episode', 'files': 'file', 'supplements': 'file'}[view],
             display_title=title[:160], media_kind=row['media_kind'],
             season=row['season'] if view != 'works' else None,
-            episode=row['episode'] if view in ('episodes', 'files') else None,
+            episode=row['episode'] if view in ('episodes', 'files', 'supplements') else None,
             review_state=row['review_state'], availability=row['availability'],
             variant_count=row['variant_count'], available_count=row['available_count'],
             source_count=row['source_count'], truncated=len(title) > 160,
@@ -235,10 +315,15 @@ class CatalogQuery:
     @staticmethod
     def _sql(expected, query, after):
         view = query['view']
-        key = {'works': 'work_id', 'seasons': 'season_id', 'episodes': 'episode_id', 'files': 'id'}[view]
+        key = {'works': 'work_id', 'seasons': 'season_id', 'episodes': 'episode_id', 'files': 'id', 'supplements': 'id'}[view]
         conditions = ['p.provider=?', 'p.account=?', 'p.' + key + ' IS NOT NULL']
         args = list(scope_key(expected)[:2])
-        if expected.get('reference_kind') == 'mounted_path':
+        if view != 'supplements':
+            # The review workbench still needs to reach every original file.
+            # All ordinary works/versions omit extras from main-media counts.
+            if not (view == 'files' and query.get('review_state')):
+                conditions.append('NOT EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id)')
+        if expected.get('reference_kind') in ('mounted_path', 'local_path'):
             conditions.append('p.namespace=?')
             args.append(expected['namespace'])
         for field, column in (('review_state', 'review_state'), ('media_kind', 'media_kind')):
@@ -253,16 +338,22 @@ class CatalogQuery:
             args.append('%' + query['text'].replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%')
         parent = query['parent_entity_id']
         if parent:
-            columns = ('work_id',) if view == 'seasons' else ('season_id',) if view == 'episodes' else ('work_id', 'season_id', 'episode_id')
-            conditions.append('(' + ' OR '.join('p.' + column + '=?' for column in columns) + ')')
-            args.extend([parent] * len(columns))
+            if view == 'supplements':
+                conditions.append('EXISTS(SELECT 1 FROM file_supplements s WHERE s.file=p.id AND '
+                    '(s.work_id=? OR s.parent_file=? OR (s.parent_file IS NULL AND s.work_id IN '
+                    '(SELECT work_id FROM catalog_rows WHERE id=?))))')
+                args.extend([parent] * 3)
+            else:
+                columns = ('work_id',) if view == 'seasons' else ('season_id',) if view == 'episodes' else ('work_id', 'season_id', 'episode_id')
+                conditions.append('(' + ' OR '.join('p.' + column + '=?' for column in columns) + ')')
+                args.extend([parent] * len(columns))
         availability = ("CASE WHEN EXISTS(SELECT 1 FROM memberships m JOIN catalog_sources s ON s.source=m.source "
             "WHERE m.file=p.id AND s.active=1 AND m.available=1) THEN 'observed_present' "
             "WHEN EXISTS(SELECT 1 FROM memberships m JOIN catalog_sources s ON s.source=m.source "
             "WHERE m.file=p.id AND s.active=1) THEN 'observed_absent' "
             "WHEN EXISTS(SELECT 1 FROM memberships m WHERE m.file=p.id) THEN 'source_unavailable' "
             "ELSE 'unverified' END")
-        if expected.get('reference_kind') == 'mounted_path':
+        if expected.get('reference_kind') in ('mounted_path', 'local_path'):
             generation = expected.get('generation', '')
             if generation:
                 # Only hex digests produced by the mounted port reach this
@@ -283,7 +374,7 @@ class CatalogQuery:
         # added date from a migration or metadata change.
         sort = {'name': 'MIN(p.title_sort)', 'recent_added': '-COALESCE(MAX(p.first_seen),0)',
                 'recent_edited': '-MAX(p.updated)'}[query['sort']]
-        if query['sort'] == 'name' and view == 'files':
+        if query['sort'] == 'name' and view in ('files', 'supplements'):
             sort = 'MIN(p.filename_sort)'
         if query['sort'] == 'name' and view in ('seasons', 'episodes'):
             sort = "printf('%06d:%06d',MIN(p.season),COALESCE(MIN(p.episode),0))"

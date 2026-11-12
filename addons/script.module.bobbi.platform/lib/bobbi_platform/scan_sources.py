@@ -12,7 +12,7 @@ import stat
 from threading import Event
 import time
 
-from bobbi_core import mounted_ref
+from bobbi_core import mounted_ref, typed_ref
 from bobbi_core.file_ref import from_selected
 from . import cd2_mounts
 from .libraries import Registry, joined_path, VIDEO_EXTENSIONS, MAX_DIRECTORY_ITEMS
@@ -204,10 +204,11 @@ class MountedPort:
             session.close()
 
     def stat_by_reference(self, authority, reference, check=lambda: None):
-        reference = mounted_ref.validate(reference)
+        reference = typed_ref.validate(reference)
         check()
         source = self.require(authority)
-        if (reference['source_id'], reference['namespace']) != (authority['source_id'], authority['namespace']):
+        if (reference['reference_kind'], reference['source_id'], reference['namespace']) != (
+                authority['reference_kind'], authority['source_id'], authority['namespace']):
             raise ValueError('CATALOG_REFERENCE_INVALID')
         path = self.path(source, reference['relative'])
         info = os.stat(path, follow_symlinks=False)
@@ -215,10 +216,56 @@ class MountedPort:
         self.require(authority)
         if not stat.S_ISREG(info.st_mode):
             raise ValueError('CATALOG_FILE_CHANGED')
-        current = mounted_ref.observed(authority, reference['relative'], info)
-        if not mounted_ref.same_observation(reference, current):
+        current = typed_ref.observed(authority, reference['relative'], info)
+        if not typed_ref.same_observation(reference, current):
             raise ValueError('CATALOG_FILE_CHANGED')
         return current
+
+
+class LocalPort(MountedPort):
+    """One ordinary local Registry source, sharing bounded path I/O only.
+
+    No remote VFS protocols or kernel mount authority are implied. Read-only
+    scope/query/cancel inspect configuration, never stat a potentially blocked
+    root. Every scan and play admission still checks the actual root and file.
+    """
+    capabilities = dict(MountedPort.capabilities, reference_kind='local_path',
+                        authority='registered_local_root', device_verified=False)
+
+    @staticmethod
+    def source_scope(source):
+        MountedPort.source_scope(source)  # Same strict absolute-local configuration boundary.
+        return dict(reference_kind='local_path', source_id=source.id,
+                    namespace=typed_ref.digest('local', source.location), generation='')
+
+    @classmethod
+    def source_snapshot(cls, source, mounts):
+        current = cls.source_scope(source)
+        root = source.location.rstrip('/\\')
+        if any(root == row['path'] or root.startswith(row['path'].rstrip('/') + '/') for row in mounts):
+            raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        current['generation'] = typed_ref.digest('local-config', source.id, current['namespace'])
+        return current
+
+    def describe(self, source_id):
+        source = self.source(source_id)
+        authority = self.source_snapshot(source, self.mounts())
+        path = native_path(source.location)
+        if os.path.islink(path) or not os.path.isdir(path):
+            raise ValueError('CATALOG_SOURCE_UNAVAILABLE')
+        if os.path.realpath(path) != os.path.abspath(path):
+            raise ValueError('CATALOG_SOURCE_UNSUPPORTED')
+        info = os.stat(path, follow_symlinks=False)
+        authority['root_signature'] = dict(device=info.st_dev, inode=info.st_ino)
+        return source, authority
+
+    def publish(self, expected, write):
+        # Full root stat was checked outside the catalog owner lock; local
+        # publication only rechecks Registry configuration, never blocking I/O.
+        current = self.snapshot(expected)
+        if any(current[key] != expected[key] for key in current):
+            raise ValueError('CATALOG_AUTHORITY_CHANGED')
+        return write()
 
 
 class MountedSession:
@@ -273,7 +320,7 @@ class MountedSession:
             if stat.S_ISDIR(info.st_mode):
                 rows.append(dict(directory=True, relative=child))
             elif stat.S_ISREG(info.st_mode) and any(name.lower().endswith(ext) for ext in VIDEO_EXTENSIONS):
-                rows.append(dict(directory=False, reference=mounted_ref.observed(self.authority, child, info)))
+                rows.append(dict(directory=False, reference=typed_ref.observed(self.authority, child, info)))
             else:
                 rows.append(dict(directory=False, reference=None))
         self.check()

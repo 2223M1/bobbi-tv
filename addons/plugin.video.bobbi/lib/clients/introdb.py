@@ -1,4 +1,6 @@
 from datetime import timedelta
+import json
+import re
 
 import requests
 
@@ -8,9 +10,17 @@ from lib.utils.kodi.utils import kodilog
 INTRODB_BASE_URL = "http://api.introdb.app"
 INTRODB_TIMEOUT = 5
 INTRODB_CACHE_EXPIRY = timedelta(hours=24)
+MAX_RESPONSE = 16384
 
 _cache = MemoryCache(database="introdb")
 _SENTINEL = "__introdb_none__"
+
+
+def _segments(data):
+    if type(data) is not dict:
+        return None
+    # Metadata is not version proof and is outside the owner segment contract.
+    return {key: data[key] for key in ('intro', 'recap', 'outro') if key in data}
 
 
 def get_segments(imdb_id, season, episode):
@@ -28,8 +38,9 @@ def get_segments(imdb_id, season, episode):
         dict with keys 'intro', 'recap', 'outro' (each a dict or None),
         or None if the request fails or no data is available.
     """
-    if not imdb_id or not season or not episode:
-
+    if (type(imdb_id) is not str or not re.fullmatch(r'tt[0-9]{1,12}', imdb_id)
+            or type(season) is not int or not 0 <= season <= 10000
+            or type(episode) is not int or not 1 <= episode <= 100000):
         return None
 
     cache_key = f"{imdb_id}.S{season}E{episode}"
@@ -47,9 +58,9 @@ def get_segments(imdb_id, season, episode):
         if cached == _SENTINEL:
             kodilog(f"IntroDB: Cache hit (no data) for {imdb_id} S{season}E{episode}")
             return None
-        kodilog(f"IntroDB: Cache hit for {imdb_id} S{season}E{episode} data={cached}")
-        return cached
+        return _segments(cached)
 
+    response = None
     try:
         kodilog(
             f"IntroDB: Requesting /segments for {imdb_id} S{season}E{episode} with params {request_params}"
@@ -58,9 +69,10 @@ def get_segments(imdb_id, season, episode):
             f"{INTRODB_BASE_URL}/segments",
             params=request_params,
             timeout=INTRODB_TIMEOUT,
+            stream=True,
         )
         kodilog(
-            f"IntroDB: Response status {response.status_code} for {imdb_id} S{season}E{episode} body={response.text}"
+            f"IntroDB: Response status {response.status_code} for {imdb_id} S{season}E{episode}"
         )
 
         if response.status_code == 404:
@@ -74,7 +86,14 @@ def get_segments(imdb_id, season, episode):
             )
             return None
 
-        data = response.json()
+        body = bytearray()
+        for chunk in response.iter_content(4096):
+            if len(body) + len(chunk) > MAX_RESPONSE:
+                return None
+            body.extend(chunk)
+        data = _segments(json.loads(body))
+        if data is None:
+            return None
         kodilog(
             f"IntroDB: Got segments for {imdb_id} S{season}E{episode}: "
             f"intro={'yes' if data.get('intro') else 'no'}, "
@@ -87,9 +106,12 @@ def get_segments(imdb_id, season, episode):
     except requests.exceptions.Timeout:
         kodilog(f"IntroDB: Request timed out for {imdb_id} S{season}E{episode}")
         return None
-    except requests.exceptions.RequestException as e:
-        kodilog(f"IntroDB: Request failed for {imdb_id} S{season}E{episode}: {e}")
+    except requests.exceptions.RequestException:
+        kodilog("IntroDB: public segment request unavailable")
         return None
-    except (ValueError, KeyError) as e:
-        kodilog(f"IntroDB: Failed to parse response for {imdb_id} S{season}E{episode}: {e}")
+    except (ValueError, KeyError, TypeError):
+        kodilog("IntroDB: invalid public segment response")
         return None
+    finally:
+        if response is not None:
+            response.close()

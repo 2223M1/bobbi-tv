@@ -15,10 +15,10 @@ import traceback
 from urllib.parse import quote
 from uuid import uuid4
 
-from ce_115_direct_remote import (DiagnosticError, checked_account, control, digest, encoded, inspect,
-    require, retained_tuple, safe_error)
+from ce_115_direct_remote import (DiagnosticError, catalog_scope, checked_catalog_scope, checked_account, checked_target, control, digest, encoded, inspect,
+    require, retained_tuple, safe_error, target_evidence)
 
-TOOL_REVISION = 8
+TOOL_REVISION = 11
 SHARE_DIAGNOSTICS = {'sharestream-open-range': 'open_range',
                      'sharestream-open-range-microbatch': 'open_range_microbatch',
                      'sharestream-open-range-bound-guard': 'open_range_bound_guard',
@@ -41,6 +41,22 @@ def error_location(error):
 class HostAbort(DiagnosticError):
     """Fixed cancellation code; never an upstream or native exception body."""
     code = 'cancelled'
+
+
+class SampleReadUnavailable(Exception):
+    """Only a read-channel gap; never an authority rejection or control retry."""
+    def __init__(self, channel, error):
+        super().__init__('SAMPLE_READ_UNAVAILABLE')
+        self.evidence = dict(channel=channel, reason='READ_UNAVAILABLE', **error_location(error))
+
+
+def sample_read(channel, read):
+    try:
+        return read()
+    except OSError as error:
+        # Includes socket/URL read timeouts. Identity checks, invalid replies,
+        # HostAbort and programming errors remain fatal and are not retried.
+        raise SampleReadUnavailable(channel, error) from None
 
 
 def check_abort(runtime):
@@ -98,6 +114,13 @@ def preserved_address(address, ua, valid_cdn):
 
 def perform_start(runtime, expected, target, record):
     """Admission is single-shot; an ambiguous open is never issued twice."""
+    checked_catalog_scope(expected.get('catalog_scope'))
+    if target.get('schema') == 2:
+        checked_target(target)
+        require(target['size'] is not None and target['size'] == expected.get('size')
+                and expected.get('baseline_sha256') == target['baseline_sha256']
+                and expected.get('size_evidence') == 'retained_tuple_and_exact_history', 'INSPECT_CHANGED')
+        record.update(target_evidence(target), tuple_sha256=expected.get('tuple_sha256'))
     route = checked_route(record.get('route', 'direct'))
     record.update(route=route, tool_revision=TOOL_REVISION)
     runtime.route = route
@@ -110,6 +133,7 @@ def perform_start(runtime, expected, target, record):
     fresh = runtime.inspect(target)
     check_abort(runtime)
     require(fresh == expected, 'INSPECT_CHANGED')
+    record['catalog_scope'] = expected['catalog_scope']
     account = checked_account(runtime.account())
     check_abort(runtime)
     require(account['account_id'][4:] == fresh['account_fingerprint']
@@ -127,6 +151,7 @@ def perform_start(runtime, expected, target, record):
     record.update(state='resolving', resolve_began=time.monotonic())
     runtime.save(record)
     check_abort(runtime)
+    runtime.require_catalog_scope(expected['catalog_scope'])
     if route == 'direct':
         address, ua, valid_cdn = runtime.resolve(row, account)
         check_abort(runtime)
@@ -143,6 +168,7 @@ def perform_start(runtime, expected, target, record):
     record.update(resolve_completed=time.monotonic(), baseline_ua_comparison='not_recorded',
                   url_sha256=digest(address))
     require(runtime.account() == account, 'ACCOUNT_CHANGED')
+    runtime.require_catalog_scope(expected['catalog_scope'])
     check_abort(runtime)
     latest = runtime.view()
     check_abort(runtime)
@@ -151,6 +177,7 @@ def perform_start(runtime, expected, target, record):
     runtime.save(record)
     check_abort(runtime)
     # Existing owner CAS calls native BobiIntent. A newer user selection wins.
+    runtime.require_catalog_scope(expected['catalog_scope'])
     selected = runtime.select(latest[0], record['request_id'], target['selection_identity'], account)
     check_abort(runtime)
     desired = selected.get('desired') or {}
@@ -163,6 +190,7 @@ def perform_start(runtime, expected, target, record):
     require_owned(runtime.view(), record, unopened=True)
     check_abort(runtime)
     require(runtime.account() == account, 'ACCOUNT_CHANGED')
+    runtime.require_catalog_scope(expected['catalog_scope'])
     check_abort(runtime)
     context = runtime.bind(record['request_id'], record['file_identity'], address)
     check_abort(runtime)
@@ -170,11 +198,13 @@ def perform_start(runtime, expected, target, record):
     require_owned(runtime.view(), record, unopened=True)
     check_abort(runtime)
     require(runtime.account() == account, 'ACCOUNT_CHANGED')
+    runtime.require_catalog_scope(expected['catalog_scope'])
     check_abort(runtime)
     record.update(state='open_unconfirmed', play_issued_at=time.monotonic(), retry_allowed=False)
     runtime.save(record)  # Before the only native opener; even a lost ACK stays unconfirmed.
     try:
         check_abort(runtime)
+        runtime.require_catalog_scope(expected['catalog_scope'])
         runtime.play(address, record['request_id'], record['file_identity'])
     except HostAbort:
         # Runtime.play raises HostAbort only before its one native opener. This
@@ -227,15 +257,24 @@ class Runtime:
     def account(self):
         return control('account_status', {})
 
-    def view(self):
-        return (self.protocol.call({'operation': 'snapshot'}), self.rpc('Player.BobiState'),
-                self.rpc('Player.GetActivePlayers'))
+    def view(self, reader=None):
+        reader = reader or (lambda channel, read: read())
+        return (reader('owner', lambda: self.protocol.call({'operation': 'snapshot'})),
+                reader('native', lambda: self.rpc('Player.BobiState')),
+                reader('active_players', lambda: self.rpc('Player.GetActivePlayers')))
 
     def inspect(self, target):
-        return inspect(self.root, target, self.account)
+        proof = inspect(self.root, target, self.account, lambda: self.rpc('Profiles.GetCurrentProfile'))
+        self.catalog_binding = proof['catalog_scope']
+        return proof
 
     def tuple(self, target):
-        return retained_tuple(self.root, target)
+        return retained_tuple(self.root, target, self.catalog_binding,
+                              lambda: self.rpc('Profiles.GetCurrentProfile'))
+
+    def require_catalog_scope(self, expected):
+        require(catalog_scope(self.root, lambda: self.rpc('Profiles.GetCurrentProfile'))
+                == checked_catalog_scope(expected), 'STATE_CHANGED')
 
     def resolve(self, row, account):
         from bobbi_catalog.api import Client, valid_cdn
@@ -290,8 +329,8 @@ class Runtime:
         import xbmc
         import xbmcgui
         check_abort(self)
-        label = ('Gattaca sharestream supervised diagnostic' if getattr(self, 'route', 'direct').startswith('sharestream')
-                 else 'Gattaca direct-CDN supervised diagnostic')
+        label = ('Exact-file sharestream supervised diagnostic' if getattr(self, 'route', 'direct').startswith('sharestream')
+                 else 'Exact-file direct-CDN supervised diagnostic')
         item = xbmcgui.ListItem(label=label, path=address)
         item.setProperty('bobitv.request_id', request)
         item.setProperty('bobitv.file_identity', identity)
@@ -301,6 +340,7 @@ class Runtime:
         item.getVideoInfoTag().setResumePoint(0, 0)
         player = xbmc.Player()
         check_abort(self)
+        self.require_catalog_scope(self.catalog_binding)
         player.play(address, item, windowed=True)
 
     def wait(self, duration):
@@ -356,7 +396,7 @@ class Runtime:
 
     def sample(self, record):
         started = time.monotonic()
-        native, row = require_owned(self.view(), record)
+        native, row = require_owned(self.view(sample_read), record)
         sample = dict(wall=started, phase=row.get('phase'))
         if row.get('request_id') == record['request_id']:
             require(row.get('file_identity') == record['file_identity'], 'OTHER_INSTANCE')
@@ -367,29 +407,29 @@ class Runtime:
             sample['native'] = {k: row.get(k) for k in ('request_id', 'native_instance', 'phase', 'sequence',
                 'user_intent', 'open_epoch', 'monotonic_us', 'reason', 'read_error')}
             if row.get('phase') == 'AV_STARTED':
-                properties = self.rpc('Player.GetProperties', dict(playerid=1,
-                    properties=['time', 'totaltime', 'speed', 'currentvideostream', 'currentaudiostream']))
+                properties = sample_read('player_properties', lambda: self.rpc('Player.GetProperties', dict(playerid=1,
+                    properties=['time', 'totaltime', 'speed', 'currentvideostream', 'currentaudiostream'])))
                 sample.update(seconds=seconds(properties['time']), duration=seconds(properties['totaltime']),
-                    speed=properties['speed'], caching=self.rpc('XBMC.GetInfoBooleans',
-                    {'booleans': ['Player.Caching']})['Player.Caching'])
+                    speed=properties['speed'], caching=sample_read('caching', lambda: self.rpc('XBMC.GetInfoBooleans',
+                    {'booleans': ['Player.Caching']}))['Player.Caching'])
                 for field in ('currentvideostream', 'currentaudiostream'):
                     stream = properties.get(field) or {}
                     sample[field] = {k: stream[k] for k in ('width', 'height', 'bitrate', 'channels', 'samplerate')
                                      if type(stream.get(k)) in (int, float)}
                 labels = ('Player.CacheLevel', 'Player.ProgressCache', 'Player.CacheTime')
-                raw_labels = self.rpc('XBMC.GetInfoLabels', {'labels': list(labels)})
+                raw_labels = sample_read('cache_labels', lambda: self.rpc('XBMC.GetInfoLabels', {'labels': list(labels)}))
                 sample['cache_labels'] = {k: float(v) if re.fullmatch(r'-?\d+(?:\.\d+)?', str(v)) else None
                                           for k, v in raw_labels.items() if k in labels}
-                if 'first_av_observed_at' not in record:
-                    record['first_av_observed_at'] = time.monotonic()
-                    record['play_to_av_observed_seconds'] = record['first_av_observed_at'] - record['play_issued_at']
-                    record['resolve_to_av_observed_seconds'] = record['first_av_observed_at'] - record['resolve_began']
         began = time.monotonic()
         path = Path('/sys/class/vdec/vdec_status')
-        raw = path.read_text()[:32768]
+        raw = sample_read('decoder', lambda: path.read_text()[:32768])
         sample['decoder'] = decoder(raw, began, time.monotonic())
-        require_owned(self.view(), record)
+        require_owned(self.view(sample_read), record)
         sample['completed'] = time.monotonic()
+        if sample.get('phase') == 'AV_STARTED' and 'first_av_observed_at' not in record:
+            record['first_av_observed_at'] = sample['completed']
+            record['play_to_av_observed_seconds'] = record['first_av_observed_at'] - record['play_issued_at']
+            record['resolve_to_av_observed_seconds'] = record['first_av_observed_at'] - record['resolve_began']
         return sample
 
     def stop(self, record):
@@ -454,6 +494,64 @@ def capture_stop_result(runtime, record):
     return stopped
 
 
+def observe_samples(runtime, record, duration):
+    """C00 admission-window policy: skip expired slots, never replay a read."""
+    require(type(duration) is int and 10 <= duration <= 60, 'DIAGNOSTIC_SCOPE')
+    origin, interval = record['play_issued_at'], .5
+    deadline, planned = origin + duration, duration * 2
+    record['sample_errors'] = []
+    summary = record['sampling'] = dict(admission_deadline_monotonic=deadline,
+        sample_interval_seconds=interval, planned_points=planned, collected_points=0,
+        error_points=0, skipped_points=0, unstarted_points=planned, has_gaps=False,
+        stopped_reason='sampling', qualification='Deadline bounds new sample admission. Expired slots are skipped, '
+        'read-channel failures are missing observations, and neither missed reads nor playback/control are replayed. '
+        'An in-flight read reports its actual completion and overrun; it does not extend the admission window.')
+    try:
+        for index in range(planned):
+            check_abort(runtime)
+            scheduled = origin + index * interval
+            runtime.wait(max(0, min(scheduled - time.monotonic(), deadline - time.monotonic())))
+            admitted = time.monotonic()
+            if admitted >= deadline:
+                summary['stopped_reason'] = 'deadline'
+                break
+            if admitted >= scheduled + interval:
+                summary['skipped_points'] += 1
+                continue
+            try:
+                sample = runtime.sample(record)
+                check_abort(runtime)
+                sample.update(schedule_index=index, schedule_lag_seconds=max(0, admitted - scheduled))
+                record['samples'].append(sample)
+                summary['collected_points'] += 1
+            except SampleReadUnavailable as error:
+                check_abort(runtime)
+                record['sample_errors'].append(dict(schedule_index=index, wall=admitted,
+                    completed=time.monotonic(), **error.evidence))
+                summary['error_points'] += 1
+                sample = {}
+            summary['unstarted_points'] = planned - sum(summary[key] for key in
+                ('collected_points', 'error_points', 'skipped_points'))
+            summary['has_gaps'] = bool(summary['error_points'] or summary['skipped_points'])
+            record['state'] = 'observing'
+            runtime.save(record)
+            if sample.get('phase') == 'TERMINAL' and sample.get('native', {}).get('request_id') == record['request_id']:
+                summary['stopped_reason'] = 'target_terminal'
+                break
+        else:
+            runtime.wait(max(0, deadline - time.monotonic()))
+            summary['stopped_reason'] = 'schedule_complete'
+    except BaseException:
+        summary['stopped_reason'] = 'fatal_error'
+        raise
+    finally:
+        summary['unstarted_points'] = planned - sum(summary[key] for key in
+            ('collected_points', 'error_points', 'skipped_points'))
+        summary['has_gaps'] = bool(summary['error_points'] or summary['skipped_points'] or summary['unstarted_points'])
+        summary['monotonic_ended'] = time.monotonic()
+        summary['overrun_seconds'] = max(0, summary['monotonic_ended'] - deadline)
+
+
 def kodi_entry(parameters, directory):
     route = checked_route(parameters.get('route', 'direct'))
     runtime = Runtime(directory)
@@ -464,26 +562,17 @@ def kodi_entry(parameters, directory):
                      'Kodi may update per-file watch records and logs', 'Observed AV time is an upper bound',
                      'Windowed diagnostic with no automatic external subtitle discovery',
                      'Compare resolve-to-AV: sharestream obtains its CDN grant on GET'], samples=[])
+    record.update(target_evidence(parameters['target']))
     runtime.save(record)
 
 
     try:
         perform_start(runtime, parameters['inspection'], parameters['target'], record)
-        deadline = record['play_issued_at'] + parameters['duration']
-        while time.monotonic() < deadline:
-            check_abort(runtime)
-            began = time.monotonic()
-            sample = runtime.sample(record)
-            check_abort(runtime)
-            record['samples'].append(sample)
-            record['state'] = 'observing'
-            runtime.save(record)
-            if sample.get('phase') == 'TERMINAL' and sample.get('native', {}).get('request_id') == record['request_id']:
-                break
-            runtime.wait(max(0, min(.5 - (time.monotonic() - began), deadline - time.monotonic())))
+        observe_samples(runtime, record, parameters['duration'])
         check_abort(runtime)
         stopped = capture_stop_result(runtime, record)
-        record['state'] = 'completed' if stopped.get('confirmed') is True else 'stop_unconfirmed'
+        record['state'] = (('completed_with_gaps' if record['sampling']['has_gaps'] else 'completed')
+                           if stopped.get('confirmed') is True else 'stop_unconfirmed')
     except Exception as error:
         may_have_opened = record.get('play_issued_at') and record.get('open_cancelled_before_call') is not True
         record.update(state='unconfirmed' if may_have_opened else 'not_started',

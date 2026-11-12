@@ -183,7 +183,7 @@ def _history_snapshot(database):
     return history, items
 
 
-def _file_item(record):
+def _file_item(record, link=None):
     from lib.cinema.frontend_contract import personal_file_projection
     from bobbi_platform.pan_accounts import NAMES
     display = personal_file_projection(record, NAMES)
@@ -204,6 +204,17 @@ def _file_item(record):
     item.setProperty('Bobi.File.State', display['state'])
     item.setProperty('Bobi.File.ResumeDetail', display['detail'])
     item.setProperty('IsPlayable', 'false')
+    if link and link.get('entity_id') == record['id'] and link.get('parent_entity_id'):
+        from lib.utils.views.personal_catalog import route, scope_params
+        from bobbi_core.catalog_display import file_description
+        target = route(action='personal_catalog', view='files', parent_entity_id=link['parent_entity_id'],
+                       **scope_params(link['expected']))
+        item.setProperty('Bobi.Catalog.Variants', target)
+        detail = ' · '.join(filter(None, [link.get('work_title'),
+            file_description(link, record['position'], record['duration'])]))
+        item.setLabel2(detail)
+        item.setProperty('Bobi.File.ResumeDetail', detail)
+        item.addContextMenuItems([('查看此作品的文件版本', 'ActivateWindow(Videos,"' + target + '",return)')])
     item.addContextMenuItems([
         ('从头播放', 'RunPlugin({})'.format(build_url('pan_history_play', history_id=record['id'], start_over='true'))),
         ('从继续观看中移除', 'RunPlugin({})'.format(build_url('remove_continue_watching',
@@ -238,6 +249,14 @@ def show_continue_watching(params=None):
     start = (page - 1) * per_page
     end = start + per_page
     items = filtered_items[start:end]
+    links = {}
+    file_ids = [data['_file_record']['id'] for _, data, _ in items if '_file_record' in data]
+    if file_ids:
+        try:
+            from bobbi_platform.runtime import call
+            links = {row['entity_id']: row for row in call('catalog_history_links', dict(history_ids=file_ids))['items']}
+        except (ImportError, OSError, ValueError, RuntimeError, TypeError, KeyError):
+            pass  # Missing catalogue does not remove or prevent original-file resume.
 
     directory_items = [_resume_status('empty')] if (preview or rail) and not filtered_items else []
     if rail and directory_items:
@@ -254,7 +273,7 @@ def show_continue_watching(params=None):
                                     if rail else '', unavailable, False))
             continue
         if '_file_record' in data:
-            directory_items.append(_file_item(data['_file_record']))
+            directory_items.append(_file_item(data['_file_record'], links.get(data['_file_record']['id'])))
             continue
         # Display is a separate projection. Playback receives the original payload.
         # Retain release317's URL-decoding at the playback boundary.

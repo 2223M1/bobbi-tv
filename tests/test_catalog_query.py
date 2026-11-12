@@ -154,7 +154,7 @@ def test_schema1_backup_migration_does_not_invent_first_seen(tmp_path):
     index.close()
     index = MediaIndex(path)
     try:
-        assert index.db.execute('PRAGMA user_version').fetchone()[0] == 2
+        assert index.db.execute('PRAGMA user_version').fetchone()[0] == 3
         assert index.db.execute('SELECT first_seen FROM catalog_rows').fetchone()[0] is None
         assert index.query(scope())['items'][0]['entity_id'] == ref()['id']
         backup = sqlite3.connect(str(path) + '.schema1.bak')

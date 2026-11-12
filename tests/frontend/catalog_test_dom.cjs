@@ -17,6 +17,7 @@ class Element {
   append(...children){this.children.push(...children);}
   replaceChildren(...children){this.children=[...children];}
   addEventListener(type,handler){this.listeners[type]=handler;}
+  setAttribute(name,value){this[name]=value;}
   async fire(type='click') {
     if(type==='click'&&this.disabled)return;
     assert.equal(typeof this.listeners[type],'function',this.tag+' has no '+type+' handler');

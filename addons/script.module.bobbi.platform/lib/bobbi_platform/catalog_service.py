@@ -3,6 +3,7 @@ from collections import deque, OrderedDict
 from threading import Event, Lock, Thread
 
 from bobbi_core.media_library_index import MediaIndex, TERMINAL, REPLY_BYTES, encode, identifier
+from bobbi_core.typed_ref import KINDS as PATH_KINDS
 from .libraries import Registry
 from .scan_sources import NativePort
 
@@ -82,7 +83,7 @@ class CatalogService:
         # local; never attach credentials/locations or read the remote tree.
         store = self._registry()
         try:
-            if expected.get('reference_kind') == 'mounted_path':
+            if expected.get('reference_kind') in PATH_KINDS:
                 source = store.get(expected['source_id'])
                 source_names = {source.id: source.name}
             else:
@@ -112,9 +113,9 @@ class CatalogService:
 
     def scope(self, expected):
         """Validate only the local edit scope, never manufacture a permit."""
-        if type(expected) is dict and expected.get('reference_kind') == 'mounted_path':
+        if type(expected) is dict and expected.get('reference_kind') in PATH_KINDS:
             self.mounted.live()
-            scope = self.mounted.port.scope(identifier(expected.get('source_id')))
+            scope = self.mounted.port_for(expected).scope(identifier(expected.get('source_id')))
             if scope['namespace'] != expected.get('namespace'):
                 raise ValueError('CATALOG_AUTHORITY_CHANGED')
             return scope
@@ -122,7 +123,7 @@ class CatalogService:
 
     def run_in_scope(self, expected, operation):
         expected = self.scope(expected)
-        if expected.get('reference_kind') == 'mounted_path':
+        if expected.get('reference_kind') in PATH_KINDS:
             with self.lock:
                 self.scope(expected)
                 return operation()
@@ -198,7 +199,7 @@ class CatalogService:
             return self._admit(NativePort(self.pans), expected, source_id, source['parent'])
 
     def start_mounted_scan(self, authority):
-        port = self.mounted.port
+        port = self.mounted.port_for(authority)
         port.require(authority)  # Potentially blocking FUSE validation stays outside the owner lock.
         with self.lock:
             self.mounted.live()
@@ -317,10 +318,22 @@ class CatalogService:
                 self.operation = None
 
     def dispatch(self, action, body):
-        if isinstance(action, str) and action.startswith('catalog_mount_'):
+        if isinstance(action, str) and action.startswith(('catalog_mount_', 'catalog_local_')):
             return self.mounted.dispatch(action, body)
         expected = self._guard(body.get('expected'))
         args = {key: value for key, value in body.items() if key != 'expected'}
+        descriptors = {
+            'catalog_holdings': ({'identities'}, self.index.holdings),
+            'catalog_parent': ({'parent_id'}, self.index.parent_descriptor),
+            'catalog_describe': ({'file_ids'}, self.index.describe_files),
+        }
+        if action in descriptors:
+            fields, method = descriptors[action]
+            if set(args) != fields:
+                raise ValueError('CATALOG_ACTION_INVALID')
+            return self.pans.accounts.run_if_current(expected, lambda: method(expected, **args))
+        if action == 'catalog_manual_records' and set(args) <= {'file_ids', 'offset', 'limit', 'projection_revision'}:
+            return self.pans.accounts.run_if_current(expected, lambda: self.index.manual_records(expected, **args))
         if action == 'catalog_sources' and not args:
             store = self._registry()
             try:

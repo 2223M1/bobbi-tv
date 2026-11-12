@@ -37,7 +37,7 @@ def page(monkeypatch):
     from lib.db import pickle_db
     from lib.clients.tmdb import frontend_metadata as metadata
     from bobbi_platform import runtime
-    state = SimpleNamespace(history={}, reads=0, calls=0, rows=[], failed=False,
+    state = SimpleNamespace(history={}, reads=0, calls=0, rows=[], failed=False, link_calls=[], links=[],
                             account=dict(account_id='115:' + 'a' * 64, epoch=2, authenticated=True))
     class Database:
         def get_key_checked(self, key):
@@ -47,6 +47,10 @@ def page(monkeypatch):
                 raise OSError('history unavailable')
             return deepcopy(state.history)
     def account_status(action, body, **kwargs):
+        if action == 'catalog_history_links':
+            state.link_calls.append(deepcopy(body))
+            assert set(body) == {'history_ids'} and len(body['history_ids']) <= 20
+            return dict(items=deepcopy(state.links))
         assert action == 'account_status' and body == {} and kwargs['timeout'] == .1
         state.calls += 1
         if isinstance(state.account, Exception):
@@ -118,6 +122,7 @@ def test_file_and_title_history_share_snapshot_preview_and_only_opaque_file_rout
     monkeypatch.setattr(continuing, 'PickleDatabase', Database)
     continuing.show_continue_watching({})
     assert len(page.rows) == 2 and page.reads == 1 and page.calls == 0
+    assert page.link_calls == [dict(history_ids=[ref['id']])]
     url, item, folder = page.rows[0]
     assert json.loads(url.split('?', 1)[1]) == {'history_id': ref['id']}
     assert url.startswith('pan_history_play?') and not folder
@@ -127,6 +132,24 @@ def test_file_and_title_history_share_snapshot_preview_and_only_opaque_file_rout
     page.rows.clear()
     continuing.show_continue_watching({'resume_preview': 'true'})
     assert len(page.rows) == 1 and page.rows[0][0] == url and page.reads == 2
+
+
+def test_history_version_link_uses_current_scope_and_keeps_original_resume(page):
+    from bobbi_core.file_ref import from_selected
+    from urllib.parse import parse_qsl, urlsplit
+    expected = dict(provider='quark', account_id='quark:' + 'd'*64, epoch=7, authenticated=True)
+    ref = from_selected(expected, dict(file_id='original', name='原始文件.mkv', size=100, directory=False), 'private')
+    record = dict(version=1, id=ref['id'], file_ref=ref, position=18., duration=100.,
+        completion_reason='STOP', updated_at=1, generation=1, sequence=1, session_id='a'*32)
+    link = dict(entity_id=ref['id'], parent_entity_id='f'*64, expected=expected,
+                work_title='已确认作品', version_label='导演剪辑', file_size=100)
+    target, item, folder = continuing._file_item(record, link)
+    assert json.loads(target.split('?', 1)[1]) == {'history_id': ref['id']}
+    navigation = dict(parse_qsl(urlsplit(item.properties['Bobi.Catalog.Variants']).query))
+    assert navigation['view'] == 'files' and navigation['parent_entity_id'] == 'f'*64
+    assert navigation['provider'] == 'quark' and 'file_ref' not in navigation
+    assert '人工备注' in item.label2 and '上次播放此文件' in item.label2
+    assert any(label == '查看此作品的文件版本' for label, _ in item.menu)
 
 
 @pytest.mark.parametrize('change', [dict(ids={}), dict(ids={'tmdb_id': 0}),

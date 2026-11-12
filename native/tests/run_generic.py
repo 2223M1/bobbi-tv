@@ -20,6 +20,7 @@ report = {'scope': 'Generic Kodi production C++ helpers; host Linux ABI, not And
 tests = [
     ('handoff_registry', [legacy/'handoff_registry_test.cpp', source/'utils/Variant.cpp', source/'cores/VideoSettings.cpp']),
     ('handoff_file', [HERE/'handoff_file_test.cpp']),
+    ('scoped_control', [HERE/'scoped_control_test.cpp', source/'utils/Variant.cpp']),
     ('completion_observation', [HERE/'completion_observation_test.cpp', source/'utils/Variant.cpp'])]
 for name, files in tests:
     command = ['g++', '-std=c++17', '-O1', '-pthread', '-DTARGET_POSIX', '-I'+str(source),
@@ -47,9 +48,16 @@ visibility_spec.loader.exec_module(visibility_harness)
 visibility_path, visibility_result = visibility_harness.run(args.source, run)
 report['tests'].append(dict(name='directory_visibility', passed=visibility_result['passed'],
     result=str(visibility_path), sha256=hashlib.sha256(visibility_path.read_bytes()).hexdigest()))
+scoped_spec = importlib.util.spec_from_file_location('scoped_actor', HERE/'run_scoped_actor_test.py')
+scoped_harness = importlib.util.module_from_spec(scoped_spec)
+scoped_spec.loader.exec_module(scoped_harness)
+scoped_path, scoped_result = scoped_harness.run(args.source, run)
+report['tests'].append(dict(name='scoped_actor', passed=scoped_result['passed'],
+    result=str(scoped_path), sha256=hashlib.sha256(scoped_path.read_bytes()).hexdigest()))
 inputs = (source/'cores/BobiHandoff.h', source/'dialogs/BobiHandoffFile.h',
           source/'cores/VideoPlayer/BobiOriginalAudio.h', source/'cores/VideoPlayer/VideoPlayer.cpp',
-          source/'cores/VideoPlayer/BobiCompletion.h', source/'utils/Variant.cpp', source/'utils/Variant.h')
+          source/'cores/VideoPlayer/BobiCompletion.h', source/'cores/VideoPlayer/BobiScopedControl.h',
+          source/'utils/Variant.cpp', source/'utils/Variant.h')
 report['sources'] = {str(file.relative_to(args.source)): hashlib.sha256(file.read_bytes()).hexdigest()
                      for file in inputs if file.is_file()}
 report['missing_sources'] = [str(file.relative_to(args.source)) for file in inputs if not file.is_file()]

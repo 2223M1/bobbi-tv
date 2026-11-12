@@ -2,6 +2,7 @@
 from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
+import sys
 
 import pytest
 
@@ -46,6 +47,12 @@ def tv(index, monkeypatch):
     state.dialog = SimpleNamespace(yesno=yesno, textviewer=lambda title, message:state.views.append((title,message)),
                                    ok=lambda title,message:state.messages.append((title,message)), multiselect=multiselect)
     monkeypatch.setattr(catalog_ui, 'call', call)
+    # The production review now binds profile/runtime ownership at admission;
+    # this fixture supplies the same in-memory RPC through that exact seam.
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda _: str(index.path.parent)))
+    binding = SimpleNamespace(root=lambda: index.path.parent, require_current=lambda: None)
+    monkeypatch.setattr(catalog_ui, '_review_context', lambda expected:
+        (binding, lambda action, **body: catalog_ui._call(action, expected, **body)))
     return state
 
 

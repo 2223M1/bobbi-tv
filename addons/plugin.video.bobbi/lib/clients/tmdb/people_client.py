@@ -64,7 +64,7 @@ def relationship_works(credits, action, params):
             continue
         unique.setdefault((credit['media_type'], identifier), credit)
     ordered = sorted(unique.values(), key=lambda c: (c.get('release_date') or c.get('first_air_date') or '', c['id']), reverse=True)
-    rows = []
+    rows, owned = [], []
     with image_batch():
         for credit in ordered[(page-1)*20:page*20]:
             item = _generic_item(credit)
@@ -73,6 +73,10 @@ def relationship_works(credits, action, params):
                 # recommendation is not a prepared or directly playable file.
                 item[1].setProperty('IsPlayable', 'false')
                 rows.append(item)
+                owned.append((item[1], 'tmdb:%s:%d' % (credit['media_type'], credit['id'])))
+    if owned and not xbmc.Monitor().abortRequested():
+        from lib.utils.views.catalog_owned import annotate
+        annotate(owned)
     if xbmc.Monitor().abortRequested():
         end_of_directory(cache=False)
         return

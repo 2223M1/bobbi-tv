@@ -21,10 +21,12 @@ class KodiNative:
         self.subtitle_fallback = SubtitleFallback()
         self.subtitle_poll = 0
         self.subtitle_receipt = None
+        self.subtitle_label = ''
+        self.presentation_receipt = None
 
     def poll_io(self):
         self.subtitle_lookup.tick()
-        if ((self.subtitle_receipt is not None or self.subtitle_fallback.key is not None)
+        if ((self.subtitle_receipt is not None or self.subtitle_fallback.key is not None or self.presentation_receipt is not None)
                 and time.monotonic() >= self.subtitle_poll):
             self.subtitle_poll = time.monotonic() + .5
             try:
@@ -51,6 +53,20 @@ class KodiNative:
                     and not subtitle_snapshot_follows(current, receipt)):
                 return  # A stale live snapshot is not renewed automatic intent.
             self.subtitle_fallback.observe(current)
+            if self.presentation_receipt is not None:
+                import xbmcgui
+                from bobbi_core.playback_presentation import audio_status
+                previous = self.presentation_receipt
+                window = xbmcgui.Window(10000)
+                if (not current or current.get('phase') != 'AV_STARTED'
+                        or current.get('native_instance') != previous['native_instance']
+                        or current.get('request_id') != previous['request_id']):
+                    self.presentation_receipt = None
+                    window.clearProperty('AM6B.AudioState')
+                    window.clearProperty('AM6B.PlaybackStateOwner')
+                else:
+                    self.presentation_receipt = current
+                    window.setProperty('AM6B.AudioState', audio_status(current))
             if receipt is not None:
                 import xbmcgui
                 from lib.services.subtitle_fallback import receipt_key
@@ -69,6 +85,7 @@ class KodiNative:
                     self.subtitle_receipt = current
                     if owned_label and current.get('subtitle_intent') != current.get('subtitle_auto_intent'):
                         label = '字幕已由你手动控制'
+                        self.subtitle_label = label
                         if window.getProperty('AM6B.SubtitleState') != label:
                             window.setProperty('AM6B.SubtitleState', label)
 
@@ -163,6 +180,20 @@ class KodiNative:
     def subtitles(self):
         return self.rpc('Player.BobiSubtitles')
 
+    def subtitle_status(self, captured):
+        if (self.subtitle_receipt and captured.get('native_instance') == self.subtitle_receipt.get('native_instance')
+                and captured.get('request_id') == self.subtitle_receipt.get('request_id')):
+            return self.subtitle_label
+        return '字幕状态尚未确认'
+
+    def publish_playback_presentation(self, captured, view):
+        """One resident publisher for the TV and browser's shared projection."""
+        import xbmcgui
+        self.presentation_receipt = captured
+        window = xbmcgui.Window(10000)
+        window.setProperty('AM6B.PlaybackStateOwner', captured['request_id'])
+        window.setProperty('AM6B.AudioState', view['audio_status'])
+
     def subtitle(self, command):
         return self.rpc('Player.BobiSubtitle', command)
 
@@ -241,6 +272,7 @@ class KodiNative:
         # This service is the only writer. A client interpreter must never
         # compare-then-clear these properties across a newer request's write.
         self.subtitle_receipt = current
+        self.subtitle_label = label
         window.setProperty('AM6B.SubtitleStateOwner', current['request_id'])
         window.setProperty('AM6B.SubtitleState', label)
         return True

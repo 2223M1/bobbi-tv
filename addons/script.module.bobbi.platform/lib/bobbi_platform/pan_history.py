@@ -5,7 +5,7 @@ from bobbi_core.file_ref import from_selected, same_file, validate
 from .pan_accounts import PanError, scope
 
 
-def history_summary(service, expected, offset=0, limit=5, history=None):
+def history_summary(service, expected, offset=0, limit=5, history=None, catalog=None):
     """Read-only phone projection of current-account unfinished file history.
 
     The injected adapter exists for offline tests, not as an IPC argument.
@@ -22,13 +22,30 @@ def history_summary(service, expected, offset=0, limit=5, history=None):
     rows = [row for row in history.rows()
             if (row['file_ref']['provider'], row['file_ref']['account_id']) ==
                (expected['provider'], expected['account_id'])]
+    descriptions = {}
+    selected = rows[offset:offset + limit]
+    if catalog is not None and selected:
+        from types import SimpleNamespace
+        from .catalog_navigation import history_links
+        try:
+            descriptions = {row['entity_id']: row for row in history_links(catalog, service,
+                [row['id'] for row in selected], history=SimpleNamespace(rows=lambda: selected))['items']}
+        except (ValueError, OSError, RuntimeError):
+            pass  # Optional local index cannot prevent original-file history.
     def publish():
         if service.closed:
             raise PanError('PAN_SERVICE_CLOSED')
-        return dict(items=[dict(id=row['id'], name=row['file_ref']['name'][:240],
+        items = [dict(id=row['id'], name=row['file_ref']['name'][:240],
             position=row['position'], duration=row['duration'], updated_at=row['updated_at'],
-            completion_reason=row['completion_reason']) for row in rows[offset:offset + limit]],
-            next_offset=offset + limit if len(rows) > offset + limit else None)
+            completion_reason=row['completion_reason']) for row in selected]
+        for item in items:
+            card = descriptions.get(item['id'])
+            if card:
+                from bobbi_core.catalog_display import file_description
+                item.update(work_title=card['work_title'], version_label=card['version_label'],
+                    description=file_description(card, item['position'], item['duration']),
+                    navigation=dict(view='files', parent_entity_id=card['parent_entity_id']))
+        return dict(items=items, next_offset=offset + limit if len(rows) > offset + limit else None)
     return service.accounts.run_if_current(expected, publish)
 
 

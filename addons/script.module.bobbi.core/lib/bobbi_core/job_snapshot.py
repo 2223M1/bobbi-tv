@@ -10,8 +10,8 @@ PREPARATION_STATES = {
 
 
 def owner(scope):
-    if scope.get('reference_kind') == 'mounted_path':
-        return sha256(('mounted_path\n' + scope['source_id']).encode()).hexdigest()
+    if scope.get('reference_kind') in ('mounted_path', 'local_path'):
+        return sha256((scope['reference_kind'] + '\n' + scope['source_id']).encode()).hexdigest()
     return sha256((scope.get('provider', '115') + '\n' + scope['account_id']).encode()).hexdigest()
 
 

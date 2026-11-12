@@ -53,8 +53,13 @@ def test_real_entry_drains_consumers_before_replacement(product, monkeypatch, tm
     monkeypatch.setitem(sys.modules, 'lib.services.widget_refresh', SimpleNamespace(
         WidgetRefreshService=lambda **kw: SimpleNamespace(start=lambda: None,
             tick=lambda: None, close=lambda: None)))
-    monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=lambda *a, **kw: host))
-    monkeypatch.setitem(sys.modules, 'bobbi_platform.paths', SimpleNamespace(profile=lambda *a, **kw: tmp_path))
+    def host_factory(root, **kwargs):
+        assert root == tmp_path
+        host.profile_current, host.plugin_root = kwargs['profile_current'], kwargs['plugin_root']
+        return host
+    monkeypatch.setitem(sys.modules, 'bobbi_platform.host', SimpleNamespace(Host=host_factory))
+    monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(translatePath=lambda value:
+        str(tmp_path if value.endswith('/script.module.bobbi.platform') else tmp_path/'plugin.video.bobbi')))
     monkeypatch.setitem(sys.modules, 'bobbi_core.runtime_paths', SimpleNamespace(configure=lambda *a, **kw: None, native_subtitle_abi=lambda *a: None))
     monkeypatch.setattr(sys.modules['xbmc'], 'Monitor', lambda: SimpleNamespace(waitForAbort=lambda _: True), raising=False)
     def run():

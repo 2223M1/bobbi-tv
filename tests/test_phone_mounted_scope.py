@@ -62,6 +62,12 @@ def test_mounted_grant_cannot_expand_browser_scope(mounted, action, params):
     assert all(action == 'catalog_mount_scope' for action, _ in mounted.calls)
 
 
+def test_mounted_grant_does_not_advertise_an_unusable_native_playback_permission(mounted):
+    with pytest.raises(mounted.module.PhoneError, match='ACTION_FORBIDDEN'):
+        mounted.module.PhoneManagement(mounted.expected, 'http://127.0.0.1:8081',
+            rpc=lambda *args,**kwargs: {}, scopes=mounted.module.SCOPES|mounted.module.PLAYBACK_SCOPES)
+
+
 def test_old_native_grant_cannot_read_or_modify_mounted_files(phone, cd2):
     service, _, _, _ = cd2
     scan(cd2)
@@ -141,12 +147,13 @@ def test_mounted_phone_pairing_requires_explicit_tv_source_namespace_approval(ph
         prompts.append(body)
         return approved
     modules = {
-        'xbmcgui': SimpleNamespace(Dialog=lambda:SimpleNamespace(yesno=confirm)),
+        'xbmcgui': SimpleNamespace(Dialog=lambda:SimpleNamespace(yesno=confirm,select=lambda *args:0)),
         'lib.gui.qr_progress_dialog': SimpleNamespace(QRProgressDialog=lambda *args:qr),
         'lib.services.webserver': SimpleNamespace(StremioWebServer=lambda **kwargs:server, get_local_ip=lambda:'127.0.0.1'),
         'lib.utils.debrid.qrcode_utils': SimpleNamespace(make_qrcode=lambda value:''),
         'lib.utils.kodi.utils': SimpleNamespace(ADDON_PATH='',kodilog=lambda *args:None,translation=lambda value:value),
-        'lib.services.phone_management': SimpleNamespace(PhoneManagement=lambda value,origin:(grants.append(value) or manager)),
+        'lib.services.phone_management': SimpleNamespace(SCOPES=phone.module.SCOPES,
+            PhoneManagement=lambda value,origin,**kwargs:(grants.append(value) or manager)),
     }
     for name, module in modules.items():
         monkeypatch.setitem(sys.modules, name, module)

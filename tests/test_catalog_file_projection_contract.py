@@ -170,6 +170,9 @@ def test_real_schema5_records_upgrade_atomically_and_keep_receipts(tmp_path, mon
             index.db.execute('UPDATE catalog_rows SET search_text=? WHERE id=?',
                 (catalog_query.normalized('Shared title\n' + file['name']), file['id']))
         index.db.execute('UPDATE catalog_meta SET schema=5')
+        index.db.execute('DROP TABLE file_supplements')
+        index.db.execute('DROP TABLE supplement_changes')
+        index.db.execute('PRAGMA user_version=2')
     index.close()
     with sqlite3.connect(path) as old:
         before = authoritative_snapshot(old)
@@ -195,7 +198,7 @@ def test_real_schema5_records_upgrade_atomically_and_keep_receipts(tmp_path, mon
     upgraded = MediaIndex(path)
     try:
         assert upgraded.db.execute('SELECT schema FROM catalog_meta').fetchone()[0] == 6
-        assert upgraded.db.execute('PRAGMA user_version').fetchone()[0] == 2
+        assert upgraded.db.execute('PRAGMA user_version').fetchone()[0] == 3
         assert [item['file_name'] for item in upgraded.query(scope(), query=dict(view='files', text='旧版导演剪辑'))['items']] == ['A-opaque.mkv', 'Z-opaque.mkv']
         assert [item['entity_id'] for item in upgraded.query(mounted_scope,
             query=dict(view='files', text='旧挂载收藏版'))['items']] == [mounted_file['id']]

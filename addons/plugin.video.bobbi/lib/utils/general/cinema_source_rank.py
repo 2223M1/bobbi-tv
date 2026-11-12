@@ -6,7 +6,7 @@ Size is deliberately not a quality score (packs and multi-audio inflate it).
 """
 import re
 
-from lib.utils.general.source_resolution import source_resolution
+from lib.utils.general.source_resolution import source_resolution, source_resolution_label
 from lib.utils.parsers.title_parser import detect_chinese_subtitle_kind
 
 
@@ -195,7 +195,7 @@ def source_preference(source, context=None):
     if subtitle_reason:
         parts.append(subtitle_reason)
     if resolution:
-        parts.append("4K" if resolution == 2160 else str(resolution) + "p")
+        parts.append(source_resolution_label(source, resolution_facts))
     if origin:
         parts.append({4: "REMUX", 3: "蓝光", 2: "WEB-DL", 1: "WEB"}[origin])
     if dv:

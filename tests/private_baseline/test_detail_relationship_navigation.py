@@ -27,7 +27,14 @@ def params(url): return dict(parse_qsl(urlsplit(url).query))
 def page(monkeypatch):
     import xbmc
     from lib.db.cached import cache
-    state = SimpleNamespace(rows=[], calls=[], ended=[], data=None, aborted=False, during_fetch=lambda: None)
+    state = SimpleNamespace(rows=[], calls=[], local_calls=[], ended=[], data=None, aborted=False, during_fetch=lambda: None)
+    from bobbi_platform import runtime
+    def local(action, body):
+        assert action == 'catalog_public_holdings' and set(body) == {'identities'}
+        assert len(body['identities']) <= 20
+        state.local_calls.append(body)
+        return dict(state='unknown', items=[])
+    monkeypatch.setattr(runtime, 'call', local)
     def fetch(path, value):
         state.calls.append((path, value))
         state.during_fetch()
@@ -74,6 +81,7 @@ def test_people_credits_are_paginated_without_per_card_details_or_source_queries
     assert len(work) == expected
     assert all(params(url)['action'] == 'am6b_open_streaming_item' for url, _, _ in work)
     assert all(item.properties['IsPlayable'] == 'false' for _, item, _ in work)
+    assert len(page.local_calls) == 1 and len(page.local_calls[0]['identities']) == expected
     if mode != 'tv':
         assert params(page.rows[-1][0])['page'] == '2'
 

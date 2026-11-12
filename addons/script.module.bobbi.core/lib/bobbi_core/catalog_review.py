@@ -58,11 +58,14 @@ def command(value):
     if (type(value) is not dict or set(value) != {'file_id', 'expected_revision', 'action', 'mapping'}
             or type(value['file_id']) is not str or not re.fullmatch('[0-9a-f]{64}', value['file_id'])
             or type(value['expected_revision']) is not int or value['expected_revision'] < 0
-            or value['action'] not in ('confirm', 'unbind', 'ignore', 'undo')):
+            or value['action'] not in ('confirm', 'unbind', 'ignore', 'undo', 'supplement', 'detach_supplement')):
         raise ValueError('CATALOG_REVIEW_INVALID')
     result = dict(value)
     if value['action'] == 'confirm':
         result['mapping'] = mapping(value['mapping'])
+    elif value['action'] == 'supplement':
+        from .catalog_supplements import descriptor
+        result['mapping'] = descriptor(value['mapping'])
     elif value['mapping'] is not None:
         raise ValueError('CATALOG_REVIEW_INVALID')
     return result

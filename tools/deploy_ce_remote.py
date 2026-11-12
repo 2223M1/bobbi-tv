@@ -1,4 +1,6 @@
 """Reviewed one-box controller. Programs/enable flags only roll back, not media."""
+import ast
+from contextlib import closing
 import hashlib
 import io
 import json
@@ -376,6 +378,108 @@ class GenerationConflict(RuntimeError):
     """An old deployment receipt must never mutate a newer installation."""
 
 
+class CatalogCompatibilityError(ValueError):
+    """No program mutation is allowed while its persisted catalog is unreadable."""
+
+
+def catalog_schema():
+    from ce_state_migration import plain
+    # Addons are shared across Kodi profiles. This one-box controller only owns
+    # the master profile; a second registered profile needs a separate review,
+    # even when the master catalog is absent or still schema 2.
+    profiles = plain(KODI / 'userdata/profiles.xml')
+    if profiles.exists():
+        plain(profiles, file=True)
+        try:
+            if profiles.stat().st_size > 65536:
+                raise ValueError('profile inventory budget')
+            raw = profiles.read_bytes()
+            if b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
+                raise ValueError('profile inventory markup')
+            tree = ET.fromstring(raw)
+            entries = tree.findall('profile')
+            if tree.tag != 'profiles' or len(entries) != 1 or len(entries[0].findall('directory')) != 1:
+                raise ValueError('profile inventory unknown or multiple')
+            directory = (entries[0].findtext('directory') or '').strip().replace('\\', '/').rstrip('/')
+            if directory not in ('', 'special://masterprofile', (KODI / 'userdata').as_posix().rstrip('/')):
+                raise ValueError('non-master profile')
+        except (OSError, ValueError, ET.ParseError):
+            raise CatalogCompatibilityError('CE_CATALOG_OTHER_PROFILES_REQUIRE_EXPLICIT_REVIEW') from None
+    path = plain(PROFILES / 'script.module.bobbi.platform/media-index.sqlite3')
+    for suffix in ('-wal', '-shm', '-journal'):
+        plain(Path(str(path) + suffix))
+    if not path.exists():
+        return None
+    plain(path, file=True)
+    try:
+        with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, timeout=.15)) as db:
+            schema = db.execute('PRAGMA user_version').fetchone()[0]
+            if schema <= 0:
+                raise CatalogCompatibilityError('CE_CATALOG_SCHEMA_UNINITIALIZED_OR_UNKNOWN')
+            return schema
+    except sqlite3.Error:
+        raise CatalogCompatibilityError('CE_CATALOG_SCHEMA_UNREADABLE') from None
+
+
+def catalog_program_schemas(root, expected_digest=None):
+    """Inspect the actual pinned constructor, never import/execute old code."""
+    from ce_state_migration import plain
+    try:
+        path = plain(root / 'lib/bobbi_core/media_library_index.py', file=True)
+        if path.stat().st_size > 256 * 1024:
+            raise ValueError('oversized program')
+        raw = path.read_bytes()
+        if expected_digest is not None and hashlib.sha256(raw).hexdigest() != expected_digest:
+            raise ValueError('program digest changed')
+        tree = ast.parse(raw.decode('utf-8-sig'))
+        constructors = [method for node in tree.body if isinstance(node, ast.ClassDef) and node.name == 'MediaIndex'
+                        for method in node.body if isinstance(method, ast.FunctionDef) and method.name == '__init__']
+        if len(constructors) != 1:
+            raise ValueError('constructor unknown')
+        accepted = [node.comparators[0] for node in ast.walk(constructors[0])
+            if isinstance(node, ast.Compare) and isinstance(node.left, ast.Name) and node.left.id == 'version'
+            and len(node.ops) == 1 and isinstance(node.ops[0], ast.NotIn)
+            and len(node.comparators) == 1 and isinstance(node.comparators[0], (ast.Tuple, ast.List, ast.Set))]
+        if len(accepted) != 1 or not accepted[0].elts or any(not isinstance(node, ast.Constant)
+                or type(node.value) is not int or not 0 <= node.value <= 100 for node in accepted[0].elts):
+            raise ValueError('schema contract unknown')
+        return {node.value for node in accepted[0].elts}
+    except (OSError, ValueError, SyntaxError, UnicodeError):
+        raise CatalogCompatibilityError('CE_CATALOG_PROGRAM_SCHEMA_UNPROVEN') from None
+
+
+def catalog_rollback_preflight(engine, receipt, phase):
+    """Read-only before stop and again immediately before any program restore."""
+    schema = catalog_schema()
+    if schema is None:
+        return
+    component, relative = 'script.module.bobbi.core', 'lib/bobbi_core/media_library_index.py'
+    if phase in ('not_applied', 'restored'):
+        supported = catalog_program_schemas(KODI / 'addons' / component)
+    else:
+        from ce_state_migration import plain
+        from bobbi_platform.updates import MAX_BACKUP_RECEIPT
+        try:
+            path = plain(WORK / 'previous.json', file=True)
+            if path.stat().st_size > MAX_BACKUP_RECEIPT:
+                raise ValueError('receipt budget')
+            previous = json.loads(path.read_text(encoding='utf-8'))
+            transaction = previous['transaction']
+            digest = previous['digests'][component][relative]
+            if (not isinstance(transaction, str) or not re.fullmatch('[0-9a-f]{32}', transaction)
+                    or previous['current_sequence'] != receipt['program_expected']['sequence']
+                    or owned_generation(engine, previous['state']) != owned_generation(engine, receipt['program_before'])
+                    or component not in receipt['program_before']['versions']
+                    or previous['entries'][component] is not True
+                    or type(digest) is not str or not re.fullmatch('[0-9a-f]{64}', digest)):
+                raise ValueError('wrong retained generation')
+        except (OSError, ValueError, KeyError, TypeError):
+            raise CatalogCompatibilityError('CE_CATALOG_ROLLBACK_SCHEMA_UNPROVEN') from None
+        supported = catalog_program_schemas(WORK / transaction / 'backup' / component, digest)
+    if schema not in supported:
+        raise CatalogCompatibilityError('CE_CATALOG_SCHEMA_INCOMPATIBLE_REQUIRES_EXPLICIT_OFFLINE_RESTORE')
+
+
 def clean_install_preflight():
     """A new program/profile only; never reinterpret existing personal data."""
     from bobbi_platform.upstream_addons import OWNED_COMPONENTS
@@ -461,6 +565,7 @@ def program_phase(engine, receipt):
 
 def restore_program(engine, receipt):
     phase, observed, restored = program_phase(engine, receipt)
+    catalog_rollback_preflight(engine, receipt, phase)
     receipt['program_observed'] = observed
     if phase == 'applied':
         receipt['applied_generation'] = observed
@@ -491,6 +596,8 @@ def restore(run, receipt, lease):
         try:
             engine = rollback_engine(load_trust(), 'coreelec', KODI / 'addons', WORK, lease.idle, lease.commit)
             restore_program(engine, receipt)
+        except CatalogCompatibilityError:
+            raise  # No old flags/skin or programs have been restored.
         except GenerationConflict as error:
             # Do not restore OLD flags/skin over a verified different generation.
             stale = True
@@ -556,8 +663,11 @@ def main(run, mode):
                 raise ValueError('CE_RESTORE_PREVIOUS_NATIVE_BEFORE_PROGRAM_ROLLBACK')
             # Reject an old run before masking/stopping services or changing UI flags.
             check = rollback_engine(load_trust(), 'coreelec', KODI / 'addons', WORK, lease.idle, lease.commit)
-            program_phase(check, receipt)
+            phase, rollback_admitted_generation, _ = program_phase(check, receipt)
+            catalog_rollback_preflight(check, receipt, phase)
             upstream_enabled_versions(check)
+            receipt['rollback_services_before'] = {unit: {key: command('systemctl', 'show', unit,
+                '--property=' + key, '--value') for key in ('ActiveState', 'UnitFileState')} for unit in units}
         else:
             from bobbi_core.runtime_paths import known_ce_native
             receipt['native_before'] = running_native_sha256()
@@ -600,7 +710,7 @@ def main(run, mode):
     except BaseException:
         lease.close()
         raise
-    success, stopped_units = False, []
+    success, stopped_units, restart_unchanged = False, [], False
     try:
         for unit in units:
             receipt['services_attempted'].append(unit)
@@ -665,6 +775,20 @@ def main(run, mode):
     except Exception as error:
         receipt['failure'] = type(error).__name__ + ':' + str(error)[:120] if str(error).startswith(('CE_','MIGRATION_','PROFILE_','LIVE_','KODI_')) else type(error).__name__
         try:
+            if isinstance(error, CatalogCompatibilityError) and mode == 'rollback':
+                # A lazy migration may complete after the first preflight but
+                # before stop. Keep the still-installed new programs and only
+                # restore this attempt's service states, never the old flags.
+                check = rollback_engine(load_trust(), 'coreelec', KODI / 'addons', WORK, lease.idle, lease.commit)
+                if owned_generation(check, check.available()) != rollback_admitted_generation:
+                    raise GenerationConflict('CE_ROLLBACK_REJECTED_GENERATION_CHANGED')
+                schema = catalog_schema()
+                if schema is not None and schema not in catalog_program_schemas(KODI / 'addons/script.module.bobbi.core'):
+                    raise CatalogCompatibilityError('CE_CATALOG_CURRENT_PROGRAM_SCHEMA_UNPROVEN')
+                restart_unchanged = True
+                receipt['rollback_rejected_program_unchanged'] = True
+                write_json(receipt_path, receipt)
+                raise
             # If stop itself failed, no program transaction was attempted.
             # Durable unchanged-generation inspection can restore our services
             # without pretending every owner successfully stopped. Unknown or
@@ -673,19 +797,21 @@ def main(run, mode):
                 quiescent()
             restore(run, receipt, lease)
         except Exception as rollback_error:
-            receipt['rollback_failure'] = type(rollback_error).__name__
-            write_json(receipt_path, receipt)
+            if not restart_unchanged:
+                receipt['rollback_failure'] = type(rollback_error).__name__
+                write_json(receipt_path, receipt)
         raise
     finally:
         try:
-            if success or receipt.get('rolled_back') is True:
+            if success or receipt.get('rolled_back') is True or restart_unchanged:
                 recovery_errors = []
                 for unit in reversed(stopped_units):
                     try:
                         command('systemctl', 'unmask', '--runtime', unit)
                     except Exception as error:
                         recovery_errors.append('unmask:' + unit + ':' + type(error).__name__)
-                for unit, old in receipt.get('services', {}).items():
+                service_states = receipt.get('rollback_services_before', {}) if restart_unchanged else receipt.get('services', {})
+                for unit, old in service_states.items():
                     if unit not in stopped_units:
                         continue  # This attempt never controlled that service.
                     if unit == 'bobitv-preparation.service' and success and mode in ('deploy', 'upgrade'):

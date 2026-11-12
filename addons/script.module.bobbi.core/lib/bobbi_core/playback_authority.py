@@ -90,6 +90,8 @@ class PlaybackAuthority:
         self.transport_child = None
         self.account_revocation = None
         self.next_presentation = None
+        self.playback_commands = {}
+        self.media_segments = None
 
     def next_summary_snapshot(self):
         """No native commands/IO. The resident tick has already observed events."""
@@ -235,6 +237,8 @@ class PlaybackAuthority:
 
     def event(self, sender, method, data):
         self._serial()
+        if sender == 'xbmc' and method == 'Player.OnBobiControl':
+            return self._command_result(data)
         if sender != 'xbmc' or method != 'Player.OnBobiState':
             return False
         row = self.history.accept(data)
@@ -393,6 +397,102 @@ class PlaybackAuthority:
         result = self.native.control(command)
         return isinstance(result, dict) and result.get('queued') is True
 
+    def _command_result(self, value):
+        from .playback_presentation import result
+        if type(value) is not dict:
+            return False
+        stored = self.playback_commands.get(value.get('command_id'))
+        checked = result(value, stored['command']) if stored else None
+        if checked is None or stored['status'] in ('applied', 'rejected', 'failed'):
+            return False
+        stored['status'] = checked['status']
+        return True
+
+    def _playback_view(self, row):
+        from .playback_presentation import project
+        owner, desired = self.owner, self.owner.desired
+        unavailable = dict(available=False, reason='SCOPED_CONTROL_UNAVAILABLE')
+        if (not desired or desired['cancelled'] or not row or row['phase'] != 'AV_STARTED'
+                or self.native_epoch != self.reservation_epoch
+                or not owner.owns_instance(owner.boot_id, owner.epoch, desired['request_id'], row['native_instance'])
+                or row['file_identity'] != desired.get('file_identity')):
+            return unavailable
+        try:
+            raw = self.native.subtitles()
+            label = getattr(self.native, 'subtitle_status', lambda _: '')(row)
+            view = project(raw, owner.boot_id, owner.epoch, row, label)
+            if view['available']:
+                for value in raw.get('commands', [])[:16]:
+                    self._command_result(value)
+                publish = getattr(self.native, 'publish_playback_presentation', None)
+                if publish is not None:
+                    publish(row, view)
+            return view
+        except (OSError, RuntimeError, ValueError, TypeError, AttributeError):
+            return unavailable
+
+    def _playback_command(self, value, row):
+        from .playback_presentation import command, native_command
+        value = command(value)
+        ident, scope = value['command_id'], value['expected']
+        stored = self.playback_commands.get(ident)
+        if stored:
+            # Never re-submit after timeout, lost reply, or duplicate browser events.
+            return dict(command_id=ident, status=stored['status'] if stored['command'] == value else 'rejected')
+        if len(self.playback_commands) >= 256:
+            return dict(command_id=ident, status='rejected')
+        view = self._playback_view(row)
+        if not view['available'] or view['expected'] != scope:
+            return dict(command_id=ident, status='rejected')
+        params, action = value['params'], value['action']
+        if action == 'seek' and (not view['can_seek'] or params['position_ms'] >= view['duration_ms']):
+            return dict(command_id=ident, status='rejected')
+        if action in ('audio_stream', 'manual_subtitle_stream'):
+            streams = view['audio' if action == 'audio_stream' else 'subtitles']
+            if not any(item['index'] == params['index'] and item['stream_key'] == params['stream_key'] for item in streams):
+                return dict(command_id=ident, status='rejected')
+        stored = dict(command=deepcopy(value), status='unknown')
+        self.playback_commands[ident] = stored
+        try:
+            reply = self.native.control(native_command(value))
+            stored['status'] = 'queued' if type(reply) is dict and reply.get('queued') is True else 'rejected'
+        except (OSError, RuntimeError, ValueError):
+            pass  # Native may have received it; only the final receipt can resolve uncertainty.
+        return dict(command_id=ident, status=stored['status'])
+
+    def _segments(self, message, row):
+        from . import media_segments
+        operation = message['operation']
+        args = tuple(message.get(key) for key in ('boot_id', 'epoch', 'request_id'))
+        if (not self.owner._current(*args) or not row or row['native_instance'] != message.get('native_instance')
+                or row['request_id'] != args[2]):
+            return dict(available=False)
+        view = self._playback_view(row)
+        if not view['available']:
+            return dict(available=False)
+        if operation == 'segment_register':
+            segments = media_segments.normalize(message.get('segments'), row['file_identity'],
+                view['duration_ms'] / 1000, monotonic())
+            self.media_segments = dict(args=args, instance=row['native_instance'], segments=segments)
+            return dict(accepted=bool(segments), count=len(segments))
+        stored = self.media_segments
+        if (not stored or stored['args'] != args or stored['instance'] != row['native_instance']
+                or message.get('expected', view['expected']) != view['expected']):
+            return dict(available=False)
+        segment = media_segments.current(stored['segments'], view['position_ms'], view['duration_ms'],
+                                         row['file_identity'], monotonic())
+        if (not segment or not view['can_seek'] or segment['end_ms'] >= view['duration_ms']
+                or message.get('segment_id', segment['segment_id']) != segment['segment_id']):
+            return dict(available=False)
+        if operation == 'segment_status':
+            return dict(available=True, segment=dict(segment_id=segment['segment_id'], kind=segment['kind'],
+                label=media_segments.LABELS[segment['kind']]), expected=view['expected'], auto_allowed=False)
+        if operation == 'segment_action' and 'expected' in message:
+            result = self._playback_command(dict(expected=message['expected'], command_id=message.get('command_id'),
+                action='seek', params=dict(position_ms=segment['end_ms'])), row)
+            return dict(result, queued=result['status'] == 'queued')
+        return dict(available=False)
+
     def dispatch(self, message):
         """Account CAS covers admission and its local native command together."""
         self._serial()
@@ -468,8 +568,25 @@ class PlaybackAuthority:
             self.next_presentation = (args, instance, account, envelope(value, 'native',
                 dict(boot_id=args[0], epoch=args[1], request_id=args[2], native_instance=instance), account, args[1]))
             return {'accepted': True}
+        if (operation in ('playback_presentation', 'playback_command', 'playback_receipt')
+                and message.get('account_scope') is not None and self.selection_account != message['account_scope']):
+            return dict(available=False, status='rejected', reason='PLAYBACK_SCOPE_CHANGED')
         row = self.refresh()
         owner = self.owner
+        if operation == 'playback_presentation':
+            return self._playback_view(row)
+        if operation == 'playback_command':
+            return self._playback_command(message.get('command'), row)
+        if operation == 'playback_receipt':
+            from .playback_presentation import expected
+            scope = expected(message.get('expected'))
+            stored = self.playback_commands.get(message.get('command_id'))
+            self._playback_view(row)  # Read the native retained result after lost notifications.
+            if not stored or stored['command']['expected'] != scope:
+                return dict(status='unknown')
+            return dict(command_id=message['command_id'], status=stored['status'])
+        if operation in ('segment_register', 'segment_status', 'segment_action'):
+            return self._segments(message, row)
         if operation == 'snapshot':
             return owner.snapshot()
         args = (message.get('boot_id'), message.get('epoch'), message.get('request_id'))
@@ -567,6 +684,8 @@ class PlaybackAuthority:
                 self.reservation_epoch = reserved['selection_epoch']
                 self.selection_gui_intent = self.gui_state['gui_user_intent']
                 self.selection_account = deepcopy(message.get('account_scope'))
+                self.playback_commands.clear()
+                self.media_segments = None
                 self.transport_child = None
                 self.transport_attempt = None
                 self.account_revocation = None

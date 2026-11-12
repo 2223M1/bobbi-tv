@@ -63,8 +63,10 @@ def test_v7_bound_guard_scope_is_explicit_and_never_accepted_as_v6(tmp_path):
 
 @pytest.mark.parametrize('change',['request','native','product','diagnostic','launch_stub','hash',
     'file_binding','owner','sample_request','sample_native','no_native_samples','route','revision','opened','retry','mode'])
-def test_incomplete_or_mismatched_receipt_cannot_bypass_normal_session_requirement(tmp_path,change):
+@pytest.mark.parametrize('revision', [5, 9])
+def test_incomplete_or_mismatched_receipt_cannot_bypass_normal_session_requirement(tmp_path,change,revision):
     value=receipt();request=REQUEST
+    value['tool_revision']=revision
     if change=='request':request='0'*32
     elif change=='native':value.pop('native_instance')
     elif change=='product':value['product_proof']=True
@@ -83,6 +85,23 @@ def test_incomplete_or_mismatched_receipt_cannot_bypass_normal_session_requireme
     elif change=='mode':value['transport_diagnostic']['mode']='open_range_microbatch'
     with pytest.raises(ValueError,match='DIAGNOSTIC_RECEIPT_INVALID'):
         scope_for(tmp_path,value,request)
+
+
+@pytest.mark.parametrize('route,mode', [('direct', None), ('sharestream-open-range', 'open_range'),
+    ('sharestream-open-range-microbatch', 'open_range_microbatch'),
+    ('sharestream-open-range-bound-guard', 'open_range_bound_guard')])
+@pytest.mark.parametrize('revision', [9, 10, 11])
+def test_exact_target_diagnostic_keeps_scoped_log_contract(tmp_path, route, mode, revision):
+    value=receipt();value.update(tool_revision=revision, route=route,
+        target_schema=2, baseline_sha256='1'*64, baseline_request='2'*32,
+        selection_identity='transport:'+'d'*64, source_key='3'*64, media='tv:27660:1:1', size=6142048451)
+    if mode is None:
+        value.pop('transport_diagnostic')
+    else:
+        value['transport_diagnostic']={'mode':mode, 'seconds':60}
+    result=scope_for(tmp_path,value)
+    assert result['tool_revision']==revision and result['route']==route
+    assert result['native_instance']==INSTANCE and result['transport_sha256']==TRANSPORT
 
 
 def execute_remote(tmp_path,monkeypatch,lines,journal='',scope=None):

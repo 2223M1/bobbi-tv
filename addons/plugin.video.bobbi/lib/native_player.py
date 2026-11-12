@@ -2233,7 +2233,9 @@ class JacktookPLayer(xbmc.Player):
         self.skip_intro_enabled = get_setting("skip_intro_enabled")
         self.skip_intro_auto = get_setting("skip_intro_auto")
         self.skip_intro_segments = None
-        self.skip_intro_handled = {"intro": False, "recap": False}
+        self.skip_intro_handled = set()
+        self._skip_segment_count = 0
+        self._segment_next_poll = 0
 
         # Stinger notification state
         self.stinger_notified = False
@@ -2875,64 +2877,58 @@ class JacktookPLayer(xbmc.Player):
         kodilog('[CINEMA-NEXT] no terminal event; no automatic handoff', level=xbmc.LOGINFO)
 
     def fetch_introdb_segments(self):
-        """Fetch segment data from IntroDB in a background thread."""
+        """Public episode data is a suggestion, never an edition/auto-seek proof."""
         try:
+            context = deepcopy(getattr(self, '_owner_context', None))
+            instance = getattr(self, '_native_instance', None)
+            if not context or not instance or self._cinema_cancel.is_set():
+                return
             ids = self.data.get("ids", {})
             tv_data = self.data.get("tv_data", {})
             imdb_id = ids.get("imdb_id")
             season = tv_data.get("season")
             episode = tv_data.get("episode")
 
-            if not imdb_id or not season or not episode:
+            if not imdb_id or season is None or episode is None:
                 kodilog("Skip intro: Missing IMDb ID, season, or episode")
                 return
 
             from lib.clients.introdb import get_segments
-
-            self.skip_intro_segments = get_segments(imdb_id, season, episode)
-            kodilog(f"IntroDB segments: {self.skip_intro_segments}")
-        except Exception as e:
-            kodilog(f"Error fetching IntroDB segments: {e}")
+            from lib.cinema.playback_ipc import call
+            segments = get_segments(imdb_id, season, episode)
+            if self._cinema_cancel.is_set() or context != self._owner_context or instance != self._native_instance:
+                return
+            reply = call(dict(context, native_instance=instance, operation='segment_register', segments=segments))
+            if reply.get('accepted') is True:
+                self.skip_intro_segments = dict(context, native_instance=instance)
+                self._skip_segment_count = reply.get('count', 0)
+        except (OSError, RuntimeError, ValueError, TypeError, AttributeError):
+            kodilog('Skip segments unavailable for this playback instance')
 
     def check_skip_intro(self):
         try:
             if not self.skip_intro_enabled or not self.skip_intro_segments:
                 return
-            if not getattr(self, "current_time", None):
+            if self._cinema_cancel.is_set():
                 return
-
-            current_ms = int(self.current_time * 1000)
-
-            for segment_type in ("recap", "intro"):
-                if self.skip_intro_handled.get(segment_type):
-                    continue
-
-                segment = self.skip_intro_segments.get(segment_type)
-                if not segment:
-                    continue
-
-                start_ms = segment.get("start_ms", 0)
-                end_ms = segment.get("end_ms", 0)
-                end_sec = segment.get("end_sec", end_ms / 1000)
-
-                if start_ms <= current_ms <= end_ms:
-                    self.skip_intro_handled[segment_type] = True
-
-                    if self.skip_intro_auto:
-                        self.seekTime(end_sec)
-                    else:
-                        label = "Skip Intro" if segment_type == "intro" else "Skip Recap"
-                        xbmc.executebuiltin(
-                            action_url_run(
-                                name="run_skip_intro_dialog",
-                                segment_data=json_dumps(segment),
-                                skip_label=label,
-                            )
-                        )
-                elif current_ms > end_ms:
-                    self.skip_intro_handled[segment_type] = True
-        except Exception as e:
-            kodilog(f"Error in check_skip_intro: {e}")
+            if (monotonic() < self._segment_next_poll or len(self.skip_intro_handled) >= self._skip_segment_count):
+                return
+            self._segment_next_poll = monotonic() + 2
+            from lib.cinema.playback_ipc import call
+            status = call(dict(self.skip_intro_segments, operation='segment_status'))
+            if not status.get('available'):
+                return
+            segment = status['segment']
+            if segment['segment_id'] in self.skip_intro_handled:
+                return
+            self.skip_intro_handled.add(segment['segment_id'])
+            # The existing auto preference cannot turn IMDb+episode timestamps
+            # into exact-cut evidence. All three public ranges stay manual.
+            xbmc.executebuiltin(action_url_run(name='run_skip_intro_dialog', segment_data=json_dumps(segment),
+                segment_context=json_dumps(dict(self.skip_intro_segments, expected=status['expected'])),
+                skip_label=segment['label']))
+        except (OSError, RuntimeError, ValueError, TypeError, KeyError):
+            pass  # No global seek and no retry of a stale overlay action.
 
     def fetch_stinger_info(self):
         """Fetch stinger keywords from TMDB in a background thread."""

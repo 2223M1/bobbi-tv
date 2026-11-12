@@ -1,4 +1,5 @@
 from threading import Thread
+from uuid import uuid4
 
 import xbmc
 import xbmcgui
@@ -16,7 +17,7 @@ class SkipIntroWindow(xbmcgui.WindowXMLDialog):
 
     during playback when IntroDB segment data is available.
     """
-    def __init__(self, xml_file, xml_location, segment_data=None, label="Skip Intro"):
+    def __init__(self, xml_file, xml_location, segment_data=None, label="建议跳过片头", context=None):
 
         super().__init__(xml_file, xml_location)
         self.segment_data = segment_data or {}
@@ -24,7 +25,8 @@ class SkipIntroWindow(xbmcgui.WindowXMLDialog):
         self.action = None
         self.closed = False
         self.monitor_thread = None
-        self.player = xbmc.Player()
+        self.context = dict(context) if type(context) is dict else None
+        self.submitted = False
 
     def onInit(self):
         self.setProperty("skip_label", self.label)
@@ -39,24 +41,14 @@ class SkipIntroWindow(xbmcgui.WindowXMLDialog):
         self.monitor_thread.start()
 
     def _background_monitor(self):
-        """Monitor playback and auto-close when segment ends or playback stops."""
+        """Reuse this overlay's existing monitor; it owns no Kodi player."""
         try:
-
-            end_sec = self.segment_data.get("end_sec", 0)
-
-            while not self.closed and self.player.isPlaying():
-                try:
-                    current_time = self.player.getTime()
-                except RuntimeError:
+            while not self.closed:
+                if not self._owner_call('segment_status').get('available'):
                     break
-
-                # Auto-close if we've passed the segment end
-                if current_time >= end_sec:
-                    break
-
                 xbmc.sleep(500)
-        except Exception as e:
-            kodilog(f"SkipIntroWindow monitor error: {e}")
+        except (OSError, RuntimeError, ValueError, TypeError):
+            pass  # Unknown/stale owner state grants no further action.
 
         if not self.closed:
             self.close()
@@ -79,15 +71,21 @@ class SkipIntroWindow(xbmcgui.WindowXMLDialog):
             self.close()
 
     def _do_skip(self):
-        """Seek to the end of the current segment."""
+        """Submit once to the original owner. Never fall back to global seek."""
+        if self.submitted or self.closed:
+            return False
+        self.submitted = True
         try:
+            return self._owner_call('segment_action', command_id=uuid4().hex).get('queued') is True
+        except (OSError, RuntimeError, ValueError, TypeError):
+            return False
 
-            end_sec = self.segment_data.get("end_sec", 0)
-            if end_sec > 0 and self.player.isPlaying():
-                self.player.seekTime(end_sec)
-                kodilog(f"SkipIntroWindow: Skipped to {end_sec}s")
-        except Exception as e:
-            kodilog(f"SkipIntroWindow: Error seeking: {e}")
+    def _owner_call(self, operation, **values):
+        if not self.context or not self.segment_data.get('segment_id'):
+            return {}
+        from lib.cinema.playback_ipc import call
+        return call(dict(self.context, operation=operation,
+                         segment_id=self.segment_data['segment_id'], **values))
 
     def close(self):
         self.closed = True

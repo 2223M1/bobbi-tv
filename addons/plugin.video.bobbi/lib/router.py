@@ -96,6 +96,7 @@ _GUI_ACTIONS = frozenset(
         "test_resume_dialog",
         "test_download_dialog",
         "extras",
+        "playback_details",
     }
 )
 
@@ -315,6 +316,9 @@ def addon_router():
     if param_string:
         params = dict(parse.parse_qsl(param_string))
         action = params.get("action", "")
+
+        if action == "playback_details":
+            return _route_gui(action, params)
 
         if action == 'bobi_relationships':
             from lib.clients.tmdb.people_client import PeopleClient
@@ -938,6 +942,10 @@ def _route_cache(action, params):
 
 
 def _route_gui(action, params):
+    if action == "playback_details":
+        from lib.gui.custom_dialogs import publish_playback_details
+
+        return publish_playback_details(params)
     if action in ("run_next_dialog", "run_resume_dialog", "run_skip_intro_dialog"):
         from lib.gui.custom_dialogs import (
             run_next_dialog,
