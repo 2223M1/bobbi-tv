@@ -173,6 +173,52 @@ def test_restart_keeps_typed_description_review_and_observation_history(cd2):
         reopened.close()
 
 
+def test_explicit_reselection_restores_only_freshly_observed_membership(cd2):
+    service, source, media, _ = cd2
+    scan(cd2)
+    selected = movie(cd2)['entity_id']
+    original_generation = service.index.db.execute(
+        'SELECT generation FROM memberships WHERE source=? AND file=?', (source.id, selected)).fetchone()[0]
+    (media / 'Movie.mkv').unlink()
+    (media / 'Season 0' / 'Show.S00E01.mkv').unlink()
+    assert scan(cd2)['state'] == 'completed'
+    assert all(row['availability'] == 'observed_absent' for row in query(cd2)['items'])
+    first = query(cd2, limit=1)
+    (media / 'Movie.mkv').write_bytes(b'reappeared video')
+    ticket = service.dispatch('catalog_mount_prepare', dict(source_id=source.id, object_id=selected,
+        request_id=uuid4().hex, intent='play_from_start'))['ticket']
+    claimed = service.dispatch('catalog_mount_claim', dict(ticket=ticket))
+    assert claimed['object_id'] == selected and not claimed['resume_supported']
+    rows = query(cd2, query={'view': 'files'})['items']
+    assert next(row for row in rows if row['entity_id'] == selected)['availability'] == 'observed_present'
+    assert next(row for row in rows if row['entity_id'] != selected)['availability'] == 'observed_absent'
+    row = service.index.db.execute('SELECT generation,available FROM memberships WHERE source=? AND file=?',
+        (source.id, selected)).fetchone()
+    assert tuple(row) == (original_generation, 1)  # Point recheck did not complete another scan.
+    with pytest.raises(ValueError, match='CURSOR_STALE'):
+        query(cd2, cursor=first['next_cursor'], limit=1)
+
+
+def test_failed_reselection_never_restores_absent_membership(cd2, monkeypatch):
+    service, source, media, _ = cd2
+    scan(cd2)
+    selected = movie(cd2)['entity_id']
+    (media / 'Movie.mkv').unlink()
+    scan(cd2)
+    (media / 'Movie.mkv').write_bytes(b'reappeared video')
+    before = query(cd2)
+    observations = [tuple(row) for row in service.index.db.execute('SELECT * FROM typed_observations')]
+    def changed(*args):
+        raise ValueError('CATALOG_FILE_CHANGED')
+    monkeypatch.setattr(service.mounted.port, 'stat_by_reference', changed)
+    with pytest.raises(ValueError, match='FILE_CHANGED'):
+        service.dispatch('catalog_mount_prepare', dict(source_id=source.id, object_id=selected,
+            request_id=uuid4().hex, intent='play_from_start'))
+    assert query(cd2) == before
+    assert [tuple(row) for row in service.index.db.execute('SELECT * FROM typed_observations')] == observations
+    assert not service.mounted.tickets
+
+
 def test_offline_review_never_touches_mount_stat_or_mints_ticket(cd2, monkeypatch):
     service, source, _, mounts = cd2
     scan(cd2)

@@ -1,5 +1,6 @@
 """One real renderer for native and typed scopes; metadata has no file authority."""
 from dataclasses import replace
+from copy import deepcopy
 import importlib.util
 from pathlib import Path
 import sys
@@ -12,6 +13,8 @@ import pytest
 from bobbi_platform.libraries import Registry
 from test_library_plugin import plugin
 from test_personal_catalog import catalog, card
+from test_catalog_query import index, confirm
+from test_media_library_index import scope, ref, insert
 from test_scan_source_ports import cd2, mounted_ui, scan, movie
 
 
@@ -209,3 +212,145 @@ def test_late_metadata_never_refreshes_another_scope_or_entity(real_metadata, sa
 def test_season_refresh_requires_exact_related_public_key(real_metadata, selected, season):
     path = 'plugin://plugin.video.bobbi/?action=personal_catalog&scope=first&view=episodes'
     assert not real_metadata.front._refresh_catalog(path, path, selected, {season}, season)
+
+
+@pytest.mark.parametrize('mounted', [False, True])
+@pytest.mark.parametrize('view,kind', [('seasons', 'season'), ('episodes', 'episode')])
+def test_catalog_hierarchy_publishes_existing_skin_content(real_metadata, mounted, view, kind):
+    catalog = real_metadata.catalog
+    expected = dict(reference_kind='mounted_path', source_id='c'*32, namespace='d'*64, generation='e'*64)
+    rows = [card(kind, identifier=hex(number)[2:]*64, metadata_key='tmdb:tv:123',
+        season=number if kind == 'season' else 1, episode=number if kind == 'episode' else None)
+        for number in (1, 2)]
+    catalog.page['items'] = rows
+    params = dict(catalog.params, view=view, parent_entity_id='f'*64)
+    rpc = catalog.rpc
+    if mounted:
+        params = dict(source=expected['source_id'], view=view, parent_entity_id='f'*64)
+        def rpc(action, body):
+            catalog.query_calls.append((action, deepcopy(body)))
+            if action == 'catalog_mount_scope':
+                return deepcopy(expected)
+            if action == 'catalog_mount_query':
+                return deepcopy(catalog.page)
+            pytest.fail('Unexpected private/catalog mutation: '+action)
+    catalog.catalog.execute(params, 17, rpc)
+    assert len(catalog.rows) == 2
+    # Public metadata intentionally gives both rows the same work title. The
+    # actual skin chooses SeasonLabel/EpisodeRow from the directory content.
+    assert [item.properties['Bobi.Title.zh'] for _, item, _ in catalog.rows] == ['作品中文'] * 2
+    assert catalog.content == view
+    assert all(folder for _, _, folder in catalog.rows)
+    assert all(item.properties['IsPlayable'] == 'false' for _, item, _ in catalog.rows)
+    assert not catalog.resolved
+
+
+@pytest.mark.parametrize('kind', ['movie', 'tv'])
+def test_tv_drilldown_keeps_selected_source_and_filters(catalog, index, monkeypatch, kind):
+    monkeypatch.setitem(sys.modules, 'lib.db.file_history', SimpleNamespace(KEY='history',
+        FileHistory=lambda: SimpleNamespace(database=SimpleNamespace(get_key_checked=lambda key: {}))))
+    account = scope()
+    catalog.account = account
+    files = [ref(1, name='Movie.1080p.mkv'), ref(2, name='Movie.4K.mkv')]
+    for source, file in zip(('a'*32, 'b'*32), files):
+        insert(index, [file], source=source)
+        confirm(index, file, title='Movie', kind=kind,
+                season=1 if kind == 'tv' else None, episode=1 if kind == 'tv' else None)
+    def rpc(action, body):
+        catalog.query_calls.append((action, deepcopy(body)))
+        if action == 'pan_status':
+            return dict(providers=[dict(provider='quark', account=account)])
+        assert action == 'catalog_query'
+        return index.query(**body)
+    filters = dict(source_id='a'*32, text='Movie', media_kind=kind, review_state='confirmed',
+                   availability='observed_present', sort='recent_added')
+    params = dict(provider='quark', scope=catalog.catalog.scope_key(account), view='works', **filters)
+    for view in (['works', 'seasons', 'episodes'] if kind == 'tv' else ['works']):
+        assert params['view'] == view
+        catalog.rows.clear()
+        catalog.catalog.execute(params, 17, rpc)
+        assert len(catalog.rows) == 1 and catalog.rows[0][1].label2.endswith('1 个文件版本')
+        params = dict(parse_qsl(urlsplit(catalog.rows[0][0]).query))
+    catalog.rows.clear()
+    assert params['view'] == 'files'
+    catalog.catalog.execute(params, 17, rpc)
+    assert [item.label for _, item, _ in catalog.rows] == [files[0]['name']]
+    for name, value in filters.items():
+        assert params.get(name) == value
+    reads = [body['query'] for action, body in catalog.query_calls if action == 'catalog_query']
+    assert len(reads) == (4 if kind == 'tv' else 2)
+    assert all(query['source_id'] == 'a'*32 for query in reads)
+
+
+@pytest.mark.parametrize('cold', [False, True])
+def test_episode_directory_reuses_existing_projection_without_changing_display(real_metadata, monkeypatch, cold):
+    front, catalog = real_metadata.front, real_metadata.catalog
+    season_key = front.PREFIX + 'tv:123:season:1'
+    work_key = front.PREFIX + 'tv:123'
+    season = dict(season_number=1, name='第一季', poster_path='/s1.jpg',
+        episodes=[dict(episode_number=n, name='分集%d' % n, still_path='/e%d.jpg' % n)
+                  for n in range(1, 21)])
+    real_metadata.store[season_key] = dict(refresh_after=1e20, data=season)
+    if cold:
+        real_metadata.store.pop(work_key)
+        real_metadata.store.pop(season_key)
+    reads = []
+    def get(key):
+        reads.append(key)
+        return real_metadata.store.get(key)
+    monkeypatch.setitem(sys.modules, 'lib.db.cached', SimpleNamespace(cache=SimpleNamespace(get=get,
+        set=lambda key, value, ttl: real_metadata.store.update({key: value}))))
+    cards = [card('episode', identifier='%064x' % number, metadata_key='tmdb:tv:123',
+        season=1, episode=number) for number in range(1, 21)]
+    catalog.page['items'] = cards
+    catalog.catalog.execute(dict(catalog.params, view='episodes', parent_entity_id='f'*64), 17, catalog.rpc)
+    assert len(catalog.rows) == 20
+    assert reads.count(work_key) == reads.count(season_key) == 1
+    for descriptor, (_, rendered, _) in zip(cards, catalog.rows):
+        # The existing non-projected decorator is the display-equivalence oracle.
+        ordinary = real_metadata.item()
+        ordinary.setLabel2(rendered.properties['Bobi.Library.Location'])
+        front.apply(ordinary, 123, 'episode', data=dict(title=descriptor['display_title'],
+            year=None, season=1, episode=descriptor['episode']))
+        assert {key: rendered.art.get(key) for key in ordinary.art} == ordinary.art
+        assert rendered.label == ordinary.label and rendered.label2 == ordinary.label2
+        assert rendered.tag.mock_calls == ordinary.tag.mock_calls
+        assert all(rendered.properties.get(key) == value for key, value in ordinary.properties.items())
+
+
+def test_episode_projection_is_rebuilt_for_the_next_directory(real_metadata, monkeypatch):
+    front, catalog = real_metadata.front, real_metadata.catalog
+    key = front.PREFIX + 'tv:123:season:1'
+    def store(poster):
+        real_metadata.store[key] = dict(refresh_after=1e20, data=dict(
+            season_number=1, name='第一季', poster_path=poster,
+            episodes=[dict(episode_number=1, name='分集一')]))
+    store('/before.jpg')
+    catalog.page['items'] = [card('episode', metadata_key='tmdb:tv:123', season=1, episode=1)]
+    params = dict(catalog.params, view='episodes', parent_entity_id='f'*64)
+    catalog.catalog.execute(params, 17, catalog.rpc)
+    assert catalog.rows[0][1].art['poster'].endswith('/before.jpg')
+    store('/after.jpg')
+    catalog.rows.clear()
+    catalog.catalog.execute(params, 17, catalog.rpc)
+    assert catalog.rows[0][1].art['poster'].endswith('/after.jpg')
+
+
+def test_episode_projection_does_not_mix_adjacent_work_or_season(real_metadata):
+    front, catalog = real_metadata.front, real_metadata.catalog
+    cards = []
+    for identifier in (123, 456):
+        for season in (0, 1):
+            real_metadata.store[front.PREFIX + 'tv:%d:season:%d' % (identifier, season)] = dict(
+                refresh_after=1e20, data=dict(season_number=season, name='Season',
+                    poster_path='/work%d-season%d.jpg' % (identifier, season),
+                    episodes=[dict(episode_number=2, name='分集二',
+                        still_path='/work%d-season%d-episode2.jpg' % (identifier, season))]))
+            cards.append(card('episode', identifier='%064x' % (identifier + season),
+                metadata_key='tmdb:tv:%d' % identifier, season=season, episode=2))
+    catalog.page['items'] = cards
+    catalog.catalog.execute(dict(catalog.params, view='episodes', parent_entity_id='f'*64), 17, catalog.rpc)
+    for descriptor, (_, item, _) in zip(cards, catalog.rows):
+        identifier = int(descriptor['metadata_key'].split(':')[-1])
+        assert item.art['poster'].endswith('/work%d-season%d.jpg' % (identifier, descriptor['season']))
+        assert item.art['thumb'].endswith('/work%d-season%d-episode2.jpg' % (identifier, descriptor['season']))

@@ -410,7 +410,8 @@ def manage():
             from .library_ui import cd2_mounts, open_library
             mounted = bool(cd2_mounts.discover())
             if dialog.yesno('目录索引支持范围',
-                    '个人网盘作品索引需要原生登录（115 除外）。现有 CD2 本机挂载可在片库的“CD2 索引片库”中登记与扫描。'
+                    '个人网盘作品索引需要原生登录（115 除外）。现有 CD2 本机挂载先在“管理片库来源”中登记，'
+                    '随后在“我的作品片库”选择 CD2 来源并扫描。'
                     '\nWebDAV / SMB / NFS / 普通本机目录仍使用原文件浏览；已有挂载无需为此再次扫码。',
                     yeslabel='片库与 CD2 索引' if mounted else '浏览片库', nolabel='返回'):
                 return open_library(dialog)

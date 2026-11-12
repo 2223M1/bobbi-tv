@@ -19,7 +19,8 @@ source = args.source/'xbmc'
 report = {'scope': 'Generic Kodi production C++ helpers; host Linux ABI, not Android runtime', 'tests': []}
 tests = [
     ('handoff_registry', [legacy/'handoff_registry_test.cpp', source/'utils/Variant.cpp', source/'cores/VideoSettings.cpp']),
-    ('handoff_file', [HERE/'handoff_file_test.cpp'])]
+    ('handoff_file', [HERE/'handoff_file_test.cpp']),
+    ('completion_observation', [HERE/'completion_observation_test.cpp', source/'utils/Variant.cpp'])]
 for name, files in tests:
     command = ['g++', '-std=c++17', '-O1', '-pthread', '-DTARGET_POSIX', '-I'+str(source),
                '-I'+str(legacy/'includes'), *map(str, files), '-o', str(run/name)]
@@ -48,7 +49,11 @@ report['tests'].append(dict(name='directory_visibility', passed=visibility_resul
     result=str(visibility_path), sha256=hashlib.sha256(visibility_path.read_bytes()).hexdigest()))
 report['sources'] = {str(file.relative_to(args.source)): hashlib.sha256(file.read_bytes()).hexdigest()
                      for file in (source/'cores/BobiHandoff.h', source/'dialogs/BobiHandoffFile.h',
-                                  source/'cores/VideoPlayer/BobiOriginalAudio.h', source/'cores/VideoPlayer/VideoPlayer.cpp')}
+                                  source/'cores/VideoPlayer/BobiOriginalAudio.h', source/'cores/VideoPlayer/VideoPlayer.cpp',
+                                  source/'cores/VideoPlayer/BobiCompletion.h', source/'utils/Variant.cpp',
+                                  source/'utils/Variant.h')}
+report['fixtures'] = {'completion_observation_test.cpp': hashlib.sha256(
+    (HERE/'completion_observation_test.cpp').read_bytes()).hexdigest()}
 (run/'result.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
 print(json.dumps(report, ensure_ascii=False))
 raise SystemExit(0 if all(test['passed'] for test in report['tests']) else 1)

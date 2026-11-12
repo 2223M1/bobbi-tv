@@ -50,7 +50,7 @@ def query_page(rpc, expected, **values):
     return rpc('catalog_query', dict(expected=expected, **values))
 
 
-def decorate(item, card):
+def decorate(item, card, projections=None):
     """Public descriptions only, using the existing cache and bounded metadata queue."""
     key = card.get('metadata_key')
     if type(key) is not str or not re.fullmatch(r'tmdb:(movie|tv):[1-9]\d{0,8}', key):
@@ -64,10 +64,17 @@ def decorate(item, card):
     from lib.clients.tmdb.frontend_metadata import apply
     data = dict(title=card['display_title'], year=card.get('year'),
                 season=card.get('season'), episode=card.get('episode'))
+    options = {}
+    if mode == 'episode' and projections is not None:
+        from lib.clients.tmdb.frontend_metadata import episode_projection
+        projection_key = (int(identifier), season)
+        if projection_key not in projections:
+            projections[projection_key] = episode_projection(*projection_key)
+        options['projection'] = projections[projection_key]
     file_card = card['entity_kind'] == 'file'
     detail = item.getLabel2() if file_card else ''
     try:
-        apply(item, int(identifier), mode, data=data)
+        apply(item, int(identifier), mode, data=data, **options)
     finally:
         if file_card:
             # The skin prefers title properties to Label and original titles to
@@ -143,7 +150,7 @@ def file_progress(items, account, history):
     return result
 
 
-def card_target(card, account):
+def card_target(card, account, query=None):
     identifier, kind = card.get('entity_id'), card.get('entity_kind')
     if type(identifier) is not str or not re.fullmatch('[0-9a-f]{64}', identifier):
         raise ValueError('CATALOG_REPLY_INVALID')
@@ -154,7 +161,10 @@ def card_target(card, account):
              'season': 'episodes', 'episode': 'files'}
     if kind not in views:
         raise ValueError('CATALOG_REPLY_INVALID')
-    return route(action='personal_catalog', view=views[kind], parent_entity_id=identifier, **base), True
+    filters = {key: value for key, value in (query or {}).items() if key in (
+        'source_id', 'review_state', 'availability', 'media_kind', 'text', 'sort')}
+    return route(action='personal_catalog', view=views[kind], parent_entity_id=identifier,
+                 **base, **filters), True
 
 
 def execute(params, handle=None, rpc=None, rail_cache=None):
@@ -165,7 +175,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
     from bobbi_platform.runtime import call
     handle = int(sys.argv[1]) if handle is None else handle
     rpc = call if rpc is None else rpc
-    rows, category = [], '我的作品片库'
+    rows, category, content = [], '我的作品片库', 'videos'
     mode = params.get('mode', '')
     rail = mode == 'rail'
     state, revision, presentation_scope = 'ready', '', 'local-profile'
@@ -239,6 +249,10 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     'availability', 'media_kind', 'text', 'parent_entity_id', 'sort') if params.get(key)}
                 query.setdefault('view', 'works')
                 query.setdefault('sort', 'recent_added' if mode == 'rail' else 'name')
+                # Reuse the skin's season captions and episode rows. Public
+                # metadata may give every card the same work title; the native
+                # content type supplies the visible season/episode distinction.
+                content = {'seasons': 'seasons', 'episodes': 'episodes'}.get(query['view'], 'videos')
                 cursor = params.get('cursor')
                 cache_key = 'bobi.catalog.rail.' + scope_key(account) + ':' + hashlib.sha256(
                     json.dumps(query, sort_keys=True).encode()).hexdigest()
@@ -280,8 +294,9 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                 availability = {'observed_present': '已收录 · 播放前核验',
                     'observed_absent': '来源未发现此文件', 'source_unavailable': '来源暂不可用',
                     'unverified': '待确认来源'}
+                projections = {}  # One immutable work/season view per directory render.
                 for card in page['items']:
-                    target, folder = card_target(card, account)
+                    target, folder = card_target(card, account, query)
                     title = card['display_title']
                     detail = availability.get(card.get('availability'), '待确认来源')
                     if card['entity_kind'] != 'file':
@@ -306,7 +321,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                             info[field] = card[field]
                     item.setInfo('video', info)
                     try:
-                        decorate(item, card)
+                        decorate(item, card, projections)
                     except (ImportError, AttributeError, ValueError, TypeError, KeyError, RuntimeError):
                         pass  # Missing public metadata cannot hide a real local file.
                     if card['entity_kind'] == 'file' and hasattr(item, 'addContextMenuItems'):
@@ -340,7 +355,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
             return
         xbmcplugin.setPluginCategory(handle, category)
-        xbmcplugin.setContent(handle, 'videos')
+        xbmcplugin.setContent(handle, content)
         if rail:
             from lib.cinema.frontend_contract import apply_rail_state
             apply_rail_state(rows, state, revision=revision, scope=presentation_scope)

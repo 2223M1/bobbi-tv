@@ -133,7 +133,7 @@ def test_index_explains_supported_cd2_and_preserves_file_access(ui, mounted, lab
     assert catalog_ui.manage() is True
     assert ui.opened == ['library']
     _, message, buttons = ui.prompts[0]
-    assert '115 除外' in message and 'CD2 索引片库' in message
+    assert '115 除外' in message and '管理片库来源' in message and '我的作品片库' in message
     assert 'CD2 / WebDAV / SMB / NFS / 本机目录暂不支持此索引' not in message
     assert 'WebDAV / SMB / NFS / 普通本机目录仍使用原文件浏览' in message
     assert '无需为此再次扫码' in message and buttons['yeslabel'] == label

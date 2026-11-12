@@ -56,7 +56,10 @@ class FileHistory:
         ref = validate(ref)
         def reserve(previous):
             previous = record(previous) if previous is not None else None
-            return dict(version=1, id=ref['id'], file_ref=ref,
+            # Reserving a writer is not an observation of the selected content.
+            # Keep the saved evidence with its progress until this session reports;
+            # a failed open must not attach old progress to a replacement file.
+            return dict(version=1, id=ref['id'], file_ref=previous['file_ref'] if previous else ref,
                 position=previous['position'] if previous else 0.,
                 duration=previous['duration'] if previous else None,
                 completion_reason=previous['completion_reason'] if previous else 'STARTED',
@@ -65,7 +68,7 @@ class FileHistory:
                 session_id=uuid4().hex, sequence=0)
         try:
             value = self.database.begin_file_session(KEY, ref['id'], reserve, LIMIT)
-            return {key: value[key] for key in ('file_ref', 'generation', 'session_id')}
+            return dict(file_ref=ref, generation=value['generation'], session_id=value['session_id'])
         except (OSError, ValueError, TypeError, RuntimeError):
             self.report('FILE_HISTORY_RESERVATION_FAILED')
             return None

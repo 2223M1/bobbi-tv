@@ -122,7 +122,10 @@ class CatalogService:
             self._play_source(expected, object_id)
 
             def publish(prepare):
-                with self.lock:
+                # PanService publishes tickets under service -> account locks.
+                # Preserve that order while adding our index/source guard.
+                # All directory IO has finished before this local boundary.
+                with self.pans.lock, self.lock:
                     self._play_source(expected, object_id)
                     # A simultaneous completed scan must not silently replace
                     # the trusted exact-file evidence while the request waits.
@@ -180,16 +183,16 @@ class CatalogService:
                     if self.stop.is_set() or self.cancel_event.is_set():
                         operation.cancelled.set()
                 def commit(write):
-                    def guarded():
-                        # Serialize the final publication check with close.
-                        # An already committed batch may precede cancellation;
-                        # no late response may commit after shutdown admission.
-                        with self.lock:
-                            if self.stop.is_set() or self.cancel_event.is_set():
-                                operation.cancelled.set()
-                            port.check(operation, local=True)
-                            return write()
-                    return port.publish(expected, guarded)
+                    # The owner lock precedes the native account CAS, as in
+                    # admission/removal/play publication. Reversing these
+                    # locks lets a scan and a concurrent play wait forever.
+                    # Mounted publication checks only local Registry/mountinfo;
+                    # full FUSE validation remains outside this lock.
+                    with self.lock:
+                        if self.stop.is_set() or self.cancel_event.is_set():
+                            operation.cancelled.set()
+                        port.check(operation, local=True)
+                        return port.publish(expected, write)
                 pending = deque([(root_parent, 0)])
                 visited = {root_parent}
                 while pending:

@@ -104,6 +104,11 @@ class MediaIndex:
                     'CREATE TABLE IF NOT EXISTS typed_observations(file TEXT NOT NULL,digest TEXT NOT NULL,ref TEXT NOT NULL,observed REAL NOT NULL,PRIMARY KEY(file,digest))',
                 ):
                     self.db.execute(sql)
+                # A point recheck outranks an already-started mounted scan.
+                # This connection-local work table participates in the same
+                # transactions without adding a persistent schema/cache.
+                self.db.execute('CREATE TEMP TABLE scan_point_observations('
+                    'task TEXT NOT NULL,file TEXT NOT NULL,PRIMARY KEY(task,file))')
                 self.db.execute('INSERT OR IGNORE INTO object_times SELECT id,NULL,0 FROM objects')
                 self.db.execute('INSERT OR IGNORE INTO object_times SELECT id,NULL,0 FROM typed_objects')
                 self.db.execute('INSERT OR IGNORE INTO catalog_sources SELECT DISTINCT source,1 FROM memberships')
@@ -214,6 +219,18 @@ class MediaIndex:
             self._remember_observation(previous)
             self._remember_observation(reference)
             self.db.execute('UPDATE typed_objects SET ref=? WHERE id=?', (encode(reference), reference['id']))
+            # An explicit fresh-list/stat observation can rediscover a file
+            # absent from the last closed scan. Restore only this membership;
+            # its scan generation remains unchanged, and no sibling becomes
+            # present merely because this file was selected.
+            self.db.execute('UPDATE memberships SET available=1 WHERE source=? AND file=?',
+                (authority['source_id'], reference['id']))
+            for row in self.db.execute("SELECT id FROM scans WHERE state IN ('queued','running')").fetchall():
+                run = self._scan(row['id'])
+                if (self._mounted_task_matches(run, authority['source_id'], authority['namespace'])
+                        and run['scope'].get('generation') == authority['generation']):
+                    self.db.execute('INSERT OR IGNORE INTO temp.scan_point_observations VALUES(?,?)',
+                        (run['id'], reference['id']))
             catalog_query.project(self.db, reference['id'])
             self._changed(authority)
 
@@ -274,6 +291,7 @@ class MediaIndex:
         # checkpoint for diagnosis, and require an explicit fresh generation.
         with self.transaction():
             self.db.execute("UPDATE scans SET state='interrupted',reason='SERVICE_RESTART',updated=? WHERE state IN ('queued','running')", (self.now(),))
+            self.db.execute('DELETE FROM temp.scan_point_observations')
 
     def retain_sources(self, sources):
         """Local explicit source removal, not an inference of remote deletion."""
@@ -313,6 +331,7 @@ class MediaIndex:
             active = self.db.execute("SELECT id FROM scans WHERE state IN ('queued','running')").fetchall()
             if active:
                 raise ValueError('CATALOG_SCAN_BUSY')  # One low-priority worker.
+            self.db.execute('DELETE FROM temp.scan_point_observations')
             self.db.execute('DELETE FROM scans WHERE id IN (SELECT id FROM scans ORDER BY updated DESC,id DESC LIMIT -1 OFFSET ?)', (MAX_JOBS - 1,))
             self.db.execute('DELETE FROM scan_batches WHERE task NOT IN (SELECT id FROM scans)')
             task = uuid4().hex
@@ -388,12 +407,15 @@ class MediaIndex:
                 if mounted:
                     if (ref['namespace'], ref['mount_generation']) != (run['scope']['namespace'], run['scope']['generation']):
                         raise ValueError('CATALOG_AUTHORITY_CHANGED')
-                    previous_ref = self.db.execute('SELECT ref FROM typed_objects WHERE id=?', (ref['id'],)).fetchone()
-                    if previous_ref:
-                        self._remember_observation(json.loads(previous_ref[0]))
-                    self._remember_observation(ref)
-                    self.db.execute('INSERT INTO typed_objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
-                        (ref['id'], ref['source_id'], ref['namespace'], encode(ref)))
+                    point = self.db.execute('SELECT 1 FROM temp.scan_point_observations WHERE task=? AND file=?',
+                        (task, ref['id'])).fetchone()
+                    if not point:
+                        previous_ref = self.db.execute('SELECT ref FROM typed_objects WHERE id=?', (ref['id'],)).fetchone()
+                        if previous_ref:
+                            self._remember_observation(json.loads(previous_ref[0]))
+                        self._remember_observation(ref)
+                        self.db.execute('INSERT INTO typed_objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
+                            (ref['id'], ref['source_id'], ref['namespace'], encode(ref)))
                 else:
                     self.db.execute('INSERT INTO objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
                         (ref['id'], ref['provider'], ref['account_id'], encode(ref)))
@@ -423,8 +445,11 @@ class MediaIndex:
             if row['cancel_requested'] and state == 'completed':
                 state, reason = 'canceled', 'CANCEL_CONFIRMED'
             if state == 'completed':
-                self.db.execute('UPDATE memberships SET available=0 WHERE source=? AND generation!=?', (row['source'], task))
+                self.db.execute('UPDATE memberships SET available=0 WHERE source=? AND generation!=? AND NOT EXISTS('
+                    'SELECT 1 FROM temp.scan_point_observations p WHERE p.task=? AND p.file=memberships.file)',
+                    (row['source'], task, task))
                 self._changed(row['scope'])
+            self.db.execute('DELETE FROM temp.scan_point_observations WHERE task=?', (task,))
             self.db.execute('UPDATE scans SET state=?,reason=?,updated=? WHERE id=?', (state, reason, self.now(), task))
             return scan_snapshot(self._scan(task))
 
