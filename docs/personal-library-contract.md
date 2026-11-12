@@ -1,6 +1,6 @@
 # 个人片库实现边界
 
-已构建的集成候选及有限单台 CoreELEC 验收分别记录于 [d030e04 审查轮](review-d030e04-validation.md) 和 [95a140b 审查轮](review-95a140b-validation.md)。设备结果绑定其中各自的源码和组件身份；当前发现与筛选改动另做本地回归和后续设备验收。选源界面、唯一播放 owner、115 PreparationQueue、账号凭据库和来源 Registry 继续复用。原生网盘与 CD2 挂载共享 MediaIndex、CatalogService 的唯一扫描循环、worker 和任务管理。
+已构建的集成候选及有限单台 CoreELEC 验收分别记录于 [d030e04 审查轮](review-d030e04-validation.md)、[95a140b 审查轮](review-95a140b-validation.md) 和 [9446e59 审查轮](review-9446e59-validation.md)。设备结果绑定其中各自的源码和组件身份，不以旧回执代替新功能验收。选源界面、唯一播放 owner、115 PreparationQueue、账号凭据库和来源 Registry 继续复用。原生网盘、CD2 挂载与普通本地目录共享 MediaIndex、CatalogService 的唯一扫描循环、worker 和任务管理。
 
 ## 索引与扫描
 
@@ -74,7 +74,25 @@ FileRef 与 MountedRef 通过同一 typed lookup 进入既有 reviews、review_c
 
 一次性 fragment 配对、严格 Host/Origin、HttpOnly cookie、CSRF 和固定 RPC 白名单共同限制访问。仅可信局域网使用，HTTP 不提供传输加密。关闭二维码立即撤销管理授权，不取消后台扫描。原 Stremio 和字幕入口保留，管理模式不开放旧的匿名修改路由。
 
-不打开详细管理即可继续原文件浏览。新增 scope revision 和 typed observation 表是辅助元数据；原 objects、typed_objects、reviews 与历史不逆向删除，FileRef v1 与 MountedRef 稳定键语义不变。当前索引 user_version 保持 2，读取投影 schema 为 6，统一由 catalog_query.PROJECTION_SCHEMA 声明；本次加入 filename_sort，并重建包含版本备注的 search_text。升级在原事务内重建投影，失败可回滚并重试。支持 schema 2 的旧版本可重建自己的读取投影，辅助表和用户记录保留；已用独立进程验证当前 6→9446e59 基线 5→6 往返，权威表逻辑摘要保持一致。不支持的索引 schema 继续拒绝写入。没有设备和真实账号证据的网盘能力继续标记 `not_device_verified`。
+不打开详细管理即可继续原文件浏览。scope revision 和 typed observation 为辅助元数据；原 objects、typed_objects、reviews 与历史不逆向删除，FileRef v1 与 MountedRef 稳定键语义不变。当前权威索引 user_version 为 3，读取投影 schema 为 6，由 catalog_query.PROJECTION_SCHEMA 声明；后者包含 filename_sort 和版本备注 search_text。schema 3 增加补充内容关系，不能用较早的投影 6→5→6 测试证明权威 schema 可降级。
+
+2→3 迁移在 BEGIN IMMEDIATE 后、任何 DDL 前，通过独立只读连接生成一致 schema2 备份，校验并 fsync 后独占发布；已有有效恢复点不被覆盖。真实升级已核对迁移前既有 14 张表的内容摘要与备份。schema2 旧程序拒读 schema3，部署器在停止服务前及 restore_program 前检查留存程序是否支持当前索引，未知或不兼容时拒绝自动程序回退。副本恢复测试、原生二进制回退均不等于设备实际程序 2/3 降级往返；后者尚未验收。没有设备和真实账号证据的网盘能力继续标记 `not_device_verified`。
+
+## 复用的发现、整理与来源扩展
+
+常用视图只保存命名筛选描述、来源身份及必要父实体描述，沿用 profile 原子库、目录 renderer 和首页轨道；重开时重新验证来源，不保存 cursor、epoch 或播放票据。支持更新、重命名、排序、删除、设为首页与恢复默认；离线仍可重命名或删除描述。历史到原文件/其他版本和人物页持有标记共用有界批量查询，未知媒体事实不由文件名冒充。
+
+个人补充内容复用 MediaIndex 的 file_supplements/supplement_changes 与既有 preview/CAS/receipt/undo，支持作品共有或精确父文件关系，也可关联人工自建作品；父文件变化需复核。补充内容排除正片版本计数、自动下一集与人工状态导出。人工状态导入导出是最多 100 条、1 MiB 的白名单 JSON，仅匹配当前 native 账号和稳定文件身份，经原审核流程处理冲突，不迁移凭据、票据、会话、历史或补充关系。
+
+普通本地目录使用原 Registry 登记，LocalPort 接入已有扫描、typed lookup、查询、文件复核与标准播放交接。根身份包含 device/inode，未知观察不显示已验证，`exact_resume=False`。这不是 SMB/NFS/WebDAV 认证，也不代表新增了 115 私人目录或 Jellyfin/Emby/Plex 的统一索引适配。移除登记不删除媒体、历史、人工记录或正常保留的扫描索引。
+
+ProfileBinding 捕获 plugin/platform 两个绝对根；一旦观察到切换，旧绑定永久撤销，A→B→A 不恢复。运行时 token、Host、手机、整理弹窗、常用视图和延迟历史均使用固定绑定；延迟历史复用单写入队列，不另建 profile 数据库。真实 Kodi profile 切换与跨设备迁移仍按验收记录的未测边界保留。
+
+## 当前实例播放控制
+
+电视与手机共用 playback_presentation；手机读取与控制分别授权。seek、音轨、手选字幕及显隐携带原 request/native instance/文件身份和意图水位，只查询原命令最终 applied/rejected/failed，queued 不视为完成，不向旧内核降级为全局控制。native actor 的 applied 表示对应执行路径成功返回，时钟可能稍后同步；真实位置验收需后续同实例观测。普通本地/CD2 手机管理不提供无法保证的播放授权。
+
+IntroDB 仅提供有界、人工确认的公开片段建议；旧窗口不能控制新影片，关闭字幕后的迟到自动选择不得重新打开字幕。未实现的自动跳过选项隐藏但保留 setting id 兼容。完整精确文件自动跳过、片尾彩蛋/next 闭环和真实手机操控尚不能据此宣称完成。
 
 ## 首页与播放摘要
 

@@ -482,9 +482,16 @@ class Host:
                     try:
                         if not self.check_profile() or self.stopping.is_set():
                             raise OSError('NATIVE_OWNER_UNAVAILABLE')
+                        # The profile fence can outlive the caller's deadline.
+                        # Recheck before starting either owner or lifecycle work.
+                        if job.cancelled or time.monotonic() >= job.deadline:
+                            raise OSError('NATIVE_OWNER_UNAVAILABLE')
                         if job.lifecycle:
                             if self.can_quiesce() is not True:
                                 raise ValueError('PLAYBACK_ACTIVE_OR_UNKNOWN')
+                            # Quiescence observation can also block before commit.
+                            if job.cancelled or time.monotonic() >= job.deadline:
+                                raise OSError('NATIVE_OWNER_UNAVAILABLE')
                             self.stopping.set()
                             job.result = {'accepted': True}
                         else:
