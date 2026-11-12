@@ -25,7 +25,7 @@
 - B01/B02 定向 211 passed，补充三版本独立进度和真实 JS→PhoneManagement→SQLite 等 46 passed；独立 SQL 复核把 1716 组 native/mounted 查询与 `95a140b` 原 SQL 逐行比较，零差异。500 个历史 membership 的本地样本从约 512.5 万降至 2.8 万 SQLite 指令；这是合成数据查询测量，不是设备速度倍数。
 - 性能入口已用当前 2116 盒子做 3 秒只读工具自检，并将采样的 7 个源码文件、组件清单与其原部署 tree 逐一核对；这是旧代工具自检，不是本轮性能收益。
 - B04 真实构建回执位于 `b04-native/home/ce-home-focus-ng4inyza/build-result.json` 和 `b04-native/completion/ce-completion-kwt9bxv9/build-result.json`。前代字节级重链、档案成员与 ABI 核验通过；候选分别仍为 `591fa655fa6a507145c7fd90163a18eee91266b98fe89315268e1a5bd32be032` 和 `4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a`。工具归并未改变产品原生字节，因此本轮无需另换内核。
-- `b04-native/generic-final/result.json` 的五组通过，包含真实 DirectoryProvider 十二场景及两个负控。`b04-native/gate-negative/completion-gate-axqmi3tu/result.json` 的禁用成功分支、缺头文件两个破坏均使真实 gate 返回失败；原始源码未改。完整 series apply 另有独立回执。
+- `b04-native/generic-final/result.json` 的五组通过，包含真实 DirectoryProvider 十二场景及两个负控。`b04-native/gate-negative/completion-gate-axqmi3tu/result.json` 的禁用成功分支、缺头文件两个破坏均使真实 gate 返回失败；原始源码未改。完整 series apply 在独立命令中通过但该旧工具未保留单独 JSON；下面两份 Android 回执另记录各自真实的 `full_series_applied=true`。
 - Android arm64/armv7 各三个实际 TU 编译通过，回执分别为 `b04-native/android-arm64/completion-4hvw41yu/result.json`、`b04-native/android-armv7/completion-v0rzyz8d/result.json`，状态仍是 COMPILED_NOT_LINKED，不冒充 Android 链接或实机。
 - 只读设备预检 `device-catalog/existing-samples-04.json` 显示 326 个文件尚无人工确认映射，全部 observed_present；有命名明确的跨季剧集，但没有现成已确认的电影三版本。此限制不能靠合成用户数据改写为真实矩阵通过。
 - 最终回归、安装和设备用例以本节后续实际回执补充，不把计划项提前标为通过。

@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def plugin(monkeypatch, tmp_path):
     state = SimpleNamespace(rows=[], resolved=[], ended=[], calls=[], props={},
         directories=['Season 1'], files=['film.mkv'], aborted=False, exists=True,
-        submit_error=False, on_make=None, category=None, content=None, closed=0)
+        submit_error=False, on_make=None, category=None, content=None, closed=0, info_labels={})
     state.path = tmp_path / 'libraries.sqlite3'
     state.source = vfs_source('NAS', 'smb://nas.example/Movies', 'user', 'test-secret')
     store = Registry(state.path)
@@ -58,6 +58,7 @@ def plugin(monkeypatch, tmp_path):
 
     xbmc = SimpleNamespace(Monitor=lambda: SimpleNamespace(abortRequested=lambda: state.aborted),
         Player=lambda: SimpleNamespace(play=lambda *args: state.calls.append(('play', args))),
+        getInfoLabel=lambda label: state.info_labels.get(label, ''),
         executebuiltin=lambda command: state.calls.append(('builtin', command)))
     gui = SimpleNamespace(ListItem=ListItem,
         Window=lambda _: SimpleNamespace(setProperty=lambda k, v: state.props.update({k: v}),

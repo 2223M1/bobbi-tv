@@ -111,7 +111,13 @@ def test_actual_private_skin_restores_exact_fonts_but_not_legacy_scripts():
     addon = ET.parse(output / 'addon.xml').getroot()
     assert addon.get('id') == 'skin.bobbi.cinema'
     assert addon.get('version') == ET.parse(source / 'addon.xml').getroot().get('version')
-    assert all(d.get('version') == '0.1.0' for d in addon.findall('./requires/import') if 'bobbi' in d.get('addon', ''))
+    dependencies = {d.get('addon'): d.get('version') for d in addon.findall('./requires/import')
+                    if 'bobbi' in d.get('addon', '')}
+    assert set(dependencies) == {'plugin.video.bobbi'}
+    required = tuple(map(int, dependencies['plugin.video.bobbi'].split('.')))
+    shipped = ET.parse(ROOT / 'addons/plugin.video.bobbi/addon.xml').getroot().get('version')
+    # The private detail's file-version action requires the catalog contract.
+    assert (0, 1, 61) <= required <= tuple(map(int, shipped.split('.')))
     assert addon.find('.//screenshot') is None
     for file in (output / '1080p').glob('*.xml'):
         for node in ET.parse(file).iter():
