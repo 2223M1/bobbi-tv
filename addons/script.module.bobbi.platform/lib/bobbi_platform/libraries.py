@@ -251,16 +251,17 @@ class Registry:
                 os.close(fd)
             self.db = sqlite3.connect(str(self.path), timeout=1)
             self.db.execute('PRAGMA secure_delete=ON')
-            version = self.db.execute('PRAGMA user_version').fetchone()[0]
-            if version not in (0, 1):
-                raise LibraryError('UNKNOWN_STORAGE_VERSION')
-            self.db.execute('CREATE TABLE IF NOT EXISTS sources (id TEXT PRIMARY KEY, record TEXT NOT NULL)')
-            self.db.execute('CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)')
-            # Optional directory membership is an extension of this registry,
-            # not a second source owner. Older versions ignore this table.
-            self.db.execute('CREATE TABLE IF NOT EXISTS pan_directories (id TEXT PRIMARY KEY, record TEXT NOT NULL)')
-            self.db.execute('PRAGMA user_version=1')
-            self.db.commit()
+            version, missing = self._schema()
+            if version == 0 or missing:
+                with self.db:
+                    self.db.execute('BEGIN IMMEDIATE')
+                    # Another opener may have initialized it while we waited.
+                    version, missing = self._schema()
+                    for name, key, value in missing:
+                        self.db.execute('CREATE TABLE {} ({} TEXT PRIMARY KEY, {} TEXT NOT NULL)'.format(
+                            name, key, value))
+                    if version == 0:
+                        self.db.execute('PRAGMA user_version=1')
         except LibraryError:
             if self.db is not None:
                 self.db.close()
@@ -269,6 +270,28 @@ class Registry:
             if self.db is not None:
                 self.db.close()
             raise LibraryError('STORAGE_UNAVAILABLE') from None
+
+    def _schema(self):
+        """Validate locally without turning every scope/job read into a writer."""
+        version = self.db.execute('PRAGMA user_version').fetchone()[0]
+        if version not in (0, 1):
+            raise LibraryError('UNKNOWN_STORAGE_VERSION')
+        tables = dict(self.db.execute("SELECT name,type FROM sqlite_master WHERE name IN "
+            "('sources','metadata','pan_directories')").fetchall())
+        missing = []
+        for name, key, value in (('sources', 'id', 'record'), ('metadata', 'key', 'value'),
+                                 ('pan_directories', 'id', 'record')):
+            if name not in tables:
+                # The directory extension may be absent in an older v1 file;
+                # missing core tables are not an empty registry to recreate.
+                if version == 1 and name != 'pan_directories':
+                    raise LibraryError('STORAGE_UNAVAILABLE')
+                missing.append((name, key, value))
+            elif (tables[name] != 'table' or
+                  self.db.execute('PRAGMA table_info('+name+')').fetchall() != [
+                      (0, key, 'TEXT', 0, None, 1), (1, value, 'TEXT', 1, None, 0)]):
+                raise LibraryError('STORAGE_UNAVAILABLE')
+        return version, missing
 
     def close(self):
         self.db.close()

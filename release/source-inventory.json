@@ -769,7 +769,7 @@
       "resources/settings.xml": "b4d1881ec4bac04d37d8a9dd8da4c8625cb136f7a1051dcac2c0bcf4cb00335d"
     },
     "script.module.bobbi.platform": {
-      "addon.xml": "40a7fb285ab9f1d0725ec25413944a5f31407e0bb358e26ea31a4ce44f810f49",
+      "addon.xml": "81e5b570db9b2b0400ed30a322674bf8c5a6649443d0426daab69bd076d6111c",
       "lib/bobbi_platform/__init__.py": "691d6a67c49a1ef4a8d8f5e6c5d732f271a4ffbcd755eb4b1da424b87554fb97",
       "lib/bobbi_platform/_vendor/__init__.py": "22e2f9041b74d877917f3bf76e71e521b21368602291a46e4cbc8218c45f233b",
       "lib/bobbi_platform/_vendor/segno/__init__.py": "d6fec9545c9e5f4738f56d74940d4874dfaa78b2bb8180d463035679284995ae",
@@ -802,7 +802,7 @@
       "lib/bobbi_platform/host.py": "eb765fa8b447d32152d7fd9e6043a2120bd6305e5af588f84ac29652cd800d3b",
       "lib/bobbi_platform/instance_lock.py": "e3395ade1e550e51721d9cc501df09bb5950cbce516b0903546c394caa7a82a7",
       "lib/bobbi_platform/kodi.py": "1ac389e1474172bb04b19ece30b7eb57a545b36586a16c709e6d2c659010689a",
-      "lib/bobbi_platform/libraries.py": "361f92b18f964ffc5e5c96925f11b0ad47e3e26af1e9445b1f97fda5830be0a2",
+      "lib/bobbi_platform/libraries.py": "60ab5e1f86150abdf90dbae6877142a0324e54cedc415b040deb5db56bd10632",
       "lib/bobbi_platform/library_listing.py": "92be271d8f6d3b2ff4aa5c506358aed260f16551d46d311e788ed05d0a790438",
       "lib/bobbi_platform/library_ui.py": "60946c33055c2f6d9c4cb6d358296c141d7b746fb38a3c7bf17d75a25fd81970",
       "lib/bobbi_platform/login_flow.py": "feb1fbb899d455b32c1490114bb495aadc3f3326f5a06a8c3819e15cb5c43783",
