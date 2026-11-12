@@ -10,6 +10,22 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 
 
+def trial_cases():
+    return json.loads((ROOT / 'tools/ce_trial_cases.json').read_text(encoding='utf-8'))
+
+
+def remote_code(parameters):
+    cases = trial_cases()
+    if parameters.get('NAME') not in cases['works'] or parameters.get('OP') not in cases['operations']:
+        raise ValueError('TRIAL_SCOPE')
+    if parameters['OP'] in cases['local_operations']:
+        raise ValueError('TRIAL_LOCAL_OPERATION')
+    injected = dict(parameters, TESTS=cases['works'],
+        OPERATIONS=[value for value in cases['operations'] if value not in cases['local_operations']])
+    return '\n'.join(key+'='+repr(value) for key,value in injected.items())+'\n'+(
+        ROOT/'tools/ce_trial_remote.py').read_text(encoding='utf-8')
+
+
 def decode_trace(raw, descriptor, expected_path, work, retained=False):
     if descriptor.get('artifact') != expected_path:
         raise ValueError('UNEXPECTED_TRACE_PATH')
@@ -49,13 +65,11 @@ def result_exit_code(result, remote_code=0, diagnostic=False, operation=None):
     return 2 if result.get('state') == 'not_tested' else 0
 
 
-def main():
+def build_parser():
     parser=argparse.ArgumentParser()
-    parser.add_argument('work',choices=('dog_day_afternoon','galactic_heroes','paris_texas','millennium_actress','straight_story','paprika','station_agent','nichijou','paterson','planetes','moon','made_in_abyss','nightcrawler','heavenly_delusion','attack_on_titan','frieren','the_conversation','death_parade','man_who_wasnt_there','space_dandy','baccano','gattaca','samurai_champloo','arrival','mushishi','perfect_days','eizouken','grand_budapest','further_universe','ping_pong','amelie','barakamon','coherence','odd_taxi','wild_tales','girls_last_tour','burning','flip_flappers',
-                                      'lives_of_others','tokyo_godfathers','haibane_renmei','man_from_earth','lain',
-                                      'twelve_angry_men','tatami_galaxy','rashomon','cowboy_bebop'))
-    parser.add_argument('operation',choices=('start','requery','cards','select','collect','picker_wait','wait','inspect','observe','stop','cancel',
-        'seek','manual_off','font_switch'), help='seek/manual_off/font_switch currently record read-only NOT TESTED evidence (exit 2); they never issue unguarded controls')
+    cases = trial_cases()
+    parser.add_argument('work',choices=tuple(cases['works']))
+    parser.add_argument('operation',choices=cases['operations'], help='seek/manual_off/font_switch currently record read-only NOT TESTED evidence (exit 2); they never issue unguarded controls')
     parser.add_argument('--transport-source',type=Path,required=True)
     parser.add_argument('--title')
     parser.add_argument('--site')
@@ -66,6 +80,11 @@ def main():
     parser.add_argument('--resume-percent',type=float,help='Explicit one-shot product StartPercent for an attended natural EOF trial')
     parser.add_argument('--attempt',type=int,choices=range(1,11),default=1,
                         help='A separate retained defect-regression attempt, not new-work coverage')
+    return parser
+
+
+def main():
+    parser=build_parser()
     args=parser.parse_args()
     if args.operation == 'select' and (args.title is None or args.site is None):
         parser.error('select requires the observed --title and --site (and optionally --key)')
@@ -78,7 +97,7 @@ def main():
     parameters=dict(NAME=args.work,OP=args.operation,TITLE=args.title,SITE=args.site,SOURCE_KEY=args.key,
                     TRACE=args.trace,ATTEMPT=args.attempt,PICKER=True,ORDINARY_UI=True,START_OVER=args.start_over,
                     RESUME_PERCENT=args.resume_percent)
-    code='\n'.join(key+'='+repr(value) for key,value in parameters.items())+'\n'+(ROOT/'tools/ce_trial_remote.py').read_text(encoding='utf-8')
+    code=remote_code(parameters) if args.operation != 'collect' else ''
     # Failure evidence is retained and cannot turn a failed attempt into a pass.
     script='import json,traceback,sys\nsys.dont_write_bytecode=True\ntry:\n    exec(compile('+repr(code)+',"ce-ordinary-ui-trial","exec"))\nexcept Exception as error:\n    print(json.dumps(dict(error=type(error).__name__,reason=str(error) if isinstance(error,AssertionError) else "TRIAL_ERROR",frames=[dict(function=f.name,line=f.lineno) for f in traceback.extract_tb(error.__traceback__)])))\n'
     client,wire=transport.connect()
@@ -97,6 +116,7 @@ def main():
         rc,result,diagnostic=1,dict(error=type(error).__name__,reason='TRIAL_TRANSPORT_OR_TRACE_ERROR'),False
     finally:client.close()
     output=ROOT/'review-evidence'/('ce-new-work-'+args.work+'-'+args.operation+'-'+str(time.time_ns())+'.json')
+    output.parent.mkdir(parents=True, exist_ok=True)
     code = result_exit_code(result, rc, diagnostic, args.operation)
     value=dict(exit_code=code,transport_exit_code=rc,trial_exit_code=code,
                result=result,diagnostic_present=bool(diagnostic),work=args.work,

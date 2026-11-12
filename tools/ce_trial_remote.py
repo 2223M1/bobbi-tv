@@ -13,56 +13,8 @@ import urllib.request
 
 BASE=Path('/storage/.local/share/bobbi-private-trials/20261020')
 BASE.mkdir(mode=0o700, parents=True, exist_ok=True)
-TESTS={
-    'dog_day_afternoon': {'title': 'Dog Day Afternoon', 'tmdb_id': 968, 'kind': 'movie', 'year': 1975},
-    'galactic_heroes': {'title': 'Legend of the Galactic Heroes', 'tmdb_id': 27660, 'kind': 'tv', 'year': 1988, 'season': 1, 'episode': 1, 'animation': True},
-    'paris_texas': {'title': 'Paris, Texas', 'tmdb_id': 655, 'kind': 'movie', 'year': 1984},
-    'millennium_actress': {'title': 'Millennium Actress', 'tmdb_id': 33320, 'kind': 'movie', 'year': 2002, 'animation': True},
-    'straight_story': {'title': 'The Straight Story', 'tmdb_id': 404, 'kind': 'movie', 'year': 1999},
-    'paprika': {'title': 'Paprika', 'tmdb_id': 4977, 'kind': 'movie', 'year': 2006, 'animation': True},
-    'station_agent': {'title': 'The Station Agent', 'tmdb_id': 2056, 'kind': 'movie', 'year': 2003},
-    'nichijou': {'title': 'Nichijou: My Ordinary Life', 'tmdb_id': 44684, 'kind': 'tv', 'year': 2011, 'season': 1, 'episode': 1, 'animation': True},
-    'paterson': {'title': 'Paterson', 'tmdb_id': 370755, 'kind': 'movie', 'year': 2016},
-    'planetes': {'title': 'Planetes', 'tmdb_id': 34102, 'kind': 'tv', 'year': 2003, 'season': 1, 'episode': 1, 'animation': True},
-    'moon': {'title': 'Moon', 'tmdb_id': 17431, 'kind': 'movie', 'year': 2009},
-    'made_in_abyss': {'title': 'Made in Abyss', 'tmdb_id': 72636, 'kind': 'tv', 'year': 2017, 'season': 1, 'episode': 1, 'animation': True},
-    'nightcrawler': {'title': 'Nightcrawler', 'tmdb_id': 242582, 'kind': 'movie', 'year': 2014},
-    'heavenly_delusion': {'title': 'Tengoku Daimakyo', 'tmdb_id': 208891, 'kind': 'tv', 'year': 2023, 'season': 1, 'episode': 1, 'animation': True},
-    'attack_on_titan': {'title': 'Attack on Titan', 'tmdb_id': 1429, 'kind': 'tv', 'year': 2013, 'season': 1, 'episode': 1, 'animation': True},
-    'frieren': {'title': "Frieren: Beyond Journey's End", 'tmdb_id': 209867, 'kind': 'tv', 'year': 2023, 'season': 1, 'episode': 1, 'animation': True},
-    'the_conversation': {'title': 'The Conversation', 'tmdb_id': 592, 'kind': 'movie', 'year': 1974},
-    'death_parade': {'title': 'Death Parade', 'tmdb_id': 61901, 'kind': 'tv', 'year': 2015, 'season': 1, 'episode': 1, 'animation': True},
-    'man_who_wasnt_there': {'title': "The Man Who Wasn't There", 'tmdb_id': 10778, 'kind': 'movie', 'year': 2001},
-    'space_dandy': {'title': 'Space Dandy', 'tmdb_id': 60874, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1, 'animation': True},
-    'baccano': {'title': 'Baccano!', 'tmdb_id': 34121, 'kind': 'tv', 'year': 2007, 'season': 1, 'episode': 1, 'animation': True},
-    'gattaca': {'title': 'Gattaca', 'tmdb_id': 782, 'kind': 'movie', 'year': 1997},
-    'samurai_champloo': {'title': 'Samurai Champloo', 'tmdb_id': 1063, 'kind': 'tv', 'year': 2004, 'season': 1, 'episode': 1, 'animation': True},
-    'arrival': {'title': 'Arrival', 'tmdb_id': 329865, 'kind': 'movie', 'year': 2016},
-    'mushishi': {'title': 'Mushi-Shi', 'tmdb_id': 26867, 'kind': 'tv', 'year': 2005, 'season': 1, 'episode': 1, 'animation': True},
-    'grand_budapest': {'title': 'The Grand Budapest Hotel', 'tmdb_id': 120467, 'kind': 'movie', 'year': 2014},
-    'further_universe': {'title': 'A Place Further Than the Universe', 'tmdb_id': 76059, 'kind': 'tv', 'year': 2018, 'season': 1, 'episode': 1, 'animation': True},
-    'perfect_days': {'title': 'Perfect Days', 'tmdb_id': 976893, 'kind': 'movie', 'year': 2023},
-    'eizouken': {'title': 'Keep Your Hands Off Eizouken!', 'tmdb_id': 92579, 'kind': 'tv', 'year': 2020, 'season': 1, 'episode': 1, 'animation': True},
-    'ping_pong': {'title': 'Ping Pong the Animation', 'tmdb_id': 60811, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1},
-    'amelie': {'title': 'Amelie', 'tmdb_id': 194, 'kind': 'movie', 'year': 2001},
-    'barakamon': {'title': 'Barakamon', 'tmdb_id': 67048, 'kind': 'tv', 'year': 2014, 'season': 1, 'episode': 1},
-    'rashomon': {'title': 'Rashomon', 'tmdb_id': 548, 'kind': 'movie', 'year': 1950},
-    'cowboy_bebop': {'title': 'Cowboy Bebop', 'tmdb_id': 30991, 'kind': 'tv', 'year': 1998, 'season': 1, 'episode': 1},
-    'twelve_angry_men': {'title': '12 Angry Men', 'tmdb_id': 389, 'kind': 'movie', 'year': 1957},
-    'tatami_galaxy': {'title': 'The Tatami Galaxy', 'tmdb_id': 36243, 'kind': 'tv', 'year': 2010, 'season': 1, 'episode': 1},
-    'man_from_earth': {'title': 'The Man from Earth', 'tmdb_id': 13363, 'kind': 'movie', 'year': 2007},
-    'lain': {'title': 'Serial Experiments Lain', 'tmdb_id': 1087, 'kind': 'tv', 'year': 1998, 'season': 1, 'episode': 1},
-    'coherence': {'title': 'Coherence', 'tmdb_id': 220289, 'kind': 'movie', 'year': 2014},
-    'odd_taxi': {'title': 'ODDTAXI', 'tmdb_id': 116727, 'kind': 'tv', 'year': 2021, 'season': 1, 'episode': 1},
-    'wild_tales': {'title': 'Wild Tales', 'tmdb_id': 265195, 'kind': 'movie', 'year': 2014},
-    'girls_last_tour': {'title': "Girls' Last Tour", 'tmdb_id': 74185, 'kind': 'tv', 'year': 2017, 'season': 1, 'episode': 1},
-    'burning': {'title': 'Burning', 'tmdb_id': 491584, 'kind': 'movie', 'year': 2018},
-    'flip_flappers': {'title': 'Flip Flappers', 'tmdb_id': 68272, 'kind': 'tv', 'year': 2016, 'season': 1, 'episode': 1},
-    'lives_of_others': {'title': 'The Lives of Others', 'tmdb_id': 582, 'kind': 'movie', 'year': 2006},
-    'tokyo_godfathers': {'title': 'Tokyo Godfathers', 'tmdb_id': 13398, 'kind': 'movie', 'year': 2003},
-    'haibane_renmei': {'title': 'Haibane Renmei', 'tmdb_id': 34164, 'kind': 'tv', 'year': 2002, 'season': 1, 'episode': 1},
-}
-assert NAME in TESTS and OP in ('start', 'requery', 'wait', 'picker_wait', 'observe', 'seek', 'stop', 'cancel', 'cards', 'select', 'manual_off', 'font_switch', 'inspect'), 'TRIAL_SCOPE'
+# TESTS and OPERATIONS are injected from the one tool-side manifest by the CLI.
+assert NAME in TESTS and OP in OPERATIONS, 'TRIAL_SCOPE'
 attempt=globals().get('ATTEMPT',1)
 assert type(attempt) is int and 1<=attempt<=10
 record_path = BASE / ('trial-' + NAME + ('' if attempt==1 else '-'+str(attempt)) + '.json')
