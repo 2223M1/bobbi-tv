@@ -265,6 +265,21 @@ def review_group(dialog, expected, anchor, candidate, source_id=None, start=0):
         return result
 
 
+def _mapping_description(value):
+    """Display only; retain the Host's original mapping and review command."""
+    if not value:
+        return '未设置'
+    parts = [value.get('title') or '未填写名称',
+             {'tv': '剧集', 'movie': '电影', 'custom': '自定义名称'}.get(value.get('kind'), '类型待核对')]
+    if value.get('tmdb_id') is not None:
+        parts.append('TMDb %s' % value['tmdb_id'])
+    if value.get('kind') == 'tv':
+        season, episode = value.get('season'), value.get('episode')
+        parts.append('S%02dE%02d' % (season, episode) if type(season) is int and type(episode) is int else '季集未明确')
+    parts.append('版本备注 %s' % (value.get('version') or '未填写'))
+    return ' · '.join(parts)
+
+
 def review_entries(dialog, expected, entries):
     """Bounded TV batch coordinator; existing Host remains the sole writer."""
     from bobbi_core.catalog_review import plan
@@ -281,10 +296,11 @@ def review_entries(dialog, expected, entries):
             dialog.ok('预览包含冲突', '未提交任何批次，请刷新后重新选择。')
             return
         for entry, row in zip(chunk['entries'], rows):
-            after = row.get('after') or {}
-            previews.append('%s · 修订 %s\n原描述 %s\n拟绑定 %s · S%sE%s · 版本备注 %s\n操作 %s · 修改后状态 %s' % (
-                entry['name'], entry['command']['expected_revision'], row.get('before'), after.get('title'),
-                after.get('season'), after.get('episode'), after.get('version'), entry['command']['action'], row.get('after_state')))
+            action = {'confirm': '保存描述', 'unbind': '解除绑定', 'ignore': '忽略此项', 'undo': '撤回上次修改'}
+            previews.append('%s\n记录修订 %s\n原描述 %s\n修改后描述 %s\n操作 %s · 修改后状态 %s' % (
+                entry['name'], entry['command']['expected_revision'], _mapping_description(row.get('before')),
+                _mapping_description(row.get('after')), action.get(entry['command']['action'], '待核对'),
+                LABELS.get(row.get('after_state'), '状态未知')))
     dialog.textviewer('逐项预览（尚未保存）', '\n\n'.join(previews))
     if not dialog.yesno('确认分批保存？', '%s 项将分 %s 批。已保存批次不会因后续冲突自动回滚；每批开始前仍会检查修订。' % (len(entries), len(chunks))):
         return

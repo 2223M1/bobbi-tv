@@ -9,6 +9,21 @@
   <include file="Includes_OSD.xml" />
   <include file="Includes_Dialogs.xml" />
 
+  <!-- Capture the Info item before closing changes ListItem's context. Kodi
+       refuses window activation while this modal dialog is still open. An
+       existing Videos window needs an update, without replacing Back history. -->
+  <include name="DetailFolderNavigation">
+    <param name="target" />
+    <param name="condition">true</param>
+    <definition>
+      <onclick condition="$PARAM[condition]">SetProperty(Bobi.Detail.Target,"$PARAM[target]",home)</onclick>
+      <onclick condition="$PARAM[condition]">Dialog.Close(movieinformation,true)</onclick>
+      <onclick condition="$PARAM[condition] + Window.IsVisible(videos)">Container.Update("$INFO[Window(Home).Property(Bobi.Detail.Target)]")</onclick>
+      <onclick condition="$PARAM[condition] + !Window.IsVisible(videos)">ActivateWindow(Videos,"$INFO[Window(Home).Property(Bobi.Detail.Target)]",return)</onclick>
+      <onclick condition="$PARAM[condition]">ClearProperty(Bobi.Detail.Target,home)</onclick>
+    </definition>
+  </include>
+
   <!-- ===== depth constants (Kodi stereo depth; keep 0 for 2D) ===== -->
   <constant name="DepthBackground">-0.2</constant>
   <constant name="DepthContent">0.0</constant>

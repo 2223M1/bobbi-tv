@@ -121,6 +121,7 @@
     <value>bobi/icons/play.png</value>
   </variable>
   <variable name="DetailKicker">
+    <value condition="String.IsEqual(ListItem.Property(Bobi.Catalog.MediaKind),unknown)">原文件</value>
     <value condition="String.IsEqual(ListItem.DBType,movie)">电影</value>
     <value condition="String.IsEqual(ListItem.DBType,tvshow)">剧集</value>
     <value condition="String.IsEqual(ListItem.DBType,season)">剧集 · 季</value>

@@ -104,7 +104,7 @@ def test_mounted_menu_exposes_shared_management_and_explicit_scan(cd2, mounted_u
     mounted_ui.catalog.execute(dict(source=source.id), 17, mounted_ui.dispatch)
     routes = [dict(parse_qsl(urlsplit(target).query)) for target, _, _ in mounted_ui.plugin.rows]
     scoped = [row for row in routes if row.get('action') == 'personal_catalog_manage']
-    assert len(scoped) == 2 and any(row.get('mode') == 'scan' for row in scoped)
+    assert len(scoped) == 3 and {row.get('mode') for row in scoped} == {None, 'scan', 'search'}
     assert all(row['source'] == source.id and len(row['namespace']) == 64 for row in scoped)
 
 

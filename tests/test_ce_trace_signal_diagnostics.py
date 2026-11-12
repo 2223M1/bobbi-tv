@@ -92,7 +92,8 @@ def test_owner_unavailable_reply_keeps_only_controlled_cause_without_retry(failu
     assert sleeps == [.5] * failure_at  # The owner failure adds no retry or delay.
     assert len(trace) == failure_at
     assert failure == dict(type='RuntimeError', reason='STARTUP_OBSERVATION_INTERRUPTED',
-                          samples_retained=failure_at, cause='PLAYBACK_OWNER_UNAVAILABLE')
+                          samples_retained=failure_at, cause='PLAYBACK_OWNER_UNAVAILABLE',
+                          owner_response='rejected_or_unspecified')
     exported = json.dumps({'samples': trace, 'trace_error': failure})
     assert 'private' not in exported and 'signed.invalid' not in exported
     assert all('labels' not in item for item in trace)
@@ -139,6 +140,83 @@ def test_startup_capture_finishes_within_original_budget():
             sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)))
     trace, failure = ns['capture_startup_trace']({}, budget=2)
     assert len(trace) == 4 and clock[0] == 2 and failure is None
+
+
+def unavailable():
+    error = RuntimeError('PLAYBACK_OWNER_UNAVAILABLE')
+    error.owner_response = 'unavailable'
+    return error
+
+
+def test_explicit_owner_unavailable_retains_gap_and_failure_after_same_owner_recovers():
+    ns = functions('capture_startup_trace', 'startup_health', 'startup_signal_diagnostics', 'startup_coverage')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        if len(calls) == 2:
+            raise unavailable()
+        return row(clock[0], clock[0]+1, len(calls)*10)
+    ns.update(sample=sample, time=SimpleNamespace(monotonic=lambda: clock[0],
+        sleep=lambda seconds: clock.__setitem__(0, clock[0]+seconds)))
+    trace, failure = ns['capture_startup_trace']({'owned': True}, budget=2)
+    assert len(calls) == 4 and len(trace) == 4 and clock[0] == 2
+    assert trace[1]['acquisition_gap'] == 'OWNER_UNAVAILABLE' and trace[1]['phase'] is None
+    assert 'native' not in trace[1] and 'seconds' not in trace[1]
+    assert failure['owner_response'] == 'unavailable' and failure['samples_retained'] == 4
+    assert failure['acquisition_gaps'] == [dict(sample_started=.5, sample_completed=.5, recovered=True)]
+    health = ns['startup_health'](trace)
+    assert health['observation_gaps'] == 1 and health['no_observed_stall'] is False
+    assert ns['startup_signal_diagnostics'](trace)['observation_gap_events'] == [
+        dict(sample_index=1, cause='OWNER_UNAVAILABLE', wall=.5)]
+    assert ns['startup_coverage'](trace, health)['passed'] is False
+
+
+def test_explicit_unavailable_recovery_is_bounded_and_preserves_unresolved_gaps():
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        raise unavailable()
+    ns.update(sample=sample, time=SimpleNamespace(monotonic=lambda: clock[0],
+        sleep=lambda seconds: clock.__setitem__(0, clock[0]+seconds)))
+    trace, failure = ns['capture_startup_trace']({}, budget=2)
+    assert len(calls) == 4 and len(trace) == 3 and clock[0] == 1.5
+    assert len(failure['acquisition_gaps']) == 3
+    assert all(gap['recovered'] is False for gap in failure['acquisition_gaps'])
+
+
+@pytest.mark.parametrize('error', [AssertionError('USER_CHANGED_SELECTION'),
+    AssertionError('OTHER_INSTANCE'), RuntimeError('UNKNOWN_OWNER_FAILURE')])
+def test_unavailable_does_not_allow_retry_past_changed_or_unknown_owner(error):
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        raise unavailable() if len(calls) == 1 else error
+    ns.update(sample=sample, time=SimpleNamespace(monotonic=lambda: clock[0],
+        sleep=lambda seconds: clock.__setitem__(0, clock[0]+seconds)))
+    trace, failure = ns['capture_startup_trace']({}, budget=2)
+    assert len(calls) == 2 and len(trace) == 1 and clock[0] == .5
+    assert failure['type'] == type(error).__name__
+    assert failure['acquisition_gaps'][0]['recovered'] is False
+
+
+def test_call_only_classifies_exact_public_unavailable_enum_without_exporting_body():
+    ns = functions('call')
+    replies = iter([dict(ok=False, error='unavailable', token='secret'),
+                    dict(ok=False, error='unavailable secret'), dict(ok=False),
+                    dict(ok=False, error={'message':'unavailable'})])
+    ns.update(Path=lambda _: SimpleNamespace(read_text=lambda:json.dumps(dict(port=1,token='secret'))),
+        json=json, urllib=SimpleNamespace(request=SimpleNamespace(Request=lambda *a,**k:None,
+        ProxyHandler=lambda _:None,build_opener=lambda _:SimpleNamespace(
+            open=lambda *a,**k:io.StringIO(json.dumps(next(replies)))))))
+    classifications=[]
+    for _ in range(4):
+        with pytest.raises(RuntimeError) as caught:
+            ns['call']({'operation':'snapshot'})
+        classifications.append(caught.value.owner_response)
+        assert caught.value.args == ('PLAYBACK_OWNER_UNAVAILABLE',)
+    assert classifications == ['unavailable']+['rejected_or_unspecified']*3
 
 
 def test_clock_only_stationarity_is_separate_from_real_caching_without_rewriting_failure():

@@ -91,6 +91,21 @@ def decorate(item, card, projections=None):
             item.setProperty('AM6B.Title.original', '')
 
 
+def origin_is_current(params, expected, origin, rpc):
+    """Dialogs may return only to their original directory and account/root."""
+    import xbmc
+    from bobbi_platform.pan_accounts import scope
+    if not origin or xbmc.getInfoLabel('Container.FolderPath') != origin:
+        return False
+    if expected.get('reference_kind') == 'mounted_path':
+        mounted_for(dict(params, **scope_params(expected)), rpc)
+    else:
+        account_for(params, [scope(row['account'], authenticated=True)
+            for row in rpc('pan_status', {})['providers']
+            if row['provider'] != '115' and row['account'].get('authenticated')])
+    return xbmc.getInfoLabel('Container.FolderPath') == origin
+
+
 def manage(params=None, rpc=None):
     import xbmc
     import xbmcgui
@@ -105,6 +120,17 @@ def manage(params=None, rpc=None):
         expected = (mounted_for(params, rpc) if params.get('source') else account_for(params,
             [scope(row['account'], authenticated=True) for row in rpc('pan_status', {})['providers']
              if row['provider'] != '115' and row['account'].get('authenticated')]))
+        if params.get('mode') == 'search':
+            text = xbmcgui.Dialog().input('搜索自己的片库', defaultt=params.get('text', '')).strip()
+            if text and origin_is_current(params, expected, origin, rpc):
+                query = {key: params[key] for key in ('view', 'source_id', 'review_state',
+                    'availability', 'media_kind', 'parent_entity_id', 'sort') if params.get(key)}
+                query.setdefault('view', 'works')
+                query.setdefault('sort', 'name')
+                # Only this stable, scope-bound URL enters directory history.
+                target = route(action='personal_catalog', text=text, **scope_params(expected), **query)
+                xbmc.executebuiltin('Container.Update("' + target + '")')
+            return
         if params.get('object_id'):
             values = dict(file_id=params['object_id'])
             if expected.get('reference_kind') == 'mounted_path':
@@ -117,15 +143,7 @@ def manage(params=None, rpc=None):
                 if result.get('pending_request_id') and xbmcgui.Dialog().yesno(
                         '查询原提交回执？', '结果尚待核对。只查询原提交编号，不重新写入；也可稍后从片库管理继续查询。'):
                     catalog_ui.query_receipt(xbmcgui.Dialog(), expected, result['pending_request_id'])
-                if origin and xbmc.getInfoLabel('Container.FolderPath') == origin:
-                    # A dialog result must not refresh a different account/root
-                    # after the user or another frontend changed ownership.
-                    if expected.get('reference_kind') == 'mounted_path':
-                        mounted_for(dict(params, **scope_params(expected)), rpc)
-                    else:
-                        account_for(params, [scope(row['account'], authenticated=True)
-                            for row in rpc('pan_status', {})['providers']
-                            if row['provider'] != '115' and row['account'].get('authenticated')])
+                if origin_is_current(params, expected, origin, rpc):
                     xbmc.executebuiltin('Container.Refresh')
             return result
         mode = params.get('mode')
@@ -274,6 +292,12 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
             account = mounted_for(params, rpc) if mounted else account_for(params, accounts)
             presentation_scope = scope_key(account)
             base = dict(action='personal_catalog', **scope_params(account))
+            if params.get('search') == 'true':
+                # Legacy search folders are one-shot actions too. End their
+                # pending listing before opening the stable results directory.
+                if handle >= 0:
+                    xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
+                return manage(dict(params, mode='search', **scope_params(account)), rpc)
             if mode == 'review':
                 base['mode'] = 'review'
             if mode == 'review' and not params.get('view'):
@@ -289,9 +313,10 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     ('未匹配原文件', dict(view='files', review_state='unmatched')),
                     ('身份不明确', dict(view='files', review_state='ambiguous')),
                     ('待确认建议', dict(view='files', review_state='proposed')),
-                    ('已忽略原文件', dict(view='files', review_state='ignored')),
-                    ('搜索片库', dict(search='true'))):
+                    ('已忽略原文件', dict(view='files', review_state='ignored'))):
                     entry(label, route(**base, **values, **(dict(mode='review') if values.get('review_state') else {})))
+                entry('搜索片库', route(action='personal_catalog_manage', mode='search',
+                    source_id=params.get('source_id'), **scope_params(account)), False)
                 entry('继续观看', route(action='continue_watching_menu'))
                 if mounted:
                     entry('扫描 / 更新当前 CD2 来源', route(action='personal_catalog_manage',
@@ -311,12 +336,6 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                 cursor = params.get('cursor')
                 cache_key = 'bobi.catalog.rail.' + scope_key(account) + ':' + hashlib.sha256(
                     json.dumps(query, sort_keys=True).encode()).hexdigest()
-                if params.get('search') == 'true':
-                    text = xbmcgui.Dialog().input('搜索自己的片库', defaultt=params.get('text', ''))
-                    if not text.strip():
-                        xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
-                        return
-                    query['text'], cursor = text.strip(), None
                 try:
                     page = query_page(rpc, account, query=query, cursor=cursor, limit=20)
                 except (OSError, RuntimeError, ValueError) as error:
@@ -376,6 +395,7 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                     properties = {'Bobi.CardKey': 'catalog:' + scope_key(account) + ':' + card['entity_id'],
                         'Bobi.File.State': card.get('availability', 'unverified'),
                         'Bobi.Review.State': card.get('review_state', ''),
+                        'Bobi.Catalog.MediaKind': card.get('media_kind', 'unknown'),
                         'Bobi.Title.zh': title}
                     variants = variants_target(card, account, query)
                     if variants:
@@ -391,10 +411,11 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                         ('从头播放本文件' if mounted else '继续播放本文件' if card['entity_id'] in progress else '播放本文件')
                         if card['entity_kind'] == 'file' else
                         '选择文件版本' if card['entity_kind'] == 'episode' or card.get('media_kind') == 'movie' else
-                        '选择分集' if card['entity_kind'] == 'season' else '选择季集')
+                        '选择分集' if card['entity_kind'] == 'season' else
+                        '选择季集' if card.get('media_kind') == 'tv' else '查看原文件')
                     item = entry(title, target, folder, detail, properties)
-                    info = dict(title=title, mediatype={'work': 'tvshow' if card.get('media_kind') == 'tv'
-                        else 'movie', 'season': 'season', 'episode': 'episode'}.get(card['entity_kind'], 'video'))
+                    info = dict(title=title, mediatype={'work': {'tv': 'tvshow', 'movie': 'movie'}.get(
+                        card.get('media_kind'), 'video'), 'season': 'season', 'episode': 'episode'}.get(card['entity_kind'], 'video'))
                     for field in ('season', 'episode', 'year'):
                         if type(card.get(field)) is int:
                             info[field] = card[field]
@@ -414,8 +435,15 @@ def execute(params, handle=None, rpc=None, rail_cache=None):
                           properties={'Bobi.NextPage': 'true'})
                 if not page['items']:
                     state = 'empty'
-                    entry('当前筛选没有作品 · 打开整理与扫描', route(
-                        action='personal_catalog_manage', **scope_params(account)), False)
+                    if query.get('parent_entity_id'):
+                        recovery = dict(action='personal_catalog', source_id=query.get('source_id'),
+                            **scope_params(account))
+                        entry('返回当前来源作品', route(**recovery, view='works', sort='name'),
+                              detail='此分组暂时没有文件，整理后的作品可能已归入新分组')
+                        entry('继续整理当前来源', route(**recovery, mode='review'))
+                    else:
+                        entry('当前筛选没有作品 · 打开整理与扫描', route(
+                            action='personal_catalog_manage', **scope_params(account)), False)
                 try:
                     from lib.clients.tmdb.frontend_metadata import flush
                     flush()

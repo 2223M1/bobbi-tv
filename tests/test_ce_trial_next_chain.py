@@ -5,7 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import queue
+import socket
 import sys
+import time
 
 import pytest
 
@@ -107,3 +110,119 @@ def test_only_whitelisted_exact_logs_are_consumed():
     assert log_rows(text) == logs
     assert log_rows('[CINEMA-NEXT] NATURAL_EOF_SAME_VERSION_HANDOFF') == []
     assert log_rows('[BOBBI-CONTINUATION] '+json.dumps(dict(logs[0], token='secret'))) == []
+
+
+def acquisition_trial(monkeypatch, tmp_path, damage=None):
+    """Actual watcher/thread/parser with local fake wire; no Kodi or network."""
+    raw_parent = dict(request_id='a'*32, native_instance='11111111-1111-1111-1111-111111111111',
+                      file_identity='parent-private-file', phase='AV_STARTED', sequence=2)
+    raw_child = dict(request_id='c'*32, native_instance='22222222-2222-2222-2222-222222222222',
+                     file_identity='child-private-file', phase='AV_STARTED', sequence=2)
+    terminal = dict(raw_parent, phase='TERMINAL', sequence=3, reason='NATURAL_EOF',
+        completion_observation=dict(schema=1, position_ms=99960, duration_ms=100000, age_us=1000, valid=True))
+    grant = dict(schema=1, kind='natural', stage='GRANTED', parent_request_id=raw_parent['request_id'],
+        parent_native_instance=raw_parent['native_instance'],
+        selection_sha256=hashlib.sha256(b'child-private-selection').hexdigest(), child_request_id='')
+    logs = [grant, dict(grant, stage='CHILD_RESERVED', child_request_id=raw_child['request_id'])]
+    path = tmp_path/'kodi.log'
+    path.write_text('baseline\n', encoding='utf-8')
+
+    class Wire:
+        def __init__(self): self.incoming, self.sent = queue.Queue(), []
+        def settimeout(self, timeout): pass
+        def sendall(self, raw):
+            self.sent.append(json.loads(raw))
+            self.incoming.put(json.dumps(dict(id=1,result={})).encode())
+        def recv(self, maximum):
+            try: return self.incoming.get(timeout=.05)
+            except queue.Empty: raise socket.timeout()
+        def close(self): self.incoming.put(b'')
+        def event(self, raw):
+            self.incoming.put(json.dumps(dict(method='Player.OnBobiState',params=dict(data=raw))).encode())
+    wire = Wire()
+    monkeypatch.setattr(socket, 'create_connection', lambda *a, **k: wire)
+    counts = dict(snapshot=0, poll=0)
+    published = [False]
+    def publish():
+        published[0] = True
+        with path.open('a', encoding='utf-8') as stream:
+            for entry in logs:
+                stream.write('[BOBBI-CONTINUATION] '+json.dumps(entry)+'\n')
+        if damage == 'malformed_event': wire.incoming.put(b'[]')
+        if damage != 'missing_open': wire.event(dict(raw_child,phase='OPEN',sequence=1))
+        wire.event(raw_child)
+
+    def snapshot():
+        counts['snapshot'] += 1
+        if counts['snapshot'] == 2:
+            wire.event(terminal)
+        if (damage in ('owner_once','wrong_target') and counts['snapshot'] == 2 or
+                damage == 'owner_forever' and counts['snapshot'] >= 2):
+            error = RuntimeError('PLAYBACK_OWNER_UNAVAILABLE')
+            error.owner_response = 'unavailable'
+            raise error
+        child = published[0]
+        return dict(desired=dict(request_id=(raw_child if child else raw_parent)['request_id'],file_bound=True,
+            selection_identity='unrelated-private' if child and damage == 'wrong_target' else
+                'child-private-selection' if child else 'parent-private-selection',
+            file_identity=(raw_child if child else raw_parent)['file_identity']))
+
+    def rpc(method):
+        assert method == 'Player.BobiState'  # No input, seek, play or stop API.
+        counts['poll'] += 1
+        if counts['poll'] == 2:
+            publish()
+            if damage == 'native_poll_once': raise RuntimeError('private://response-must-not-escape')
+        return dict(playback=raw_child if published[0] else raw_parent)
+
+    namespace = dict(scope, Path=lambda _: path, time=time, snapshot=snapshot, rpc=rpc,
+        state=lambda record, require: ({},{},raw_parent))
+    node = next(node for node in ast.parse((ROOT/'tools/ce_trial_remote.py').read_text()).body
+                if isinstance(node, ast.FunctionDef) and node.name == 'watch_next')
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<real-next-watch>','exec'),namespace)
+    result = namespace['watch_next']({'request_id':raw_parent['request_id']},duration=1)
+    assert wire.sent == [dict(jsonrpc='2.0', id=1, method='JSONRPC.SetConfiguration',
+                             params={'notifications': {'Player': True}})]
+    assert 'private' not in json.dumps(result)
+    return result, counts
+
+
+def test_live_acquisition_positive_control_requires_complete_exact_chain(monkeypatch, tmp_path):
+    result, counts = acquisition_trial(monkeypatch, tmp_path)
+    assert result['passed'] is True and result['causal_chain_passed'] is True
+    assert result['acquisition_errors'] == [] and result['acquisition_error_details'] == []
+    assert counts['snapshot'] >= 3 and counts['poll'] >= 3
+
+
+@pytest.mark.parametrize('damage,channel', [('owner_once','OWNER_SNAPSHOT'),('native_poll_once','NATIVE_POLL')])
+def test_one_channel_failure_does_not_close_other_channels_or_erase_error(monkeypatch, tmp_path, damage, channel):
+    result, counts = acquisition_trial(monkeypatch, tmp_path, damage)
+    assert result['causal_chain_passed'] is True and result['missing'] == []
+    assert result['passed'] is False and result['attribution'] == 'incomplete'
+    assert result['acquisition_errors'] == [channel+'_RuntimeError']
+    detail = result['acquisition_error_details'][0]
+    assert detail['channel'] == channel and detail['count'] == 1 and detail['recovered'] is True
+    if channel == 'OWNER_SNAPSHOT': assert detail['owner_response'] == 'unavailable'
+    assert counts['snapshot'] >= 3 and counts['poll'] >= 3
+
+
+def test_permanent_owner_gap_keeps_native_and_log_evidence_but_never_invents_target(monkeypatch, tmp_path):
+    result, counts = acquisition_trial(monkeypatch, tmp_path, 'owner_forever')
+    assert result['passed'] is False and result['causal_chain_passed'] is False
+    assert 'child_target' in result['missing'] and result['target'] is None
+    assert len(result['continuation_events']) == 2
+    assert any(row['phase']=='OPEN' for row in result['native_events'])
+    assert result['acquisition_error_details'][0]['recovered'] is False
+    assert counts['poll'] >= 3
+
+
+@pytest.mark.parametrize('damage,missing', [('wrong_target','child_target'),('missing_open','child_open_av')])
+def test_recovery_cannot_substitute_wrong_target_or_missing_native_open(monkeypatch, tmp_path, damage, missing):
+    result, _ = acquisition_trial(monkeypatch, tmp_path, damage)
+    assert result['passed'] is False and result['causal_chain_passed'] is False
+    assert missing in result['missing']
+
+
+def test_malformed_native_message_is_explicit_acquisition_failure(monkeypatch, tmp_path):
+    result, _ = acquisition_trial(monkeypatch, tmp_path, 'malformed_event')
+    assert result['passed'] is False and 'NATIVE_EVENT_MESSAGE_INVALID' in result['acquisition_errors']

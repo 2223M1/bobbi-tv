@@ -113,9 +113,12 @@
           <ondown>50</ondown>
           <onup condition="Control.IsVisible(983)">983</onup>
           <onclick condition="!String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">SendClick(8)</onclick>
-          <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + ListItem.IsFolder">ActivateWindow(Videos,"$INFO[ListItem.FilenameAndPath]",return)</onclick>
+          <include content="DetailFolderNavigation">
+            <param name="target">$INFO[ListItem.FilenameAndPath]</param>
+            <param name="condition">String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + ListItem.IsFolder</param>
+          </include>
           <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + !ListItem.IsFolder">RunPlugin("$INFO[ListItem.FilenameAndPath]")</onclick>
-          <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">Dialog.Close(movieinformation)</onclick>
+          <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + !ListItem.IsFolder">Dialog.Close(movieinformation)</onclick>
         </control>
         <control type="image">
           <left>32</left><top>20</top><width>32</width><height>32</height>
@@ -139,8 +142,9 @@
         <label>选择文件版本</label><font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
         <texturefocus colordiffuse="focus" border="32">bobi/pill.png</texturefocus>
         <texturenofocus colordiffuse="surface_hi" border="32">bobi/pill.png</texturenofocus>
-        <onclick>ActivateWindow(Videos,"$INFO[ListItem.Property(Bobi.Catalog.Variants)]",return)</onclick>
-        <onclick>Dialog.Close(movieinformation)</onclick>
+        <include content="DetailFolderNavigation">
+          <param name="target">$INFO[ListItem.Property(Bobi.Catalog.Variants)]</param>
+        </include>
         <onleft>981</onleft><onup condition="Control.IsVisible(983)">983</onup><ondown>50</ondown>
       </control>
       <control type="button" id="984">
@@ -149,8 +153,9 @@
         <label>系列与演职作品</label><font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
         <texturefocus colordiffuse="focus" border="32">bobi/pill.png</texturefocus>
         <texturenofocus colordiffuse="surface_hi" border="32">bobi/pill.png</texturenofocus>
-        <onclick>ActivateWindow(Videos,"$INFO[ListItem.Property(Bobi.Relationships)]",return)</onclick>
-        <onclick>Dialog.Close(movieinformation)</onclick>
+        <include content="DetailFolderNavigation">
+          <param name="target">$INFO[ListItem.Property(Bobi.Relationships)]</param>
+        </include>
         <onleft>981</onleft><onup condition="Control.IsVisible(983)">983</onup><ondown>50</ondown>
       </control>
       <include content="TextPill"><param name="id">11</param><param name="label">预告片</param><param name="width">200</param><param name="visible">!String.IsEmpty(ListItem.Trailer)</param></include>

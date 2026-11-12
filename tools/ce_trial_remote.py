@@ -29,7 +29,13 @@ def call(message):
         headers={'Authorization':'Bearer '+config['token'],'Content-Type':'application/json'})
     with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(request,timeout=.3) as response:
         result=json.load(response)
-    if result.get('ok') is not True:raise RuntimeError('PLAYBACK_OWNER_UNAVAILABLE')
+    if result.get('ok') is not True:
+        error = RuntimeError('PLAYBACK_OWNER_UNAVAILABLE')
+        # Only the runtime's fixed public transport enum may classify a gap.
+        # An unspecified/rejected reply is not evidence of transient failure.
+        error.owner_response = ('unavailable' if result.get('error') == 'unavailable'
+                                else 'rejected_or_unspecified')
+        raise error
     return result['result']
 
 
@@ -243,7 +249,7 @@ def bounded_clock_start(record, budget=5):
 def startup_health(samples):
     """A later stable segment cannot erase an observed positive-clock freeze."""
     frozen, maximum = 0.0, 0.0
-    discontinuities, gaps = 0, 0
+    discontinuities, gaps = 0, sum(bool(row.get('acquisition_gap')) for row in samples)
     for first, last in zip(samples, samples[1:]):
         wall = last['wall'] - first['wall']
         if wall > 2:
@@ -280,7 +286,9 @@ def startup_signal_diagnostics(samples):
         return type(value) in (int, float) and isfinite(value)
     runs = {name: [] for name in ('caching_sample_runs', 'stationary_decoder_with_caching_runs',
                                   'stationary_clock_with_decoder_progress_runs')}
-    gaps, steps, resets = [], [], []
+    gaps = [dict(sample_index=index, cause=row['acquisition_gap'], wall=row.get('wall'))
+            for index, row in enumerate(samples) if row.get('acquisition_gap')]
+    steps, resets = [], []
     def extend(name, index, first, last):
         entries = runs[name]
         if entries and entries[-1]['last_index'] == index:
@@ -380,9 +388,10 @@ def sample(record):
 
 
 def capture_startup_trace(record, budget=40):
-    """Keep bounded evidence on read failure; never retry past an owner change."""
+    """Keep explicit read gaps; never retry past a rejected/changed owner."""
     assert 0 < budget <= 40
     trace = []
+    interrupted, gaps = None, []
     deadline = time.monotonic() + budget
     while time.monotonic() < deadline:
         began = time.monotonic()
@@ -398,7 +407,25 @@ def capture_startup_trace(record, budget=40):
             if (type(error) is RuntimeError and len(error.args) == 1
                     and type(error.args[0]) is str and error.args[0] == 'PLAYBACK_OWNER_UNAVAILABLE'):
                 failure['cause'] = 'PLAYBACK_OWNER_UNAVAILABLE'
+                response = getattr(error, 'owner_response', None)
+                if response in ('unavailable', 'rejected_or_unspecified'):
+                    failure['owner_response'] = response
+            if failure.get('owner_response') == 'unavailable' and len(gaps) < 3:
+                gap = dict(sample_started=began, sample_completed=time.monotonic(), recovered=False)
+                gaps.append(gap)
+                trace.append(dict(wall=gap['sample_completed'], phase=None,
+                    acquisition_gap='OWNER_UNAVAILABLE', observation_times={key:gap[key]
+                        for key in ('sample_started', 'sample_completed')}))
+                interrupted = dict(failure, acquisition_gaps=gaps, samples_retained=len(trace))
+                # Re-enter sample(), including its exact request/native guards.
+                # This is read-only and cannot authorize a control or selection.
+                time.sleep(max(0, min(.5-(time.monotonic()-began), deadline-time.monotonic())))
+                continue
+            if gaps:
+                failure['acquisition_gaps'] = gaps
             return trace, failure
+        for gap in gaps:
+            gap['recovered'] = True
         compact = {key: current[key] for key in (
             'wall', 'phase', 'seconds', 'speed', 'caching', 'observation_times',
             'cancelled', 'failure', 'subtitleenabled', 'decoder_counters',
@@ -407,8 +434,10 @@ def capture_startup_trace(record, budget=40):
             'native_instance', 'request_id', 'subtitle_file_applied',
             'subtitle_file_sha256', 'subtitle_intent', 'user_intent', 'sequence')}
         trace.append(compact)
+        if interrupted:
+            interrupted['samples_retained'] = len(trace)
         time.sleep(max(0, min(.5 - (time.monotonic() - began), deadline - time.monotonic())))
-    return trace, None
+    return trace, interrupted
 
 
 def startup_coverage(samples, health):
@@ -767,6 +796,7 @@ def watch_next(record, duration=45):
     assert type(duration) in (int, float) and 1 <= duration <= 60, 'NEXT_WATCH_BUDGET'
     native_rows, selections = [], []
     errors = []
+    channel_errors = {}
     done = threading.Event()
     subscribed = threading.Event()
     connection = None
@@ -775,6 +805,25 @@ def watch_next(record, duration=45):
     stat = path.stat()
     offset, inode = stat.st_size, stat.st_ino
     deadline = time.monotonic()+duration
+
+    def acquisition_error(channel, error):
+        # Keep failures even if a later sample recovers. One unavailable owner
+        # snapshot must not close the independent native event subscription.
+        response = getattr(error, 'owner_response', None)
+        response = response if response in ('unavailable', 'rejected_or_unspecified') else None
+        key = (channel, type(error).__name__, response)
+        detail = channel_errors.setdefault(key, dict(channel=channel, error_type=key[1], count=0, recovered=False))
+        if response:
+            detail['owner_response'] = response
+        detail.update(count=detail['count']+1, recovered=False)
+        code = channel+'_'+key[1]
+        if code not in errors:
+            errors.append(code)
+
+    def recovered(channel):
+        for (name, _, _), detail in channel_errors.items():
+            if name == channel:
+                detail['recovered'] = True
 
     def keep(raw):
         row = next_native_row(raw)
@@ -796,7 +845,7 @@ def watch_next(record, duration=45):
                 if not done.is_set(): errors.append('NATIVE_EVENT_READ_FAILED')
                 return
             if not chunk:
-                errors.append('NATIVE_EVENT_EOF')
+                if not done.is_set(): errors.append('NATIVE_EVENT_EOF')
                 return
             buffer += chunk.decode('utf-8', errors='replace')
             if len(buffer) > 262144:
@@ -809,9 +858,16 @@ def watch_next(record, duration=45):
                 except ValueError:
                     break
                 buffer = buffer[end:]
+                if not isinstance(message, dict):
+                    errors.append('NATIVE_EVENT_MESSAGE_INVALID')
+                    return
                 if message.get('id') == 1 and 'result' in message: subscribed.set()
                 if message.get('method') == 'Player.OnBobiState':
-                    keep(message.get('params', {}).get('data'))
+                    params = message.get('params')
+                    if not isinstance(params, dict):
+                        errors.append('NATIVE_EVENT_MESSAGE_INVALID')
+                        return
+                    keep(params.get('data'))
 
     try:
         connection = socket.create_connection(('127.0.0.1', 9090), timeout=1)
@@ -826,19 +882,31 @@ def watch_next(record, duration=45):
         assert parent and parent['phase'] == 'AV_STARTED', 'NEXT_PARENT_UNAVAILABLE'
         keep(raw)
         while time.monotonic() < deadline:
-            authority = snapshot()
-            desired = authority.get('desired') or {}
-            identity = desired.get('selection_identity')
-            file_identity = desired.get('file_identity')
-            if (type(identity) is str and 0 < len(identity) <= 1024 and type(file_identity) is str
-                    and 0 < len(file_identity) <= 1024 and desired.get('file_bound') is True):
-                selection = dict(request_id=desired.get('request_id'),
-                    selection_sha256=hashlib.sha256(identity.encode()).hexdigest(),
-                    file_sha256=hashlib.sha256(file_identity.encode()).hexdigest())
-                if selection not in selections:
-                    assert len(selections) < 16, 'SELECTION_OBSERVATION_LIMIT'
-                    selections.append(selection)
-            keep((rpc('Player.BobiState') or {}).get('playback'))
+            try:
+                authority = snapshot()
+                assert isinstance(authority, dict), 'OWNER_SNAPSHOT_INVALID'
+                desired = authority.get('desired') or {}
+                assert isinstance(desired, dict), 'OWNER_SELECTION_INVALID'
+                identity = desired.get('selection_identity')
+                file_identity = desired.get('file_identity')
+                if (type(identity) is str and 0 < len(identity) <= 1024 and type(file_identity) is str
+                        and 0 < len(file_identity) <= 1024 and desired.get('file_bound') is True):
+                    selection = dict(request_id=desired.get('request_id'),
+                        selection_sha256=hashlib.sha256(identity.encode()).hexdigest(),
+                        file_sha256=hashlib.sha256(file_identity.encode()).hexdigest())
+                    if selection not in selections:
+                        assert len(selections) < 16, 'SELECTION_OBSERVATION_LIMIT'
+                        selections.append(selection)
+                recovered('OWNER_SNAPSHOT')
+            except (OSError, ValueError, AssertionError, RuntimeError) as error:
+                acquisition_error('OWNER_SNAPSHOT', error)
+            try:
+                current = rpc('Player.BobiState') or {}
+                assert isinstance(current, dict), 'NATIVE_POLL_INVALID'
+                keep(current.get('playback'))
+                recovered('NATIVE_POLL')
+            except (OSError, ValueError, AssertionError, RuntimeError) as error:
+                acquisition_error('NATIVE_POLL', error)
             time.sleep(min(.2, max(0, deadline-time.monotonic())))
     except (OSError, ValueError, AssertionError, RuntimeError) as error:
         errors.append(type(error).__name__)  # No raw response, locator or credentials.
@@ -847,24 +915,28 @@ def watch_next(record, duration=45):
         if connection: connection.close()
         if thread: thread.join(.5)
     logs = []
-    if path.stat().st_ino != inode or path.stat().st_size < offset:
-        errors.append('LOG_ROTATED')
-    else:
-        with path.open('rb') as stream:
-            stream.seek(offset)
-            raw_log = stream.read(262145)
-        if len(raw_log) > 262144:
-            errors.append('LOG_LIMIT')
+    try:
+        if path.stat().st_ino != inode or path.stat().st_size < offset:
+            errors.append('LOG_ROTATED')
         else:
-            logs = next_log_rows(raw_log.decode('utf-8', errors='replace'))
-            if len(logs) > 32:
-                errors.append('CONTINUATION_EVENT_LIMIT')
-                logs = logs[:32]
+            with path.open('rb') as stream:
+                stream.seek(offset)
+                raw_log = stream.read(262145)
+            if len(raw_log) > 262144:
+                errors.append('LOG_LIMIT')
+            else:
+                logs = next_log_rows(raw_log.decode('utf-8', errors='replace'))
+                if len(logs) > 32:
+                    errors.append('CONTINUATION_EVENT_LIMIT')
+                    logs = logs[:32]
+    except OSError as error:
+        acquisition_error('CONTINUATION_LOG', error)
     parent = locals().get('parent') or dict(request_id=record.get('request_id'),
         native_instance=record.get('native_instance'), file_sha256=None)
     result = next_chain_evidence(parent, native_rows, selections, logs)
     result.update(operation='next_watch', native_events=native_rows, selections=selections,
-                  continuation_events=logs, acquisition_errors=errors, mutation_performed=False)
+                  continuation_events=logs, acquisition_errors=errors,
+                  acquisition_error_details=list(channel_errors.values()), mutation_performed=False)
     if errors:
         result.update(passed=False, attribution='incomplete')
     if not result['passed']:

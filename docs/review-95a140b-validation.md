@@ -16,6 +16,10 @@
 
 本轮保留现有 core/platform/plugin 分工。删除的是重复根入口、旧 TV 列表及重复构建模板，不按文件数合并权限、生命周期不同的责任。
 
+界面收尾修复：未确认类型的作品显示“原文件 / 查看原文件”，不再冒充电影或季集。详情的文件夹、文件版本与关系入口共用捕获目标→关闭当前弹窗→导航动作；已有 Videos 窗口更新目录并保留返回历史。片库搜索改为一次性操作，结果 URL 保存关键词；整理导致旧分组为空时只提供同账号/来源的返回作品与继续整理入口，不自动跨范围跳转。TV 整理预览以中文显示原描述、修改后描述、季集、版本备注及状态，不改变实际命令。
+
+本次界面修复的组件版本为 plugin `0.1.62`、platform `0.1.70`、skin `0.1.16`，对应最低依赖同步。无源码变更的 core `0.1.62`、library `0.1.7` 保留原版本；来源清单按实际字节更新。以上实现描述不等于本代真机验收通过。
+
 ## 验证入口
 
 新证据目录为 `D:/AM6B-Project/AM6B/tmp/bobbi-review-95a140b-20261112/results`，原包不改写。
@@ -23,6 +27,7 @@
 - B00 定向回归 113 passed，含真实双线程交错、SQLite 事务和本地文件系统；非设备目录 IO 认证。
 - B03 无变化扫描负控先复现 native revision 2→4、mounted 3→6、空扫描 0→1；修复后定向集 172 passed / 1 skipped，追加任务/UI 观察 29 passed。与后续全量回归有重叠，不相加。
 - B01/B02 定向 211 passed，补充三版本独立进度和真实 JS→PhoneManagement→SQLite 等 46 passed；独立 SQL 复核把 1716 组 native/mounted 查询与 `95a140b` 原 SQL 逐行比较，零差异。500 个历史 membership 的本地样本从约 512.5 万降至 2.8 万 SQLite 指令；这是合成数据查询测量，不是设备速度倍数。
+- UI 收尾的导航、预览和包元数据相关集 97 passed；22 个组件、31 条本地依赖最低版本核对通过。`ui-metadata-source-check` 已按更新后的清单构建全部 22 个组件，仍为不可安装的 source-check，不代表本代真机导航或播放验收。
 - 性能入口已用当前 2116 盒子做 3 秒只读工具自检，并将采样的 7 个源码文件、组件清单与其原部署 tree 逐一核对；这是旧代工具自检，不是本轮性能收益。
 - B04 真实构建回执位于 `b04-native/home/ce-home-focus-ng4inyza/build-result.json` 和 `b04-native/completion/ce-completion-kwt9bxv9/build-result.json`。前代字节级重链、档案成员与 ABI 核验通过；候选分别仍为 `591fa655fa6a507145c7fd90163a18eee91266b98fe89315268e1a5bd32be032` 和 `4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a`。工具归并未改变产品原生字节，因此本轮无需另换内核。
 - `b04-native/generic-final/result.json` 的五组通过，包含真实 DirectoryProvider 十二场景及两个负控。`b04-native/gate-negative/completion-gate-axqmi3tu/result.json` 的禁用成功分支、缺头文件两个破坏均使真实 gate 返回失败；原始源码未改。完整 series apply 在独立命令中通过但该旧工具未保留单独 JSON；下面两份 Android 回执另记录各自真实的 `full_series_applied=true`。

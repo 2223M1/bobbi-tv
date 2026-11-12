@@ -139,7 +139,8 @@ def test_private_detail_version_action_preserves_scope_and_filters(catalog, kind
     button = tree.find(".//control[@id='985']")
     assert button.findtext('label') == '选择文件版本'
     assert 'Bobi.Catalog.Variants' in button.findtext('visible')
-    assert any('Bobi.Catalog.Variants' in row.text for row in button.findall('onclick'))
+    navigation = button.find("include[@content='DetailFolderNavigation']")
+    assert navigation.findtext("param[@name='target']") == '$INFO[ListItem.Property(Bobi.Catalog.Variants)]'
     native_version = [row for row in tree.findall(".//include[@content='TextPill']")
                       if any(param.attrib.get('name') == 'id' and param.text == '14' for param in row)]
     assert len(native_version) == 1 and 'ListItem.DBID' in ET.tostring(native_version[0], encoding='unicode')
@@ -148,7 +149,9 @@ def test_private_detail_version_action_preserves_scope_and_filters(catalog, kind
     assert 'Control.IsVisible(985)' in primary.find('onright').attrib['condition']
     assert button.findtext('onleft') == '981' and button.findtext('ondown') == '50'
     actions = primary.findall('onclick')
-    assert any(row.text.startswith('ActivateWindow(Videos,') and 'ListItem.IsFolder' in row.attrib['condition'] for row in actions)
+    navigation = primary.find("include[@content='DetailFolderNavigation']")
+    assert navigation.findtext("param[@name='target']") == '$INFO[ListItem.FilenameAndPath]'
+    assert 'ListItem.IsFolder' in navigation.findtext("param[@name='condition']")
     assert any(row.text.startswith('RunPlugin(') and '!ListItem.IsFolder' in row.attrib['condition'] for row in actions)
     assert not any('play_movie' in row.text or 'search' in row.text for row in actions)
     assert item.properties['Bobi.Catalog.ActionLabel'] == ('选择文件版本' if kind == 'episode' else '选择季集')
@@ -232,6 +235,72 @@ def test_source_status_never_turns_cancel_request_or_partial_scan_into_completio
         indexed_count=8, counts=dict(scanned=11, discovered=8, pages=2))))
     assert '等待后台确认' in description and '仅已提交部分' in description and '11 项 / 发现 8 文件' in description
     assert '已取消' not in description and '完整扫描' not in description and '挂载已变化' not in description
+
+
+@pytest.mark.parametrize('mounted', [False, True])
+@pytest.mark.parametrize('mode', ['directory', 'search', 'rail'])
+@pytest.mark.parametrize('review_state', ['unmatched', 'ambiguous', 'proposed', 'ignored'])
+def test_unknown_work_has_file_type_and_file_action_without_inventing_movie_or_seasons(catalog, mounted, mode, review_state):
+    descriptor = dict(card(), display_title='The.Boondocks.S01E01.mkv', media_kind='unknown', review_state=review_state)
+    catalog.page['items'] = [descriptor]
+    expected = dict(reference_kind='mounted_path', source_id='b'*32, namespace='c'*64, generation='d'*64)
+    params = dict(catalog.params, source_id='b'*32, review_state=review_state,
+                  availability='observed_present', text='Boondocks')
+    rpc = catalog.rpc
+    if mounted:
+        params.pop('provider');params.pop('scope')
+        params['source'] = expected['source_id']
+        def rpc(action, body):
+            catalog.query_calls.append((action, body))
+            if action == 'catalog_mount_scope':
+                return dict(expected)
+            if action == 'catalog_mount_query':
+                return dict(catalog.page)
+            pytest.fail('Unexpected source IO: ' + action)
+    if mode == 'search':
+        params['text'] = '测试'  # Results use a stable URL, not the one-shot prompt.
+    elif mode == 'rail':
+        params.pop('view')
+        params['mode'] = 'rail'
+    cache = SimpleNamespace(get=lambda _: None, set=lambda *args: None)
+    catalog.catalog.execute(params, 17, rpc, rail_cache=cache)
+    assert len(catalog.rows) == 1
+    url, item, folder = catalog.rows[0]
+    values = dict(parse_qsl(urlsplit(url).query))
+    assert folder and values['view'] == 'files' and values['parent_entity_id'] == descriptor['entity_id']
+    assert values['scope'] == catalog.catalog.scope_key(expected if mounted else catalog.account)
+    assert values['source_id'] == 'b'*32 and values['review_state'] == review_state
+    assert values['availability'] == 'observed_present'
+    assert values['text'] == ('测试' if mode == 'search' else 'Boondocks')
+    assert item.info['mediatype'] == 'video'
+    assert item.properties['Bobi.Catalog.MediaKind'] == 'unknown'
+    assert item.properties['Bobi.Catalog.ActionLabel'] == '查看原文件'
+    assert 'Bobi.Catalog.Variants' not in item.properties
+    assert item.properties['IsPlayable'] == 'false' and not catalog.resolved
+    query = next(body['query'] for action, body in catalog.query_calls if action in ('catalog_query', 'catalog_mount_query'))
+    assert query['view'] == 'works'
+
+
+@pytest.mark.parametrize('kind,media_kind,mediatype,label', [
+    ('work', 'movie', 'movie', '选择文件版本'), ('work', 'tv', 'tvshow', '选择季集'),
+    ('season', 'tv', 'season', '选择分集'), ('episode', 'tv', 'episode', '选择文件版本')])
+def test_confirmed_catalog_type_and_action_labels_remain_unchanged(catalog, kind, media_kind, mediatype, label):
+    catalog.page['items'] = [dict(card(kind), media_kind=media_kind)]
+    catalog.catalog.execute(catalog.params, 17, catalog.rpc)
+    item = catalog.rows[0][1]
+    assert item.info['mediatype'] == mediatype
+    assert item.properties['Bobi.Catalog.MediaKind'] == media_kind
+    assert item.properties['Bobi.Catalog.ActionLabel'] == label
+
+
+def test_unknown_type_kicker_is_private_property_driven_and_preserves_public_skin_fallbacks():
+    import xml.etree.ElementTree as ET
+    tree = ET.parse(ROOT/'addons/skin.bobbi.cinema/1080p/Variables.xml')
+    rows = tree.find("variable[@name='DetailKicker']").findall('value')
+    assert rows[0].attrib['condition'] == 'String.IsEqual(ListItem.Property(Bobi.Catalog.MediaKind),unknown)'
+    assert rows[0].text == '原文件'
+    assert [row.text for row in rows[1:]] == ['电影', '剧集', '剧集 · 季', '剧集 · 单集']
+    assert all('ListItem.DBType' in row.attrib['condition'] for row in rows[1:])
 
 
 def test_tv_receipt_survives_redraw_and_queries_original_id_only(tv, monkeypatch):

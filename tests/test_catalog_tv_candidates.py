@@ -54,13 +54,60 @@ def writes(tv):
 
 
 def test_tv_previews_12_real_files_then_5_5_2_and_keeps_special_season(tv):
+    original = deepcopy(tv.entries)
     catalog_ui.review_entries(tv.dialog, tv.expected, tv.entries)
     assert [len(body['commands']) for body in writes(tv)] == [5, 5, 2]
     assert len({body['request_id'] for body in writes(tv)}) == 3
     assert tv.views[0][0] == '逐项预览（尚未保存）'
-    assert tv.views[0][1].count('拟绑定 Show') == 12
+    assert tv.views[0][1].count('修改后描述 Show') == 12
+    assert '原描述 未设置' in tv.views[0][1]
+    assert 'S00E01 · 版本备注 未填写' in tv.views[0][1]
+    assert '操作 保存描述 · 修改后状态 人工确认' in tv.views[0][1]
+    assert not any(raw in tv.views[0][1] for raw in ('None', 'confirm', "{'kind'"))
+    assert tv.entries == original
+    assert [command for body in writes(tv) for command in body['commands']] == [row['command'] for row in original]
     assert '已保存 12/12' in tv.views[-1][0]
     assert all(tv.index._item(file['id'], tv.expected)['mapping']['season'] == 0 for file in tv.files)
+
+
+@pytest.mark.parametrize('kind,season,episode,expected', [
+    ('tv', 1, 1, '剧集 · TMDb 123 · S01E01'),
+    ('tv', 0, 101, '剧集 · TMDb 123 · S00E101'),
+    ('movie', None, None, '电影 · TMDb 123'),
+    ('custom', None, None, '自定义名称'),
+])
+def test_preview_mapping_is_readable_without_changing_values(kind, season, episode, expected):
+    value = dict(kind=kind, title='作品名称', tmdb_id=None if kind == 'custom' else 123,
+                 season=season, episode=episode, version='导演剪辑版')
+    original = deepcopy(value)
+    text = catalog_ui._mapping_description(value)
+    assert text == '作品名称 · ' + expected + ' · 版本备注 导演剪辑版'
+    assert value == original
+    assert 'None' not in text
+
+
+@pytest.mark.parametrize('action,label,state', [
+    ('unbind', '解除绑定', '待匹配'),
+    ('ignore', '忽略此项', '已忽略'),
+    ('undo', '撤回上次修改', '待确认建议'),
+])
+def test_review_removal_preview_translates_real_before_after_and_preserves_command(tv, action, label, state):
+    initial = deepcopy(tv.entries[0]['command'])
+    initial['mapping'].update(season=1, episode=1, version='原版')
+    tv.index.apply(tv.expected, 'f' * 32, [initial])
+    entry = dict(name=tv.entries[0]['name'], command=dict(initial, expected_revision=1, action=action, mapping=None))
+    original = deepcopy(entry)
+    tv.confirm = lambda title, message: False
+    catalog_ui.review_entries(tv.dialog, tv.expected, [entry])
+    text = tv.views[0][1]
+    assert '记录修订 1' in text
+    assert '原描述 Show · 剧集 · TMDb 123 · S01E01 · 版本备注 原版' in text
+    assert '修改后描述 未设置' in text
+    assert '操作 %s · 修改后状态 %s' % (label, state) in text
+    assert not any(raw in text for raw in ('None', action, "{'kind'"))
+    assert entry == original and not writes(tv)
+    assert tv.calls[0][1]['commands'] == [original['command']]
+    assert tv.index._item(tv.files[0]['id'], tv.expected)['revision'] == 1
 
 
 def test_tv_mid_plan_stop_preserves_first_commit_and_unstarted_revisions(tv):
@@ -98,6 +145,7 @@ def test_tv_group_uses_real_same_parent_source_and_manual_selection_before_cas(t
     candidate = dict(media_kind='tv', title='Show', tmdb_id=123, year=2020)
     anchor = tv.index._public(tv.index._item(tv.files[0]['id'], tv.expected))
     catalog_ui.review_group(tv.dialog, tv.expected, anchor, candidate)
+    assert tv.multi[0] == '逐项选择：同目录不证明同作品；排除合集 / 重制版 / 多集文件'
     assert len(tv.multi[1]) == 12 and len(tv.multi[2]) == 12
     group_calls = [body for action, body in tv.calls if action == 'catalog_group']
     assert len(group_calls) == 3
