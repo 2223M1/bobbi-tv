@@ -26,6 +26,8 @@ CE_F9_REVIEWED_PATCHES = frozenset((
     'ba03279546193a8a5e6299b257e1321833dbf5b7b3ecc087ba67ed7dd2eb1991',
     # R05 completion observation; all VideoPlayer layout consumers rebuilt.
     '4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a',
+    # R03 locked directory publication; playback objects and subtitle ABI unchanged.
+    '591fa655fa6a507145c7fd90163a18eee91266b98fe89315268e1a5bd32be032',
 ))
 CONFIG = 'runtime-paths.json'
 

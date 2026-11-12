@@ -24,8 +24,12 @@
     {
       "file": "0006-bobbi-completion-observation.patch",
       "sha256": "c7647dcbb94a4f2bc6e19f4deff3f3677e835a95b8a6771d10aa42860244fe2a"
+    },
+    {
+      "file": "0007-bobbi-directory-visibility.patch",
+      "sha256": "7db7a5def0a7570b015be298fba2a124930a1afd832fc6df20f666b2a0b442a3"
     }
   ],
   "clean_apply_verified": true,
-  "port_scope": "Generic playback, subtitle intent, original audio, single-use transport handoff and Android host; no CE/AMLogic/DV hardware patch"
+  "port_scope": "Generic playback, subtitle intent, original audio, single-use transport handoff, same-tick directory visibility and Android host; no CE/AMLogic/DV hardware patch"
 }

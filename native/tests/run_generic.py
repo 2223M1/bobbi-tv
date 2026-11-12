@@ -40,6 +40,12 @@ compiled = subprocess.run(['g++', '-std=c++17', '-O1', '-Wall', '-Wextra', '-Wer
 audio = subprocess.run([str(run/'audio')], capture_output=True, text=True, timeout=15) if not compiled.returncode else compiled
 report['tests'].append(dict(name='original_audio', passed=audio.returncode == 0,
     output=compiled.stdout+compiled.stderr+audio.stdout+audio.stderr))
+visibility_spec = importlib.util.spec_from_file_location('directory_visibility', HERE/'run_directory_visibility_test.py')
+visibility_harness = importlib.util.module_from_spec(visibility_spec)
+visibility_spec.loader.exec_module(visibility_harness)
+visibility_path, visibility_result = visibility_harness.run(args.source, run)
+report['tests'].append(dict(name='directory_visibility', passed=visibility_result['passed'],
+    result=str(visibility_path), sha256=hashlib.sha256(visibility_path.read_bytes()).hexdigest()))
 report['sources'] = {str(file.relative_to(args.source)): hashlib.sha256(file.read_bytes()).hexdigest()
                      for file in (source/'cores/BobiHandoff.h', source/'dialogs/BobiHandoffFile.h',
                                   source/'cores/VideoPlayer/BobiOriginalAudio.h', source/'cores/VideoPlayer/VideoPlayer.cpp')}

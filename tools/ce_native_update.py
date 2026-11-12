@@ -18,6 +18,22 @@ HANDOFF_CANDIDATE = '632758f5d1ca5494e9b049446d3908bead70589b4d18640bb5d06e830a2
 ENTRY_GENERATION_PATH = '/storage/.kodi/userdata/addon_data/script.bobbi.start/installation.json'
 LEGACY_GENERATION_PATH = '/storage/.local/share/bobbi-private-updates/state.json'
 PROFILES = {
+    'homefocus2116': dict(build_kind='home_focus',
+        candidate='591fa655fa6a507145c7fd90163a18eee91266b98fe89315268e1a5bd32be032',
+        sequence=2026102116, tag='2116', base='/storage/.local/share/bobbi-native/2026102116',
+        layout=ROOT.parent/'ce-native-home-focus-20261112/current-overlay2114.json',
+        reports=ROOT.parent/'ce-native-home-focus-20261112', deadline=390,
+        generation_kind='private_complete', generation_path=LEGACY_GENERATION_PATH,
+        minimum_versions={'plugin.video.bobbi':'0.1.59','script.module.bobbi.core':'0.1.60',
+                          'script.module.bobbi.platform':'0.1.67'},
+        build_proof_sha256='e67b4d8b108157428286a93a74bb0407a0133621753785681257133d0829f90f',
+        predecessor_proof_sha256='0b54e0b6b3e982dd9e02f2867cdbc6fc3df36afd7709e7cf4c368ec655651f7c',
+        canonical_patch_sha256='7db7a5def0a7570b015be298fba2a124930a1afd832fc6df20f666b2a0b442a3',
+        predecessor=dict(binary='4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a',
+            conf='e0bd0d8cb53480a06f9996d2abe4ad0374cbdecb244e9b9f8c6810bcf01cfbba',
+            launch='d5e79b1b33053cdb811246fa4108ffdcb885b20657d8c4ce17951a60e0cf4195',
+            binary_path='/storage/.local/share/bobbi-native/2026102114/kodi.bin',
+            launch_path='/storage/.local/share/bobbi-native/2026102114/launch.py')),
     'completion2114': dict(build_kind='completion',
         candidate='4177ade3b59b0c69062f0e49d1e6dc27fa4dba78aed883721e9e83d4fc36fc6a',
         sequence=2026102114, tag='2114', base='/storage/.local/share/bobbi-native/2026102114',
@@ -350,7 +366,7 @@ def local_artifact_path(reference):
 
 
 def checked_build(build_result, profile):
-    if profile.get('build_kind') == 'completion':
+    if profile.get('build_kind') in ('completion', 'home_focus'):
         # This successor inherits the already verified schema host, not a
         # reconstruction from the historical pre-handoff runtime generation.
         assert sha_file(build_result) == profile['build_proof_sha256'], 'BUILD_PROOF_CHANGED'
@@ -363,8 +379,37 @@ def checked_build(build_result, profile):
         assert (result.get('architecture_and_dependencies_unchanged') is True
                 and result.get('binary_bobicontrol_schema_unchanged') is True
                 and result.get('canonical_patch_sha256') == profile['canonical_patch_sha256']), 'NATIVE_ABI_NOT_VERIFIED'
-        units = {'xbmc/cores/VideoPlayer/VideoPlayer.cpp', 'xbmc/application/ApplicationPlayer.cpp',
-                 'xbmc/cores/playercorefactory/PlayerCoreConfig.cpp'}
+        if profile['build_kind'] == 'home_focus':
+            units = {'xbmc/guilib/listproviders/DirectoryProvider.cpp'}
+            assert (result.get('build_kind') == 'home_focus'
+                    and result.get('predecessor_unchanged') is True
+                    and result.get('predecessor_proof_sha256') == profile['predecessor_proof_sha256']
+                    and result.get('completion_archives_unchanged') is True
+                    and result.get('recompiled_units') == sorted(units)), 'FOCUS_PREDECESSOR_CHANGED'
+            evidence = result.get('production_tests', {})
+            assert (isinstance(evidence, dict) and evidence.get('candidate_passed') is True
+                    and evidence.get('negative_control_failed') is True
+                    and evidence.get('interleaved_control_failed') is True), 'FOCUS_PRODUCTION_TESTS_MISSING'
+            relative = evidence.get('path', '')
+            assert (isinstance(relative, str) and relative
+                    and not Path(relative).is_absolute() and '\\' not in relative
+                    and ':' not in relative and '..' not in relative.split('/')), 'FOCUS_TEST_PATH_INVALID'
+            test_path = build_result.parent/relative
+            assert sha_file(test_path) == evidence.get('sha256'), 'FOCUS_TEST_PROOF_CHANGED'
+            tests = json.loads(test_path.read_text())
+            assert (tests.get('passed') is True and isinstance(tests.get('tests'), list)
+                    and len(tests['tests']) == 3), 'FOCUS_TEST_PROOF_INVALID'
+            controls = ('candidate', 'pre_fix_negative_control', 'update_only_negative_control')
+            for row, name, code in zip(tests['tests'], controls, (0, 1, 1)):
+                assert (row.get('name') == name and row.get('passed') is True
+                        and type(row.get('exit_code')) is int
+                        and row.get('exit_code') == code), 'FOCUS_TEST_CONTROL_INVALID'
+                for filename, field in (('actual_directory_visibility.inc', 'extracted_sha256'),
+                                        ('directory-visibility-test', 'binary_sha256')):
+                    assert sha_file(test_path.parent/name/filename) == row.get(field), 'FOCUS_TEST_ARTIFACT_CHANGED'
+        else:
+            units = {'xbmc/cores/VideoPlayer/VideoPlayer.cpp', 'xbmc/application/ApplicationPlayer.cpp',
+                     'xbmc/cores/playercorefactory/PlayerCoreConfig.cpp'}
         assert set(result.get('objects', {})) == units, 'NATIVE_LAYOUT_CONSUMERS_CHANGED'
         for source, item in result['objects'].items():
             obj = build_result.parent / (Path(source).name + '.o')

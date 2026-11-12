@@ -632,7 +632,7 @@
       "resources/settings.xml": "3ad0dd1185d7871b2a549838ebf41410853281797c75f4e2277d9e5fabe2c298"
     },
     "script.module.bobbi.core": {
-      "addon.xml": "35271d7cb6b10bba65f7feddf4327758c6d66520dcd34c700a8673b583195cbb",
+      "addon.xml": "07e1565389d25df729f7949060aa0d5e7d9334b911519c3b9703bc85f496ab1f",
       "lib/bobbi_core/__init__.py": "3f82dad45525f9209cbdb0b53f3dbbb3242c9141a83e2437ae80ecf54685854a",
       "lib/bobbi_core/account_readiness.py": "d4a6ff03eb16191e3ed324c9a76adb91280818a234c9f6367e78bcc152cdbbe2",
       "lib/bobbi_core/android_font_decoder.py": "f61bf11376abf483f4d1b01e4f4f965a3dc69f795e8271a44a8c36fb718af119",
@@ -723,7 +723,7 @@
       "lib/bobbi_core/resolve_lane.py": "f5191fe064c3c35f9e297b96fcb68091f79e9791e70829dee8d092243c4659a7",
       "lib/bobbi_core/retention.py": "4e683fca4c48fd760b37b6e0c3532a562cb03b70884bdf442b47c3abe63239a7",
       "lib/bobbi_core/runtime_measurement.py": "554252d63f50647f53ccd545cb11b6af9e46dab4320697c5b8d29b242a148393",
-      "lib/bobbi_core/runtime_paths.py": "0cc84c92b18a064d2e7ab0fc386a7bb865cb2685c7f53d1c75f0254a511e7c9a",
+      "lib/bobbi_core/runtime_paths.py": "bfc850a67ad801a8b4f2caf02f3cbead6663ea0e92720cc24e57a14fb6e5882c",
       "lib/bobbi_core/search_admission.py": "ef7f5b22e03280ed9d492e1c9cb602d7c4cad0223c4dae07beb26d340fc07ac6",
       "lib/bobbi_core/search_completion.py": "3d768c1e84595f19b5fa3ad537967701b8a0b804d3f84b976edc44562414110e",
       "lib/bobbi_core/search_trace.py": "c3689e82f90400be3c7b979d7e7194de5a8297d50950298f1455ba93731b7703",
