@@ -21,6 +21,7 @@ LATER_REQUEST = '9c83ef02df784463a97b03f7f4b2f946'
 @pytest.fixture(autouse=True)
 def preserve_release_pins(monkeypatch):
     monkeypatch.setattr(remote, 'BASELINE', dict(remote.BASELINE))
+    monkeypatch.setattr(remote, 'profile_status', lambda: dict(label='Fixture'))
 
 
 def receipt():
@@ -90,7 +91,8 @@ def test_later_baseline_still_requires_ordinary_selection_evidence(tmp_path, fie
 
 
 def history_file(catalog):
-    return catalog.parent.parent / 'database.pickle'
+    # The retained catalog now lives under source-libraries/<endpoint digest>.
+    return catalog.parents[2] / 'database.pickle'
 
 
 def test_new_request_rejects_old_history_and_accepts_only_matching_history(tmp_path):

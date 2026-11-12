@@ -65,11 +65,16 @@ def test_real_stop_outcome_sets_both_fields_without_extra_stop(monkeypatch,mode)
 @pytest.mark.parametrize('outcome',[{'confirmed':True,'reason':'STOP'}, {'confirmed':False}, {},
                                    {'confirmed':1}, {'confirmed':'true'}, TimeoutError('private')])
 def test_runner_final_receipt_matches_outcome_and_never_retries(monkeypatch,outcome):
-    saved=[];stop_calls=[]
+    saved=[];stop_calls=[];sample_calls=[];clock=[100.]
     class Runtime:
         def __init__(self,directory):pass
         def save(self,value):saved.append(deepcopy(value))
         def abort_requested(self):return False
+        def wait(self,seconds):clock[0]+=max(0,seconds)
+        def sample(self,record):
+            sample_calls.append(clock[0])
+            return dict(wall=clock[0],completed=clock[0],phase='AV_STARTED',
+                        native=dict(request_id=record['request_id'],native_instance=record['native_instance']))
         def settings(self):return {'unchanged':True}
         def user_state(self):return {'unchanged':True}
         def native_identity(self):return {'sha256':'1'*64}
@@ -78,12 +83,16 @@ def test_runner_final_receipt_matches_outcome_and_never_retries(monkeypatch,outc
             if isinstance(outcome,Exception):raise outcome
             return deepcopy(outcome)
         def cancel_pending(self,record):pytest.fail('No cleanup replay after an opened diagnostic')
-    def start(runtime,expected,target,record):record.update(owned_record(),play_issued_at=1.)
+    def start(runtime,expected,target,record):record.update(owned_record(),play_issued_at=clock[0])
     monkeypatch.setattr(kodi,'Runtime',Runtime)
     monkeypatch.setattr(kodi,'perform_start',start)
-    monkeypatch.setattr(kodi.time,'monotonic',lambda:100.)
+    monkeypatch.setattr(kodi.time,'monotonic',lambda:clock[0])
     kodi.kodi_entry(dict(run_id='a'*32,request_id=REQUEST,inspection={},target={},duration=10),'unused')
     final=saved[-1]
+    # Exercise the real admission window before checking the one Stop outcome.
+    assert sample_calls==[100.+index*.5 for index in range(20)] and clock[0]==110.
+    assert final['sampling']['collected_points']==20 and len(final['samples'])==20
+    assert final['sampling']['stopped_reason']=='schedule_complete' and not final['sampling']['has_gaps']
     confirmed=isinstance(outcome,dict) and outcome.get('confirmed') is True
     assert final['stop_state']==('confirmed' if confirmed else 'unconfirmed')
     assert final['stop']['confirmed'] is confirmed

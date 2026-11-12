@@ -13,8 +13,8 @@ from test_ce2096_pan_playback import entry
 @pytest.mark.parametrize('parent_kind', ['shared', 'version', 'custom', 'unnamed'])
 def test_tv_supplement_relation_has_explicit_parent_and_cas(catalog, monkeypatch, parent_kind):
     from lib.utils.views import catalog_supplement_ui as ui
-    from bobbi_platform import catalog_ui
-    calls, reviewed, notices = [], [], []
+    from bobbi_platform import catalog_ui, runtime
+    calls, reviewed, notices, bound_paths = [], [], [], []
     native = parent_kind in ('shared', 'version')
     choices = iter([0, 0] + ([int(parent_kind == 'version')] if native else []) + [0])
     inputs = iter(['', '制作花絮'])
@@ -28,8 +28,19 @@ def test_tv_supplement_relation_has_explicit_parent_and_cas(catalog, monkeypatch
         assert action == 'catalog_item'
         return dict(file=dict(id='a'*64, observation_key='b'*64), revision=7, state='unmatched',
                     provenance='manual', mapping=dict(kind='custom') if parent_kind == 'custom' else None)
-    monkeypatch.setattr(catalog_ui, 'review_entries', lambda dialog, expected, entries: reviewed.extend(entries))
+    def bind(path):
+        bound_paths.append(path)
+        return lambda action, body, **kwargs: rpc(action, body)
+    def review(dialog, expected, entries, *, invoke, scope_check, profile_root):
+        assert expected == catalog.account and callable(invoke)
+        assert profile_root == catalog.path.parent
+        scope_check()
+        reviewed.extend(entries)
+    # Retain real profile admission; only IPC and the review handoff are doubles.
+    monkeypatch.setattr(runtime, 'bind_call', bind)
+    monkeypatch.setattr(catalog_ui, 'review_entries', review)
     ui.edit(dialog, catalog.account, dict(file=dict(id='c'*64, name='extra.mkv'), revision=3), rpc)
+    assert bound_paths == [catalog.path.parent / 'runtime.json']
     if parent_kind == 'unnamed':
         assert not reviewed and notices
         return

@@ -51,7 +51,7 @@ def test_real_stream_resolver_receives_only_the_retained_tuple_and_frozen_accoun
         locator=row['locator'], guid=row['guid'], title=row['name'], size=row['size'], media=row['media'], account=share.runtime.scope)
     opens = [call for call in share.runtime.calls if isinstance(call, tuple)]
     assert len(opens) == 1 and opens[0][1] == ADDRESS
-    assert record['tool_revision'] == 8 and record['route'] == 'sharestream'
+    assert record['tool_revision'] == kodi.TOOL_REVISION and record['route'] == 'sharestream'
     assert record['grant_timing'] == 'first_stream_get' and record['original_pipe_preserved'] is None
     assert 'ua_sha256' not in record and ADDRESS not in json.dumps(share.runtime.saved)
 
@@ -64,7 +64,7 @@ def test_diagnostic_route_is_explicit_short_lived_and_uses_the_same_resident_res
     record=perform(share,route)
     assert share.actions==['share_open_diagnostic']
     assert share.calls[0]['diagnostic']=={'mode':mode,'seconds':60}
-    assert record['tool_revision']==8 and record['transport_diagnostic']==share.calls[0]['diagnostic']
+    assert record['tool_revision']==kodi.TOOL_REVISION and record['transport_diagnostic']==share.calls[0]['diagnostic']
     assert record['route']==route
     assert len([call for call in share.runtime.calls if isinstance(call,tuple)])==1
 
@@ -121,7 +121,7 @@ def test_resolve_to_observed_av_includes_pre_play_time_for_both_routes(monkeypat
             return dict(time=stamp, totaltime=stamp, speed=1)
         if method == 'XBMC.GetInfoBooleans': return {'Player.Caching': False}
         return {}
-    runtime = SimpleNamespace(view=lambda: deepcopy(view), rpc=rpc)
+    runtime = SimpleNamespace(view=lambda reader=None: deepcopy(view), rpc=rpc)
     for route in ('direct', 'sharestream'):
         record = dict(request_id=REQUEST, file_identity='identity', route=route,
             owner_context={'boot_id': 'boot', 'epoch': 2}, resolve_began=100., play_issued_at=110.)
@@ -138,7 +138,7 @@ def test_route_is_pinned_in_new_receipts_and_cannot_change_at_collection(tmp_pat
     sent = []
     def sender(source, code): sent.append(code); raise TimeoutError('private')
     receipt = driver.run_once(tmp_path, tmp_path/'receipt.json', params, sender)
-    assert receipt['route'] == route and receipt['tool_revision'] == 8 and len(sent) == 1
+    assert receipt['route'] == route and receipt['tool_revision'] == kodi.TOOL_REVISION and len(sent) == 1
     compile(sent[0], 'route-launch', 'exec')
     result = dict(run_id=params['run_id'], request_id=REQUEST, route='direct', diagnostic_only=True, product_proof=False)
     raw = json.dumps(result).encode()
