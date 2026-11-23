@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <zorder>4</zorder>
+  <coordinates><left>1412</left><top>46</top></coordinates>
+  <include>HudFade</include>
+  <controls>
+    <control type="image">
+      <left>-36</left><top>-36</top><width>500</width><height>140</height>
+      <texture border="64">bobbi/glass/modal-shadow.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>428</width><height>68</height>
+      <texture colordiffuse="EC17181D" border="34,0,34,0">bobbi/glass/capsule-68.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>428</width><height>68</height>
+      <texture colordiffuse="glass_rim" border="34,0,34,0">bobbi/glass/capsule-68-rim.png</texture>
+    </control>
+    <control type="image">
+      <left>22</left><top>18</top><width>32</width><height>32</height>
+      <texture colordiffuse="FFFFFFFF">bobbi/glass/icons/speaker.png</texture>
+      <visible>!Player.Muted</visible>
+    </control>
+    <control type="image">
+      <left>22</left><top>18</top><width>32</width><height>32</height>
+      <texture colordiffuse="error">bobbi/glass/icons/speaker-mute.png</texture>
+      <visible>Player.Muted</visible>
+    </control>
+    <control type="progress">
+      <left>70</left><top>28</top><width>272</width><height>12</height>
+      <info>Player.Volume</info>
+      <texturebg border="6">bobbi/glass/osd-scrubber-track.png</texturebg>
+      <midtexture border="6">bobbi/glass/osd-scrubber-fill.png</midtexture>
+      <visible>!Player.Muted</visible>
+    </control>
+    <control type="label">
+      <left>70</left><top>0</top><width>272</width><height>68</height>
+      <label>已静音</label>
+      <font>Card26</font><textcolor>text</textcolor><aligny>center</aligny>
+      <visible>Player.Muted</visible>
+    </control>
+    <control type="label">
+      <left>348</left><top>0</top><width>58</width><height>68</height>
+      <label>$INFO[Player.Volume]</label>
+      <font>Clock27</font><textcolor>FFFFFFFF</textcolor><align>right</align><aligny>center</aligny>
+      <visible>!Player.Muted</visible>
+    </control>
+  </controls>
+</window>

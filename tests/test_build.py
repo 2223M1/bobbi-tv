@@ -1,0 +1,57 @@
+import ast
+import importlib.util
+import json
+from pathlib import Path
+import zipfile
+import xml.etree.ElementTree as ET
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+spec = importlib.util.spec_from_file_location('preview_build', ROOT / 'tools/build_preview.py')
+builder = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(builder)
+
+
+def test_preview_is_reproducible_and_dependency_closed(tmp_path):
+    first, second = tmp_path / 'one', tmp_path / 'two'
+    one, two = builder.build(first), builder.build(second)
+    assert one == two
+    assert one['status'] == 'diagnostic-preview-not-cinema'
+    ids = {item['id'] for item in one['components']}
+    for item in one['components']:
+        assert (first / item['file']).read_bytes() == (second / item['file']).read_bytes()
+        with zipfile.ZipFile(first / item['file']) as archive:
+            names = archive.namelist()
+            assert all(name.startswith(item['id'] + '/') for name in names)
+            from delivery_policy import require_clean
+            require_clean(names)
+            expected = json.loads((ROOT / 'release/preview-inputs.json').read_text())['components'][item['id']]
+            assert set(names) == {item['id'] + '/' + name for name in expected}
+            root = ET.fromstring(archive.read(item['id'] + '/addon.xml'))
+            for dep in root.findall('./requires/import'):
+                assert dep.get('addon') in ids | {'xbmc.python', 'script.module.pycryptodome'}
+    # Setup's new core dependency is actually packaged, not suppressed by a stub.
+    assert {'script.module.bobbi.core', 'script.module.requests', 'script.module.urllib3'} <= ids
+    assert 'plugin.video.bobbi' not in ids  # Still a diagnostic, not a cinema installer.
+
+
+def test_kodi_sources_parse_with_python38_grammar():
+    for path in (ROOT / 'addons').rglob('*.py'):
+        ast.parse(path.read_text(encoding='utf-8'), filename=str(path), feature_version=(3, 8))
+
+
+def test_catalog_working_copies_never_join_refreshed_inventory(tmp_path):
+    from build_release import files
+    root = tmp_path/'script.module.bobbi.catalog'
+    resources = root/'resources'
+    resources.mkdir(parents=True)
+    for suffix in ('', '.bak-scrub', '.backup', '-wal', '-shm', '-journal'):
+        (resources/('catalog.sqlite3' + suffix)).write_bytes(b'fixture')
+    assert list(files(root)) == ['resources/catalog.sqlite3']
+
+
+def test_incomplete_cinema_cannot_claim_stable():
+    gates = json.loads((ROOT / 'tests/fixtures/package/incomplete_generation.json').read_text(encoding='utf-8'))
+    assert gates['stable_release_allowed'] is False
+    assert all(not value['clean_install'] for value in gates['profiles'].values())

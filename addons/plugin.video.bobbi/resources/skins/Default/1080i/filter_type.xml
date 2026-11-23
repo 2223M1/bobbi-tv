@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window type="dialog">
+  <defaultcontrol always="true">2000</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <animation effect="fade" start="0" end="100" time="160" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="73000000">bobbi/white.png</texture>
+      <animation effect="fade" start="100" end="70" time="0" condition="!Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+    </control>
+    <control type="group">
+      <left>1200</left><top>0</top>
+      <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+        <effect type="slide" start="48,0" end="0,0" time="200" tween="cubic" easing="out" />
+      </animation>
+      <control type="image">
+        <left>-28</left><top>-20</top><width>772</width><height>1120</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>20</left><top>28</top><width>676</width><height>1024</height>
+        <texture colordiffuse="FF25252C" border="46">bobbi/glass/modal-glass.png</texture>
+        <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <left>20</left><top>28</top><width>676</width><height>1024</height>
+        <texture colordiffuse="FF50545C" border="46">bobbi/glass/modal-glass.png</texture>
+        <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <left>20</left><top>28</top><width>676</width><height>1024</height>
+        <texture border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+      <control type="label">
+        <left>48</left><top>68</top><width>620</width><height>52</height>
+        <label>筛选片源</label>
+        <font>Head40</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label" id="1210">
+        <left>48</left><top>124</top><width>620</width><height>32</height>
+        <label>选择要筛选的项目</label>
+        <font>CardSub22</font><textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+      <control type="list" id="2000">
+        <left>48</left><top>180</top><width>620</width><height>836</height>
+        <orientation>vertical</orientation>
+        <scrolltime tween="cubic" easing="out">160</scrolltime>
+        <pagecontrol>2100</pagecontrol>
+        <onleft>noop</onleft><onright>2100</onright>
+        <itemlayout width="620" height="78">
+          <control type="image">
+            <left>0</left><top>6</top><width>620</width><height>66</height>
+            <texture colordiffuse="1EFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+          </control>
+          <control type="image">
+            <left>0</left><top>6</top><width>620</width><height>66</height>
+            <texture border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+          </control>
+          <control type="label">
+            <left>32</left><top>6</top><width>520</width><height>66</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card26</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          </control>
+          <control type="image">
+            <left>568</left><top>27</top><width>24</width><height>24</height>
+            <texture colordiffuse="9CEBEBF5">bobbi/glass/icons/chevron-right.png</texture>
+          </control>
+        </itemlayout>
+        <focusedlayout width="620" height="78">
+          <control type="image">
+            <left>0</left><top>6</top><width>620</width><height>66</height>
+            <texture colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+            <visible>Control.HasFocus(2000)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>6</top><width>620</width><height>66</height>
+            <texture colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+            <visible>!Control.HasFocus(2000)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>6</top><width>620</width><height>66</height>
+            <texture border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+            <visible>!Control.HasFocus(2000)</visible>
+          </control>
+          <control type="label">
+            <left>32</left><top>6</top><width>520</width><height>66</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card26</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+            <visible>Control.HasFocus(2000)</visible>
+          </control>
+          <control type="label">
+            <left>32</left><top>6</top><width>520</width><height>66</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card26</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <visible>!Control.HasFocus(2000)</visible>
+          </control>
+          <control type="image">
+            <left>568</left><top>27</top><width>24</width><height>24</height>
+            <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/chevron-right.png</texture>
+            <visible>Control.HasFocus(2000)</visible>
+          </control>
+          <control type="image">
+            <left>568</left><top>27</top><width>24</width><height>24</height>
+            <texture colordiffuse="9CEBEBF5">bobbi/glass/icons/chevron-right.png</texture>
+            <visible>!Control.HasFocus(2000)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="scrollbar" id="2100">
+        <left>678</left><top>184</top><width>4</width><height>828</height>
+        <orientation>vertical</orientation><showonepage>false</showonepage>
+        <onleft>2000</onleft>
+        <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+      </control>
+    </control>
+  </controls>
+</window>

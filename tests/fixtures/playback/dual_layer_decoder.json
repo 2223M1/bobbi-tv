@@ -1,0 +1,5 @@
+{
+  "result": {
+    "decoder": "vdec channel 0 statistics:\n  device name : dvbldec\n  frame width : 3840\n frame height : 2160\n   frame rate : 24 fps\n     bit rate : 93216 kbps\n       status : 5\n    frame dur : 4004\n   frame data : 686 KB\n  frame count : 1755\n   drop count : 8\nfra err count : 8\n hw err count : 8\n   total data : 845539 KB\nratio_control : 9000\n\nvdec channel 1 statistics:\n  device name : dveldec\n  frame width : 1920\n frame height : 1088\n   frame rate : 24 fps\n     bit rate : 93280 kbps\n       status : 53\n    frame dur : 4004\n   frame data : 474 KB\n  frame count : 1755\n   drop count : 0\nfra err count : 0\n hw err count : 0\n   total data : 845945 KB\nratio_control : 9000\n\n"
+  }
+}

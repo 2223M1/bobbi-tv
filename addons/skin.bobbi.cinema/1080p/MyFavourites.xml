@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="false">50</defaultcontrol>
+  <menucontrol>9701</menucontrol>
+  <views>50</views>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <include>BobbiBrowseCanvas</include>
+    <control type="group">
+      <left>80</left><top>132</top>
+      <control type="label">
+        <left>0</left><top>0</top><width>1200</width><height>68</height>
+        <label>我的收藏</label>
+        <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>2</left><top>72</top><width>1400</width><height>32</height>
+        <label>收藏夹里的影片、剧集与常用入口</label>
+        <font>HeroPlot24</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+    <include content="DirectoryToolbar">
+      <param name="down" value="50" />
+    </include>
+    <control type="group">
+      <visible>Integer.IsGreater(Container(50).NumItems,0) + !Window.IsActive(shutdownmenu)</visible>
+      <include>NavFade</include>
+      <include content="GlassCapsule">
+        <param name="x">1710</param><param name="y">52</param><param name="w">144</param><param name="h">56</param>
+      </include>
+      <control type="label">
+        <left>1710</left><top>52</top><width>144</width><height>56</height>
+        <label>$INFO[Container(50).CurrentItem]$INFO[Container(50).NumItems, / ,]</label>
+        <font>Card24</font><textcolor>D9EBEBF5</textcolor><align>center</align><aligny>center</aligny>
+      </control>
+    </control>
+    <include>BrowserCardPanel</include>
+    <control type="group">
+      <visible>Integer.IsEqual(Container(50).NumItems,0)</visible>
+      <include content="StateBlock">
+        <param name="y">400</param>
+        <param name="empty">true</param>
+        <param name="emptytitle">这里还没有收藏内容</param>
+        <param name="emptyhint">在影片详情或目录上打开菜单即可加入收藏</param>
+      </include>
+    </control>
+    <include content="TopBar">
+      <param name="down" value="50" />
+    </include>
+  </controls>
+</window>

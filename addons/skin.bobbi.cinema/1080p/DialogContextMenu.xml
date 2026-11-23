@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">996</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <include>MenuPop</include>
+  <controls>
+    <control type="image">
+      <left>-1920</left><top>-1080</top><width>5760</width><height>3240</height>
+      <texture colordiffuse="80000000">bobbi/white.png</texture>
+    </control>
+    <control type="button">
+      <left>-1920</left><top>-1080</top><width>5760</width><height>3240</height>
+      <texturefocus /><texturenofocus />
+      <onclick>Action(close)</onclick>
+    </control>
+    <control type="image" id="999">
+      <left>-24</left><top>-24</top><width>568</width><height>808</height>
+      <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+    </control>
+    <control type="grouplist" id="996">
+      <left>0</left><top>0</top><width>520</width>
+      <height max="760">auto</height>
+      <itemgap>8</itemgap>
+      <usecontrolcoords>true</usecontrolcoords>
+      <onleft>noop</onleft><onright>noop</onright>
+    </control>
+    <control type="button" id="1000">
+      <left>0</left><top>0</top><width>520</width><height>64</height>
+      <font>Card26</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>text_disabled</disabledcolor>
+      <textoffsetx>28</textoffsetx><aligny>center</aligny>
+      <texturefocus colordiffuse="FFFFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturefocus>
+      <texturenofocus colordiffuse="1CFFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturenofocus>
+    </control>
+  </controls>
+</window>

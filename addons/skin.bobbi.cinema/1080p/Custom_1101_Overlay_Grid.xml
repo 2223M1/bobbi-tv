@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="1101">
+  <zorder>100</zorder>
+  <visible>Skin.HasSetting(DebugGrid)</visible>
+  <controls>
+    <control type="image">
+      <width>1920</width>
+      <height>1080</height>
+      <texture>special://skin/extras/debuggrid1080.png</texture>
+      <colordiffuse>88ffffff</colordiffuse>
+    </control>
+  </controls>
+</window>

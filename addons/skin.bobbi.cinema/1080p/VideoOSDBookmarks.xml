@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">2</defaultcontrol>
+  <onload condition="Integer.IsGreater(Container(11).NumItems,0)">SetFocus(11)</onload>
+  <depth>DepthOSD</depth>
+  <coordinates>
+    <left>0</left>
+    <top>0</top>
+  </coordinates>
+  <controls>
+    <include content="OSDScrim"><param name="top">380</param></include>
+
+    <!-- on-device Floating 1600x560 Liquid Glass Bookmarks & Chapters Sheet -->
+    <control type="group">
+      <left>160</left><top>464</top><width>1600</width><height>560</height>
+      <include content="PanelOpen"><param name="slide">0,28</param></include>
+
+      <control type="image">
+        <left>-48</left><top>-48</top><width>1696</width><height>656</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1600</width><height>560</height>
+        <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1600</width><height>560</height>
+        <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+
+      <!-- Header -->
+      <control type="label">
+        <left>44</left><top>28</top><width>900</width><height>44</height>
+        <label>章节与书签</label>
+        <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <right>44</right><top>28</top><width>520</width><height>44</height>
+        <label>第 $INFO[Container(11).CurrentItem] / $INFO[Container(11).NumItems] 项   ·   ↑ 返回播放</label>
+        <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><align>right</align><aligny>center</aligny>
+        <visible>Integer.IsGreater(Container(11).NumItems,0)</visible>
+      </control>
+
+      <!-- Empty State -->
+      <control type="group">
+        <left>44</left><top>88</top><width>1512</width><height>248</height>
+        <visible>Integer.IsEqual(Container(11).NumItems,0)</visible>
+        <control type="image">
+          <left>0</left><top>0</top><width>1512</width><height>248</height>
+          <texture colordiffuse="14FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1512</width><height>248</height>
+          <texture colordiffuse="44FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+        </control>
+        <control type="image">
+          <left>738</left><top>68</top><width>36</width><height>36</height>
+          <texture colordiffuse="9CEBEBF5">bobbi/glass/icons/bookmark.png</texture>
+        </control>
+        <control type="label">
+          <left>40</left><top>120</top><width>1432</width><height>44</height>
+          <label>暂无书签 — 选择下方「添加书签」记录当前画面时间点</label>
+          <font>Card26</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><align>center</align><aligny>center</aligny>
+        </control>
+      </control>
+
+      <!-- Horizontal 320x180 Chapter / Bookmark Cards (contract 11: single onup=Close, ondown=2) -->
+      <control type="list" id="11">
+        <left>26</left><top>84</top><width>1548</width><height>268</height>
+        <onleft>11</onleft>
+        <onright>11</onright>
+        <onup>Close</onup>
+        <ondown>2</ondown>
+        <include>ListMotion</include>
+        <orientation>horizontal</orientation>
+        <itemlayout width="360" height="268">
+          <control type="group">
+            <left>18</left><top>14</top>
+            <control type="image">
+              <left>-16</left><top>-12</top><width>352</width><height>212</height>
+              <texture>bobbi/glass/shadow-320x180.png</texture>
+            </control>
+            <control type="image">
+              <left>0</left><top>0</top><width>320</width><height>180</height>
+              <texture>bobbi/glass/tile-320x180.png</texture>
+            </control>
+            <control type="image">
+              <left>0</left><top>0</top><width>320</width><height>180</height>
+              <aspectratio scalediffuse="false">scale</aspectratio>
+              <texture background="true" diffuse="bobbi/glass/mask-320x180.png">$VAR[Image_Landscape]</texture>
+            </control>
+            <control type="image">
+              <left>0</left><top>0</top><width>320</width><height>180</height>
+              <texture colordiffuse="66FFFFFF">bobbi/glass/rim-320x180.png</texture>
+            </control>
+            <control type="label">
+              <left>2</left><top>188</top><width>316</width><height>28</height>
+              <font>Card24</font><textcolor>text</textcolor><selectedcolor>text</selectedcolor>
+              <label>$VAR[Label_OSD_EpisodeLabel]</label><aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>2</left><top>216</top><width>316</width><height>24</height>
+              <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><selectedcolor>text2</selectedcolor>
+              <label>$VAR[Label_OSD_EpisodeLabel2]</label><aligny>center</aligny>
+            </control>
+          </control>
+        </itemlayout>
+        <focusedlayout width="360" height="268">
+          <control type="group">
+            <left>18</left><top>14</top>
+            <control type="group">
+              <include content="Lift"><param name="zoom">105</param></include>
+              <control type="image">
+                <left>-24</left><top>-24</top><width>368</width><height>228</height>
+                <texture>bobbi/glass/glow-320x180.png</texture>
+                <visible>Control.HasFocus(11)</visible>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>320</width><height>180</height>
+                <texture>bobbi/glass/tile-320x180.png</texture>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>320</width><height>180</height>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture background="true" diffuse="bobbi/glass/mask-320x180.png">$VAR[Image_Landscape]</texture>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>320</width><height>180</height>
+                <texture colordiffuse="FFFFFFFF">bobbi/glass/rim-320x180.png</texture>
+              </control>
+            </control>
+            <control type="label">
+              <left>2</left><top>192</top><width>316</width><height>28</height>
+              <font>Card24</font><textcolor>text</textcolor><selectedcolor>text</selectedcolor>
+              <label>$VAR[Label_OSD_EpisodeLabel]</label><aligny>center</aligny>
+            </control>
+            <control type="label">
+              <left>2</left><top>220</top><width>316</width><height>24</height>
+              <font>CardSub22</font><textcolor>text2</textcolor><selectedcolor>text2</selectedcolor>
+              <label>$VAR[Label_OSD_EpisodeLabel2]</label><aligny>center</aligny>
+            </control>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <!-- Synopsis Strip -->
+      <control type="label">
+        <left>44</left><top>366</top><width>1512</width><height>62</height>
+        <label>[COLOR FFF5F5F7]$VAR[PlayerTitle][/COLOR]$INFO[VideoPlayer.Plot,   ·   ,]</label>
+        <font>CardSub22</font><textcolor>text2</textcolor><wrapmultiline>true</wrapmultiline>
+      </control>
+
+      <!-- Bottom 66px Stadium Action Pills (2: Add, 3: Clear, 4: Episode Bookmark) -->
+      <control type="grouplist" id="9000">
+        <left>44</left><top>452</top><width>1512</width><height>66</height>
+        <orientation>horizontal</orientation><itemgap>16</itemgap>
+        <onup condition="Integer.IsGreater(Container(11).NumItems,0)">11</onup>
+        <onup condition="Integer.IsEqual(Container(11).NumItems,0)">Close</onup>
+        <ondown>Close</ondown>
+
+        <control type="button" id="2">
+          <width>220</width><height>66</height>
+          <label>添加书签</label>
+          <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <visible>Control.IsEnabled(2)</visible>
+        </control>
+
+        <control type="button" id="3">
+          <width>220</width><height>66</height>
+          <label>清空书签</label>
+          <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <visible>Control.IsEnabled(3) + !Integer.IsEqual(Container(11).NumItems,0)</visible>
+        </control>
+
+        <control type="button" id="4">
+          <width>240</width><height>66</height>
+          <label>剧集书签</label>
+          <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <visible>Control.IsEnabled(4)</visible>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

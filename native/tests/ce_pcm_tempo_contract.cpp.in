@@ -1,0 +1,52 @@
+// Production snippets are inserted by check_ce_pcm_tempo.py, not reimplemented here.
+#include <cstdio>
+#include <initializer_list>
+#include <string>
+enum { SYNC_DISCON, SYNC_RESAMPLE, DVD_PLAYSPEED_NORMAL=1000, AV_CODEC_ID_AAC=33,
+       LOCAL_NOPTS=-1000, DVDSTREAM_TYPE_DVD=61, DVDSTREAM_TYPE_BLURAY, LOGINFO };
+struct CLog { static void Log(int, const char*) {} };
+struct Codec { bool raw=false; bool NeedPassthrough() const {return raw;} };
+struct Track { int codec=AV_CODEC_ID_AAC; };
+struct Jitter { int resets=0; void Reset(){++resets;} };
+struct Audio {
+  Codec codec; Codec* m_pAudioCodec=&codec; Track m_streaminfo; Jitter m_pcmJitterTracker;
+  int m_synctype=SYNC_DISCON, mode=SYNC_DISCON, m_pcmOutputClock=991;
+  bool m_bobiTempoBorrowed=false, m_pcmResyncTimestamp=false;
+  void SetSyncType(bool) {mode=m_synctype;}
+  void speed(int speed) { /*@borrow@*/ }
+};
+struct State {int timeMin=0, timeMax=10; bool canseek=false, canpause=false, cantempo=false, isInMenu=false;};
+struct Input {int type=0; bool live=false; bool IsRealtime(){return live;} bool IsStreamType(int t){return type==t;}};
+struct Process {bool hw=true; std::string decoder="am-h264"; bool IsVideoHwDecoder(){return hw;}
+                std::string GetVideoDecoderName(){return decoder;}};
+struct Base {virtual ~Base()=default;};
+struct CVideoPlayerAudio:Base { bool sink=true; bool HasTempoSink() const{return sink;}};
+struct Side {int id=0;};
+bool capable(State state, Input* m_pInputStream, Base* m_VideoPlayerAudio, Process* m_processInfo,
+             Side m_CurrentAudio={}, Side m_CurrentVideo={}) {
+  /*@timeline@*/
+  return state.cantempo;
+}
+int main(){
+  int errors=0; State s; Input i; Process p; CVideoPlayerAudio a;
+  if(!capable(s,&i,&a,&p))++errors;
+  if(capable(s,nullptr,&a,&p)||capable(s,&i,nullptr,&p)||capable(s,&i,&a,&p,{-1})||capable(s,&i,&a,&p,{0},{-1}))++errors;
+  for(int type:{DVDSTREAM_TYPE_DVD,DVDSTREAM_TYPE_BLURAY}){i.type=type;if(capable(s,&i,&a,&p))++errors;}i.type=0;
+  i.live=true;if(capable(s,&i,&a,&p))++errors;i.live=false;
+  s.isInMenu=true;if(capable(s,&i,&a,&p))++errors;s.isInMenu=false;
+  s.timeMax=s.timeMin;if(capable(s,&i,&a,&p))++errors;s.timeMax=10;
+  p.decoder="unverified";if(capable(s,&i,&a,&p))++errors;
+  p.hw=false;if(!capable(s,&i,&a,&p))++errors;a.sink=false;if(capable(s,&i,&a,&p))++errors;
+  for(int n:{800,900,1100,1200,1500}){
+    Audio t;t.speed(n);if(!t.m_bobiTempoBorrowed||t.mode!=SYNC_RESAMPLE)++errors;
+    t.speed(n);t.speed(1000);if(t.m_bobiTempoBorrowed||t.m_synctype!=SYNC_DISCON||
+        t.m_pcmJitterTracker.resets!=1||!t.m_pcmResyncTimestamp)++errors;
+    Audio native;native.m_synctype=SYNC_RESAMPLE;native.speed(n);native.speed(1000);
+    if(native.m_bobiTempoBorrowed||native.m_synctype!=SYNC_RESAMPLE||native.m_pcmJitterTracker.resets)++errors;
+    Audio raw;raw.codec.raw=true;raw.speed(n);if(raw.mode||raw.m_bobiTempoBorrowed)++errors;
+    Audio other;other.m_streaminfo.codec=44;other.speed(n);if(other.mode||other.m_bobiTempoBorrowed)++errors;
+    Audio paused;paused.speed(n);paused.speed(0);if(paused.mode||paused.m_bobiTempoBorrowed)++errors;
+  }
+  Audio plain;for(int n:{0,1000,2000,4000,-2000}){plain.speed(n);if(plain.m_bobiTempoBorrowed||plain.mode)++errors;}
+  std::printf("%d\n",errors);return errors!=0;
+}

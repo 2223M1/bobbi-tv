@@ -1,0 +1,282 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">9000</defaultcontrol>
+  <onload>ClearProperty(WhatsNew,home)</onload>
+  <include>PageOpen</include>
+  <controls>
+    <control type="group">
+      <visible>!Window.IsVisible(AddonSettings) + !Window.IsActive(TextViewer)</visible>
+      <!-- on-device Settings warm-cool charcoal radial backdrop -->
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/settings-bg.png</texture>
+      </control>
+
+      <!-- Top-left premium TV back pill @ (50,50) 180x60 -->
+      <control type="group">
+        <control type="image">
+          <left>29</left><top>68</top><width>20</width><height>24</height>
+          <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/chevron-left.png</texture>
+        </control>
+        <control type="image">
+          <left>50</left><top>50</top><width>180</width><height>60</height>
+          <texture>bobbi/glass/back-pill-180x60.png</texture>
+        </control>
+        <control type="image">
+          <left>55</left><top>55</top><width>50</width><height>50</height>
+          <texture>bobbi/glass/avatar-disc.png</texture>
+        </control>
+        <control type="label">
+          <left>117</left><top>50</top><width>100</width><height>60</height>
+          <label>波比TV</label>
+          <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+
+      <!-- Top-centered muted slate title id="2" -->
+      <control type="label" id="2">
+        <left>360</left><top>56</top><width>1200</width><height>62</height>
+        <label>$LOCALIZE[24003]</label>
+        <font>SettingsTitle50</font><textcolor>FF7C8088</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+
+      <!-- Left Column: Continuous-corner squircle icon + metadata + description glass card @ x=80..980 -->
+      <control type="group">
+        <left>80</left><top>160</top>
+        <control type="image">
+          <left>0</left><top>0</top><width>220</width><height>220</height>
+          <texture colordiffuse="24FFFFFF" border="28">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <left>22</left><top>22</top><width>176</width><height>176</height>
+          <aspectratio>keep</aspectratio>
+          <texture background="true">$INFO[ListItem.Icon]</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>220</width><height>220</height>
+          <texture border="28">bobbi/glass/squircle-r14-rim.png</texture>
+        </control>
+
+        <control type="label">
+          <left>252</left><top>4</top><width>648</width><height>48</height>
+          <font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <label>$INFO[ListItem.AddonName]</label>
+          <scroll>true</scroll>
+        </control>
+        <control type="label">
+          <left>252</left><top>58</top><width>648</width><height>34</height>
+          <font>HeroMeta24</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+          <label>$INFO[ListItem.AddonType]$INFO[ListItem.AddonVersion,   ·   v]</label>
+        </control>
+        <control type="label">
+          <left>252</left><top>96</top><width>648</width><height>30</height>
+          <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+          <label>$LOCALIZE[21863]  $INFO[ListItem.AddonCreator]</label>
+        </control>
+        <control type="textbox">
+          <left>252</left><top>136</top><width>648</width><height>80</height>
+          <font>Card24</font><textcolor>D9EBEBF5</textcolor>
+          <label>$INFO[ListItem.AddonSummary]</label>
+        </control>
+
+        <!-- Liquid Glass Description Card -->
+        <control type="image">
+          <left>0</left><top>248</top><width>900</width><height>508</height>
+          <texture colordiffuse="1CFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>248</top><width>900</width><height>508</height>
+          <texture colordiffuse="66FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+        </control>
+        <control type="label">
+          <left>36</left><top>274</top><width>520</width><height>36</height>
+          <font>Head30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <label>$VAR[AddonInfoHeading]</label>
+        </control>
+
+        <!-- Description with Disclaimer -->
+        <control type="group">
+          <visible>!String.IsEmpty(ListItem.AddonDisclaimer)</visible>
+          <control type="label">
+            <left>560</left><top>276</top><width>304</width><height>32</height>
+            <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <label>$INFO[Container(400).CurrentPage]$INFO[Container(400).NumPages, / ]</label>
+          </control>
+          <control type="textbox" id="400">
+            <left>36</left><top>322</top><width>808</width><height>284</height>
+            <font>Plot26</font><textcolor>D9EBEBF5</textcolor><align>left</align>
+            <label>$VAR[AddonInfoDescription]</label>
+            <pagecontrol>60</pagecontrol>
+          </control>
+          <control type="scrollbar" id="60">
+            <left>864</left><top>326</top><width>4</width><height>276</height>
+            <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+            <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+            <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+            <onleft>9000</onleft><onright>9000</onright>
+            <showonepage>false</showonepage>
+            <orientation>vertical</orientation>
+          </control>
+          <control type="label">
+            <left>36</left><top>618</top><width>828</width><height>28</height>
+            <font>CardSub22</font><textcolor>FFFFD60A</textcolor><aligny>center</aligny>
+            <label>$LOCALIZE[24052]</label>
+          </control>
+          <control type="textbox">
+            <left>36</left><top>650</top><width>828</width><height>84</height>
+            <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><align>left</align>
+            <label>$INFO[ListItem.AddonDisclaimer]</label>
+            <autoscroll time="2000" delay="4000" repeat="5000">true</autoscroll>
+          </control>
+        </control>
+
+        <!-- Description without Disclaimer -->
+        <control type="group">
+          <visible>String.IsEmpty(ListItem.AddonDisclaimer)</visible>
+          <control type="label">
+            <left>560</left><top>276</top><width>304</width><height>32</height>
+            <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <label>$INFO[Container(401).CurrentPage]$INFO[Container(401).NumPages, / ]</label>
+          </control>
+          <control type="textbox" id="401">
+            <left>36</left><top>322</top><width>808</width><height>404</height>
+            <font>Plot26</font><textcolor>D9EBEBF5</textcolor><align>left</align>
+            <label>$VAR[AddonInfoDescription]</label>
+            <pagecontrol>61</pagecontrol>
+          </control>
+          <control type="scrollbar" id="61">
+            <left>864</left><top>326</top><width>4</width><height>396</height>
+            <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+            <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+            <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+            <onleft>9000</onleft><onright>9000</onright>
+            <showonepage>false</showonepage>
+            <orientation>vertical</orientation>
+          </control>
+        </control>
+
+        <!-- Broken Addon Warning Banner -->
+        <control type="group">
+          <visible>!String.IsEmpty(ListItem.AddonBroken)</visible>
+          <left>0</left><top>772</top>
+          <control type="image">
+            <left>0</left><top>0</top><width>900</width><height>92</height>
+            <texture colordiffuse="2EFF453A" border="26">bobbi/glass/row-glass.png</texture>
+          </control>
+          <control type="image">
+            <left>24</left><top>22</top><width>48</width><height>48</height>
+            <texture>bobbi/glass/icon-disc-44.png</texture>
+          </control>
+          <control type="image">
+            <left>34</left><top>32</top><width>28</width><height>28</height>
+            <texture colordiffuse="FFFF453A">bobbi/glass/icons/info.png</texture>
+          </control>
+          <control type="label">
+            <left>88</left><top>12</top><width>784</width><height>30</height>
+            <font>Card26</font><textcolor>FFFF453A</textcolor><aligny>center</aligny>
+            <label>$LOCALIZE[24096]</label>
+          </control>
+          <control type="label">
+            <left>88</left><top>46</top><width>784</width><height>32</height>
+            <font>CardSub22</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <label>$INFO[ListItem.AddonBroken]</label>
+            <scroll>true</scroll>
+          </control>
+        </control>
+      </control>
+
+      <!-- Right Column: on-device Settings 780x66 stadium action capsule stack @ x=1060..1840 -->
+      <control type="grouplist" id="9000">
+        <left>1060</left><top>160</top><width>780</width><height>860</height>
+        <orientation>vertical</orientation><itemgap>12</itemgap>
+        <onleft condition="Control.IsVisible(60)">60</onleft>
+        <onleft condition="Control.IsVisible(61)">61</onleft>
+        <onright>noop</onright>
+        <onup>9000</onup><ondown>9000</ondown>
+        <control type="button" id="12">
+          <width>780</width><height>66</height>
+          <label>518</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+        </control>
+        <control type="button" id="9">
+          <width>780</width><height>66</height>
+          <label>24020</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+        </control>
+        <control type="button" id="11">
+          <width>780</width><height>66</height>
+          <label>$VAR[AddonInfoButtonLabel]</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+          <onclick condition="!String.IsEmpty(Window(home).Property(WhatsNew))">ClearProperty(WhatsNew,home)</onclick>
+          <onclick condition="String.IsEmpty(Window(home).Property(WhatsNew))">SetProperty(WhatsNew,True,home)</onclick>
+          <visible>!String.IsEmpty(ListItem.AddonNews)</visible>
+        </control>
+        <control type="button" id="8">
+          <width>780</width><height>66</height>
+          <label>24069</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+        </control>
+        <control type="radiobutton" id="13">
+          <width>780</width><height>66</height>
+          <label>21340</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+          <textureradioonfocus>bobbi/glass/switch-on-focus.png</textureradioonfocus>
+          <textureradioonnofocus>bobbi/glass/switch-on.png</textureradioonnofocus>
+          <textureradioofffocus>bobbi/glass/switch-off-focus.png</textureradioofffocus>
+          <textureradiooffnofocus>bobbi/glass/switch-off.png</textureradiooffnofocus>
+          <radiowidth>64</radiowidth><radioheight>36</radioheight><radioposx>682</radioposx>
+        </control>
+        <control type="button" id="14">
+          <width>780</width><height>66</height>
+          <label>24069</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+        </control>
+        <control type="button" id="6">
+          <width>780</width><height>66</height>
+          <label>24022</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+        </control>
+        <control type="button" id="7">
+          <width>780</width><height>66</height>
+          <label>24021</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+        </control>
+        <control type="button" id="10">
+          <width>780</width><height>66</height>
+          <label>39024</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor><disabledcolor>FF636366</disabledcolor>
+          <textoffsetx>36</textoffsetx><align>left</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/settings-pill-780x66.png</texturenofocus>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

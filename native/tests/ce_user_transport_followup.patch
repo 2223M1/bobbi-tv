@@ -1,0 +1,14 @@
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.cpp b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+@@ -5353,6 +5353,9 @@
+           mode.trickplay = true;
+           mode.sync = true;
+           mode.restore = false;
+-          m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
++          if (scopedCommand["action"].asString() == "user_resume")
++            scopedResumeSeek = std::make_shared<CDVDMsgPlayerSeek>(mode);
++          else
++            m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
+         }
+       }

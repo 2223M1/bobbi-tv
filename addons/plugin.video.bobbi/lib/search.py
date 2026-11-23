@@ -1,0 +1,2389 @@
+import hashlib
+import json
+from typing import Any, List, Mapping, Optional
+from urllib.parse import unquote
+from time import monotonic
+
+_IMPORT_STARTED = monotonic()
+_CAPTURE_PLAYBACK = object()
+
+import xbmc
+from xbmcgui import Dialog
+
+from lib.clients.nuvio.constants import NUVIO_ADDONS_KEY
+from lib.clients.nuvio.helpers import (
+    get_selected_stream_addon_records,
+)
+from lib.clients.nuvio.helpers import (
+    get_selected_stream_addons as get_selected_nuvio_stream_addons,
+)
+from lib.clients.stremio.constants import STREMIO_ADDON_ALIASES_KEY, STREMIO_ADDONS_KEY
+from lib.clients.stremio.helpers import (
+    get_addon_by_base_url,
+    get_addon_display_name,
+    get_selected_stream_addons,
+)
+from lib.clients.stremio.playback import (
+    StremioPlaybackError,
+    candidate_from_payload,
+    classify,
+    current_stremio_playback_capabilities,
+    normalize_stream,
+    payload_from_torrent,
+    resolve,
+)
+from lib.db.cached import cache, HybridCache
+from lib.domain.torrent import TorrentStream
+from lib.gui.custom_dialogs import source_select
+from lib.gui.search_status_window import SearchStatusWindow
+from lib.player import JacktookPLayer
+from lib.utils.clients.utils import get_client, update_dialog
+from lib.utils.debrid.debrid_utils import check_debrid_cached, is_supported_debrid_type
+from lib.utils.general.utils import (
+    DialogListener,
+    Indexer,
+    IndexerType,
+    Players,
+    SearchVariant,
+    build_media_metadata,
+    clean_auto_play_undesired,
+    info_hash_to_magnet,
+    normalize_tv_data,
+    post_process,
+    pre_process,
+    safe_json_loads,
+    set_content_type,
+    set_watched_title,
+)
+from lib.utils.kodi.settings import auto_play_enabled, get_setting
+from lib.utils.kodi.utils import (
+    ADDON_PATH,
+    cancel_playback,
+    capture_settings,
+    close_busy_dialog,
+    kodilog,
+    notification,
+    translation,
+)
+from lib.utils.player.utils import resolve_playback_url
+from lib.utils.source_manager import parse_source_selection, reconcile_source_selection
+
+_IMPORT_SECONDS = monotonic() - _IMPORT_STARTED
+TITLE_LANGUAGE_LOCALIZED_FIRST = "localized_first"
+TITLE_LANGUAGE_ENGLISH_FIRST = "english_first"
+TITLE_LANGUAGE_ENGLISH_ONLY = "english_only"
+MAX_SEARCH_WORKERS = 8
+MAX_STREMIO_ADDONS_PER_SEARCH = 8
+
+
+class SearchCancelled(Exception):
+    """Raised when the user cancels an interactive search flow."""
+
+    def __init__(self, results: Optional[List[TorrentStream]] = None):
+        super().__init__("Search cancelled")
+        self.results = results if results is not None else []
+
+
+class SilentProgressDialog:
+    """No-op progress dialog for flows that should not show Kodi progress UI."""
+
+    def create(self, *args, **kwargs):
+        pass
+
+    def update(self, *args, **kwargs):
+        pass
+
+    def close(self):
+        pass
+
+
+def _build_search_cache_scope(scoped_addon_url: str = "", cache_backend=..., settings_getter=None) -> str:
+    setting = settings_getter or get_setting
+    flags = {
+        "torrent": bool(setting("torrent_enable")),
+        "jackett": bool(setting("jackett_enabled")),
+        "prowlarr": bool(setting("prowlarr_enabled")),
+        "burst": bool(setting("jacktookburst_enabled")),
+        "jackgram": bool(setting("jackgram_enabled")),
+        "external_scraper": bool(setting("external_scraper_enabled")),
+        "stremio": bool(setting("stremio_enabled")),
+        "nuvio": bool(setting("nuvio_enabled")),
+        "rd": bool(setting("real_debrid_enabled")),
+        "ad": bool(setting("alldebrid_enabled")),
+        "tb": bool(setting("torbox_enabled")),
+        "oc": bool(setting("offcloud_enabled")),
+        "pm": bool(setting("premiumize_enabled")),
+        "db": bool(setting("debrider_enabled")),
+        "ed": bool(setting("easydebrid_enabled")),
+    }
+    backend = cache if cache_backend is ... else cache_backend
+    read = backend.get if backend is not None else (lambda key: None)
+    selected_stream_addons = str(read(STREMIO_ADDONS_KEY) or "")
+    selected_nuvio_addons = str(read(NUVIO_ADDONS_KEY) or "")
+    stremio_addon_aliases = json.dumps(read(STREMIO_ADDON_ALIASES_KEY) or {}, sort_keys=True)
+    source_manager_selection = str(read("source_manager_selection") or "")
+    external_scraper_module = str(setting("external_scraper_module") or "")
+    raw_scope = "{}|{}|{}|{}|{}|{}|{}".format(
+        "|".join([f"{key}:{int(value)}" for key, value in sorted(flags.items())]),
+        selected_stream_addons,
+        selected_nuvio_addons,
+        stremio_addon_aliases,
+        source_manager_selection,
+        external_scraper_module,
+        str(scoped_addon_url or ""),
+    )
+    if xbmc.getSkinDir() == 'skin.bobbi.cinema':
+        raw_scope += '|cinema-independent-indexers-v4-catalog-candidates'
+    # Two users/instances can share a media title but not their configured
+    # private indexers. Only the fingerprint reaches the persisted cache key.
+    instance = '\0'.join(str(setting(key, '') or '') for key in
+        ('jackett_host', 'jackett_port', 'jackett_apikey'))
+    raw_scope += '|jackett-instance:' + hashlib.sha256(instance.encode()).hexdigest()
+    return hashlib.sha256(raw_scope.encode("utf-8")).hexdigest()
+
+
+def _filter_isolated_jackgram_cache_results(
+    query: str, results: List[TorrentStream]
+) -> List[TorrentStream]:
+    terms = str(query or "").casefold().split()
+    if not terms:
+        return results
+    return [
+        r
+        for r in results
+        if all(term in str(getattr(r, "title", "") or "").casefold() for term in terms)
+    ]
+
+
+def _search_worker_count(settings_getter=None) -> int:
+    try:
+        configured = int((settings_getter or get_setting)("thread_number", 6))
+    except (TypeError, ValueError):
+        configured = 6
+    return min(MAX_SEARCH_WORKERS, max(1, configured))
+
+
+BUILTIN_INDEXER_SETTINGS = {
+    Indexer.JACKETT: "jackett_enabled",
+    Indexer.PROWLARR: "prowlarr_enabled",
+    Indexer.BURST: "jacktookburst_enabled",
+    Indexer.JACKGRAM: "jackgram_enabled",
+    Indexer.EASYNEWS: "easynews_enabled",
+    Indexer.STREMIO: "stremio_enabled",
+    Indexer.EXTERNAL_SCRAPER: "external_scraper_enabled",
+}
+
+
+def _get_source_manager_selection(cache_backend=...) -> Optional[set]:
+    """Return the cached source-manager selection as a set of strings.
+
+    Missing or corrupt values return None so callers use the legacy open
+    fallback. A persisted empty list remains an explicit empty whitelist.
+    """
+    backend = cache if cache_backend is ... else cache_backend
+    parsed = parse_source_selection(backend.get("source_manager_selection") if backend is not None else None,
+                                    strict=cache_backend is not ...)
+    return set(parsed) if parsed is not None else None
+
+
+def _is_source_enabled(indexer_key, stremio_addon_key=None, addon_origin="Stremio", cache_backend=..., settings_getter=None):
+    selected = (_get_source_manager_selection() if cache_backend is ...
+                else _get_source_manager_selection(cache_backend))
+
+    # Missing or corrupt cache → everything is enabled (no whitelist restriction)
+    if selected is None:
+        return True
+
+    # Compatible stream addons are keyed by their independent account origin.
+    if stremio_addon_key:
+        return f"{addon_origin}:{stremio_addon_key}" in selected
+
+    # External scraper uses its configured module name as the cache key.
+    # The fallback literal "External Scraper" supports older caches.
+    if indexer_key == Indexer.EXTERNAL_SCRAPER:
+        setting = settings_getter or get_setting
+        if not setting("external_scraper_enabled"):
+            return False
+        module_name = setting("external_scraper_module_name") or "External Scraper"
+        return module_name in selected or "External Scraper" in selected
+
+    # Managed builtin sources are enabled only when explicitly selected.
+    return str(indexer_key) in selected
+
+
+def _is_enabled(setting_id):
+    value = get_setting(setting_id)
+    return value is True or str(value).lower() == "true"
+
+
+def _get_selected_nuvio_stream_addons_safe(cache_backend=...):
+    try:
+        return (get_selected_nuvio_stream_addons() if cache_backend is ...
+                else get_selected_nuvio_stream_addons(cache_backend))
+    except Exception as error:
+        if cache_backend is not ...:
+            raise RuntimeError('SEARCH_CONFIGURATION_UNAVAILABLE') from error
+        kodilog(f"Unable to load selected Nuvio addons ({type(error).__name__})")
+        return []
+
+
+def _clean_title_candidate(value) -> str:
+    if value is None:
+        return ""
+    return str(value).strip()
+
+
+def _unique_title_candidates(candidates: List[str]) -> List[str]:
+    unique = []
+    seen = set()
+
+    for candidate in candidates:
+        cleaned = _clean_title_candidate(candidate)
+        if not cleaned:
+            continue
+        key = cleaned.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(cleaned)
+
+    return unique
+
+
+def _normalize_search_variant(variant) -> str:
+    allowed = {
+        SearchVariant.DEFAULT,
+        SearchVariant.TITLE_YEAR,
+        SearchVariant.ORIGINAL_TITLE,
+        SearchVariant.ORIGINAL_TITLE_YEAR,
+    }
+    return variant if variant in allowed else SearchVariant.DEFAULT
+
+
+def _normalize_title_language_mode(mode) -> str:
+    allowed = {
+        TITLE_LANGUAGE_LOCALIZED_FIRST,
+        TITLE_LANGUAGE_ENGLISH_FIRST,
+        TITLE_LANGUAGE_ENGLISH_ONLY,
+    }
+    return mode if mode in allowed else TITLE_LANGUAGE_LOCALIZED_FIRST
+
+
+def _extract_english_tmdb_title(details, mode: str) -> str:
+    translations = getattr(details, "translations", None)
+    entries = getattr(translations, "translations", translations)
+    if not entries:
+        return ""
+
+    title_key = "title" if mode == "movies" else "name"
+
+    for entry in entries:
+        if getattr(entry, "iso_639_1", "") != "en":
+            continue
+
+        data = getattr(entry, "data", None)
+        if not data:
+            continue
+
+        return _clean_title_candidate(getattr(data, title_key, ""))
+
+    return ""
+
+
+def _infer_tmdb_year(ids: dict, mode: str, details=None) -> Optional[int]:
+    if not ids or mode not in ("movies", "tv"):
+        return None
+    tmdb_id = ids.get("tmdb_id")
+    if not tmdb_id:
+        return None
+    try:
+        from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+
+        if details is None:
+            details = get_tmdb_media_details(tmdb_id, mode)
+        date_value = (
+            getattr(details, "release_date", None)
+            if mode == "movies"
+            else getattr(details, "first_air_date", None)
+        )
+        return int(str(date_value)[:4]) if date_value else None
+    except Exception as e:
+        kodilog(f"Failed to infer TMDB year: {e}")
+        return None
+
+
+def _build_title_fallback_queries(
+    query: str,
+    ids: dict,
+    mode: str,
+    variant: str = SearchVariant.DEFAULT,
+    year: Optional[int] = None,
+    title_language_mode: Optional[str] = None,
+    details=None,
+) -> List[str]:
+    variant = _normalize_search_variant(variant)
+    title_language_mode = _normalize_title_language_mode(
+        title_language_mode
+        if title_language_mode is not None
+        else get_setting("search_title_language_mode", TITLE_LANGUAGE_LOCALIZED_FIRST)
+    )
+    candidates = []
+
+    cleaned_query = _clean_title_candidate(query)
+    cleaned_year = _clean_title_candidate(year)
+
+    localized_candidate = ""
+    if cleaned_query and variant == SearchVariant.DEFAULT:
+        localized_candidate = cleaned_query
+    elif cleaned_query and cleaned_year and variant == SearchVariant.TITLE_YEAR:
+        localized_candidate = f"{cleaned_query} {cleaned_year}"
+
+    if localized_candidate:
+        candidates.append(localized_candidate)
+
+    if not ids:
+        return _unique_title_candidates(candidates)
+
+    tmdb_id = ids.get("tmdb_id")
+    if not tmdb_id or mode not in ("movies", "tv"):
+        return _unique_title_candidates(candidates)
+
+    try:
+        from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+
+        if details is None:
+            details = get_tmdb_media_details(tmdb_id, mode)
+    except Exception as e:
+        kodilog(f"Failed to load TMDB titles for fallback: {e}")
+        details = None
+
+    if not details:
+        return _unique_title_candidates(candidates)
+
+    english_title = _extract_english_tmdb_title(details, mode)
+    original_title = getattr(details, "original_title", "") or getattr(details, "original_name", "")
+
+    english_candidate = ""
+    original_candidate = ""
+    if variant == SearchVariant.DEFAULT:
+        english_candidate = english_title
+        original_candidate = original_title
+    elif variant == SearchVariant.TITLE_YEAR and cleaned_year:
+        if english_title:
+            english_candidate = f"{english_title} {cleaned_year}"
+        if original_title:
+            original_candidate = f"{original_title} {cleaned_year}"
+
+    if variant == SearchVariant.DEFAULT or variant == SearchVariant.TITLE_YEAR:
+        if title_language_mode == TITLE_LANGUAGE_ENGLISH_ONLY:
+            candidates = [english_candidate, original_candidate]
+            if not any(candidates) and localized_candidate:
+                candidates.append(localized_candidate)
+        elif title_language_mode == TITLE_LANGUAGE_ENGLISH_FIRST:
+            candidates = [english_candidate, original_candidate, localized_candidate]
+        else:
+            candidates = [localized_candidate, english_candidate, original_candidate]
+    elif variant == SearchVariant.ORIGINAL_TITLE:
+        if original_title:
+            candidates.append(original_title)
+        elif cleaned_query:
+            candidates.append(cleaned_query)
+    elif variant == SearchVariant.ORIGINAL_TITLE_YEAR:
+        if original_title and cleaned_year:
+            candidates.append(f"{original_title} {cleaned_year}")
+        elif original_title:
+            candidates.append(original_title)
+        elif cleaned_query and cleaned_year:
+            candidates.append(f"{cleaned_query} {cleaned_year}")
+        elif cleaned_query:
+            candidates.append(cleaned_query)
+
+    return _unique_title_candidates(candidates)
+
+
+def _anime_absolute_query(ids, mode, season):
+    """One additional query for known first-season anime, regardless of age.
+
+    Metadata is shared with title fallback. Do not infer season 2 absolute
+    numbering or add extra requests to normal live-action searches.
+    """
+    if xbmc.getSkinDir() != 'skin.bobbi.cinema' or mode != 'tv' or str(season) != '1' or not (ids or {}).get('tmdb_id'):
+        return ''
+    try:
+        from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+        details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        genres = [g.get('id') if isinstance(g, Mapping) else getattr(g, 'id', None)
+                  for g in (getattr(details, 'genres', None) or [])]
+        if 16 not in genres:
+            return ''
+        title = _extract_english_tmdb_title(details, mode) or getattr(details, 'original_name', '')
+        return str(title).strip() if title else ''
+    except (ValueError, TypeError, AttributeError, OSError):
+        return ''
+
+
+def _anime_release_query(ids, mode):
+    """Native title for group discovery; no age distinction or guessed alias."""
+    if xbmc.getSkinDir() != 'skin.bobbi.cinema' or mode not in ('tv', 'movies') or not (ids or {}).get('tmdb_id'):
+        return ''
+    try:
+        from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+        details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        genres = [g.get('id') if isinstance(g, Mapping) else getattr(g, 'id', None)
+                  for g in (getattr(details, 'genres', None) or [])]
+        if 16 not in genres:
+            return ''
+        language = getattr(details, 'original_language', '')
+        if isinstance(language, str) and language and language != 'ja':
+            return ''  # Japanese release-group queries must not starve western animation.
+        original = getattr(details, 'original_name' if mode == 'tv' else 'original_title', '')
+        return str(original or _extract_english_tmdb_title(details, mode) or '').strip()
+    except (ValueError, TypeError, AttributeError, OSError):
+        return ''
+
+
+def _cinema_catalog_aliases(ids, mode, details=None):
+    """Reuse the existing bounded/cached detail request, with exact ID binding."""
+    if mode not in ('tv', 'movies') or not (ids or {}).get('tmdb_id'):
+        return []
+    from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+    from lib.api.tmdbv3api.as_obj import AsObj
+    try:
+        if details is None:
+            details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        if isinstance(details, AsObj):
+            details = details.to_dict()
+        if not isinstance(details, dict) or str(details.get('id')) != str(ids['tmdb_id']):
+            return []
+        keys = ('name', 'original_name') if mode == 'tv' else ('title', 'original_title')
+        aliases = [details.get(key) for key in keys]
+        for item in details.get('translations', {}).get('translations', [])[:128]:
+            if isinstance(item, dict) and isinstance(item.get('data'), dict):
+                aliases.append(item['data'].get(keys[0]))
+        alternate = details.get('alternative_titles') or {}
+        for item in alternate.get('results', alternate.get('titles', []))[:128]:
+            if isinstance(item, dict):
+                aliases.append(item.get('title'))
+        return list(dict.fromkeys(a.strip() for a in aliases if isinstance(a, str) and 2 <= len(a.strip()) <= 512))
+    except (ValueError, TypeError, AttributeError, OSError):
+        return []
+
+
+def _cinema_anime_queries(ids, mode, details=None):
+    """Independent ID/genre evidence for a bounded multilingual anime plan."""
+    if mode != 'tv' or not (ids or {}).get('tmdb_id'):
+        return []
+    from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+    from lib.api.tmdbv3api.as_obj import AsObj
+    from lib.utils.general.anime_identity import catalog_anime_queries
+    try:
+        if details is None:
+            details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        if isinstance(details, AsObj):
+            details = details.to_dict()
+        return catalog_anime_queries(details, ids['tmdb_id'])
+    except (ValueError, TypeError, AttributeError, OSError):
+        return []
+
+
+def _cinema_anime_range_context(ids, mode, catalog_season, release_season, episode, details=None):
+    if mode != 'tv' or not (ids or {}).get('tmdb_id'):
+        return None
+    from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+    from lib.api.tmdbv3api.as_obj import AsObj
+    from bobbi_core.anime_range_candidates import context
+    try:
+        if details is None:
+            details = get_tmdb_media_details(ids['tmdb_id'], mode)
+        if isinstance(details, AsObj):
+            details = details.to_dict()
+        return context(details, ids['tmdb_id'], catalog_season, release_season, episode)
+    except (ValueError, TypeError, AttributeError, OSError):
+        return None
+
+
+def _cinema_release_season(value):
+    """Keep explicit zero; invalid supplied context must not skip screening."""
+    if type(value) is not int and not isinstance(value, str):
+        raise ValueError('Invalid release season')
+    number = int(value)
+    if not 0 <= number <= 99 or (number == 0 and value not in (0, '0')):
+        raise ValueError('Invalid release season')
+    return number
+
+
+def _cinema_requires_catalog_admission(source):
+    """Untrusted title-indexed BT providers share the same work/episode gate."""
+    return str(getattr(source, 'indexer', '')) in (str(Indexer.JACKETT), 'AnimeGarden')
+
+
+def _cinema_filter_catalog_candidates(results, aliases, mode, release_season=None, release_episode=None, fallback_query=None, anime=False, anime_range_context=None,
+                                      *, settings_getter=None):
+    from bobbi_core.search_trace import observe
+    observe('catalog_input', results or [])
+    from bobbi_core.candidate_titles import matches, discovery_matches
+    from bobbi_core.search_completion import replace_rows
+    # Missing catalog evidence is unknown, not a negative work match. The
+    # original request remains a lexical screen only; never publish it as a
+    # trusted catalog alias or relax the explicit season/episode checks.
+    candidate_aliases = aliases or ([fallback_query] if isinstance(fallback_query, str) else [])
+    title_basis = 'catalog_aliases' if aliases else ('request_query_unverified' if candidate_aliases else 'unavailable')
+    from lib.utils.general.anime_identity import animation_release_conflict
+    from bobbi_core.episode_scope import release_scope
+    screened = [source for source in results or [] if not (
+        anime and aliases and _cinema_requires_catalog_admission(source)
+        and ((str(getattr(source, 'indexer', '')) == str(Indexer.JACKETT)
+              and getattr(source, 'jackettReleaseType', '') == 'live_action')
+             or animation_release_conflict(getattr(source, 'title', ''), aliases)))]
+    if mode == 'tv' and aliases and type(release_season) is int:
+        # Every provider receives the same negative work/season/type check
+        # when ID-checked aliases exist. Unknown cards remain unverified.
+        screened = [source for source in screened if release_scope(
+            getattr(source, 'title', ''), aliases, release_season) != 'conflict']
+    from bobbi_core.anime_range_candidates import eligible as range_eligible
+    range_rows = [source for source in screened if anime and mode == 'tv'
+                  and _cinema_requires_catalog_admission(source)
+                  and range_eligible(getattr(source, 'title', ''), anime_range_context, release_season, release_episode)]
+    for source in range_rows:
+        source.requiresCatalogEpisodeProof = True
+    range_ids = {id(source) for source in range_rows}
+    kept = [source for source in screened
+            if not _cinema_requires_catalog_admission(source)
+            or id(source) in range_ids
+            or matches(getattr(source, 'title', ''), candidate_aliases, mode, release_season=release_season)
+            or (mode == 'tv' and aliases and type(release_season) is int
+                and discovery_matches(getattr(source, 'title', ''), aliases, release_season))]
+    if mode == 'tv' and release_season is not None and release_episode is not None:
+        from lib.utils.general.processors import PreProcessBuilder
+        scoped = [row for row in kept if _cinema_requires_catalog_admission(row)]
+        eligible = PreProcessBuilder(scoped, settings_getter=settings_getter).filter_sources('', release_episode, release_season,
+            anime_aliases=aliases if anime else None, anime_range_context=anime_range_context if anime else None).get_results()
+        scoped_ids, eligible_ids = {id(row) for row in scoped}, {id(row) for row in eligible}
+        # Both lists contain original input objects. Identity hits are O(1),
+        # but the episode builder can collapse equal, distinct copies; retain
+        # the original equality fallback for those copies and unknown rows.
+        kept = [row for row in kept if id(row) not in scoped_ids
+                or id(row) in eligible_ids or row in eligible]
+    rejected = len(results or []) - len(kept)
+    if rejected or title_basis == 'request_query_unverified':
+        kodilog('Cinema catalog candidate screening: rejected={}, kept={}; title_basis={}; labels are not readiness'.format(rejected, len(kept), title_basis), level=xbmc.LOGINFO)
+    observe('catalog_kept', kept)
+    return replace_rows(results, kept)
+
+
+def _movie_catalog_context(ids, mode):
+    if mode not in ('movie', 'movies'):
+        return None
+    from lib.clients.tmdb.movie_years import cached_movie_identity
+    return cached_movie_identity((ids or {}).get('tmdb_id'))
+
+
+def _tv_completed_context(ids, mode, tv_data, release_order=None):
+    if mode != 'tv':
+        return None
+    from lib.clients.tmdb.tv_ended_window import cached_window
+    return cached_window(ids, tv_data, release_order)
+
+
+def _filter_tv_completed_candidates(results, evidence, ids, tv_data):
+    if evidence is None:
+        return results
+    try:
+        identifier = int(ids.get('tmdb_id'))
+    except (AttributeError, TypeError, ValueError):
+        return results
+    from bobbi_core.tv_ended_window import status
+    return [row for row in results if (
+        str(getattr(row, 'type', '')).casefold() != 'torrent'
+        or bool(getattr(row, 'preparedResourceId', ''))
+        or status(getattr(row, 'title', ''), evidence, identifier,
+                  tv_data.get('season', 1), tv_data.get('episode', 1))['status'] != 'conflict')]
+
+
+def _filter_movie_year_candidates(results, catalog):
+    """Reject explicit BT movie-year contradictions; unknown is not proof."""
+    if not catalog or not catalog['aliases']:
+        return results
+    from bobbi_core.movie_identity import evidence_status
+    kept = []
+    for source in results or []:
+        # Cloud/direct rows retain their existing independent identity gates.
+        torrent = (str(getattr(source, 'type', '')) == str(IndexerType.TORRENT)
+                   or bool(getattr(source, 'infoHash', '')))
+        if (torrent and not getattr(source, 'preparedResourceId', '')
+                and str(getattr(source, 'type', '')) not in (str(IndexerType.DIRECT), str(IndexerType.DEBRID), str(IndexerType.STREMIO_DEBRID))
+                and evidence_status([getattr(source, 'title', '')], catalog['aliases'],
+                    catalog['evidence'], catalog['tmdb_id'])['status'] == 'conflict'):
+            continue
+        kept.append(source)
+    return kept
+
+
+def _perform_search_with_title_fallback(
+    indexer_key,
+    dialog,
+    query: str,
+    ids: dict,
+    mode: str,
+    *args,
+    variant: str = SearchVariant.DEFAULT,
+    year: Optional[int] = None,
+    title_language_mode: str = TITLE_LANGUAGE_LOCALIZED_FIRST,
+    **kwargs,
+):
+    from bobbi_core.search_completion import SearchCompletion, SearchResults
+    from lib.clients.fanout_diagnostics import observe_owner
+    settings_options = ({} if kwargs.get('settings_getter') is None
+                        else {'settings_getter': kwargs['settings_getter']})
+    variant = _normalize_search_variant(variant)
+    title_language_mode = _normalize_title_language_mode(title_language_mode)
+    queries = _build_title_fallback_queries(
+        query,
+        ids,
+        mode,
+        variant,
+        year,
+        title_language_mode=title_language_mode,
+    )
+
+    anime_query = _anime_absolute_query(ids, mode, args[0] if args else None) if indexer_key == Indexer.JACKETT else ''
+    release_query = _anime_release_query(ids, mode) if indexer_key == Indexer.JACKETT else ''
+    screen_catalog = (indexer_key == Indexer.JACKETT and xbmc.getSkinDir() == 'skin.bobbi.cinema'
+                      and mode in ('tv', 'movies') and bool((ids or {}).get('tmdb_id')))
+    catalog_aliases = _cinema_catalog_aliases(ids, mode) if screen_catalog else []
+    anime_titles = _cinema_anime_queries(ids, mode) if screen_catalog else []
+    kwargs.pop('anime_title_queries', None)  # Only the ID-bound catalogue supplies this plan.
+    if anime_titles:
+        kwargs['anime_title_queries'] = anime_titles
+    kwargs.pop('movie_years', None)  # Never accept a caller-supplied year whitelist.
+    kwargs.pop('movie_tmdb_id', None)
+    kwargs.pop('movie_imdb_id', None)
+    if screen_catalog and mode == 'movies':
+        from lib.clients.tmdb.movie_years import cached_movie_identity
+        identity = cached_movie_identity(ids.get('tmdb_id'))
+        if identity is not None:
+            evidence = identity['evidence']
+            kwargs['movie_years'] = evidence
+            kwargs['movie_tmdb_id'] = int(ids['tmdb_id'])
+            kwargs['movie_imdb_id'] = identity.get('imdb_id')
+            year = evidence.primary_year
+    release_order = None
+    if screen_catalog and mode == 'tv' and len(args) >= 2:
+        from lib.clients.tmdb.episode_order import release_pair
+        release_order = release_pair(ids, {'season': args[0], 'episode': args[1]})
+    search_args = args
+    if release_order:
+        search_args = (release_order['season'], release_order['episode']) + args[2:]
+    range_context = (_cinema_anime_range_context(ids, mode, _cinema_release_season(args[0]),
+                        _cinema_release_season(search_args[0]), int(search_args[1]))
+                     if screen_catalog and anime_titles and len(args) >= 2 else None)
+    publish = kwargs.pop('publish', None)
+    if publish is not None and indexer_key == Indexer.JACKETT:
+        def publish_checked(rows):
+            if screen_catalog:
+                rows = _cinema_filter_catalog_candidates(rows, catalog_aliases, mode,
+                    release_season=_cinema_release_season(search_args[0]) if mode == 'tv' and len(search_args) >= 2 else None,
+                    release_episode=int(search_args[1]) if mode == 'tv' and len(search_args) >= 2 else None,
+                    fallback_query=query, anime=bool(anime_titles), anime_range_context=range_context,
+                    **settings_options)
+            return publish(rows)
+        kwargs['publish'] = publish_checked
+    if screen_catalog and len(queries) > 1:
+        # One bounded shared fanout, retaining all identity/season gates. Do not
+        # let a first alias's partial hits hide releases found by another alias.
+        results = _perform_search(indexer_key, dialog, queries[0], mode, *search_args,
+            variant=variant, year=year, title_queries=queries[:3],
+            **({'anime_absolute_query': anime_query} if anime_query else {}),
+            **({'anime_release_query': release_query} if release_query else {}), **kwargs)
+        observe_owner(results, queries[0], ids, mode, year, args, search_args)
+        return _cinema_filter_catalog_candidates(results, catalog_aliases, mode,
+            release_season=_cinema_release_season(search_args[0]) if mode == 'tv' and len(search_args) >= 2 else None,
+            release_episode=int(search_args[1]) if mode == 'tv' and len(search_args) >= 2 else None,
+            fallback_query=query, anime=bool(anime_titles), anime_range_context=range_context,
+            **settings_options)
+    completion = None
+    for attempt, candidate in enumerate(queries, start=1):
+        if attempt > 1:
+            kodilog(
+                f"Retrying {indexer_key} search with fallback title {candidate!r}",
+                level=xbmc.LOGINFO,
+            )
+
+        results = _perform_search(
+            indexer_key,
+            dialog,
+            candidate,
+            mode,
+            *search_args,
+            variant=variant,
+            year=year,
+            **({'anime_absolute_query': anime_query} if anime_query and attempt == 1 else {}),
+            **({'anime_release_query': release_query} if release_query and attempt == 1 else {}),
+            **kwargs,
+        )
+        observe_owner(results, candidate, ids, mode, year, args, search_args)
+        if screen_catalog:
+            results = _cinema_filter_catalog_candidates(results, catalog_aliases, mode,
+                        release_season=_cinema_release_season(search_args[0]) if mode == 'tv' and len(search_args) >= 2 else None,
+                        release_episode=int(search_args[1]) if mode == 'tv' and len(search_args) >= 2 else None,
+                        fallback_query=query, anime=bool(anime_titles), anime_range_context=range_context,
+                        **settings_options)
+        if isinstance(results, SearchResults):
+            completion = (completion or SearchCompletion()).combine(results.completion)
+        if results:
+            return SearchResults(results, completion) if completion is not None else results
+
+    return SearchResults([], completion) if completion is not None else []
+
+
+def _source_values(source: Any) -> Mapping[str, Any]:
+    if isinstance(source, Mapping):
+        return source
+    try:
+        return vars(source)
+    except TypeError:
+        return {}
+
+
+def _is_stremio_source(source: Any) -> bool:
+    values = _source_values(source)
+    return bool(
+        values.get("stremioMetadata")
+        or values.get("stremio_metadata")
+        or values.get("addonKey")
+        or values.get("addon_key")
+    )
+
+
+def _preferred_stremio_results(raw_streams: Any) -> List[TorrentStream]:
+    if not isinstance(raw_streams, (list, tuple)):
+        return []
+
+    results = []
+    for stream in raw_streams:
+        try:
+            candidate = normalize_stream(stream, origin="video")
+            decision = classify(candidate, current_stremio_playback_capabilities())
+            if not decision.supported:
+                continue
+        except (TypeError, ValueError):
+            continue
+        is_torrent = decision.source_class == "torrent_hash"
+        results.append(
+            TorrentStream(
+                title=candidate.title or candidate.name or candidate.filename or "",
+                type=IndexerType.TORRENT if is_torrent else "direct",
+                addonKey="stremio_video",
+                indexer=Indexer.STREMIO,
+                url=info_hash_to_magnet(candidate.infoHash) if is_torrent else candidate.url or "",
+                infoHash=candidate.infoHash or "",
+                size=candidate.size or 0,
+                streamSubtitles=list(candidate.subtitles),
+                stremioMetadata=dict(stream) if isinstance(stream, Mapping) else {},
+            )
+        )
+    return results
+
+
+def _stremio_metadata_diagnostics(candidate: Any) -> str:
+    fields = []
+    for field in ("title", "name", "filename"):
+        value = getattr(candidate, field, None)
+        if not isinstance(value, str):
+            continue
+        code_points = sorted(
+            {
+                f"U+{ord(character):04X}"
+                for character in value
+                if (ord(character) < 0x20 and ord(character) not in {0x09, 0x0A, 0x0D})
+                or ord(character) == 0x7F
+            }
+        )
+        if code_points:
+            fields.append(f"{field}={','.join(code_points)}")
+    return " ".join(fields)
+
+
+def _prepare_stremio_results(
+    results: List[TorrentStream],
+    notify_rejections: bool = True,
+    rejection_reasons: Optional[List[str]] = None,
+) -> List[TorrentStream]:
+    prepared = []
+    for source_index, result in enumerate(results):
+        if not _is_stremio_source(result):
+            prepared.append(result)
+            continue
+
+        payload = payload_from_torrent(result)
+        candidate = candidate_from_payload(payload)
+        decision = classify(candidate, current_stremio_playback_capabilities())
+        if decision.supported:
+            prepared.append(result)
+        else:
+            diagnostics = f"stremio_result index={source_index} decision={decision.code}"
+            if decision.code == "unsafe_metadata":
+                metadata_diagnostics = _stremio_metadata_diagnostics(candidate)
+                if metadata_diagnostics:
+                    diagnostics += f" {metadata_diagnostics}"
+            kodilog(diagnostics, xbmc.LOGWARNING)
+            if rejection_reasons is not None:
+                rejection_reasons.append(decision.reason)
+            if notify_rejections:
+                notification(decision.reason)
+    return prepared
+
+
+def _resolve_stremio_source(source: Any, context: Optional[Mapping[str, Any]] = None, *, playback_client=None):
+    payload = payload_from_torrent(source)
+    candidate = candidate_from_payload(payload)
+    playback_context = dict(context or {})
+    playback_context.update(current_stremio_playback_capabilities())
+    decision = classify(candidate, playback_context)
+    playback_context["is_torrent"] = decision.source_class == "torrent_hash"
+
+    def legacy_resolver(resolved_payload, _context=None):
+        resolved_payload.update(dict(context or {}))
+        resolved_payload["is_torrent"] = playback_context["is_torrent"]
+        for key in ("type", "debrid_type", "indexer", "is_pack"):
+            if key in payload:
+                resolved_payload.setdefault(key, payload[key])
+        return resolve_playback_url(resolved_payload, playback_client=playback_client)
+
+    resolved = resolve(candidate, playback_context, legacy_resolver=legacy_resolver)
+    resolved.update(dict(context or {}))
+    for key in ("type", "debrid_type", "indexer", "is_pack"):
+        if key in payload:
+            resolved.setdefault(key, payload[key])
+    return resolved
+
+
+def _resolve_cached_source(source: Any, params: Mapping[str, Any], *, playback_client=None):
+    if _is_stremio_source(source):
+        return _resolve_stremio_source(
+            source,
+            {
+                "mode": params.get("mode", ""),
+                "ids": safe_json_loads(params.get("ids")),
+                "tv_data": safe_json_loads(params.get("tv_data") or "{}"),
+                "is_torrent": False,
+            },
+            playback_client=playback_client,
+        )
+
+    legacy_source = source if isinstance(source, Mapping) else payload_from_torrent(source)
+    resolved = resolve_playback_url(legacy_source, playback_client=playback_client)
+    if resolved is None:
+        from lib.utils.player.utils import resolve_failure_reason
+
+        kodilog(f"resolve_cached_source_failed reason={resolve_failure_reason(legacy_source)}")
+    return resolved
+
+
+def _handle_super_quick_play(params: dict, *, playback_client=_CAPTURE_PLAYBACK) -> bool:
+    if params.get("force_select"):
+        kodilog("Super quick play: force_select requested, skipping cached shortcut")
+        return False
+
+    if not get_setting("super_quick_play", False):
+        kodilog("Super quick play disabled")
+        return False
+
+    ids = safe_json_loads(params.get("ids"))
+    key = str(ids.get("original_id") or ids.get("imdb_id") or ids.get("tmdb_id") or "")
+
+    if key:
+        tv_data = safe_json_loads(params.get("tv_data") or "{}")
+        if tv_data and "season" in tv_data and "episode" in tv_data:
+            key += f"_{tv_data['season']}_{tv_data['episode']}"
+
+    if not key:
+        kodilog("Super quick play: No valid key found from ids")
+        return False
+
+    cached_torrent = cache.get(key)
+    if not cached_torrent:
+        kodilog("No cached media found")
+        return False
+
+    if playback_client is _CAPTURE_PLAYBACK:
+        from bobbi_platform.playback_client import capture
+        playback_client = capture()
+
+    def play_cached_source() -> bool:
+        def play(data: dict) -> None:
+            for key in (
+                "simkl_session_id",
+                "simkl_resume_progress",
+                "trakt_playback_id",
+                "trakt_resume_progress",
+                "nuvio_resume_percent",
+            ):
+                if key in params:
+                    data[key] = params[key]
+            player = JacktookPLayer(playback_client=playback_client)
+            player.run(data=data)
+
+        cached_url = cached_torrent.get("url") if isinstance(cached_torrent, Mapping) else None
+        if isinstance(cached_url, str) and cached_url.startswith("plugin://"):
+            play(dict(cached_torrent))
+            return True
+
+        try:
+            source = playback_client.reserve_ui_entry(cached_torrent) if isinstance(cached_torrent, Mapping) else cached_torrent
+            playback_info = _resolve_cached_source(source, params, playback_client=playback_client)
+            if playback_info and isinstance(source, Mapping) and source.get('_ui_reserved_request'):
+                playback_info.update(request_id=source['request_id'],
+                                     _ui_reserved_request=source['_ui_reserved_request'])
+        except StremioPlaybackError as error:
+            kodilog(
+                f"stremio_playback_error phase=super_quick_play code={error.code}",
+                xbmc.LOGWARNING,
+            )
+            notification(error.user_message)
+            return True
+        except Exception:
+            notification(translation(90144))
+            return True
+
+        if not playback_info:
+            notification(translation(90144))
+            return True
+
+        play(playback_info)
+        return True
+
+    if get_setting("silent_resume", False):
+        return play_cached_source()
+
+    dialog = Dialog()
+    if dialog.yesno(
+        translation(90142),
+        translation(90143),
+    ):
+        return play_cached_source()
+
+    kodilog("User chose not to play cached torrent")
+    return False
+
+
+def _process_search_results(
+    results,
+    mode,
+    ep_name,
+    episode,
+    season,
+    scoped_addon_url,
+    query,
+    media_type,
+    rescrape,
+    suppress_debrid_dialog=False,
+    suppress_busy_dialog=False,
+    recommendation_context=None,
+    *, settings_getter=None, debrid_context=None,
+):
+    setting = get_setting if settings_getter is None else settings_getter
+    settings_options = {} if settings_getter is None else {'settings_getter': settings_getter}
+    release_order = (recommendation_context or {}).get('release_order')
+    if isinstance(release_order, dict) and mode == 'tv':
+        season, episode = release_order['season'], release_order['episode']
+        from lib.utils.parsers.pack_parser import detect_pack_scope
+        from lib.utils.general.processors import explicit_episode_conflict
+        # Renumbered later seasons require explicit release-season evidence;
+        # an unlabelled first-season pack cannot inherit the new season.
+        if season != release_order['catalog_season']:
+            results = [result for result in results if (
+                season in detect_pack_scope(result.title, season)['pack_seasons']
+                or (detect_pack_scope(result.title, season)['pack_type'] == 'episode'
+                    and not explicit_episode_conflict(result.title, season, episode)))]
+    # Provider sorting/bypass preferences cannot override a positively wrong
+    # season/episode in the Cinema picker. Unknown/absolute numbering is kept
+    # for exact metadata resolution; this does not manufacture a file match.
+    if recommendation_context is not None and mode in ('tv', 'anime'):
+        from lib.utils.general.processors import explicit_episode_conflict
+        results = [result for result in results
+                   if not explicit_episode_conflict(result.title, season, episode)]
+    bypassed_streams = []
+    other_results = results
+
+    if setting("stremio_bypass_addons", True):
+        bypass_list_str = str(setting("stremio_bypass_addon_list", "") or "")
+        bypass_addons = [value.strip() for value in bypass_list_str.split(",") if value.strip()]
+
+        def is_bypassed(result):
+            if result.addonKey and result.addonKey in bypass_addons:
+                return True
+
+            legacy_name = (result.addonSourceName or result.indexer or "").lower()
+            return any(addon == legacy_name for addon in bypass_addons)
+
+        bypassed_streams = [res for res in results if is_bypassed(res)]
+        other_results = [res for res in results if not is_bypassed(res)]
+
+    pre_results = []
+    if other_results:
+        pre_results = pre_process_results(
+            other_results,
+            mode,
+            ep_name,
+            episode,
+            season,
+            skip_episode_filter=bool(scoped_addon_url),
+            anime_aliases=((recommendation_context or {}).get('catalog_aliases')
+                if 16 in ((recommendation_context or {}).get('genre_ids') or []) else None),
+            anime_range_context=(recommendation_context or {}).get('anime_range_context'),
+            **settings_options,
+        )
+
+    post_results = []
+    if pre_results:
+        post_results = process_results(
+            pre_results,
+            query,
+            mode,
+            media_type,
+            rescrape,
+            episode,
+            suppress_dialog=suppress_debrid_dialog,
+            suppress_busy_dialog=suppress_busy_dialog,
+            **({"recommendation_context": recommendation_context} if recommendation_context is not None else {}),
+            **settings_options,
+            **({'debrid_context': debrid_context} if debrid_context is not None else {}),
+        )
+
+    # Combine results, prioritizing bypassed streams exact native sorting
+    from bobbi_core.search_completion import replace_rows
+    return replace_rows(post_results, bypassed_streams + post_results)
+
+
+def run_search_entry(params: dict, catalog_sources=None, *, playback_client=_CAPTURE_PLAYBACK):
+    mode = params.get('mode', '')
+    media_type = params.get('media_type', '')
+    tv_data = normalize_tv_data(safe_json_loads(params.get('tv_data')))
+    if (mode == 'tv' or media_type == 'tv') and not (
+            type(tv_data.get('season')) is int and tv_data['season'] >= 0
+            and type(tv_data.get('episode')) is int and tv_data['episode'] > 0):
+        # A work-level Play action is not an implicit request for S1E1.
+        # Resolve the ordinary season directory before any quick-play/search.
+        from lib.utils.kodi.utils import build_url, execute_builtin
+        execute_builtin('ActivateWindow(Videos,%s,return)' % build_url(
+            'show_seasons_details', ids=json.dumps(safe_json_loads(params.get('ids'))),
+            mode='tv', media_type='tv'))
+        return
+    if playback_client is _CAPTURE_PLAYBACK:
+        from bobbi_platform.playback_client import capture
+        playback_client = capture()
+    from lib.clients.cinema_ui import is_ui_action
+    ui_action = is_ui_action()
+    if ui_action:
+        # Choosing a work is not consent to choose a source. Keep the shared
+        # picker open until an explicit source click, including the Cinema skin.
+        # Exact next-episode continuation has its own owner-bound entry path.
+        params = dict(params, skip_cancel_on_back=True, force_select=True)
+    # Cinema must compare the shared pool on every ordinary Play request;
+    # an old single-source quick-play entry would bypass new providers.
+    if not ui_action and xbmc.getSkinDir() != 'skin.bobbi.cinema' and _handle_super_quick_play(params, playback_client=playback_client):
+        return
+
+    query = params.get("query", "")
+    mode = params.get("mode", "")
+    media_type = params.get("media_type", "")
+    ids = safe_json_loads(params.get("ids"))
+    tv_data = normalize_tv_data(safe_json_loads(params.get("tv_data")))
+    direct = params.get("direct", False)
+    rescrape = params.get("rescrape", False)
+    skip_cancel = params.get("skip_cancel_on_back", False)
+    jackgram_only = (
+        str(params.get("jackgram_only", "")).lower() == "true"
+        or params.get("jackgram_only") is True
+    )
+    playback_resume = {
+        key: params[key]
+        for key in (
+            "simkl_session_id",
+            "simkl_resume_progress",
+            "trakt_playback_id",
+            "trakt_resume_progress",
+            "nuvio_resume_percent",
+            "_bobbi_resume_percent",
+            "_bobbi_start_over",
+        )
+        if key in params
+    }
+    if ui_action:
+        playback_resume['direct_playback_handoff'] = True
+
+    variant = _normalize_search_variant(params.get("search_variant", SearchVariant.DEFAULT))
+    title_language_mode = _normalize_title_language_mode(
+        params.get(
+            "search_title_language_mode",
+            get_setting("search_title_language_mode", TITLE_LANGUAGE_LOCALIZED_FIRST),
+        )
+    )
+    year = params.get("year")
+    if year is not None:
+        try:
+            year = int(year)
+        except (ValueError, TypeError):
+            year = None
+
+    library_data = None
+    if params.get("stremio_addon_url") and params.get("stremio_catalog_type"):
+        library_data = {
+            "source": "stremio_catalog",
+            "addon_url": params.get("stremio_addon_url"),
+            "catalog_type": params.get("stremio_catalog_type"),
+            "meta_id": params.get("stremio_meta_id") or ids.get("original_id", ""),
+        }
+
+    set_content_type(mode)
+    set_watched_title(query, ids, mode, media_type=media_type, library_data=library_data)
+
+    ep_name = tv_data.get("name", "")
+    episode = tv_data.get("episode", 1)
+    season = tv_data.get("season", 1)
+
+    scoped_addon_url = params.get("scoped_addon_url", "")
+    if jackgram_only and scoped_addon_url:
+        scoped_addon_url = ""
+    preferred_stremio_streams = safe_json_loads(params.get("preferred_stremio_streams") or "[]")
+    preferred_results = _preferred_stremio_results(preferred_stremio_streams)
+
+    if xbmc.getSkinDir() == 'skin.bobbi.cinema' and not direct:
+        return _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
+            rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
+            playback_resume, preferred_results, catalog_sources=catalog_sources, playback_client=playback_client)
+    try:
+        results = search_client(
+            query,
+            ids,
+            mode,
+            media_type,
+            rescrape,
+            season,
+            episode,
+            scoped_addon_url=scoped_addon_url,
+            variant=variant,
+            title_language_mode=title_language_mode,
+            year=year,
+            jackgram_only=jackgram_only,
+            tv_data=tv_data,
+        )
+    except SearchCancelled as exc:
+        kodilog("Search cancelled from detailed status window")
+        results = exc.results
+
+    if not results and not preferred_results:
+        notification("No results found")
+        if not skip_cancel:
+            cancel_playback()
+        return
+
+    # Reuse the metadata that the source dialog already needs. Rank before
+    # the configured result cap so a high-seed encode cannot evict a REMUX.
+    source_metadata = None
+    if xbmc.getSkinDir() == "skin.bobbi.cinema" and not direct:
+        source_metadata = build_media_metadata(ids, mode) if ids else {}
+        if mode in ('tv', 'movies') and (ids or {}).get('tmdb_id'):
+            aliases = _cinema_catalog_aliases(ids, mode)
+            source_metadata['catalog_aliases'] = aliases
+            # Also screen old cached results and partial cancelled searches.
+            results = _cinema_filter_catalog_candidates(results, aliases, mode, fallback_query=query)
+    # The shared coordinator already applied identity, episode and preparation
+    # gates. Re-running them here would strip exact-file catalogue adapters.
+    final_results = _prepare_stremio_results(preferred_results) + list(results)
+    final_results = _filter_movie_year_candidates(final_results, _movie_catalog_context(ids, mode))
+
+    if not final_results:
+        notification(translation(90358))
+        if not skip_cancel:
+            cancel_playback()
+        return
+
+    preferred_group = params.get("preferred_group")
+    force_select = params.get("force_select", False)
+    autoplay_context = params.get("autoplay_context")
+
+    # Fixed: if Auto-Play is enabled but fails (most commonly because
+    # results exist but none match the preferred auto_play_quality), fall
+    # back to the manual source-select screen instead of just cancelling
+    # playback. The user still gets to pick a source manually rather than
+    # a bare "no sources" failure when sources did in fact exist.
+    autoplay_attempted = auto_play_enabled() and not force_select
+    if autoplay_attempted:
+        if auto_play(
+            final_results,
+            ids,
+            tv_data,
+            mode,
+            preferred_group,
+            autoplay_context=autoplay_context,
+            playback_context=playback_resume,
+            playback_client=playback_client,
+        ):
+            return
+
+    if (
+        not show_source_select(
+            final_results,
+            mode,
+            ids,
+            tv_data,
+            query,
+            media_type,
+            rescrape,
+            direct,
+            autoplay_context=autoplay_context,
+            playback_context=playback_resume,
+            playback_client=playback_client,
+            **({"source_metadata": source_metadata} if source_metadata is not None else {}),
+            rejection_already_notified=autoplay_attempted,
+        )
+        and not skip_cancel
+    ):
+        cancel_playback()
+
+
+def _perform_search(indexer_key, dialog, *args, **kwargs):
+    settings_getter = kwargs.pop('settings_getter', None)
+    cache_backend = kwargs.pop('cache_backend', ...)
+    show_dialog = kwargs.pop("show_dialog", True)
+    scoped_addon_url = kwargs.pop("scoped_addon_url", "")
+    addon_override = kwargs.pop("addon_override", None)
+
+    if indexer_key == Indexer.STREMIO:
+        from requests.exceptions import Timeout
+        from bobbi_core.search_completion import SearchCompletion, SearchResults
+        if scoped_addon_url:
+            addon = addon_override or get_addon_by_base_url(scoped_addon_url)
+            stremio_addons = [addon] if addon else []
+        else:
+            stremio_addons = get_selected_stream_addons()[:MAX_STREMIO_ADDONS_PER_SEARCH]
+        if not stremio_addons:
+            notification("No Stremio addons selected")
+            return SearchResults([], SearchCompletion())
+
+        ids_dict = args[0]
+        rest_args = args[1:]
+        results = []
+        completion = SearchCompletion()
+
+        for addon in stremio_addons:
+            if show_dialog:
+                update_dialog(addon.manifest.name, "Searching...", dialog)
+
+            video_id = None
+            original_id = ids_dict.get("original_id")
+            media_kind = "series" if args[1] == "tv" or args[2] == "tv" else "movie"
+
+            if original_id:
+                prefix = original_id.split(":")[0]
+                if addon.isSupported("stream", media_kind, prefix):
+                    video_id = original_id
+
+            # Try IMDb ID for addons that declare tt: prefix
+            if (
+                not video_id
+                and ids_dict.get("imdb_id")
+                and addon.isSupported("stream", media_kind, "tt")
+            ):
+                video_id = ids_dict.get("imdb_id")
+
+            # Try TMDB ID for addons that declare tmdb: prefix
+            if (
+                not video_id
+                and ids_dict.get("tmdb_id")
+                and (
+                    addon.isSupported("stream", media_kind, "tmdb:")
+                    or addon.isSupported("stream", media_kind, "tmdb")
+                )
+            ):
+                video_id = f"tmdb:{ids_dict['tmdb_id']}"
+
+            if video_id:
+                try:
+                    from lib.clients.stremio.addon_client import StremioAddonClient
+                    options = {}
+                    if settings_getter is not None:
+                        options['settings_getter'] = settings_getter
+                    if cache_backend is not ...:
+                        options['cache_backend'] = cache_backend
+                    client = StremioAddonClient(addon, **options)
+                    found = client.search(video_id, *rest_args)
+                    receipt = (found.completion if isinstance(found, SearchResults)
+                               else SearchCompletion(1, failed=1) if found is None
+                               else SearchCompletion(1, succeeded=1))
+                    results.extend(found or [])
+                    completion = completion.combine(receipt)
+                except (Timeout, TimeoutError):
+                    completion = completion.combine(SearchCompletion(1, timed_out=1))
+                except Exception:
+                    completion = completion.combine(SearchCompletion(1, failed=1))
+                    kodilog("Stremio/Nuvio search failed")
+
+        return SearchResults(results, completion)
+
+    client = (get_client(indexer_key) if settings_getter is None
+              else get_client(indexer_key, settings_getter=settings_getter))
+    if not client:
+        return []
+
+    if indexer_key == Indexer.BURST:
+        kwargs["silent"] = True
+
+    result = client.search(*args, **kwargs)
+    if result is None and indexer_key == Indexer.JACKETT and xbmc.getSkinDir() == 'skin.bobbi.cinema':
+        # Discovery/parser failures retain Jackett's legacy None public return,
+        # but cannot become a successful empty provider in this orchestration.
+        from bobbi_core.search_completion import SearchCompletion, SearchResults
+        return SearchResults([], SearchCompletion(1, failed=1))
+    return result
+
+
+def _submit_search_tasks(
+    executor,
+    tasks,
+    dialog,
+    query,
+    mode,
+    media_type,
+    season,
+    episode,
+    ids,
+    scoped_addon_url,
+    tmdb_id,
+    imdb_id,
+    show_dialog,
+    variant: str = SearchVariant.DEFAULT,
+    title_language_mode: str = TITLE_LANGUAGE_LOCALIZED_FIRST,
+    year: Optional[int] = None,
+    title_aliases: Optional[List[str]] = None,
+    jackgram_only: bool = False,
+    slot_factory=None,
+):
+    """Legacy executor/UI adapter; provider selection has one implementation."""
+    class Submission:
+        def submit_task(self, name, key, function, *args, **kwargs):
+            kwargs["show_dialog"] = show_dialog
+            task = executor.submit(function, *args, **kwargs)
+            tasks.append(task)
+            return task
+
+    return _submit_search_tasks_managed(Submission(), dialog, query, mode,
+        media_type, season, episode, ids, scoped_addon_url, tmdb_id, imdb_id,
+        variant, title_language_mode, year, title_aliases, jackgram_only, slot_factory)
+
+
+def _submit_search_tasks_managed(
+    manager,
+    dialog,
+    query,
+    mode,
+    media_type,
+    season,
+    episode,
+    ids,
+    scoped_addon_url,
+    tmdb_id,
+    imdb_id,
+    variant: str = SearchVariant.DEFAULT,
+    title_language_mode: str = TITLE_LANGUAGE_LOCALIZED_FIRST,
+    year: Optional[int] = None,
+    title_aliases: Optional[List[str]] = None,
+    jackgram_only: bool = False,
+    slot_factory=None,
+    cache_backend=...,
+    settings_getter=None,
+):
+    setting = settings_getter or get_setting
+    def enabled(*args, **kwargs):
+        if cache_backend is not ...:
+            kwargs['cache_backend'] = cache_backend
+        if settings_getter is not None:
+            kwargs['settings_getter'] = settings_getter
+        return _is_source_enabled(*args, **kwargs)
+
+    def submit_task(*args, **kwargs):
+        if settings_getter is not None:
+            kwargs['settings_getter'] = settings_getter
+        if cache_backend is not ...:
+            kwargs['cache_backend'] = cache_backend
+        return manager.submit_task(*args, **kwargs)
+
+    def add_managed(*args, **kwargs):
+        if settings_getter is not None:
+            kwargs['settings_getter'] = settings_getter
+        if cache_backend is not ...:
+            kwargs['cache_backend'] = cache_backend
+        return add_task_if_enabled_managed(*args, **kwargs)
+
+    def submit_performer_managed(name, indexer_key, *args, **kwargs):
+        kwargs["show_dialog"] = False
+        if "scoped_addon_url" not in kwargs:
+            kwargs["scoped_addon_url"] = scoped_addon_url
+        if "variant" not in kwargs:
+            kwargs["variant"] = variant
+        if "title_language_mode" not in kwargs:
+            kwargs["title_language_mode"] = title_language_mode
+        if "year" not in kwargs:
+            kwargs["year"] = year
+        return submit_task(
+            name,
+            indexer_key,
+            _perform_search,
+            indexer_key,
+            *args,
+            **kwargs,
+        )
+
+    if jackgram_only:
+        if enabled(Indexer.JACKGRAM):
+            add_managed(
+                manager,
+                "jackgram_enabled",
+                Indexer.JACKGRAM,
+                _perform_search,
+                dialog,
+                tmdb_id,
+                query,
+                mode,
+                media_type,
+                season,
+                episode,
+                show_dialog=False,
+                scoped_addon_url=scoped_addon_url,
+            )
+        return
+
+    if scoped_addon_url:
+        addon = (get_addon_by_base_url(scoped_addon_url) if cache_backend is ...
+                 else get_addon_by_base_url(scoped_addon_url, cache_backend))
+        if (
+            addon
+            and (ids.get("imdb_id") or ids.get("original_id") or ids.get("tmdb_id"))
+            and enabled(Indexer.STREMIO, addon.key())
+        ):
+            submit_performer_managed(
+                get_addon_display_name(addon) if cache_backend is ... else get_addon_display_name(addon, cache_backend),
+                Indexer.STREMIO,
+                dialog,
+                ids,
+                mode,
+                media_type,
+                season,
+                episode,
+                scoped_addon_url=scoped_addon_url,
+                addon_override=addon,
+            )
+    else:
+        if enabled(Indexer.EASYNEWS):
+            add_managed(
+                manager,
+                "easynews_enabled",
+                Indexer.EASYNEWS,
+                _perform_search_with_title_fallback,
+                dialog,
+                query,
+                ids,
+                mode,
+                media_type,
+                season,
+                episode,
+                show_dialog=False,
+                scoped_addon_url=scoped_addon_url,
+                variant=variant,
+                title_language_mode=title_language_mode,
+                year=year,
+            )
+        if enabled(Indexer.BURST):
+            add_managed(
+                manager,
+                "jacktookburst_enabled",
+                Indexer.BURST,
+                _perform_search,
+                dialog,
+                imdb_id or "",
+                query,
+                mode,
+                media_type,
+                season,
+                episode,
+                show_dialog=False,
+                scoped_addon_url=scoped_addon_url,
+            )
+        if setting("prowlarr_enabled") and enabled(Indexer.PROWLARR):
+            indexers_ids = setting("prowlarr_indexer_ids")
+            submit_task(
+                "Prowlarr",
+                Indexer.PROWLARR,
+                _perform_search_with_title_fallback,
+                Indexer.PROWLARR,
+                dialog,
+                query,
+                ids,
+                mode,
+                season,
+                episode,
+                indexers_ids,
+                show_dialog=False,
+                scoped_addon_url=scoped_addon_url,
+                variant=variant,
+                title_language_mode=title_language_mode,
+                year=year,
+            )
+        if enabled(Indexer.JACKETT):
+            add_managed(
+                manager,
+                "jackett_enabled",
+                Indexer.JACKETT,
+                _perform_search_with_title_fallback,
+                dialog,
+                query,
+                ids,
+                mode,
+                season,
+                episode,
+                show_dialog=False,
+                scoped_addon_url=scoped_addon_url,
+                variant=variant,
+                title_language_mode=title_language_mode,
+                year=year,
+                cancelled=getattr(manager, 'scope_cancelled',
+                                  getattr(getattr(manager, 'cancelled', None), 'is_set', None)),
+                deadline=getattr(manager, 'deadline', None),
+                query_cache=getattr(manager, 'query_result_cache', None),
+                **({'slot_factory': slot_factory} if slot_factory is not None else {}),
+                **({'_progressive': True, '_cache_seed_only': True} if hasattr(manager, 'session') else {}),
+            )
+        if enabled(Indexer.JACKGRAM):
+            add_managed(
+                manager,
+                "jackgram_enabled",
+                Indexer.JACKGRAM,
+                _perform_search,
+                dialog,
+                tmdb_id,
+                query,
+                mode,
+                media_type,
+                season,
+                episode,
+                show_dialog=False,
+                scoped_addon_url=scoped_addon_url,
+            )
+        if setting('external_scraper_enabled') and enabled(Indexer.EXTERNAL_SCRAPER):
+            module_display_name = setting("external_scraper_module_name") or "External Scraper"
+            submit_task(
+                module_display_name,
+                Indexer.EXTERNAL_SCRAPER,
+                _perform_search,
+                Indexer.EXTERNAL_SCRAPER,
+                dialog,
+                tmdb_id,
+                query,
+                mode,
+                media_type,
+                season,
+                episode,
+                show_dialog=False,
+                scoped_addon_url=scoped_addon_url,
+                imdb_id=imdb_id or "",
+                tvdb_id=(ids or {}).get("tvdb_id", ""),
+                year=str(year) if year else "",
+                aliases=title_aliases,
+            )
+        if setting("stremio_enabled") and (
+            ids.get("imdb_id") or ids.get("original_id") or ids.get("tmdb_id")
+        ):
+            stremio_addons = (get_selected_stream_addons() if cache_backend is ...
+                             else get_selected_stream_addons(cache_backend))[:MAX_STREMIO_ADDONS_PER_SEARCH]
+            filtered_addons = [
+                addon
+                for addon in stremio_addons
+                if enabled(Indexer.STREMIO, addon.key())
+            ]
+            for addon in filtered_addons:
+                submit_performer_managed(
+                    get_addon_display_name(addon) if cache_backend is ... else get_addon_display_name(addon, cache_backend),
+                    Indexer.STREMIO,
+                    dialog,
+                    ids,
+                    mode,
+                    media_type,
+                    season,
+                    episode,
+                    scoped_addon_url=addon.url(),
+                    addon_override=addon,
+                )
+        if setting("nuvio_enabled") and (
+            ids.get("imdb_id") or ids.get("original_id") or ids.get("tmdb_id")
+        ):
+            nuvio_addons = _get_selected_nuvio_stream_addons_safe(cache_backend)[:MAX_STREMIO_ADDONS_PER_SEARCH]
+            for addon in nuvio_addons:
+                if enabled(Indexer.STREMIO, addon.key(), addon_origin="Nuvio"):
+                    submit_performer_managed(
+                        f"Nuvio: {addon.manifest.name or addon.manifest.id}",
+                        Indexer.STREMIO,
+                        dialog,
+                        ids,
+                        mode,
+                        media_type,
+                        season,
+                        episode,
+                        scoped_addon_url=addon.url(),
+                        addon_override=addon,
+                    )
+
+
+class _SearchProgress:
+    """Presentation adapter; the same coordinator owns all query state."""
+    def __init__(self, session, pump):
+        self.session, self.pump = session, pump
+
+    @property
+    def is_cancelled(self):
+        return self.session.cancelled
+
+    @property
+    def is_complete(self):
+        return not self.pump.thread.is_alive()
+
+    def cancel_pending(self):
+        self.session.cancel()
+        self.pump.cancel()
+
+    def snapshot_tasks(self):
+        from lib.gui.search_status_window import SearchTask
+        states = {'PENDING': 'Pending', 'RUNNING': 'In Progress',
+                  'COMPLETE': 'Completed', 'PARTIAL': 'Completed',
+                  'FAILED': 'Failed', 'TIMEOUT': 'Failed', 'CANCELLED': 'Cancelled'}
+        return [SearchTask(name=key.split(':')[0], indexer_key=key,
+                    status=states[row['state']], result_count=row['count'])
+                for key, row in self.session.status()['providers'].items()]
+
+
+def _session_results(session):
+    from bobbi_core.search_completion import SearchCompletion, SearchResults
+    snapshot = session.snapshot(full=True)
+    completion = SearchCompletion()
+    for key, record in snapshot['providers'].items():
+        receipt = record.get('completion')
+        if receipt is not None:
+            part = SearchCompletion(**receipt)
+        elif record['state'] == 'COMPLETE':
+            # Setup does no source query; local sources and ordinary adapters
+            # without subquery receipts still represent one completed provider.
+            part = SearchCompletion() if key == 'setup' else SearchCompletion(1, succeeded=1)
+        else:
+            outcome = ('timed_out' if record['state'] == 'TIMEOUT' else
+                       'skipped' if record['state'] in ('CANCELLED', 'PENDING', 'RUNNING') else 'failed')
+            part = SearchCompletion(1, **{outcome: 1})
+        # A timeout after a cached/streamed success must not promote its older
+        # receipt to a complete final search.
+        if record['state'] in ('TIMEOUT', 'FAILED', 'CANCELLED') and part.complete:
+            outcome = {'TIMEOUT': 'timed_out', 'FAILED': 'failed', 'CANCELLED': 'skipped'}[record['state']]
+            part = part.combine(SearchCompletion(1, **{outcome: 1}))
+        completion = completion.combine(part)
+    return SearchResults([row for _, row in snapshot['entries']], completion)
+
+
+def search_client(
+    query: str,
+    ids: dict,
+    mode: str,
+    media_type: str,
+    rescrape: bool,
+    season: int,
+    episode: int,
+    show_dialog: bool = True,
+    scoped_addon_url: str = "",
+    variant: str = SearchVariant.DEFAULT,
+    title_language_mode: str = TITLE_LANGUAGE_LOCALIZED_FIRST,
+    year: Optional[int] = None,
+    jackgram_only: bool = False,
+    tv_data=None,
+    cancelled=None,
+) -> List[TorrentStream]:
+    """Collect already-filtered candidates from the picker's execution core.
+
+    Background callers never instantiate a window or manipulate busy dialogs.
+    Provider/query caches, identity filters and deadlines have one owner; no
+    aggregate search cache may hide failed siblings or extend their lifetime.
+    """
+    tv_data = dict(tv_data or {}, season=season, episode=episode)
+    if jackgram_only:
+        scoped_addon_url = ""
+    session, pump = _create_source_search({}, query, ids or {}, mode, media_type,
+        tv_data, rescrape, scoped_addon_url, variant, title_language_mode, year,
+        jackgram_only, {}, [])
+    progress = _SearchProgress(session, pump)
+    monitor = xbmc.Monitor()
+    pump.start()
+    try:
+        if show_dialog:
+            close_busy_dialog()
+            window = SearchStatusWindow("search_status.xml", ADDON_PATH,
+                task_manager=progress, item_information={"ids": ids, "mode": mode})
+            try:
+                window.show()
+                window.run_until_complete()
+            finally:
+                window.close()
+        else:
+            while pump.thread.is_alive():
+                if monitor.abortRequested() or (cancelled is not None and cancelled()):
+                    progress.cancel_pending()
+                    break
+                pump.thread.join(.05)
+        results = _session_results(session)
+        if session.cancelled:
+            raise SearchCancelled(results)
+        return results
+    finally:
+        pump.cancel()
+
+
+def pre_process_results(
+    results: List[TorrentStream],
+    mode: str,
+    ep_name: str,
+    episode: int,
+    season: int,
+    skip_episode_filter: bool = False,
+    anime_aliases=None,
+    anime_range_context=None,
+    *, settings_getter=None,
+) -> List[TorrentStream]:
+    return pre_process(results, mode, ep_name, episode, season, skip_episode_filter,
+                       anime_aliases=anime_aliases, anime_range_context=anime_range_context,
+                       **({} if settings_getter is None else {'settings_getter': settings_getter}))
+
+
+def process_results(
+    pre_results: List[TorrentStream],
+    query: str,
+    mode: str,
+    media_type: str,
+    rescrape: bool,
+    episode: int,
+    suppress_dialog: bool = False,
+    suppress_busy_dialog: bool = False,
+    recommendation_context=None,
+    *, settings_getter=None, debrid_context=None,
+) -> List[TorrentStream]:
+    setting = get_setting if settings_getter is None else settings_getter
+    torrent_results = []
+    if setting("torrent_enable"):
+        options = {} if settings_getter is None else {'settings_getter': settings_getter}
+        if recommendation_context is not None:
+            options['recommendation_context'] = recommendation_context
+        torrent_results = post_process(pre_results, **options)
+    if not suppress_busy_dialog:
+        close_busy_dialog()
+    if suppress_dialog:
+        debrid_results = check_debrid_cached(
+            query, pre_results, mode, media_type, SilentProgressDialog(), rescrape, episode,
+            **({'search_context': debrid_context} if debrid_context is not None else {}),
+        )
+    else:
+        with DialogListener() as listener:
+            debrid_results = check_debrid_cached(
+                query, pre_results, mode, media_type, listener.dialog, rescrape, episode,
+                **({'search_context': debrid_context} if debrid_context is not None else {}),
+            )
+    from bobbi_core.search_completion import replace_rows
+    return replace_rows(debrid_results, debrid_results + torrent_results)
+
+
+def _create_source_search(params, query, ids, mode, media_type, tv_data,
+        rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
+        playback_context, preferred, catalog_sources=None, budget=30):
+    created_at = monotonic()
+    from bobbi_core.source_list_session import SourceListSession
+    from bobbi_core.progressive_search import ProgressiveSearch
+    from lib.utils.general.cinema_source_rank import rank_sources
+    from bobbi_core.provider_cache import ProviderResultCache
+    from lib.clients.catalog_providers import provider_for, submit_catalogs
+    from bobbi_platform.source_libraries import capture_context
+    from bobbi_platform.paths import ProfileBinding
+    from bobbi_core.search_admission import try_acquire
+    from lib.clients.portable_http import _slot
+    from functools import partial
+    class SearchBinding(ProfileBinding):
+        ADDONS = ProfileBinding.ADDONS + ('script.module.bobbi.core',)
+    try:
+        binding = SearchBinding()
+    except (ImportError, OSError, ValueError, RuntimeError):
+        binding = None  # Failed capture never binds later from a worker/retry.
+    current = binding.is_current if binding is not None else (lambda: False)
+    query_root = binding.root('plugin.video.bobbi') if binding is not None else None
+    settings_error = None
+    try:
+        setting = capture_settings(query_root, current)
+    except Exception as error:
+        settings_error = error
+        setting = lambda key, default=None: default  # Local-only presentation defaults.
+    def admission():
+        if not current():
+            raise ValueError('PROFILE_CHANGED')
+        return try_acquire(query_root / 'search-admission')
+    slot_factory = (partial(_slot, directory=query_root / 'http-admission', current=current)
+                    if query_root is not None else None)
+    catalog_context = capture_context(binding=binding) if binding is not None else None
+    from bobbi_platform.prepared_sessions import capture as capture_prepared
+    prepared_session = (capture_prepared(binding=catalog_context.binding)
+                        if catalog_context is not None and not scoped_addon_url and not jackgram_only else None)
+    season, episode = tv_data.get('season', 1), tv_data.get('episode', 1)
+    context = dict(mode=mode, query=query, media_type=media_type, ids=ids, tv_data=tv_data)
+    # Cache-only identity is ready before any preferred/local BT card can show.
+    # The worker may refresh it after the existing catalog detail lookup.
+    movie_catalog = [_movie_catalog_context(ids, mode)]
+    if mode == 'tv':
+        from lib.clients.tmdb.episode_order import release_pair
+        order = release_pair(ids, tv_data)
+        if order:
+            context['release_order'] = order
+    tv_completed = [_tv_completed_context(ids, mode, tv_data, context.get('release_order'))]
+    limit = max(1, min(100, int(setting('indexers_total_results', 10))))
+    session = SourceListSession(dict(ids=ids, mode=mode, season=season, episode=episode,
+        query=query, policy='b-full-unified-v6-movie-years', order_digest=(context.get('release_order') or {}).get('order_digest', ''), scope=scoped_addon_url, variant=variant,
+        language=title_language_mode, jackgram_only=bool(jackgram_only)),
+        lambda rows: rank_sources(_filter_tv_completed_candidates(
+            _filter_movie_year_candidates(rows, movie_catalog[0]), tv_completed[0], ids, tv_data), context), limit,
+        share_reader=catalog_context.reader if catalog_context is not None else None)
+    from bobbi_core.search_trace import configure, observe
+    if binding is not None and current():
+        configure(binding.root('script.module.bobbi.core'), session.epoch)
+    def phase(name):
+        kodilog('BOBBI-SEARCH-PHASE ' + json.dumps(dict(invocation=session.epoch,
+            phase=name, elapsed=round(monotonic() - created_at, 4),
+            import_seconds=round(_IMPORT_SECONDS, 4))), level=xbmc.LOGINFO)
+    if catalog_sources:
+        session.publish(session.epoch, 'local-entry', catalog_sources)
+    if preferred:
+        session.publish(session.epoch, 'preferred', _prepare_stremio_results(preferred))
+    local_catalogs = not scoped_addon_url and not jackgram_only
+    if local_catalogs:
+        # Register before starting the coordinator: cancellation can terminalize
+        # these producers even while a local read/validation is still running.
+        # No catalog IO belongs to the caller's pre-window construction path.
+        for provider in ('漫迪 MDsub', '115-local-index'):
+            session.publish(session.epoch, provider, state='PENDING')
+    phase('SESSION_READY')
+
+    def transform(rows):
+        from bobbi_core.search_completion import SearchCompletion, SearchResults
+        upstream = rows.completion if isinstance(rows, SearchResults) else None
+        # Exact-file catalogue rows have already passed their independent
+        # identity gate. Keep stable locators out of the legacy search cache.
+        catalog_rows, ordinary = [], []
+        for row in rows:
+            (catalog_rows if provider_for(row) else ordinary).append(row)
+        rows = ordinary
+        if not rows:
+            return SearchResults(catalog_rows, upstream) if upstream is not None else catalog_rows
+        from lib.utils.debrid.debrid_utils import capture_search_debrid
+        # This runs inside a retained ProgressiveSearch provider callback, never
+        # on the picker UI thread. Freeze this round's token/deadline, not retry's.
+        debrid_context = capture_search_debrid(setting, current=pump.scope_current,
+            cancelled=pump.cancelled, deadline=pump.deadline)
+        if mode in ('tv', 'movies'):
+            target = context.get('release_order') or tv_data
+            rows = _cinema_filter_catalog_candidates(rows, context.get('catalog_aliases', []), mode,
+                release_season=_cinema_release_season(target.get('season', season)) if mode == 'tv' else None,
+                release_episode=int(target.get('episode', 0)) or None if mode == 'tv' else None,
+                fallback_query=query, anime=16 in (context.get('genre_ids') or []),
+                anime_range_context=context.get('anime_range_context'), settings_getter=setting)
+        checked = _process_search_results(rows, mode, tv_data.get('name', ''),
+            episode, season, scoped_addon_url, query, media_type, rescrape,
+            suppress_debrid_dialog=True, suppress_busy_dialog=True, recommendation_context=context,
+            settings_getter=setting, debrid_context=debrid_context)
+        processed = catalog_rows + _prepare_stremio_results(checked)
+        completion = checked.completion if isinstance(checked, SearchResults) else None
+        if upstream is not None:
+            completion = upstream.combine(completion or SearchCompletion())
+        if completion is not None:
+            processed = SearchResults(processed, completion)
+        observe('processed', processed, invocation=session.epoch)
+        return processed
+
+    ready_setup = []
+    query_backends = []
+
+    def close_cache():
+        for backend in query_backends:
+            backend.close()
+        query_backends.clear()
+
+    def local_live(manager):
+        if manager.scope_cancelled():
+            return False
+        if monotonic() >= manager.deadline:
+            for provider in ('漫迪 MDsub', '115-local-index'):
+                session.publish(session.epoch, provider, state='TIMEOUT', error='SEARCH_DEADLINE')
+            return False
+        return True
+
+    def setup(manager):
+        phase('SETUP_BEGIN')
+        if manager.retrying and ready_setup:
+            manager.query_result_cache.resume_cached_queries()
+            return ready_setup[0](manager)
+        if local_catalogs:
+            if not local_live(manager):
+                return
+            from lib.clients.mdsub_provider import find_sources as mdsub_sources
+            session.publish(session.epoch, '漫迪 MDsub', state='RUNNING')
+            rows = mdsub_sources(ids, mode, season, episode, prepared_session=prepared_session)
+            if not local_live(manager):
+                return
+            session.publish(session.epoch, '漫迪 MDsub', rows)
+            from lib.clients.bobbi_library import load_index, find_sources
+            session.publish(session.epoch, '115-local-index', state='RUNNING')
+            try:
+                clouds = find_sources(load_index(session=prepared_session), ids.get('tmdb_id'), mode, season, episode)
+                if not local_live(manager):
+                    return
+                session.publish(session.epoch, '115-local-index', clouds)
+            except (ValueError, OSError, KeyError, TypeError, RuntimeError) as error:
+                session.publish(session.epoch, '115-local-index', state='FAILED', error=type(error).__name__)
+            if not local_live(manager):
+                return
+        phase('LOCAL_READY')
+        if not local_live(manager):
+            return
+        if settings_error is not None:
+            raise RuntimeError('SEARCH_SETTINGS_UNAVAILABLE') from settings_error
+        try:
+            if not query_backends:
+                query_backends.append(HybridCache(str(query_root / 'plugin.video.bobbi.cached.sqlite'),
+                                                  current=current, strict_reads=True))
+            backend = query_backends[0]
+            from lib.clients.nuvio.helpers import get_selected_stream_addon_records
+            from lib.clients.stremio.helpers import _get_aliases
+            # Validate every configuration family before reconciliation writes.
+            # Explicit-backend helpers stay strict on their later reads too.
+            get_selected_stream_addons(backend)
+            get_selected_stream_addon_records(backend)
+            _get_aliases(STREMIO_ADDON_ALIASES_KEY, backend)
+            for key in ('source_manager_selection', 'source_manager_known_keys'):
+                parse_source_selection(backend.get(key), strict=True)
+            reconcile_source_selection(cache_backend=backend, settings_getter=setting, strict=True,
+                stremio_addons_getter=lambda: get_selected_stream_addons(backend),
+                nuvio_addons_getter=lambda: get_selected_stream_addon_records(backend))
+        except Exception as error:
+            # This database also owns source/account selection. Unknown
+            # configuration cannot mean "enable everything" or an empty list.
+            # Already-discovered independent local rows remain available.
+            raise RuntimeError('SEARCH_CONFIGURATION_UNAVAILABLE') from error
+        configuration = _build_search_cache_scope(scoped_addon_url, backend, setting)
+        # Older snapshots discarded indexer category evidence. Re-admit from
+        # fresh provider data rather than re-publishing those rows after upgrade.
+        scope = configuration + ':provider-v2:' + hashlib.sha256(session.media.encode()).hexdigest()
+        # The progressive path no longer reads/writes an aggregate full-search
+        # cache. Healthy providers survive sibling failure and only missing or
+        # expired scopes repeat IO. Exact-file catalogs own their locator cache.
+        manager.result_cache = ProviderResultCache(backend, scope,
+            hours=min(.5, float(setting('cache_expiration', 24))) if setting('cache_enabled') else 0,
+            refresh=rescrape, cacheable=lambda key: key in (Indexer.JACKETT, 'animegarden'))
+        # URLs already bind site, query and every season/year parameter. Share
+        # identical broad-title requests across episodes/callers; identity
+        # filtering still runs independently for the requested work/episode.
+        manager.query_result_cache = ProviderResultCache(backend, configuration + ':queries-v3',
+            hours=min(.5, float(setting('cache_expiration', 24))) if setting('cache_enabled') else 0, refresh=rescrape)
+        details = {}
+        if ids.get('tmdb_id') and mode in ('tv', 'movies'):
+            from lib.clients.tmdb.utils.utils import get_tmdb_media_details
+            details = get_tmdb_media_details(ids['tmdb_id'], mode) or {}
+        if ids:
+            context.update(build_media_metadata(ids, mode, enrich_art=False, details=details))
+        if mode in ('tv', 'movies') and ids.get('tmdb_id'):
+            context['catalog_aliases'] = _cinema_catalog_aliases(ids, mode, details=details)
+        if mode == 'tv' and 16 in (context.get('genre_ids') or []):
+            target = context.get('release_order') or tv_data
+            context['anime_range_context'] = _cinema_anime_range_context(ids, mode, _cinema_release_season(season),
+                _cinema_release_season(target.get('season', season)), int(target.get('episode', episode)), details=details)
+        movie_catalog[0] = _movie_catalog_context(ids, mode)
+        tv_completed[0] = _tv_completed_context(ids, mode, tv_data, context.get('release_order'))
+        session.set_metadata({key: value for key, value in context.items()
+                              if key not in ('mode', 'query', 'media_type')})
+        inferred_year = year if year is not None else _infer_tmdb_year(ids, mode, details=details)
+        movie_years = None
+        if mode == 'movies':
+            from lib.clients.tmdb.movie_years import cached_movie_years
+            movie_years = cached_movie_years(ids.get('tmdb_id'))
+            if movie_years is not None:
+                inferred_year = movie_years.primary_year
+        aliases = _build_title_fallback_queries(query, ids, mode, SearchVariant.DEFAULT,
+            inferred_year, title_language_mode=title_language_mode, details=details)
+        phase('IDENTITY_READY')
+        # Reuse this title's established identity and query plan on manual retry.
+        # Only request deadlines/tokens are rebuilt, not the metadata chain.
+        def submit_ready(manager):
+            submit(manager, inferred_year, movie_years, aliases, details)
+        ready_setup[:] = [submit_ready]
+        submit_ready(manager)
+        phase('PLAN_SUBMITTED')
+
+    def submit(manager, inferred_year, movie_years, aliases, details):
+        if manager.scope_cancelled():
+            return
+        if not scoped_addon_url and not jackgram_only and ids.get('tmdb_id'):
+            submit_catalogs(manager,
+                ids, mode, season, episode, inferred_year, context.get('catalog_aliases', []),
+                context.get('release_order'),
+                movie_years=movie_years, context=catalog_context)
+        _submit_search_tasks_managed(manager, None, query, mode, media_type, season, episode,
+            ids, scoped_addon_url, ids.get('tmdb_id'), ids.get('imdb_id'), variant=variant,
+            title_language_mode=title_language_mode, year=inferred_year,
+            title_aliases=aliases, jackgram_only=jackgram_only, slot_factory=slot_factory,
+            cache_backend=query_backends[0] if query_backends else None, settings_getter=setting)
+        if (not scoped_addon_url and not jackgram_only and mode == 'tv'
+                and 16 in (context.get('genre_ids') or [])):
+            # Raw releases supplement the existing providers. ANI-RSS preview
+            # collapses same-episode versions and is not a source-selection API.
+            # No BGM subject ID is promoted to trusted TMDb catalogue identity.
+            from lib.clients.animegarden_provider import find_sources as animegarden_sources
+            manager.submit_task('AnimeGarden RSS', 'animegarden', animegarden_sources,
+                ids, mode, _cinema_anime_queries(ids, mode, details=details), manager.deadline, manager.cancelled,
+                query_cache=manager.query_result_cache, _progressive=True, _cache_seed_only=True,
+                slot_factory=slot_factory, proxy_path=query_root / 'search-network.json', current=current)
+
+        # Optional RPDB/Fanart IO belongs to idle navigation warming. A picker
+        # uses cached art (or TMDb art) and releases its search lease promptly.
+
+    pump = ProgressiveSearch(session, setup, transform, workers=min(4, _search_worker_count(setting)), budget=budget,
+                             admission=admission, current=current, on_close=close_cache)
+    return session, pump
+
+
+def _run_progressive_source_entry(params, query, ids, mode, media_type, tv_data,
+        rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
+        playback_context, preferred, catalog_sources=None, *, playback_client=_CAPTURE_PLAYBACK):
+    if playback_client is _CAPTURE_PLAYBACK:
+        from bobbi_platform.playback_client import capture
+        playback_client = capture()
+    session, pump = _create_source_search(params, query, ids, mode, media_type, tv_data,
+        rescrape, scoped_addon_url, variant, title_language_mode, year, jackgram_only,
+        playback_context, preferred, catalog_sources)
+    pump.start()
+    try:
+        initial = [source for _, source in session.snapshot()['entries']]
+        return show_source_select(initial, mode, ids, tv_data, query, media_type,
+            rescrape, playback_context=playback_context, source_metadata={},
+            source_session=session, source_pump=pump, playback_client=playback_client,
+            auto_select_sources=str(params.get('force_select', False)).lower() not in ('true', '1'))
+    finally:
+        pump.cancel()
+
+
+def create_next_source_search(data, budget=30):
+    """Read-only prefetch and visible picker share one session and provider work."""
+    return _create_source_search({'force_select': True}, data.get('query', ''),
+        data.get('ids', {}), data.get('mode', 'tv'), data.get('media_type', ''),
+        data.get('tv_data', {}), False, '', SearchVariant.DEFAULT,
+        _normalize_title_language_mode(get_setting('search_title_language_mode', TITLE_LANGUAGE_LOCALIZED_FIRST)),
+        None, False, {'playnext_context': True, 'direct_play': True}, [], budget=budget)
+
+
+def _show_reserved_next_sources(reservation, job, *, playback_client):
+    from lib.utils.player.next_source_picker import picker_note, picker_status
+    monitor = xbmc.Monitor()
+    if job is None:
+        return False
+    def inactive():
+        return monitor.abortRequested() or job.closed.is_set() or job.stopped.is_set()
+    def wait_retry(delay):
+        return not inactive() and not monitor.waitForAbort(delay) and not inactive()
+    # Prefetch normally has a first card by EOF. A slow result may wait only
+    # within this job's original budget and while the exact UI permit survives.
+    while not inactive():
+        if picker_status(reservation, playback_client=playback_client, wait_retry=wait_retry) is None or inactive():
+            picker_note('PERMIT_UNAVAILABLE')
+            return False
+        account = job.account_scope()
+        if account is None:
+            if not job.finished.is_set():
+                if monotonic() >= job.deadline or monitor.waitForAbort(.12):
+                    return False
+                continue
+            # Capture can complete between the first scope read and finished.
+            account = job.account_scope()
+            if account is None:
+                return False  # Failed capture is not an empty source list.
+        if account != reservation.get('_account'):
+            # The job may finish account capture after EOF admission. It must
+            # never relabel old personal results with the new permit's scope.
+            job.cancel()
+            return False
+        entry = job.snapshot()
+        if entry:
+            data, session, pump = entry
+            initial = [source for _, source in session.snapshot()['entries']]
+            if initial:
+                picker_note('OPEN_WITH_CARDS')
+                context = dict(playnext_context=True, direct_play=True, direct_playback_handoff=True,
+                    _next_picker_context=reservation['_next_picker_context'], _account=reservation.get('_account'))
+                return show_source_select(initial, data['mode'], data['ids'], data['tv_data'],
+                    data.get('query', ''), data.get('media_type', ''), False,
+                    playback_context=context, source_metadata={}, source_session=session,
+                    source_pump=pump, auto_select_sources=False, playback_client=playback_client)
+            if not pump.thread.is_alive():
+                break
+        elif job.finished.is_set():
+            break
+        if monotonic() >= job.deadline or monitor.waitForAbort(.12):
+            break
+    if not monitor.abortRequested() and not job.stopped.is_set() and picker_status(reservation, playback_client=playback_client) is not None:
+        entry = job.snapshot()
+        if entry is None:
+            reason, message = 'TARGET_UNCONFIRMED', '本集已播完，未能确认已播出的下一集'
+        else:
+            providers = entry[1].snapshot()['providers']
+            complete = bool(providers) and all(row['state'] == 'COMPLETE' for row in providers.values())
+            reason, message = (('NO_CARDS', '本集已播完，未找到下一集可选片源') if complete else
+                               ('SEARCH_INCOMPLETE', '本集已播完，下一集片源查询未完成，可在分集页重试'))
+        picker_note(reason)
+        notification(message, heading='波比TV', time=5000)
+    return False
+
+
+def show_next_sources(data, next_picker=None, *, playback_client):
+    """Legacy next-entry adapter; never display an opaque aggregate cache.
+
+    The shared per-query cache seeds current candidates and supplements expired
+    or failed queries, including after an account/source configuration change.
+    """
+    if '_next_picker_context' in data:
+        return _show_reserved_next_sources(data, next_picker, playback_client=playback_client)
+    return _run_progressive_source_entry({'force_select': True}, data.get('query', ''),
+        data.get('ids', {}), data.get('mode', 'tv'), data.get('media_type', ''),
+        data.get('tv_data', {}), False, '', SearchVariant.DEFAULT,
+        _normalize_title_language_mode(get_setting('search_title_language_mode', TITLE_LANGUAGE_LOCALIZED_FIRST)),
+        None, False, {'playnext_context': True, 'direct_play': True}, [], playback_client=playback_client)
+
+
+def show_source_select(
+    results: List[TorrentStream],
+    mode: str,
+    ids: dict,
+    tv_data: dict,
+    query: str,
+    media_type: str,
+    rescrape: bool,
+    direct: bool = False,
+    autoplay_context: Optional[str] = None,
+    playback_context: Optional[dict] = None,
+    source_metadata: Optional[dict] = None,
+    source_session=None,
+    source_pump=None,
+    rejection_already_notified: bool = False,
+    auto_select_sources: bool = False,
+    playback_client=_CAPTURE_PLAYBACK,
+) -> bool:
+    rejection_reasons = []
+    results = _prepare_stremio_results(
+        results,
+        notify_rejections=False,
+        rejection_reasons=rejection_reasons,
+    )
+    if not results and source_session is None:
+        if rejection_reasons and not rejection_already_notified:
+            notification(rejection_reasons[0])
+        return False
+
+    item_info = {
+        "tv_data": tv_data,
+        "ids": ids,
+        "mode": mode,
+        "query": query,
+        "media_type": media_type,
+        "rescrape": rescrape,
+        "auto_select_sources": auto_select_sources,
+    }
+    from lib.clients.cinema_ui import is_ui_action
+    if is_ui_action():
+        item_info['direct_playback_handoff'] = True
+    if autoplay_context:
+        item_info["playnext_context"] = True
+        item_info["direct_play"] = True
+    if playback_context:
+        item_info.update(playback_context)
+
+    if not direct and ids:
+        item_info.update(source_metadata if source_metadata is not None else build_media_metadata(ids, mode))
+
+    tv_data = tv_data if isinstance(tv_data, dict) else {}
+    episode_title_zh = unquote(str(tv_data.get("display_name_zh") or ""))
+    episode_title_en = unquote(str(tv_data.get("display_name_en") or tv_data.get("name") or ""))
+    episode_display = unquote(str(tv_data.get("display_name") or ""))
+    season_number = tv_data.get("season")
+    episode_number = tv_data.get("episode")
+    if mode == 'tv':
+        from lib.clients.tmdb.episode_order import release_pair
+        display_order = release_pair(ids, tv_data)
+        if display_order:
+            season_number, episode_number = display_order['season'], display_order['episode']
+    item_info["episode_title_zh"] = episode_title_zh
+    item_info['display_season'] = season_number
+    item_info['display_episode'] = episode_number
+    item_info["episode_title_en"] = episode_title_en
+    item_info["episode_display_title"] = episode_display
+    from lib.clients.tmdb.frontend_metadata import source_window
+    # Preserve original_title for existing search/playback consumers; the
+    # source window projects its English subtitle independently.
+    item_info.update({key: value for key, value in source_window(item_info).items() if key != 'original_title'})
+
+    xml_file_string = "source_select_direct.xml" if mode == "direct" else "source_select.xml"
+
+    if playback_client is _CAPTURE_PLAYBACK:
+        from bobbi_platform.playback_client import capture
+        playback_client = capture()
+    options = dict(source_session=source_session, source_pump=source_pump) if source_session is not None else {}
+    return source_select(item_info, xml_file=xml_file_string, sources=results,
+                         playback_client=playback_client, **options)
+
+
+def _autoplay_description(source: TorrentStream, ids: dict, mode: str) -> str:
+    if not (get_setting("torrent_enable") and get_setting("torrent_client") == Players.JACKTORR):
+        return ""
+
+    if _is_stremio_source(source):
+        payload = payload_from_torrent(source)
+        decision = classify(
+            candidate_from_payload(payload), current_stremio_playback_capabilities()
+        )
+        if decision.source_class != "torrent_hash" or is_supported_debrid_type(
+            payload.get("debrid_type", "")
+        ):
+            return ""
+    elif source.type in (
+        IndexerType.DIRECT,
+        IndexerType.STREMIO_DEBRID,
+    ) or is_supported_debrid_type(source.debridType):
+        return ""
+
+    return build_media_metadata(ids or {}, mode).get("overview") or ""
+
+
+def auto_play(
+    results: List[TorrentStream],
+    ids,
+    tv_data,
+    mode,
+    preferred_group=None,
+    force_select=False,
+    autoplay_context: Optional[str] = None,
+    playback_context: Optional[dict] = None,
+    playback_client=_CAPTURE_PLAYBACK,
+) -> bool:
+    if force_select:
+        return False
+
+    filtered_results = clean_auto_play_undesired(_prepare_stremio_results(results))
+    if not filtered_results:
+        notification("No suitable source found for auto play.")
+        return False
+
+    preferred_quality = str(get_setting("auto_play_quality"))
+    quality_matches = [
+        r for r in filtered_results if preferred_quality.lower() in r.quality.lower()
+    ]
+
+    if not quality_matches:
+        notification("No sources found with the preferred quality.")
+        return False
+
+    selected_result = quality_matches[0]
+    if preferred_group:
+        group_matches = [r for r in quality_matches if preferred_group.lower() in r.title.lower()]
+        if group_matches:
+            selected_result = group_matches[0]
+
+    from lib.clients.catalog_providers import provider_for
+    if provider_for(selected_result):
+        # A catalogue locator is not a playable URL. This legacy automatic
+        # path has no selected-file authority; use the ordinary manual picker.
+        return False
+
+    if playback_client is _CAPTURE_PLAYBACK:
+        from bobbi_platform.playback_client import capture
+        playback_client = capture()
+    description = _autoplay_description(selected_result, ids, mode)
+    if _is_stremio_source(selected_result):
+        try:
+            playback_info = _resolve_stremio_source(
+                selected_result,
+                {
+                    "description": description,
+                    "mode": mode,
+                    "ids": ids,
+                    "tv_data": tv_data,
+                    "is_torrent": False,
+                },
+                playback_client=playback_client,
+            )
+        except StremioPlaybackError as error:
+            kodilog(
+                f"stremio_playback_error phase=auto_play code={error.code}",
+                xbmc.LOGWARNING,
+            )
+            notification(error.user_message)
+            return False
+    else:
+        playback_info = resolve_playback_url(
+            data={
+                "title": selected_result.title,
+                "description": description,
+                "mode": mode,
+                "indexer": selected_result.indexer,
+                "type": selected_result.type,
+                "debrid_type": selected_result.debridType,
+                "ids": ids,
+                "info_hash": selected_result.infoHash,
+                "url": selected_result.url,
+                "tv_data": tv_data,
+                "is_torrent": False,
+            },
+            playback_client=playback_client,
+        )
+
+    if not playback_info:
+        return False
+
+    playback_info["autoplay"] = True
+    if autoplay_context:
+        playback_info["playnext_context"] = True
+        playback_info["direct_play"] = True
+    if playback_context:
+        playback_info.update(playback_context)
+
+    player = JacktookPLayer(playback_client=playback_client)
+    player.run(data=playback_info)
+    del player
+    return True
+
+
+def stremio_addon_generator(stremio_addons, dialog, show_dialog):
+    from lib.clients.stremio.addon_client import StremioAddonClient
+    for addon in stremio_addons:
+        if show_dialog:
+            update_dialog(addon.manifest.name, "Searching...", dialog)
+        yield StremioAddonClient(addon)
+
+
+def add_task_if_enabled(
+    executor, tasks, setting_key, indexer_key, perform_search, dialog, *args, **kwargs
+):
+    """Add a search task to the task list if the corresponding setting is enabled."""
+    if get_setting(setting_key):
+        tasks.append(executor.submit(perform_search, indexer_key, dialog, *args, **kwargs))
+
+
+def add_task_if_enabled_managed(
+    manager, setting_key, indexer_key, perform_search, dialog, *args, **kwargs
+):
+    """Add a managed search task if the corresponding setting is enabled."""
+    if (kwargs.get('settings_getter') or get_setting)(setting_key):
+        name = str(indexer_key).title()
+        manager.submit_task(name, indexer_key, perform_search, indexer_key, dialog, *args, **kwargs)

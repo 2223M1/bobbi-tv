@@ -1,0 +1,1177 @@
+{
+  "schema": 1,
+  "status": "FROZEN_2135_DEPLOYED_PRIVATE_FILE_AV_OBSERVED_ACCEPTANCE_INCOMPLETE",
+  "finalized": true,
+  "plan_complete": false,
+  "product_accepted": false,
+  "assembled_utc": "2026-11-13T23:20:11.244446+00:00",
+  "source": {
+    "commit": "35b9d61ebb9429f5b15e3b882efbfc9c022bd6ad",
+    "tree": "1bb4ba7c7a683a177bba9821035ed534ebc169b4",
+    "sequence": 2026102135,
+    "versions": {
+      "plugin.video.bobbi": "0.1.76",
+      "script.module.bobbi.core": "0.1.75",
+      "script.module.bobbi.platform": "0.1.82",
+      "script.bobbi.start": "0.2.100"
+    },
+    "previous": {
+      "commit": "2acdba84f80f16d7e5452d93dace88396f7d3527",
+      "tree": "fce770a51c5aac9c151b5c1e61ffb742edc87e96",
+      "sequence": 2026102134
+    },
+    "worktree_clean_at_assembly": true,
+    "qualification": "Frozen product is 35b9d61/2135. The evidence record is closed with failures and missing terminal-history proof retained; later facts-retry or storage changes are excluded. The old 2134 finalized record is unchanged."
+  },
+  "evidence_reference_convention": "evidence_id/evidence_ids resolve through the registry. Registry values are root, relative path, SHA-256, byte length.",
+  "evidence_roots": {
+    "R": "D:\\AM6B-Project\\bobbi-tv-ce-search-recall-20261026",
+    "E": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\results",
+    "B": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\builds"
+  },
+  "evidence_columns": [
+    "root",
+    "path",
+    "sha256",
+    "bytes"
+  ],
+  "evidence_registry": {
+    "assembly_script": [
+      "E",
+      "assemble-validation-35b9d61-draft.py",
+      "18cb4bb3aef76a8ef0978edcc409b75af03cef16d25c8ba89b07a4083328699e",
+      31122
+    ],
+    "prior_validation_2134": [
+      "R",
+      "docs/architecture/validation-2acdba8.json",
+      "6249a0d6bf84c301c99301ce1bc0e36f5f47e636a5d646fbace7ece1c7dcaccc",
+      42569
+    ],
+    "targeted_regression": [
+      "E",
+      "35b9d61-regression.xml",
+      "40f82237872908a5a93dfc261112f67226987dbab510fa292c5db5db812de157",
+      84090
+    ],
+    "build_verification": [
+      "E",
+      "35b9d61-build-verification.json",
+      "3605c15a96e86fc06142fcd580123fa5a1e0f082209cb035b086553ae8caad02",
+      25224
+    ],
+    "offline_independent_review": [
+      "E",
+      "35b9d61-offline-independent-review.json",
+      "4054f6d161f61365bffda96ef1a00b93254aede9aa9fb1569c5fa797d6551329",
+      28303
+    ],
+    "offline_independent_auditor": [
+      "E",
+      "35b9d61-offline-independent-auditor.py",
+      "e3378b98a52fda9fcc5ff63d39e803ed6725b26964a0b415931b6a5465ebd1b5",
+      23707
+    ],
+    "ua_independent_review": [
+      "E",
+      "35b9d61-ua-independent-review.json",
+      "bb9e4babc429b4edf2711ca5e9f665ef5a7ca7ffd768109632390b57efdb5fb1",
+      8037
+    ],
+    "ua_regression": [
+      "E",
+      "ua-context-independent-regression.xml",
+      "1ed1a480a8e17f1ecec0a365857d9a73809032412abd619151f50bdc4f7ca339",
+      30612
+    ],
+    "ua_boundary": [
+      "E",
+      "ua-context-independent-boundary-02.xml",
+      "55dfc546c02ab25ce4cf31ac45eeda63052475e90306c316f545adcb0c5dc506",
+      2889
+    ],
+    "wrapper_review": [
+      "E",
+      "native-files-35b9d61-wrapper-review.json",
+      "12595afd2deaed29a6ea881f7123e8c6856eabf10fe8ef36d7c5f889ab29f878",
+      7736
+    ],
+    "wrapper_final_tests": [
+      "E",
+      "native-files-35b9d61-offline-final.xml",
+      "0b3cbe41c7a877cb840392450797e6d82d571e0d6cf6714a69d167c5dec59494",
+      9552
+    ],
+    "wrapper_root_tests": [
+      "E",
+      "native-files-35b9d61-root.xml",
+      "c09d5e333f43d085cf4cc405cf073d332219e6a633b81e1b6102793cb743c580",
+      9837
+    ],
+    "history_observer_2135": [
+      "E",
+      "native_files_history_observer_35b9d61.py",
+      "3d591a0f633459b36207f9fa46b16ebdaa83ec112503474459552a66ba467780",
+      4055
+    ],
+    "clock_observer_2135": [
+      "E",
+      "nativefiles_clock_observer_35b9d61.py",
+      "1ba22573c0f642104dba7fe9d925e691c82f4cab991c7bf92e08ac901e294b0e",
+      4527
+    ],
+    "stop_observer_2135": [
+      "E",
+      "nativefiles_scoped_stop_35b9d61.py",
+      "b01623070b5ab246b4b386673d18cf2d69994dc9c8be2d144706c37db8ead4d8",
+      5470
+    ],
+    "device_before": [
+      "E",
+      "device-35b9d61-before.json",
+      "c443c9b6ea1299cc55e20dda44433d74aa3a2baac594cce3ef774fb178adc34b",
+      5808
+    ],
+    "device_upgrade_failed": [
+      "E",
+      "device-35b9d61-upgrade-failed.json",
+      "82974d5d2183195a38c42a77d6ca69a759f54169069a26844d3e416701ccce77",
+      5760
+    ],
+    "device_after": [
+      "E",
+      "device-35b9d61-after.json",
+      "f74d5d62338de78b79dc3f72abc4793a7c16501260aa16ae14cd2410d3056831",
+      5762
+    ],
+    "device_post_stop": [
+      "E",
+      "device-35b9d61-post-stop.json",
+      "24e5697bafa324414c092417e4e1c46f2d4092e9432283daccc4d44848071bf1",
+      5809
+    ],
+    "post_stop_log_classification": [
+      "E",
+      "device-35b9d61-post-stop-log-classification.json",
+      "293708bffdd8cf1155bfbc4674d7f6a1d6e6450162a15495d646ef814405a89f",
+      650
+    ],
+    "playback_error_classification": [
+      "E",
+      "device-35b9d61-playback-errors.json",
+      "8af2067d6f5aafca7255095eab8d3ecc5cf9d2c994a47af65c1a015218ec8252",
+      818
+    ],
+    "space_observation": [
+      "E",
+      "device-35b9d61-space.json",
+      "b65515d3f9831e826762b620733881ea877cac1f0654d4d509cd9341ebcd3b5b",
+      11316
+    ],
+    "prune_tool": [
+      "E",
+      "prune_verified_bootstrap_cache.py",
+      "96b6f278f5a44cbfc13f25ae07849d816d70bccfccf259927ee0db1ff16cc6c8",
+      6865
+    ],
+    "prune_review": [
+      "E",
+      "bootstrap-prune-independent-review.json",
+      "53030a4b553c33080bd836445730d9cad5c49f7c2008494fba5e0ab5ab6cd531",
+      3997
+    ],
+    "prune_initial_unconfirmed": [
+      "E",
+      "bootstrap-prune-inspect.json",
+      "f073c002c7b7c21c8f34578cc265cdc293d72804deea4116bf0cffc79a147525",
+      129
+    ],
+    "prune_excluded_run_rejected": [
+      "E",
+      "bootstrap-prune-inspect-02.json",
+      "0f7c11791e34050fe4d15ff992bd68e6336657a53368584fb75fe2a2157e368f",
+      313
+    ],
+    "prune_four_run_timeout": [
+      "E",
+      "bootstrap-prune-inspect-03.json",
+      "8f3a260ac386c8aa16be97eaa40ef4363a4752fcbf3a19e111be380f981770d2",
+      311
+    ],
+    "space_future_recommendation": [
+      "E",
+      "35b9d61-deploy-space-offline-review.json",
+      "3bed092a614d51282586ed55da5121bcabd6242a383c3a7d9884724533bd8270",
+      9333
+    ],
+    "space_future_reviewer": [
+      "E",
+      "35b9d61-deploy-space-offline-review.py",
+      "ed4a6d0ba78494aead601b3bc64e56935c0231565dc17f8b3c3583638c09b40a",
+      11805
+    ],
+    "build_check_a_manifest": [
+      "B",
+      "35b9d61-check-a/manifest.json",
+      "ffc391b87ddd7784673b2ecc88b0930ff4bb556970cc705f1c21281b31486c74",
+      7638
+    ],
+    "build_check_b_manifest": [
+      "B",
+      "35b9d61-check-b/manifest.json",
+      "ffc391b87ddd7784673b2ecc88b0930ff4bb556970cc705f1c21281b31486c74",
+      7638
+    ],
+    "build_installable_manifest": [
+      "B",
+      "35b9d61-installable/manifest.json",
+      "06cddea1639a7a9bc3768ce218f664b271b3efdeb6c1806161b4dd9ebca16d04",
+      7619
+    ],
+    "signed_bundle": [
+      "B",
+      "35b9d61-releases/bobbi-private-2026102135-coreelec.bobbi-update.zip",
+      "304e79be2b0724b85b7123699493c20a2bd0fea268feb2707e83a48be3e72579",
+      96334897
+    ],
+    "entry_zip": [
+      "B",
+      "35b9d61-entry-artifacts/script.bobbi.start-0.2.100.zip",
+      "50cf06eb2634b57d966dee86dc60739edecfbddbddded23852f5d8deca3b0915",
+      96546450
+    ],
+    "entry_metadata": [
+      "B",
+      "35b9d61-entry-artifacts/script.bobbi.start-0.2.100.json",
+      "f12290d857687c3536823e3b8ae1d053c4682b3a61677ef380d25a820677471e",
+      486
+    ],
+    "deploy_065728_stage": [
+      "R",
+      "review-evidence/ce-20261114-065728-stage.json",
+      "6f6b2ce6e9934b3a6d7ad8e9ca1b3cca73ab798d675c0f453e31285533292640",
+      154
+    ],
+    "deploy_065728_upgrade": [
+      "R",
+      "review-evidence/ce-20261114-065728-upgrade.json",
+      "522753699a21de35072f7a5f37b544b11d1dc15919b568b30d4632c965cc2af8",
+      219
+    ],
+    "deploy_065728_inputs": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-065728.json",
+      "f9a3b036ad2b612439896d036fdfed324d3ceacedf8727e7e3724c5c2ca9cc34",
+      474
+    ],
+    "deploy_065728_transition": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-065728.transition-baseline.json",
+      "eb6db76e925c094dcaa44b9a121d8ebd3967eba2e43910e786abe951d19ebc53",
+      2438
+    ],
+    "deploy_070634_stage": [
+      "R",
+      "review-evidence/ce-20261114-070634-stage.json",
+      "6f6b2ce6e9934b3a6d7ad8e9ca1b3cca73ab798d675c0f453e31285533292640",
+      154
+    ],
+    "deploy_070634_upgrade": [
+      "R",
+      "review-evidence/ce-20261114-070634-upgrade.json",
+      "3d6fd6b35323cee6115160cf0b8c8ec7cd8388baf1270d8ec9344341d735a417",
+      319
+    ],
+    "deploy_070634_inputs": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-070634.json",
+      "8b35fe7f5976b9b5a1f6eb3a54da55755de3c200b6855495d9799c9a745876ea",
+      474
+    ],
+    "deploy_070634_transition": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-070634.transition-baseline.json",
+      "eb6db76e925c094dcaa44b9a121d8ebd3967eba2e43910e786abe951d19ebc53",
+      2438
+    ],
+    "failed_deployment_inspection": [
+      "R",
+      "review-evidence/ce-20261114-065728-inspect.json",
+      "fc285ca92ac76c39076f82112b23f8727b09632d4ab635424fff19b84f95108e",
+      4872
+    ],
+    "rollback_owned_files": [
+      "R",
+      "review-evidence/ce2023/installed-files-1794610834928738300.json",
+      "1ddc2607a56f89f6f0d643b0944601694219554a92862cb0967556c8e198fc74",
+      313
+    ],
+    "installed_owned_files": [
+      "R",
+      "review-evidence/ce2023/installed-files-1794611352837007800.json",
+      "4d922c18872af6e79502c91554b8b0ab32753cc3a898bf2d42f56c76af215225",
+      313
+    ],
+    "prune_010704_inspect": [
+      "E",
+      "bootstrap-prune-010704-inspect.json",
+      "7ce810d7e8274fe920827d3169b35e4681a97270ba19c9f276e3d6a6a6a1c49f",
+      711
+    ],
+    "prune_010704_execute": [
+      "E",
+      "bootstrap-prune-010704-execute.json",
+      "0e09d414a25290aaff442d3003d563225c884cb81a392c2101ea050ec2989eea",
+      722
+    ],
+    "prune_010704_inputs": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-010704.json",
+      "aa8d43a581b9c00eb075e40c7471f604f7334cbf7051b831d0f6db864533c47c",
+      474
+    ],
+    "prune_025908_inspect": [
+      "E",
+      "bootstrap-prune-025908-inspect.json",
+      "d2a89a8198bd9400d0d09d5a1ea6ba6a388918c33359c263f333b42f2bfe7784",
+      711
+    ],
+    "prune_025908_execute": [
+      "E",
+      "bootstrap-prune-025908-execute.json",
+      "f48e6120cfb34c2627183290fc7c9f19d379c8fbe252be8d713c9f658eb836b6",
+      722
+    ],
+    "prune_025908_inputs": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-025908.json",
+      "5b6cdbfc682d73926f51c26db52320c8514751fe8ade5576f40be76bace2c920",
+      474
+    ],
+    "prune_035537_inspect": [
+      "E",
+      "bootstrap-prune-035537-inspect.json",
+      "461de17acb13500243e3509fef8c43337f5e6dab8df132ac140aa5323d33d676",
+      711
+    ],
+    "prune_035537_execute": [
+      "E",
+      "bootstrap-prune-035537-execute.json",
+      "d8bd510a404e30639d6c91fd99d421f378d9f8c0a5e8ba2c4f7f9bd44c57d374",
+      722
+    ],
+    "prune_035537_inputs": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-035537.json",
+      "01e4ff0aa6dbada69df1cb78de4cdeb7bcea594f503e071bfce189dd4dd913a7",
+      474
+    ],
+    "prune_045232_inspect": [
+      "E",
+      "bootstrap-prune-045232-inspect.json",
+      "e32a5c3158f8d7657bdc0f6080f83d81a0ac40fa143a767d2be59c08a5b7ad6d",
+      711
+    ],
+    "prune_045232_execute": [
+      "E",
+      "bootstrap-prune-045232-execute.json",
+      "e616e01ec966225eccd26b64c6f30132650c0cc7fd61495b014b004c4e1e236b",
+      722
+    ],
+    "prune_045232_inputs": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-045232.json",
+      "0f7333fe0432aea7c54ff517f5d70e8c46c1035cd198677c5db8e29adafa5c6f",
+      474
+    ],
+    "ui_view_home": [
+      "E",
+      "private-files-ui-35b9d61/view-home.json",
+      "aa334a6b6259690dc4d9860d19e5b6fde330f330112cbd555d33327669cd869d",
+      4719
+    ],
+    "ui_focus_nav": [
+      "E",
+      "private-files-ui-35b9d61/focus-nav.json",
+      "cab035005a98dce61acc3b1ff3403776bc233a5df3372be1f6c2e1d264d25666",
+      4694
+    ],
+    "ui_focus_nav_02": [
+      "E",
+      "private-files-ui-35b9d61/focus-nav-02.json",
+      "0d0cdf16a3520bceb5f2937f3b5fce1ac58f7dc9f9495d9432404bc13a1b29ba",
+      5103
+    ],
+    "ui_focus_nav_03": [
+      "E",
+      "private-files-ui-35b9d61/focus-nav-03.json",
+      "fb3ab6751c6946535ef4c649008ef735a561d72eac49b7bbb00e07c354d55256",
+      5101
+    ],
+    "ui_focus_nav_04": [
+      "E",
+      "private-files-ui-35b9d61/focus-nav-04.json",
+      "07844d711327575969330d79a3938974ad3a47e6b915196ac8efc096c7b8c52d",
+      5100
+    ],
+    "ui_open_my": [
+      "E",
+      "private-files-ui-35b9d61/open-my.json",
+      "5935000797e11a91f6fd6851d933c8cce4d8366f22c41154f66e7a680d060a25",
+      3353
+    ],
+    "ui_open_pan_nas": [
+      "E",
+      "private-files-ui-35b9d61/open-pan-nas.json",
+      "52873685af91354c44df69d303fad0af41214e852d6d3fe6fdcabe5c30b69b53",
+      2183
+    ],
+    "ui_focus_cd2": [
+      "E",
+      "private-files-ui-35b9d61/focus-cd2.json",
+      "bbeca582e1dc791fcd81c634f3518ceccc37d57b0b4f0cc718794883f32a8379",
+      2733
+    ],
+    "ui_focus_native_files": [
+      "E",
+      "private-files-ui-35b9d61/focus-native-files.json",
+      "92d37b6edb612f6d5b90774a6c12c59a13f6cabeb81729ebc04cb3facf5b5b83",
+      2763
+    ],
+    "ui_open_native_files": [
+      "E",
+      "private-files-ui-35b9d61/open-native-files.json",
+      "851d65332d2ae8b5e9c5b8e2800c8fc8a0eb825ac094de634187b671137cf9fc",
+      3015
+    ],
+    "ui_focus_115": [
+      "E",
+      "private-files-ui-35b9d61/focus-115.json",
+      "b231b922d56522e59355a4d722083a0711ece9173ddce844d5194f37d4be48ac",
+      3165
+    ],
+    "ui_open_115": [
+      "E",
+      "private-files-ui-35b9d61/open-115.json",
+      "a6bf37caf9d4a9635f4c06d116a1b0528df06a76cfd2ecb864cc7bd771b69e64",
+      2687
+    ],
+    "ui_video_directory": [
+      "E",
+      "private-files-ui-35b9d61/video-directory.json",
+      "9e1d849e3cbca119f3fa2e1e5de1eda62586b1e8373e918f9e0ff91b18ced1dd",
+      3657
+    ],
+    "ui_open_video_actions": [
+      "E",
+      "private-files-ui-35b9d61/open-video-actions.json",
+      "b8bbef2c90046ac903af101ae0267e85127333d357d438a30a00654700bc76f3",
+      3238
+    ],
+    "ui_play_original_once": [
+      "E",
+      "private-files-ui-35b9d61/play-original-once.json",
+      "2cdc85297f177fdaf3384ed692f36fe2bcc79e154505a9f0319d6fd456e2297d",
+      2820
+    ],
+    "ui_binding": [
+      "E",
+      "private-files-ui-35b9d61/binding.json",
+      "86efdf48ec1335abe638540c7e202c3b8aa88f93efb52713054a11359d084521",
+      926
+    ],
+    "ui_capture_binding": [
+      "E",
+      "private-files-ui-35b9d61/capture-binding.json",
+      "c85ba25188e05a8df1fd1f2c386eddf810215989e5e6b0cdebea368c778388ec",
+      941
+    ],
+    "ui_history_active": [
+      "E",
+      "private-files-ui-35b9d61/history-active.json",
+      "b8f1fb13dee8d2fed99e7acf25c84f982af0174565d70ebf590a1246ba90432b",
+      1163
+    ],
+    "ui_clock_active": [
+      "E",
+      "private-files-ui-35b9d61/clock-active.json",
+      "c2eaf12cc33fad30bdfde539d9bbcf59479f41973276ec49ec2f613dfec1abbb",
+      4008
+    ],
+    "ui_stop_command": [
+      "E",
+      "private-files-ui-35b9d61/stop-command.json",
+      "3e5f4b5a76954f9feff31b31ef2b2b3d736dc2b038dc5042adf1a6bb2bbf7d72",
+      431
+    ],
+    "ui_stop_once": [
+      "E",
+      "private-files-ui-35b9d61/stop-once.json",
+      "d661b516e865e4488fe913715e5a5ea2fbb2231498792d255c3eb5cb489266a4",
+      1100
+    ],
+    "linked_080": [
+      "B",
+      "2acdba8-releases/bobbi-private-2026102134-coreelec.bobbi-update.zip",
+      "e9918dd669e39f559e86e8d2ce023cd6eff41b6454196ca642f8a36d892f3c05",
+      96334555
+    ],
+    "linked_081": [
+      "E",
+      "private-files-ui-2acdba8/resolver-readonly-once.json",
+      "924fea09b8bc9157c1347a4d62c862a10e53d0061ea333cdd166757fd235780c",
+      3227
+    ],
+    "linked_082": [
+      "E",
+      "private-files-ui-2acdba8/resolver-redirect-once.json",
+      "c3d46e090661c936870f7fa5ce2313be68377b371c58baed71f0c814bf9611a0",
+      3958
+    ],
+    "linked_083": [
+      "E",
+      "private-files-ui-2acdba8/resolver-ua-chrome87-once.json",
+      "3bc2fad4d5b1462b44c0380ad2eea0cb4eba26205fd53d73ab49f5fc5dc35f9b",
+      4046
+    ],
+    "linked_084": [
+      "E",
+      "private-files-ui-2acdba8/open-video-actions.json",
+      "bbadd3743dd54dca73a35b1e8cda3f71cdd3167db4cf96dc2b6935d5dc579fd0",
+      3238
+    ],
+    "linked_085": [
+      "E",
+      "native_files_history_observer.py",
+      "e203c890611cca71184531fcd476633c6768d0420f3421d46ed535bb120988dc",
+      38730
+    ],
+    "linked_086": [
+      "E",
+      "readonly_115_resolver_diagnostic.py",
+      "698b0fc282b5b5dc12ceb1e116ec2fde4a589a5cdb60f75eb8fdc16cfa28de41",
+      27889
+    ],
+    "linked_087": [
+      "E",
+      "readonly_115_redirect_diagnostic.py",
+      "dd4b0a6311f6b9a15128caa823cf76e727e4e6949d72833406e0cec6cb04d63f",
+      8278
+    ],
+    "linked_088": [
+      "E",
+      "readonly_115_ua_control.py",
+      "b3a61ed02eab93539484f8018e2fc3a92b9c1bbd7b72ccf87f1c14406a36c272",
+      7777
+    ],
+    "linked_089": [
+      "E",
+      "test_readonly_115_ua_control.py",
+      "baaca50176dfe6e03141df647139e14f57f83e6535ea671dbe64727ccd86462d",
+      11860
+    ],
+    "linked_090": [
+      "E",
+      "115-downurl-protocol-comparison.json",
+      "44f40f838f6f402900c42420f3fbaaa2102703531149aae32fe21e39be9b1459",
+      8434
+    ],
+    "linked_091": [
+      "E",
+      "test_115_ua_patch_boundary.py",
+      "ba2c98c631e392f2a2498661531833c000c67604359249349510aa4125aaa945",
+      3026
+    ],
+    "linked_092": [
+      "E",
+      "ua-context-independent-boundary.xml",
+      "38f91e1fbe2e1b08f285c4b5d6ff20a063b0b9dba1ca60647dde2af21885ba65",
+      1499
+    ],
+    "linked_093": [
+      "E",
+      "test_native_files_35b9d61.py",
+      "f664ed97bc1e7858f4c0a38b57b1d4a6bc3aeab5a1185b954286c7493210be7b",
+      16859
+    ],
+    "linked_094": [
+      "E",
+      "native-files-35b9d61-offline.xml",
+      "27d029b124e9d750ab21e5e262a135833ed3e9a1f25699eb10ed597416dc3a36",
+      8708
+    ]
+  },
+  "offline": {
+    "evidence_ids": [
+      "targeted_regression",
+      "ua_independent_review",
+      "wrapper_review"
+    ],
+    "targeted_product_regression": {
+      "evidence_id": "targeted_regression",
+      "tests": 470,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "testcase_rows": 470,
+      "unique_testcase_labels": 470
+    },
+    "independent_ua_regression": {
+      "evidence_id": "ua_regression",
+      "tests": 223,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "testcase_rows": 223,
+      "unique_testcase_labels": 223
+    },
+    "independent_ua_boundary": {
+      "evidence_id": "ua_boundary",
+      "tests": 12,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "testcase_rows": 12,
+      "unique_testcase_labels": 12
+    },
+    "wrapper_external_final": {
+      "evidence_id": "wrapper_final_tests",
+      "tests": 79,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "testcase_rows": 57,
+      "unique_testcase_labels": 57,
+      "pytest_main_cases": 57,
+      "pytest_subtest_rows": 22
+    },
+    "wrapper_external_root_rerun": {
+      "evidence_id": "wrapper_root_tests",
+      "tests": 79,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "testcase_rows": 57,
+      "unique_testcase_labels": 57
+    },
+    "overlap_by_testcase_labels": {
+      "targeted_470_vs_ua_223": 190,
+      "wrapper_final_vs_root_rerun": 0
+    },
+    "combined_unique_test_total": null,
+    "qualification": "Separate overlapping runs, not additive totals or full acceptance. Wrapper XML reports tests=79 but has 57 testcase elements; its reviewed pytest run reports 57 main tests plus 22 subtests. The root rerun does not add unique coverage."
+  },
+  "build_and_signing": {
+    "evidence_ids": [
+      "build_verification",
+      "offline_independent_review",
+      "signed_bundle",
+      "entry_zip",
+      "entry_metadata",
+      "build_check_a_manifest",
+      "build_check_b_manifest",
+      "build_installable_manifest"
+    ],
+    "three_build_artifact_hashes_recomputed": true,
+    "artifact_hash_comparisons": 189,
+    "two_source_check_builds_byte_identical": true,
+    "source_check_file_count": 63,
+    "component_count": 22,
+    "source_files_matched": 1471,
+    "owned_installed_files_separate_count": 1262,
+    "signature_verifiers": [
+      "production SignedBundle contract/RSA verifier",
+      "independent cryptography RSA3072 SHA256 PKCS1v15"
+    ],
+    "tampered_manifest_rejected_by_both": true,
+    "entry_embeds_identical_signed_update": true,
+    "changed_component_archives": [
+      "plugin.video.bobbi",
+      "script.bobbi.start",
+      "script.module.bobbi.platform"
+    ],
+    "changed_archive_members": {
+      "plugin.video.bobbi/addon.xml": {
+        "old_sha256": "d4f11672522adae508e001d13192242349eca3fae786721aa24dcfa69eb8ea9d",
+        "new_sha256": "452f9874bebfbbdd094b450fe77d6c9cb8ae48099d49fe595c98a475fe486429"
+      },
+      "plugin.video.bobbi/lib/pan_playback.py": {
+        "old_sha256": "47f7e12261bcbe3c2c626e5354b46c1f40a29941be21f8fa6e207df108dc6f20",
+        "new_sha256": "6a91998f43f3f84d7eaa2a306dfbb0dcf9716a4d26862e02f6d1d03c2c0db98d"
+      },
+      "script.bobbi.start/addon.xml": {
+        "old_sha256": "a75a2003a7fe107a7e4230ef19db2ae74b2b62eb27bff58ab0d316479ad47fe1",
+        "new_sha256": "1cbf713f1f03fee6f2e71ca693fad4a2ed3289193b50dc618a0cd49320313086"
+      },
+      "script.module.bobbi.platform/addon.xml": {
+        "old_sha256": "da021b2328aadf8f3c138bfa5675390c1bf4c2be467cc317df49c3c3575d698b",
+        "new_sha256": "fae63f26cd96a575c9c9bcae0be07b6e4562c889056f1297bb2342649525a8b5"
+      },
+      "script.module.bobbi.platform/lib/bobbi_platform/pan_115.py": {
+        "old_sha256": "4fdef8ef9aa8b588b5484a3db98e74830048142281028559b020c3c69654a511",
+        "new_sha256": "ca969ec750bea9a4f258e4d170b4140c03d8d8fe8604519e8a1610972471b488"
+      },
+      "script.module.bobbi.platform/lib/bobbi_platform/pan_accounts.py": {
+        "old_sha256": "093978779a69caaaa35ecda90f7112dcbdff336e9beea19cfd0eb87c7c382019",
+        "new_sha256": "0c74429b13325e68c537ecfa02357702b52b41878267be6cf5877f818c3e6052"
+      },
+      "script.module.bobbi.platform/lib/bobbi_platform/pan_http.py": {
+        "old_sha256": "23720c310e52db66169ca8b0e03302f443cc1ce1c85fb065c7d2e0a6e7c62305",
+        "new_sha256": "0db866c69bf2d5a7fda5ab8890d22e7a3c88e1051beb020509b09e44433aae11"
+      },
+      "script.module.bobbi.platform/lib/bobbi_platform/pan_ui.py": {
+        "old_sha256": "57422894b0c4232e89fb8c3747e10dc4e1de7449bc4a81f9b8658ebdedc2e910",
+        "new_sha256": "467a841a74cdd1e5c2a08a97a8aa516947da93940f492d4610c493228b6d91ad"
+      }
+    },
+    "unchanged_component_archives": 19,
+    "application_resource": {
+      "member": "script.module.bobbi.core/resources/tmdb-project.json",
+      "sha256": "2afc6cdf088af273f683ff41ba5256a2fe2a4cfd5d57402c44421896bfb4a0cd",
+      "unchanged": true,
+      "contents_not_printed": true,
+      "note": "Only extra core member; it is application configuration, not native injection."
+    },
+    "qualification": "Signatures and exact source/package consistency do not establish licensing, installation or playback. Native executable is not inside this addon package."
+  },
+  "ua_control": {
+    "evidence_ids": [
+      "ua_independent_review"
+    ],
+    "source_review": {
+      "download_request_ua_only_for_exact_115_post_route": true,
+      "resolved_and_range_media_ua_matches_download_ua": true,
+      "api_cookie_not_forwarded_to_personal_cdn": true,
+      "login_share_list_metadata_ua_unchanged": true,
+      "route_allowlist_redirect_budget_retry_body_crypto_cookie_referer_unchanged": true,
+      "query_parameter_branch_does_not_widen_original_route_validation": true
+    },
+    "prior_2134_controlled_diagnostic": {
+      "execution_attribution": "Parent executed existing device diagnostic; independent agent reviewed receipt and frozen payload offline.",
+      "source_commit": "2acdba84f80f16d7e5452d93dace88396f7d3527",
+      "payload_sha256": "644ecf94ce2416ad0f84c1cd6480aaaa5fc14699b3a37b15b282f8bd7730a6a5",
+      "observed_state": "resolved",
+      "https_requests": 3,
+      "changed_requests": 1,
+      "same_account_profile_parent_selected_target_ui_hashes_as_prior_redirect_trial": true,
+      "all_file_identity_matches": true,
+      "final_fence_verified": true,
+      "optional_metadata_alias_absence_is_not_identity_failure": true,
+      "redirect_followed": false,
+      "media_header_ua_adapted": false,
+      "playback_eligible": false,
+      "cdn_fetch": false,
+      "stream_registered": false,
+      "ticket_created": false,
+      "playback_attempted": false,
+      "credentials_persisted": false,
+      "original_ui_cause_proven": false,
+      "product_proof": false
+    },
+    "qualification": "Historical single-request UA control resolved the selected original URL but was playback-ineligible. New 2135 UI trial is separate evidence; the prior UI failure cause remains unrecovered."
+  },
+  "deployment": {
+    "first_attempt": {
+      "evidence_ids": [
+        "deploy_065728_inputs",
+        "deploy_065728_stage",
+        "deploy_065728_upgrade",
+        "failed_deployment_inspection",
+        "rollback_owned_files",
+        "device_upgrade_failed"
+      ],
+      "run": "20261114-065728",
+      "candidate_sequence": 2026102135,
+      "failure": "OSError",
+      "specific_errno_proven": false,
+      "enospc_proven": false,
+      "rolled_back_receipt": true,
+      "observed_program_sequence": 2026102134,
+      "owned_files_matched": 1262,
+      "qualification": "Failed upgrade and scoped recovery are retained. No evidence supports discarding this run or attributing exact errno solely from the low-space observation."
+    },
+    "successful_attempt": {
+      "evidence_ids": [
+        "deploy_070634_inputs",
+        "deploy_070634_stage",
+        "deploy_070634_upgrade",
+        "installed_owned_files",
+        "device_after"
+      ],
+      "run": "20261114-070634",
+      "state": "upgraded",
+      "sequence": 2026102135,
+      "owned_files_matched": 1262,
+      "mismatches": [],
+      "profile_migration_performed": false,
+      "cd2_and_mount_untouched_reported": true,
+      "qualification": "Owned program-byte match excludes original dependencies and user data; upgrade receipt itself says playback_verified=false."
+    }
+  },
+  "space_cleanup": {
+    "evidence_ids": [
+      "space_observation",
+      "prune_tool",
+      "prune_review",
+      "prune_initial_unconfirmed",
+      "prune_excluded_run_rejected",
+      "prune_four_run_timeout",
+      "space_future_recommendation"
+    ],
+    "initial_available_bytes": 101732352,
+    "observed_old_deploy_run_count": 89,
+    "four_explicit_run_cache_removals": [
+      {
+        "evidence_ids": [
+          "prune_010704_inspect",
+          "prune_010704_execute",
+          "prune_010704_inputs"
+        ],
+        "run_id": "20261114-010704",
+        "files": 1469,
+        "bytes": 191087734,
+        "candidate_sha256": "24c02f887a6b344da02dd535a673f13cddd47df55a4e10b17149cdcad9f0b0e3",
+        "before_available": 101683200,
+        "after_available": 297267200
+      },
+      {
+        "evidence_ids": [
+          "prune_025908_inspect",
+          "prune_025908_execute",
+          "prune_025908_inputs"
+        ],
+        "run_id": "20261114-025908",
+        "files": 1470,
+        "bytes": 191117412,
+        "candidate_sha256": "ac57ff1227799dd566ae87bf2d556d4ea77c10ef6b3f6702e3a5ef51407809e7",
+        "before_available": 297263104,
+        "after_available": 492879872
+      },
+      {
+        "evidence_ids": [
+          "prune_035537_inspect",
+          "prune_035537_execute",
+          "prune_035537_inputs"
+        ],
+        "run_id": "20261114-035537",
+        "files": 1471,
+        "bytes": 191131190,
+        "candidate_sha256": "2bdce7db7176be342ae36ad813c47518fea5393b7d8a5c043e5351736852d841",
+        "before_available": 492867584,
+        "after_available": 688513024
+      },
+      {
+        "evidence_ids": [
+          "prune_045232_inspect",
+          "prune_045232_execute",
+          "prune_045232_inputs"
+        ],
+        "run_id": "20261114-045232",
+        "files": 1471,
+        "bytes": 191136133,
+        "candidate_sha256": "9eae70d7406338ad8f4194e177007e334b7f0c31ffdb9c2f52a6364020a63ee7",
+        "before_available": 688513024,
+        "after_available": 884142080
+      }
+    ],
+    "removed_files": 5881,
+    "removed_logical_bytes": 764472469,
+    "last_cleanup_receipt_available_bytes": 884142080,
+    "excluded_run": "20261114-004258",
+    "only_removed_scope": "selected old run/bootstrap/addons",
+    "retained": [
+      "candidate.zip",
+      "controllers and deployment receipts",
+      "updater backups",
+      "current and failed run",
+      "userdata/profile"
+    ],
+    "recoverability": "Re-extract retained hash-verified candidate.zip; no automatic undelete.",
+    "future_preflight_implemented": false,
+    "qualification": "Verified cleanup and reclaimed allocation do not prove the original OSError errno. Offline future space advice is not part of frozen 2135 product behavior."
+  },
+  "health_and_preservation": {
+    "evidence_ids": [
+      "device_before",
+      "device_upgrade_failed",
+      "device_after",
+      "device_post_stop",
+      "post_stop_log_classification",
+      "playback_error_classification"
+    ],
+    "snapshots": {
+      "device_before": {
+        "observed_at": "2026-11-14 06:56:33",
+        "sequence": 2026102134,
+        "state": "attention_required",
+        "failures": [
+          "startup_log_attention"
+        ],
+        "players": [],
+        "pending_transaction": false,
+        "kodi_service": {
+          "ActiveState": "active",
+          "MainPID": "15313",
+          "NRestarts": "0"
+        },
+        "native_pid": 15321,
+        "startup_log": {
+          "available": true,
+          "scope": "current_kodi_log_tail",
+          "truncated": false,
+          "tracebacks": 0,
+          "product_error_lines": 4
+        }
+      },
+      "device_upgrade_failed": {
+        "observed_at": "2026-11-14 06:59:32",
+        "sequence": 2026102134,
+        "state": "observed",
+        "failures": [],
+        "players": [],
+        "pending_transaction": false,
+        "kodi_service": {
+          "ActiveState": "active",
+          "MainPID": "19030",
+          "NRestarts": "0"
+        },
+        "native_pid": 19038,
+        "startup_log": {
+          "available": true,
+          "scope": "current_kodi_log_tail",
+          "truncated": false,
+          "tracebacks": 0,
+          "product_error_lines": 0
+        }
+      },
+      "device_after": {
+        "observed_at": "2026-11-14 07:09:08",
+        "sequence": 2026102135,
+        "state": "observed",
+        "failures": [],
+        "players": [],
+        "pending_transaction": false,
+        "kodi_service": {
+          "ActiveState": "active",
+          "MainPID": "19662",
+          "NRestarts": "0"
+        },
+        "native_pid": 19671,
+        "startup_log": {
+          "available": true,
+          "scope": "current_kodi_log_tail",
+          "truncated": false,
+          "tracebacks": 0,
+          "product_error_lines": 0
+        }
+      },
+      "device_post_stop": {
+        "observed_at": "2026-11-14 07:14:20",
+        "sequence": 2026102135,
+        "state": "attention_required",
+        "failures": [
+          "startup_log_attention"
+        ],
+        "players": [],
+        "pending_transaction": false,
+        "kodi_service": {
+          "ActiveState": "active",
+          "MainPID": "19662",
+          "NRestarts": "0"
+        },
+        "native_pid": 19671,
+        "startup_log": {
+          "available": true,
+          "scope": "current_kodi_log_tail",
+          "truncated": false,
+          "tracebacks": 0,
+          "product_error_lines": 2
+        }
+      }
+    },
+    "before_failed_recovery_after_upgrade_sentinels_equal": true,
+    "post_stop_changed_sentinels": [
+      "history"
+    ],
+    "post_stop_unchanged_sentinel_names": [
+      "115_account",
+      "advancedsettings",
+      "library",
+      "native_abi",
+      "pan_accounts",
+      "preparation",
+      "torrent_backend"
+    ],
+    "history_change_semantics_verified": false,
+    "post_stop_product_error_lines": 2,
+    "post_stop_error_classification": {
+      "state": "fixed_markers_classified_root_cause_unproven",
+      "error_level_lines": 2,
+      "matches": [
+        {
+          "level": "error",
+          "markers": [
+            "GetDirectory",
+            "plugin.video.bobbi"
+          ],
+          "line_sha256": "89a4f8fd16e9d3b468c82ce2e25461a87135b3fe482f47b6c0783866297f6dcb"
+        },
+        {
+          "level": "error",
+          "markers": [
+            "GetDirectory",
+            "CGUIMediaWindow",
+            "plugin.video.bobbi"
+          ],
+          "line_sha256": "7208f9823ed0e44f36decdf992cb7bd422b9f48dcee6ad9cb0d14a1c92bf2ba4"
+        }
+      ],
+      "raw_log_or_url_exported": false,
+      "qualification": "Both lines are error severity, not the prior 2134 info-level case. Markers do not prove the exact cause or associate either line with the Stop command."
+    },
+    "health_all_green": false,
+    "saved_account_flags_not_live_authentication": true,
+    "index_integrity_at_each_snapshot": {
+      "device_before": "ok",
+      "device_upgrade_failed": "ok",
+      "device_after": "ok",
+      "device_post_stop": "ok"
+    },
+    "qualification": "After-upgrade idle health had no listed failures. Post-stop retains attention_required and two actual error-level GetDirectory/plugin.video.bobbi lines, one also CGUIMediaWindow; underlying cause remains unproven. History hash changed but correctness/ownership/completion is not established."
+  },
+  "native": {
+    "evidence_ids": [
+      "offline_independent_review",
+      "device_before",
+      "device_upgrade_failed",
+      "device_after",
+      "device_post_stop",
+      "ui_clock_active",
+      "ui_stop_once"
+    ],
+    "source_tree": "294abcde0b17995420d07bf49c268c715e6f9dc7",
+    "source_unchanged_since_2134": true,
+    "binary_sha256_observed": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+    "observed_binary_hash_equal_across_four_snapshots": true,
+    "rebuilt_for_2135": false,
+    "scoped_controls": "one_original_stop_applied_other_controls_not_accepted"
+  },
+  "private_files_trial": {
+    "evidence_ids": [
+      "ui_view_home",
+      "ui_focus_nav",
+      "ui_focus_nav_02",
+      "ui_focus_nav_03",
+      "ui_focus_nav_04",
+      "ui_open_my",
+      "ui_open_pan_nas",
+      "ui_focus_cd2",
+      "ui_focus_native_files",
+      "ui_open_native_files",
+      "ui_focus_115",
+      "ui_open_115",
+      "ui_video_directory",
+      "ui_open_video_actions",
+      "ui_play_original_once",
+      "ui_binding",
+      "ui_capture_binding",
+      "ui_history_active",
+      "ui_clock_active",
+      "ui_stop_command",
+      "ui_stop_once"
+    ],
+    "route": [
+      "home",
+      "my",
+      "cloud drives and NAS",
+      "native files",
+      "115 native login",
+      "remembered directory restored",
+      "selected personal MKV",
+      "play original file once"
+    ],
+    "ui_action_evidence": "ordinary UI key receipts retained; no synthetic direct resolver playback request",
+    "live_binding_captured": true,
+    "native_instance": "b4649afd-2f0c-40df-b842-5de624395fc6",
+    "binding_canonical_sha256": "9fcf255471f6da1a4208f0438a57bf0b4445c6297e464bed411f30a4fb9f4d92",
+    "binding_file_sha256": "86efdf48ec1335abe638540c7e202c3b8aa88f93efb52713054a11359d084521",
+    "binding_hash_qualification": "Capture/history/clock pin canonical JSON hash; registry separately pins pretty-printed binding file bytes. These two hashes intentionally differ.",
+    "request_id": "1ff479c0e70641189cc4025f9a34fb9f",
+    "file_sha256": "7de8c56bcaf128545f008a14df1ffa4cce1645521f329da0f903f47a0edf21e9",
+    "capture_ui_causality_proven_field": false,
+    "ui_provenance": "caller_asserted_hash_bound",
+    "native_av_start_observed": true,
+    "active_history_observer": {
+      "state": "rejected",
+      "error": "FACTS_ABSENT",
+      "observation": null,
+      "history_accepted": false,
+      "media_start_facts_accepted": false
+    },
+    "clock_window": {
+      "samples": 11,
+      "controls_sent": 0,
+      "first_position_seconds": 45.87,
+      "last_position_seconds": 56.798,
+      "elapsed_sample_window_seconds": 10.01449,
+      "position_increase_seconds": 10.928,
+      "all_native_phase": "AV_STARTED",
+      "all_caching_false": true,
+      "all_speed_one": true,
+      "all_paused_false": true,
+      "qualification": "Eleven bounded observations after playback started, not startup latency, long-run smoothness, cache architecture or performance repair proof."
+    },
+    "stop": {
+      "evidence_ids": [
+        "ui_stop_command",
+        "ui_stop_once"
+      ],
+      "command_id": "4c258462f2fd4828b2df8942c9581858",
+      "action": "user_stop",
+      "receipt_status": "applied",
+      "expected_unchanged_from_binding": true,
+      "reissue_allowed": false,
+      "qualification": "Original Stop is consumed and applied. Do not resend or create a new Stop for this selection."
+    },
+    "terminal_diagnostic": {
+      "state": "partial_readonly_classification_exact_terminal_history_unproven",
+      "evidence_ids": [
+        "device_post_stop",
+        "post_stop_log_classification",
+        "playback_error_classification"
+      ],
+      "native_playback_present_after_stop": false,
+      "strict_selected_FileRef_available_in_binding": false,
+      "binding_has_only_full_identity_sha256": true,
+      "latest_history_row_reinterpreted_as_this_stop": false,
+      "exact_terminal_history_persistence_proven": false,
+      "further_terminal_diagnostic_pending": false,
+      "finalized": true,
+      "qualification": "Closed as unproven: this binding lacks a strict selected-file locator association after Stop. No latest-row inference or mutating snapshot query was used. A later trial must capture its own association before stopping."
+    },
+    "qualification": "This one personal 115 file reached observed native AV playback and advancing position, improving on the retained 2134 failed trial. It is not full private-file product acceptance; facts/history and precise terminal cause/persistence remain incomplete."
+  },
+  "licensing": {
+    "public_distribution_cleared": false,
+    "qualification": "Unresolved upstream/full-license gates are retained; private signature is not publication clearance."
+  },
+  "remaining_gates": [
+    "Two error-level GetDirectory lines remain unexplained; exact selected-file terminal history cannot be reconstructed safely from this trial's retained binding.",
+    "Explain FACTS_ABSENT and verify active/terminal history and media-start facts with correct selected-file ownership.",
+    "Do not count a changed history hash as a successful history receipt.",
+    "No startup, OSD, subtitle/audio control, long-duration playback, native build reproducibility or performance repair acceptance follows from this trial.",
+    "Broader prior feature and licensing gates remain open; no aggregate completion claim."
+  ],
+  "drafting_agent_scope": {
+    "device_calls": 0,
+    "private_key_reads": 0,
+    "product_edits": 0,
+    "old_validation_edits": 0,
+    "qualification": "Parent executed device operations. Drafting agent independently verified local evidence, references and arithmetic only."
+  },
+  "publication": {
+    "public_release": false,
+    "finalized": true,
+    "qualification": "Finalized evidence record, not product acceptance or permission for public release."
+  }
+}

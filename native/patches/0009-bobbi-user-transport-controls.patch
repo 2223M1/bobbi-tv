@@ -1,0 +1,505 @@
+diff --git a/xbmc/cores/VideoPlayer/BobiScopedControl.h b/xbmc/cores/VideoPlayer/BobiScopedControl.h
+index e7e18a5..5962670 100644
+--- a/xbmc/cores/VideoPlayer/BobiScopedControl.h
++++ b/xbmc/cores/VideoPlayer/BobiScopedControl.h
+@@ -2,7 +2,9 @@
+ #pragma once
+ 
+ #include "utils/Variant.h"
++#include <chrono>
+ #include <deque>
++#include <mutex>
+ #include <string>
+ 
+ // Shared by admission and the real actor. A received request is never evidence
+@@ -11,13 +13,108 @@
+ inline bool BobiScopedAction(const std::string& action)
+ {
+   return action == "seek" || action == "audio_stream" ||
+-      action == "manual_subtitle_stream" || action == "subtitle_visible";
++      action == "manual_subtitle_stream" || action == "subtitle_visible" ||
++      action == "user_pause" || action == "user_resume" || action == "user_stop";
+ }
+ 
++inline CVariant BobiScopedRecord(const CVariant& command)
++{
++  CVariant row(CVariant::VariantTypeObject);
++  for (const auto* key : {"command_id", "request_id", "native_instance", "action", "file_sha256",
++       "expected_sequence", "selection_epoch", "user_intent", "subtitle_intent", "audio_intent"})
++    row[key] = command[key];
++  row["control_protocol"] = 1;
++  row["status"] = "queued";
++  return row;
++}
++
++inline bool BobiScopedSameCommand(const CVariant& row, const CVariant& command)
++{
++  for (const auto* key : {"command_id", "request_id", "native_instance", "action", "file_sha256",
++       "expected_sequence", "selection_epoch", "user_intent", "subtitle_intent", "audio_intent"})
++    if (row[key] != command[key]) return false;
++  return true;
++}
++
++// Immutable result retention, not another command owner. Reserve BEFORE an
++// accepted stop changes playback. Pending slots are never evicted; terminal or
++// explicit unknown settlement starts a ten-minute retention period. All time
++// is monotonic. Neither reads nor expiry can execute/replay a command.
++class CBobiScopedTerminals
++{
++public:
++  using Clock = std::chrono::steady_clock;
++  static constexpr size_t CAPACITY = 64;
++  static constexpr auto RETENTION = std::chrono::seconds(600);
++  static CBobiScopedTerminals& Get() { static CBobiScopedTerminals value; return value; }
++  bool Available(Clock::time_point now = Clock::now())
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    Prune(now);
++    return m_rows.size() < CAPACITY;
++  }
++  bool Reserve(const CVariant& command, Clock::time_point now = Clock::now())
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    Prune(now);
++    if (command["action"].asString() != "user_stop" || m_rows.size() >= CAPACITY) return false;
++    for (const auto& item : m_rows)
++      if (item.row["command_id"] == command["command_id"]) return false;
++    m_rows.push_back({BobiScopedRecord(command), false, {}});
++    return true;
++  }
++  CVariant Finish(const CVariant& command, const CVariant& terminal,
++                  const std::string& fileSha, Clock::time_point now = Clock::now())
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    for (auto& item : m_rows)
++      if (!item.settled && BobiScopedSameCommand(item.row, command))
++      {
++        const bool bound = terminal.isObject() && terminal["phase"].asString() == "TERMINAL" &&
++            terminal["request_id"] == command["request_id"] &&
++            terminal["native_instance"] == command["native_instance"] &&
++            fileSha == command["file_sha256"].asString() &&
++            terminal["open_epoch"].asUnsignedInteger() == command["selection_epoch"].asUnsignedInteger() &&
++            terminal["sequence"].asUnsignedInteger() > command["expected_sequence"].asUnsignedInteger() &&
++            terminal["user_intent"].asUnsignedInteger() > command["user_intent"].asUnsignedInteger();
++        item.row["status"] = bound ? (terminal["reason"].asString() == "STOP" ? "applied" : "failed") : "unknown";
++        if (bound)
++        {
++          item.row["terminal_reason"] = terminal["reason"];
++          item.row["terminal_sequence"] = terminal["sequence"];
++          item.row["terminal_open_epoch"] = terminal["open_epoch"];
++          item.row["terminal_user_intent"] = terminal["user_intent"];
++        }
++        item.settled = true;
++        item.expires = now + RETENTION;
++        return item.row;
++      }
++    return CVariant();
++  }
++  CVariant Recent(Clock::time_point now = Clock::now())
++  {
++    std::lock_guard<std::mutex> lock(m_mutex);
++    Prune(now);
++    CVariant result(CVariant::VariantTypeArray);
++    for (const auto& item : m_rows) result.push_back(item.row);
++    return result;
++  }
++private:
++  struct Item { CVariant row; bool settled; Clock::time_point expires; };
++  void Prune(Clock::time_point now)
++  {
++    for (auto it = m_rows.begin(); it != m_rows.end();)
++      if (it->settled && now >= it->expires) it = m_rows.erase(it); else ++it;
++  }
++  std::mutex m_mutex;
++  std::deque<Item> m_rows;
++};
++
+ inline bool BobiScopedMatches(const CVariant& command, const CVariant& state,
+                               uint64_t selectionEpoch, const std::string& fileSha)
+ {
+   if (!BobiScopedAction(command["action"].asString()) ||
++      !(command["control_protocol"].isInteger() || command["control_protocol"].isUnsignedInteger()) ||
+       command["control_protocol"].asInteger() != 1 ||
+       state["phase"].asString() != "AV_STARTED" ||
+       command["request_id"].asString().size() != 32 ||
+@@ -25,9 +122,11 @@ inline bool BobiScopedMatches(const CVariant& command, const CVariant& state,
+       command["request_id"] != state["request_id"] ||
+       command["file_sha256"].asString() != fileSha || fileSha.size() != 64)
+     return false;
+-  for (const auto* key : {"user_intent", "subtitle_intent", "audio_intent"})
++  for (const auto* key : {"expected_sequence", "selection_epoch", "user_intent", "subtitle_intent", "audio_intent"})
+     if (!(command[key].isInteger() || command[key].isUnsignedInteger()) ||
+-        command[key].asInteger(-1) < 0 || command[key].asUnsignedInteger() != state[key].asUnsignedInteger()) return false;
++        command[key].asInteger(-1) < 0) return false;
++  for (const auto* key : {"user_intent", "subtitle_intent", "audio_intent"})
++    if (command[key].asUnsignedInteger() != state[key].asUnsignedInteger()) return false;
+   return command["expected_sequence"].asUnsignedInteger() == state["sequence"].asUnsignedInteger() &&
+       command["selection_epoch"].asUnsignedInteger() == state["open_epoch"].asUnsignedInteger() &&
+       command["selection_epoch"].asUnsignedInteger() == selectionEpoch;
+@@ -39,36 +138,35 @@ inline bool BobiScopedSeek(const CVariant& value, int64_t duration, bool canSeek
+       value.asInteger(-1) >= 0 && value.asInteger(-1) < duration;
+ }
+ 
+-// Per native instance, protected by its existing receipt lock. Exhaustion
+-// closes admission instead of evicting IDs and accidentally replaying them.
++// Per native instance, protected by its existing receipt lock. Only final rows
++// whose original scope is strictly behind the REAL player state may retire.
++// Pending/unknown rows never retire. There is no unbounded UUID tombstone:
++// replay of a retired original ID+scope still fails the actor's full CAS.
+ class CBobiScopedCommands
+ {
+ public:
+   void Reset() { m_rows.clear(); }
+-  bool Admit(const CVariant& command)
++  bool Admit(const CVariant& command, const CVariant& state = CVariant())
+   {
+     const auto id = command["command_id"].asString();
+     if (id.size() != 32 || id.find_first_not_of("0123456789abcdef") != std::string::npos)
+       return false;
+     for (const auto& row : m_rows)
+       if (row["command_id"] == command["command_id"]) return false;
++    for (auto it = m_rows.begin(); it != m_rows.end();)
++      if (Retirable(*it, state)) it = m_rows.erase(it); else ++it;
+     if (m_rows.size() >= 256) return false;
+-    CVariant row(CVariant::VariantTypeObject);
+-    for (const auto* key : {"command_id", "request_id", "native_instance", "action", "file_sha256"})
+-      row[key] = command[key];
+-    row["control_protocol"] = 1;
+-    row["status"] = "queued";
+-    m_rows.push_back(row);
++    m_rows.push_back(BobiScopedRecord(command));
+     return true;
+   }
+-  CVariant Finish(const CVariant& command, const std::string& status)
++  CVariant Finish(const CVariant& command, const std::string& status, const CVariant& evidence = CVariant())
+   {
+     for (auto& row : m_rows)
+-      if (row["command_id"] == command["command_id"] && row["status"].asString() == "queued" &&
+-          row["native_instance"] == command["native_instance"] && row["request_id"] == command["request_id"] &&
+-          row["file_sha256"] == command["file_sha256"] && row["action"] == command["action"])
++      if (row["status"].asString() == "queued" && BobiScopedSameCommand(row, command))
+       {
+         row["status"] = status;
++        for (const auto* key : {"terminal_reason", "terminal_sequence", "terminal_open_epoch", "terminal_user_intent"})
++          if (evidence.isMember(key)) row[key] = evidence[key];
+         return row;
+       }
+     return CVariant();
+@@ -81,5 +179,27 @@ public:
+     return result;
+   }
+ private:
++  static bool Retirable(const CVariant& row, const CVariant& state)
++  {
++    const auto status = row["status"].asString();
++    if ((status != "applied" && status != "rejected" && status != "failed") ||
++        state["phase"].asString() != "AV_STARTED" ||
++        row["native_instance"] != state["native_instance"] || row["request_id"] != state["request_id"] ||
++        !(row["selection_epoch"].isInteger() || row["selection_epoch"].isUnsignedInteger()) ||
++        row["selection_epoch"].asInteger(-1) < 0 ||
++        row["selection_epoch"].asUnsignedInteger() != state["open_epoch"].asUnsignedInteger())
++      return false;
++    bool advanced = false;
++    for (const auto* key : {"expected_sequence", "user_intent", "subtitle_intent", "audio_intent"})
++    {
++      const auto& original = row[key];
++      const auto& current = state[std::string(key) == "expected_sequence" ? "sequence" : key];
++      if (!(original.isInteger() || original.isUnsignedInteger()) || original.asInteger(-1) < 0 ||
++          !(current.isInteger() || current.isUnsignedInteger()) || current.asInteger(-1) < 0 ||
++          current.asUnsignedInteger() < original.asUnsignedInteger()) return false;
++      advanced = advanced || current.asUnsignedInteger() > original.asUnsignedInteger();
++    }
++    return advanced;
++  }
+   std::deque<CVariant> m_rows;
+ };
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.cpp b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+index 1395e86..bbb4019 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+@@ -71,6 +71,7 @@
+ #include "video/VideoInfoTag.h"
+ #include "windowing/WinSystem.h"
+ #include "utils/ScopeGuard.h"
++#include <exception>
+ 
+ #include <iterator>
+ #include <algorithm>
+@@ -673,6 +674,7 @@ CVideoPlayer::CVideoPlayer(IPlayerCallback& callback)
+ 
+ CVideoPlayer::~CVideoPlayer()
+ {
++  KODI::UTILS::CScopeGuard<int, 0, void(int)> settleStop([&](int) { FinishBobiUserStop(); }, 1);
+   CServiceBroker::GetWinSystem()->Unregister(this);
+ 
+   CloseFile();
+@@ -764,6 +766,8 @@ CVariant CVideoPlayer::GetBobiSubtitles() const
+   result["receipt"] = before;
+   result["selection_epoch"] = selectionEpoch;
+   result["control_protocol"] = 1;
++  result["transport_protocol"] = 1;
++  result["transport_state"] = before["transport_state"];
+   result["streams"] = CVariant(CVariant::VariantTypeArray);
+   result["audio_streams"] = CVariant(CVariant::VariantTypeArray);
+   {
+@@ -805,6 +809,10 @@ CVariant CVideoPlayer::GetBobiSubtitles() const
+     result["position_ms"] = static_cast<int64_t>(std::llround(m_State.time));
+     result["duration_ms"] = static_cast<int64_t>(std::llround(m_State.timeMax));
+     result["can_seek"] = m_State.canseek && m_State.timeMax > 0 && m_State.menuType == MenuType::NONE;
++    const bool transport = m_State.menuType == MenuType::NONE && !m_bAbortRequest;
++    result["can_pause"] = transport && m_State.canpause;
++    result["can_resume"] = transport && (m_State.canpause || m_State.canseek);
++    result["can_stop"] = transport && CBobiScopedTerminals::Get().Available();
+     result["chapters"] = CVariant(CVariant::VariantTypeArray);
+     if (m_State.chapters.size() <= 64)
+       for (const auto& chapter : m_State.chapters)
+@@ -836,6 +844,7 @@ CVariant CVideoPlayer::GetBobiSubtitles() const
+ 
+ void CVideoPlayer::BeginBobiInstance(const CFileItem& file)
+ {
++  FinishBobiUserStop(); // A replaced instance cannot lend authority to an old stop.
+   InvalidateBobiCompletion();
+   using KODI::UTILITY::CDigest;
+   std::unique_lock<CCriticalSection> lock(m_bobiLock);
+@@ -871,6 +880,7 @@ void CVideoPlayer::BeginBobiInstance(const CFileItem& file)
+   m_bobiState["sequence"] = static_cast<uint64_t>(0);
+   m_bobiState["phase"] = "OPEN";
+   m_bobiState["paused"] = false;
++  m_bobiState["transport_state"] = "playing";
+ }
+ 
+ CVariant CVideoPlayer::BobiEvent(const std::string& phase, const std::string& reason)
+@@ -920,6 +930,7 @@ CVariant CVideoPlayer::BobiEvent(const std::string& phase, const std::string& re
+   }
+   if (phase == "TERMINAL")
+   {
++    FinishBobiUserStop(m_bobiState);
+     // Only the existing immutable terminal may carry completion evidence.
+     m_bobiState["completion_observation"] = reason == "NATURAL_EOF"
+         ? m_bobiCompletion.Snapshot() : CBobiCompletion().Snapshot();
+@@ -930,6 +941,24 @@ CVariant CVideoPlayer::BobiEvent(const std::string& phase, const std::string& re
+   return m_bobiState;
+ }
+ 
++void CVideoPlayer::FinishBobiUserStop(const CVariant& terminal)
++{
++  CVariant result;
++  {
++    std::unique_lock<CCriticalSection> lock(m_bobiLock);
++    if (!m_bobiStopCommand.isObject()) return;
++    const auto fileSha = KODI::UTILITY::CDigest::Calculate(
++        KODI::UTILITY::CDigest::Type::SHA256, terminal["file_identity"].asString());
++    result = CBobiScopedTerminals::Get().Finish(m_bobiStopCommand, terminal, fileSha);
++    if (result.isObject())
++      m_bobiCommands.Finish(m_bobiStopCommand, result["status"].asString(), result);
++    m_bobiStopCommand = CVariant();
++  }
++  if (result.isObject()) m_outboundEvents->Submit([result]() {
++    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "OnBobiControl", result);
++  });
++}
++
+ void CVideoPlayer::BobiUserIntent()
+ {
+   std::unique_lock<CCriticalSection> lock(m_bobiLock);
+@@ -979,7 +1008,7 @@ bool CVideoPlayer::BobiControl(const CVariant& command)
+     std::unique_lock<CCriticalSection> lock(m_bobiLock);
+     if (command["control_protocol"].asInteger() != 1 ||
+         command["native_instance"] != m_bobiState["native_instance"] ||
+-        !m_bobiCommands.Admit(command)) return false;
++        !m_bobiCommands.Admit(command, m_bobiState)) return false;
+   }
+   m_messenger.Put(std::make_shared<CDVDMsgType<CVariant>>(
+       CDVDMsg::PLAYER_BOBI_CONTROL, command), 1);
+@@ -1853,6 +1882,10 @@ void CVideoPlayer::Prepare()
+ 
+ void CVideoPlayer::Process()
+ {
++  const int exceptions = std::uncaught_exceptions();
++  KODI::UTILS::CScopeGuard<int, 0, void(int)> settleStop([&](int) {
++    if (std::uncaught_exceptions() > exceptions) FinishBobiUserStop();
++  }, 1);
+   // Try to resolve the correct mime type. This can take some time, for example if a requested
+   // item is located at a slow/not reachable remote source. So, do mime type detection in vp worker
+   // thread, not directly when initalizing the player to keep GUI responsible.
+@@ -3044,6 +3077,8 @@ void CVideoPlayer::SendPlayerMessage(std::shared_ptr<CDVDMsg> pMsg, unsigned int
+ 
+ void CVideoPlayer::OnExit()
+ {
++  // An exception before the real terminal is unknown, never an applied stop.
++  KODI::UTILS::CScopeGuard<int, 0, void(int)> settleStop([&](int) { FinishBobiUserStop(); }, 1);
+   CLog::Log(LOGINFO, "CVideoPlayer::OnExit()");
+ 
+   // set event to inform openfile something went wrong in case openfile is still waiting for this event
+@@ -3149,6 +3184,7 @@ void CVideoPlayer::HandleMessages()
+     std::unique_lock<CCriticalSection> scopedIntent;
+     CVariant scopedCommand;
+     CVariant scopedIntentClaim;
++    std::shared_ptr<CDVDMsgPlayerSeek> scopedResumeSeek;
+     bool scopedApplied = false;
+     std::string scopedFailure = "rejected";
+     KODI::UTILS::CScopeGuard<int, 0, void(int)> scopedResult([&](int) {
+@@ -3198,6 +3234,13 @@ void CVideoPlayer::HandleMessages()
+             static_cast<int64_t>(std::llround(m_State.timeMax)), CanSeek())) continue;
+         if (action == "subtitle_visible" && (!command["visible"].isBoolean() ||
+             (command["visible"].asBoolean() && m_CurrentSubtitle.id < 0))) continue;
++        if (action == "user_pause" && !CanPause()) continue;
++        if (action == "user_resume" && !CanPause() && !CanSeek()) continue;
++        if (action == "user_stop")
++        {
++          if (!CBobiScopedTerminals::Get().Reserve(command)) continue;
++          m_bobiStopCommand = command;
++        }
+         // Claim this action atomically, then execute in this same actor turn.
+         // Decoder Open/Close/Flush can wait on other threads: never hold the
+         // receipt lock across them. The epoch gate fixes the player instance;
+@@ -3205,13 +3248,43 @@ void CVideoPlayer::HandleMessages()
+         scopedFailure = "failed";
+         const bool audioSync = command["audio_sync"].asBoolean(); // internal queue only, not in RPC schema
+         if (!audioSync) BobiUserIntent();
+-        if (action == "seek")
++        if (action == "user_stop")
++        {
++          scopedCommand = CVariant(); // OnExit, not this turn's guard, settles stop.
++          scopedIntent.unlock();
++          m_bCloseRequest = true;
++          m_bAbortRequest = true;
++          break; // Do not consume a newer open after this accepted stop.
++        }
++        if (action == "user_pause" || action == "user_resume")
++        {
++          const int target = action == "user_pause" ? DVD_PLAYSPEED_PAUSE : DVD_PLAYSPEED_NORMAL;
++          m_processInfo->SetNewSpeed(target == DVD_PLAYSPEED_PAUSE ? 0.0f : 1.0f);
++          CDVDMsgPlayerSetSpeed::SpeedParams params{target, false};
++          pMsg = std::make_shared<CDVDMsgPlayerSetSpeed>(params);
++          if (target != m_playSpeed)
++          {
++            if (target == DVD_PLAYSPEED_PAUSE) m_callback.OnPlayBackPaused();
++            else m_callback.OnPlayBackResumed();
++          }
++        }
++        else if (action == "seek")
+         {
+           if (!audioSync) InvalidateBobiCompletion();
+           CDVDMsgPlayerSeek::CMode mode;
+           mode.time = static_cast<double>(command["position_ms"].asInteger());
+           mode.backward = true;
+           mode.trickplay = audioSync;
++          if (audioSync && command["transport_seek"].isObject())
++          {
++            const auto& seek = command["transport_seek"];
++            mode.time = seek["time"].asDouble();
++            mode.backward = seek["backward"].asBoolean();
++            mode.accurate = seek["accurate"].asBoolean();
++            mode.sync = seek["sync"].asBoolean();
++            mode.restore = seek["restore"].asBoolean();
++            mode.trickplay = seek["trickplay"].asBoolean();
++          }
+           pMsg = std::make_shared<CDVDMsgPlayerSeek>(mode);
+         }
+         else if (action == "audio_stream")
+@@ -3937,9 +4010,16 @@ void CVideoPlayer::HandleMessages()
+         mode.trickplay = true;
+         mode.sync = true;
+         mode.restore = false;
+-        m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
++        if (scopedCommand["action"].asString() == "user_resume")
++          scopedResumeSeek = std::make_shared<CDVDMsgPlayerSeek>(mode);
++        else
++          m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
+       }
+ 
++      // Explicit resume means stable normal 1x, including the remembered tempo.
++      // Do not call public SetTempo: it would add another intent/queued action.
++      if (scopedCommand["action"].asString() == "user_resume")
++        m_processInfo->SetTempo(1.0f);
+       if (std::static_pointer_cast<CDVDMsgPlayerSetSpeed>(pMsg)->IsTempo())
+         m_processInfo->SetTempo(static_cast<float>(speed) / DVD_PLAYSPEED_NORMAL);
+       else
+@@ -3957,9 +4037,39 @@ void CVideoPlayer::HandleMessages()
+       {
+         std::unique_lock<CCriticalSection> lock(m_bobiLock);
+         m_bobiState["paused"] = speed == DVD_PLAYSPEED_PAUSE;
++        m_bobiState["transport_state"] = speed == DVD_PLAYSPEED_PAUSE ? "paused" :
++            speed == DVD_PLAYSPEED_NORMAL && m_processInfo->GetNewTempo() == 1.0f ? "playing" : "other";
+       }
+       const auto speedReceipt = BobiEvent(GetBobiState()["phase"].asString());
+       m_outboundEvents->Submit([speedReceipt]() { AnnounceBobiReceipt(speedReceipt); });
++      if (scopedCommand["action"].asString() == "user_pause" || scopedCommand["action"].asString() == "user_resume")
++        scopedApplied = m_playSpeed == (scopedCommand["action"].asString() == "user_pause" ?
++            DVD_PLAYSPEED_PAUSE : DVD_PLAYSPEED_NORMAL) &&
++            (scopedCommand["action"].asString() == "user_pause" || m_processInfo->GetNewTempo() == 1.0f);
++      if (scopedResumeSeek && speedReceipt["native_instance"] == scopedIntentClaim["native_instance"] &&
++          speedReceipt["request_id"] == scopedIntentClaim["request_id"] &&
++          speedReceipt["user_intent"] == scopedIntentClaim["user_intent"] &&
++          speedReceipt["audio_intent"] == scopedIntentClaim["audio_intent"] &&
++          speedReceipt["subtitle_intent"] == scopedIntentClaim["subtitle_intent"] &&
++          speedReceipt["sequence"].asUnsignedInteger() == scopedIntentClaim["sequence"].asUnsignedInteger() + 1)
++      {
++        // Keep the original ID/result. This private decoder synchronization is
++        // guarded at its own actor turn and cannot borrow a newer user intent.
++        CVariant sync = scopedCommand;
++        sync["action"] = "seek";
++        sync["audio_sync"] = true;
++        for (const auto* key : {"user_intent", "audio_intent", "subtitle_intent"}) sync[key] = speedReceipt[key];
++        sync["expected_sequence"] = speedReceipt["sequence"];
++        sync["position_ms"] = static_cast<int64_t>(std::llround(scopedResumeSeek->GetTime()));
++        auto& seek = sync["transport_seek"];
++        seek["time"] = scopedResumeSeek->GetTime();
++        seek["backward"] = scopedResumeSeek->GetBackward();
++        seek["accurate"] = scopedResumeSeek->GetAccurate();
++        seek["sync"] = scopedResumeSeek->GetSync();
++        seek["restore"] = scopedResumeSeek->GetRestore();
++        seek["trickplay"] = scopedResumeSeek->GetTrickPlay();
++        m_messenger.Put(std::make_shared<CDVDMsgType<CVariant>>(CDVDMsg::PLAYER_BOBI_CONTROL, sync));
++      }
+     }
+     else if (pMsg->IsType(CDVDMsg::PLAYER_FRAME_ADVANCE))
+     {
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.h b/xbmc/cores/VideoPlayer/VideoPlayer.h
+index 512f8db..da25805 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.h
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.h
+@@ -269,6 +269,8 @@ private:
+   mutable CCriticalSection m_bobiLock;
+   CVariant m_bobiState;
+   CBobiScopedCommands m_bobiCommands;
++  CVariant m_bobiStopCommand;
++  void FinishBobiUserStop(const CVariant& terminal = CVariant());
+   CBobiOriginalAudio m_bobiOriginalAudio;
+   CBobiCompletion m_bobiCompletion;
+   void ObserveBobiCompletion(bool video, bool domainValid, double durationMs);
+diff --git a/xbmc/interfaces/json-rpc/PlayerOperations.cpp b/xbmc/interfaces/json-rpc/PlayerOperations.cpp
+index f885012..c12f4eb 100644
+--- a/xbmc/interfaces/json-rpc/PlayerOperations.cpp
++++ b/xbmc/interfaces/json-rpc/PlayerOperations.cpp
+@@ -24,6 +24,7 @@
+ #include "application/ApplicationPowerHandling.h"
+ #include "cores/playercorefactory/PlayerCoreFactory.h"
+ #include "cores/BobiOpenGate.h"
++#include "cores/VideoPlayer/BobiScopedControl.h"
+ #include "cores/BobiHandoff.h"
+ #include "cores/BobiGuiGate.h"
+ #include "guilib/GUIComponent.h"
+@@ -86,6 +87,8 @@ JSONRPC_STATUS CPlayerOperations::BobiState(const std::string&, ITransportLayer*
+   result["protocol"] = 1;
+   result["selection_epoch"] = CBobiOpenGate::Get().Epoch();
+   result["playback"] = player->GetBobiState();
++  result["control_protocol"] = 1;
++  result["terminal_commands"] = CBobiScopedTerminals::Get().Recent();
+   result["handoff"] = CBobiHandoff::Get().Status();
+   const auto gui = CBobiGuiGate::Get().Snapshot();
+   result["gui_generation"] = gui.generation;
+diff --git a/xbmc/interfaces/json-rpc/schema/methods.json b/xbmc/interfaces/json-rpc/schema/methods.json
+index 5591614..76611ab 100644
+--- a/xbmc/interfaces/json-rpc/schema/methods.json
++++ b/xbmc/interfaces/json-rpc/schema/methods.json
+@@ -598,7 +598,7 @@
+       {"name": "selection_epoch", "type": "integer", "minimum": 0, "required": true},
+       {"name": "window_token", "type": "string", "default": "", "maxLength": 32},
+       {"name": "command_id", "type": "string", "required": true, "minLength": 32, "maxLength": 32},
+-      {"name": "action", "type": "string", "enum": ["stop", "pause", "resume", "handoff_capture", "handoff_stop", "seek", "audio_stream", "manual_subtitle_stream", "subtitle_visible"], "required": true},
++      {"name": "action", "type": "string", "enum": ["stop", "pause", "resume", "handoff_capture", "handoff_stop", "seek", "audio_stream", "manual_subtitle_stream", "subtitle_visible", "user_pause", "user_resume", "user_stop"], "required": true},
+       {"name": "control_protocol", "type": "integer", "default": 0, "minimum": 0, "maximum": 1},
+       {"name": "file_sha256", "type": "string", "default": "", "maxLength": 64},
+       {"name": "subtitle_intent", "type": "integer", "default": 0, "minimum": 0},

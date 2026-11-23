@@ -1,0 +1,329 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1198">
+  <defaultcontrol always="false">9101</defaultcontrol>
+  <menucontrol>9701</menucontrol>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <include>BobbiBrowseCanvas</include>
+    <control type="group">
+      <left>80</left><top>128</top>
+      <control type="label">
+        <left>0</left><top>0</top><width>1200</width><height>68</height>
+        <label>动漫世界</label>
+        <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>2</left><top>68</top><width>1600</width><height>32</height>
+        <label>新番、剧场版动画与想重看的故事</label>
+        <font>HeroPlot24</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+
+    <!-- 3 Hero on-device Squircle Category Cards (x=80..1840) -->
+    <control type="group">
+      <left>80</left><top>252</top><width>564</width><height>216</height>
+      <control type="button" id="9101">
+        <left>0</left><top>0</top><width>564</width><height>216</height>
+        <label>本季度新番</label>
+        <font>Card26</font><textcolor>00000000</textcolor><focusedcolor>00000000</focusedcolor>
+        <onleft>9701</onleft><onright>9102</onright>
+        <onup>9701</onup>
+        <ondown condition="Integer.IsGreater(Container(9200).NumItems,0)">9200</ondown>
+        <ondown condition="!Integer.IsGreater(Container(9200).NumItems,0)">9101</ondown>
+        <texturefocus /><texturenofocus />
+        <onclick>ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Current_Quarter&amp;mode=anime&amp;submode=tv&amp;api=tmdb&quot;,return)</onclick>
+      </control>
+      <control type="group">
+        <visible>!Control.HasFocus(9101)</visible>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="1EFFFFFF" border="36">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="668E5CF7">bobbi/glass/glow-416x234.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture border="36">bobbi/glass/squircle-r14-rim.png</texture>
+        </control>
+        <control type="image">
+          <left>30</left><top>28</top><width>56</width><height>56</height>
+          <texture>bobbi/glass/icon-disc-44.png</texture>
+        </control>
+        <control type="image">
+          <left>42</left><top>40</top><width>32</width><height>32</height>
+          <texture colordiffuse="text">bobbi/glass/icons/sparkles.png</texture>
+        </control>
+        <control type="label">
+          <left>30</left><top>114</top><width>500</width><height>44</height>
+          <label>本季度新番</label><font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>30</left><top>160</top><width>500</width><height>28</height>
+          <label>发现正在更新的当季番剧</label><font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <control type="group">
+        <visible>Control.HasFocus(9101)</visible>
+        <include content="Lift"><param name="center">282,108</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-36</left><top>-36</top><width>636</width><height>288</height>
+          <texture border="64">bobbi/glass/modal-shadow.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="FFFFFFFF" border="36">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <left>30</left><top>28</top><width>56</width><height>56</height>
+          <texture>bobbi/glass/icon-disc-focus.png</texture>
+        </control>
+        <control type="image">
+          <left>42</left><top>40</top><width>32</width><height>32</height>
+          <texture colordiffuse="text">bobbi/glass/icons/sparkles.png</texture>
+        </control>
+        <control type="label">
+          <left>30</left><top>114</top><width>500</width><height>44</height>
+          <label>本季度新番</label><font>Head34</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>30</left><top>160</top><width>500</width><height>28</height>
+          <label>发现正在更新的当季番剧</label><font>CardSub22</font><textcolor>B31D1D1F</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    </control>
+
+    <control type="group">
+      <left>678</left><top>252</top><width>564</width><height>216</height>
+      <control type="button" id="9102">
+        <left>0</left><top>0</top><width>564</width><height>216</height>
+        <label>动漫电影</label>
+        <font>Card26</font><textcolor>00000000</textcolor><focusedcolor>00000000</focusedcolor>
+        <onleft>9101</onleft><onright>9103</onright>
+        <onup>9701</onup>
+        <ondown condition="Integer.IsGreater(Container(9200).NumItems,0)">9200</ondown>
+        <ondown condition="!Integer.IsGreater(Container(9200).NumItems,0)">9102</ondown>
+        <texturefocus /><texturenofocus />
+        <onclick>ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Movies_New&amp;mode=anime&amp;submode=movies&amp;api=tmdb&quot;,return)</onclick>
+      </control>
+      <control type="group">
+        <visible>!Control.HasFocus(9102)</visible>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="1EFFFFFF" border="36">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="6630B0C7">bobbi/glass/glow-416x234.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture border="36">bobbi/glass/squircle-r14-rim.png</texture>
+        </control>
+        <control type="image">
+          <left>30</left><top>28</top><width>56</width><height>56</height>
+          <texture>bobbi/glass/icon-disc-44.png</texture>
+        </control>
+        <control type="image">
+          <left>42</left><top>40</top><width>32</width><height>32</height>
+          <texture colordiffuse="text">bobbi/glass/icons/film.png</texture>
+        </control>
+        <control type="label">
+          <left>30</left><top>114</top><width>500</width><height>44</height>
+          <label>动漫电影</label><font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>30</left><top>160</top><width>500</width><height>28</height>
+          <label>剧场版与动画长片精选</label><font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <control type="group">
+        <visible>Control.HasFocus(9102)</visible>
+        <include content="Lift"><param name="center">282,108</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-36</left><top>-36</top><width>636</width><height>288</height>
+          <texture border="64">bobbi/glass/modal-shadow.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="FFFFFFFF" border="36">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <left>30</left><top>28</top><width>56</width><height>56</height>
+          <texture>bobbi/glass/icon-disc-focus.png</texture>
+        </control>
+        <control type="image">
+          <left>42</left><top>40</top><width>32</width><height>32</height>
+          <texture colordiffuse="text">bobbi/glass/icons/film.png</texture>
+        </control>
+        <control type="label">
+          <left>30</left><top>114</top><width>500</width><height>44</height>
+          <label>动漫电影</label><font>Head34</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>30</left><top>160</top><width>500</width><height>28</height>
+          <label>剧场版与动画长片精选</label><font>CardSub22</font><textcolor>B31D1D1F</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    </control>
+
+    <control type="group">
+      <left>1276</left><top>252</top><width>564</width><height>216</height>
+      <control type="button" id="9103">
+        <left>0</left><top>0</top><width>564</width><height>216</height>
+        <label>搜索动漫</label>
+        <font>Card26</font><textcolor>00000000</textcolor><focusedcolor>00000000</focusedcolor>
+        <onleft>9102</onleft><onright>noop</onright>
+        <onup>9701</onup>
+        <ondown condition="Integer.IsGreater(Container(9200).NumItems,0)">9200</ondown>
+        <ondown condition="!Integer.IsGreater(Container(9200).NumItems,0)">9103</ondown>
+        <texturefocus /><texturenofocus />
+        <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=anime_tv&quot;)</onclick>
+      </control>
+      <control type="group">
+        <visible>!Control.HasFocus(9103)</visible>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="1EFFFFFF" border="36">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="7A2F7BFF">bobbi/glass/glow-416x234.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture border="36">bobbi/glass/squircle-r14-rim.png</texture>
+        </control>
+        <control type="image">
+          <left>30</left><top>28</top><width>56</width><height>56</height>
+          <texture>bobbi/glass/icon-disc-44.png</texture>
+        </control>
+        <control type="image">
+          <left>42</left><top>40</top><width>32</width><height>32</height>
+          <texture colordiffuse="text">bobbi/glass/icons/search.png</texture>
+        </control>
+        <control type="label">
+          <left>30</left><top>114</top><width>500</width><height>44</height>
+          <label>搜索动漫</label><font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>30</left><top>160</top><width>500</width><height>28</height>
+          <label>按片名查找新番与经典旧番</label><font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <control type="group">
+        <visible>Control.HasFocus(9103)</visible>
+        <include content="Lift"><param name="center">282,108</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-36</left><top>-36</top><width>636</width><height>288</height>
+          <texture border="64">bobbi/glass/modal-shadow.png</texture>
+        </control>
+        <control type="image">
+          <width>564</width><height>216</height>
+          <texture colordiffuse="FFFFFFFF" border="36">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <left>30</left><top>28</top><width>56</width><height>56</height>
+          <texture>bobbi/glass/icon-disc-focus.png</texture>
+        </control>
+        <control type="image">
+          <left>42</left><top>40</top><width>32</width><height>32</height>
+          <texture colordiffuse="text">bobbi/glass/icons/search.png</texture>
+        </control>
+        <control type="label">
+          <left>30</left><top>114</top><width>500</width><height>44</height>
+          <label>搜索动漫</label><font>Head34</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>30</left><top>160</top><width>500</width><height>28</height>
+          <label>按片名查找新番与经典旧番</label><font>CardSub22</font><textcolor>B31D1D1F</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    </control>
+
+    <!-- Live Current-Quarter Anime Poster Rail (7-up 200x300 @ x=80..1840) -->
+    <control type="label">
+      <left>80</left><top>504</top><width>600</width><height>36</height>
+      <label>当季热播番剧</label>
+      <font>RailTitle30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+      <visible>Integer.IsGreater(Container(9200).NumItems,0)</visible>
+    </control>
+    <control type="panel" id="9200">
+      <left>50</left><top>548</top><width>1820</width><height>520</height>
+      <orientation>vertical</orientation>
+      <include>ListMotion</include>
+      <preloaditems>2</preloaditems>
+      <onup>9101</onup>
+      <onleft>9701</onleft>
+      <onright>noop</onright>
+      <ondown>noop</ondown>
+      <itemlayout width="260" height="364">
+        <control type="group">
+          <left>30</left><top>16</top>
+          <control type="image">
+            <width>200</width><height>300</height>
+            <texture>bobbi/glass/tile-200x300.png</texture>
+          </control>
+          <control type="image">
+            <width>200</width><height>300</height>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+            <texture background="true" diffuse="bobbi/glass/mask-200x300.png">$INFO[ListItem.Art(poster)]</texture>
+          </control>
+          <control type="image">
+            <width>200</width><height>300</height>
+            <texture>bobbi/glass/rim-200x300.png</texture>
+          </control>
+          <control type="label">
+            <left>2</left><top>310</top><width>196</width><height>26</height>
+            <label>$VAR[TitlePrimary]</label>
+            <font>Card24</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+      </itemlayout>
+      <focusedlayout width="260" height="364">
+        <control type="group">
+          <left>30</left><top>16</top>
+          <control type="group">
+            <include content="Lift"><param name="center">100,150</param><param name="zoom">106</param></include>
+            <control type="image">
+              <left>-28</left><top>-20</top><width>256</width><height>356</height>
+              <texture>bobbi/glass/shadow-200x300.png</texture>
+              <visible>Control.HasFocus(9200)</visible>
+            </control>
+            <control type="image">
+              <width>200</width><height>300</height>
+              <texture>bobbi/glass/tile-200x300.png</texture>
+            </control>
+            <control type="image">
+              <width>200</width><height>300</height>
+              <aspectratio scalediffuse="false">scale</aspectratio>
+              <texture background="true" diffuse="bobbi/glass/mask-200x300.png">$INFO[ListItem.Art(poster)]</texture>
+            </control>
+            <control type="image">
+              <width>200</width><height>300</height>
+              <texture>bobbi/glass/spec-200x300.png</texture>
+              <visible>Control.HasFocus(9200)</visible>
+            </control>
+            <control type="image">
+              <left>-4</left><top>-4</top><width>208</width><height>308</height>
+              <texture colordiffuse="E6FFFFFF" border="44">bobbi/glass/ring-card.png</texture>
+              <visible>Control.HasFocus(9200)</visible>
+            </control>
+          </control>
+          <control type="label">
+            <left>2</left><top>314</top><width>196</width><height>26</height>
+            <label>$VAR[TitlePrimary]</label>
+            <font>Card24</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny><scroll>true</scroll>
+          </control>
+        </control>
+      </focusedlayout>
+      <content target="videos">plugin://plugin.video.bobbi/?action=search_item&amp;category=Anime_Current_Quarter&amp;mode=anime&amp;submode=tv&amp;api=tmdb</content>
+    </control>
+
+    <include content="TopBar">
+      <param name="down" value="9101" />
+    </include>
+  </controls>
+</window>

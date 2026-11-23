@@ -1,0 +1,907 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <expression name="BobbiRailRecovery">String.IsEqual(ListItem.Property(Bobbi.Rail.State),empty) | String.IsEqual(ListItem.Property(Bobbi.Rail.State),error) | String.IsEqual(ListItem.Property(Bobbi.Rail.State),auth_required)</expression>
+  <!-- library sources (115 / 百度网盘 / CD2 / NAS) carry no artwork: they get a glass tile, never a stretched icon -->
+  <expression name="BobbiNoArt">String.IsEmpty(ListItem.Art(fanart)) + String.IsEmpty(ListItem.Art(tvshow.fanart)) + String.IsEmpty(ListItem.Art(poster)) + String.IsEmpty(ListItem.Art(landscape))</expression>
+  <include name="HomeRailStateCard">
+    <param name="w">224</param><param name="h">336</param>
+    <param name="focused">false</param>
+    <definition>
+      <control type="group">
+        <visible>$EXP[BobbiRailRecovery]</visible>
+        <control type="image">
+          <width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/tile-$PARAM[w]x$PARAM[h].png</texture>
+        </control>
+        <control type="image">
+          <width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="24FFFFFF">bobbi/glass/glow-$PARAM[w]x$PARAM[h].png</texture>
+        </control>
+        <control type="image">
+          <width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/rim-$PARAM[w]x$PARAM[h].png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>-5</left><top>-5</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="F2FFFFFF" border="44">bobbi/glass/ring-card.png</texture>
+          <animation effect="zoom" start="100" end="105" center="auto" time="0" condition="true">Conditional</animation>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>52</top><width>$PARAM[w]</width><height>54</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="24FFFFFF">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>52</top><width>$PARAM[w]</width><height>54</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="glass_rim">bobbi/glass/circle-128-rim.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>65</top><width>$PARAM[w]</width><height>28</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/refresh.png</texture>
+        </control>
+        <control type="label">
+          <left>0</left><top>120</top><width>$PARAM[w]</width><height>32</height>
+          <font>Card24</font><textcolor>FFF5F5F7</textcolor><align>center</align><aligny>center</aligny>
+          <label>$INFO[ListItem.Label]</label>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <!-- Home rail declarations and shared selectors are statically generated. -->
+  <!-- 我的 hub: the newest resume item, read from the hidden 继续观看 list (container 9130) -->
+  <variable name="HubResumeHeading">
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.File.State),start_only)">观看记录</value>
+    <value>接着看</value>
+  </variable>
+  <variable name="HubResumeAction">
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.File.State),start_only)">历史进度 · 仅从头播放</value>
+    <value>已看 $INFO[Container(9130).ListItem.Property(PercentPlayed)]%   ·   按 确认 继续</value>
+  </variable>
+  <variable name="HubResumeStateTitle">
+    <value condition="Container(9130).IsUpdating">正在读取观看记录</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),empty)">还没有在看的影片</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),error)">暂时无法读取观看记录</value>
+    <value>正在读取观看记录</value>
+  </variable>
+  <variable name="HubResumeStateDescription">
+    <value condition="Container(9130).IsUpdating">正在与首页同步；你可以先使用左侧菜单。</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),empty)">从首页片单选一部开始；未看完的影院影片会留在这里。</value>
+    <value condition="String.IsEqual(Container(9130).ListItem.Property(Bobbi.Resume.State),error)">观看记录未被清除；请从左侧“继续观看”重试。</value>
+    <value>你可以从左侧“继续观看”查看或重试。</value>
+  </variable>
+  <variable name="HubResumeArt">
+    <value condition="!String.IsEmpty(Container(9130).ListItem.Art(thumb))">$INFO[Container(9130).ListItem.Art(thumb)]</value>
+    <value condition="!String.IsEmpty(Container(9130).ListItem.Art(fanart))">$INFO[Container(9130).ListItem.Art(fanart)]</value>
+    <value>$INFO[Container(9130).ListItem.Art(landscape)]</value>
+  </variable>
+  <variable name="HubResumeTitle">
+    <value condition="!String.IsEmpty(Container(9130).ListItem.Property(Bobbi.Title.zh))">$INFO[Container(9130).ListItem.Property(Bobbi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(Container(9130).ListItem.TVShowTitle)">$INFO[Container(9130).ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(Container(9130).ListItem.Title)">$INFO[Container(9130).ListItem.Title]</value>
+    <value>$INFO[Container(9130).ListItem.Label]</value>
+  </variable>
+  <variable name="HubResumeSubline">
+    <value condition="!String.IsEmpty(Container(9130).ListItem.Season) + !String.IsEmpty(Container(9130).ListItem.Episode)">第$INFO[Container(9130).ListItem.Season]季 · 第$INFO[Container(9130).ListItem.Episode]集$INFO[Container(9130).ListItem.Year,   ·   ]</value>
+    <value condition="!String.IsEmpty(Container(9130).ListItem.Year)">$INFO[Container(9130).ListItem.Year]$INFO[Container(9130).ListItem.Genre,   ·   ]</value>
+    <value>$INFO[Container(9130).ListItem.Label2]</value>
+  </variable>
+
+  <!-- ===== rail motion (premium TV TV.app bottom-anchored shelf transitions) =====
+       Exactly one rail owns the 9000 slot (label 9791); the next populated rail
+       (label 9792) rests just below the bottom bezel so becoming current is a
+       short cubic-out slide, and leaving it slides cleanly back down. -->
+  <include name="HomeRailMotion">
+    <param name="id" />
+    <definition>
+      <animation effect="slide" start="0,0" end="0,425" time="205" tween="cubic" easing="out" reversible="true" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id]) + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="0,425" time="0" reversible="true" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id]) + Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="0,-2160" time="0" reversible="true" condition="String.IsEqual(Control.GetLabel(9792),$PARAM[id])">Conditional</animation>
+    </definition>
+  </include>
+
+  <!-- poster rail (2:3): 8-up 192x288 @ x=80..1840 (+ 48 px 9th-card right peek), y=772..1060 -->
+  <include name="HomeRail">
+    <param name="id" />
+    <param name="title" />
+    <param name="content" />
+    <param name="key" />
+    <param name="limit">20</param>
+    <param name="preloaditems">2</param>
+    <definition>
+      <control type="group">
+        <width>1920</width><height>500</height>
+        <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id])">Conditional</animation>
+        <!-- Keep the provider owner alive: Kodi evaluates node.visible one
+             tick after DONE. Hiding this group on zero items prevents that
+             tick and permanently hides account-filtered cards. Navigation
+             still skips empty lists. Inactive rails are translated offscreen,
+             not hidden, so they keep processing without occupying scroll slots. -->
+        <control type="label">
+          <left>80</left><top>144</top><width>1100</width><height>34</height>
+          <label>$PARAM[title]</label>
+          <visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
+          <font>RailTitle30</font><textcolor>BFEBEBF5</textcolor><aligny>center</aligny>
+          <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
+        </control>
+        <control type="group">
+          <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
+          <control type="label">
+            <left>1240</left><top>144</top><width>600</width><height>34</height>
+            <label>保留上次片单 · 可继续浏览</label><font>CardSub22</font><textcolor>text3</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <visible>String.IsEqual(Container($PARAM[id]).ListItem.Property(Bobbi.Rail.State),stale) | [Container($PARAM[id]).IsUpdating + String.IsEqual(Container($PARAM[id]).ListItem.Property(Bobbi.Rail.State),ready)]</visible>
+          </control>
+          <control type="group">
+            <left>80</left><top>192</top>
+            <visible>Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems,0)</visible>
+            <include content="SkeletonRow" />
+          </control>
+        </control>
+        <control type="list" id="$PARAM[id]">
+          <left>64</left><top>176</top><width>1856</width><height>324</height>
+          <orientation>horizontal</orientation>
+          <include>ListMotion</include>
+          <focusposition>0</focusposition>
+          <movement>0</movement>
+          <preloaditems>$PARAM[preloaditems]</preloaditems>
+          <enable>Integer.IsGreater(Container($PARAM[id]).NumItems,0)</enable>
+          <onup>SetFocus($VAR[HomeRailUp])</onup>
+          <ondown>SetFocus($VAR[HomeRailDown])</ondown>
+          <onleft>SetFocus(9701)</onleft>
+          <onright>noop</onright>
+          <onfocus>SetProperty(BobbiRail,$PARAM[id],Home)</onfocus>
+          <onfocus>SetProperty(TMDbHelper.Blur.Fallback,$ESCVAR[HeroArt],Home)</onfocus>
+          <onback condition="!Integer.IsEqual(Container($PARAM[id]).CurrentItem,1)">Control.SetFocus($PARAM[id],0)</onback>
+          <onback condition="Integer.IsEqual(Container($PARAM[id]).CurrentItem,1)">SetFocus(9701)</onback>
+          <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
+          <itemlayout width="224" height="324">
+            <control type="group">
+              <left>16</left><top>16</top>
+              <control type="group">
+                <visible>!$EXP[BobbiIsMore] + !$EXP[BobbiRailRecovery]</visible>
+                <include content="ATVPoster" />
+              </control>
+              <include content="MoreTile"><param name="visible">$EXP[BobbiIsMore]</param><param name="w">192</param><param name="h">288</param><param name="disc_y">92</param><param name="glyph_y">108</param><param name="label_y">170</param></include>
+              <include content="HomeRailStateCard"><param name="w">192</param><param name="h">288</param></include>
+            </control>
+          </itemlayout>
+          <focusedlayout width="224" height="324">
+            <control type="group">
+              <left>16</left><top>16</top>
+              <include content="Lift"><param name="center">96,144</param><param name="zoom">106</param></include>
+              <control type="group">
+                <visible>!$EXP[BobbiIsMore] + !$EXP[BobbiRailRecovery]</visible>
+                <control type="image">
+                  <left>-48</left><top>-48</top><width>288</width><height>384</height>
+                  <texture>bobbi/glass/shadow-192x288.png</texture>
+                  <visible>Control.HasFocus($PARAM[id])</visible>
+                </control>
+                <include content="ATVPoster" />
+                <control type="image">
+                  <width>192</width><height>288</height>
+                  <texture>bobbi/glass/spec-192x288.png</texture>
+                  <visible>Control.HasFocus($PARAM[id])</visible>
+                </control>
+              </control>
+              <include content="MoreTile">
+                <param name="visible">$EXP[BobbiIsMore]</param>
+                <param name="focused">Control.HasFocus($PARAM[id])</param>
+                <param name="w">192</param><param name="h">288</param>
+                <param name="disc_y">92</param><param name="glyph_y">108</param><param name="label_y">170</param>
+              </include>
+              <include content="HomeRailStateCard"><param name="w">192</param><param name="h">288</param><param name="focused">Control.HasFocus($PARAM[id])</param></include>
+            </control>
+          </focusedlayout>
+          <content target="videos" limit="$PARAM[limit]" browse="never">$PARAM[content]&amp;rail=$PARAM[key]&amp;revision=$INFO[Window(Home).Property(Bobbi.Rail.Revision.$PARAM[key])]</content>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- wide rail (16:9): exact premium TV TV.app 320x180 @ x=80,440,800,1160,1520 (+ 1880 right peek), y=793..973 -->
+  <include name="HomeRailWide">
+    <param name="id" />
+    <param name="title" />
+    <param name="content" />
+    <param name="key" />
+    <param name="limit">20</param>
+    <param name="preloaditems">2</param>
+    <definition>
+      <control type="group">
+        <width>1920</width><height>480</height>
+        <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id])">Conditional</animation>
+        <!-- Same provider-lifetime rule as HomeRail; do not gate its parent
+             processing on the result of the provider itself. -->
+        <control type="label">
+          <left>80</left><top>162</top><width>1100</width><height>34</height>
+          <label>$PARAM[title]</label>
+          <visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
+          <font>RailTitle30</font><textcolor>BFEBEBF5</textcolor><aligny>center</aligny>
+          <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
+        </control>
+        <control type="label">
+          <left>80</left><top>240</top><width>1600</width><height>48</height>
+          <label>正在读取观看记录…</label>
+          <font>Card26</font><textcolor>text3</textcolor><aligny>center</aligny>
+          <visible>Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems,0)</visible>
+          <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
+        </control>
+        <control type="list" id="$PARAM[id]">
+          <left>60</left><top>193</top><width>1860</width><height>287</height>
+          <orientation>horizontal</orientation>
+          <include>ListMotion</include>
+          <focusposition>0</focusposition>
+          <movement>0</movement>
+          <preloaditems>$PARAM[preloaditems]</preloaditems>
+          <enable>Integer.IsGreater(Container($PARAM[id]).NumItems,0)</enable>
+          <onup>SetFocus($VAR[HomeRailUp])</onup>
+          <ondown>SetFocus($VAR[HomeRailDown])</ondown>
+          <onleft>SetFocus(9701)</onleft>
+          <onright>noop</onright>
+          <onfocus>SetProperty(BobbiRail,$PARAM[id],Home)</onfocus>
+          <onfocus>SetProperty(TMDbHelper.Blur.Fallback,$ESCVAR[HeroArt],Home)</onfocus>
+          <onback condition="!Integer.IsEqual(Container($PARAM[id]).CurrentItem,1)">Control.SetFocus($PARAM[id],0)</onback>
+          <onback condition="Integer.IsEqual(Container($PARAM[id]).CurrentItem,1)">SetFocus(9701)</onback>
+          <include content="HomeRailMotion"><param name="id" value="$PARAM[id]" /></include>
+          <itemlayout width="360" height="287">
+            <control type="group">
+              <left>20</left><top>20</top>
+              <control type="group">
+                <visible>!$EXP[BobbiIsMore] + !$EXP[BobbiRailRecovery]</visible>
+                <include content="WideCard" />
+              </control>
+              <include content="MoreTile">
+                <param name="visible">$EXP[BobbiIsMore]</param>
+                <param name="w">320</param><param name="h">180</param>
+                <param name="disc_y">40</param><param name="glyph_y">56</param><param name="label_y">116</param>
+              </include>
+              <include content="HomeRailStateCard"><param name="w">320</param><param name="h">180</param></include>
+            </control>
+          </itemlayout>
+          <focusedlayout width="360" height="287">
+            <control type="group">
+              <left>20</left><top>20</top>
+              <control type="group">
+                <visible>!$EXP[BobbiIsMore] + !$EXP[BobbiRailRecovery]</visible>
+                <control type="group">
+                  <include content="Lift"><param name="center">160,90</param><param name="zoom">106</param></include>
+                  <control type="image">
+                    <left>-48</left><top>-48</top><width>416</width><height>276</height>
+                    <texture>bobbi/glass/shadow-320x180.png</texture>
+                    <visible>Control.HasFocus($PARAM[id])</visible>
+                  </control>
+                  <include content="WideArt" />
+                  <control type="image">
+                    <width>320</width><height>180</height>
+                    <texture>bobbi/glass/spec-320x180.png</texture>
+                    <visible>Control.HasFocus($PARAM[id])</visible>
+                  </control>
+                </control>
+                <include content="WideCaption"><param name="focused">Control.HasFocus($PARAM[id])</param></include>
+              </control>
+              <include content="HomeRailStateCard"><param name="w">320</param><param name="h">180</param><param name="focused">Control.HasFocus($PARAM[id])</param></include>
+              <control type="group">
+                <include content="Lift"><param name="center">160,90</param><param name="zoom">106</param></include>
+                <include content="MoreTile">
+                  <param name="visible">$EXP[BobbiIsMore]</param>
+                  <param name="focused">Control.HasFocus($PARAM[id])</param>
+                  <param name="w">320</param><param name="h">180</param>
+                  <param name="disc_y">40</param><param name="glyph_y">56</param><param name="label_y">116</param>
+                </include>
+              </control>
+            </control>
+          </focusedlayout>
+          <content target="videos" limit="$PARAM[limit]" browse="never">$PARAM[content]&amp;rail=$PARAM[key]&amp;revision=$INFO[Window(Home).Property(Bobbi.Rail.Revision.$PARAM[key])]</content>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== premium TV cards ===== -->
+  <!-- 2:3 poster: graphite glass body, title fallback, masked art, hairline rim, progress -->
+  <include name="ATVPoster">
+    <control type="image">
+      <width>192</width><height>288</height>
+      <texture>bobbi/glass/tile-192x288.png</texture>
+    </control>
+    <control type="image">
+      <left>76</left><top>84</top><width>40</width><height>40</height>
+      <texture colordiffuse="text3">bobbi/glass/icons/film.png</texture>
+      <visible>String.IsEmpty(ListItem.Art(poster)) + String.IsEmpty(ListItem.Art(tvshow.poster)) + String.IsEmpty(ListItem.Art(season.poster)) + String.IsEmpty(ListItem.Art(thumb))</visible>
+    </control>
+    <control type="textbox">
+      <left>14</left><top>136</top><width>164</width><height>130</height>
+      <label>$VAR[TitlePrimary]</label>
+      <font>Card24</font><textcolor>text2</textcolor><align>center</align>
+      <visible>String.IsEmpty(ListItem.Art(poster)) + String.IsEmpty(ListItem.Art(tvshow.poster)) + String.IsEmpty(ListItem.Art(season.poster)) + String.IsEmpty(ListItem.Art(thumb))</visible>
+    </control>
+    <control type="image">
+      <width>192</width><height>288</height>
+      <aspectratio scalediffuse="false">scale</aspectratio>
+      <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$VAR[PosterImage]</texture>
+      <include>ArtFade</include>
+    </control>
+    <control type="image">
+      <width>192</width><height>288</height>
+      <texture>bobbi/glass/rim-192x288.png</texture>
+    </control>
+    <include content="ATVProgress"><param name="w">192</param><param name="h">288</param><param name="barw">160</param></include>
+  </include>
+  <!-- premium TV CODA on-card bottom capsule progress bar (zero % numbers):
+       16 px symmetric left/right/bottom inset, 7 px frosted capsule track + white fill + 14x7 min nub -->
+  <include name="ATVProgress">
+    <param name="w">320</param>
+    <param name="h">180</param>
+    <param name="barw">288</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture>bobbi/glass/progress-scrim-$PARAM[w]x$PARAM[h].png</texture>
+        <visible>!ListItem.IsPlaying + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]</visible>
+      </control>
+      <control type="group">
+        <left>16</left><top>$PARAM[h]</top>
+        <animation effect="slide" end="0,-24" time="0" condition="true">Conditional</animation>
+        <control type="progress">
+          <left>0</left><top>0</top><width>$PARAM[barw]</width><height>7</height>
+          <info>ListItem.Property(PercentPlayed)</info>
+          <texturebg colordiffuse="52FFFFFF" border="4">bobbi/glass/progress-track.png</texturebg>
+          <midtexture colordiffuse="FFFFFFFF" border="4">bobbi/glass/progress-fill.png</midtexture>
+          <visible>Integer.IsGreater(ListItem.Property(PercentPlayed),0) + !ListItem.IsPlaying</visible>
+        </control>
+        <control type="progress">
+          <left>0</left><top>0</top><width>$PARAM[barw]</width><height>7</height>
+          <info>ListItem.PercentPlayed</info>
+          <texturebg colordiffuse="52FFFFFF" border="4">bobbi/glass/progress-track.png</texturebg>
+          <midtexture colordiffuse="FFFFFFFF" border="4">bobbi/glass/progress-fill.png</midtexture>
+          <visible>String.IsEmpty(ListItem.Property(PercentPlayed)) + Integer.IsGreater(ListItem.PercentPlayed,0) + !ListItem.IsPlaying</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>14</width><height>7</height>
+          <texture colordiffuse="FFFFFFFF">bobbi/glass/progress-nub.png</texture>
+          <visible>!ListItem.IsPlaying + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]</visible>
+        </control>
+      </control>
+      <control type="group">
+        <visible>ListItem.IsPlaying</visible>
+        <control type="image">
+          <left>12</left><top>12</top><width>40</width><height>40</height>
+          <texture colordiffuse="E6000000">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>22</left><top>22</top><width>20</width><height>20</height>
+          <texture colordiffuse="text">bobbi/glass/icons/play.png</texture>
+        </control>
+      </control>
+      <control type="group">
+        <visible>Integer.IsGreater(ListItem.PlayCount,0) + !ListItem.IsPlaying + !Integer.IsGreater(ListItem.PercentPlayed,0) + !Integer.IsGreater(ListItem.Property(PercentPlayed),0)</visible>
+        <control type="image">
+          <left>12</left><top>12</top><width>36</width><height>36</height>
+          <texture colordiffuse="CC000000">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>21</left><top>21</top><width>18</width><height>18</height>
+          <texture colordiffuse="text">bobbi/glass/icons/checkmark.png</texture>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <!-- 16:9 art card (320x180), or a glass source tile when the item has no artwork -->
+  <include name="WideArt">
+    <control type="group">
+      <visible>!$EXP[BobbiNoArt]</visible>
+      <control type="image">
+        <width>320</width><height>180</height>
+        <texture>bobbi/glass/tile-320x180.png</texture>
+      </control>
+      <control type="image">
+        <left>138</left><top>68</top><width>44</width><height>44</height>
+        <texture colordiffuse="text3">bobbi/glass/icons/film.png</texture>
+        <visible>String.IsEmpty(ListItem.Art(thumb)) + String.IsEmpty(ListItem.Art(landscape)) + String.IsEmpty(ListItem.Art(fanart))</visible>
+      </control>
+      <control type="image">
+        <width>320</width><height>180</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobbi/glass/mask-320x180.png">$VAR[LandscapeImage]</texture>
+        <include>ArtFade</include>
+      </control>
+      <control type="image">
+        <width>320</width><height>180</height>
+        <texture>bobbi/glass/rim-320x180.png</texture>
+      </control>
+      <include content="ATVProgress"><param name="w">320</param><param name="h">180</param><param name="barw">288</param></include>
+    </control>
+    <control type="group">
+      <visible>$EXP[BobbiNoArt]</visible>
+      <include content="HomeSourceTile" />
+    </control>
+  </include>
+  <!-- library source tile (TV.app "Channels & Apps" tile): glass body, type-tinted
+       glow, a large centred native glyph; the name lives under the card -->
+  <variable name="LibraryTileGlow">
+    <value condition="$EXP[BobbiIsManage]">38FFFFFF</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),personal_catalog) | String.Contains(ListItem.Label,海报库) | String.Contains(ListItem.Label,作品片库)">967B52F5</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan) | String.Contains(ListItem.Label,云盘) | String.Contains(ListItem.Label,网盘) | String.Contains(ListItem.Label,115)">962F7BFF</value>
+    <value condition="ListItem.IsFolder">8622B8CF</value>
+    <value>867B52F5</value>
+  </variable>
+  <include name="HomeSourceTile">
+    <control type="image">
+      <width>320</width><height>180</height>
+      <texture>bobbi/glass/tile-320x180.png</texture>
+    </control>
+    <control type="image">
+      <width>320</width><height>180</height>
+      <texture colordiffuse="$VAR[LibraryTileGlow]">bobbi/glass/glow-320x180.png</texture>
+    </control>
+    <control type="image">
+      <width>320</width><height>180</height>
+      <texture>bobbi/glass/rim-320x180.png</texture>
+    </control>
+    <control type="image">
+      <left>128</left><top>58</top><width>64</width><height>64</height>
+      <texture colordiffuse="F2FFFFFF">$VAR[LibraryTileIcon]</texture>
+    </control>
+    <include content="ATVProgress"><param name="w">320</param><param name="h">180</param><param name="barw">288</param></include>
+  </include>
+  <variable name="HomeWideTitle">
+    <value condition="$EXP[BobbiNoArt]">$VAR[LibraryTileTitle]</value>
+    <value>$VAR[CardTitle]</value>
+  </variable>
+  <variable name="HomeWideSubline">
+    <value condition="$EXP[BobbiNoArt]">$VAR[LibraryTileHint]</value>
+    <value condition="!String.IsEmpty(ListItem.Episode)">$VAR[SeasonLabel] · $VAR[EpisodeLabel]</value>
+    <value condition="!String.IsEmpty(ListItem.Season)">$VAR[SeasonLabel]$INFO[ListItem.Year,  ·  ]</value>
+    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">继续播放</value>
+    <value condition="!String.IsEmpty(ListItem.Year)">$INFO[ListItem.Year]$INFO[ListItem.Genre, · ]</value>
+    <value>$VAR[CardSubline]</value>
+  </variable>
+  <include name="WideCaption">
+    <param name="focused">false</param>
+    <definition>
+      <control type="label">
+        <left>1</left><top>192</top><width>318</width><height>28</height>
+        <label>$VAR[HomeWideTitle]</label>
+        <font>Card26</font><textcolor>E6F5F5F7</textcolor><aligny>center</aligny>
+        <scroll>false</scroll>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>1</left><top>192</top><width>318</width><height>28</height>
+        <label>$VAR[HomeWideTitle]</label>
+        <font>Card26</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        <scroll>false</scroll>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>1</left><top>222</top><width>318</width><height>24</height>
+        <label>$VAR[HomeWideSubline]</label>
+        <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+      </control>
+    </definition>
+  </include>
+  <include name="WideCard">
+    <include>WideArt</include>
+    <include>WideCaption</include>
+  </include>
+
+  <!-- ===== "more" tile: 1:1 premium TV (on-device) continuous Liquid Glass card matching adjacent poster/wide cards ===== -->
+  <include name="MoreTile">
+    <param name="visible">true</param>
+    <param name="focused">false</param>
+    <param name="w">224</param>
+    <param name="h">336</param>
+    <param name="disc_y">112</param>
+    <param name="glyph_y">128</param>
+    <param name="label_y">190</param>
+    <definition>
+      <control type="group">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <visible>$PARAM[visible]</visible>
+        <control type="image">
+          <left>-48</left><top>-48</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/shadow-$PARAM[w]x$PARAM[h].png</texture>
+          <animation effect="zoom" start="100" end="138" center="auto" time="0" condition="true">Conditional</animation>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/tile-$PARAM[w]x$PARAM[h].png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="26FFFFFF">bobbi/glass/glow-$PARAM[w]x$PARAM[h].png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/spec-$PARAM[w]x$PARAM[h].png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/rim-$PARAM[w]x$PARAM[h].png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>-5</left><top>-5</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="E6FFFFFF" border="44">bobbi/glass/ring-card.png</texture>
+          <animation effect="zoom" start="100" end="104" center="auto" time="0" condition="true">Conditional</animation>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <!-- Dead-center frosted circular chevron disc (flips to crisp white disc on focus, 1:1 premium TV) -->
+        <control type="image">
+          <left>0</left><top>$PARAM[disc_y]</top><width>$PARAM[w]</width><height>62</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="24FFFFFF">bobbi/glass/circle-128.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>$PARAM[disc_y]</top><width>$PARAM[w]</width><height>62</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="glass_rim">bobbi/glass/circle-128-rim.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>$PARAM[disc_y]</top><width>$PARAM[w]</width><height>62</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>$PARAM[glyph_y]</top><width>$PARAM[w]</width><height>28</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/chevron-right.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>$PARAM[glyph_y]</top><width>$PARAM[w]</width><height>28</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/chevron-right.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>0</left><top>$PARAM[label_y]</top><width>$PARAM[w]</width><height>32</height>
+          <label>查看更多</label>
+          <font>Card24</font><textcolor>BFEBEBF5</textcolor><align>center</align><aligny>center</aligny>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="label">
+          <left>0</left><top>$PARAM[label_y]</top><width>$PARAM[w]</width><height>32</height>
+          <label>查看更多</label>
+          <font>Card24</font><textcolor>FFFFFFFF</textcolor><align>center</align><aligny>center</aligny>
+          <visible>$PARAM[focused]</visible>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== library source tile (云盘 / NAS / 影视海报库) modeled 1:1 on premium TV "Channels & Apps" 16:9 cards ===== -->
+  <variable name="LibraryTileIcon">
+    <value condition="$EXP[BobbiIsManage]">bobbi/glass/icons/plus.png</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),personal_catalog) | String.Contains(ListItem.Label,海报库) | String.Contains(ListItem.Label,作品片库)">bobbi/glass/icons/stack-outline.png</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan) | String.Contains(ListItem.Label,网盘) | String.Contains(ListItem.Label,云) | String.Contains(ListItem.Label,115) | String.Contains(ListItem.Label,WebDAV)">bobbi/glass/icons/cloud-outline.png</value>
+    <value condition="String.Contains(ListItem.Label,CD2) | String.Contains(ListItem.Label,NAS) | String.Contains(ListItem.Label,SMB) | String.Contains(ListItem.Label,NFS)">bobbi/glass/icons/drive-outline.png</value>
+    <value condition="ListItem.IsFolder">bobbi/glass/icons/folder-outline.png</value>
+    <value>bobbi/glass/icons/film-outline.png</value>
+  </variable>
+  <variable name="LibraryTileTitle">
+    <value condition="$EXP[BobbiIsManage]">添加与管理来源</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan) | String.Contains(ListItem.Label,原生网盘)">个人云盘</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),personal_catalog) | String.Contains(ListItem.Label,作品片库)">影视海报库</value>
+    <value>$INFO[ListItem.Label]</value>
+  </variable>
+  <variable name="LibraryTileHint">
+    <value condition="$EXP[BobbiIsManage]">连接云盘账号 · CD2 挂载 · 局域网共享</value>
+    <value condition="!String.IsEmpty(ListItem.Property(Bobbi.Library.Location)) | !String.IsEmpty(ListItem.Label2)">$VAR[BobbiLibraryLocation]</value>
+    <value condition="String.IsEqual(ListItem.Property(Bobbi.Library.Kind),native_pan)">浏览网盘文件</value>
+    <value condition="ListItem.IsFolder">打开媒体目录</value>
+    <value condition="Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)">继续播放</value>
+    <value>播放</value>
+  </variable>
+  <!-- on-device [TV-MA]-style outlined metadata badge (shared with detail page) -->
+  <include name="StageChip">
+    <param name="id" />
+    <param name="label" />
+    <definition>
+      <control type="button" id="$PARAM[id]">
+        <top>8</top><width>auto</width><height>28</height>
+        <label>$PARAM[label]</label>
+        <font>Badge18</font><textcolor>F2F5F5F7</textcolor><disabledcolor>F2F5F5F7</disabledcolor>
+        <textoffsetx>10</textoffsetx><align>center</align><aligny>center</aligny>
+        <texturenofocus colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texturenofocus>
+        <texturefocus colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texturefocus>
+        <enable>false</enable>
+        <visible>!String.IsEmpty(Control.GetLabel($PARAM[id]))</visible>
+      </control>
+    </definition>
+  </include>
+
+  <include name="LibraryTile">
+    <param name="focused">false</param>
+    <param name="w">416</param>
+    <param name="h">234</param>
+    <definition>
+      <!-- on-device "Channels & Apps" 16:9 chromatic Liquid Glass card (large centered native glyph + below-card caption) -->
+      <control type="group">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/tile-416x234.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="$VAR[LibraryTileGlow]">bobbi/glass/glow-416x234.png</texture>
+        </control>
+        <control type="image">
+          <left>174</left><top>83</top><width>68</width><height>68</height>
+          <texture colordiffuse="F2F5F5F7">$VAR[LibraryTileIcon]</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>174</left><top>83</top><width>68</width><height>68</height>
+          <texture colordiffuse="FFFFFFFF">$VAR[LibraryTileIcon]</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/spec-416x234.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture>bobbi/glass/rim-416x234.png</texture>
+          <visible>!$PARAM[focused]</visible>
+        </control>
+        <control type="image">
+          <left>-6</left><top>-6</top><width>428</width><height>246</height>
+          <texture colordiffuse="F2FFFFFF" border="44">bobbi/glass/ring-card.png</texture>
+          <visible>$PARAM[focused]</visible>
+        </control>
+      </control>
+      <!-- Below-card centered title & location subtitle (exact 2 LibraryTileHint label nodes preserved) -->
+      <control type="label">
+        <left>8</left><top>250</top><width>400</width><height>32</height>
+        <label>$VAR[LibraryTileTitle]</label>
+        <font>Card26</font><textcolor>D9EBEBF5</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>8</left><top>250</top><width>400</width><height>32</height>
+        <label>$VAR[LibraryTileTitle]</label>
+        <font>Card26</font><textcolor>FFFFFFFF</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <scroll>true</scroll>
+        <visible>$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>8</left><top>282</top><width>400</width><height>26</height>
+        <label>$VAR[LibraryTileHint]</label>
+        <font>CardSub22</font><textcolor>8AEBEBF5</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <visible>!$PARAM[focused]</visible>
+      </control>
+      <control type="label">
+        <left>8</left><top>282</top><width>400</width><height>26</height>
+        <label>$VAR[LibraryTileHint]</label>
+        <font>CardSub22</font><textcolor>BFEBEBF5</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <visible>$PARAM[focused]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- quiet placeholder posters while a rail loads (no spinner, no motion) -->
+  <include name="SkeletonRow">
+    <control type="image"><left>0</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+    <control type="image"><left>224</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+    <control type="image"><left>448</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+    <control type="image"><left>672</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+    <control type="image"><left>896</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+    <control type="image"><left>1120</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+    <control type="image"><left>1344</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+    <control type="image"><left>1568</left><top>0</top><width>192</width><height>288</height><texture colordiffuse="14FFFFFF" border="36">bobbi/glass/squircle-r14.png</texture></control>
+  </include>
+
+  <!-- 1:1 premium TV (on-device) UIPageControl Liquid Glass Pill & Sliding-Window Conveyor:
+       - Restores original 206x28 @ (857,687) capsule + 30x9 active pill + 9x9 parting dots.
+       - Sliding window W = clamp(k - 6, 0, max(0, N - 8)) glides real dots smoothly across
+         middle items AND advances the active pill onto slot 6 (N-1) and slot 7 (N). -->
+  <include name="HomeDotsIndicator">
+    <control type="group">
+      <left>960</left><top>687</top>
+      <visible>Integer.IsGreater(Control.GetLabel(9795),1) + Integer.IsGreater(Control.GetLabel(9794),0)</visible>
+      <include>NavFade</include>
+      <include>HomePageGeometry</include>
+      <control type="group">
+        <include>HomePageWindow</include>
+        <include>HomePageDots</include>
+        <control type="image">
+          <left>0</left><top>10</top><width>30</width><height>9</height>
+          <texture>bobbi/glass/dot-active-pill.png</texture>
+          <include>HomePageTravel</include>
+        </control>
+      </control>
+    </control>
+  </include>
+  <include name="HomePageTrack">
+    <param name="count" /><param name="width" />
+    <definition>
+      <control type="group">
+        <visible>Integer.IsEqual(Control.GetLabel(9795),$PARAM[count])</visible>
+        <control type="image">
+          <left>-15</left><top>0</top><width>$PARAM[width]</width><height>28</height>
+          <texture diffuse="bobbi/glass/lg-pill.png" border="14,0,14,0">bobbi/glass/dots-pill-bg.png</texture>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="HomePageDot">
+    <param name="index" />
+    <param name="left" />
+    <param name="visible" />
+    <param name="part" />
+    <param name="taper">false</param>
+    <definition>
+      <control type="group">
+        <left>$PARAM[left]</left><top>10</top><width>9</width><height>9</height>
+        <visible>$PARAM[visible]</visible>
+        <animation effect="fade" start="0" end="100" time="150" tween="cubic" easing="out" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">VisibleChange</animation>
+        <animation effect="slide" start="0,0" end="42,0" time="165" tween="cubic" easing="out" reversible="true" condition="$PARAM[part] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+        <animation effect="slide" start="0,0" end="42,0" time="0" reversible="true" condition="$PARAM[part] + Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+        <control type="image">
+          <left>0</left><top>0</top><width>9</width><height>9</height>
+          <texture>bobbi/glass/dot-9.png</texture>
+          <animation effect="zoom" start="100" end="66" center="4,4" time="165" tween="cubic" easing="out" reversible="true" condition="$PARAM[taper] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+          <animation effect="zoom" start="100" end="66" center="4,4" time="0" reversible="true" condition="$PARAM[taper] + Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="HomePageStep">
+    <param name="when" /><param name="dx" />
+    <definition>
+      <animation effect="slide" start="0,0" end="$PARAM[dx],0" time="165" tween="cubic" easing="out" reversible="true" condition="$PARAM[when] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      <animation effect="slide" start="0,0" end="$PARAM[dx],0" time="0" reversible="true" condition="$PARAM[when] + Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+    </definition>
+  </include>
+
+  <!-- ===== stage: on-device full-bleed hero (1:1 aligned to glass_home_hero.jpg) ===== -->
+  <include name="HomeStage">
+    <control type="group" id="9600">
+      <!-- graphite ambient so an art-less moment is never flat black -->
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/stage-ambient.png</texture>
+      </control>
+      <!-- sticky art: the visible card, else the nearest rail's selected card -->
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true">$VAR[HeroArt]</texture>
+        <include>ArtFade</include>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/scrim-top.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/scrim-left.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/scrim-bottom.png</texture>
+      </control>
+      <include>LGBarrierHero</include>
+      <!-- ClearLogo first (baseline y=404, 60 px above metadata row) -->
+      <control type="image">
+        <left>80</left><top>204</top><width>600</width><height>200</height>
+        <aspectratio align="left" aligny="bottom">keep</aspectratio>
+        <texture background="true">$VAR[HeroLogo]</texture>
+        <include>ArtFade</include>
+        <visible>$EXP[BobbiHeroHasLogo] + !$EXP[BobbiHeroQuiet]</visible>
+      </control>
+      <!-- large title fallback (cap_h ~69 px @ y=335..404, matching 'Severance') -->
+      <control type="label">
+        <left>80</left><top>314</top><width>1100</width><height>110</height>
+        <label>$VAR[StageTitlePrimary]</label>
+        <font>Hero76</font><textcolor>FFFFFFFF</textcolor><shadowcolor>40000000</shadowcolor>
+        <aligny>center</aligny>
+        <visible>!$EXP[BobbiHeroHasLogo] + !$EXP[BobbiHeroQuiet]</visible>
+      </control>
+      <!-- art-less card (library source, raw file, recovery): crisp stage title + hint -->
+      <control type="label">
+        <left>80</left><top>346</top><width>1100</width><height>68</height>
+        <label>$VAR[HeroCaption]</label>
+        <font>Head40</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        <visible>$EXP[BobbiHeroQuiet]</visible>
+      </control>
+      <control type="label">
+        <left>81</left><top>456</top><width>1100</width><height>36</height>
+        <label>$VAR[HeroCaptionHint]</label>
+        <font>HeroMeta24</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+        <visible>$EXP[BobbiHeroQuiet]</visible>
+      </control>
+      <!-- Metadata + Synopsis (exact relative spacing to [▶ Play] & Dots Pill & Cards) -->
+      <control type="group">
+        <visible>!$EXP[BobbiHeroQuiet] + $EXP[BobbiHomeHasItems]</visible>
+        <!-- Leading 36x36 channel avatar disc + Meta text + [TV-MA]-style outlined badge -->
+        <control type="image">
+          <left>81</left><top>456</top><width>36</width><height>36</height>
+          <texture>bobbi/glass/avatar-disc.png</texture>
+        </control>
+        <control type="grouplist" id="9612">
+          <left>131</left><top>456</top><width>1100</width><height>36</height>
+          <orientation>horizontal</orientation><itemgap>12</itemgap>
+          <usecontrolcoords>true</usecontrolcoords>
+          <control type="label" id="9624">
+            <width>auto</width><height>36</height>
+            <label>$VAR[HeroMetaLine]</label>
+            <font>HeroMeta24</font><textcolor>F5F5F5F7</textcolor><aligny>center</aligny>
+          </control>
+          <control type="button" id="9623">
+            <top>5</top><width>auto</width><height>26</height>
+            <label>$VAR[HeroBadgeLabel]</label>
+            <font>Badge18</font><textcolor>F2F5F5F7</textcolor><disabledcolor>F2F5F5F7</disabledcolor>
+            <textoffsetx>10</textoffsetx><align>center</align><aligny>center</aligny>
+            <texturenofocus colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texturenofocus>
+            <texturefocus colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texturefocus>
+            <enable>false</enable>
+            <visible>!String.IsEmpty(Control.GetLabel(9623))</visible>
+          </control>
+        </control>
+        <!-- Single-line crisp synopsis (35 px above [▶ Play], matching Severance) -->
+        <control type="label">
+          <left>81</left><top>512</top><width>760</width><height>32</height>
+          <label>$VAR[StagePlot]</label>
+          <font>HeroPlot24</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+          <scroll>false</scroll>
+        </control>
+      </control>
+      <!-- Action Buttons Row: [ ▶ 播放/继续 ] (234x74 @ 75,570) + (✓) (66x66 @ 324,574) + (ⓘ) (66x66 @ 413,574) + › (@ 513,594) -->
+      <control type="group">
+        <visible>$EXP[BobbiHomeHasItems]</visible>
+        <control type="image">
+          <left>75</left><top>570</top><width>234</width><height>74</height>
+          <texture>bobbi/glass/hero-play-pill.png</texture>
+        </control>
+        <control type="image">
+          <left>142</left><top>593</top><width>28</width><height>28</height>
+          <texture colordiffuse="FF0D0D0F">bobbi/glass/icons/play.png</texture>
+        </control>
+        <control type="label">
+          <left>184</left><top>570</top><width>100</width><height>74</height>
+          <label>$VAR[HeroPlayLabel]</label>
+          <font>HeroPlay29</font><textcolor>FF0D0D0F</textcolor><aligny>center</aligny>
+        </control>
+        <control type="image">
+          <left>324</left><top>574</top><width>66</width><height>66</height>
+          <texture diffuse="bobbi/glass/lg-pill.png">bobbi/glass/hero-circle-66.png</texture>
+        </control>
+        <control type="image">
+          <left>343</left><top>593</top><width>28</width><height>28</height>
+          <texture colordiffuse="F5FFFFFF">bobbi/glass/icons/checkmark.png</texture>
+        </control>
+        <control type="image">
+          <left>413</left><top>574</top><width>66</width><height>66</height>
+          <texture diffuse="bobbi/glass/lg-pill.png">bobbi/glass/hero-circle-66.png</texture>
+        </control>
+        <control type="image">
+          <left>429</left><top>590</top><width>34</width><height>34</height>
+          <texture colordiffuse="F5FFFFFF">bobbi/glass/icons/info.png</texture>
+        </control>
+        <control type="image">
+          <left>513</left><top>594</top><width>26</width><height>26</height>
+          <texture colordiffuse="F5FFFFFF">bobbi/glass/icons/chevron-right.png</texture>
+        </control>
+      </control>
+      <!-- Animated Page-Indicator Dots Pill centered at (857, 687) 206x28 -->
+      <include>HomeDotsIndicator</include>
+    </control>
+  </include>
+</includes>

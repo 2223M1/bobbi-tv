@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "scope": "Frozen a725b84 local regression and one CoreELEC upgrade. Cold search and subsequent diagnostic attempts failed owner admission; full acceptance has NOT passed. Later source changes are not installed by this receipt.",
+  "source_identity": {
+    "commit": "a725b84d7fb1b5cc647cbd52d5db45582659e43f",
+    "tree": "d490256a344aef4262b9921f1b35c0761561cd13",
+    "catalog_schema": 4,
+    "inventory_sha256": "5710a6f9e9be12640dd448100bac609cc231a4ca26f65b7ae2ce1da5a5039269",
+    "documentation_binding": "This later documentation overlay does not replace the tested product commit or artifact identity."
+  },
+  "local_execution": {
+    "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+    "source_binding": "Each a725b84-<group>.json records exact command, clean before/after HEAD, commit/tree and JUnit/log SHA256; source_unchanged is true for all three groups.",
+    "groups": [
+      {
+        "name": "primary",
+        "receipt": "a725b84-primary.json",
+        "junit_sha256": "2110ac62da1329e1951896cb840143807a5852c8e8410a1dc165aceab9ecce48",
+        "passed": 7369,
+        "ordinary_skipped": 14,
+        "xfail": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "baseline",
+        "receipt": "a725b84-baseline.json",
+        "junit_sha256": "3e3aaaebbea95c4afbe04ccd5afb95917887d3d5870e1ee4da176faae15391d6",
+        "passed": 1691,
+        "ordinary_skipped": 0,
+        "xfail": 0,
+        "failures": 0,
+        "errors": 0
+      },
+      {
+        "name": "preparation",
+        "receipt": "a725b84-preparation.json",
+        "junit_sha256": "13d0f3feaec1b3bf5645ed91358ffbd31dc39671030e19962c09d3226bda0340",
+        "passed": 254,
+        "ordinary_skipped": 0,
+        "xfail": 0,
+        "failures": 0,
+        "errors": 0
+      }
+    ],
+    "qualification": "Counts are execution results, not unique system-interaction coverage. Primary JUnit skipped=15 includes the one strict expected failure. The missing strong type evidence for Eizouken live-action remains unknown, not inferred from its name."
+  },
+  "graph": {
+    "receipt": "architecture-a725b84-final-summary.json",
+    "directory": "D:/AM6B-Project/architecture-audit-a725b84-final",
+    "repeat_directory": "D:/AM6B-Project/architecture-audit-a725b84-final-repeat",
+    "all_three_artifacts_byte_equal": true,
+    "graph_bytes": 100925923,
+    "graph_sha256": "535aa42c9c9de4b782dc34124a76e8309792084b107c90889114ca0f592cdcea",
+    "files": 2302,
+    "loaded_sources": 1725,
+    "inventory_only": 577,
+    "python_ast_inputs": 1432,
+    "nodes": 59556,
+    "edges": {"confirmed": 7444, "candidate": 33839, "external": 25474, "unresolved": 81220},
+    "diagnostics": 0,
+    "candidate_scc": 19,
+    "module_collisions": 3,
+    "core_to_platform_imports_at_this_revision": 3,
+    "qualification": "Static typed evidence and explicit ownership assertions, not complete resolved runtime reachability. Subsequent source injection work must be graphed under its own revision."
+  },
+  "build_and_install": {
+    "source_check": "Two independent source-check builds; 63 files have identical SHA256. Installable build has 22 components and clean source identity. Independent package signature check passed.",
+    "sequence": 2026102125,
+    "run_id": "20261113-170800",
+    "package": "bobbi-a725b84-2026102125-coreelec.bobbi-update.zip",
+    "package_sha256": "2dc7cbe11727f52e1b1a1e9fa11584dc9586ae800f305c2bc1b7c98ee43d18b6",
+    "entry": "script.bobbi.start-0.2.90-a725b84.zip",
+    "entry_sha256": "868d8784ff22b444f3690b76fdff9f700c97397d74e68ba7a673325a9d99b5a2",
+    "installed_files_receipt": "review-evidence/ce2023/installed-files-1794561037124453700.json",
+    "owned_files_matching": 1256,
+    "native_sha256_unchanged": "7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c",
+    "execution_order": "Baseline and preparation groups completed before upgrade. Primary group was still running during deployment and completed successfully afterwards; do not describe this as all groups passed before deployment.",
+    "android": "Not built, linked, packaged or device-tested at this revision."
+  },
+  "device": {
+    "health_before": "device-before-a725b84.json",
+    "health_after": "device-after-a725b84.json",
+    "sentinels_unchanged": 8,
+    "saved_cloud_logins": ["115", "baidu"],
+    "saved_server_logins": [],
+    "catalog_integrity": "ok",
+    "typed_objects": 594,
+    "pending_transaction": false,
+    "service": "active with zero restarts at upgrade health check",
+    "health_attention": "Three traceback headers form one upstream a4kSubtitles network timeout exception chain. A later cold-restart log scan contains no traceback. This is not an all-green whole-device health claim.",
+    "capability_probe_correction": "The first helper incorrectly read JSONRPC.Introspect enum instead of enums. The original failed receipt is retained; corrected helper handles both with unknown for missing/malformed/conflicting declarations. Schema availability does not prove an executed scoped command.",
+    "owner_idle_observation": {
+      "receipt": "owner-latency-a725b84.json",
+      "accepted": "12/12",
+      "elapsed_ms_range": [21.612, 54.192],
+      "qualification": "Short idle observation only, not full performance acceptance."
+    },
+    "cold_search": {
+      "run_id": "convergence115a725b84",
+      "attempt": 1,
+      "receipt": "campaign-a725b84/ce-new-work-convergence115a725b84-galactic_heroes-start-1794561268326167100.json",
+      "state": "failed",
+      "failure": "Owner snapshot timed out after ordinary RunPlugin search launch; no source was selected and no playback request started.",
+      "phase_receipt": "search-phases-a725b84-cold-failure.json",
+      "phase_seconds": {"SESSION_READY": 0.5308, "SETUP_BEGIN": 0.628, "LOCAL_READY": 1.9065, "IDENTITY_READY": 2.9073, "PLAN_SUBMITTED": 5.332},
+      "post_failure_owner_observation": "12/12 accepted, 18.936 to 41.695 ms; this does not turn the failed attempt into a pass."
+    },
+    "diagnostic_followup": {
+      "run_id": "convergence115searchdiag",
+      "scope": "Separate diagnostic attempts, excluded from the five-cold/five-warm campaign.",
+      "attempts": {
+        "1": "Refused because display was asleep before launch; one attended Back woke the display.",
+        "2": "Owner admission failed. GDB attached only after an observed timeout; its 1.385-second interruption invalidates this run as a latency benchmark. Later inspect found a source picker; no selection was issued.",
+        "3": "Owner admission failed. Nonblocking Python sampler observed prepared-index JSON parsing in the search interpreter; snapshot may be inconsistent and does not establish causation.",
+        "4": "Owner admission failed. Bounded all-interpreter frame sampling recovered 75 samples; many owner frames are in repeated profile path resolution or Registry reads. First download raced a non-atomic diagnostic report write; recovered evidence is explicitly marked, and diagnostic writer was corrected."
+      },
+      "index_sizes": "Legacy index 201064 bytes; prepared index 141007 bytes. Standalone Python parsing was about 4 ms each; large JSON parsing is not established as the cause.",
+      "evidence": ["owner-search-stack-a725b84-attempt2.json", "owner-python-stack-a725b84-attempt3.json", "kodi-threads-a725b84-attempt4-recovered.json", "prepared-index-size-a725b84.json", "owner_registry_lock_audit_a725b84.txt"],
+      "offline_lock_reproduction": "Actual a725b84 Registry/Accounts/Host against temporary SQLite: EXCLUSIVE and PENDING locks exceeded owner deadline; ordinary RESERVED did not. Mechanism is proven locally, but no device writer has been causally identified.",
+      "temporary_tools": "Hash-pinned upstream py-spy and frame-only scripts staged under bobbi-private-trials/architecture-diagnostic-tools, outside installed add-ons. No frame locals, credentials or signed source URLs were exported."
+    },
+    "acceptance": "NOT_PASSED",
+    "remaining": ["115 five cold and five warm exact-file playback observations", "actual OSD control effects", "EOF/history/next-source interaction chain", "complete 110-scenario system matrix", "real NAS/server protocols and progress conflict synchronization"]
+  },
+  "release": {"public_release_clearance": false, "reason": "Device acceptance incomplete and prior license provenance blockers unresolved. No GitHub push performed."}
+}

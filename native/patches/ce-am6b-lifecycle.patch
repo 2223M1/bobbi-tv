@@ -1,0 +1,235 @@
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.h b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.h
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.h
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.h
+@@ -11,4 +11,4 @@
+-#include "DVDVideoCodec.h"
+-#include "AmlogicPreroll.h"
++#include "cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodec.h"
++#include "cores/VideoPlayer/DVDCodecs/Video/AmlogicPreroll.h"
+ #include "DVDStreamInfo.h"
+@@ -16,6 +16,7 @@
+ #include "cores/VideoPlayer/Buffers/VideoBuffer.h"
+ #include "utils/BitstreamConverter.h"
++#include "utils/Geometry.h"
+ #include "utils/VC1BitstreamParser.h"
+-#include "AMLFrameMetadata.h"
++#include "cores/VideoPlayer/DVDCodecs/Video/AMLFrameMetadata.h"
+ 
+@@ -22,4 +23,5 @@
+ #include <atomic>
+ #include <memory>
++#include <mutex>
+ #include <set>
+@@ -49,6 +51,7 @@
+   void Set(CDVDVideoCodecAmlogic *codec, std::shared_ptr<CAMLCodec> amlcodec, uint64_t omxPts, int amlDuration, uint32_t bufferIndex)
+   {
++    std::lock_guard lock(m_frameMutex);
+     m_codec = codec;
+@@ -57,10 +60,16 @@
+   }
+ 
++  void Present(uint64_t& previousPts, const CRect& src, const CRect& dst);
++  void Discard();
++
+   CDVDVideoCodecAmlogic* m_codec;
+-  std::shared_ptr<CAMLCodec> m_amlCodec;
+   uint64_t m_omxPts;
+   int m_amlDuration;
+   uint32_t m_bufferIndex;
++
++private:
++  std::mutex m_frameMutex;
++  std::shared_ptr<CAMLCodec> m_amlCodec;
+ };
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -49,3 +49,25 @@
++// Pool teardown visits every frame before resetting or closing the decoder. Keep
++// that barrier across BOTH hardware calls; a shared_ptr copy alone only pins memory.
++void CAMLVideoBuffer::Present(uint64_t& previousPts, const CRect& src, const CRect& dst)
++{
++  std::lock_guard lock(m_frameMutex);
++  if (!m_amlCodec || m_omxPts == previousPts)
++    return;
++
++  m_amlCodec->ReleaseFrame(m_bufferIndex);
++  m_amlCodec->SetVideoRect(src, dst);
++  previousPts = m_omxPts;
++  m_amlCodec.reset();
++}
++
++void CAMLVideoBuffer::Discard()
++{
++  std::lock_guard lock(m_frameMutex);
++  if (m_amlCodec)
++    m_amlCodec->ReleaseFrame(m_bufferIndex, true);
++  m_amlCodec.reset();
++}
++
+ CAMLVideoBufferPool::~CAMLVideoBufferPool()
+ {
+@@ -75,9 +97,5 @@
+   std::unique_lock<CCriticalSection> lock(m_criticalSection);
+-  if (m_videoBuffers[id]->m_amlCodec)
+-  {
+-    m_videoBuffers[id]->m_amlCodec->ReleaseFrame(m_videoBuffers[id]->m_bufferIndex, true);
+-    m_videoBuffers[id]->m_amlCodec = nullptr;
+-  }
++  m_videoBuffers[id]->Discard();
+   m_freeBuffers.push_back(id);
+@@ -88,7 +106,4 @@
+-    if (buf && buf->m_amlCodec)
+-    {
+-      buf->m_amlCodec->ReleaseFrame(buf->m_bufferIndex, true);
+-      buf->m_amlCodec = nullptr;
+-    }
++    if (buf)
++      buf->Discard();
+   }
+ }
+@@ -1242,4 +1257,6 @@
+ void CDVDVideoCodecAmlogic::Reset(void)
+ {
++  if (m_videoBufferPool)
++    static_cast<CAMLVideoBufferPool&>(*m_videoBufferPool).ReleaseAllBuffers();
+   m_Codec->Reset();
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.h b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.h
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.h
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.h
+@@ -46,5 +46,5 @@
+   void RenderVideoLayerCommit(int idx, const CRect& src, const CRect& dst) override
+   {
+-    CommitVideoLayer(idx, src, dst);
++    CommitVideoLayer(m_asyncPinnedBuffer, src, dst);
+   }
+@@ -57,3 +57,3 @@
+   void Reset();
+-  void CommitVideoLayer(int index, CRect src, CRect dst);
++  void CommitVideoLayer(CVideoBuffer* buffer, const CRect& src, const CRect& dst);
+ 
+diff --git a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.cpp b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.cpp
+--- a/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.cpp
++++ b/xbmc/cores/VideoPlayer/VideoRenderers/HwDecRender/RendererAML.cpp
+@@ -103,8 +103,4 @@
+     CAMLVideoBuffer *amli(static_cast<CAMLVideoBuffer*>(buf.videoBuffer));
+-    if (amli->m_amlCodec)
+-    {
+-      amli->m_amlCodec->ReleaseFrame(amli->m_bufferIndex, true);
+-      amli->m_amlCodec = nullptr; // Released
+-    }
++    amli->Discard();
+     amli->Release();
+@@ -166,21 +162,10 @@
+-void CRendererAML::CommitVideoLayer(int index, CRect src, CRect dst)
++void CRendererAML::CommitVideoLayer(CVideoBuffer* buffer, const CRect& src, const CRect& dst)
+ {
+-  CAMLVideoBuffer *amli = static_cast<CAMLVideoBuffer *>(m_buffers[index].videoBuffer);
+-  if(amli && amli->m_amlCodec)
+-  {
+-    uint64_t pts = amli->m_omxPts;
+-    if (pts != m_prevVPts)
+-    {
+-      amli->m_amlCodec->ReleaseFrame(amli->m_bufferIndex);
+-      amli->m_amlCodec->SetVideoRect(src, dst);
+-      amli->m_amlCodec = nullptr; //Mark frame as processed
+-      m_prevVPts = pts;
+-    }
+-  }
++  if (buffer)
++    static_cast<CAMLVideoBuffer*>(buffer)->Present(m_prevVPts, src, dst);
+ }
+ 
+ void CRendererAML::RenderUpdate(int index, int index2, bool clear, unsigned int flags, unsigned int alpha)
+ {
+   ManageRenderArea();
+-  CommitVideoLayer(index, m_sourceRect, m_destRect);
++  CommitVideoLayer(m_buffers[index].videoBuffer, m_sourceRect, m_destRect);
+   CAMLCodec::PollFrame();
+diff --git a/xbmc/addons/Skin.cpp b/xbmc/addons/Skin.cpp
+--- a/xbmc/addons/Skin.cpp
++++ b/xbmc/addons/Skin.cpp
+@@ -27,3 +27,2 @@
+ #include "settings/lib/SettingDefinitions.h"
+-#include "threads/Timer.h"
+ #include "utils/FileUtils.h"
+@@ -36,3 +35,6 @@
+ #include <charconv>
++#include <chrono>
+ #include <memory>
++#include <mutex>
++#include <optional>
+ 
+@@ -63,14 +65,20 @@
+-class CSkinSettingUpdateHandler : private ITimerCallback
++// Debounce on the existing skin processing loop. Only the application thread
++// saves, so shutdown can never leave a callback behind the addon manager.
++class CSkinSettingUpdateHandler
+ {
+ public:
+-  CSkinSettingUpdateHandler(CAddon& addon)
+-  : m_addon(addon), m_timer(this) {}
+-  ~CSkinSettingUpdateHandler() override = default;
++  using Clock = std::chrono::steady_clock;
++  explicit CSkinSettingUpdateHandler(CAddon& addon) : m_addon(addon) {}
+ 
+-  void OnTimeout() override;
++  void SetActive(bool active);
++  void Process();
+   void TriggerSave();
+ private:
+   CAddon &m_addon;
+-  CTimer m_timer;
++  std::mutex m_mutex;
++  bool m_active{false};
++  std::optional<Clock::time_point> m_due;
+ };
+@@ -220,3 +228,4 @@
+ void CSkinInfo::Start()
+ {
++  m_settingsUpdateHandler->SetActive(true);
+   if (!LoadUserSettings())
+@@ -298,3 +307,4 @@
+ void CSkinInfo::ProcessTimers() const {
+   m_skinTimerManager->Process();
++  m_settingsUpdateHandler->Process();
+ }
+@@ -426,3 +436,4 @@
+ void CSkinInfo::Unload() const {
++  m_settingsUpdateHandler->SetActive(false);
+   m_skinTimerManager->Stop();
+ }
+@@ -923,15 +934,30 @@
+-void CSkinSettingUpdateHandler::OnTimeout()
++void CSkinSettingUpdateHandler::SetActive(bool active)
+ {
+-  m_addon.SaveSettings();
++  std::lock_guard lock(m_mutex);
++  m_active = active;
++  m_due.reset();
+ }
+ 
+ void CSkinSettingUpdateHandler::TriggerSave()
+ {
+-  if (m_timer.IsRunning())
+-    m_timer.Restart();
+-  else
+-    m_timer.Start(DELAY);
++  std::lock_guard lock(m_mutex);
++  if (m_active)
++    m_due = Clock::now() + DELAY;
++}
++
++void CSkinSettingUpdateHandler::Process()
++{
++  {
++    std::lock_guard lock(m_mutex);
++    if (!m_due || Clock::now() < *m_due)
++      return;
++    m_due.reset();
++  }
++  // SaveSettings notifies observers; permit a reentrant request for the next turn.
++  m_addon.SaveSettings();
+ }
+ 
+ } /*namespace ADDON*/

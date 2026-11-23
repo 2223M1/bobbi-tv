@@ -1,0 +1,653 @@
+{
+  "schema": 1,
+  "status": "offline_passed_deployed_device_acceptance_failed_incomplete",
+  "source": {
+    "commit": "1eb2e58b668916b950d332337486109184c48a18",
+    "tree": "4245e79c3c3087f0aa60ec6a20fe83cd236300bf",
+    "qualification": "Frozen tested and packaged product identity. Later tooling-only or product commits do not relabel these receipts; post-freeze catalog/transport/stop candidates are not included in the frozen test counts or installed product identity."
+  },
+  "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+  "build_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds",
+  "review_evidence_root": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence",
+  "integrated_changes": {
+    "body_delivery_clock_commit": "76f58f4ffe4ed048dab87775f447365485968927",
+    "qualification": "Initialize the non-consuming block body-delivery clock once after response identity validation and before the first body read. Setup no longer spends that body window; body waits do, and retries never rearm it. The existing account guard, limits and cancellation remain. This source change and its tests do not establish a device performance fix."
+  },
+  "offline": {
+    "primary": {
+      "path": "1eb2e58-primary.json",
+      "sha256": "6468ef15600a6fccfeef2cf54f5b0a2f31aeb41e161087c350d50161cb2a653f",
+      "passed": 8021,
+      "ordinary_skipped": 21,
+      "xfailed": 1
+    },
+    "baseline": {
+      "path": "1eb2e58-baseline.json",
+      "sha256": "1369c585e320ec2eeabfc63a3f76bea15bc314fbe813c981df54c78914cea6f5",
+      "passed": 2171
+    },
+    "preparation": {
+      "path": "1eb2e58-preparation.json",
+      "sha256": "d9b86daddb21419d071bcb21df3fd57e73d42451b2241699d07264c6caa7f2be",
+      "passed": 254
+    },
+    "main_unique_cases": 10468,
+    "windows_passed": 10446,
+    "ordinary_skipped": 21,
+    "xfailed": 1,
+    "failed": 0,
+    "errors": 0,
+    "duplicate_main_case_ids": 0,
+    "skip_coverage": {
+      "path": "1eb2e58-windows-linux-skip-coverage.json",
+      "sha256": "1fd9e164ec78d0e635d524b2a555066dd3f538408377a5cb41705e6c73e3d1a5",
+      "same_case_linux_passed": 21,
+      "unknown": 0,
+      "input_hashes_independently_rechecked": 17
+    },
+    "identity_rule": "Case-sensitive (file, classname, full parameterized name); no duplicate main IDs. Fourteen Linux matches have exact XML file/classname/name; seven infer file from the same-source receipt's unique profile test target. Original Windows outcomes remain unchanged.",
+    "xfail": "tests/test_ce2029_search_audit.py::test_real_provider_never_publishes_explicit_live_action_for_animation[Keep Your Hands Off Eizouken! (Nogizaka46 Drama) - S01E01 (1080p)-aliases0]",
+    "xfail_reason": "Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama",
+    "overlapping_executions_not_added": {
+      "linux_supplement": {
+        "path": "1eb2e58-linux-supplement-20261114-01/report.json",
+        "sha256": "cbefb429a4c11e2c4d7aeb3c39933f13f0c109ff1783b92f38bac300bac8bc71",
+        "passed": 306
+      },
+      "linux_inner_report": {
+        "path": "1eb2e58-linux-supplement-20261114-01/linux-report.json",
+        "sha256": "12d201b1a3fa2083b198955cac33ea364b239c0a4e2788cb65ffdd4ce152d529"
+      },
+      "posix_twelve_groups": {
+        "path": "1eb2e58-posix-contracts-report.json",
+        "sha256": "25ff6dc1076c597bedc57f4501fca86dc00e540fafe584671d0de8d6e686548a",
+        "passed": 312
+      },
+      "architecture_capability_license_contracts": {
+        "path": "1eb2e58-architecture-contracts-audit.json",
+        "sha256": "b4bbe69c76dd7b211730a560efaafbeef442fa268bf60bc124c4fc23f022c843",
+        "passed": 62
+      }
+    },
+    "qualification": "Three original XMLs independently re-enumerated with case-sensitive full parameterized identity. Linux/POSIX/contracts overlap and are not added to unique functional coverage. Original Windows outcomes and historical xfail remain unchanged. Historical native111 is not a new native run; no large suite was rerun for this documentation."
+  },
+  "graph": {
+    "combined_report": {
+      "path": "1eb2e58-final-contracts-and-graphs-report.json",
+      "sha256": "35d3d3e7b8fa8d3b61c77ad7b9f600671d952d5a3ccb55229c0de31f74cdd546"
+    },
+    "record": {
+      "path": "1eb2e58-architecture-final-report.json",
+      "sha256": "dab8c8aad508eb197057d9a989563d35a5c1d78bf8ae528c8622215d538194c6"
+    },
+    "independent_audit": {
+      "path": "1eb2e58-architecture-contracts-audit.json",
+      "sha256": "b4bbe69c76dd7b211730a560efaafbeef442fa268bf60bc124c4fc23f022c843"
+    },
+    "directories": [
+      "D:/AM6B-Project/architecture-audit-1eb2e58-final",
+      "D:/AM6B-Project/architecture-audit-1eb2e58-final-repeat"
+    ],
+    "two_exports_identical": true,
+    "sha256": "ff8dd1de955c9663b0f67cfafd300c36c7f48fb20be2efbd169938120e9e18ec",
+    "files": 2351,
+    "python_ast": 1470,
+    "nodes": 62144,
+    "edges": 154634,
+    "confirmed": 7653,
+    "candidate": 35078,
+    "external": 26827,
+    "unresolved": 85076,
+    "diagnostics": 0,
+    "scc_candidates": 19,
+    "module_collisions": 3,
+    "boundary_findings": 0,
+    "registered_reverse_import_debts": 4,
+    "qualification": "Deterministic static extraction, not full runtime reachability or zero architectural debt. Four registered reverse imports remain in this frozen source; later refactors do not rewrite this graph."
+  },
+  "build_and_install": {
+    "release_verification": {
+      "path": "1eb2e58-release-verification.json",
+      "sha256": "25c125411f655af341f1d56972c2369e35b2c9493fea3591fd345c9cf6bb61de"
+    },
+    "build_verification": {
+      "path": "1eb2e58-build-verification.json",
+      "sha256": "db2001ceaa0cc522e5fff9e8cec35b7a6dd5cee5aa5a7b8bb13ece74b8f6e885"
+    },
+    "private_audit": {
+      "path": "1eb2e58-private-audit.json",
+      "sha256": "0f4a797de8ac9ceec90e1839a478a1470a6418e10f37b03eb4a009edfd7dab15"
+    },
+    "entry_audit": {
+      "path": "1eb2e58-entry-audit.json",
+      "sha256": "da1fa5f3018b31d9b920f60772d09bf74acbd83c85bb104ca6c61bf271dcb3b6"
+    },
+    "inventory_sha256": "3e77e490dad64e59a71e6e5fcd66acd339b67a77c6e66e3a7993d8f9bc390161",
+    "managed_inventory_files_checked": 1468,
+    "source_check_equal_files": 63,
+    "installable_components": 22,
+    "sequence": 2026102130,
+    "package": {
+      "path": "1eb2e58-releases/bobbi-private-2026102130-coreelec.bobbi-update.zip",
+      "root": "build_root",
+      "sha256": "24c02f887a6b344da02dd535a673f13cddd47df55a4e10b17149cdcad9f0b0e3",
+      "bytes": 96315604
+    },
+    "entry": {
+      "path": "1eb2e58-entry/script.bobbi.start-0.2.95.zip",
+      "root": "build_root",
+      "sha256": "350bf8e73aceab415f7319f0eb94257b233f74249e73da7c4ebdd9d6b43463c3",
+      "bytes": 96527156,
+      "members": 25,
+      "bootstrap_files": 22
+    },
+    "changed_components_since_e58718b": [
+      "plugin.video.bobbi",
+      "script.bobbi.start",
+      "script.module.bobbi.core"
+    ],
+    "payload_change_scope": "Three addon.xml version files and bobbi_core/share_stream.py; core/plugin0.1.71 and entry0.2.95. Declared application-input metadata unchanged.",
+    "deployment": {
+      "path": "ce-deploy-runs/20261114-010704.json",
+      "root": "review_evidence_root",
+      "sha256": "aa8d43a581b9c00eb075e40c7471f604f7334cbf7051b831d0f6db864533c47c"
+    },
+    "upgrade": {
+      "path": "ce-20261114-010704-upgrade.json",
+      "root": "review_evidence_root",
+      "sha256": "d9b3566192215b5dc928d7f4feb46983694ca4a129138347cd6513565c08ccf9",
+      "playback_verified": false,
+      "migration_performed": false
+    },
+    "installed_files": {
+      "path": "ce2023/installed-files-1794590231785855800.json",
+      "root": "review_evidence_root",
+      "sha256": "905e5b12650172b24c6c9ebe55e2ada59a12da5b4c32cc0dfff368d52c36a9d8",
+      "matching_owned_files": 1259,
+      "mismatches": 0
+    },
+    "qualification": "Independent release audit checked existing source-check output equality, archive identities, signed bundle and entry membership. Its then-unassessed Windows/deployment scope is supplemented only by separate receipts, not rewritten. Both package hashes were rechecked for this record. No repeated signed-package reproducibility, all-user-data audit or public distribution clearance."
+  },
+  "native": {
+    "sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+    "rebuilt_for_this_release": false,
+    "changed_during_upgrade": false,
+    "historical_record": {
+      "path": "E-native-freeze-ff0422-20261113-2345/record.json",
+      "sha256": "00297a1e008125910a70bf1096b462590ed980ef8bf33c2b92db963a0bc68a52"
+    },
+    "qualification": "Existing ff0422c native binary reused; no native source changes since the prior e58718b release. Historical build/actor proofs are not new executions."
+  },
+  "device": {
+    "acceptance": "failed_incomplete",
+    "before_upgrade": {
+      "path": "device-before-2130-freeze.json",
+      "sha256": "53f68e7778ac28b3cad9d29237a0296a3a95ba74279f5839b6379f217849e7e4"
+    },
+    "after_upgrade": {
+      "path": "device-after-2130-upgrade.json",
+      "sha256": "03dbebf86b263a4bc09bfdab58f1c81720907f165077c42daa4a9d864cc3402e",
+      "state": "observed",
+      "sequence": 2026102130,
+      "pending_transaction": false,
+      "kodi_active": true,
+      "kodi_restarts": 0,
+      "catalog_schema": 4,
+      "catalog_integrity": "ok",
+      "typed_objects": 594,
+      "probe_cloud_requests": 0,
+      "unchanged_sentinels": 8
+    },
+    "upgrade_qualification": "Eight sentinel hashes match only across the upgrade window. This is not all-user-data, live-account or full playback/health acceptance.",
+    "ordinary_attempt_1": {
+      "start": {
+        "path": "campaign-1eb2e58/ce-new-work-convergence1151eb2e58-galactic_heroes-start-1794590250817520600.json",
+        "sha256": "c11e4ffd586ea2de78dd86365b444b9bff150ba5cc43cd4c0108790c2bd26449",
+        "exit_code": 1,
+        "transport_exit_code": 0,
+        "trial_exit_code": 1,
+        "error": "RuntimeError",
+        "reason": "TRIAL_ERROR",
+        "stack_functions": [
+          "assert_picker_idle",
+          "snapshot",
+          "call"
+        ],
+        "query_receipt_present": false
+      },
+      "later_inspect": {
+        "path": "campaign-1eb2e58/ce-new-work-convergence1151eb2e58-galactic_heroes-inspect-1794590293950907300.json",
+        "sha256": "416e0873a3dc542a331c21c7d2a14797e195b1da11243c244d84daf815dfe4e1",
+        "launch_accepted": true,
+        "picker_bound": true,
+        "ordinary_ui": true,
+        "force_select": false,
+        "explicit_start_over": true
+      },
+      "later_cards": {
+        "path": "campaign-1eb2e58/ce-new-work-convergence1151eb2e58-galactic_heroes-cards-1794590334448866500.json",
+        "sha256": "907ffcf625a5ac40b381b3b622f69d91dcade579b7d93846a1f30597f270b9ed",
+        "items": 1,
+        "selected": false
+      },
+      "select": {
+        "path": "campaign-1eb2e58/ce-new-work-convergence1151eb2e58-galactic_heroes-select-1794590389855807700.json",
+        "sha256": "06918ce862f4967f8be6358aad93f01b73b11e5ccf7bc582cd1fe8fd1c5632bd",
+        "exit_code": 1,
+        "transport_exit_code": 0,
+        "trial_exit_code": 1,
+        "selected": true
+      },
+      "independent_analysis": {
+        "path": "1eb2e58-ordinary-independent-analysis-v2.json",
+        "sha256": "18884cb157cd8f7c97485bf44fb4a9fcd3396eafcc82956621a22ecdfe84f53c"
+      },
+      "request_id": "8670d85683d54f46bac24ae25d10a961",
+      "native_instance": "34c60aa7-09c7-4901-a25b-fe0d4341bbb6",
+      "selected_source_key_sha256": "196ebb67c4ed53b27a3b2dedb200f89f51b146b2faf2305579f0e785d350bd10",
+      "file_identity_sha256": "507bb43dd2e4e87bfe1b46fd6fc3dfd3c4ce75b1c0aa5d15f6b49d4350942e8e",
+      "select_to_av_observed_seconds": 7.725545953959227,
+      "startup_health": {
+        "trace_passed": false,
+        "reason": "STARTUP_OBSERVATION_INTERRUPTED",
+        "total_samples": 80,
+        "av_samples": 64,
+        "open_samples": 13,
+        "phase_none_samples": 3,
+        "max_observed_stall_seconds": 9.812243374995887,
+        "clock_discontinuities": 2,
+        "observation_gaps": 1,
+        "whole_startup_or_render_continuity_proven": false
+      },
+      "sampled_dual_signal_stall": {
+        "first_index": 39,
+        "last_index": 59,
+        "sampled_endpoint_span_seconds": 9.812243374995887,
+        "media_seconds": 3.32,
+        "primary_frame_count": 232,
+        "caching": true,
+        "speed": 1,
+        "qualification": "This run independently satisfies same-playback stationary-clock and stationary-primary-decoder tests; the legacy OR/composite metric alone would not establish that. Sequential reads are not synchronized capture or exact transition timing."
+      },
+      "earlier_caching_segment": {
+        "first_index": 21,
+        "last_index": 37,
+        "sampled_endpoint_span_seconds": 7.929427703842521,
+        "decoder_intermittently_advanced": true
+      },
+      "observation_gap": {
+        "sample_index": 38,
+        "cause": "OWNER_UNAVAILABLE",
+        "recovered": true,
+        "failed_owner_read_elapsed_seconds": 0.30115919280797243,
+        "valid_sample_endpoint_spacing_seconds": 1.111125968163833,
+        "qualification": "Failed-read elapsed time is not the complete missing-observation span or an exact device outage. Do not bridge this gap when describing runs."
+      },
+      "decoder": {
+        "channel": 0,
+        "device": "ammvdec_h264-00",
+        "width": 1920,
+        "height": 1080,
+        "first_av_frames": 46,
+        "last_av_frames": 830,
+        "frame_delta": 784,
+        "drop_delta": 0,
+        "frame_error_delta": 0,
+        "hardware_error_delta": 0,
+        "counter_resets": 0
+      },
+      "audio_subtitle": {
+        "observed_av_samples": 64,
+        "audio_index": 0,
+        "audio_language": "jpn",
+        "audio_channels": 6,
+        "subtitle_index": 0,
+        "subtitle_language": "chi",
+        "subtitle_enabled": true,
+        "qualification": "Current track scalars only; no total track count, acoustic output, subtitle-render or uninterrupted frame-render proof."
+      },
+      "later_observe": {
+        "path": "campaign-1eb2e58/ce-new-work-convergence1151eb2e58-galactic_heroes-observe-1794590437368125300.json",
+        "sha256": "c60997fb0801b4a2a9853ac5a7e1d0eeccef6ccb753988b472bc5bb11aadbc4e",
+        "passed": true,
+        "samples": 4,
+        "wall_seconds": 30.364,
+        "play_seconds": 30.497,
+        "primary_decoder_frame_delta": 1822,
+        "bounded_clock_stable": true,
+        "bounded_clock_elapsed_seconds": 1.1895951281767339,
+        "qualification": "Four roughly ten-second-spaced samples and a separate bounded stable-clock check. Intentional sparse spacing is a coverage limit, not a dense-startup failure; it also does not erase startup failure or prove continuity."
+      },
+      "stop": {
+        "path": "campaign-1eb2e58/ce-new-work-convergence1151eb2e58-galactic_heroes-stop-1794591265961073100.json",
+        "sha256": "dc114458249c27d35b5ca2507740574000600023253aa1b915c55749f939e5db",
+        "tool_commit": "6130cfc845b363e0d206a92960479222413aa6d6",
+        "deployed_product_changed": false,
+        "stopped": true,
+        "state": "confirmed",
+        "command_id": "751e8bf19b6b45c487eff2e443049bf1",
+        "action": "user_stop",
+        "admission_status": "queued",
+        "receipt_status": "applied",
+        "original_receipt_verified": true,
+        "dispatch_attempted": true,
+        "journal_sha256": "f34a93007ce953e007dbbf3e59a59d06a56f5b0ad7a54d7f1dac996477bff93c",
+        "qualification": "One original scoped user_stop command, retained journal and matching applied receipt. Tool-only follow-up is not part of the frozen product count or a redeployment; no EOF/history/profile/version-chain proof."
+      },
+      "qualification": "Original start failure remains. Later launch ACK, picker binding, one card and AV do not reconstruct an absent successful query receipt. Startup failure is preserved separately from later sparse observations, OSD and stop. No controlled performance comparison.",
+      "stop_readonly_recovery": {
+        "path": "campaign-1eb2e58/ce-new-work-convergence1151eb2e58-galactic_heroes-stop-1794591985121985100.json",
+        "sha256": "7c2a90758cd02d8109524ff3617597ddeb32145d4a9ad90ebca0d4b25c406eb7",
+        "tool_commit": "44a9897888b9eef4eb5e99d9af2de483a51cef71",
+        "main_tool_commit": "bd3dd414e8b57a36da3da653dd3a87a773d5823e",
+        "deployed_product_changed": false,
+        "exit_code": 0,
+        "same_original_command_expected_trial": true,
+        "same_journal_sha256": true,
+        "dispatch_attempted": false,
+        "admission_status": null,
+        "receipt_status": "applied",
+        "original_receipt_verified": true,
+        "qualification": "After a different diagnostic request had run and stopped, this tool-only follow-up recovered the original ordinary user_stop751e8bf receipt using the same journal and expected tuple. No new STOP dispatch. This is not a replayed playback acceptance or a product redeployment."
+      }
+    },
+    "ordinary_log": {
+      "path": "ce-playback-log-1794591308901846500.json",
+      "root": "review_evidence_root",
+      "sha256": "c91d1fbb186c87b3601f6847aae076760a69373d994730e4aa534d3802ba8a1c",
+      "transport_bound_rows": 95,
+      "other_transport_rows_excluded": 25,
+      "externally_dropped_observation_rows": 176,
+      "protected_rows": 92,
+      "protected_rows_dropped": 0,
+      "qualification": "Exact ordinary native transport hash filter. Unscoped export includes diagnostic transport rows; long HTTP end aggregates extend beyond startup and are not startup-cause evidence."
+    },
+    "block_timing": {
+      "path": "1eb2e58-block-timing-collected.json",
+      "sha256": "255eef9319c0d35ce8c32cf33766f6aa21e380777ec575f9691aa825176f0160",
+      "analysis": {
+        "path": "1eb2e58-diagnostic-independent-analysis.json",
+        "sha256": "5428669d55c7c7beccf1f77741b4896d7ca706d695a0d429848446194ec93dd2"
+      },
+      "log": {
+        "path": "ce-playback-log-diagnostic-1794591364335585200.json",
+        "root": "review_evidence_root",
+        "sha256": "ee6ec76689c9fd2f5d96d2f98aedbf491176bcc68fe3d9a07c4da15aed61bea1"
+      },
+      "state": "completed_with_gaps",
+      "diagnostic_only": true,
+      "product_proof": false,
+      "planned": 90,
+      "collected": 88,
+      "owner_read_error_indices": [
+        17,
+        23
+      ],
+      "owner_read_error": "TimeoutError",
+      "matching_native_tuple_samples": 87,
+      "native_tuple_unavailable_indices": [
+        0
+      ],
+      "native_monotonic_unavailable_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "av_samples": 70,
+      "play_to_av_observed_upper_bound_seconds": 10.288427611114457,
+      "caching_true_samples": 21,
+      "caching_media_seconds": 3.505,
+      "caching_sample_endpoint_span_seconds": 9.994738704059273,
+      "longest_sampled_joint_clock_decoder_stationary_span_seconds": 3.999708360992372,
+      "main_http20_seconds": {
+        "wall": 38.788,
+        "gate": 0.366,
+        "fetch": 36.13,
+        "write": 2.147,
+        "connect_within_fetch": 9.815871,
+        "read_wait_within_fetch": 16.449588,
+        "grant_within_fetch": 0.000596,
+        "consumer_cancel_cross_phase": 7.777642,
+        "socket_send_within_write": 1.521545
+      },
+      "delivered_socket_bytes": 255456409,
+      "internally_suppressed_main_http_rows": 19,
+      "retained_log_rows": 73,
+      "externally_dropped": 0,
+      "protected_rows": 26,
+      "protected_rows_dropped": 0,
+      "stop_confirmed": true,
+      "stop_confirmation_basis": "post_command_scoped_terminal_stop",
+      "settings_unchanged": true,
+      "observed_user_files_unchanged": true,
+      "native_unchanged": true,
+      "qualification": "Gaps and missing native timestamps remain. All73 log rows match the diagnostic transport and one log tuple, but log/native request and file hashes are not equated. The whole9.9947s caching span is not a joint decoder stall: decoder advances intermittently before the longest3.9997s run. Nested timings are not additive; consumer_cancel does not isolate account CPU/lock waiting. Diagnostic terminal stop is not the ordinary original-command receipt. No causal or controlled performance comparison; no new-crash claim from historical crash listings."
+    },
+    "after_ordinary_stop": {
+      "path": "device-after-2130-ordinary-stop.json",
+      "sha256": "bd4f58238ffbb8e978e7b249c25fe7f95ee4d8ab47de1f58016be674de8147c7",
+      "state": "attention_required",
+      "active_players": 0,
+      "catalog_schema": 4,
+      "catalog_integrity": "ok",
+      "typed_objects": 594,
+      "native_pid": 30787,
+      "kodi_restarts": 0,
+      "tracebacks": 0,
+      "broad_product_error_matches": 1,
+      "unchanged_sentinels_since_upgrade": 7,
+      "history_changed": true
+    },
+    "after_diagnostic_stop": {
+      "path": "device-after-2130-diagnostic-stop.json",
+      "sha256": "bfda29082b1c66c71bd5ed66ebdecfc4378eadb9bf5c6a54347fa7fc551fee6f",
+      "state": "attention_required",
+      "active_players": 0,
+      "catalog_schema": 4,
+      "catalog_integrity": "ok",
+      "typed_objects": 594,
+      "native_pid": 30787,
+      "kodi_restarts": 0,
+      "tracebacks": 0,
+      "broad_product_error_matches": 1,
+      "unchanged_sentinels_since_ordinary_stop": 8
+    },
+    "health_log_classification": {
+      "path": "device-2130-log-classification.json",
+      "sha256": "2151b383a4a3a47048a4e33275b2f2c00de66e993468337546c6b02770d8b67c",
+      "tail_truncated": false,
+      "matched_rows": 1,
+      "actual_kodi_level": "info",
+      "fixed_markers": [
+        "failed"
+      ],
+      "qualification": "Only classifies the broad health predicate's one match as INFO. It does not prove the business operation succeeded or remove search/playback failure. Both attention_required receipts are retained. The filtered playback logs cannot independently reconstruct the matched full-tail row."
+    },
+    "osd_review": {
+      "state": "four_original_commands_narrowly_verified_full_osd_incomplete",
+      "independent_analysis": {
+        "path": "1eb2e58-osd-independent-analysis.json",
+        "sha256": "022ce21cc1b058445e83f8f1ddadaacdcf8babe31a932f8eabe7c9d601b4981c"
+      },
+      "sources": [
+        {
+          "path": "1eb2e58-osd-03-forward-receipt.json",
+          "sha256": "89f51232bb2d28a51c88a0366f96f40a5ea959a257f36eca9bcf4355eb8a7f24"
+        },
+        {
+          "path": "1eb2e58-osd-04-seek-back.json",
+          "sha256": "1a540471cb52a78552221412e68c7d6f5ff183f8c58c8354644773ca8faf3581"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-cht-capture.json",
+          "sha256": "0092c79bbf6707bee89650857ef3acf9d54602a8bebc6508e45e44b0e1560f95"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-cht-capture.png",
+          "sha256": "88408e10bf7b080fcd08375a8e2c2f0c64cc77190ac49e255e8ae378092b7705"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-cht-after.json",
+          "sha256": "ab12fbe2f5b3e8f67679bc1f8c001461b77ea99b9192fa2e3570a952aa0b8bc5"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-cht-after.png",
+          "sha256": "fde3f9b13d7f235d45fb91a25e6d1607c8ec9fb4ebbb8e76cb9334e612340855"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-chs-final-capture.json",
+          "sha256": "6fbc0b6f0d6b8b72eb79a322523189085bc00992222c5da6db800c861c074d5f"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-chs-final-capture.png",
+          "sha256": "7aabd8d0860b9d31cb269215f542f503b745f9f53822efafedc33b357ab5228e"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-chs-final-applied.json",
+          "sha256": "bba47371bbddb40ab3bd8386cc75a27235f29202adc558085847c74203915927"
+        },
+        {
+          "path": "1eb2e58-osd-subtitle-chs-final-applied.png",
+          "sha256": "40014962ca3deaf712b4fa95e386a505c187bab43df8efc18f14d540ee200483"
+        },
+        {
+          "path": "1eb2e58-osd-01-before.json",
+          "sha256": "1a0c3e9665c62ce52e23026f25d6fdb03a25230c77f3efeb7677ee6c0161c8ef"
+        },
+        {
+          "path": "1eb2e58-osd-02-seek-forward.json",
+          "sha256": "cd3f49a05f950cfb2cab6bbf5dfd5240f881dc3cf64627bd4fc0891810e58413"
+        }
+      ],
+      "commands": [
+        {
+          "operator_label": "operator_label_seek_forward",
+          "command_id": "cb0f444bab394d06ab2a58cc27253b50",
+          "action": "seek",
+          "receipt_status": "applied",
+          "matched_original_reply": true,
+          "native_status": "applied",
+          "native_fields_match_original": true,
+          "before_target_match": "exact",
+          "after_target_match": "exact",
+          "sampled_presentation_position_ms": 272772,
+          "exact_target_params_retained": false
+        },
+        {
+          "operator_label": "operator_label_seek_back",
+          "command_id": "0e77da2d052b431b87b97f5813c89643",
+          "action": "seek",
+          "receipt_status": "applied",
+          "matched_original_reply": true,
+          "native_status": "applied",
+          "native_fields_match_original": true,
+          "before_target_match": "exact",
+          "after_target_match": "exact",
+          "sampled_presentation_position_ms": 309358,
+          "exact_target_params_retained": false
+        },
+        {
+          "operator_label": "subtitle_index1",
+          "command_id": "d95e49eb5a2b4de3bc2768489f30290a",
+          "action": "manual_subtitle_stream",
+          "receipt_status": "applied",
+          "native_status": "applied",
+          "native_fields_match_original": true,
+          "requested_index": 1,
+          "observed_selected_index": 1,
+          "selected_stream_key_matches_token": true,
+          "subtitle_visible": true,
+          "video_plane_included": false,
+          "unused_toggle_unknown_is_not_a_failed_command": true
+        },
+        {
+          "operator_label": "subtitle_index0",
+          "command_id": "8d2fb5792c6b408fb999fe2a3ba1977c",
+          "action": "manual_subtitle_stream",
+          "receipt_status": "applied",
+          "native_status": "applied",
+          "native_fields_match_original": true,
+          "requested_index": 0,
+          "observed_selected_index": 0,
+          "selected_stream_key_matches_token": true,
+          "subtitle_visible": true,
+          "video_plane_included": false,
+          "unused_toggle_unknown_is_not_a_failed_command": true
+        }
+      ],
+      "qualification": "Two operator-labelled forward/back seek commands and two subtitle stream selections retain matching original applied receipts and same-instance expected bindings. Seek projections do not retain immutable target params, exact landing or latency. Subtitle token index/stream_key matches selected presentation state. GUI framebuffer excludes hardware video plane, so no subtitle-render proof. Unsent toggle unknown is not a failed issued command. Other controls/tempo/new-instance recovery and complete OSD remain unaccepted."
+    },
+    "five_cold_five_warm": "not_completed",
+    "full_system_acceptance": "pending",
+    "evidence_cutoff": "Listed2130 upgrade, failed ordinary start/startup, later sparse observe, four narrow original OSD command receipts, original user_stop, separate completed-with-gaps diagnostic, post-stop health/classification, bounded idle reads and read-only recovery of that original stop receipt. Subsequent tool/product repository integrations are not deployed or reattributed to this frozen product.",
+    "health_log_marker_classification": {
+      "path": "device-2130-log-marker-classification.json",
+      "sha256": "f5c57cb2e0e90f31246725812c98d0a9bb42896b0d902f141c91013bd4b24d9d",
+      "matched_rows": 1,
+      "actual_kodi_level": "info",
+      "markers": [
+        "BOBBI-PROVIDERS"
+      ],
+      "same_line_sha256_as_fixed_vocabulary_classification": true,
+      "qualification": "Same one broad health match; classification alone does not prove provider success or erase original attention_required/startup failures."
+    },
+    "idle_owner_latency": {
+      "path": "device-2130-idle-owner-latency.json",
+      "sha256": "a15997277e45f8dca5d9d288859b1d2792216901e408c118a6253eff6f4d4420",
+      "mutation_performed": false,
+      "owner": {
+        "samples": 12,
+        "all_accepted": true,
+        "elapsed_ms_min": 16.381,
+        "elapsed_ms_max": 43.526,
+        "active_values": [
+          true
+        ]
+      },
+      "native": {
+        "samples": 12,
+        "all_accepted": true,
+        "elapsed_ms_min": 2.308,
+        "elapsed_ms_max": 6.109,
+        "active_values": [
+          false
+        ]
+      },
+      "qualification": "Twelve sequential owner/native read pairs after stopping. Owner active means a retained desired field exists, not playing; native active is false. No loaded performance, full health or playback-gap recovery proof."
+    }
+  },
+  "remaining_gates": [
+    "All110 exact cross-module scenarios remain pending;83 partial local mappings and27 candidate-only mappings are unchanged.",
+    "Ordinary start and startup health failed; full OSD, exact EOF/Stop/history/next/profile/version chain and fixed-file five-cold/five-warm remain incomplete.",
+    "Cut/multipart identities, full media facts/preferences, automatic segments and source remapping retain their gaps.",
+    "Real115/NAS/server protocols, server progress and Direct Stream/Transcode/HLS lifecycles remain unaccepted.",
+    "Historical2129-to2128 program-byte rollback is a narrow previous-generation proof; current-generation rollback/full health, data restoration/interruption and Android clean-link/APK/device remain unproved.",
+    "Distribution remains blocked by seven unresolved-source and two unresolved-full-license entries, including p115rsacipher GPLv3 LICENSE versus MIT metadata conflict."
+  ],
+  "history_preserved": [
+    "validation-ba4c238.json",
+    "validation-a725b84.json",
+    "validation-55b4f9b.json",
+    "validation-2b263bb.json",
+    "validation-319e398.json",
+    "validation-ff0422c.json",
+    "original offline ledgers, failed inventories, superseded native candidates and device failures",
+    "validation-e58718b.json",
+    "prior deployments, failed startup receipts and their diagnostics",
+    "1eb2e58 ordinary analysis v1 provisional retained externally; v2 is the corrected sparse-observe interpretation"
+  ]
+}

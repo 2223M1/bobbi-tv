@@ -1,0 +1,5 @@
+# Optional existing-service adapter
+
+No engine is installed or started. A new installation must explicitly configure its own backend before BT playback; normal 115/direct playback and the main interface do not require it. An explicit device-local `backend.json` belongs in this addon's profile, not in an installer. Its exact keys are `schema` (1), `endpoint` (loopback HTTP/HTTPS with explicit port), `auth` (null or username/password object), `metadata_seconds` (1–120), `buffering_seconds` (1–300). Absence fails only the selected BT source. Existing MatriX.144.1 and MatriX.147 APIs are supported; the separate authenticated helper's pairing/version contract is not weakened.
+
+A migration may call `from_legacy_settings` with the seven documented connection/budget fields. It never reads another addon, changes server settings, stops an engine, retries an uncertain add, or copies account state. Only an active exact request from the current bobbi owner is accepted. Native-less stock Kodi keeps its separate manual adapter and cannot gain native receipts here.

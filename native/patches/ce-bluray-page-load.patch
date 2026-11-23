@@ -1,0 +1,29 @@
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.h b/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.h
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.h
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.h
+@@ -83,6 +83,7 @@
+   int64_t m_sourceLength{0};
+   size_t m_maxPages{1};
+ 
++  std::mutex m_pageLoadMutex;
+   std::mutex m_cacheMutex;
+   std::list<int64_t> m_lruOrder;
+   std::unordered_map<int64_t, CacheSlot> m_pages;
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.cpp b/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.cpp
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.cpp
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/BlurayIsoCache.cpp
+@@ -159,6 +159,15 @@ CBlurayIsoCache::PagePtr CBlurayIsoCache::LoadPage(int64_t pageIndex, bool prefetch)
+   if (!IsValidPageIndex(pageIndex) || !m_readCallback)
+     return nullptr;
+ 
++  // ReadRaw already serializes all seeks/reads on this disc. Cover publication
++  // with that same ordering at the page layer: a foreground miss overlapping
++  // prefetch must not seek back and read a page which just finished loading.
++  // Hits still take only m_cacheMutex; neither cache nor worker-queue locks
++  // are held across the callback. Failed loads leave the page retryable.
++  std::lock_guard<std::mutex> loading(m_pageLoadMutex);
++  if (auto cached = GetPage(pageIndex))
++    return cached;
++
+   auto page = std::make_shared<Page>();
+   page->data.resize(m_config.pageSize);

@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="12000">
+  <coordinates><left>510</left><top>300</top><width>900</width><height>460</height></coordinates>
+  <defaultcontrol always="true">12003</defaultcontrol>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+    <effect type="zoom" start="95" end="100" center="50%,50%" tween="cubic" easing="out" time="180" />
+    <effect type="fade" start="0" end="100" time="160" />
+  </animation>
+  <animation type="WindowClose" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+    <effect type="fade" start="100" end="0" time="140" />
+  </animation>
+  <depth>0.40</depth>
+  <controls>
+    <control type="image">
+      <left>-48</left><top>-48</top><width>996</width><height>556</height>
+      <texture border="64">bobbi/glass/modal-shadow.png</texture>
+    </control>
+    <control type="image">
+      <width>900</width><height>460</height>
+      <texture colordiffuse="FF25252C" border="46">bobbi/glass/modal-glass.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+    <control type="image">
+      <width>900</width><height>460</height>
+      <texture colordiffuse="FF50545C" border="46">bobbi/glass/modal-glass.png</texture>
+      <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+    <control type="image">
+      <width>900</width><height>460</height>
+      <texture border="46">bobbi/glass/modal-glass-rim.png</texture>
+    </control>
+    <control type="label" id="12001">
+      <top>28</top><left>48</left><width>804</width><height>44</height>
+      <align>center</align><aligny>center</aligny>
+      <font>Head34</font><textcolor>FFF5F5F7</textcolor>
+    </control>
+    <control type="image">
+      <top>92</top><left>56</left><width>236</width><height>236</height>
+      <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+    </control>
+    <control type="image" id="12006">
+      <top>100</top><left>64</left><width>220</width><height>220</height>
+      <texture>bobbi/glass/qr-placeholder.png</texture>
+    </control>
+    <control type="label" id="12002">
+      <top>96</top><left>324</left><width>524</width><height>220</height>
+      <align>left</align><font>Plot26</font><textcolor>D9EBEBF5</textcolor>
+      <wrapmultiline>true</wrapmultiline>
+    </control>
+    <control type="progress" id="12004">
+      <top>348</top><left>56</left><width>788</width><height>7</height>
+      <info>percentage</info>
+      <texturebg colordiffuse="48FFFFFF" border="4">bobbi/glass/progress-track.png</texturebg>
+      <midtexture colordiffuse="FFFFFFFF" border="4">bobbi/glass/progress-fill.png</midtexture>
+    </control>
+    <control type="grouplist">
+      <orientation>horizontal</orientation>
+      <top>374</top><left>350</left><itemgap>120</itemgap>
+      <control type="button" id="12003">
+        <width>200</width><height>60</height>
+        <label>关闭</label>
+        <align>center</align><aligny>center</aligny>
+        <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="30,0,30,0">bobbi/glass/capsule-60.png</texturefocus>
+        <texturenofocus colordiffuse="24FFFFFF" border="30,0,30,0">bobbi/glass/capsule-60.png</texturenofocus>
+        <pulseonselect>no</pulseonselect>
+      </control>
+    </control>
+  </controls>
+</window>

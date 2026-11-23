@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">3</defaultcontrol>
+  <include>PageOpen</include>
+  <controls>
+    <!-- on-device Settings warm-cool charcoal radial backdrop -->
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/settings-bg.png</texture>
+    </control>
+
+    <!-- Top-centered muted slate title + top-right Settings Level frosted pill (1:1 on-device) -->
+    <control type="label" id="2"><visible>false</visible></control>
+    <control type="label">
+      <left>0</left><top>62</top><width>1920</width><height>62</height>
+      <label>$VAR[SettingsSectionTitle]</label>
+      <font>SettingsTitle50</font><textcolor>FF7C8088</textcolor>
+      <align>center</align><aligny>center</aligny>
+    </control>
+    <control type="radiobutton" id="20">
+      <left>1640</left><top>68</top><width>200</width><height>52</height>
+      <font>Card24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+      <textoffsetx>0</textoffsetx><align>center</align><aligny>center</aligny>
+      <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+      <texturenofocus colordiffuse="22FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+      <radiowidth>1</radiowidth><radioheight>1</radioheight>
+      <textureradioonfocus /><textureradioonnofocus /><textureradioofffocus /><textureradiooffnofocus />
+      <onclick>SettingsLevelChange</onclick>
+      <onup>3</onup><ondown>5</ondown><onright>5</onright><onleft>3</onleft>
+    </control>
+
+    <!-- Left borderless on-device stadium category rail @ x=80, y=189 (matching Choose Aerials / Library) -->
+    <control type="grouplist" id="3">
+      <left>80</left><top>189</top><width>340</width><height>560</height>
+      <orientation>vertical</orientation><itemgap>8</itemgap>
+      <usecontrolcoords>true</usecontrolcoords>
+      <onleft>noop</onleft><onright>5</onright>
+      <onup>20</onup><ondown>20</ondown>
+    </control>
+    <control type="button" id="10">
+      <left>0</left><top>0</top><width>340</width><height>66</height>
+      <font>Label28</font><textcolor>D6EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+      <textoffsetx>32</textoffsetx><aligny>center</aligny>
+      <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+      <texturenofocus />
+    </control>
+
+    <!-- Bottom-left contextual help text (contract 6 autoscroll preserved) -->
+    <control type="textbox" id="6">
+      <left>92</left><top>788</top><width>360</width><height>196</height>
+      <font>HeroPlot24</font><textcolor>FF989A9F</textcolor>
+      <autoscroll delay="5000" time="2000" repeat="6000">ControlGroup(5).HasFocus</autoscroll>
+    </control>
+
+    <!-- Right-column on-device 66px stadium settings stack @ x=496..1840 -->
+    <control type="grouplist" id="5">
+      <left>496</left><top>189</top><width>1344</width><height>784</height>
+      <orientation>vertical</orientation><itemgap>14</itemgap>
+      <pagecontrol>60</pagecontrol>
+      <include>ListMotion</include>
+      <onleft>3</onleft><onright>60</onright>
+      <onup>20</onup><ondown>5</ondown>
+    </control>
+    <control type="scrollbar" id="60">
+      <left>1852</left><top>194</top><width>4</width><height>772</height>
+      <orientation>vertical</orientation><showonepage>false</showonepage>
+      <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+      <onleft>5</onleft><onright>5</onright>
+    </control>
+
+    <control type="group">
+      <left>-3000</left>
+      <include content="SettingTemplates"><param name="w">1344</param><param name="radiox">1248</param></include>
+    </control>
+  </controls>
+</window>

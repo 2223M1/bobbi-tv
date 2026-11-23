@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "source": {
+    "commit": "2b263bb3e9ab5d20a93349af66f83badfdf7f503",
+    "tree": "ed7b6470e6389d753cd36be25e08251983866bd3",
+    "clean_and_unchanged_during_tests": true
+  },
+  "status": "failed_offline_validation_not_installed",
+  "windows": {
+    "primary": {"passed": 7577, "failed": 1, "errors": 24, "skipped": 21, "xfailed": 1, "receipt": "2b263bb-primary.json", "xml_sha256": "9a84295436ef724baf1b68a81884c6de354f8821493b84ef0cae83106ef6dda7"},
+    "baseline": {"passed": 1735, "receipt": "2b263bb-baseline.json", "xml_sha256": "2d6d4e22a768754aaad3e3eaca623eb59927d9f267cd1715145a1327e57a9c27"},
+    "preparation": {"passed": 254, "receipt": "2b263bb-preparation.json", "xml_sha256": "f9ce8862c5b3340245c3b60afcce3513021b9f2a07da3aeef0bfabc1dc213432"},
+    "failures": [
+      "Ownership manifest capture anchor was stale after capture_transport composition was introduced.",
+      "24 mounted binding setup errors: legacy dynamic RPC fail-trap required raising=False after removal of the module-level call. Assertions must remain intact."
+    ]
+  },
+  "posix": {
+    "passed": 288, "errors": 24, "skipped": 0,
+    "scope": "Twelve overlapping isolated WSL groups; same mounted fixture setup errors.",
+    "receipt": "2b263bb-posix-contracts-report.json",
+    "receipt_sha256": "08de8fd791a1f13c08985050766d6a7561a81082e0de5cd4ea1c3d62efec6300"
+  },
+  "build": {
+    "independent_source_check_files_equal": 63,
+    "installable_components": 22,
+    "receipt": "2b263bb-builds.json",
+    "bundle_sha256": "0e8cde491d6a39c445167d6eb7bce7024b9b3cf1c375e006ea64653aecacc44d",
+    "entry_sha256": "4c020b65e2499288a457033769bb9d9d3ae1e9e075f9be7722e2363339293f7d",
+    "qualification": "Signed and archive-audited only; failed tests prohibit installation of this candidate."
+  },
+  "graph": {
+    "independent_outputs_equal": true,
+    "sha256": "41ee83adc9d0f709bee684f1436591c51b2f06b63945d66e392abe13a412a8b9",
+    "inventory": 2320, "python_ast": 1448, "nodes": 60790, "edges": 150672,
+    "confirmed": 7533, "candidate": 34299, "external": 25963, "unresolved": 82877,
+    "qualification": "Zero parse diagnostics does not validate ownership anchors or prove absence of dynamic dependency debt."
+  },
+  "device": {
+    "run_id": "20261113-214600",
+    "operation": "stage_only",
+    "result": "staged",
+    "system_unchanged": true,
+    "installed_commit": "55b4f9be6eb435cf212f188d8352dc8028f0c6be",
+    "installed_sequence": 2026102126,
+    "candidate_sequence": 2026102127,
+    "candidate_installed": false,
+    "playback_acceptance": "not_run_for_this_candidate"
+  },
+  "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+  "qualification": "Retain all failed evidence. Later fixes or successful runs do not change this candidate's result. No release readiness or public distribution clearance."
+}

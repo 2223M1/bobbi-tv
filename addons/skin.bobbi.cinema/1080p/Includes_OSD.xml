@@ -1,0 +1,450 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <expression name="BobbiCurrentStreamPanel">Integer.IsGreater(Container(2021).NumItems,0) + !String.IsEmpty(Window(Home).Property(Bobbi.OSD.StreamPanel)) + String.IsEqual(Container(2021).ListItem.Property(bobbi_panel),Window(Home).Property(Bobbi.OSD.StreamPanel))</expression>
+  <include name="OSDScrim">
+    <param name="top">500</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>$PARAM[top]</top><width>1920</width><height>620</height>
+        <texture>bobbi/glass/scrim-bottom.png</texture>
+      </control>
+    </definition>
+  </include>
+
+  <!-- on-device Now Playing kicker + inline outlined tech badges + Hero60 title (x=80..1500, y=720..822) -->
+  <include name="OSDTitle">
+    <param name="top">720</param>
+    <param name="width">1420</param>
+    <definition>
+      <control type="group">
+        <left>80</left><top>$PARAM[top]</top>
+        <control type="grouplist">
+          <left>0</left><top>0</top><width>$PARAM[width]</width><height>32</height>
+          <orientation>horizontal</orientation><align>left</align><itemgap>10</itemgap>
+          <usecontrolcoords>true</usecontrolcoords>
+          <control type="label">
+            <top>0</top><width>auto</width><height>32</height>
+            <label>$VAR[PlayerSubtitle]</label>
+            <font>HeroMeta24</font><textcolor>D9EBEBF5</textcolor><shadowcolor>66000000</shadowcolor>
+            <aligny>center</aligny>
+            <visible>!String.IsEmpty(VideoPlayer.TVShowTitle) | !String.IsEmpty(VideoPlayer.Year) | !String.IsEmpty(VideoPlayer.Genre) | Player.HasVideo</visible>
+          </control>
+          <include content="TechChip">
+            <param name="label">$VAR[ResolutionLabel]</param>
+            <param name="visible">!String.IsEmpty(VideoPlayer.VideoResolution)</param>
+          </include>
+          <include content="TechChip">
+            <param name="label">$VAR[HDRLabel]</param>
+            <param name="visible">Player.HasVideo</param>
+          </include>
+          <include content="TechChip">
+            <param name="label">$VAR[AudioCodecLabel]$INFO[VideoPlayer.AudioChannels, ,ch]</param>
+            <param name="visible">!String.IsEmpty(VideoPlayer.AudioCodec)</param>
+          </include>
+          <control type="label">
+            <top>0</top><width>auto</width><height>32</height>
+            <label>$INFO[Window(Home).Property(Bobbi.Next.Label),·  ,]</label>
+            <font>HeroMeta24</font><textcolor>9CEBEBF5</textcolor><shadowcolor>66000000</shadowcolor>
+            <aligny>center</aligny>
+            <visible>Player.HasVideo + !String.IsEmpty(Window(Home).Property(Bobbi.Next.Label))</visible>
+          </control>
+        </control>
+        <control type="label">
+          <left>0</left><top>38</top><width>$PARAM[width]</width><height>64</height>
+          <label>$VAR[PlayerTitle]</label>
+          <font>Hero60</font><textcolor>FFFFFFFF</textcolor><shadowcolor>66000000</shadowcolor>
+          <aligny>center</aligny><scroll>false</scroll>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <include name="TechChip">
+    <param name="label" />
+    <param name="visible">true</param>
+    <param name="top">2</param>
+    <definition>
+      <control type="button">
+        <top>$PARAM[top]</top><width>auto</width><height>28</height>
+        <label>$PARAM[label]</label>
+        <font>Badge18</font><textcolor>F2F5F5F7</textcolor><disabledcolor>F2F5F5F7</disabledcolor>
+        <textoffsetx>10</textoffsetx><align>center</align><aligny>center</aligny>
+        <texturenofocus colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texturenofocus>
+        <texturefocus colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texturefocus>
+        <enable>false</enable>
+        <visible>$PARAM[visible]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- on-device 14px Liquid Glass Scrubber + Below-Scrubber Time & PlayStateRing (x=80..1840, w=1760) -->
+  <include name="OSDProgress">
+    <param name="top">842</param>
+    <param name="slider">false</param>
+    <definition>
+      <control type="group">
+        <left>80</left><top>$PARAM[top]</top>
+        <control type="progress">
+          <left>0</left><top>0</top><width>1760</width><height>14</height>
+          <info>Player.ProgressCache</info>
+          <texturebg border="7">bobbi/glass/osd-scrubber-track.png</texturebg>
+          <midtexture border="7">bobbi/glass/osd-scrubber-cache.png</midtexture>
+        </control>
+        <control type="progress">
+          <left>0</left><top>0</top><width>1760</width><height>14</height>
+          <info>Player.Progress</info>
+          <texturebg colordiffuse="00FFFFFF" border="7">bobbi/glass/osd-scrubber-track.png</texturebg>
+          <midtexture border="7">bobbi/glass/osd-scrubber-fill.png</midtexture>
+        </control>
+        <control type="ranges">
+          <left>0</left><top>0</top><width>1760</width><height>14</height>
+          <info>Player.Chapters</info>
+          <texturebg />
+          <righttexture colordiffuse="CC000000">bobbi/white.png</righttexture>
+          <visible>Integer.IsGreater(Player.ChapterCount,0)</visible>
+        </control>
+        <control type="grouplist">
+          <left>0</left><top>22</top><width>520</width><height>32</height>
+          <orientation>horizontal</orientation><align>left</align><itemgap>10</itemgap>
+          <usecontrolcoords>true</usecontrolcoords>
+          <control type="label">
+            <top>0</top><width>auto</width><height>32</height>
+            <label>$INFO[Player.Time]</label>
+            <font>Clock27</font><textcolor>FFFFFFFF</textcolor><shadowcolor>66000000</shadowcolor>
+            <aligny>center</aligny>
+          </control>
+          <control type="image">
+            <top>2</top><width>28</width><height>28</height>
+            <texture>$VAR[PlayStateRing]</texture>
+          </control>
+        </control>
+        <control type="label">
+          <left>1320</left><top>22</top><width>440</width><height>32</height>
+          <label>-$INFO[Player.TimeRemaining]</label>
+          <font>Clock27</font><textcolor>FFFFFFFF</textcolor><shadowcolor>66000000</shadowcolor>
+          <align>right</align><aligny>center</aligny>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- on-device 66px Stadium Capsule Row for OSD Side Sheets (1114 / 1116) -->
+  <include name="OSDCapsuleRow">
+    <param name="w">624</param>
+    <param name="h">66</param>
+    <param name="list" />
+    <param name="focused">false</param>
+    <definition>
+      <control type="group">
+        <width>$PARAM[w]</width><height>76</height>
+        <control type="image">
+          <left>0</left><top>5</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="1CFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>5</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="glass_rim" border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>5</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+        </control>
+        <control type="group">
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+          <control type="image">
+            <left>9</left><top>14</top><width>48</width><height>48</height>
+            <texture>bobbi/glass/pill-disc-50.png</texture>
+          </control>
+          <control type="image">
+            <left>18</left><top>23</top><width>30</width><height>30</height>
+            <texture colordiffuse="FFF5F5F7">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>72</left><top>5</top><width>276</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card26</font><textcolor>text</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <right>26</right><top>5</top><width>264</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><align>right</align><aligny>center</aligny>
+            <scroll>false</scroll>
+          </control>
+        </control>
+        <control type="group">
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+          <control type="image">
+            <left>9</left><top>14</top><width>48</width><height>48</height>
+            <texture colordiffuse="18000000">bobbi/glass/circle-128.png</texture>
+          </control>
+          <control type="image">
+            <left>18</left><top>23</top><width>30</width><height>30</height>
+            <texture colordiffuse="FF1D1D1F">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>72</left><top>5</top><width>276</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card26</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <right>26</right><top>5</top><width>264</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>CardSub22</font><textcolor>B31D1D1F</textcolor><align>right</align><aligny>center</aligny>
+            <scroll>true</scroll>
+          </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- Telemetry Key/Value Row for DialogPlayerProcessInfo Bento Cards -->
+  <include name="OSDTelemetryRow">
+    <param name="label" />
+    <param name="value" />
+    <param name="visible">true</param>
+    <param name="h">36</param>
+    <definition>
+      <control type="group">
+        <width>776</width><height>$PARAM[h]</height>
+        <visible>$PARAM[visible]</visible>
+        <control type="label">
+          <left>0</left><top>0</top><width>200</width><height>$PARAM[h]</height>
+          <label>$PARAM[label]</label>
+          <font>Meta22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>208</left><top>0</top><width>568</width><height>$PARAM[h]</height>
+          <label>$PARAM[value]</label>
+          <font>Label24</font><textcolor>FFFFFFFF</textcolor><align>right</align><aligny>center</aligny>
+          <scroll>false</scroll>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <include name="OSDChip">
+    <param name="id" />
+    <param name="icon" />
+    <param name="label" />
+    <param name="value" />
+    <param name="width">240</param>
+    <param name="visible">true</param>
+    <param name="onclick">noop</param>
+    <param name="onclick2">noop</param>
+    <param name="onclick3">noop</param>
+    <param name="onup">noop</param>
+    <definition>
+      <control type="group" id="$PARAM[id]9">
+        <width>$PARAM[width]</width><height>64</height>
+        <visible>$PARAM[visible]</visible>
+        <control type="button" id="$PARAM[id]">
+          <left>0</left><top>0</top><width>$PARAM[width]</width><height>64</height>
+          <label />
+          <texturefocus colordiffuse="FFFFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturefocus>
+          <texturenofocus colordiffuse="22FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturenofocus>
+          <onclick>$PARAM[onclick]</onclick>
+          <onclick>$PARAM[onclick2]</onclick>
+          <onclick>$PARAM[onclick3]</onclick>
+          <onup>$PARAM[onup]</onup>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[width]</width><height>64</height>
+          <texture colordiffuse="glass_rim" border="32,0,32,0">bobbi/glass/capsule-64-rim.png</texture>
+          <visible>!Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="group">
+          <visible>!Control.HasFocus($PARAM[id])</visible>
+          <control type="image">
+            <left>22</left><top>19</top><width>26</width><height>26</height>
+            <texture colordiffuse="text">$PARAM[icon]</texture>
+          </control>
+          <control type="label">
+            <left>60</left><top>0</top><width>$PARAM[width]</width><height>64</height>
+            <label>$PARAM[label][COLOR 9CEBEBF5]$PARAM[value][/COLOR]</label>
+            <font>Card26</font><textcolor>text</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+        <control type="group">
+          <visible>Control.HasFocus($PARAM[id])</visible>
+          <control type="image">
+            <left>22</left><top>19</top><width>26</width><height>26</height>
+            <texture colordiffuse="on_focus">$PARAM[icon]</texture>
+          </control>
+          <control type="label">
+            <left>60</left><top>0</top><width>$PARAM[width]</width><height>64</height>
+            <label>$PARAM[label][COLOR B31D1D1F]$PARAM[value][/COLOR]</label>
+            <font>Card26</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- on-device Top-Right Popover Liquid Glass Stream Picker (Subtitles 1144 / Audio 1145) -->
+  <include name="StreamPicker">
+    <param name="type" />
+    <param name="issub">false</param>
+    <param name="title" />
+    <param name="full" />
+    <param name="fulllabel" />
+    <param name="offlabel" />
+    <param name="window" />
+    <param name="apply" />
+    <definition>
+      <control type="group" id="2024">
+        <defaultcontrol always="true">2021</defaultcontrol>
+        <right>80</right><top>140</top><width>700</width><height>680</height>
+        <include content="PanelOpen"><param name="slide">0,-18</param></include>
+        <control type="image">
+          <left>-48</left><top>-48</top><width>796</width><height>776</height>
+          <texture border="64">bobbi/glass/modal-shadow.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>700</width><height>680</height>
+          <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>700</width><height>680</height>
+          <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+        </control>
+        <control type="label">
+          <left>36</left><top>28</top><width>628</width><height>44</height>
+          <label>$PARAM[title]</label><font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>36</left><top>74</top><width>628</width><height>26</height>
+          <label>[COLOR ok]✓[/COLOR] 当前轨道   ·   ↑↓ 选择   ·   确认 应用$INFO[Window(Home).Property(Bobbi.OSD.Truncated),   ·   ]</label>
+          <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>36</left><top>104</top><width>628</width><height>24</height>
+          <label>$INFO[Window(Home).Property(AM6B.SubtitleState)]</label>
+          <font>CardSub22</font><textcolor>$VAR[BobbiPanelHint]</textcolor><visible>$PARAM[issub]</visible>
+        </control>
+        <control type="label">
+          <left>36</left><top>104</top><width>628</width><height>24</height>
+          <label>$INFO[Window(Home).Property(AM6B.AudioState)]</label>
+          <font>CardSub22</font><textcolor>$VAR[BobbiPanelHint]</textcolor><visible>!$PARAM[issub]</visible>
+        </control>
+        <control type="button" id="2020">
+          <left>24</left><top>140</top><width>652</width><height>64</height>
+          <label>$VAR[BobbiStreamPlaceholder]</label>
+          <font>Card26</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><focusedcolor>on_focus</focusedcolor>
+          <textoffsetx>28</textoffsetx><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturefocus>
+          <texturenofocus colordiffuse="18FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texturenofocus>
+          <onup>noop</onup><ondown>2022</ondown>
+          <onleft>noop</onleft><onright>noop</onright><onclick>noop</onclick>
+          <visible>!$EXP[BobbiCurrentStreamPanel]</visible>
+        </control>
+        <control type="list" id="2021">
+          <left>24</left><top>140</top><width>652</width><height>432</height>
+          <orientation>vertical</orientation>
+          <enable>$EXP[BobbiCurrentStreamPanel]</enable>
+          <animation effect="fade" start="100" end="0" time="0" condition="!$EXP[BobbiCurrentStreamPanel]">Conditional</animation>
+          <include>ListMotion</include>
+          <onup>2021</onup>
+          <ondown>2022</ondown>
+          <onleft>noop</onleft><onright>noop</onright>
+          <onclick condition="$EXP[BobbiCurrentStreamPanel]">RunScript(plugin.video.bobbi,bobbi_osd=apply,token=$INFO[ListItem.Property(bobbi_command)])</onclick>
+          <onclick condition="$EXP[BobbiCurrentStreamPanel]">Dialog.Close($PARAM[window])</onclick>
+          <itemlayout width="652" height="72">
+            <include content="StreamRow"><param name="focused">false</param></include>
+          </itemlayout>
+          <focusedlayout width="652" height="72">
+            <include content="StreamRow"><param name="focused">true</param></include>
+          </focusedlayout>
+          <content target="videos">$VAR[BobbiStreamFetchPanel,plugin://plugin.video.bobbi/?action=osd_streams&amp;stream_type=$PARAM[type]&amp;panel=,]</content>
+        </control>
+        <control type="grouplist" id="2022">
+          <left>24</left><top>584</top><width>652</width><height>72</height>
+          <orientation>horizontal</orientation><itemgap>10</itemgap>
+          <onup condition="$EXP[BobbiCurrentStreamPanel]">2021</onup>
+          <onup condition="!$EXP[BobbiCurrentStreamPanel]">2020</onup>
+          <ondown>noop</ondown>
+          <include content="TextPill">
+            <param name="id">20221</param><param name="label">$PARAM[offlabel]</param><param name="width">204</param>
+            <param name="visible">$PARAM[issub] + VideoPlayer.HasSubtitles + $EXP[BobbiCurrentStreamPanel]</param>
+            <param name="onclick">RunScript(plugin.video.bobbi,bobbi_osd=subtitle_toggle,token=$INFO[Container(2021).ListItem.Property(bobbi_toggle)])</param>
+            <param name="onclick2">Dialog.Close($PARAM[window])</param>
+          </include>
+          <include content="TextPill">
+            <param name="id">20222</param><param name="label">$PARAM[fulllabel]</param><param name="width">204</param>
+            <param name="onclick">Dialog.Close($PARAM[window])</param>
+            <param name="onclick2">RunScript(plugin.video.bobbi,bobbi_osd=$PARAM[type]_settings)</param>
+          </include>
+          <include content="TextPill">
+            <param name="id">20223</param><param name="label">找中文字幕</param><param name="width">224</param>
+            <param name="visible">$PARAM[issub] + System.HasAddon(script.bobbi.opensubtitles)</param>
+            <param name="onclick">Dialog.Close($PARAM[window])</param>
+            <param name="onclick2">RunScript(script.bobbi.opensubtitles)</param>
+          </include>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <include name="StreamRow">
+    <param name="focused" />
+    <definition>
+      <control type="image">
+        <left>0</left><top>4</top><width>652</width><height>64</height>
+        <texture colordiffuse="18FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+        <visible>!$PARAM[focused] | !Control.HasFocus(2021)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>4</top><width>652</width><height>64</height>
+        <texture colordiffuse="glass_rim" border="32,0,32,0">bobbi/glass/capsule-64-rim.png</texture>
+        <visible>!$PARAM[focused] | !Control.HasFocus(2021)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>4</top><width>652</width><height>64</height>
+        <texture colordiffuse="FFFFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+        <visible>$PARAM[focused] + Control.HasFocus(2021)</visible>
+      </control>
+      <control type="image">
+        <left>22</left><top>25</top><width>22</width><height>22</height>
+        <texture colordiffuse="ok">bobbi/glass/icons/checkmark.png</texture>
+        <visible>String.IsEqual(ListItem.Property(iscurrent),true) + [!$PARAM[focused] | !Control.HasFocus(2021)]</visible>
+      </control>
+      <control type="image">
+        <left>22</left><top>25</top><width>22</width><height>22</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/checkmark.png</texture>
+        <visible>String.IsEqual(ListItem.Property(iscurrent),true) + $PARAM[focused] + Control.HasFocus(2021)</visible>
+      </control>
+      <control type="label">
+        <left>58</left><top>4</top><width>216</width><height>64</height>
+        <label>$VAR[StreamLang]</label>
+        <font>Card26</font><aligny>center</aligny>
+        <textcolor>text</textcolor>
+        <visible>!$PARAM[focused] | !Control.HasFocus(2021)</visible>
+      </control>
+      <control type="label">
+        <left>58</left><top>4</top><width>216</width><height>64</height>
+        <label>$VAR[StreamLang]</label>
+        <font>Card26</font><aligny>center</aligny>
+        <textcolor>FF1D1D1F</textcolor>
+        <visible>$PARAM[focused] + Control.HasFocus(2021)</visible>
+      </control>
+      <control type="label">
+        <left>280</left><top>4</top><width>346</width><height>64</height>
+        <label>$INFO[ListItem.Label2]$INFO[ListItem.Property(codec),  ·  ]$INFO[ListItem.Property(channels),  ·  ,ch]</label>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <textcolor>$VAR[BobbiPanelCaption]</textcolor>
+        <scroll>false</scroll>
+        <visible>!$PARAM[focused] | !Control.HasFocus(2021)</visible>
+      </control>
+      <control type="label">
+        <left>280</left><top>4</top><width>346</width><height>64</height>
+        <label>$INFO[ListItem.Label2]$INFO[ListItem.Property(codec),  ·  ]$INFO[ListItem.Property(channels),  ·  ,ch]</label>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <textcolor>B31D1D1F</textcolor>
+        <scroll>true</scroll>
+        <visible>$PARAM[focused] + Control.HasFocus(2021)</visible>
+      </control>
+    </definition>
+  </include>
+</includes>

@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Control defaults for windows that have not been rebuilt by hand yet.
+     Only colours and textures change here; positions and sizes stay as inherited so
+     untouched windows keep their layout. Text tokens: white=F5F3EF, grey3=7E7D79,
+     grey2=B4B2AD (colors/defaults.xml). Focus = white fill with dark text where the
+     control can recolour text; otherwise the raised row-focus ring (settings rows,
+     spin/slider/select) which Kodi draws without changing the label colour. -->
+<includes>
+  <default type="image">
+    <left>0</left>
+    <top>0</top>
+    <texture />
+  </default>
+  <default type="label">
+    <label />
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+  </default>
+  <default type="fadelabel">
+    <left>120</left>
+    <top>90</top>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+  </default>
+  <default type="button">
+    <width>450</width>
+    <height>63</height>
+    <texturefocus colordiffuse="focus" border="14">bobbi/r14.png</texturefocus>
+    <texturenofocus colordiffuse="$VAR[BobbiControlSurface]" border="14">bobbi/r14.png</texturenofocus>
+    <focusedcolor>on_focus</focusedcolor>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="togglebutton">
+    <left>210</left>
+    <top>251</top>
+    <width>30</width>
+    <height>30</height>
+    <texturefocus colordiffuse="focus">bobbi/icons/chevron-down.png</texturefocus>
+    <texturenofocus colordiffuse="text2">bobbi/icons/chevron-down.png</texturenofocus>
+    <alttexturefocus colordiffuse="focus">bobbi/icons/chevron-up.png</alttexturefocus>
+    <alttexturenofocus colordiffuse="text2">bobbi/icons/chevron-up.png</alttexturenofocus>
+    <textcolor>white</textcolor>
+    <label />
+    <font>font13</font>
+    <disabledcolor>grey3</disabledcolor>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="textbox">
+    <left>330</left>
+    <top>333</top>
+    <width>615</width>
+    <height>320</height>
+    <align>left</align>
+    <textcolor>white</textcolor>
+    <font>font13</font>
+  </default>
+  <default type="progress">
+    <left>150</left>
+    <top>488</top>
+    <texturebg colordiffuse="40FFFFFF" border="4,0,4,0">bobbi/bar8.png</texturebg>
+    <lefttexture />
+    <midtexture colordiffuse="accent" border="4,0,4,0">bobbi/bar8.png</midtexture>
+    <righttexture />
+    <overlaytexture />
+  </default>
+  <default type="spincontrol">
+    <left>495</left>
+    <top>189</top>
+    <textureup colordiffuse="text2">bobbi/icons/chevron-up.png</textureup>
+    <texturedown colordiffuse="text2">bobbi/icons/chevron-down.png</texturedown>
+    <textureupdisabled colordiffuse="text_disabled">bobbi/icons/chevron-up.png</textureupdisabled>
+    <texturedowndisabled colordiffuse="text_disabled">bobbi/icons/chevron-down.png</texturedowndisabled>
+    <textureupfocus colordiffuse="focus">bobbi/icons/chevron-up.png</textureupfocus>
+    <texturedownfocus colordiffuse="focus">bobbi/icons/chevron-down.png</texturedownfocus>
+    <align>right</align>
+    <width>50</width>
+    <height>33</height>
+    <font>font13</font>
+    <reverse>yes</reverse>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <subtype>text</subtype>
+    <textoffsetx>-8</textoffsetx>
+    <textoffsety>0</textoffsety>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="spincontrolex">
+    <left>795</left>
+    <top>240</top>
+    <width>450</width>
+    <height>63</height>
+    <spinwidth>50</spinwidth>
+    <spinheight>33</spinheight>
+    <texturefocus />
+    <texturenofocus />
+    <textureup colordiffuse="text2">bobbi/icons/chevron-up.png</textureup>
+    <texturedown colordiffuse="text2">bobbi/icons/chevron-down.png</texturedown>
+    <textureupdisabled colordiffuse="text_disabled">bobbi/icons/chevron-up.png</textureupdisabled>
+    <texturedowndisabled colordiffuse="text_disabled">bobbi/icons/chevron-down.png</texturedowndisabled>
+    <textureupfocus colordiffuse="focus">bobbi/icons/chevron-up.png</textureupfocus>
+    <texturedownfocus colordiffuse="focus">bobbi/icons/chevron-down.png</texturedownfocus>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <reverse>yes</reverse>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="radiobutton">
+    <left>450</left>
+    <top>300</top>
+    <width>450</width>
+    <height>63</height>
+    <radiowidth>36</radiowidth>
+    <radioheight>36</radioheight>
+    <textureradioonfocus colordiffuse="on_focus">bobbi/radio-on.png</textureradioonfocus>
+    <textureradioonnofocus colordiffuse="accent">bobbi/radio-on.png</textureradioonnofocus>
+    <textureradioofffocus colordiffuse="on_focus">bobbi/radio-off.png</textureradioofffocus>
+    <textureradiooffnofocus colordiffuse="text3">bobbi/radio-off.png</textureradiooffnofocus>
+    <textureradioondisabled colordiffuse="text_disabled">bobbi/radio-on.png</textureradioondisabled>
+    <textureradiooffdisabled colordiffuse="text_disabled">bobbi/radio-off.png</textureradiooffdisabled>
+    <texturefocus colordiffuse="focus" border="14">bobbi/r14.png</texturefocus>
+    <texturenofocus colordiffuse="$VAR[BobbiControlSurface]" border="14">bobbi/r14.png</texturenofocus>
+    <focusedcolor>on_focus</focusedcolor>
+    <font>font11</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="colorbutton">
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>450</width>
+    <height>63</height>
+    <colorwidth>130</colorwidth>
+    <colorheight>76</colorheight>
+    <texturecolormask>color-button-box.png</texturecolormask>
+    <texturecolordisabledmask colordiffuse="40FFFFFF">color-button-box.png</texturecolordisabledmask>
+    <texturefocus />
+    <texturenofocus />
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey2</disabledcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+  <default type="selectbutton">
+    <left>735</left>
+    <top>503</top>
+    <width>450</width>
+    <height>75</height>
+    <label />
+    <font>font12</font>
+    <texturefocus>bobbi/row-focus.png</texturefocus>
+    <texturenofocus colordiffuse="$VAR[BobbiControlSurface]" border="14">bobbi/r14.png</texturenofocus>
+    <texturebg />
+    <textureleft colordiffuse="text2">bobbi/icons/chevron-left.png</textureleft>
+    <textureleftfocus colordiffuse="focus">bobbi/icons/chevron-left.png</textureleftfocus>
+    <textureright colordiffuse="text2">bobbi/icons/chevron-right.png</textureright>
+    <texturerightfocus colordiffuse="focus">bobbi/icons/chevron-right.png</texturerightfocus>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <aligny>center</aligny>
+  </default>
+  <default type="slider">
+    <controloffsetx>75</controloffsetx>
+    <controloffsety>0</controloffsety>
+    <orientation>horizontal</orientation>
+  </default>
+  <default type="sliderex">
+    <height>53</height>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <texturefocus>bobbi/row-focus.png</texturefocus>
+    <texturenofocus colordiffuse="$VAR[BobbiControlSurface]" border="14">bobbi/r14.png</texturenofocus>
+    <sliderwidth>150</sliderwidth>
+    <sliderheight>20</sliderheight>
+    <texturesliderbar colordiffuse="40FFFFFF" border="12,0,12,0">bobbi/slider-track.png</texturesliderbar>
+    <texturesliderbardisabled colordiffuse="text_disabled" border="12,0,12,0">bobbi/slider-track.png</texturesliderbardisabled>
+    <textureslidernib colordiffuse="text2">bobbi/dot.png</textureslidernib>
+    <textureslidernibfocus colordiffuse="accent">bobbi/dot.png</textureslidernibfocus>
+    <font>font12</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+  </default>
+  <default type="mover">
+    <left>90</left>
+    <top>288</top>
+    <texturefocus colordiffuse="focus">bobbi/white.png</texturefocus>
+    <texturenofocus colordiffuse="$VAR[BobbiControlSurface]">bobbi/white.png</texturenofocus>
+  </default>
+  <default type="resize">
+    <left>90</left>
+    <top>288</top>
+    <texturefocus colordiffuse="focus">bobbi/white.png</texturefocus>
+    <texturenofocus colordiffuse="$VAR[BobbiControlSurface]">bobbi/white.png</texturenofocus>
+  </default>
+  <default type="edit">
+    <left>450</left>
+    <top>300</top>
+    <width>450</width>
+    <height>63</height>
+    <texturefocus colordiffuse="focus" border="14">bobbi/r14.png</texturefocus>
+    <texturenofocus colordiffuse="$VAR[BobbiControlSurface]" border="14">bobbi/r14.png</texturenofocus>
+    <focusedcolor>on_focus</focusedcolor>
+    <font>font13</font>
+    <textcolor>white</textcolor>
+    <disabledcolor>grey3</disabledcolor>
+    <invalidcolor>invalid</invalidcolor>
+    <textoffsetx>11</textoffsetx>
+    <aligny>center</aligny>
+    <pulseonselect>false</pulseonselect>
+  </default>
+</includes>

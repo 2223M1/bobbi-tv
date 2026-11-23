@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<keymap>
+  <global>
+    <keyboard>
+      <key id="61584">contextmenu</key>
+    </keyboard>
+  </global>
+  <fullscreenvideo>
+    <keyboard>
+      <key id="61572">activatewindow(1145)</key>
+      <key id="61587">fastforward</key>
+      <key id="61588">rewind</key>
+      <key id="61589">subtitleshiftup</key>
+      <key id="61448">playerdebug</key>
+      <key id="61585">subtitleshiftdown</key>
+      <key id="61584">activatewindow(playerprocessinfo)</key>
+      <key id="61573">activatewindow(1144)</key>
+    </keyboard>
+  </fullscreenvideo></keymap>

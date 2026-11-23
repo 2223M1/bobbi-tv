@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <coordinates><left>836</left><top>880</top></coordinates>
+  <animation effect="fade" start="0" end="100" time="200" delay="350" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>-36</left><top>-36</top><width>320</width><height>144</height>
+      <texture border="64">bobbi/glass/modal-shadow.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>248</width><height>72</height>
+      <texture colordiffuse="F017181E" border="36,0,36,0">bobbi/glass/capsule-72.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>248</width><height>72</height>
+      <texture colordiffuse="glass_rim" border="36,0,36,0">bobbi/glass/capsule-72-rim.png</texture>
+    </control>
+    <control type="image">
+      <left>24</left><top>19</top><width>34</width><height>34</height>
+      <texture colordiffuse="FFFFFFFF">bobbi/spinner.png</texture>
+      <animation effect="rotate" end="-360" center="41,36" time="900" loop="true" condition="!Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+    </control>
+    <control type="label">
+      <left>76</left><top>0</top><width>152</width><height>72</height>
+      <label>加载中…</label>
+      <font>Card26</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+    </control>
+  </controls>
+</window>

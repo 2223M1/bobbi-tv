@@ -1,0 +1,7 @@
+{
+  "platform": "coreelec-amlogic-ng.arm-21",
+  "predecessor_sha256": "dbe974c131f9b8fc82b16eefee80348bac18c44b549245b5f4883c2cc1f8fb25",
+  "patches": [
+    {"file": "ce-am6b-lifecycle.patch", "sha256": "9c5e0bc5e65a46ec745f9f8f6663ac8b3393c451c9c58f2c0969c9fa81e96d4b"}
+  ]
+}

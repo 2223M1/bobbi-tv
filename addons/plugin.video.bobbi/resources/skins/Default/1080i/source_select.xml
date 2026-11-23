@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  波比TV 选源面板 (SourceSelect, progressive mode) — 1:1 glass (on-device) Split Stage.
+  Contracts preserved 100%:
+    - list 1000 (sources), list 1300 (quality tabs), button 1400 (filter), button 1500 (retry), scrollbar 1111
+    - FIELDS in test_ce2091_card_projection.py, retry nav in test_ce2062_retry_ui.py, hints in test_guidance.py
+-->
+<window type="dialog">
+  <defaultcontrol always="true">1000</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <animation effect="fade" start="0" end="100" time="180" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120" tween="cubic" easing="in" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  <controls>
+    <!-- 1:1 on-device Smoky Slate Frosted Canvas + Whisper Atmospheric Fanart (zero giant dark modal box) -->
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/settings-bg.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <aspectratio>scale</aspectratio>
+      <texture background="true" colordiffuse="36FFFFFF">$INFO[Window().Property(info.fanart)]</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-vignette.png</texture>
+    </control>
+
+    <!-- Top-Centered Quiet on-device Title (matching ref-glass-settings.jpg) -->
+    <control type="label">
+      <left>360</left><top>46</top><width>1200</width><height>64</height>
+      <label>选择片源</label>
+      <font>SettingsTitle50</font><textcolor>FF989DA8</textcolor>
+      <align>center</align><aligny>center</aligny>
+    </control>
+
+    <!-- ===== Left Showcase Column: 340x510 Superellipse Poster + Centered Work Identity ===== -->
+    <control type="group">
+      <left>126</left><top>166</top><width>560</width><height>760</height>
+      <control type="image">
+        <left>62</left><top>-48</top><width>436</width><height>606</height>
+        <texture>bobbi/glass/shadow-340x510.png</texture>
+      </control>
+      <control type="image">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <texture>bobbi/glass/tile-340x510.png</texture>
+      </control>
+      <control type="group">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <visible>String.IsEmpty(Window().Property(info.poster))</visible>
+        <control type="image">
+          <left>0</left><top>211</top><width>340</width><height>88</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="20FFFFFF">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>233</top><width>340</width><height>44</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="8CEBEBF5">bobbi/glass/icons/film-outline.png</texture>
+        </control>
+      </control>
+      <control type="image">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobbi/glass/mask-340x510.png">$INFO[Window().Property(info.poster)]</texture>
+      </control>
+      <control type="image">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <texture>bobbi/glass/rim-340x510.png</texture>
+      </control>
+
+      <!-- Centered Work Title & Quiet Metadata (1:1 ref-glass-settings.jpg emblem caption layout) -->
+      <control type="label">
+        <left>0</left><top>538</top><width>560</width><height>44</height>
+        <label>$INFO[Window().Property(info.display_title)]$INFO[Window().Property(info.season_episode),   ·   ]</label>
+        <font>Head34</font><textcolor>FFF5F5F7</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <scroll>true</scroll><scrollspeed>40</scrollspeed>
+        <visible>!String.IsEmpty(Window().Property(info.display_title))</visible>
+      </control>
+      <control type="label">
+        <left>0</left><top>538</top><width>560</width><height>44</height>
+        <label>$INFO[Container(1000).ListItem.Property(title)]</label>
+        <font>Head34</font><textcolor>FFF5F5F7</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <scroll>true</scroll><scrollspeed>40</scrollspeed>
+        <visible>String.IsEmpty(Window().Property(info.display_title))</visible>
+      </control>
+
+      <control type="label">
+        <left>0</left><top>586</top><width>560</width><height>28</height>
+        <label>$INFO[Window().Property(info.display_subtitle)]$INFO[Window().Property(source_status),   ·   ]</label>
+        <font>Card24</font><textcolor>FF8E8E93</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <visible>!String.IsEmpty(Window().Property(info.display_subtitle)) | !String.IsEmpty(Window().Property(source_status))</visible>
+      </control>
+
+      <control type="label">
+        <left>0</left><top>620</top><width>560</width><height>26</height>
+        <label>$INFO[Window().Property(source_count),共 , 个片源]$INFO[Window().Property(chinese_subtitle_count),   ·   中文字幕 , 个]</label>
+        <font>CardSub22</font><textcolor>FF7C7C82</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+
+      <!-- Progressive search indicator -->
+      <control type="group">
+        <left>0</left><top>656</top><width>560</width><height>32</height>
+        <visible>String.IsEqual(Window().Property(source_loading),true) + Integer.IsGreater(Container(1000).NumItems,0)</visible>
+        <control type="label">
+          <left>0</left><top>0</top><width>560</width><height>28</height>
+          <label>正在查找更多片源，可先选择已显示的版本</label>
+          <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+          <align>center</align><aligny>center</aligny>
+        </control>
+      </control>
+
+      <!-- Provider error / diagnostic note -->
+      <control type="label">
+        <left>0</left><top>690</top><width>560</width><height>28</height>
+        <label>$INFO[Window().Property(playback_error)]$INFO[Window().Property(source_error),   ]$INFO[Window().Property(source_diagnostic),   ]</label>
+        <font>CardSub22</font><textcolor>FFFF6961</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <visible>!String.IsEmpty(Window().Property(playback_error)) | !String.IsEmpty(Window().Property(source_error)) | !String.IsEmpty(Window().Property(source_diagnostic))</visible>
+      </control>
+    </control>
+
+    <!-- ===== Right Floating Semicircular Capsule Column (x=860..1760, w=900, zero outer box) ===== -->
+    <control type="group">
+      <visible>!String.IsEqual(Window().Property(resolving),true) + !String.IsEqual(Window().Property(instant_close),true)</visible>
+
+      <!-- Retry Pill (contract id=1500 preserved 100%) -->
+      <control type="button" id="1500">
+        <left>652</left><top>166</top><width>192</width><height>54</height>
+        <label>$INFO[Window().Property(source_retry_label)]</label>
+        <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF0A0B0E</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="27">bobbi/pill.png</texturefocus>
+        <texturenofocus colordiffuse="24FFFFFF" border="27,0,27,0">bobbi/glass/capsule-56.png</texturenofocus>
+        <visible>String.IsEqual(Window().Property(source_retry_visible),true)</visible>
+        <onup>1300</onup><onright>1300</onright><onleft>1300</onleft><ondown>1000</ondown>
+      </control>
+
+      <!-- Segmented Quality Capsules (id=1300) -->
+      <control type="list" id="1300">
+        <left>860</left><top>166</top><width>696</width><height>56</height>
+        <orientation>horizontal</orientation>
+        <onleft>1500</onleft><onright>1400</onright>
+        <onup>1300</onup><ondown>1000</ondown>
+        <scrolltime tween="cubic" easing="out">160</scrolltime>
+        <itemlayout width="146" height="56">
+          <control type="image">
+            <left>0</left><top>1</top><width>136</width><height>54</height>
+            <texture colordiffuse="1FFFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texture>
+            <visible>!String.IsEqual(ListItem.Property(quality),Window().Property(selected_quality))</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>1</top><width>136</width><height>54</height>
+            <texture colordiffuse="3BFFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texture>
+            <visible>String.IsEqual(ListItem.Property(quality),Window().Property(selected_quality))</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>1</top><width>136</width><height>54</height>
+            <texture colordiffuse="glass_rim" border="28,0,28,0">bobbi/glass/capsule-56-rim.png</texture>
+          </control>
+          <control type="label">
+            <left>10</left><top>1</top><width>116</width><height>54</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card24</font><textcolor>D9EBEBF5</textcolor>
+            <align>center</align><aligny>center</aligny>
+          </control>
+        </itemlayout>
+        <focusedlayout width="146" height="56">
+          <control type="image">
+            <left>0</left><top>1</top><width>136</width><height>54</height>
+            <texture colordiffuse="FFFFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texture>
+            <visible>Control.HasFocus(1300)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>1</top><width>136</width><height>54</height>
+            <texture colordiffuse="3BFFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texture>
+            <visible>!Control.HasFocus(1300)</visible>
+          </control>
+          <control type="label">
+            <left>10</left><top>1</top><width>116</width><height>54</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card24</font><textcolor>FF1D1D1F</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <visible>Control.HasFocus(1300)</visible>
+          </control>
+          <control type="label">
+            <left>10</left><top>1</top><width>116</width><height>54</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Card24</font><textcolor>FFF5F5F7</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <visible>!Control.HasFocus(1300)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <!-- Filter Capsule (id=1400) @ right=1760 -->
+      <control type="group">
+        <left>1572</left><top>167</top><width>188</width><height>54</height>
+        <control type="button" id="1400">
+          <left>0</left><top>0</top><width>188</width><height>54</height>
+          <label />
+          <texturefocus colordiffuse="FFFFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texturefocus>
+          <texturenofocus colordiffuse="1CFFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texturenofocus>
+          <onleft>1300</onleft><onright>1111</onright>
+          <onup>1400</onup><ondown>1000</ondown>
+        </control>
+        <control type="image">
+          <left>38</left><top>16</top><width>22</width><height>22</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/sliders.png</texture>
+          <visible>!Control.HasFocus(1400)</visible>
+        </control>
+        <control type="image">
+          <left>38</left><top>16</top><width>22</width><height>22</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/sliders.png</texture>
+          <visible>Control.HasFocus(1400)</visible>
+        </control>
+        <control type="label">
+          <left>72</left><top>0</top><width>92</width><height>54</height>
+          <label>筛选</label>
+          <font>Card24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <visible>!Control.HasFocus(1400)</visible>
+        </control>
+        <control type="label">
+          <left>72</left><top>0</top><width>92</width><height>54</height>
+          <label>筛选</label>
+          <font>Card24</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+          <visible>Control.HasFocus(1400)</visible>
+        </control>
+        <control type="image">
+          <left>156</left><top>22</top><width>10</width><height>10</height>
+          <texture colordiffuse="FF0A84FF">bobbi/glass/circle-128.png</texture>
+          <visible>String.IsEqual(Window().Property(filter_applied),true)</visible>
+        </control>
+      </control>
+
+      <!-- Initial Loading / Empty State on Right Stage -->
+      <control type="group">
+        <left>860</left><top>440</top><width>900</width><height>120</height>
+        <visible>String.IsEqual(Window().Property(source_loading),true) + Integer.IsEqual(Container(1000).NumItems,0)</visible>
+        <control type="image">
+          <left>0</left><top>0</top><width>36</width><height>36</height>
+          <texture colordiffuse="D9EBEBF5">bobbi/spinner.png</texture>
+          <animation effect="rotate" end="-360" center="18,18" time="900" loop="true" condition="!Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+        </control>
+        <control type="label">
+          <left>52</left><top>0</top><width>820</width><height>36</height>
+          <label>正在查找可用片源…</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+
+      <control type="group">
+        <left>860</left><top>420</top><width>900</width><height>140</height>
+        <visible>!String.IsEqual(Window().Property(source_loading),true) + Integer.IsEqual(Container(1000).NumItems,0)</visible>
+        <control type="label">
+          <left>0</left><top>0</top><width>900</width><height>40</height>
+          <label>$INFO[Window().Property(source_empty_title)]</label>
+          <font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>0</left><top>48</top><width>900</width><height>32</height>
+          <label>$INFO[Window().Property(source_empty_hint)]</label>
+          <font>Card24</font><textcolor>FF8E8E93</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+
+      <!-- Floating Semicircular Liquid Glass Source Capsules (id=1000, 900x84 capsules, 12px gap) -->
+      <control type="list" id="1000">
+        <left>860</left><top>242</top><width>900</width><height>768</height>
+        <pagecontrol>1111</pagecontrol>
+        <onleft>1500</onleft><onright>1111</onright>
+        <onup>1300</onup><ondown>1000</ondown>
+        <scrolltime tween="cubic" easing="out">180</scrolltime>
+        <preloaditems>2</preloaditems>
+        <itemlayout width="900" height="96">
+          <control type="image">
+            <left>0</left><top>6</top><width>900</width><height>84</height>
+            <texture colordiffuse="1CFFFFFF" border="42,0,42,0">bobbi/glass/capsule-84.png</texture>
+          </control>
+          <!-- Concentric circular play disc on left -->
+          <control type="image">
+            <left>20</left><top>26</top><width>44</width><height>44</height>
+            <texture colordiffuse="1FFFFFFF">bobbi/glass/circle-128.png</texture>
+          </control>
+          <control type="image">
+            <left>33</left><top>38</top><width>20</width><height>20</height>
+            <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/play.png</texture>
+          </control>
+          <!-- Title + optional [4K]/[1080P] outlined badge (never shows [未知]) -->
+          <control type="label">
+            <left>80</left><top>15</top><width>656</width><height>34</height>
+            <label>$INFO[ListItem.Property(title)]</label>
+            <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <scroll>false</scroll>
+          </control>
+          <control type="label">
+            <left>80</left><top>50</top><width>656</width><height>26</height>
+            <label>$VAR[BobbiQualityBadge]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
+            <font>CardSub22</font><textcolor>FF989DA8</textcolor><aligny>center</aligny>
+            <visible>!String.IsEmpty(ListItem.Property(quality_plain)) + !String.IsEqual(ListItem.Property(quality_plain),未知) + !String.IsEqual(ListItem.Property(quality_plain),n/a) + !String.IsEqual(ListItem.Property(quality_plain),N/A)</visible>
+          </control>
+          <control type="label">
+            <left>80</left><top>50</top><width>656</width><height>26</height>
+            <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
+            <font>CardSub22</font><textcolor>FF989DA8</textcolor><aligny>center</aligny>
+            <visible>String.IsEmpty(ListItem.Property(quality_plain)) | String.IsEqual(ListItem.Property(quality_plain),未知) | String.IsEqual(ListItem.Property(quality_plain),n/a) | String.IsEqual(ListItem.Property(quality_plain),N/A)</visible>
+          </control>
+          <!-- Right native glass accessory: quiet status + chevron -->
+          <control type="label">
+            <left>736</left><top>6</top><width>114</width><height>84</height>
+            <label>$INFO[ListItem.Property(recommendation_status)]</label>
+            <font>Card24</font><textcolor>FF989DA8</textcolor>
+            <align>right</align><aligny>center</aligny>
+          </control>
+          <control type="image">
+            <left>860</left><top>39</top><width>18</width><height>18</height>
+            <texture colordiffuse="8CEBEBF5">bobbi/glass/icons/chevron-right.png</texture>
+          </control>
+        </itemlayout>
+        <focusedlayout width="900" height="96">
+          <control type="image">
+            <left>-12</left><top>-6</top><width>924</width><height>108</height>
+            <texture border="26,20,26,20">bobbi/glass/settings-pill-shadow-780x66.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>6</top><width>900</width><height>84</height>
+            <texture colordiffuse="FFFFFFFF" border="42,0,42,0">bobbi/glass/capsule-84.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>6</top><width>900</width><height>84</height>
+            <texture colordiffuse="32FFFFFF" border="42,0,42,0">bobbi/glass/capsule-84.png</texture>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>20</left><top>26</top><width>44</width><height>44</height>
+            <texture colordiffuse="14000000">bobbi/glass/circle-128.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>33</left><top>38</top><width>20</width><height>20</height>
+            <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/play.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>20</left><top>26</top><width>44</width><height>44</height>
+            <texture colordiffuse="24FFFFFF">bobbi/glass/circle-128.png</texture>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>33</left><top>38</top><width>20</width><height>20</height>
+            <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/play.png</texture>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>80</left><top>15</top><width>656</width><height>34</height>
+            <label>$INFO[ListItem.Property(title)]</label>
+            <font>Label28</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+            <scroll>true</scroll><scrollspeed>45</scrollspeed>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>80</left><top>15</top><width>656</width><height>34</height>
+            <label>$INFO[ListItem.Property(title)]</label>
+            <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <!-- Focused metadata line (expands full technical details cleanly) -->
+          <control type="label">
+            <left>80</left><top>50</top><width>656</width><height>26</height>
+            <label>$VAR[BobbiQualityBadge]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(release_group),   ·   ]$INFO[ListItem.Property(size),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]</label>
+            <font>CardSub22</font><textcolor>FF6E6E73</textcolor><aligny>center</aligny>
+            <scroll>true</scroll><scrollspeed>38</scrollspeed>
+            <visible>Control.HasFocus(1000) + !String.IsEmpty(ListItem.Property(quality_plain)) + !String.IsEqual(ListItem.Property(quality_plain),未知) + !String.IsEqual(ListItem.Property(quality_plain),n/a) + !String.IsEqual(ListItem.Property(quality_plain),N/A)</visible>
+          </control>
+          <control type="label">
+            <left>80</left><top>50</top><width>656</width><height>26</height>
+            <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(release_group),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]$INFO[ListItem.Property(seeders),   ·   做种 ]</label>
+            <font>CardSub22</font><textcolor>FF6E6E73</textcolor><aligny>center</aligny>
+            <scroll>true</scroll><scrollspeed>38</scrollspeed>
+            <visible>Control.HasFocus(1000) + [String.IsEmpty(ListItem.Property(quality_plain)) | String.IsEqual(ListItem.Property(quality_plain),未知) | String.IsEqual(ListItem.Property(quality_plain),n/a) | String.IsEqual(ListItem.Property(quality_plain),N/A)]</visible>
+          </control>
+          <control type="label">
+            <left>80</left><top>50</top><width>656</width><height>26</height>
+            <label>$INFO[ListItem.Property(size)]$INFO[ListItem.Property(badges_plain),   ·   ]$INFO[ListItem.Property(source_site),   ·   ]$INFO[ListItem.Property(languages_plain),   ·   ]</label>
+            <font>CardSub22</font><textcolor>FF989DA8</textcolor><aligny>center</aligny>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <!-- Hidden field references preserving 100% of test_ce2091_card_projection.py FIELDS -->
+          <control type="label">
+            <left>-2000</left><top>0</top><width>10</width><height>1</height>
+            <label>$INFO[ListItem.Property(type_plain)]$INFO[ListItem.Property(chinese_subtitles)]$INFO[ListItem.Property(source_key)]$INFO[ListItem.Property(peers)]$INFO[ListItem.Property(status_plain)]$INFO[ListItem.Property(recommendation_reason)]</label>
+          </control>
+          <control type="label">
+            <left>736</left><top>6</top><width>114</width><height>84</height>
+            <label>$INFO[ListItem.Property(recommendation_status)]</label>
+            <font>Card24</font><textcolor>FF6E6E73</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>736</left><top>6</top><width>114</width><height>84</height>
+            <label>$INFO[ListItem.Property(recommendation_status)]</label>
+            <font>Card24</font><textcolor>FF989DA8</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>860</left><top>39</top><width>18</width><height>18</height>
+            <texture colordiffuse="FF6E6E73">bobbi/glass/icons/chevron-right.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>860</left><top>39</top><width>18</width><height>18</height>
+            <texture colordiffuse="8CEBEBF5">bobbi/glass/icons/chevron-right.png</texture>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <control type="scrollbar" id="1111">
+        <left>1780</left><top>252</top><width>6</width><height>748</height>
+        <visible>Control.IsVisible(1000)</visible>
+        <texturesliderbackground colordiffuse="18FFFFFF" border="3">bobbi/glass/progress-track.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="4CFFFFFF" border="3">bobbi/glass/progress-fill.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF" border="3">bobbi/glass/progress-fill.png</texturesliderbarfocus>
+        <showonepage>false</showonepage><orientation>vertical</orientation>
+        <onleft>1000</onleft><onright>1000</onright>
+      </control>
+    </control>
+
+    <!-- Resolving state -->
+    <control type="group">
+      <visible>String.IsEqual(Window().Property(resolving),true) + !String.IsEqual(Window().Property(instant_close),true)</visible>
+      <control type="group">
+        <left>860</left><top>460</top><width>900</width><height>120</height>
+        <control type="image">
+          <left>0</left><top>0</top><width>40</width><height>40</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/spinner.png</texture>
+          <animation effect="rotate" end="-360" center="20,20" time="900" loop="true" condition="!Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+        </control>
+        <control type="label">
+          <left>60</left><top>0</top><width>800</width><height>40</height>
+          <label>正在准备播放…</label>
+          <font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

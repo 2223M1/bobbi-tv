@@ -1,0 +1,158 @@
+#include <atomic>
+#include <chrono>
+#include <functional>
+#include <future>
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <thread>
+#include <vector>
+using namespace std::chrono_literals;
+void report(const char* name, bool pass) { std::cout << name << ' ' << pass << '\n'; }
+
+// Instrument a real mutex. The old code is exercised sequentially; the fixed
+// close-barrier witness waits on actual contention, never on a timing guess.
+struct ProbeMutex {
+  std::mutex real;
+  static inline thread_local unsigned held=0;
+  static inline std::function<void()> contended;
+  void lock() {
+    if (!real.try_lock()) { if(contended) contended(); real.lock(); }
+    ++held;
+  }
+  void unlock() { --held; real.unlock(); }
+};
+struct CRect {};
+struct CDVDVideoCodecAmlogic {};
+struct CVideoBuffer {
+  explicit CVideoBuffer(int) {}
+  int refs=1;
+  void Acquire() { ++refs; }
+  void Release() { --refs; }
+};
+struct CAMLCodec {
+  int shown=0,dropped=0,rects=0;
+  bool owned=true;
+  std::function<void()> atDisplay;
+  void ReleaseFrame(unsigned, bool drop=false) {
+    if(drop) { ++dropped; return; }
+    owned &= (ProbeMutex::held==1);
+    ++shown;
+    if(atDisplay) atDisplay();
+  }
+  void SetVideoRect(const CRect&,const CRect&) { ++rects; owned &= (ProbeMutex::held==1); }
+};
+/*@buf@*/
+/*@frame@*/
+using CCriticalSection=std::mutex;
+struct CAMLVideoBufferPool {
+  std::mutex m_criticalSection;
+  std::vector<CAMLVideoBuffer*> m_videoBuffers;
+  void ReleaseAllBuffers();
+};
+/*@pool@*/
+struct CRendererAML {
+  struct BUFFER { CVideoBuffer* videoBuffer=nullptr; } m_buffers[1];
+  uint64_t m_prevVPts=0;
+  std::atomic<int> m_asyncRenderIndex{-1};
+  CVideoBuffer* m_asyncPinnedBuffer=nullptr;
+  /*@declaration@*/
+  /*@async_commit@*/
+  void BeginAsyncVideoLayerRender(int);
+  void EndAsyncVideoLayerRender(int);
+  void ReleaseBuffer(int);
+};
+/*@commit@*/
+/*@render@*/
+void testFrames() {
+  auto ca=std::make_shared<CAMLCodec>(), cb=std::make_shared<CAMLCodec>();
+  CAMLVideoBuffer a(1),b(2);
+  a.Set(nullptr,ca,1,1,1); b.Set(nullptr,cb,2,1,2);
+  CRendererAML r;
+  r.m_buffers[0].videoBuffer=&a; r.BeginAsyncVideoLayerRender(0);
+  r.m_buffers[0].videoBuffer=&b; // The async owner still holds A.
+  r.RenderVideoLayerCommit(0,{},{}); r.EndAsyncVideoLayerRender(0);
+  report("pinned_frame",ca->shown==1 && cb->shown==0 && a.refs==1);
+  report("ownership",ca->owned && cb->owned);
+  CAMLVideoBufferPool pool; pool.m_videoBuffers={&a,&b};
+  pool.ReleaseAllBuffers(); pool.ReleaseAllBuffers();
+  report("discard",ca->shown+cb->shown==1 && ca->dropped+cb->dropped==1 && ca->rects+cb->rects==1);
+  auto dup=std::make_shared<CAMLCodec>(); a.Set(nullptr,dup,r.m_prevVPts,1,3);
+  r.m_buffers[0].videoBuffer=&a; r.BeginAsyncVideoLayerRender(0);
+  r.RenderVideoLayerCommit(0,{},{}); r.EndAsyncVideoLayerRender(0);
+  r.ReleaseBuffer(0); pool.ReleaseAllBuffers();
+  report("duplicate_pts",dup->shown==0 && dup->dropped==1);
+#if CANDIDATE
+  CAMLVideoBuffer c(4); auto cc=std::make_shared<CAMLCodec>(); c.Set(nullptr,cc,99,1,4);
+  pool.m_videoBuffers={&c}; r.m_buffers[0].videoBuffer=&c;
+  std::promise<void> entered, blocked, resume;
+  auto wait=resume.get_future();
+  cc->atDisplay=[&]{entered.set_value();wait.wait();};
+  ProbeMutex::contended=[&]{blocked.set_value();};
+  r.BeginAsyncVideoLayerRender(0);
+  std::thread worker([&]{r.RenderVideoLayerCommit(0,{},{});});
+  entered.get_future().wait();
+  std::thread drain([&]{pool.ReleaseAllBuffers();});
+  bool met=blocked.get_future().wait_for(2s)==std::future_status::ready;
+  resume.set_value(); worker.join(); drain.join(); r.EndAsyncVideoLayerRender(0);
+  ProbeMutex::contended={};
+  report("close_barrier",met && cc->owned && cc->shown==1 && cc->rects==1 && !cc->dropped);
+#else
+  // Observe the old render's absence of a frame barrier without racing old pointers.
+  report("close_barrier",ca->owned && cb->owned);
+#endif
+}
+
+struct TestClock {
+  using time_point=std::chrono::steady_clock::time_point;
+  static inline time_point time;
+  static time_point now() { return time; }
+};
+constexpr auto DELAY=500ms;
+struct ITimerCallback { virtual ~ITimerCallback()=default; virtual void OnTimeout()=0; };
+struct CTimer {
+  ITimerCallback* cb; static inline CTimer* pending=nullptr;
+  TestClock::time_point due; explicit CTimer(ITimerCallback* c):cb(c){}
+  ~CTimer() { if(pending==this) pending=nullptr; }
+  bool IsRunning() { return pending==this; }
+  void Start(std::chrono::milliseconds d) { due=TestClock::now()+d; pending=this; }
+  void Restart() { Start(DELAY); }
+  static void tick() {
+    if(pending && pending->due<=TestClock::now()) {
+      auto timer=pending; pending=nullptr; timer->cb->OnTimeout();
+    }
+  }
+};
+struct CAddon {
+  int saved=0; std::function<void()> observer;
+  void SaveSettings() { ++saved; if(observer) observer(); }
+};
+/*@handler@*/
+/*@handlers@*/
+struct Skin : CAddon {
+  std::unique_ptr<CSkinSettingUpdateHandler> m_settingsUpdateHandler=std::make_unique<CSkinSettingUpdateHandler>(*this);
+  void Start() { /*@start@*/ }
+  void Unload() { /*@unload@*/ }
+  void Process() { /*@process@*/ }
+  void change() { m_settingsUpdateHandler->TriggerSave(); }
+  void advance(int ms) { TestClock::time+=std::chrono::milliseconds(ms); CTimer::tick(); Process(); }
+};
+void unload(Skin* g_SkinInfo,bool& m_saveSkinOnUnloading) { /*@policy@*/ }
+void testSkin() {
+  Skin s; s.Start(); s.change(); s.advance(450); s.change(); s.advance(499);
+  bool delayed=s.saved==0; s.advance(1); s.advance(800);
+  report("debounce",delayed && s.saved==1);
+  bool save=true; s.change(); unload(&s,save);
+  int atUnload=s.saved; s.advance(600);
+  report("unload_save",atUnload==2 && s.saved==atUnload);
+  s.Start(); s.change(); save=false; int before=s.saved;
+  unload(&s,save); s.change(); s.advance(600);
+  report("profile_switch",save && s.saved==before);
+  before=s.saved; s.Start(); s.change(); s.advance(500);
+  report("reactivate",s.saved==before+1);
+  before=s.saved; s.observer=[&]{s.change();}; s.change(); s.advance(500);
+  s.observer={}; s.advance(500);
+  report("reentrant",s.saved==before+2);
+}
+int main() { testFrames(); testSkin(); }

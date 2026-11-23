@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="false">20</defaultcontrol>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/settings-bg.png</texture>
+    </control>
+
+    <!-- Top-Centered on-device Settings Title (matching sref_5_0.jpg) -->
+    <control type="label">
+      <left>360</left><top>48</top><width>1200</width><height>64</height>
+      <label>文件管理</label>
+      <font>SettingsTitle50</font><textcolor>FF7C8088</textcolor>
+      <align>center</align><aligny>center</aligny>
+    </control>
+
+    <control type="label">
+      <left>1680</left><top>56</top><width>160</width><height>48</height>
+      <label>$VAR[BobbiTimeAMPM]</label>
+      <font>NavClock20</font><textcolor>9CEBEBF5</textcolor><align>right</align><aligny>center</aligny>
+    </control>
+
+    <!-- Left continuous-corner Liquid Glass Pane @ x=80..940 (860x844) -->
+    <control type="image">
+      <left>80</left><top>148</top><width>860</width><height>844</height>
+      <texture colordiffuse="1EFFFFFF" border="46">bobbi/glass/modal-glass.png</texture>
+    </control>
+    <control type="image">
+      <left>80</left><top>148</top><width>860</width><height>844</height>
+      <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+    </control>
+    <control type="label" id="101">
+      <left>128</left><top>174</top><width>768</width><height>42</height>
+      <label />
+      <haspath>true</haspath>
+      <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>128</left><top>218</top><width>768</width><height>28</height>
+      <font>CardSub22</font><textcolor>FF80848D</textcolor>
+      <label>$INFO[Container(20).NumItems,, 项]   ·   $INFO[Container(20).CurrentPage] / $INFO[Container(20).NumPages] 页</label>
+    </control>
+    <control type="list" id="20">
+      <left>128</left><top>260</top><width>766</width><height>696</height>
+      <onleft>60</onleft>
+      <onright>21</onright>
+      <onup>20</onup>
+      <ondown>20</ondown>
+      <include>ListMotion</include>
+      <pagecontrol>60</pagecontrol>
+      <itemlayout width="766" height="66">
+        <include content="BobbiFileManagerRow"><param name="list">20</param></include>
+      </itemlayout>
+      <focusedlayout width="766" height="66">
+        <include content="BobbiFileManagerRow"><param name="list">20</param><param name="focused">true</param></include>
+      </focusedlayout>
+    </control>
+    <control type="scrollbar" id="60">
+      <left>104</left><top>264</top><width>4</width><height>688</height>
+      <orientation>vertical</orientation><showonepage>false</showonepage>
+      <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+      <onleft>20</onleft><onright>20</onright>
+    </control>
+
+    <!-- Right continuous-corner Liquid Glass Pane @ x=980..1840 (860x844) -->
+    <control type="image">
+      <left>980</left><top>148</top><width>860</width><height>844</height>
+      <texture colordiffuse="1EFFFFFF" border="46">bobbi/glass/modal-glass.png</texture>
+    </control>
+    <control type="image">
+      <left>980</left><top>148</top><width>860</width><height>844</height>
+      <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+    </control>
+    <control type="label" id="102">
+      <left>1024</left><top>174</top><width>768</width><height>42</height>
+      <label />
+      <haspath>true</haspath>
+      <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>1024</left><top>218</top><width>768</width><height>28</height>
+      <font>CardSub22</font><textcolor>FF80848D</textcolor>
+      <label>$INFO[Container(21).NumItems,, 项]   ·   $INFO[Container(21).CurrentPage] / $INFO[Container(21).NumPages] 页</label>
+    </control>
+    <control type="list" id="21">
+      <left>1024</left><top>260</top><width>766</width><height>696</height>
+      <onleft>20</onleft>
+      <onright>61</onright>
+      <onup>21</onup>
+      <ondown>21</ondown>
+      <include>ListMotion</include>
+      <pagecontrol>61</pagecontrol>
+      <itemlayout width="766" height="66">
+        <include content="BobbiFileManagerRow"><param name="list">21</param></include>
+      </itemlayout>
+      <focusedlayout width="766" height="66">
+        <include content="BobbiFileManagerRow"><param name="list">21</param><param name="focused">true</param></include>
+      </focusedlayout>
+    </control>
+    <control type="scrollbar" id="61">
+      <left>1808</left><top>264</top><width>4</width><height>688</height>
+      <orientation>vertical</orientation><showonepage>false</showonepage>
+      <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+      <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+      <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+      <onleft>21</onleft><onright>21</onright>
+    </control>
+  </controls>
+</window>

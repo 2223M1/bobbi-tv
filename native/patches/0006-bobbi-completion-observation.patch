@@ -1,0 +1,207 @@
+diff --git a/xbmc/cores/VideoPlayer/BobiCompletion.h b/xbmc/cores/VideoPlayer/BobiCompletion.h
+new file mode 100644
+index 0000000..828a01f
+--- /dev/null
++++ b/xbmc/cores/VideoPlayer/BobiCompletion.h
+@@ -0,0 +1,76 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#pragma once
++
++#include "utils/Variant.h"
++
++#include <chrono>
++#include <cmath>
++#include <cstdint>
++
++// A presentation observation, not EOF or control authority. Never advance a
++// media position using elapsed wall time, speed, or the free-running DVD clock.
++class CBobiCompletion
++{
++public:
++  using Clock = std::chrono::steady_clock;
++
++  void Reset()
++  {
++    m_valid = false;
++    m_position = 0;
++    m_duration = 0;
++    m_changed = {};
++    m_waitForChange = false;
++  }
++
++  void Invalidate(double previousPositionMs)
++  {
++    Reset();
++    m_waitForChange = std::isfinite(previousPositionMs) && previousPositionMs >= 0;
++    m_previous = previousPositionMs;
++  }
++
++  void Observe(double positionMs, double durationMs, bool supported,
++               Clock::time_point now = Clock::now())
++  {
++    constexpr double maxExactInteger = 9007199254740991.0;
++    if (!supported || !std::isfinite(positionMs) || !std::isfinite(durationMs) ||
++        positionMs < 0 || durationMs <= 0 || positionMs > durationMs + 3000 ||
++        durationMs > maxExactInteger || positionMs > maxExactInteger)
++    {
++      m_valid = false;
++      return;
++    }
++    const auto position = static_cast<int64_t>(std::llround(positionMs));
++    const auto duration = static_cast<int64_t>(std::llround(durationMs));
++    if (m_waitForChange && positionMs == m_previous)
++      return; // a stale on-screen frame from before a seek/replaced instance
++    m_waitForChange = false;
++    if (m_changed == Clock::time_point{} || position != m_position || duration != m_duration)
++      m_changed = now;
++    m_valid = true;
++    m_position = position;
++    m_duration = duration;
++  }
++
++  CVariant Snapshot(Clock::time_point now = Clock::now()) const
++  {
++    CVariant result(CVariant::VariantTypeObject);
++    const auto age = std::chrono::duration_cast<std::chrono::microseconds>(now - m_changed).count();
++    const bool valid = m_valid && age >= 0;
++    result["schema"] = 1;
++    result["valid"] = valid;
++    result["position_ms"] = valid ? m_position : int64_t{0};
++    result["duration_ms"] = valid ? m_duration : int64_t{0};
++    result["age_us"] = valid ? static_cast<int64_t>(age) : int64_t{0};
++    return result;
++  }
++
++private:
++  bool m_valid{false};
++  bool m_waitForChange{false};
++  double m_previous{0};
++  int64_t m_position{0};
++  int64_t m_duration{0};
++  Clock::time_point m_changed{};
++};
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.cpp b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+index bc5ffee..30bbce9 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+@@ -795,6 +795,7 @@ CVariant CVideoPlayer::GetBobiSubtitles() const
+ 
+ void CVideoPlayer::BeginBobiInstance(const CFileItem& file)
+ {
++  InvalidateBobiCompletion();
+   using KODI::UTILITY::CDigest;
+   std::unique_lock<CCriticalSection> lock(m_bobiLock);
+   m_bobiState = CVariant(CVariant::VariantTypeObject);
+@@ -875,6 +876,9 @@ CVariant CVideoPlayer::BobiEvent(const std::string& phase, const std::string& re
+   }
+   if (phase == "TERMINAL")
+   {
++    // Only the existing immutable terminal may carry completion evidence.
++    m_bobiState["completion_observation"] = reason == "NATURAL_EOF"
++        ? m_bobiCompletion.Snapshot() : CBobiCompletion().Snapshot();
+     CBobiHandoff::Get().Terminal(m_bobiState["native_instance"].asString(), reason);
+     if (CBobiHandoff::Get().Restoring(m_bobiState["native_instance"].asString()))
+       CBobiHandoff::Get().Invalidate(m_bobiState["native_instance"].asString(), "OPEN_TERMINATED");
+@@ -3001,11 +3005,29 @@ void CVideoPlayer::OnExit()
+   CFileItem fileItem(m_item);
+   UpdateFileItemStreamDetails(fileItem);
+ 
++  // Refresh domain metadata while stream identities and inputs still exist.
++  // time/timeMax alone are insufficient: UpdatePlayState can synthesize an
++  // unknown duration from the current clock, or describe a live/menu timeline.
++  UpdatePlayState(0);
++  const bool completionVideo = m_CurrentVideo.id >= 0;
++  const bool completionDomain = !m_bAbortRequest && !m_error && !m_bCloseRequest &&
++      m_pInputStream && m_pDemuxer && !m_pInputStream->IsRealtime() &&
++      !m_pInputStream->GetITimes() && !m_pInputStream->GetIDisplayTime() &&
++      !std::dynamic_pointer_cast<CDVDInputStream::IMenus>(m_pInputStream) &&
++      !m_Edl.HasCuts() && m_offset_pts == 0 && m_State.startTime == 0 && m_State.timeMin == 0 &&
++      m_pDemuxer->GetStreamLength() > 0 && m_playSpeed > DVD_PLAYSPEED_PAUSE;
++  const double completionDuration = m_pDemuxer ? m_pDemuxer->GetStreamLength() : 0;
++
+   CloseStream(m_CurrentAudio, !m_bAbortRequest);
+   CloseStream(m_CurrentVideo, !m_bAbortRequest);
+   CloseStream(m_CurrentTeletext,!m_bAbortRequest);
+   CloseStream(m_CurrentRadioRDS, !m_bAbortRequest);
+   CloseStream(m_CurrentAudioID3, !m_bAbortRequest);
++  // Video CloseStream joins the decode thread, but the renderer and its actual
++  // presented PTS survive until Flush below. Do not copy the 200 ms m_State
++  // cache or use GetClock here; either can advance without a rendered frame.
++  ObserveBobiCompletion(completionVideo, completionDomain && !m_bAbortRequest &&
++                        !m_error && !m_bCloseRequest, completionDuration);
+   // the generalization principle was abused for subtitle player. actually it is not a stream player like
+   // video and audio. subtitle player does not run on its own thread, hence waitForBuffers makes
+   // no sense here. waitForBuffers is abused to clear overlay container (false clears container)
+@@ -4733,6 +4755,7 @@ bool CVideoPlayer::CloseStream(CCurrentStream& current, bool bWaitForBuffers)
+ 
+ void CVideoPlayer::FlushBuffers(double pts, bool accurate, bool sync)
+ {
++  InvalidateBobiCompletion();
+   CLog::Log(LOGDEBUG, "CVideoPlayer::FlushBuffers - flushing buffers");
+ 
+   double startpts;
+@@ -5758,6 +5781,13 @@ void CVideoPlayer::UpdatePlayState(double timeout)
+ 
+   state.timestamp = m_clock.GetAbsoluteClock();
+ 
++  ObserveBobiCompletion(m_CurrentVideo.id >= 0,
++      m_pInputStream && m_pDemuxer && !m_pInputStream->IsRealtime() &&
++      !m_pInputStream->GetITimes() && !m_pInputStream->GetIDisplayTime() &&
++      !std::dynamic_pointer_cast<CDVDInputStream::IMenus>(m_pInputStream) &&
++      !m_Edl.HasCuts() && m_offset_pts == 0 && state.startTime == 0 && state.timeMin == 0,
++      m_pDemuxer ? m_pDemuxer->GetStreamLength() : 0);
++
+   if (state.timeMax <= 0)
+   {
+     state.timeMax = state.time;
+@@ -5780,6 +5810,28 @@ void CVideoPlayer::UpdatePlayState(double timeout)
+   m_State = state;
+ }
+ 
++void CVideoPlayer::ObserveBobiCompletion(bool video, bool domainValid, double durationMs)
++{
++  double presented = DVD_NOPTS_VALUE;
++  int late = 0, queued = 0, discard = 0;
++  // Renderer PTS is a media timestamp, not extrapolated by GetClock(). Stalled
++  // unchanged frames retain their original observation age in the tracker.
++  const bool available = video && domainValid &&
++      m_renderManager.GetStats(late, presented, queued, discard) &&
++      presented != DVD_NOPTS_VALUE;
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  m_bobiCompletion.Observe(presented * 1000 / DVD_TIME_BASE, durationMs, available);
++}
++
++void CVideoPlayer::InvalidateBobiCompletion()
++{
++  double presented = DVD_NOPTS_VALUE;
++  int late = 0, queued = 0, discard = 0;
++  m_renderManager.GetStats(late, presented, queued, discard);
++  std::unique_lock<CCriticalSection> lock(m_bobiLock);
++  m_bobiCompletion.Invalidate(presented * 1000 / DVD_TIME_BASE);
++}
++
+ int64_t CVideoPlayer::GetUpdatedTime()
+ {
+   UpdatePlayState(0);
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.h b/xbmc/cores/VideoPlayer/VideoPlayer.h
+index 0f20bc3..4cedeb9 100644
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.h
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.h
+@@ -10,6 +10,7 @@
+ 
+ #include "DVDClock.h"
+ #include "BobiOriginalAudio.h"
++#include "BobiCompletion.h"
+ #include "DVDMessageQueue.h"
+ #include "Edl.h"
+ #include "FileItem.h"
+@@ -267,6 +268,9 @@ private:
+   mutable CCriticalSection m_bobiLock;
+   CVariant m_bobiState;
+   CBobiOriginalAudio m_bobiOriginalAudio;
++  CBobiCompletion m_bobiCompletion;
++  void ObserveBobiCompletion(bool video, bool domainValid, double durationMs);
++  void InvalidateBobiCompletion();
+ public:
+   bool CloseFile(bool reopen = false) override;
+   bool IsPlaying() const override;

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol>-</defaultcontrol>
+  <controls>
+    <control type="group" id="0">
+      <left>80</left><top>54</top><width>880</width><height>152</height>
+      <visible>!Window.IsActive(videoosd)</visible>
+      <control type="image">
+        <left>-36</left><top>-36</top><width>952</width><height>224</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>880</width><height>152</height>
+        <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>880</width><height>152</height>
+        <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+      <control type="label" id="10">
+        <left>32</left><top>20</top><width>816</width><height>38</height>
+        <font>Card26</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label" id="11">
+        <left>32</left><top>58</top><width>816</width><height>36</height>
+        <font>CardSub22</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label" id="12">
+        <left>32</left><top>96</top><width>816</width><height>36</height>
+        <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+
+    <control type="group">
+      <visible>!String.IsEmpty(Player.SeekNumeric) + !Window.IsActive(seekbar)</visible>
+      <left>1520</left><top>46</top>
+      <control type="image">
+        <left>-32</left><top>-32</top><width>384</width><height>140</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>320</width><height>76</height>
+        <texture colordiffuse="EC17181D" border="38,0,38,0">bobbi/glass/capsule-76.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>320</width><height>76</height>
+        <texture colordiffuse="glass_rim" border="38,0,38,0">bobbi/glass/capsule-76-rim.png</texture>
+      </control>
+      <control type="label">
+        <left>0</left><top>0</top><width>320</width><height>76</height>
+        <label>$INFO[Player.SeekNumeric]</label>
+        <font>Head40</font><textcolor>FFFFFFFF</textcolor><align>center</align><aligny>center</aligny>
+      </control>
+    </control>
+
+    <control type="group">
+      <visible>Player.ShowInfo + !Window.IsActive(videoosd) + !Window.IsActive(seekbar) + !Window.IsActive(1144) + !Window.IsActive(1145)</visible>
+      <animation type="Visible" condition="!Skin.HasSetting(BobbiReduceMotion)">
+        <effect type="fade" start="0" end="100" time="160" />
+        <effect type="slide" start="0,24" end="0,0" time="200" tween="cubic" easing="out" />
+      </animation>
+      <animation effect="fade" start="100" end="0" time="140" type="Hidden" condition="!Skin.HasSetting(BobbiReduceMotion)" />
+      <include content="OSDScrim"><param name="top">480</param></include>
+      <include content="OSDTitle"><param name="top">720</param><param name="width">1760</param></include>
+      <include content="OSDProgress"><param name="top">842</param></include>
+      <control type="label">
+        <left>80</left><top>924</top><width>1760</width><height>34</height>
+        <label>[COLOR 9CEBEBF5]字幕[/COLOR]  $VAR[SubtitleLabel]      [COLOR 9CEBEBF5]音轨[/COLOR]  $VAR[AudioLabel]</label>
+        <font>Card26</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+
+    <control type="group">
+      <visible>Player.Caching</visible>
+      <animation effect="fade" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">VisibleChange</animation>
+      <left>1616</left><top>46</top>
+      <control type="image">
+        <left>-32</left><top>-32</top><width>288</width><height>132</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>224</width><height>68</height>
+        <texture colordiffuse="EC17181D" border="34,0,34,0">bobbi/glass/capsule-68.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>224</width><height>68</height>
+        <texture colordiffuse="glass_rim" border="34,0,34,0">bobbi/glass/capsule-68-rim.png</texture>
+      </control>
+      <control type="image">
+        <left>22</left><top>18</top><width>32</width><height>32</height>
+        <texture colordiffuse="text">bobbi/spinner.png</texture>
+        <animation effect="rotate" end="-360" center="38,34" time="900" loop="true" condition="Player.Caching + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      </control>
+      <control type="label">
+        <left>68</left><top>0</top><width>140</width><height>68</height>
+        <label>$INFO[Player.CacheLevel,缓冲 ,%]</label>
+        <font>Card24</font><textcolor>text</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+  </controls>
+</window>

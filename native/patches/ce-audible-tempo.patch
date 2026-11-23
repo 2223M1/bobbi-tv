@@ -1,0 +1,174 @@
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayerAudio.h b/xbmc/cores/VideoPlayer/VideoPlayerAudio.h
+--- a/xbmc/cores/VideoPlayer/VideoPlayerAudio.h
++++ b/xbmc/cores/VideoPlayer/VideoPlayerAudio.h
+@@ -100,6 +100,11 @@
+ 
+   bool IsStalled() const override { return m_stalled;  }
+   bool IsPassthrough() const override;
++  bool HasTempoSink() const
++  {
++    std::unique_lock<CCriticalSection> lock(m_info_section);
++    return m_info.tempoReady && !m_info.passthrough && m_info.pts != DVD_NOPTS_VALUE;
++  }
+ 
+   void OnSettingChanged(const std::shared_ptr<const CSetting>& setting) override;
+ 
+@@ -151,6 +156,7 @@
+ 
+   int m_synctype;
+   int m_prevsynctype;
++  bool m_bobiTempoBorrowed{false};
+ 
+   bool   m_prevskipped;
+   double m_maxspeedadjust;
+@@ -163,6 +169,7 @@
+     double           cache = 0.0;
+     double           delay = 0.0;
+     bool             passthrough = false;
++    bool             tempoReady = false;
+   };
+ 
+   mutable CCriticalSection m_info_section;
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayerAudio.cpp b/xbmc/cores/VideoPlayer/VideoPlayerAudio.cpp
+--- a/xbmc/cores/VideoPlayer/VideoPlayerAudio.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayerAudio.cpp
+@@ -308,6 +308,11 @@
+   m_audioClock = 0;
+   m_stalled = m_messageQueue.GetPacketCount(CDVDMsg::DEMUXER_PACKET) == 0;
+ 
++  m_bobiTempoBorrowed = false;
++  {
++    std::unique_lock<CCriticalSection> lock(m_info_section);
++    m_info.tempoReady = false;
++  }
+   m_prevsynctype = -1;
+   m_createFailures = 0;
+   m_createRetryTimer.SetExpired();
+@@ -443,6 +448,8 @@
+   info.cache       = m_audioSink.GetCacheTime() * DVD_TIME_BASE;
+   info.delay       = m_audioSink.GetDelay();
+   info.passthrough = m_pAudioCodec && m_pAudioCodec->NeedPassthrough();
++  info.tempoReady = m_pAudioCodec && !info.passthrough && m_streaminfo.codec == AV_CODEC_ID_AAC &&
++                    (m_prevsynctype == SYNC_DISCON || m_prevsynctype == SYNC_RESAMPLE);
+ 
+   {
+     std::unique_lock<CCriticalSection> lock(m_info_section);
+@@ -681,6 +688,25 @@
+       else
+       {
+         m_audioSink.Pause();
++      }
++      const bool fractional = speed >= 800 && speed <= 1500 && speed != DVD_PLAYSPEED_NORMAL;
++      const bool pcm = m_pAudioCodec && !m_pAudioCodec->NeedPassthrough() && m_streaminfo.codec == AV_CODEC_ID_AAC;
++      if (fractional && pcm && !m_bobiTempoBorrowed && m_synctype == SYNC_DISCON)
++      {
++        m_bobiTempoBorrowed = true;
++        CLog::Log(LOGINFO, "Bobbi PCM tempo: acquire local AE resampling");
++        m_synctype = SYNC_RESAMPLE;
++        SetSyncType(false);
++      }
++      else if (m_bobiTempoBorrowed && (!fractional || !pcm))
++      {
++        m_bobiTempoBorrowed = false;
++        CLog::Log(LOGINFO, "Bobbi PCM tempo: restore local clock policy");
++        m_synctype = SYNC_DISCON;
++        SetSyncType(!pcm);
++        m_pcmJitterTracker.Reset();
++        m_pcmOutputClock = LOCAL_NOPTS;
++        m_pcmResyncTimestamp = true;
+       }
+       m_speed = (int)speed;
+     }
+@@ -928,7 +954,7 @@
+     // LAV PCM jitter tracking (for non-passthrough audio only)
+     // This runs AFTER baseline PTS handling, potentially adjusting audioframe.pts
+     //==========================================================================
+-    if (m_lavStylePcmSyncEnabled && !audioframe.passthrough && audioframe.hasTimestamp)
++    if (m_lavStylePcmSyncEnabled && !m_bobiTempoBorrowed && !audioframe.passthrough && audioframe.hasTimestamp)
+     {
+       double inputPts = audioframe.pts;
+       bool inputPtsValid = IsValidPts(inputPts);
+@@ -1173,7 +1199,7 @@
+   m_audioClock += audioframe.duration * ((double)framesOutput / audioframe.nb_frames);
+ 
+   // LAV: Accumulate output clock by actual duration output
+-  if (m_lavStylePcmSyncEnabled && !audioframe.passthrough && IsValidPts(m_pcmOutputClock))
++  if (m_lavStylePcmSyncEnabled && !m_bobiTempoBorrowed && !audioframe.passthrough && IsValidPts(m_pcmOutputClock))
+   {
+     double durationOutput = audioframe.duration * (static_cast<double>(framesOutput) / audioframe.nb_frames);
+     m_pcmOutputClock += durationOutput;
+diff --git a/xbmc/cores/VideoPlayer/VideoPlayer.cpp b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+--- a/xbmc/cores/VideoPlayer/VideoPlayer.cpp
++++ b/xbmc/cores/VideoPlayer/VideoPlayer.cpp
+@@ -3769,7 +3769,8 @@
+   }
+ 
+   // handle ff/rw
+-  if (m_playSpeed != DVD_PLAYSPEED_NORMAL && m_playSpeed != DVD_PLAYSPEED_PAUSE)
++  if (m_playSpeed != DVD_PLAYSPEED_NORMAL && m_playSpeed != DVD_PLAYSPEED_PAUSE &&
++      !(m_playSpeed >= 800 && m_playSpeed <= 1500 && m_processInfo->GetNewTempo() != 1.0f))
+   {
+     if (isInMenu)
+     {
+@@ -3919,7 +3920,10 @@
+     float currentTempo = m_processInfo->GetNewTempo();
+     if (currentTempo != 1.0f)
+     {
+-      SetTempo(1.0f);
++      if (m_playSpeed > 0 && m_playSpeed >= 800 && m_playSpeed <= 1500)
++        SetTempo(1.0f);
++      else
++        m_processInfo->SetNewTempo(1.0f);
+     }
+   }
+ }
+@@ -5964,7 +5968,7 @@
+     if (iSpeed == DVD_PLAYSPEED_NORMAL)
+     {
+       float currentTempo = m_processInfo->GetNewTempo();
+-      if (currentTempo != 1.0f)
++      if (currentTempo != 1.0f && SupportsTempo())
+       {
+         SetTempo(currentTempo);
+         return;
+@@ -5978,6 +5982,9 @@
+ {
+   BobiUserIntent();
+   tempo = floor(tempo * 100.0f + 0.5f) / 100.0f;
++  // Returning to normal must work when a stream change retires the previous sink.
++  if (tempo != 1.0f && (!SupportsTempo() || tempo < 0.8f || tempo > 1.5f))
++    return;
+   if (m_processInfo->IsTempoAllowed(tempo))
+   {
+     int speed = tempo * DVD_PLAYSPEED_NORMAL;
+@@ -7944,6 +7951,16 @@
+     state.canpause = true;
+   }
+ 
++  if (m_pInputStream && state.canpause && state.canseek && !state.isInMenu &&
++      !m_pInputStream->IsRealtime() && !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD) &&
++      !m_pInputStream->IsStreamType(DVDSTREAM_TYPE_BLURAY) &&
++      m_CurrentAudio.id >= 0 && m_CurrentVideo.id >= 0)
++  {
++    const auto* audio = dynamic_cast<const CVideoPlayerAudio*>(m_VideoPlayerAudio);
++    state.cantempo = audio && audio->HasTempoSink() &&
++                     (!m_processInfo->IsVideoHwDecoder() || m_processInfo->GetVideoDecoderName() == "am-h264");
++  }
++
+   m_processInfo->SetPlayTimes(state.startTime, state.time, state.timeMin, state.timeMax);
+ 
+   std::unique_lock<CCriticalSection> lock(m_StateSection);
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecAmlogic.cpp
+@@ -1339,7 +1339,9 @@
+ void CDVDVideoCodecAmlogic::SetSpeed(int iSpeed)
+ {
+   if (m_Codec)
+-    m_Codec->SetSpeed(iSpeed);
++    // Fractional audible tempo uses the presentation clock. Passing it into AML
++    // sets FFFB/I-frame trick mode. Pause and real FF/RW still use their original path.
++    m_Codec->SetSpeed(iSpeed >= 800 && iSpeed <= 1500 ? DVD_PLAYSPEED_NORMAL : iSpeed);
+ }
+ 
+ void CDVDVideoCodecAmlogic::FrameRateTracking(uint8_t *pData, int iSize, double dts, double pts)

@@ -1,0 +1,286 @@
+{
+  "schema": 1,
+  "status": "FROZEN_EVIDENCE_REVIEWED_ACCEPTANCE_FAILED_INCOMPLETE",
+  "finalized": true,
+  "plan_complete": false,
+  "assembled_utc": "2026-11-13T21:01:11.185Z",
+  "source": {"repository":"D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026","commit":"ed645eece1dc340e52f1377731d5f1ff9d0804c8","tree":"edda8c37d4176bed7d74eaeab5024cf738c7b1d5","program_sequence":2026102133,"draft_assembly_readonly_check_clean":true,"identity_and_cleanliness_evidence":["test_audit","architecture","release_verification"]},
+  "evidence_reference_convention": "Registry rows follow evidence_columns. Exact path = evidence_roots[base] + '/' + path. All SHA-256/bytes rechecked; details/IDs remain in pinned reports.",
+  "evidence_registry": {
+    "test_audit": [
+      "E",
+      "ed645ee-test-identity-independent-audit.json",
+      "dc6935d5d7218bfd53f08cf5015542b3b047e881ba9055087ecbf801cafbdf59",
+      6528192
+    ],
+    "primary": [
+      "E",
+      "ed645ee-primary.json",
+      "17d90e8f9f464ec0f577229056bad5e44909b5395bf0f4e554730eff11728e7a",
+      1546
+    ],
+    "baseline": [
+      "E",
+      "ed645ee-baseline.json",
+      "991a8aaa2630ec136c7292a6720b9ecf0cd022dabbfae151c323a2ca7c2a6346",
+      1479
+    ],
+    "preparation": [
+      "E",
+      "ed645ee-preparation.json",
+      "05e5df7c024f68f2228cb746bd98236e82be2418d99a09ed5b9440d4beea4aed",
+      1496
+    ],
+    "linux_supplement": [
+      "E",
+      "ed645ee-linux-completion-supplement-20261114-01/report.json",
+      "d92223b889610539674f6de6effb2d616a04a14cd42b1f1d285d3664227ad92a",
+      2798
+    ],
+    "linux_posix": [
+      "E",
+      "ed645ee-posix-contracts-report.json",
+      "9802840ea24e698af53c6fc93f69044c8443f2f5208e65a473e3020cb93424d5",
+      15844
+    ],
+    "linux_new_history": [
+      "E",
+      "ed645ee-new-history-linux-20261114-01/ed645ee-new-history-linux-report.json",
+      "04607c6ecc72eeddc666a351d341c6c598bb3240b8931edb8cbebeccfb888584",
+      45270
+    ],
+    "test_runner": [
+      "E",
+      "frozen_validation.py",
+      "a7a97594ad122a3529bbf9a7304aada6a37f63db2f311f2864d86f8317f58821",
+      3567
+    ],
+    "audit_failed_attempt": [
+      "E",
+      "ed645ee-test-identity-audit-failure-20261113T205340482129Z.json",
+      "4240a2dc7bebffd920df0b84f6a0439bbabb91d14aef89e80d0d261c6c27dc5b",
+      28395
+    ],
+    "architecture": [
+      "E",
+      "ed645ee-architecture-final-report.json",
+      "ea93ccf342298a70324fd45da720b6fad52a4d87422eb5251bcdba311a9e7ea6",
+      12907
+    ],
+    "contracts_and_graphs": [
+      "E",
+      "ed645ee-final-contracts-and-graphs-report.json",
+      "8e2115722d353ae2f72854dfd7d6e2b34da2e48026c92c3f300565d63cf4a05a",
+      3045
+    ],
+    "graph_first": [
+      "P",
+      "architecture-audit-ed645ee-final/graph.json",
+      "3fc13e7b618ba40502a1a2b18e84dc4a1b6e5b7f86ee6fc6380d1d2b0cabf1e5",
+      108163859
+    ],
+    "graph_repeat": [
+      "P",
+      "architecture-audit-ed645ee-final-repeat/graph.json",
+      "3fc13e7b618ba40502a1a2b18e84dc4a1b6e5b7f86ee6fc6380d1d2b0cabf1e5",
+      108163859
+    ],
+    "ownership_manifest": [
+      "R",
+      "docs/architecture/ownership-manifest.json",
+      "74f5218241e71fabf373858f411852fe03b676f941e8d47ca4efa6580cd16016",
+      81991
+    ],
+    "build": [
+      "E",
+      "ed645ee-build-verification.json",
+      "768160c8d31079ea6ebb47a39b2b413ae29c0615b6a52de366f3053ab28e77af",
+      25218
+    ],
+    "entry_audit": [
+      "E",
+      "ed645ee-entry-audit.json",
+      "90f5f04914153e4f7b868deeabc6a03d15b7508f6d4fd6684144006f640438cb",
+      491
+    ],
+    "private_artifact_audit": [
+      "E",
+      "ed645ee-private-artifact-audit.json",
+      "fdd80b60eba837faabf58047fad34e8aca37a1cc4f796cb6fdde52a9247f7f4a",
+      11136
+    ],
+    "release_verification": [
+      "E",
+      "ed645ee-release-verification.json",
+      "9b9504694261f0fe68376f4be6e13103737b81df117c657d502cf84743e048ae",
+      14680
+    ],
+    "signed_payload": [
+      "B",
+      "ed645ee-releases/bobbi-private-2026102133-coreelec.bobbi-update.zip",
+      "9eae70d7406338ad8f4194e177007e334b7f0c31ffdb9c2f52a6364020a63ee7",
+      96328435
+    ],
+    "entry_zip": [
+      "B",
+      "ed645ee-entry-artifacts/script.bobbi.start-0.2.98.zip",
+      "cf91c2edf98b1b4dc5fa237d91ee5f8e4fcdd20fb2eb3534f78b38a5cb4ced66",
+      96539987
+    ],
+    "deployment_run": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-045232.json",
+      "0f7333fe0432aea7c54ff517f5d70e8c46c1035cd198677c5db8e29adafa5c6f",
+      474
+    ],
+    "stage": [
+      "R",
+      "review-evidence/ce-20261114-045232-stage.json",
+      "6f6b2ce6e9934b3a6d7ad8e9ca1b3cca73ab798d675c0f453e31285533292640",
+      154
+    ],
+    "upgrade": [
+      "R",
+      "review-evidence/ce-20261114-045232-upgrade.json",
+      "dcf82cadba3071049eae20095fbdb66056a4646b160dbe76d74765603385b909",
+      319
+    ],
+    "installed_files": [
+      "R",
+      "review-evidence/ce2023/installed-files-1794603267517048700.json",
+      "20a68c8239eb7840c027c158fbf0f2f0eca10c0659eca34c30b1c2cdc56f77f2",
+      313
+    ],
+    "before_upgrade": [
+      "E",
+      "device-before-2133-upgrade.json",
+      "75e699a82a0ed579f3b3791a8404168f775fac83b33346dc8ad99ba8861973f0",
+      5806
+    ],
+    "after_upgrade": [
+      "E",
+      "device-after-2133-upgrade.json",
+      "483e80824f9a4fe6c190c16b96e9b3f99948d6691b8b2f9d36c6aae7cfa2b4bd",
+      5760
+    ],
+    "before_log_classification": [
+      "E",
+      "device-before-2133-log-classification.json",
+      "17b8b045bcb7b8e4518ae2d4b5b098b34a4b424fc418854de9d7a6ffe8291981",
+      528
+    ],
+    "native_historical_record": [
+      "E",
+      "E-native-freeze-ff0422-20261113-2345/record.json",
+      "00297a1e008125910a70bf1096b462590ed980ef8bf33c2b92db963a0bc68a52",
+      5019
+    ],
+    "prior_validation": [
+      "R",
+      "docs/architecture/validation-629597c.json",
+      "2a35b831f1dec84fe560051b3ae6d26b5612a81ba31778485f5909319d66f16f",
+      37004
+    ],
+    "prior_a5155c0_draft": [
+      "E",
+      "validation-a5155c0-draft.json",
+      "266fbc514b8bcf1475ce5827776a34a320feb1eb2eddec0bd91eb633603c6d45",
+      72392
+    ],
+    "ordinary_start": [
+      "E",
+      "campaign-ed645ee/ce-new-work-convergence115ed645ee-galactic_heroes-start-1794603324533890800.json",
+      "aec887ec96f635c804a4794a7e4297c45befd843ca5589f98bf4104a2836fe08",
+      36522
+    ],
+    "ordinary_cards": [
+      "E",
+      "campaign-ed645ee/ce-new-work-convergence115ed645ee-galactic_heroes-cards-1794603355706868200.json",
+      "8bdc7a93d0f3057c9acfa44fd2ea33c061ac12c3733423b4f6d5f4c29c75188c",
+      4650
+    ],
+    "ordinary_select": [
+      "E",
+      "campaign-ed645ee/ce-new-work-convergence115ed645ee-galactic_heroes-select-1794603415236220400.json",
+      "86fb77a915a0695e590416e18fed20aea4c06fbfe7601dd82f45ea012da68877",
+      413575
+    ],
+    "ordinary_stop": [
+      "E",
+      "campaign-ed645ee/ce-new-work-convergence115ed645ee-galactic_heroes-stop-1794603459700842200.json",
+      "a611426ab1287391acfc03f88da823785f3ba35c23c3eeb2eebfe46949f98a59",
+      2632
+    ],
+    "ordinary_select_analysis": [
+      "E",
+      "ed645ee-ordinary-select-analysis-v2.json",
+      "9d43d197b30c8d18a94a84c74f183bd63560d2c37826cd2350bea93c69a3ac1e",
+      14848
+    ],
+    "after_trial_stop": [
+      "E",
+      "device-ed645ee-after-trial-stop.json",
+      "2dd650b5bf5e749c8d2e3b5fcc6fcb48978f5b9e6b9f9fe7fca208a4af285d1f",
+      5807
+    ],
+    "after_trial_log_classification": [
+      "E",
+      "device-ed645ee-after-trial-log-classification.json",
+      "3db1c95a63701cd4afa896d1bafcbe8c313220e7be6b4b2090e097350e9fd314",
+      528
+    ],
+    "after_trial_tracebacks": [
+      "E",
+      "device-ed645ee-after-trial-tracebacks.json",
+      "f6bea647ef3e9db755edd958fd756a2984007489853ac0d7e20d4ed324dfdec5",
+      3079
+    ],
+    "exact_history_after_stop": [
+      "E",
+      "ed645ee-exact-history-after-stop.json",
+      "cb07608a8c7726cfe246982ac29a97f09c97b2fdcba2b938c119a2f11969215b",
+      1870
+    ],
+    "exact_history_selftest": [
+      "E",
+      "ed645ee-exact-history-selftest.json",
+      "bb787e2e58b90171a7a2655f6dd394bdf0cb08431849d25f482978cff435d2be",
+      1503
+    ],
+    "previous_frozen": [
+      "R",
+      "docs/architecture/validation-a5155c0.json",
+      "ede6da16f7d8d73b937eafc117663f15ceed5dca833a7869fa98006b7be6116a",
+      73449
+    ],
+    "ordinary_completion": [
+      "E",
+      "ed645ee-ordinary-trial-completion-index.json",
+      "3ddfec752177f6e86146c66a2de038264a442817cf3471d1bf0b19d1c7188c7a",
+      9207
+    ],
+    "lowread_supplement": [
+      "E",
+      "ed645ee-lowread-independent-supplement.json",
+      "b3aadc80372d6e90ea1379964cae312ce9662b3070d79d8f1b449f8764bade36",
+      15915
+    ]
+  },
+  "offline": {"evidence_ids":["test_audit","primary","baseline","preparation","linux_supplement","linux_posix","linux_new_history"],"state":"VERIFIED_OFFLINE_TEST_IDENTITIES_NOT_ACCEPTANCE","windows":{"execution_instances":10919,"exact_unique_case_ids":10919,"passed":10897,"ordinary_skips":21,"xfailed":1,"failed":0,"errors":0,"duplicate_executions":0,"exact_id_set_sha256":"80e37d11aa2b0b91388c3bf61b7750f7069a34506ea7e3a7a44c3f30143a306d","groups":{"primary":{"total":8195,"passed":8173,"skipped":21,"xfailed":1},"baseline":{"total":2470,"passed":2470},"preparation":{"total":254,"passed":254}}},"linux":{"completion_supplement":657,"posix":312,"additional_groups":{"presentation_lock":59,"native_coalescing":33,"standard_close":16},"execution_instances":1077,"exact_unique_case_ids":1077,"duplicate_executions":0,"exact_windows_overlap":1077,"linux_only_ids":0,"windows_skips_same_case_passed":21,"unmatched_skips":0},"cross_platform_exact_id_union":10919,"identity_method":"Exact case-sensitive file/classname/fully parameterized name; repeat executions do not add unique or functional coverage.","retained_xfail":{"case_id":["tests/test_ce2029_search_audit.py","tests.test_ce2029_search_audit","test_real_provider_never_publishes_explicit_live_action_for_animation[Keep Your Hands Off Eizouken! (Nogizaka46 Drama) - S01E01 (1080p)-aliases0]"],"case_id_sha256":"245655a7d60fab787d59a2dad496a62df724773a28dcea5ed03412a27d7d5c2c","reason":"Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama"},"clean_preflight":{"evidence_id":"test_runner","code_asserts_empty_status_before_dispatch":true,"main_receipts_measured_status_before":false,"qualification":"Receipts record commit/tree and clean-after, not measured status-before. Helper execution is root-reported; code precondition is separate evidence."},"retained_auditor_failure":{"evidence_id":"audit_failed_attempt","cause":"Enriched vs minimal fixture-row comparison corrected; committed bytes/SHA/size/executable checked. No product/test change."}},
+  "architecture": {"evidence_ids":["architecture","contracts_and_graphs","graph_first","graph_repeat","ownership_manifest"],"two_graph_exports_byte_identical":true,"inventory_files":2368,"parsed_python_files":1483,"loaded_sources":1789,"nodes":63570,"edges":158267,"edge_status":{"confirmed":7799,"candidate":35620,"external":27439,"unresolved":87409},"diagnostics":0,"boundary_findings":0,"scc_candidates":20,"module_collisions":3,"ownership":{"nodes":38,"edges":119,"boundaries":1,"anchors_checked":119,"matching_anchors":119,"method":"Frozen git-show content at evidence.path/line contains evidence.anchor."},"qualification":"Static inventory/candidates and reviewed manifest assertions only; not runtime reachability/ownership, whole-program resolution, binary provenance or deadlock proof."},
+  "build_and_signing": {"evidence_ids":["build","entry_audit","private_artifact_audit","release_verification","signed_payload","entry_zip"],"state":"VERIFIED_RELEASE_IDENTITIES_NOT_FULL_ACCEPTANCE","inventory_sha256":"5853d1e65199dd89a81806439aced6bd4f545421630e1a089e07f7fb7b2c1b0e","inventory_components":22,"inventory_files_verified":1470,"source_check":{"files":63,"independent_byte_equality":true,"release_verifier_reran_source_checks":false},"component_archives":{"files":1471,"archive_bytes":96318839,"expanded_bytes":191136133,"qualification":"Archive/source-inventory counts have distinct scopes."},"signed_bundle":{"evidence_id":"signed_payload","profile":"coreelec","sequence":2026102133,"components":22,"exact_membership":true,"runtime_signature_verifier":"passed","independent_cryptography_verifier":"passed","changed_manifest_rejected":true,"changed_signature_rejected":true},"entry":{"evidence_id":"entry_zip","version":"0.2.98","members":25,"exact_membership":true,"embedded_payload_evidence_id":"signed_payload","same_generation_bootstrap_files":22,"kodi_addon_identity":"passed","isolated_bootstrap_import":"passed","pinned_component_notices":"passed","account_state_copied":false},"negative_controls":["wrong profile rejected","tampered signature rejected","tampered component rejected","missing component rejected"],"signed_repeat_build_reproducibility_proved":false,"qualification":"Source, payload, entry ZIP, native binary and installed files are separate identities, not licensing, clean-install, playback or performance acceptance."},
+  "deployment": {"evidence_ids":["deployment_run","stage","upgrade","installed_files"],"run":"20261114-045232","profile":"coreelec","sequence":2026102133,"candidate_matches_signed_payload":true,"stage":{"exit_code":0,"state":"staged","components":22,"system_unchanged":true},"upgrade":{"exit_code":0,"state":"upgraded","migration_performed":false,"migration_policy":"existing-current-profile-preserved","cd2_and_mount_untouched":true,"playback_verified":false},"installed":{"files":1261,"matched":true,"mismatches":0,"scope":"Owned program files only; original dependencies and user data not overwritten or compared."}},
+  "health_and_preservation": {"evidence_ids":["before_upgrade","after_upgrade","before_log_classification"],"before":{"observed_at":"2026-11-14 04:43:46","sequence":2026102132,"state":"attention_required","failures":["startup_log_attention"],"player_count":0,"window_id":10000,"service_pid":7981,"native_pid":7989,"startup_tracebacks":0,"startup_product_error_lines":1,"startup_log_truncated":false},"after":{"observed_at":"2026-11-14 04:54:24","sequence":2026102133,"state":"observed","failures":[],"player_count":0,"window_id":10000,"service_active":true,"service_pid":10966,"native_pid":10974,"service_restarts":0,"startup_tracebacks":0,"startup_product_error_lines":0,"startup_log_truncated":false,"pending_transaction":false,"index_schema":4,"index_integrity":"ok","typed_objects":594,"memberships":594,"reviews":594},"sentinel_comparison":{"count":8,"names":["115_account","pan_accounts","preparation","advancedsettings","native_abi","history","library","torrent_backend"],"all_present":true,"all_equal":true,"method":"Case-sensitive serialized before/after object equality."},"prior_attention_classification":{"level":"info","marker":"BOBBI-PROVIDERS","line_sha256":"66b31ee3237b982253322e42c9e774781ab26708758d7619c85c2a6e217a61c9","original_before_receipt_preserved":true},"rollback_available":true,"rollback_exercised":false,"qualification":"Bounded idle/sentinels only; upgrade PIDs changed. Attention retained. Rollback not exercised; full data/profile equality unproved."},
+  "native": {"evidence_ids":["native_historical_record","release_verification","before_upgrade","after_upgrade"],"sha256":"980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2","source_tree":"294abcde0b17995420d07bf49c268c715e6f9dc7","rebuilt":false,"native_source_changed_since_previous":false,"matching_device_hash_reported_before_and_after":true,"qualification":"Historical provenance plus separate device-hash receipts; no new native build/playback certification."},
+  "ordinary_trial": {"state":"closed_with_original_stop_and_history_but_failed_startup_observation","campaign":"campaign-ed645ee","run_id":"convergence115ed645ee","work":"galactic_heroes","attempt":1,"evidence_ids":["ordinary_start","ordinary_cards","ordinary_select","ordinary_stop","ordinary_select_analysis","after_trial_stop","after_trial_log_classification","after_trial_tracebacks","exact_history_after_stop","exact_history_selftest","ordinary_completion"],"accepted":false,"start":{"exit_code":1,"transport_exit_code":0,"launch_accepted":true,"query_completed":false,"query_accepted":false,"reason":"QUERY_ERROR_OBSERVED","failed_or_timed_out_sources":1},"cards":{"count":4,"selected":false},"select":{"exit_code":1,"selected":true,"trace_passed":false,"reason":"STARTUP_OBSERVATION_INTERRUPTED","cause":"PLAYBACK_OWNER_UNAVAILABLE","samples":80,"matching_request_native_samples":76,"first_av_observed_upper_bound_seconds":8.214597584912553,"first_av_clock_seconds":-0.011,"last_av_clock_seconds":3.402,"original_observation_gaps":1,"original_clock_discontinuities":2,"gap_note":"Recovered OWNER_SNAPSHOT read gap, not end-of-sampling interruption."},"strict_analysis":{"evidence_id":"ordinary_select_analysis","longest_clock_stationary_endpoint_span_seconds":27.87183463689871,"longest_clock_and_primary_decoder_stationary_endpoint_span_seconds":10.480199568904936,"acquisition_gap_adjacent_pairs_excluded":2,"qualification":"Adjacent matching AV_STARTED samples; no bridging failed predicates. Sampled spans are not continuous renderer, root-cause, performance or ISO proof."},"binding":{"request_id":"c8bb46bfc557473d870a532de8438cad","native_instance":"5120b1d8-45b4-4f1c-9d81-7e5afe3121ef","file_sha256":"de525eddd37be37a855f841e0ccd360ed208a03d8b4865a46c2a2d18cf229c0e","evidence_scope":"record+Stop file binding; per-sample file unobserved"},"stop":{"exit_code":0,"stopped":true,"state":"confirmed","seconds":1.91,"original_command_id":"7877b8168e6f4510a6faaedde6c3ac45","receipt_status":"applied","original_receipt_verified":true},"post_stop_health_history":{"health":{"evidence_id":"after_trial_stop","observed_at":"2026-11-14 05:00:44","state":"attention_required","failures":["startup_log_attention"],"player_count":0,"window_id":10000,"service_pid":10966,"native_pid":10974,"service_restarts":0,"pending_transaction":false,"index_schema":4,"index_integrity":"ok","typed_objects":594,"memberships":594,"reviews":594,"startup_tracebacks":3,"startup_product_error_lines":1,"startup_log_truncated":false,"unchanged_sentinels":7,"changed_sentinel":"history"},"log_classification":{"broad_match_level":"info","marker":"BOBBI-PROVIDERS","traceback_chain_types":["TimeoutError","ReadTimeoutError","ReadTimeout"],"frame_addons":["script.module.urllib3","script.module.requests","service.subtitles.a4ksubtitles"],"qualification":"Classification preserves attention_required; no stall root cause is proved."},"history":{"evidence_id":"exact_history_after_stop","scope":"fixed_default_profile_history","unique_request_match":true,"original_select_stop_receipts_agree":true,"terminal_reason":"STOP","completed":false,"current_time":37.665,"total_time":1444.945,"media_identity_all_match":true,"active_profile":"unmeasured","current_account":"unmeasured","exact_file_pointer":"unmeasured","helper_selftest_checks_passed":38},"qualification":"Later STOP history cannot negate earlier clock plateau. Seven static sentinels match; history changed during playback."},"qualification":"Selection/Stop/history do not erase query/trace failures or grant acceptance."},
+  "licensing": {"evidence_id":"release_verification","manifest_sha256":"b204a17fd36921f6f99c84e59433064d8b36406942f86f2b2a489fe4fc988c15","unresolved_source_components":["plugin.video.bobbi","script.module.bobbi.platform","script.module.bobbi.core","script.module.bobbi.mdsub","script.module.bobbi.catalog","skin.bobbi.cinema","resource.uisounds.bobbi-modern"],"unresolved_full_license_components":["script.module.jurialmunkey","script.module.infotagger"],"public_distribution_cleared":false},
+  "prior_acceptance_failures": {"evidence_ids":["previous_frozen","prior_validation","prior_a5155c0_draft"],"old_evidence_unchanged":true,"qualification":"Prior query/timeout, startup/observation, read/skip, acquisition-gap and clock/decoder failures remain. Later progress/Stop/health cannot erase them. Old freeze exclusions are not automatically current defects."},
+  "remaining_gates": ["Ordinary trial: QUERY_ERROR_OBSERVED, STARTUP_OBSERVATION_INTERRUPTED, acquisition gap and strict plateaus remain failures despite original Stop/later history.","Public distribution: seven unresolved-source and two unresolved-full-license components.","Android real-device acceptance and all 110 interaction scenarios remain open; scenario outcomes unchanged.","Five cold plus five warm controlled 115 samples and historical startup/observation root-cause resolution incomplete.","ISO; edition/copy/part identity; precise path resume; media facts; segment policy/source remapping open.","Real 115 private disk/NAS/server acceptance and server progress/extras/segments/transcode sessions open; no remote-write authority added.","Interrupted rollback/data restore, clean install, universal profile safety, runtime ownership and full user-data preservation unproved.","Fixed-default-profile history does not measure active profile/current account/exact filepointer.","No whole-plan, performance or product acceptance."],
+  "post_freeze_exclusions": {"standard_history_saturation_repair":"Merged as 1a2df43; excluded from deployed ed645ee/2026102133.","server_progress_and_history_receipts":"Merged after ed645ee; experimental internal read API, no automatic server resume or remote progress writes; not in 2133.","video_facts":"Separate post-ed645ee work; excluded from 2133."},
+  "drafting_agent_scope": {"external_draft_only":true,"main_repository_modified":false,"old_evidence_overwritten":false,"credentials_read":false,"device_contacted":false},
+  "last_updated_utc": "2026-11-13T21:23:14.602Z",
+  "evidence_roots": {"E":"D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results","R":"D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026","B":"D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds","P":"D:/AM6B-Project"},
+  "evidence_columns": ["base","path","sha256","bytes"],
+  "publication": {"record_reviewed":true,"product_accepted":false,"plan_complete":false,"root_checked_original_references":40,"original_reference_hash_or_size_mismatches":0,"qualification":"Finalized refers to this evidence record only. Product work after ed645ee is excluded from its tests, package, graph and deployment identity. The separate later low-read supplement does not replace either failed startup trace."},
+  "later_lowread_trial": {"evidence_id":"lowread_supplement","accepted":false,"attempt":2,"original_failures_retained":["asleep_first_attempt","start_timeout_second_attempt","trace_failed"],"first_av_observed_upper_bound_seconds":10.760793759021908,"longest_clock_stationary_endpoint_span_seconds":21.36814944492653,"decoder_frame_delta_during_clock_plateau":91,"longest_joint_stationary_endpoint_span_seconds":7.90062189521268,"later_1hz_samples":20,"later_sampled_clock_range":[75.099,94.118],"later_caching_samples":0,"stop_original_command_id":"16a7bce78ada4c8a8d41bbd9ca466087","stop_receipt_status":"applied","post_stop_state":"attention_required","qualification":"Late samples begin 107.054 seconds after select, with a 67.381-second gap after the startup trace. They neither erase the startup failure nor establish instrumentation causality. Full distinct identities, observations and limits are in the pinned supplement."}
+}

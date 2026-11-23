@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1126" type="dialog">
+  <!-- Saved remote keymaps retain this entry. The owned script captures the
+       playback command before confirmation, then closes this bridge.
+       Ending playback must never expose an unrelated skin-reset action. -->
+  <onload>RunScript(plugin.video.bobbi,bobbi_osd=confirm_stop)</onload>
+  <controls />
+</window>

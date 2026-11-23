@@ -1,0 +1,217 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1196">
+  <defaultcontrol always="false">9101</defaultcontrol>
+  <menucontrol>9701</menucontrol>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <include>BobbiBrowseCanvas</include>
+
+    <!-- Header @ x=80, y=126 -->
+    <control type="label">
+      <left>80</left><top>126</top><width>1200</width><height>68</height>
+      <label>搜索</label>
+      <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+    </control>
+
+    <!-- Full-Width 1760x76 on-device Liquid Glass Search Input Bar @ x=80..1840 -->
+    <control type="group">
+      <left>80</left><top>214</top><width>1760</width><height>76</height>
+      <control type="image">
+        <left>-36</left><top>-36</top><width>1832</width><height>148</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+        <visible>Control.HasFocus(9101)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1760</width><height>76</height>
+        <texture colordiffuse="$VAR[BobbiSearchFieldSurface]" border="38,0,38,0">bobbi/glass/capsule-76.png</texture>
+        <visible>!Control.HasFocus(9101)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1760</width><height>76</height>
+        <texture colordiffuse="glass_rim" border="38,0,38,0">bobbi/glass/capsule-76-rim.png</texture>
+        <visible>!Control.HasFocus(9101)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1760</width><height>76</height>
+        <texture colordiffuse="FFFFFFFF" border="38,0,38,0">bobbi/glass/capsule-76.png</texture>
+        <visible>Control.HasFocus(9101)</visible>
+      </control>
+      <control type="button" id="9101">
+        <left>0</left><top>0</top><width>1760</width><height>76</height>
+        <label>输入片名，搜索电影、剧集、动漫与演员</label>
+        <textoffsetx>78</textoffsetx>
+        <font>Label28</font>
+        <textcolor>$VAR[BobbiPanelCaption]</textcolor>
+        <focusedcolor>FF1D1D1F</focusedcolor>
+        <aligny>center</aligny>
+        <texturefocus />
+        <texturenofocus />
+        <onup>9701</onup>
+        <ondown>9200</ondown>
+        <onleft>9701</onleft>
+        <onright>9200</onright>
+        <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=multi&quot;)</onclick>
+      </control>
+      <control type="image">
+        <left>28</left><top>22</top><width>32</width><height>32</height>
+        <texture colordiffuse="$VAR[BobbiPanelCaption]">bobbi/glass/icons/search.png</texture>
+        <visible>!Control.HasFocus(9101)</visible>
+      </control>
+      <control type="image">
+        <left>28</left><top>22</top><width>32</width><height>32</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/search.png</texture>
+        <visible>Control.HasFocus(9101)</visible>
+      </control>
+    </control>
+
+    <!-- Horizontal 64px Stadium Category Filter Capsules (id=9200) -->
+    <control type="panel" id="9200">
+      <left>72</left><top>312</top><width>1776</width><height>76</height>
+      <orientation>horizontal</orientation>
+      <onup>9101</onup>
+      <ondown condition="Integer.IsGreater(Container(9300).NumItems,0)">9300</ondown>
+      <ondown condition="!Integer.IsGreater(Container(9300).NumItems,0)">9200</ondown>
+      <onleft>9701</onleft>
+      <onright>noop</onright>
+      <itemlayout width="236" height="76">
+        <control type="group">
+          <left>8</left><top>6</top>
+          <control type="image">
+            <width>220</width><height>64</height>
+            <texture colordiffuse="$VAR[BobbiSearchFilterSurface]" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+          </control>
+          <control type="image">
+            <width>220</width><height>64</height>
+            <texture colordiffuse="glass_rim" border="32,0,32,0">bobbi/glass/capsule-64-rim.png</texture>
+          </control>
+          <control type="label">
+            <width>220</width><height>64</height>
+            <font>Card26</font>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFF5F5F7</textcolor>
+            <align>center</align><aligny>center</aligny>
+          </control>
+        </control>
+      </itemlayout>
+      <focusedlayout width="236" height="76">
+        <control type="group">
+          <left>8</left><top>6</top>
+          <include content="Lift"><param name="center">110,32</param><param name="zoom">104</param></include>
+          <control type="image">
+            <width>220</width><height>64</height>
+            <texture colordiffuse="$VAR[BobbiSearchFilterSurface]" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+            <visible>!Control.HasFocus(9200)</visible>
+          </control>
+          <control type="image">
+            <width>220</width><height>64</height>
+            <texture colordiffuse="glass_rim" border="32,0,32,0">bobbi/glass/capsule-64-rim.png</texture>
+            <visible>!Control.HasFocus(9200)</visible>
+          </control>
+          <control type="image">
+            <width>220</width><height>64</height>
+            <texture colordiffuse="FFFFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+            <visible>Control.HasFocus(9200)</visible>
+          </control>
+          <control type="label">
+            <width>220</width><height>64</height>
+            <font>Card26</font>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FFF5F5F7</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <visible>!Control.HasFocus(9200)</visible>
+          </control>
+          <control type="label">
+            <width>220</width><height>64</height>
+            <font>Card26</font>
+            <label>$INFO[ListItem.Label]</label>
+            <textcolor>FF1D1D1F</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <visible>Control.HasFocus(9200)</visible>
+          </control>
+        </control>
+      </focusedlayout>
+      <content>
+        <item>
+          <label>全部影视</label>
+          <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=multi&quot;)</onclick>
+        </item>
+        <item>
+          <label>动漫</label>
+          <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=anime_tv&quot;)</onclick>
+        </item>
+        <item>
+          <label>电视剧</label>
+          <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=tv&quot;)</onclick>
+        </item>
+        <item>
+          <label>电影</label>
+          <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=movie&quot;)</onclick>
+        </item>
+        <item>
+          <label>动漫电影</label>
+          <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=anime_movie&quot;)</onclick>
+        </item>
+      </content>
+    </control>
+
+    <!-- premium TV Search Trending Poster Grid (id=9300, 200x300 r=19 @ x=80..1840) -->
+    <control type="label">
+      <left>80</left><top>412</top><width>600</width><height>36</height>
+      <label>热门浏览</label>
+      <font>RailTitle30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+    </control>
+    <control type="panel" id="9300">
+      <left>50</left><top>454</top><width>1820</width><height>626</height>
+      <orientation>vertical</orientation>
+      <include>ListMotion</include>
+      <preloaditems>2</preloaditems>
+      <onup>9200</onup>
+      <onleft>9701</onleft>
+      <onright>noop</onright>
+      <ondown>noop</ondown>
+      <itemlayout width="260" height="364">
+        <control type="group">
+          <left>30</left><top>16</top>
+          <include content="PosterArt"><param name="w">200</param><param name="h">300</param></include>
+        </control>
+      </itemlayout>
+      <focusedlayout width="260" height="364">
+        <control type="group">
+          <left>30</left><top>16</top>
+          <control type="group">
+            <include content="Lift"><param name="center">100,150</param><param name="zoom">106</param></include>
+            <control type="image">
+              <left>-28</left><top>-20</top><width>256</width><height>356</height>
+              <texture>bobbi/glass/shadow-200x300.png</texture>
+              <visible>Control.HasFocus(9300)</visible>
+            </control>
+            <include content="PosterArt"><param name="w">200</param><param name="h">300</param></include>
+            <control type="image">
+              <width>200</width><height>300</height>
+              <texture>bobbi/glass/spec-200x300.png</texture>
+              <visible>Control.HasFocus(9300)</visible>
+            </control>
+            <control type="image">
+              <left>-4</left><top>-4</top><width>208</width><height>308</height>
+              <texture colordiffuse="E6FFFFFF" border="44">bobbi/glass/ring-card.png</texture>
+              <visible>Control.HasFocus(9300)</visible>
+            </control>
+          </control>
+          <control type="label">
+            <left>-8</left><top>314</top><width>216</width><height>26</height>
+            <label>$VAR[TitlePrimary]</label>
+            <font>Card24</font><textcolor>FFFFFFFF</textcolor>
+            <align>center</align><aligny>center</aligny><scroll>true</scroll>
+            <visible>Control.HasFocus(9300) + !$EXP[BobbiIsRetry]</visible>
+          </control>
+        </control>
+      </focusedlayout>
+      <content target="videos">plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1</content>
+    </control>
+
+    <include content="TopBar">
+      <param name="down" value="9101" />
+    </include>
+  </controls>
+</window>

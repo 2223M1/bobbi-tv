@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "stable_release_allowed": false,
+  "profiles": {
+    "coreelec": {"clean_install": false},
+    "windows": {"clean_install": false},
+    "android": {"clean_install": false}
+  }
+}

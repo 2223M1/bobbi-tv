@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="14000">
+  <coordinates><left>0</left><top>0</top><width>1920</width><height>1080</height></coordinates>
+  <defaultcontrol always="true">14002</defaultcontrol>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+    <effect type="fade" start="0" end="100" time="180" />
+  </animation>
+  <animation type="WindowClose" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+    <effect type="fade" start="100" end="0" time="140" />
+  </animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/stage-ambient.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture background="true" colordiffuse="4DFFFFFF">$INFO[Window.Property(info.fanart)]</texture>
+      <aspectratio align="center" aligny="center">scale</aspectratio>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="99000000">bobbi/white.png</texture>
+      <animation effect="fade" start="100" end="52" time="0" condition="!Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+    </control>
+    <control type="image">
+      <left>276</left><top>36</top><width>1368</width><height>1008</height>
+      <texture border="64">bobbi/glass/modal-shadow.png</texture>
+    </control>
+    <control type="image">
+      <left>324</left><top>84</top><width>1272</width><height>912</height>
+      <texture colordiffuse="FF25252C" border="46">bobbi/glass/modal-glass.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+    <control type="image">
+      <left>324</left><top>84</top><width>1272</width><height>912</height>
+      <texture colordiffuse="FF50545C" border="46">bobbi/glass/modal-glass.png</texture>
+      <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+    <control type="image">
+      <left>324</left><top>84</top><width>1272</width><height>912</height>
+      <texture border="46">bobbi/glass/modal-glass-rim.png</texture>
+    </control>
+    <control type="group">
+      <left>360</left><top>116</top><width>1200</width><height>848</height>
+      <control type="label">
+        <top>0</top><width>1100</width><height>52</height>
+        <font>Head34</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+        <label>$ADDON[plugin.video.bobbi 90792]</label>
+      </control>
+      <control type="button" id="14008">
+        <left>1148</left><top>0</top><width>52</width><height>52</height>
+        <label />
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <texturenofocus colordiffuse="24FFFFFF">bobbi/glass/circle-128.png</texturenofocus>
+        <onleft>14001</onleft><onright>14001</onright><ondown>14001</ondown><onup>14001</onup>
+      </control>
+      <control type="image">
+        <left>1160</left><top>12</top><width>28</width><height>28</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/xmark.png</texture>
+        <visible>!Control.HasFocus(14008)</visible>
+      </control>
+      <control type="image">
+        <left>1160</left><top>12</top><width>28</width><height>28</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/xmark.png</texture>
+        <visible>Control.HasFocus(14008)</visible>
+      </control>
+      <control type="label">
+        <top>280</top><width>1200</width><height>50</height>
+        <align>center</align><font>Head30</font><textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+        <label>$ADDON[plugin.video.bobbi 90793]</label>
+        <visible>String.IsEqual(Window.Property(downloads_empty),true)</visible>
+      </control>
+      <control type="list" id="14001">
+        <top>72</top><left>0</left><width>1200</width><height>516</height>
+        <onleft>14003</onleft><onright>14003</onright><ondown>14003</ondown>
+        <visible>!String.IsEqual(Window.Property(downloads_empty),true)</visible>
+        <itemlayout width="1200" height="84">
+          <control type="image">
+            <left>0</left><top>4</top><width>1200</width><height>76</height>
+            <texture colordiffuse="16FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+          </control>
+          <control type="label">
+            <left>24</left><top>10</top><width>900</width><height>32</height>
+            <font>Card26</font><textcolor>FFF5F5F7</textcolor>
+            <label>$INFO[ListItem.Property(entry_name)]</label>
+          </control>
+          <control type="label">
+            <left>940</left><top>10</top><width>236</width><height>32</height>
+            <font>Card26</font><align>right</align><textcolor>D9EBEBF5</textcolor>
+            <label>$INFO[ListItem.Property(entry_progress)]%</label>
+          </control>
+          <control type="label">
+            <left>24</left><top>44</top><width>1152</width><height>28</height>
+            <font>CardSub22</font><textcolor>E6EBEBF5</textcolor>
+            <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+            <label>$INFO[ListItem.Property(entry_info)]</label>
+          </control>
+        </itemlayout>
+        <focusedlayout width="1200" height="84">
+          <control type="image">
+            <left>0</left><top>4</top><width>1200</width><height>76</height>
+            <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+          </control>
+          <control type="label">
+            <left>24</left><top>10</top><width>900</width><height>32</height>
+            <font>Card26</font><textcolor>FF1D1D1F</textcolor>
+            <label>$INFO[ListItem.Property(entry_name)]</label>
+          </control>
+          <control type="label">
+            <left>940</left><top>10</top><width>236</width><height>32</height>
+            <font>Card26</font><align>right</align><textcolor>FF197A35</textcolor>
+            <label>$INFO[ListItem.Property(entry_progress)]%</label>
+          </control>
+          <control type="label">
+            <left>24</left><top>44</top><width>1152</width><height>28</height>
+            <font>CardSub22</font><textcolor>B31D1D1F</textcolor>
+            <label>$INFO[ListItem.Property(entry_info)]</label>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="group">
+        <top>608</top><left>0</left><width>1200</width><height>116</height>
+        <visible>!String.IsEqual(Window.Property(downloads_empty),true)</visible>
+        <control type="image">
+          <left>0</left><width>1200</width><height>116</height>
+          <texture colordiffuse="16FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+        </control>
+        <control type="label">
+          <left>28</left><top>18</top><width>560</width><height>32</height>
+          <font>Card26</font><textcolor>FFF5F5F7</textcolor>
+          <label>$ADDON[plugin.video.bobbi 90794]: $INFO[Window.Property(selected_progress)]%</label>
+        </control>
+        <control type="label">
+          <left>612</left><top>18</top><width>560</width><height>32</height>
+          <font>Card26</font><textcolor>FFF5F5F7</textcolor>
+          <label>$ADDON[plugin.video.bobbi 90795]: $INFO[Window.Property(selected_speed)]</label>
+        </control>
+        <control type="label">
+          <left>28</left><top>62</top><width>560</width><height>32</height>
+          <font>CardSub22</font><textcolor>E6EBEBF5</textcolor>
+          <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+          <label>$ADDON[plugin.video.bobbi 90796]: $INFO[Window.Property(selected_eta)]</label>
+        </control>
+        <control type="label">
+          <left>612</left><top>62</top><width>560</width><height>32</height>
+          <font>CardSub22</font><textcolor>E6EBEBF5</textcolor>
+          <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+          <label>$ADDON[plugin.video.bobbi 90797]: $INFO[Window.Property(selected_size)]</label>
+        </control>
+      </control>
+      <control type="group">
+        <top>748</top><left>0</left><width>1200</width><height>66</height>
+        <visible>!String.IsEqual(Window.Property(downloads_empty),true)</visible>
+        <control type="button" id="14003">
+          <left>0</left><width>224</width><height>66</height>
+          <label>$ADDON[plugin.video.bobbi 90798]</label>
+          <align>center</align><aligny>center</aligny>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onleft>14007</onleft><onright>14004</onright><onup>14001</onup><ondown>14001</ondown>
+        </control>
+        <control type="button" id="14004">
+          <left>240</left><width>224</width><height>66</height>
+          <label>$ADDON[plugin.video.bobbi 90799]</label>
+          <align>center</align><aligny>center</aligny>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onleft>14003</onleft><onright>14005</onright><onup>14001</onup><ondown>14001</ondown>
+        </control>
+        <control type="button" id="14005">
+          <left>480</left><width>224</width><height>66</height>
+          <label>$ADDON[plugin.video.bobbi 90800]</label>
+          <align>center</align><aligny>center</aligny>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onleft>14004</onleft><onright>14006</onright><onup>14001</onup><ondown>14001</ondown>
+        </control>
+        <control type="button" id="14006">
+          <left>720</left><width>224</width><height>66</height>
+          <label>$ADDON[plugin.video.bobbi 90801]</label>
+          <align>center</align><aligny>center</aligny>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onleft>14005</onleft><onright>14007</onright><onup>14001</onup><ondown>14001</ondown>
+        </control>
+        <control type="button" id="14007">
+          <left>960</left><width>240</width><height>66</height>
+          <label>$ADDON[plugin.video.bobbi 90802]</label>
+          <align>center</align><aligny>center</aligny>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onleft>14006</onleft><onright>14003</onright><onup>14001</onup><ondown>14001</ondown>
+        </control>
+      </control>
+      <control type="button" id="14002">
+        <left>0</left><top>0</top><width>1</width><height>1</height>
+        <texturefocus>-</texturefocus><texturenofocus>-</texturenofocus><label />
+      </control>
+    </control>
+  </controls>
+</window>

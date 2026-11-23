@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">9000</defaultcontrol>
+  <include>PageOpen</include>
+  <controls>
+    <control type="group">
+      <visible>!Window.IsVisible(FileBrowser)</visible>
+      <!-- on-device atmospheric backdrop -->
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/stage-ambient.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <aspectratio>scale</aspectratio>
+        <texture background="true" colordiffuse="4DFFFFFF">$INFO[ListItem.Art(fanart)]</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/scrim-top.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/scrim-left.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/scrim-bottom.png</texture>
+      </control>
+
+      <!-- Top-left premium TV back pill @ (50,50) 180x60 -->
+      <control type="group">
+        <control type="image">
+          <left>29</left><top>68</top><width>20</width><height>24</height>
+          <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/chevron-left.png</texture>
+        </control>
+        <control type="image">
+          <left>50</left><top>50</top><width>180</width><height>60</height>
+          <texture>bobbi/glass/back-pill-180x60.png</texture>
+        </control>
+        <control type="image">
+          <left>55</left><top>55</top><width>50</width><height>50</height>
+          <texture>bobbi/glass/avatar-disc.png</texture>
+        </control>
+        <control type="label">
+          <left>117</left><top>50</top><width>100</width><height>60</height>
+          <label>波比TV</label>
+          <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+
+      <!-- Top-right AM/PM clock pill @ (1696,54) 144x52 -->
+      <control type="group">
+        <visible>!Window.IsActive(shutdownmenu)</visible>
+        <include>NavFade</include>
+        <control type="image">
+          <left>1696</left><top>54</top><width>144</width><height>52</height>
+          <texture colordiffuse="B81A1B1F" border="26,0,26,0">bobbi/glass/capsule-52.png</texture>
+        </control>
+        <control type="image">
+          <left>1696</left><top>54</top><width>144</width><height>52</height>
+          <texture border="26,0,26,0">bobbi/glass/capsule-52-rim.png</texture>
+        </control>
+        <control type="label">
+          <left>1696</left><top>54</top><width>144</width><height>52</height>
+          <label>$VAR[BobbiTimeAMPM]</label>
+          <font>NavClock20</font><textcolor>F5F5F5F7</textcolor>
+          <align>center</align><aligny>center</aligny>
+        </control>
+      </control>
+
+      <!-- Left Column: Continuous-corner artwork + artist/album bio @ x=80..460 -->
+      <control type="group">
+        <left>80</left><top>144</top>
+        <control type="image">
+          <left>0</left><top>0</top><width>360</width><height>360</height>
+          <texture colordiffuse="24FFFFFF" border="28">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <left>12</left><top>12</top><width>336</width><height>336</height>
+          <aspectratio>keep</aspectratio>
+          <texture background="true">$INFO[ListItem.Icon]</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>360</width><height>360</height>
+          <texture border="28">bobbi/glass/squircle-r14-rim.png</texture>
+        </control>
+
+        <control type="image">
+          <left>0</left><top>384</top><width>112</width><height>112</height>
+          <texture colordiffuse="20FFFFFF" border="24">bobbi/glass/squircle-r14.png</texture>
+        </control>
+        <control type="image">
+          <left>8</left><top>392</top><width>96</width><height>96</height>
+          <aspectratio>keep</aspectratio>
+          <texture background="true">$VAR[MusicInfoListThumb]</texture>
+        </control>
+
+        <control type="textbox">
+          <left>0</left><top>516</top><width>380</width><height>356</height>
+          <label>$VAR[MusicInfoLabel]</label>
+          <font>Plot26</font><textcolor>D9EBEBF5</textcolor><align>left</align>
+          <autoscroll time="3000" delay="5000" repeat="5000">true</autoscroll>
+        </control>
+      </control>
+
+      <!-- Right Column: Title + Metadata List 49 + Track/Album Panel 50 + Action Capsules 9000 @ x=520..1840 -->
+      <control type="label">
+        <left>520</left><top>136</top><width>1320</width><height>72</height>
+        <font>Hero60</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        <label>$VAR[MusicInfoHeader]</label>
+      </control>
+
+      <!-- Action Stadium Capsules 9000 -->
+      <control type="grouplist" id="9000">
+        <left>520</left><top>224</top><width>1320</width><height>66</height>
+        <itemgap>14</itemgap><orientation>horizontal</orientation>
+        <onleft>9000</onleft><onright>9000</onright>
+        <onup>50</onup><ondown>49</ondown>
+        <control type="button" id="8">
+          <width>216</width><height>66</height>
+          <label />
+          <font>HeroPlay29</font><textcolor>FF1D1D1F</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/hero-play-pill.png</texturenofocus>
+        </control>
+        <control type="button" id="6">
+          <width>216</width><height>66</height>
+          <label />
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        </control>
+        <control type="button" id="10">
+          <width>216</width><height>66</height>
+          <label />
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        </control>
+        <control type="button" id="12">
+          <width>216</width><height>66</height>
+          <label />
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        </control>
+        <control type="button" id="7">
+          <width>216</width><height>66</height>
+          <label />
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        </control>
+      </control>
+
+      <!-- Metadata List id="49" -->
+      <control type="list" id="49">
+        <left>520</left><top>314</top><width>1320</width><height>312</height>
+        <onleft>49</onleft><onright>49</onright>
+        <onup>9000</onup><ondown>50</ondown>
+        <include>ListMotion</include>
+        <itemlayout width="1320" height="62">
+          <control type="image">
+            <left>0</left><top>3</top><width>1320</width><height>56</height>
+            <texture colordiffuse="16FFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texture>
+          </control>
+          <control type="label">
+            <left>28</left><top>3</top><width>280</width><height>56</height>
+            <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+            <align>left</align><aligny>center</aligny>
+            <info>ListItem.Label</info>
+          </control>
+          <control type="label">
+            <left>324</left><top>3</top><width>968</width><height>56</height>
+            <font>Card26</font><textcolor>FFF5F5F7</textcolor>
+            <align>left</align><aligny>center</aligny>
+            <info>ListItem.Label2</info>
+          </control>
+        </itemlayout>
+        <focusedlayout width="1320" height="62">
+          <control type="image">
+            <left>0</left><top>3</top><width>1320</width><height>56</height>
+            <texture colordiffuse="FFFFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texture>
+            <visible>Control.HasFocus(49)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>3</top><width>1320</width><height>56</height>
+            <texture colordiffuse="22FFFFFF" border="28,0,28,0">bobbi/glass/capsule-56.png</texture>
+            <visible>!Control.HasFocus(49)</visible>
+          </control>
+          <control type="label">
+            <left>28</left><top>3</top><width>280</width><height>56</height>
+            <font>CardSub22</font><textcolor>B31D1D1F</textcolor>
+            <align>left</align><aligny>center</aligny>
+            <info>ListItem.Label</info>
+            <visible>Control.HasFocus(49)</visible>
+          </control>
+          <control type="label">
+            <left>28</left><top>3</top><width>280</width><height>56</height>
+            <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+            <align>left</align><aligny>center</aligny>
+            <info>ListItem.Label</info>
+            <visible>!Control.HasFocus(49)</visible>
+          </control>
+          <control type="label">
+            <left>324</left><top>3</top><width>968</width><height>56</height>
+            <font>Card26</font><textcolor>FF1D1D1F</textcolor>
+            <align>left</align><aligny>center</aligny>
+            <info>ListItem.Label2</info>
+            <visible>Control.HasFocus(49)</visible>
+          </control>
+          <control type="label">
+            <left>324</left><top>3</top><width>968</width><height>56</height>
+            <font>Card26</font><textcolor>FFF5F5F7</textcolor>
+            <align>left</align><aligny>center</aligny>
+            <info>ListItem.Label2</info>
+            <visible>!Control.HasFocus(49)</visible>
+          </control>
+        </focusedlayout>
+        <content>
+          <include condition="String.IsEqual(ListItem.DBTYPE,artist)">MusicInfoArtistInfo</include>
+          <include condition="String.IsEqual(ListItem.DBTYPE,album)">MusicInfoAlbumInfo</include>
+          <include condition="String.IsEqual(ListItem.DBTYPE,song)">MusicInfoSongInfo</include>
+        </content>
+      </control>
+
+      <!-- Inline Track / Album Panel id="50" -->
+      <control type="panel" id="50">
+        <visible>String.IsEqual(ListItem.DBTYPE,artist) | String.IsEqual(ListItem.DBTYPE,album) | String.IsEqual(ListItem.DBTYPE,song)</visible>
+        <left>520</left><top>648</top><width>1320</width><height>368</height>
+        <onleft>50</onleft><onright>61</onright>
+        <onup>49</onup><ondown>9000</ondown>
+        <pagecontrol>61</pagecontrol>
+        <include>ListMotion</include>
+        <orientation>vertical</orientation>
+        <itemlayout width="660" height="72">
+          <control type="image">
+            <left>0</left><top>4</top><width>646</width><height>64</height>
+            <texture colordiffuse="18FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+          </control>
+          <control type="label">
+            <left>28</left><top>4</top><width>480</width><height>64</height>
+            <font>Card24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <label>$VAR[MusicInfoPanelLabel]</label>
+          </control>
+          <control type="label">
+            <left>512</left><top>4</top><width>108</width><height>64</height>
+            <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <label>$INFO[ListItem.Duration]</label>
+          </control>
+        </itemlayout>
+        <focusedlayout width="660" height="72">
+          <control type="image">
+            <left>0</left><top>4</top><width>646</width><height>64</height>
+            <texture colordiffuse="FFFFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+            <visible>Control.HasFocus(50)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>4</top><width>646</width><height>64</height>
+            <texture colordiffuse="24FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+            <visible>!Control.HasFocus(50)</visible>
+          </control>
+          <control type="label">
+            <left>28</left><top>4</top><width>480</width><height>64</height>
+            <font>Card24</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+            <label>$VAR[MusicInfoPanelLabel]</label>
+            <visible>Control.HasFocus(50)</visible>
+          </control>
+          <control type="label">
+            <left>28</left><top>4</top><width>480</width><height>64</height>
+            <font>Card24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <label>$VAR[MusicInfoPanelLabel]</label>
+            <visible>!Control.HasFocus(50)</visible>
+          </control>
+          <control type="label">
+            <left>512</left><top>4</top><width>108</width><height>64</height>
+            <font>CardSub22</font><textcolor>B31D1D1F</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <label>$INFO[ListItem.Duration]</label>
+            <visible>Control.HasFocus(50)</visible>
+          </control>
+          <control type="label">
+            <left>512</left><top>4</top><width>108</width><height>64</height>
+            <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+            <align>right</align><aligny>center</aligny>
+            <label>$INFO[ListItem.Duration]</label>
+            <visible>!Control.HasFocus(50)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+      <control type="scrollbar" id="61">
+        <left>1852</left><top>654</top><width>4</width><height>356</height>
+        <orientation>vertical</orientation><showonepage>false</showonepage>
+        <onleft>50</onleft><onright>50</onright>
+        <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+      </control>
+    </control>
+  </controls>
+</window>

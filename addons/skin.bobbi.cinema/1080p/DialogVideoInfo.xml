@@ -1,0 +1,270 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">981</defaultcontrol>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <!-- on-device full-bleed stage backdrop -->
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/stage-ambient.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <aspectratio>scale</aspectratio>
+      <texture background="true">$VAR[FanartImage]</texture>
+      <include>ArtFade</include>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-top.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-left.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-bottom.png</texture>
+    </control>
+    <include>LGBarrierHero</include>
+    <include>LGBarrierNav</include>
+
+    <!-- Top-left on-device "‹ ( [avatar] 波比TV )" glass capsule @ (50,50) 180x60 -->
+    <control type="group">
+      <control type="image">
+        <left>29</left><top>68</top><width>20</width><height>24</height>
+        <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/chevron-left.png</texture>
+      </control>
+      <control type="image">
+        <left>50</left><top>50</top><width>180</width><height>60</height>
+        <texture diffuse="bobbi/glass/lg-nav-pill.png">bobbi/glass/back-pill-180x60.png</texture>
+      </control>
+      <control type="image">
+        <left>55</left><top>55</top><width>50</width><height>50</height>
+        <texture>bobbi/glass/avatar-disc.png</texture>
+      </control>
+      <control type="label">
+        <left>117</left><top>50</top><width>100</width><height>60</height>
+        <label>波比TV</label>
+        <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+
+    <!-- Top-right AM/PM clock pill @ (1696,54) 144x52 -->
+    <control type="group">
+      <visible>!Window.IsActive(shutdownmenu)</visible>
+      <include>NavFade</include>
+      <control type="image">
+        <left>1696</left><top>54</top><width>144</width><height>52</height>
+        <texture diffuse="bobbi/glass/lg-nav-pill.png" border="26,0,26,0">bobbi/glass/glass-pill-52.png</texture>
+      </control>
+      <control type="label">
+        <left>1696</left><top>54</top><width>144</width><height>52</height>
+        <label>$VAR[BobbiTimeAMPM]</label>
+        <font>NavClock20</font><textcolor>F5F5F5F7</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+    </control>
+
+    <!-- Right-side 200x300 continuous-corner poster @ (1640,128) when available -->
+    <control type="group">
+      <visible>!String.IsEmpty(ListItem.Art(poster))</visible>
+      <control type="image">
+        <left>1592</left><top>80</top><width>296</width><height>396</height>
+        <texture>bobbi/glass/shadow-200x300.png</texture>
+      </control>
+      <control type="image">
+        <left>1640</left><top>128</top><width>200</width><height>300</height>
+        <texture>bobbi/glass/tile-200x300.png</texture>
+      </control>
+      <control type="image">
+        <left>1640</left><top>128</top><width>200</width><height>300</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobbi/glass/mask-200x300.png">$INFO[ListItem.Art(poster)]</texture>
+      </control>
+      <control type="image">
+        <left>1640</left><top>128</top><width>200</width><height>300</height>
+        <texture>bobbi/glass/rim-200x300.png</texture>
+      </control>
+    </control>
+
+    <!-- Hero text column @ x=80 -->
+    <control type="group">
+      <left>80</left><top>140</top>
+      <control type="label">
+        <left>1</left><top>0</top><width>1400</width><height>28</height>
+        <label>$VAR[DetailKicker]</label>
+        <font>NavHead24</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+        <visible>String.IsEmpty(ListItem.Art(clearlogo))</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>8</top><width>480</width><height>112</height>
+        <aspectratio align="left" aligny="bottom">keep</aspectratio>
+        <texture background="true">$INFO[ListItem.Art(clearlogo)]</texture>
+        <include>ArtFade</include>
+        <visible>!String.IsEmpty(ListItem.Art(clearlogo))</visible>
+      </control>
+      <control type="label">
+        <left>0</left><top>28</top><width>1320</width><height>94</height>
+        <label>$VAR[TitlePrimary]</label>
+        <font>Hero76</font><textcolor>FFFFFFFF</textcolor><shadowcolor>40000000</shadowcolor>
+        <aligny>center</aligny>
+        <visible>String.IsEmpty(ListItem.Art(clearlogo))</visible>
+      </control>
+      <control type="label">
+        <left>2</left><top>126</top><width>1200</width><height>34</height>
+        <label>$VAR[TitleSecondary]</label>
+        <font>HeroMeta24</font><textcolor>B3EBEBF5</textcolor><aligny>center</aligny>
+      </control>
+      <!-- premium TV disc + Outlined [TV-MA] badges + metadata line -->
+      <control type="grouplist">
+        <left>2</left><top>170</top><width>1520</width><height>44</height>
+        <orientation>horizontal</orientation><itemgap>12</itemgap>
+        <usecontrolcoords>true</usecontrolcoords>
+        <control type="image">
+          <top>6</top><width>32</width><height>32</height>
+          <texture>bobbi/glass/avatar-disc.png</texture>
+        </control>
+        <include content="StageChip"><param name="id">9301</param><param name="label">$VAR[SeasonLabel]</param></include>
+        <include content="StageChip"><param name="id">9302</param><param name="label">$VAR[EpisodeLabel]</param></include>
+        <include content="StageChip"><param name="id">9303</param><param name="label">$INFO[ListItem.MPAA]</param></include>
+        <control type="label">
+          <width>auto</width><height>44</height>
+          <label>$INFO[ListItem.Year]$INFO[ListItem.Genre,   ·   ]$INFO[ListItem.Duration(h'小时'mm'分'),   ·   ]$INFO[ListItem.Rating,   ·   ★ ]</label>
+          <font>HeroMeta24</font><textcolor>F5F5F5F7</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <control type="label">
+        <left>2</left><top>220</top><width>1200</width><height>36</height>
+        <label>$VAR[EpisodeTitle]</label>
+        <font>Head30</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+      </control>
+      <!-- Synopsis -->
+      <control type="textbox" id="4">
+        <left>2</left><top>266</top><width>920</width><height>126</height>
+        <label>$INFO[ListItem.Plot]</label>
+        <font>Plot26</font><textcolor>D9EBEBF5</textcolor>
+        <autoscroll delay="6000" time="2500" repeat="8000">false</autoscroll>
+        <pagecontrol>983</pagecontrol>
+      </control>
+      <control type="scrollbar" id="983">
+        <left>938</left><top>268</top><width>4</width><height>122</height>
+        <visible>Container(4).HasNext | Container(4).HasPrevious</visible>
+        <onleft>981</onleft><onright>981</onright><onback>SetFocus(981)</onback>
+        <onup>983</onup><ondown>983</ondown>
+        <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+        <showonepage>false</showonepage>
+        <orientation>vertical</orientation>
+      </control>
+      <!-- Credits & source state -->
+      <control type="label">
+        <left>2</left><top>404</top><width>1200</width><height>28</height>
+        <label>$INFO[ListItem.Director,[COLOR 9CEBEBF5]导演  [/COLOR]]$INFO[ListItem.Cast,     [COLOR 9CEBEBF5]主演  [/COLOR]]</label>
+        <font>CardSub22</font><textcolor>D9EBEBF5</textcolor>
+      </control>
+      <control type="label">
+        <left>2</left><top>436</top><width>1200</width><height>28</height>
+        <label>$INFO[ListItem.Property(Bobbi.SourceState)]</label>
+        <font>CardSub22</font><textcolor>ok</textcolor>
+      </control>
+    </control>
+
+    <!-- premium TV Action Row @ x=80, y=624 (234x66 primary Play pill + 66px Liquid Glass stadium pills) -->
+    <control type="group" id="9819">
+      <left>80</left><top>624</top>
+      <width>234</width><height>66</height>
+      <control type="button" id="981">
+        <left>0</left><top>0</top><width>234</width><height>66</height>
+        <label />
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus>bobbi/glass/hero-play-pill.png</texturenofocus>
+        <onright condition="Integer.IsGreater(Container(9000).NumItems,0) | Control.IsVisible(11) | Control.IsVisible(7) | Control.IsVisible(984) | Control.IsVisible(985)">9000</onright>
+        <ondown>50</ondown>
+        <onup condition="Control.IsVisible(983)">983</onup>
+        <onclick condition="!String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)">SendClick(8)</onclick>
+        <include content="DetailFolderNavigation">
+          <param name="target">$INFO[ListItem.FilenameAndPath]</param>
+          <param name="condition">String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + ListItem.IsFolder</param>
+        </include>
+        <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + !ListItem.IsFolder">RunPlugin("$INFO[ListItem.FilenameAndPath]")</onclick>
+        <onclick condition="String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/) + !ListItem.IsFolder">Dialog.Close(movieinformation)</onclick>
+      </control>
+      <control type="image">
+        <left>26</left><top>19</top><width>28</width><height>28</height>
+        <texture colordiffuse="FF1D1D1F">$VAR[DetailPrimaryIcon]</texture>
+      </control>
+      <control type="label">
+        <left>62</left><top>0</top><width>158</width><height>66</height>
+        <label>$VAR[DetailPrimaryLabel]</label>
+        <font>HeroPlay29</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+
+    <control type="grouplist" id="9000">
+      <left>328</left><top>624</top><width>1512</width><height>66</height>
+      <orientation>horizontal</orientation><itemgap>14</itemgap>
+      <onup condition="Control.IsVisible(983)">983</onup>
+      <ondown>50</ondown>
+      <onleft>981</onleft><onright>noop</onright>
+      <control type="button" id="985">
+        <width>236</width><height>66</height>
+        <visible>!String.IsEmpty(ListItem.Property(Bobbi.Catalog.Variants))</visible>
+        <label>选择文件版本</label><font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus diffuse="bobbi/glass/lg-pill.png" border="33,0,33,0">bobbi/glass/glass-pill-66.png</texturenofocus>
+        <include content="DetailFolderNavigation">
+          <param name="target">$INFO[ListItem.Property(Bobbi.Catalog.Variants)]</param>
+        </include>
+        <onleft>981</onleft><onup condition="Control.IsVisible(983)">983</onup><ondown>50</ondown>
+      </control>
+      <control type="button" id="984">
+        <width>248</width><height>66</height>
+        <visible>!String.IsEmpty(ListItem.Property(Bobbi.Relationships))</visible>
+        <label>系列与演职作品</label><font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus diffuse="bobbi/glass/lg-pill.png" border="33,0,33,0">bobbi/glass/glass-pill-66.png</texturenofocus>
+        <include content="DetailFolderNavigation">
+          <param name="target">$INFO[ListItem.Property(Bobbi.Relationships)]</param>
+        </include>
+        <onleft>981</onleft><onup condition="Control.IsVisible(983)">983</onup><ondown>50</ondown>
+      </control>
+      <include content="TextPill"><param name="id">11</param><param name="label">预告片</param><param name="width">184</param><param name="visible">!String.IsEmpty(ListItem.Trailer)</param></include>
+      <include content="TextPill"><param name="id">7</param><param name="label">我的评分</param><param name="width">200</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+      <include content="TextPill"><param name="id">14</param><param name="label">版本</param><param name="width">156</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+      <include content="TextPill"><param name="id">6</param><param name="label">刷新资料</param><param name="width">200</param><param name="visible">Integer.IsGreater(ListItem.DBID,0)</param></include>
+    </control>
+
+    <control type="button" id="8">
+      <left>-400</left><top>-400</top><width>1</width><height>1</height>
+      <label />
+      <texturefocus /><texturenofocus />
+    </control>
+
+    <!-- Cast & Crew Circular Portraits @ x=80 -->
+    <control type="group">
+      <visible>Integer.IsGreater(Container(50).NumItems,0)</visible>
+      <control type="label">
+        <left>80</left><top>720</top><width>800</width><height>34</height>
+        <label>演职人员</label>
+        <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+      </control>
+      <control type="panel" id="50">
+        <left>56</left><top>760</top><width>1864</width><height>286</height>
+        <orientation>horizontal</orientation>
+        <include>ListMotion</include>
+        <onup>981</onup><ondown>noop</ondown>
+        <itemlayout width="200" height="264">
+          <include content="CastTile" />
+        </itemlayout>
+        <focusedlayout width="200" height="264">
+          <include content="CastTile"><param name="focused">Control.HasFocus(50)</param></include>
+        </focusedlayout>
+      </control>
+    </control>
+  </controls>
+</window>

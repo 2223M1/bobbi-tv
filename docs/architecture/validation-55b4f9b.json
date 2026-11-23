@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "scope": "Frozen 55b4f9b local regression, reproducible builds and one CoreELEC upgrade. First cold search succeeded; playback stalled and fullscreen presentation failed. Full acceptance has NOT passed.",
+  "source_identity": {
+    "commit": "55b4f9be6eb435cf212f188d8352dc8028f0c6be",
+    "tree": "652a3b78641eaec735377d501d69cbac166b7235",
+    "catalog_schema": 4,
+    "inventory_sha256": "13c4b51918d7a42c1f5128581c6813fb9314da9e9a61b08a80f26083c60e6325",
+    "documentation_binding": "Later documentation and ownership maps do not replace the frozen product or its graph manifest."
+  },
+  "local_execution": {
+    "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+    "source_binding": "Three independent frozen runner receipts record clean unchanged HEAD/tree, commands and artifact hashes. All completed before deployment.",
+    "groups": [
+      {"name": "primary", "receipt": "55b4f9b-primary.json", "junit_sha256": "fecc148f6055686992432a46d116fe741652514876bafaf2bad5a9e4fa679cc8", "passed": 7508, "ordinary_skipped": 21, "xfail": 1, "failures": 0, "errors": 0},
+      {"name": "baseline", "receipt": "55b4f9b-baseline.json", "junit_sha256": "39468aae4199b94dc9b3c3c174317925b4ac74bab154cbabf6d169e4463510f2", "passed": 1695, "ordinary_skipped": 0, "xfail": 0, "failures": 0, "errors": 0},
+      {"name": "preparation", "receipt": "55b4f9b-preparation.json", "junit_sha256": "22f635852d9b06cc9deee0c1697d2073cebda4fbeeefb713646024f47e2ae9aa", "passed": 254, "ordinary_skipped": 0, "xfail": 0, "failures": 0, "errors": 0}
+    ],
+    "windows_passed": 9457,
+    "posix": {"receipt": "55b4f9b-posix-contracts-report.json", "passed": 128, "skipped": 0, "failures": 0, "scope": "Six isolated WSL groups, including seven real symlink tests. Overlaps Windows groups; do not add as unique coverage."},
+    "qualification": "The strict expected failure retains missing strong type evidence for Eizouken/Nogizaka46. Counts do not establish system-interaction or device coverage."
+  },
+  "graph": {
+    "directory": "D:/AM6B-Project/architecture-audit-55b4f9b-final",
+    "repeat_directory": "D:/AM6B-Project/architecture-audit-55b4f9b-final-repeat",
+    "all_three_artifacts_byte_equal": true,
+    "graph_bytes": 102155660,
+    "graph_sha256": "6abb4485f9d790167d3620bb1d562e84d1bf3e470f282e27ed9dafaba1ce61e6",
+    "files": 2313,
+    "loaded_sources": 1736,
+    "python_ast_inputs": 1442,
+    "nodes": 60368,
+    "edges": {"confirmed": 7510, "candidate": 34174, "external": 25769, "unresolved": 82278},
+    "diagnostics": 0,
+    "candidate_scc": 19,
+    "module_collisions": 3,
+    "resolved_core_to_platform_or_plugin_import_edges": 0,
+    "qualification": "Static evidence only. Core runtime_paths still uses xbmcvfs; platform catalog_ui imports the plugin. Unresolved dynamic imports, calls and protocol routes remain. Later A/B/C ownership assertions are not in this frozen manifest."
+  },
+  "build_and_install": {
+    "source_check": "Two independent noninstallable source-check builds; 63 files byte-identical. Installable build has 22 components and clean source provenance. Entry audit verified the actual archive, signature and bootstrap.",
+    "sequence": 2026102126,
+    "run_id": "20261113-180500",
+    "package": "bobbi-55b4f9b-2026102126-coreelec.bobbi-update.zip",
+    "package_sha256": "97c1225247f76ca26cb0dba4186daf622b2bb646526eaed3770cd2879f5908d7",
+    "entry": "script.bobbi.start-0.2.91-55b4f9b.zip",
+    "entry_sha256": "13d96ea9cf81e91d8fcba940c7ff0f657b8c990a7372b28463651cbc1024c8a9",
+    "entry_audit": "55b4f9b-entry-audit.json",
+    "installed_files_receipt": "review-evidence/ce2023/installed-files-1794564412084081500.json",
+    "owned_files_matching": 1257,
+    "native_sha256_unchanged": "7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c",
+    "android": "Not linked, installed or device-tested at this revision."
+  },
+  "device": {
+    "health_before": "device-prestage-55b4f9b.json",
+    "health_after": "device-after-55b4f9b.json",
+    "sentinels_unchanged_at_upgrade": 8,
+    "saved_cloud_logins": ["115", "baidu"],
+    "saved_server_logins": [],
+    "catalog_integrity": "ok",
+    "typed_objects": 594,
+    "pending_transaction": false,
+    "upgrade_health": "Kodi active, zero restarts, no traceback or product error in startup observation. This is not long-running health acceptance.",
+    "owner_idle_observation": {"receipt": "owner-idle-55b4f9b.json", "accepted": "12/12", "elapsed_ms_range": [41.558, 245.199], "qualification": "Short idle sample only, not a performance improvement claim."},
+    "cold_playback": {
+      "run_id": "convergence115b55b4f9b",
+      "attempt": 1,
+      "work": "Legend of the Galactic Heroes (1988), S01E01",
+      "source": "115 selected share; not personal-library adapter acceptance",
+      "source_key": "ab766ee89fdc3b95bb4ee9f0424420c985ce7d296c90fb3cfdbdd42ce8dbc8b1",
+      "file_bytes": 6137957865,
+      "audio": "index 0, Japanese TrueHD 6 channels",
+      "subtitle": "index 0, Chinese chs, enabled",
+      "request_id": "24a4879a3736419d944405a0a5f277e5",
+      "native_instance": "831bd379-8722-4b94-9e3f-ed7a7bd3ec95",
+      "search": "passed ordinary cold search and selected fresh source card",
+      "receipt": "campaign-55b4f9b/ce-new-work-convergence115b55b4f9b-galactic_heroes-select-1794564614537817300.json",
+      "select_to_av_observed_seconds": 6.665656964,
+      "max_clock_stall_seconds": 26.45435698,
+      "clock_discontinuities": 6,
+      "observation_gaps": 0,
+      "trace_passed": false,
+      "qualification": "max_clock_stall_seconds is the trace's composite OR health interval, not 26 seconds of continuous decoder freeze. Clock stayed at 3.430 seconds over a 25.100-second sample span; decoder count stayed at 236 over approximately 14.016 seconds of actual decoder-read windows. Subsequent advancing playback does not erase failure. Transport silence after 47 ordinary events is an event-budget limit, not proof that supply stopped."
+    },
+    "presentation": {
+      "receipt": "presentation-55b4f9b-first.json",
+      "log": "review-evidence/ce-playback-log-1794564693191184700.json",
+      "failure": "Home remained visible after AV start. fullscreen_allowed=true, requested=false, confirmed=false and user_intent=0. OWNER_READ BUDGET_EXHAUSTED follows loading retirement; no fullscreen admission is observed.",
+      "qualification": "Screenshot proves GUI state, not the AMLogic video plane. No global fullscreen bypass was used."
+    },
+    "later_observation": {
+      "health": "device-55b4f9b-resumed-health.json",
+      "presentation": "presentation-55b4f9b-resumed.json",
+      "traceback": "traceback-55b4f9b-resumed.json",
+      "stop": "stop-55b4f9b-resumed.json",
+      "scope": "Hours later playback had a different request/instance. Original trial correctly rejected USER_CHANGED_SELECTION. Current exact instance was separately observed then stopped with a scoped command; this is cleanup, not OSD or EOF/next-chain acceptance.",
+      "health_attention": "Three traceback headers belong to an upstream a4kSubtitles timeout chain. Full health and system acceptance remain incomplete."
+    },
+    "acceptance": "NOT_PASSED",
+    "remaining": ["Fix presentation and diagnose exact-file stall before remaining five-cold/five-warm samples", "Actual OSD, phone, Stop/EOF/history/next and profile intersections", "110-scenario system acceptance", "Real NAS/server protocols and progress conflict synchronization"]
+  },
+  "release": {"public_release_clearance": false, "reason": "Device acceptance incomplete; seven unresolved sources, two unresolved full licenses and p115rsacipher GPL/MIT contradiction remain. No GitHub push performed."}
+}

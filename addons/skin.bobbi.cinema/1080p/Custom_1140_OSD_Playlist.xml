@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="1140">
+  <defaultcontrol always="true">6401</defaultcontrol>
+  <depth>DepthOSD</depth>
+  <controls>
+    <control type="group">
+      <visible>!Window.IsVisible(FileBrowser)</visible>
+      <visible>!Window.IsActive(videobookmarks)</visible>
+      <include content="OSDScrim"><param name="top">380</param></include>
+
+      <!-- on-device Floating Liquid Glass Episode / Queue Sheet (1800x544 @ x=60, y=480) -->
+      <control type="group">
+        <left>60</left><top>480</top><width>1800</width><height>544</height>
+        <include content="PanelOpen"><param name="slide">0,28</param></include>
+
+        <control type="image">
+          <left>-48</left><top>-48</top><width>1896</width><height>640</height>
+          <texture border="64">bobbi/glass/modal-shadow.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1800</width><height>544</height>
+          <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1800</width><height>544</height>
+          <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+        </control>
+
+        <!-- Sheet Header -->
+        <control type="label">
+          <left>44</left><top>28</top><width>1100</width><height>44</height>
+          <label>$VAR[Label_OSD_Episodes_Title]</label>
+          <font>Head34</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <right>44</right><top>28</top><width>520</width><height>44</height>
+          <label>↑ 返回播放   ·   ↓ 章节与书签</label>
+          <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><align>right</align><aligny>center</aligny>
+        </control>
+
+        <!-- Horizontal 320x180 Episode Cards (id=6401) -->
+        <control type="fixedlist" id="6401">
+          <left>26</left><top>84</top><width>1748</width><height>268</height>
+          <orientation>horizontal</orientation>
+          <preloaditems>2</preloaditems>
+          <include>ListMotion</include>
+          <onup>Close</onup>
+          <ondown condition="!VideoPlayer.Content(livetv)">RunScript(plugin.video.bobbi,bobbi_osd=chapters)</ondown>
+          <itemlayout width="356" height="268">
+            <control type="group">
+              <left>18</left><top>14</top>
+              <control type="image">
+                <left>-16</left><top>-12</top><width>352</width><height>212</height>
+                <texture>bobbi/glass/shadow-320x180.png</texture>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>320</width><height>180</height>
+                <texture>bobbi/glass/tile-320x180.png</texture>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>320</width><height>180</height>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture background="true" diffuse="bobbi/glass/mask-320x180.png">$VAR[Image_Landscape]</texture>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>320</width><height>180</height>
+                <texture colordiffuse="66FFFFFF">bobbi/glass/rim-320x180.png</texture>
+              </control>
+              <control type="image">
+                <left>280</left><top>14</top><width>26</width><height>26</height>
+                <texture colordiffuse="ok">bobbi/glass/icons/checkmark.png</texture>
+                <visible>Integer.IsGreater(ListItem.PlayCount,0)</visible>
+              </control>
+              <control type="label">
+                <left>2</left><top>188</top><width>316</width><height>28</height>
+                <font>Card24</font><textcolor>text</textcolor><selectedcolor>accent_text</selectedcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel]</label><aligny>center</aligny>
+              </control>
+              <control type="label">
+                <left>2</left><top>216</top><width>316</width><height>24</height>
+                <font>CardSub22</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><selectedcolor>text2</selectedcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel2]</label><aligny>center</aligny>
+              </control>
+            </control>
+          </itemlayout>
+          <focusedlayout width="356" height="268">
+            <control type="group">
+              <left>18</left><top>14</top>
+              <control type="group">
+                <include content="Lift"><param name="zoom">105</param></include>
+                <control type="image">
+                  <left>-24</left><top>-24</top><width>368</width><height>228</height>
+                  <texture>bobbi/glass/glow-320x180.png</texture>
+                  <visible>Control.HasFocus(6401)</visible>
+                </control>
+                <control type="image">
+                  <left>0</left><top>0</top><width>320</width><height>180</height>
+                  <texture>bobbi/glass/tile-320x180.png</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>0</top><width>320</width><height>180</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/mask-320x180.png">$VAR[Image_Landscape]</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>0</top><width>320</width><height>180</height>
+                  <texture colordiffuse="FFFFFFFF">bobbi/glass/rim-320x180.png</texture>
+                </control>
+                <control type="image">
+                  <left>280</left><top>14</top><width>26</width><height>26</height>
+                  <texture colordiffuse="ok">bobbi/glass/icons/checkmark.png</texture>
+                  <visible>Integer.IsGreater(ListItem.PlayCount,0)</visible>
+                </control>
+              </control>
+              <control type="label">
+                <left>2</left><top>192</top><width>316</width><height>28</height>
+                <font>Card24</font><textcolor>text</textcolor><selectedcolor>accent_text</selectedcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel]</label><aligny>center</aligny>
+              </control>
+              <control type="label">
+                <left>2</left><top>220</top><width>316</width><height>24</height>
+                <font>CardSub22</font><textcolor>text2</textcolor><selectedcolor>text2</selectedcolor>
+                <label>$VAR[Label_OSD_EpisodeLabel2]</label><aligny>center</aligny>
+              </control>
+            </control>
+          </focusedlayout>
+          <include>Object_ContentDynamic</include>
+        </control>
+
+        <!-- Rail Edge Chevrons -->
+        <control type="image">
+          <left>12</left><top>176</top><width>24</width><height>24</height>
+          <texture colordiffuse="9CEBEBF5">bobbi/glass/icons/chevron-left.png</texture>
+          <visible>Container(6401).HasPrevious</visible>
+        </control>
+        <control type="image">
+          <right>12</right><top>176</top><width>24</width><height>24</height>
+          <texture colordiffuse="9CEBEBF5">bobbi/glass/icons/chevron-right.png</texture>
+          <visible>Container(6401).HasNext</visible>
+        </control>
+
+        <!-- Episode Synopsis Strip -->
+        <control type="group">
+          <left>44</left><top>382</top><width>1712</width><height>124</height>
+          <control type="image">
+            <left>0</left><top>8</top><width>64</width><height>64</height>
+            <texture>bobbi/glass/osd-disc-64.png</texture>
+          </control>
+          <control type="image">
+            <left>4</left><top>12</top><width>56</width><height>56</height>
+            <aspectratio scalediffuse="false">scale</aspectratio>
+            <texture background="true" diffuse="bobbi/glass/cast-mask-152.png">$VAR[Image_OSD_Episodes]</texture>
+          </control>
+          <control type="textbox">
+            <left>88</left><top>4</top><width>1624</width><height>112</height>
+            <label>[COLOR FFF5F5F7]$INFO[Container(6401).ListItem.Season,S,]$INFO[Container(6401).ListItem.Episode,E, ]$INFO[Container(6401).ListItem.Title,,   ·   ][/COLOR]$INFO[Container(6401).ListItem.Plot]</label>
+            <font>Body26</font><textcolor>text2</textcolor>
+            <autoscroll time="2000" delay="2000" repeat="4000">true</autoscroll>
+          </control>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

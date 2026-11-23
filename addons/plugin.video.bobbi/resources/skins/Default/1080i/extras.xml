@@ -1,0 +1,1543 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window>
+  <defaultcontrol always="true">10</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <animation effect="fade" start="0" end="100" time="180" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  <controls>
+    <!-- on-device full-bleed atmospheric stage -->
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/stage-ambient.png</texture>
+    </control>
+    <control type="image" id="202">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <aspectratio>scale</aspectratio>
+      <texture background="true">$INFO[Window.Property(fanart)]</texture>
+      <fadetime>360</fadetime>
+      <visible>!String.IsEqual(Window.Property(fanart),false) + !String.IsEmpty(Window.Property(fanart))</visible>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-top.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-left.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-bottom.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-hero.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+
+    <!-- Top-left native glass "‹ ( [avatar] 波比TV )" glass capsule @ (50,50) 180x60 -->
+    <control type="group">
+      <control type="image">
+        <left>29</left><top>68</top><width>20</width><height>24</height>
+        <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/chevron-left.png</texture>
+      </control>
+      <control type="image">
+        <left>50</left><top>50</top><width>180</width><height>60</height>
+        <texture diffuse="bobbi/glass/lg-pill.png">bobbi/glass/back-pill-180x60.png</texture>
+      </control>
+      <control type="image">
+        <left>55</left><top>55</top><width>50</width><height>50</height>
+        <texture>bobbi/glass/avatar-disc.png</texture>
+      </control>
+      <control type="label">
+        <left>117</left><top>50</top><width>100</width><height>60</height>
+        <label>波比TV</label>
+        <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+
+    <!-- Top-right AM/PM clock pill @ (1696,54) 144x52 -->
+    <control type="group">
+      <control type="image">
+        <left>1696</left><top>54</top><width>144</width><height>52</height>
+        <texture colordiffuse="B81A1B1F" border="26,0,26,0">bobbi/glass/capsule-52.png</texture>
+      </control>
+      <control type="image">
+        <left>1696</left><top>54</top><width>144</width><height>52</height>
+        <texture border="26,0,26,0">bobbi/glass/capsule-52-rim.png</texture>
+      </control>
+      <control type="label">
+        <left>1696</left><top>54</top><width>144</width><height>52</height>
+        <label>$VAR[BobbiTimeAMPM]</label>
+        <font>NavClock20</font><textcolor>F5F5F5F7</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+    </control>
+
+    <!-- Right-side 200x300 continuous-corner poster @ (1640,128) -->
+    <control type="group">
+      <control type="image">
+        <left>1592</left><top>80</top><width>296</width><height>396</height>
+        <texture>bobbi/glass/shadow-200x300.png</texture>
+      </control>
+      <control type="image">
+        <left>1640</left><top>128</top><width>200</width><height>300</height>
+        <texture>bobbi/glass/tile-200x300.png</texture>
+      </control>
+      <control type="image">
+        <left>1716</left><top>254</top><width>48</width><height>48</height>
+        <texture colordiffuse="40EBEBF5">bobbi/glass/icons/film.png</texture>
+        <visible>String.IsEqual(Window.Property(poster),false) | String.IsEmpty(Window.Property(poster))</visible>
+      </control>
+      <control type="image" id="200">
+        <left>1640</left><top>128</top><width>200</width><height>300</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobbi/glass/mask-200x300.png">$INFO[Window.Property(poster)]</texture>
+        <visible>!String.IsEqual(Window.Property(poster),false) + !String.IsEmpty(Window.Property(poster))</visible>
+      </control>
+      <control type="image">
+        <left>1640</left><top>128</top><width>200</width><height>300</height>
+        <texture>bobbi/glass/rim-200x300.png</texture>
+      </control>
+    </control>
+
+    <!-- Left Hero Column @ x=80, top=124 -->
+    <control type="group">
+      <left>80</left><top>124</top>
+      <control type="image" id="201">
+        <left>0</left><top>0</top><width>480</width><height>112</height>
+        <aspectratio align="left" aligny="bottom">keep</aspectratio>
+        <texture background="true">$INFO[Window.Property(clearlogo)]</texture>
+        <fadetime>200</fadetime>
+        <visible>!String.IsEqual(Window.Property(clearlogo),false) + !String.IsEmpty(Window.Property(clearlogo))</visible>
+      </control>
+      <control type="label">
+        <left>0</left><top>20</top><width>1500</width><height>92</height>
+        <label>$INFO[Window.Property(title)]</label>
+        <font>Hero60</font><textcolor>FFFFFFFF</textcolor><shadowcolor>40000000</shadowcolor>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(clearlogo),false) | String.IsEmpty(Window.Property(clearlogo))</visible>
+      </control>
+
+      <!-- Metadata row @ y=246 (top=122 relative to 124) -->
+      <control type="grouplist">
+        <left>0</left><top>122</top><width>1520</width><height>36</height>
+        <orientation>horizontal</orientation><itemgap>14</itemgap>
+        <usecontrolcoords>true</usecontrolcoords>
+        <control type="image">
+          <top>2</top><width>32</width><height>32</height>
+          <texture>bobbi/glass/avatar-disc.png</texture>
+          <visible>!String.IsEmpty(Control.GetLabel(2001)) | !String.IsEmpty(Window.Property(genre))</visible>
+        </control>
+        <control type="label" id="2001">
+          <width>auto</width><height>36</height>
+          <font>HeroMeta24</font><textcolor>F5F5F5F7</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <width>auto</width><height>36</height>
+          <font>HeroMeta24</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+          <label>$INFO[Window.Property(genre)]</label>
+          <visible>!String.IsEmpty(Window.Property(genre))</visible>
+        </control>
+        <control type="group">
+          <width>92</width><height>36</height>
+          <visible>String.IsEqual(Window.Property(tmdb_rating),true)</visible>
+          <control type="image">
+            <left>0</left><top>5</top><width>92</width><height>26</height>
+            <texture colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texture>
+          </control>
+          <control type="image">
+            <left>12</left><top>10</top><width>16</width><height>16</height>
+            <texture colordiffuse="FFFFD60A">bobbi/glass/icons/star.png</texture>
+          </control>
+          <control type="label" id="4005">
+            <left>30</left><top>5</top><width>52</width><height>26</height>
+            <font>Badge18</font><textcolor>F2F5F5F7</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <label>0.0</label>
+          </control>
+        </control>
+        <control type="group">
+          <width>118</width><height>36</height>
+          <visible>String.IsEqual(Window.Property(display_extra_ratings),true) + !String.IsEqual(Window.Property(imdb_rating),false) + !String.IsEmpty(Window.Property(imdb_rating))</visible>
+          <control type="image">
+            <left>0</left><top>5</top><width>118</width><height>26</height>
+            <texture colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texture>
+          </control>
+          <control type="label">
+            <left>0</left><top>5</top><width>118</width><height>26</height>
+            <font>Badge18</font><textcolor>F2F5F5F7</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <label>IMDb $INFO[Window.Property(imdb_rating)]</label>
+          </control>
+        </control>
+        <control type="group">
+          <width>104</width><height>36</height>
+          <visible>String.IsEqual(Window.Property(display_extra_ratings),true) + !String.IsEqual(Window.Property(metascore_rating),false) + !String.IsEmpty(Window.Property(metascore_rating))</visible>
+          <control type="image">
+            <left>0</left><top>5</top><width>104</width><height>26</height>
+            <texture colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texture>
+          </control>
+          <control type="label">
+            <left>0</left><top>5</top><width>104</width><height>26</height>
+            <font>Badge18</font><textcolor>F2F5F5F7</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <label>MC $INFO[Window.Property(metascore_rating)]</label>
+          </control>
+        </control>
+        <control type="group">
+          <width>104</width><height>36</height>
+          <visible>String.IsEqual(Window.Property(display_extra_ratings),true) + !String.IsEqual(Window.Property(tomatometer_rating),false) + !String.IsEmpty(Window.Property(tomatometer_rating))</visible>
+          <control type="image">
+            <left>0</left><top>5</top><width>104</width><height>26</height>
+            <texture colordiffuse="E6F5F5F7" border="9">bobbi/glass/badge-outline-26.png</texture>
+          </control>
+          <control type="label">
+            <left>0</left><top>5</top><width>104</width><height>26</height>
+            <font>Badge18</font><textcolor>F2F5F5F7</textcolor>
+            <align>center</align><aligny>center</aligny>
+            <label>RT $INFO[Window.Property(tomatometer_rating)]</label>
+          </control>
+        </control>
+      </control>
+
+      <!-- Tagline & concise lead-in -->
+      <control type="label" id="3001">
+        <left>2</left><top>168</top><width>1480</width><height>32</height>
+        <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>2</left><top>200</top><width>1120</width><height>30</height>
+        <label>$INFO[Window.Property(plot)]</label>
+        <font>HeroPlot24</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+        <scroll>false</scroll>
+        <visible>!String.IsEqual(Window.Property(active_tab),overview) + !String.IsEmpty(Window.Property(plot))</visible>
+      </control>
+    </control>
+
+    <!-- native glass Action Row @ x=80, top=368, height=66 (separate label controls prevent symmetrical textoffsetx clipping!) -->
+    <control type="group">
+      <left>80</left><top>368</top>
+      <!-- Primary Play / Seasons pill id="10" (234x66) -->
+      <control type="group">
+        <left>0</left><top>0</top><width>234</width><height>66</height>
+        <control type="button" id="10">
+          <left>0</left><top>0</top><width>234</width><height>66</height>
+          <label />
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus>bobbi/glass/hero-play-pill.png</texturenofocus>
+          <onright>11</onright><onleft>17</onleft><ondown>20</ondown>
+        </control>
+        <control type="image">
+          <left>44</left><top>19</top><width>28</width><height>28</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/play.png</texture>
+        </control>
+        <control type="label">
+          <left>84</left><top>0</top><width>136</width><height>66</height>
+          <label>$INFO[Window.Property(button10.label)]</label>
+          <font>HeroPlay29</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+
+      <!-- Secondary 66px Liquid Glass stadium pills -->
+      <control type="group">
+        <left>248</left><top>0</top><width>208</width><height>66</height>
+        <control type="button" id="11">
+          <left>0</left><top>0</top><width>208</width><height>66</height>
+          <label />
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onright>15</onright><onleft>10</onleft><ondown>20</ondown>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>208</width><height>66</height>
+          <texture border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+          <visible>!Control.HasFocus(11)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/film-outline.png</texture>
+          <visible>!Control.HasFocus(11)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/film-outline.png</texture>
+          <visible>Control.HasFocus(11)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>132</width><height>66</height>
+          <label>$INFO[Window.Property(button11.label)]</label>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <visible>!Control.HasFocus(11)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>132</width><height>66</height>
+          <label>$INFO[Window.Property(button11.label)]</label>
+          <font>Button24</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+          <visible>Control.HasFocus(11)</visible>
+        </control>
+      </control>
+
+      <control type="group">
+        <left>470</left><top>0</top><width>248</width><height>66</height>
+        <control type="button" id="15">
+          <left>0</left><top>0</top><width>248</width><height>66</height>
+          <label />
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onright>16</onright><onleft>11</onleft><ondown>20</ondown>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>248</width><height>66</height>
+          <texture border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+          <visible>!Control.HasFocus(15)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/plus.png</texture>
+          <visible>!Control.HasFocus(15)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/plus.png</texture>
+          <visible>Control.HasFocus(15)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>172</width><height>66</height>
+          <label>$INFO[Window.Property(button15.label)]</label>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <visible>!Control.HasFocus(15)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>172</width><height>66</height>
+          <label>$INFO[Window.Property(button15.label)]</label>
+          <font>Button24</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+          <visible>Control.HasFocus(15)</visible>
+        </control>
+      </control>
+
+      <control type="group">
+        <left>732</left><top>0</top><width>228</width><height>66</height>
+        <control type="button" id="16">
+          <left>0</left><top>0</top><width>228</width><height>66</height>
+          <label />
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onright>17</onright><onleft>15</onleft><ondown>20</ondown>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>228</width><height>66</height>
+          <texture border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+          <visible>!Control.HasFocus(16)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/checkmark.png</texture>
+          <visible>!Control.HasFocus(16)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/checkmark.png</texture>
+          <visible>Control.HasFocus(16)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>152</width><height>66</height>
+          <label>$INFO[Window.Property(button16.label)]</label>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <visible>!Control.HasFocus(16)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>152</width><height>66</height>
+          <label>$INFO[Window.Property(button16.label)]</label>
+          <font>Button24</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+          <visible>Control.HasFocus(16)</visible>
+        </control>
+      </control>
+
+      <control type="group">
+        <left>974</left><top>0</top><width>208</width><height>66</height>
+        <control type="button" id="17">
+          <left>0</left><top>0</top><width>208</width><height>66</height>
+          <label />
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="24FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onright>10</onright><onleft>16</onleft><ondown>20</ondown>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>208</width><height>66</height>
+          <texture border="33,0,33,0">bobbi/glass/capsule-66-rim.png</texture>
+          <visible>!Control.HasFocus(17)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/refresh.png</texture>
+          <visible>!Control.HasFocus(17)</visible>
+        </control>
+        <control type="image">
+          <left>26</left><top>21</top><width>24</width><height>24</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/refresh.png</texture>
+          <visible>Control.HasFocus(17)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>132</width><height>66</height>
+          <label>$INFO[Window.Property(button17.label)]</label>
+          <font>Button24</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <visible>!Control.HasFocus(17)</visible>
+        </control>
+        <control type="label">
+          <left>62</left><top>0</top><width>132</width><height>66</height>
+          <label>$INFO[Window.Property(button17.label)]</label>
+          <font>Button24</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+          <visible>Control.HasFocus(17)</visible>
+        </control>
+      </control>
+    </control>
+
+    <!-- native glass Section Tab Bar @ x=80, top=456, height=54 -->
+    <control type="grouplist">
+      <left>80</left><top>456</top><width>1760</width><height>54</height>
+      <orientation>horizontal</orientation><itemgap>10</itemgap>
+      <onup>10</onup>
+      <control type="button" id="20">
+        <width min="156">auto</width><height>52</height>
+        <onfocus>SetProperty(active_tab,overview)</onfocus>
+        <onright>21</onright>
+        <onleft condition="Control.IsVisible(27)">27</onleft>
+        <onleft condition="!Control.IsVisible(27)">26</onleft>
+        <onup>10</onup>
+        <ondown condition="Control.IsVisible(2099)">2099</ondown>
+        <ondown>2000</ondown>
+        <label>剧情简介</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <control type="button" id="21">
+        <width min="156">auto</width><height>52</height>
+        <onfocus>SetProperty(active_tab,cast)</onfocus>
+        <onright>22</onright><onleft>20</onleft><onup>10</onup><ondown>2050</ondown>
+        <label>演职人员</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <control type="button" id="22">
+        <width min="156">auto</width><height>52</height>
+        <onfocus>SetProperty(active_tab,similar)</onfocus>
+        <onright>23</onright><onleft>21</onleft><onup>10</onup>
+        <ondown condition="!Integer.IsGreater(Container(2051).NumItems,0) + Integer.IsGreater(Container(2052).NumItems,0)">2052</ondown>
+        <ondown>2051</ondown>
+        <label>相似作品</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <control type="button" id="23">
+        <width min="124">auto</width><height>52</height>
+        <onfocus>SetProperty(active_tab,reviews)</onfocus>
+        <onright>24</onright><onleft>22</onleft><onup>10</onup>
+        <ondown condition="!Integer.IsGreater(Container(2054).NumItems,0) + Integer.IsGreater(Container(2055).NumItems,0)">2055</ondown>
+        <ondown>2054</ondown>
+        <label>影评</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <control type="button" id="24">
+        <width min="180">auto</width><height>52</height>
+        <onfocus>SetProperty(active_tab,videos)</onfocus>
+        <onright>25</onright><onleft>23</onleft><onup>10</onup><ondown>2060</ondown>
+        <label>预告与花絮</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <control type="button" id="25">
+        <width min="156">auto</width><height>52</height>
+        <onfocus>SetProperty(active_tab,trivia)</onfocus>
+        <onright>26</onright><onleft>24</onleft><onup>10</onup>
+        <ondown condition="!Integer.IsGreater(Container(2056).NumItems,0) + Integer.IsGreater(Container(2057).NumItems,0)">2057</ondown>
+        <ondown condition="!Integer.IsGreater(Container(2056).NumItems,0) + !Integer.IsGreater(Container(2057).NumItems,0) + Integer.IsGreater(Container(2058).NumItems,0)">2058</ondown>
+        <ondown>2056</ondown>
+        <label>幕后故事</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <control type="button" id="26">
+        <width min="124">auto</width><height>52</height>
+        <onfocus>SetProperty(active_tab,more)</onfocus>
+        <onright condition="Control.IsVisible(27)">27</onright>
+        <onright condition="!Control.IsVisible(27)">20</onright>
+        <onleft>25</onleft><onup>10</onup>
+        <ondown condition="!Integer.IsGreater(Container(2061).NumItems,0) + Integer.IsGreater(Container(2062).NumItems,0)">2062</ondown>
+        <ondown condition="!Integer.IsGreater(Container(2061).NumItems,0) + !Integer.IsGreater(Container(2062).NumItems,0) + Integer.IsGreater(Container(2063).NumItems,0)">2063</ondown>
+        <ondown condition="!Integer.IsGreater(Container(2061).NumItems,0) + !Integer.IsGreater(Container(2062).NumItems,0) + !Integer.IsGreater(Container(2063).NumItems,0) + Integer.IsGreater(Container(2064).NumItems,0)">2064</ondown>
+        <ondown>2061</ondown>
+        <label>更多</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+      </control>
+      <control type="button" id="27">
+        <width min="204">auto</width><height>52</height>
+        <onright>20</onright><onleft>26</onleft><onup>10</onup><ondown>27</ondown>
+        <label>个人补充视频</label>
+        <font>Button24</font><textcolor>D9EBEBF5</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <texturefocus colordiffuse="FFFFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturefocus>
+        <texturenofocus colordiffuse="20FFFFFF" border="26,0,26,0">bobbi/glass/capsule-52.png</texturenofocus>
+        <align>center</align><aligny>center</aligny><textoffsetx>28</textoffsetx>
+        <visible>String.IsEqual(Window.Property(personal_supplements),true)</visible>
+      </control>
+    </control>
+
+    <!-- Tab Content Stage @ x=80..1840, top=526, height=520 -->
+    <control type="group">
+      <left>80</left><top>526</top><width>1760</width><height>520</height>
+
+      <!-- 1. Overview Tab -->
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(active_tab),overview)</visible>
+        <control type="image">
+          <left>0</left><top>10</top><width>1760</width><height>464</height>
+          <texture colordiffuse="1EFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>10</top><width>1760</width><height>464</height>
+          <texture colordiffuse="73FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+        </control>
+        <control type="label">
+          <left>44</left><top>36</top><width>400</width><height>30</height>
+          <font>NavHead24</font><textcolor>9CEBEBF5</textcolor>
+          <label>剧情简介</label>
+        </control>
+        <control type="textbox" id="2000">
+          <left>44</left><top>78</top><width>1656</width><height>368</height>
+          <font>Plot26</font><align>left</align><textcolor>F2F5F5F7</textcolor>
+          <label>$INFO[Window.Property(plot)]</label>
+          <pagecontrol>2099</pagecontrol>
+          <autoscroll delay="8000" time="3000" repeat="6000">!Control.HasFocus(2099)</autoscroll>
+          <onup>20</onup>
+        </control>
+        <control type="scrollbar" id="2099">
+          <left>1724</left><top>82</top><width>4</width><height>360</height>
+          <orientation>vertical</orientation><showonepage>false</showonepage>
+          <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+          <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+          <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+          <onup>20</onup><onleft>20</onleft>
+        </control>
+      </control>
+
+      <!-- 2. Cast & Crew Tab (152x152 native glass Circular Portraits) -->
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(active_tab),cast)</visible>
+        <control type="label">
+          <left>0</left><top>8</top><width>900</width><height>36</height>
+          <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <label>演职人员 $INFO[Window.Property(cast.number)]</label>
+        </control>
+        <control type="fixedlist" id="2050">
+          <left>-24</left><top>56</top><width>1808</width><height>280</height>
+          <onup>21</onup><ondown>noop</ondown>
+          <orientation>horizontal</orientation>
+          <scrolltime tween="cubic" easing="out">220</scrolltime>
+          <focusposition>0</focusposition>
+          <movement>4</movement>
+          <itemlayout width="200" height="260">
+            <control type="group">
+              <left>24</left><top>14</top>
+              <control type="image">
+                <left>0</left><top>0</top><width>152</width><height>152</height>
+                <texture colordiffuse="FF2C2C2E">bobbi/glass/cast-mask-152.png</texture>
+              </control>
+              <control type="image">
+                <left>52</left><top>52</top><width>48</width><height>48</height>
+                <texture colordiffuse="73EBEBF5">bobbi/glass/icons/person.png</texture>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>152</width><height>152</height>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture background="true" diffuse="bobbi/glass/cast-mask-152.png">$INFO[ListItem.Property(thumbnail)]</texture>
+              </control>
+              <control type="image">
+                <left>0</left><top>0</top><width>152</width><height>152</height>
+                <texture>bobbi/glass/cast-rim-152.png</texture>
+              </control>
+              <control type="label">
+                <left>-20</left><top>170</top><width>192</width><height>28</height>
+                <font>Card26</font><textcolor>E6F5F5F7</textcolor>
+                <align>center</align><aligny>center</aligny>
+                <label>$INFO[ListItem.Property(name)]</label>
+              </control>
+              <control type="label">
+                <left>-20</left><top>200</top><width>192</width><height>24</height>
+                <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+                <align>center</align><aligny>center</aligny>
+                <label>$INFO[ListItem.Property(role)]</label>
+              </control>
+            </control>
+          </itemlayout>
+          <focusedlayout width="200" height="260">
+            <control type="group">
+              <left>24</left><top>14</top>
+              <control type="group">
+                <animation effect="zoom" start="100" end="106" center="76,76" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+                <animation effect="zoom" start="106" end="100" center="76,76" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+                <control type="image">
+                  <left>-32</left><top>-32</top><width>216</width><height>216</height>
+                  <texture>bobbi/glass/cast-shadow-152.png</texture>
+                  <visible>Control.HasFocus(2050)</visible>
+                </control>
+                <control type="image">
+                  <left>0</left><top>0</top><width>152</width><height>152</height>
+                  <texture colordiffuse="FF2C2C2E">bobbi/glass/cast-mask-152.png</texture>
+                </control>
+                <control type="image">
+                  <left>52</left><top>52</top><width>48</width><height>48</height>
+                  <texture colordiffuse="73EBEBF5">bobbi/glass/icons/person.png</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>0</top><width>152</width><height>152</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/cast-mask-152.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>0</top><width>152</width><height>152</height>
+                  <texture>bobbi/glass/cast-rim-152.png</texture>
+                </control>
+                <control type="image">
+                  <left>-6</left><top>-6</top><width>164</width><height>164</height>
+                  <texture colordiffuse="FFFFFFFF">bobbi/glass/cast-ring-164.png</texture>
+                  <visible>Control.HasFocus(2050)</visible>
+                </control>
+              </control>
+              <control type="label">
+                <left>-20</left><top>170</top><width>192</width><height>28</height>
+                <font>Card26</font><textcolor>FFFFFFFF</textcolor>
+                <align>center</align><aligny>center</aligny>
+                <scroll>true</scroll>
+                <label>$INFO[ListItem.Property(name)]</label>
+              </control>
+              <control type="label">
+                <left>-20</left><top>200</top><width>192</width><height>24</height>
+                <font>CardSub22</font><textcolor>D9EBEBF5</textcolor>
+                <align>center</align><aligny>center</aligny>
+                <label>$INFO[ListItem.Property(role)]</label>
+              </control>
+            </control>
+          </focusedlayout>
+        </control>
+      </control>
+
+      <!-- 3. Similar & Recommended Tab (2051 & 2052 continuous-corner 2:3 poster rails) -->
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(active_tab),similar)</visible>
+        <control type="grouplist">
+          <width>1760</width><height>512</height>
+          <orientation>vertical</orientation><itemgap>16</itemgap>
+          <scrolltime tween="cubic" easing="out">220</scrolltime>
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2051).NumItems,0)</visible>
+            <height>392</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>900</width><height>34</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>推荐作品 $INFO[Window.Property(recommended.number)]</label>
+            </control>
+            <control type="fixedlist" id="2051">
+              <left>-16</left><top>42</top><width>1792</width><height>348</height>
+              <onup>22</onup>
+              <ondown condition="Integer.IsGreater(Container(2052).NumItems,0)">2052</ondown>
+              <ondown>2052</ondown>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>4</movement>
+              <itemlayout width="224" height="344">
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/tile-192x288.png</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/rim-192x288.png</texture>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>B3EBEBF5</textcolor>
+                  <align>center</align><aligny>center</aligny>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </itemlayout>
+              <focusedlayout width="224" height="344">
+                <control type="group">
+                  <animation effect="zoom" start="100" end="105" center="112,154" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+                  <animation effect="zoom" start="105" end="100" center="112,154" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+                  <control type="image">
+                    <left>-32</left><top>-38</top><width>288</width><height>384</height>
+                    <texture>bobbi/glass/shadow-192x288.png</texture>
+                    <visible>Control.HasFocus(2051)</visible>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/tile-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                    <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/spec-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>13</left><top>7</top><width>198</width><height>294</height>
+                    <texture colordiffuse="FFFFFFFF" border="30">bobbi/glass/ring-card.png</texture>
+                    <visible>Control.HasFocus(2051)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>FFFFFFFF</textcolor>
+                  <align>center</align><aligny>center</aligny><scroll>true</scroll>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2052).NumItems,0)</visible>
+            <height>392</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>900</width><height>34</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>相似作品 $INFO[Window.Property(similar.number)]</label>
+            </control>
+            <control type="fixedlist" id="2052">
+              <left>-16</left><top>42</top><width>1792</width><height>348</height>
+              <onup condition="Integer.IsGreater(Container(2051).NumItems,0)">2051</onup>
+              <onup condition="!Integer.IsGreater(Container(2051).NumItems,0)">22</onup>
+              <onup>2051</onup>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>4</movement>
+              <itemlayout width="224" height="344">
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/tile-192x288.png</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/rim-192x288.png</texture>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>B3EBEBF5</textcolor>
+                  <align>center</align><aligny>center</aligny>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </itemlayout>
+              <focusedlayout width="224" height="344">
+                <control type="group">
+                  <animation effect="zoom" start="100" end="105" center="112,154" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+                  <animation effect="zoom" start="105" end="100" center="112,154" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+                  <control type="image">
+                    <left>-32</left><top>-38</top><width>288</width><height>384</height>
+                    <texture>bobbi/glass/shadow-192x288.png</texture>
+                    <visible>Control.HasFocus(2052)</visible>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/tile-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                    <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/spec-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>13</left><top>7</top><width>198</width><height>294</height>
+                    <texture colordiffuse="FFFFFFFF" border="30">bobbi/glass/ring-card.png</texture>
+                    <visible>Control.HasFocus(2052)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>FFFFFFFF</textcolor>
+                  <align>center</align><aligny>center</aligny><scroll>true</scroll>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+        </control>
+      </control>
+
+      <!-- 4. Reviews Tab (2054 & 2055 Liquid Glass Review Cards) -->
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(active_tab),reviews)</visible>
+        <control type="grouplist">
+          <width>1760</width><height>512</height>
+          <orientation>vertical</orientation><itemgap>16</itemgap>
+          <scrolltime tween="cubic" easing="out">200</scrolltime>
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2054).NumItems,0)</visible>
+            <height>244</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>800</width><height>32</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>精选影评 $INFO[Window.Property(imdb_reviews.number)]</label>
+            </control>
+            <control type="fixedlist" id="2054">
+              <left>0</left><top>40</top><width>1760</width><height>202</height>
+              <onup>23</onup>
+              <ondown condition="Integer.IsGreater(Container(2055).NumItems,0)">2055</ondown>
+              <ondown>2055</ondown>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>1</movement>
+              <itemlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="1EFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="73FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>D9EBEBF5</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                </control>
+              </itemlayout>
+              <focusedlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>Control.HasFocus(2054)</visible>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="24FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>!Control.HasFocus(2054)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FF1D1D1F</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>Control.HasFocus(2054)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FFF5F5F7</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>!Control.HasFocus(2054)</visible>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2055).NumItems,0)</visible>
+            <height>244</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>800</width><height>32</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>观众短评 $INFO[Window.Property(trakt_comments.number)]</label>
+            </control>
+            <control type="fixedlist" id="2055">
+              <left>0</left><top>40</top><width>1760</width><height>202</height>
+              <onup condition="Integer.IsGreater(Container(2054).NumItems,0)">2054</onup>
+              <onup condition="!Integer.IsGreater(Container(2054).NumItems,0)">23</onup>
+              <onup>2054</onup>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>1</movement>
+              <itemlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="1EFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="73FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>D9EBEBF5</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                </control>
+              </itemlayout>
+              <focusedlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>Control.HasFocus(2055)</visible>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="24FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>!Control.HasFocus(2055)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FF1D1D1F</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>Control.HasFocus(2055)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FFF5F5F7</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>!Control.HasFocus(2055)</visible>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+        </control>
+      </control>
+
+      <!-- 5. Trailers & Extras Tab (2060 320x180 16:9 native glass Cards) -->
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(active_tab),videos)</visible>
+        <control type="label">
+          <left>0</left><top>8</top><width>900</width><height>36</height>
+          <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          <label>预告与花絮 $INFO[Window.Property(youtube_videos.number)]</label>
+        </control>
+        <control type="fixedlist" id="2060">
+          <left>-20</left><top>52</top><width>1800</width><height>292</height>
+          <onup>24</onup><ondown>noop</ondown>
+          <orientation>horizontal</orientation>
+          <scrolltime tween="cubic" easing="out">220</scrolltime>
+          <focusposition>0</focusposition><movement>3</movement>
+          <itemlayout width="360" height="276">
+            <control type="image">
+              <left>20</left><top>16</top><width>320</width><height>180</height>
+              <texture>bobbi/glass/tile-320x180.png</texture>
+            </control>
+            <control type="image">
+              <left>20</left><top>16</top><width>320</width><height>180</height>
+              <aspectratio scalediffuse="false">scale</aspectratio>
+              <texture background="true" diffuse="bobbi/glass/mask-320x180.png">$INFO[ListItem.Property(thumbnail)]</texture>
+            </control>
+            <control type="image">
+              <left>20</left><top>16</top><width>320</width><height>180</height>
+              <texture>bobbi/glass/progress-scrim-320x180.png</texture>
+            </control>
+            <control type="image">
+              <left>20</left><top>16</top><width>320</width><height>180</height>
+              <texture>bobbi/glass/rim-320x180.png</texture>
+            </control>
+            <control type="image">
+              <left>36</left><top>136</top><width>44</width><height>44</height>
+              <texture>bobbi/glass/icon-disc-44.png</texture>
+            </control>
+            <control type="image">
+              <left>46</left><top>146</top><width>24</width><height>24</height>
+              <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/play.png</texture>
+            </control>
+            <control type="label">
+              <left>20</left><top>206</top><width>320</width><height>30</height>
+              <font>Card26</font><textcolor>E6F5F5F7</textcolor><aligny>center</aligny>
+              <label>$INFO[ListItem.Property(name)]</label>
+            </control>
+            <control type="label">
+              <left>20</left><top>238</top><width>320</width><height>24</height>
+              <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+              <label>$INFO[ListItem.Property(video_type)]</label>
+            </control>
+          </itemlayout>
+          <focusedlayout width="360" height="276">
+            <control type="group">
+              <animation effect="zoom" start="100" end="105" center="180,106" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+              <animation effect="zoom" start="105" end="100" center="180,106" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+              <control type="image">
+                <left>-28</left><top>-32</top><width>416</width><height>276</height>
+                <texture>bobbi/glass/shadow-320x180.png</texture>
+                <visible>Control.HasFocus(2060)</visible>
+              </control>
+              <control type="image">
+                <left>20</left><top>16</top><width>320</width><height>180</height>
+                <texture>bobbi/glass/tile-320x180.png</texture>
+              </control>
+              <control type="image">
+                <left>20</left><top>16</top><width>320</width><height>180</height>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture background="true" diffuse="bobbi/glass/mask-320x180.png">$INFO[ListItem.Property(thumbnail)]</texture>
+              </control>
+              <control type="image">
+                <left>20</left><top>16</top><width>320</width><height>180</height>
+                <texture>bobbi/glass/progress-scrim-320x180.png</texture>
+              </control>
+              <control type="image">
+                <left>17</left><top>13</top><width>326</width><height>186</height>
+                <texture colordiffuse="FFFFFFFF" border="30">bobbi/glass/ring-card.png</texture>
+                <visible>Control.HasFocus(2060)</visible>
+              </control>
+              <control type="image">
+                <left>36</left><top>136</top><width>44</width><height>44</height>
+                <texture colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texture>
+              </control>
+              <control type="image">
+                <left>46</left><top>146</top><width>24</width><height>24</height>
+                <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/play.png</texture>
+              </control>
+            </control>
+            <control type="label">
+              <left>20</left><top>206</top><width>320</width><height>30</height>
+              <font>Card26</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny><scroll>true</scroll>
+              <label>$INFO[ListItem.Property(name)]</label>
+            </control>
+            <control type="label">
+              <left>20</left><top>238</top><width>320</width><height>24</height>
+              <font>CardSub22</font><textcolor>D9EBEBF5</textcolor><aligny>center</aligny>
+              <label>$INFO[ListItem.Property(video_type)]</label>
+            </control>
+          </focusedlayout>
+        </control>
+      </control>
+
+      <!-- 6. Trivia / Blunders / Parental Guide Tab (2056, 2057, 2058) -->
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(active_tab),trivia)</visible>
+        <control type="grouplist">
+          <width>1760</width><height>512</height>
+          <orientation>vertical</orientation><itemgap>16</itemgap>
+          <scrolltime tween="cubic" easing="out">200</scrolltime>
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2056).NumItems,0)</visible>
+            <height>244</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>800</width><height>32</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>幕后花絮 $INFO[Window.Property(imdb_trivia.number)]</label>
+            </control>
+            <control type="fixedlist" id="2056">
+              <left>0</left><top>40</top><width>1760</width><height>202</height>
+              <onup>25</onup>
+              <ondown condition="!Integer.IsGreater(Container(2057).NumItems,0) + Integer.IsGreater(Container(2058).NumItems,0)">2058</ondown>
+              <ondown>2057</ondown>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>1</movement>
+              <itemlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="1EFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="73FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>D9EBEBF5</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                </control>
+              </itemlayout>
+              <focusedlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>Control.HasFocus(2056)</visible>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="24FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>!Control.HasFocus(2056)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FF1D1D1F</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>Control.HasFocus(2056)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FFF5F5F7</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>!Control.HasFocus(2056)</visible>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2057).NumItems,0)</visible>
+            <height>244</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>800</width><height>32</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>穿帮镜头 $INFO[Window.Property(imdb_blunders.number)]</label>
+            </control>
+            <control type="fixedlist" id="2057">
+              <left>0</left><top>40</top><width>1760</width><height>202</height>
+              <onup condition="Integer.IsGreater(Container(2056).NumItems,0)">2056</onup>
+              <onup condition="!Integer.IsGreater(Container(2056).NumItems,0)">25</onup>
+              <onup>2056</onup>
+              <ondown>2058</ondown>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>1</movement>
+              <itemlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="1EFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="73FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>D9EBEBF5</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                </control>
+              </itemlayout>
+              <focusedlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>Control.HasFocus(2057)</visible>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="24FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>!Control.HasFocus(2057)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FF1D1D1F</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>Control.HasFocus(2057)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FFF5F5F7</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>!Control.HasFocus(2057)</visible>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2058).NumItems,0)</visible>
+            <height>244</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>800</width><height>32</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>家长指南 $INFO[Window.Property(imdb_parentsguide.number)]</label>
+            </control>
+            <control type="fixedlist" id="2058">
+              <left>0</left><top>40</top><width>1760</width><height>202</height>
+              <onup condition="Integer.IsGreater(Container(2057).NumItems,0)">2057</onup>
+              <onup condition="!Integer.IsGreater(Container(2057).NumItems,0) + Integer.IsGreater(Container(2056).NumItems,0)">2056</onup>
+              <onup condition="!Integer.IsGreater(Container(2057).NumItems,0) + !Integer.IsGreater(Container(2056).NumItems,0)">25</onup>
+              <onup>2057</onup>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>1</movement>
+              <itemlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="1EFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="73FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>D9EBEBF5</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                </control>
+              </itemlayout>
+              <focusedlayout width="444" height="200">
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>Control.HasFocus(2058)</visible>
+                </control>
+                <control type="image">
+                  <left>0</left><top>4</top><width>424</width><height>190</height>
+                  <texture colordiffuse="24FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+                  <visible>!Control.HasFocus(2058)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FF1D1D1F</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>Control.HasFocus(2058)</visible>
+                </control>
+                <control type="label">
+                  <left>24</left><top>20</top><width>376</width><height>156</height>
+                  <font>Card24</font><textcolor>FFF5F5F7</textcolor>
+                  <label>$INFO[ListItem.Property(text)]</label>
+                  <wrapmultiline>true</wrapmultiline>
+                  <visible>!Control.HasFocus(2058)</visible>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+        </control>
+      </control>
+
+      <!-- 7. More Tab (2061, 2062, 2063, 2064 continuous-corner 2:3 poster rails) -->
+      <control type="group">
+        <visible>String.IsEqual(Window.Property(active_tab),more)</visible>
+        <control type="grouplist">
+          <width>1760</width><height>512</height>
+          <orientation>vertical</orientation><itemgap>16</itemgap>
+          <scrolltime tween="cubic" easing="out">220</scrolltime>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2061).NumItems,0)</visible>
+            <height>392</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>900</width><height>34</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>同年代佳作 $INFO[Window.Property(more_from_year.number)]</label>
+            </control>
+            <control type="fixedlist" id="2061">
+              <left>-16</left><top>42</top><width>1792</width><height>348</height>
+              <onup>26</onup>
+              <ondown condition="!Integer.IsGreater(Container(2062).NumItems,0) + Integer.IsGreater(Container(2063).NumItems,0)">2063</ondown>
+              <ondown condition="!Integer.IsGreater(Container(2062).NumItems,0) + !Integer.IsGreater(Container(2063).NumItems,0) + Integer.IsGreater(Container(2064).NumItems,0)">2064</ondown>
+              <ondown>2062</ondown>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>4</movement>
+              <itemlayout width="224" height="344">
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/tile-192x288.png</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/rim-192x288.png</texture>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>B3EBEBF5</textcolor>
+                  <align>center</align><aligny>center</aligny>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </itemlayout>
+              <focusedlayout width="224" height="344">
+                <control type="group">
+                  <animation effect="zoom" start="100" end="105" center="112,154" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+                  <animation effect="zoom" start="105" end="100" center="112,154" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+                  <control type="image">
+                    <left>-32</left><top>-38</top><width>288</width><height>384</height>
+                    <texture>bobbi/glass/shadow-192x288.png</texture>
+                    <visible>Control.HasFocus(2061)</visible>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/tile-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                    <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/spec-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>13</left><top>7</top><width>198</width><height>294</height>
+                    <texture colordiffuse="FFFFFFFF" border="30">bobbi/glass/ring-card.png</texture>
+                    <visible>Control.HasFocus(2061)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>FFFFFFFF</textcolor>
+                  <align>center</align><aligny>center</aligny><scroll>true</scroll>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2062).NumItems,0)</visible>
+            <height>392</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>900</width><height>34</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>同类型推荐 $INFO[Window.Property(more_from_genres.number)]</label>
+            </control>
+            <control type="fixedlist" id="2062">
+              <left>-16</left><top>42</top><width>1792</width><height>348</height>
+              <onup condition="Integer.IsGreater(Container(2061).NumItems,0)">2061</onup>
+              <onup condition="!Integer.IsGreater(Container(2061).NumItems,0)">26</onup>
+              <onup>2061</onup>
+              <ondown condition="!Integer.IsGreater(Container(2063).NumItems,0) + Integer.IsGreater(Container(2064).NumItems,0)">2064</ondown>
+              <ondown>2063</ondown>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>4</movement>
+              <itemlayout width="224" height="344">
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/tile-192x288.png</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/rim-192x288.png</texture>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>B3EBEBF5</textcolor>
+                  <align>center</align><aligny>center</aligny>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </itemlayout>
+              <focusedlayout width="224" height="344">
+                <control type="group">
+                  <animation effect="zoom" start="100" end="105" center="112,154" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+                  <animation effect="zoom" start="105" end="100" center="112,154" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+                  <control type="image">
+                    <left>-32</left><top>-38</top><width>288</width><height>384</height>
+                    <texture>bobbi/glass/shadow-192x288.png</texture>
+                    <visible>Control.HasFocus(2062)</visible>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/tile-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                    <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/spec-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>13</left><top>7</top><width>198</width><height>294</height>
+                    <texture colordiffuse="FFFFFFFF" border="30">bobbi/glass/ring-card.png</texture>
+                    <visible>Control.HasFocus(2062)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>FFFFFFFF</textcolor>
+                  <align>center</align><aligny>center</aligny><scroll>true</scroll>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2063).NumItems,0)</visible>
+            <height>392</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>900</width><height>34</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>同出品方作品 $INFO[Window.Property(more_from_networks.number)]</label>
+            </control>
+            <control type="fixedlist" id="2063">
+              <left>-16</left><top>42</top><width>1792</width><height>348</height>
+              <onup condition="Integer.IsGreater(Container(2062).NumItems,0)">2062</onup>
+              <onup condition="!Integer.IsGreater(Container(2062).NumItems,0) + Integer.IsGreater(Container(2061).NumItems,0)">2061</onup>
+              <onup condition="!Integer.IsGreater(Container(2062).NumItems,0) + !Integer.IsGreater(Container(2061).NumItems,0)">26</onup>
+              <onup>2062</onup>
+              <ondown>2064</ondown>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>4</movement>
+              <itemlayout width="224" height="344">
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/tile-192x288.png</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/rim-192x288.png</texture>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>B3EBEBF5</textcolor>
+                  <align>center</align><aligny>center</aligny>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </itemlayout>
+              <focusedlayout width="224" height="344">
+                <control type="group">
+                  <animation effect="zoom" start="100" end="105" center="112,154" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+                  <animation effect="zoom" start="105" end="100" center="112,154" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+                  <control type="image">
+                    <left>-32</left><top>-38</top><width>288</width><height>384</height>
+                    <texture>bobbi/glass/shadow-192x288.png</texture>
+                    <visible>Control.HasFocus(2063)</visible>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/tile-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                    <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/spec-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>13</left><top>7</top><width>198</width><height>294</height>
+                    <texture colordiffuse="FFFFFFFF" border="30">bobbi/glass/ring-card.png</texture>
+                    <visible>Control.HasFocus(2063)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>FFFFFFFF</textcolor>
+                  <align>center</align><aligny>center</aligny><scroll>true</scroll>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+
+          <control type="group">
+            <visible>Integer.IsGreater(Container(2064).NumItems,0)</visible>
+            <height>392</height>
+            <control type="label">
+              <left>0</left><top>4</top><width>1100</width><height>34</height>
+              <font>RailTitle30</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+              <label>所属系列 $INFO[Window.Property(more_from_collection.name),· , ]$INFO[Window.Property(more_from_collection.number)]</label>
+            </control>
+            <control type="fixedlist" id="2064">
+              <left>-16</left><top>42</top><width>1792</width><height>348</height>
+              <onup condition="Integer.IsGreater(Container(2063).NumItems,0)">2063</onup>
+              <onup condition="!Integer.IsGreater(Container(2063).NumItems,0) + Integer.IsGreater(Container(2062).NumItems,0)">2062</onup>
+              <onup condition="!Integer.IsGreater(Container(2063).NumItems,0) + !Integer.IsGreater(Container(2062).NumItems,0) + Integer.IsGreater(Container(2061).NumItems,0)">2061</onup>
+              <onup condition="!Integer.IsGreater(Container(2063).NumItems,0) + !Integer.IsGreater(Container(2062).NumItems,0) + !Integer.IsGreater(Container(2061).NumItems,0)">26</onup>
+              <onup>2063</onup>
+              <orientation>horizontal</orientation>
+              <scrolltime tween="cubic" easing="out">220</scrolltime>
+              <focusposition>0</focusposition><movement>4</movement>
+              <itemlayout width="224" height="344">
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/tile-192x288.png</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <aspectratio scalediffuse="false">scale</aspectratio>
+                  <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                </control>
+                <control type="image">
+                  <left>16</left><top>10</top><width>192</width><height>288</height>
+                  <texture>bobbi/glass/rim-192x288.png</texture>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>B3EBEBF5</textcolor>
+                  <align>center</align><aligny>center</aligny>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </itemlayout>
+              <focusedlayout width="224" height="344">
+                <control type="group">
+                  <animation effect="zoom" start="100" end="105" center="112,154" time="160" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+                  <animation effect="zoom" start="105" end="100" center="112,154" time="120" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">UnFocus</animation>
+                  <control type="image">
+                    <left>-32</left><top>-38</top><width>288</width><height>384</height>
+                    <texture>bobbi/glass/shadow-192x288.png</texture>
+                    <visible>Control.HasFocus(2064)</visible>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/tile-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <aspectratio scalediffuse="false">scale</aspectratio>
+                    <texture background="true" diffuse="bobbi/glass/mask-192x288.png">$INFO[ListItem.Property(thumbnail)]</texture>
+                  </control>
+                  <control type="image">
+                    <left>16</left><top>10</top><width>192</width><height>288</height>
+                    <texture>bobbi/glass/spec-192x288.png</texture>
+                  </control>
+                  <control type="image">
+                    <left>13</left><top>7</top><width>198</width><height>294</height>
+                    <texture colordiffuse="FFFFFFFF" border="30">bobbi/glass/ring-card.png</texture>
+                    <visible>Control.HasFocus(2064)</visible>
+                  </control>
+                </control>
+                <control type="label">
+                  <left>12</left><top>306</top><width>200</width><height>28</height>
+                  <font>Card24</font><textcolor>FFFFFFFF</textcolor>
+                  <align>center</align><aligny>center</aligny><scroll>true</scroll>
+                  <label>$INFO[ListItem.Property(name)]</label>
+                </control>
+              </focusedlayout>
+            </control>
+          </control>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

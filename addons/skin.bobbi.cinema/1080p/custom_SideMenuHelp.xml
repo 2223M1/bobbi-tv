@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1112" type="dialog">
+  <defaultcontrol always="true">100</defaultcontrol>
+  <controls>
+    <include>DialogScrim</include>
+    <control type="group">
+      <centerleft>50%</centerleft><centertop>50%</centertop>
+      <width>760</width><height>420</height>
+      <include content="PanelOpen"><param name="slide">0,16</param></include>
+      <control type="image">
+        <left>-48</left><top>-48</top><width>856</width><height>516</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>760</width><height>420</height>
+        <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>760</width><height>420</height>
+        <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+
+      <control type="label">
+        <left>48</left><top>42</top><width>664</width><height>48</height>
+        <font>Head34</font><textcolor>FFFFFFFF</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <label>31411</label>
+      </control>
+      <control type="textbox">
+        <left>56</left><top>110</top><width>648</width><height>172</height>
+        <font>Plot26</font><textcolor>D9EBEBF5</textcolor>
+        <align>center</align>
+        <label>31412</label>
+      </control>
+      <control type="button" id="100">
+        <left>246</left><top>308</top><width>268</width><height>66</height>
+        <label>12321</label>
+        <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus colordiffuse="22FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <onclick>Skin.SetBool(FirstTimeRun)</onclick>
+        <onclick>back</onclick>
+        <onleft>100</onleft><onright>100</onright>
+        <onup>100</onup><ondown>100</ondown>
+      </control>
+    </control>
+  </controls>
+</window>

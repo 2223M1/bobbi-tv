@@ -1,0 +1,5 @@
+# Preserve reviewed byte inventories and package reproducibility across hosts.
+* -text
+# A unified diff represents an empty, unchanged source line by a single
+# space. These byte-pinned CE inputs must keep that context marker.
+native/patches/ce-*.patch whitespace=-blank-at-eol

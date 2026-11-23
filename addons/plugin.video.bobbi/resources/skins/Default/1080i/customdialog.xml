@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog">
+  <coordinates><left>460</left><top>280</top><width>1000</width><height>520</height></coordinates>
+  <defaultcontrol always="true">32503</defaultcontrol>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+    <effect type="zoom" start="95" end="100" center="50%,50%" tween="cubic" easing="out" time="180" />
+    <effect type="fade" start="0" end="100" time="160" />
+  </animation>
+  <animation type="WindowClose" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+    <effect type="fade" start="100" end="0" time="140" />
+  </animation>
+  <depth>0.40</depth>
+  <controls>
+    <control type="group">
+      <width>1000</width><height>520</height>
+      <control type="image">
+        <left>-48</left><top>-48</top><width>1096</width><height>616</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <width>1000</width><height>520</height>
+        <texture colordiffuse="FF25252C" border="46">bobbi/glass/modal-glass.png</texture>
+        <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <width>1000</width><height>520</height>
+        <texture colordiffuse="FF50545C" border="46">bobbi/glass/modal-glass.png</texture>
+        <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <width>1000</width><height>520</height>
+        <texture border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+      <control type="label" id="32500">
+        <top>28</top><left>60</left><width>880</width><height>48</height>
+        <font>Head34</font><align>center</align><aligny>center</aligny>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="image">
+        <top>100</top><left>52</left><width>346</width><height>346</height>
+        <texture colordiffuse="FFFFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+      </control>
+      <control type="image" id="32504">
+        <top>108</top><left>60</left><width>330</width><height>330</height>
+        <texture>bobbi/glass/qr-placeholder.png</texture>
+        <aspectratio>keep</aspectratio>
+      </control>
+      <control type="label" id="32501">
+        <font>Plot26</font>
+        <top>108</top><left>436</left><width>512</width><height>188</height>
+        <align>left</align><textcolor>D9EBEBF5</textcolor>
+        <wrapmultiline>true</wrapmultiline>
+      </control>
+      <control type="button" id="32503">
+        <left>924</left><top>24</top><width>52</width><height>52</height>
+        <label />
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <texturenofocus colordiffuse="24FFFFFF">bobbi/glass/circle-128.png</texturenofocus>
+      </control>
+      <control type="image">
+        <left>936</left><top>36</top><width>28</width><height>28</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/xmark.png</texture>
+        <visible>!Control.HasFocus(32503)</visible>
+      </control>
+      <control type="image">
+        <left>936</left><top>36</top><width>28</width><height>28</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/xmark.png</texture>
+        <visible>Control.HasFocus(32503)</visible>
+      </control>
+    </control>
+    <control type="group">
+      <width>512</width><height>116</height>
+      <top>344</top><left>436</left>
+      <control type="image">
+        <width>512</width><height>116</height>
+        <texture colordiffuse="20FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+      </control>
+      <control type="image">
+        <width>512</width><height>116</height>
+        <texture border="26">bobbi/glass/row-glass-rim.png</texture>
+      </control>
+      <control type="label" id="32505">
+        <font>NavHead24</font><top>14</top><width>512</width><height>28</height>
+        <align>center</align><textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+      <control type="label" id="32502">
+        <font>Head30</font><align>center</align><aligny>center</aligny>
+        <top>46</top><width>512</width><height>56</height>
+        <textcolor>FFFFFFFF</textcolor>
+      </control>
+    </control>
+  </controls>
+</window>

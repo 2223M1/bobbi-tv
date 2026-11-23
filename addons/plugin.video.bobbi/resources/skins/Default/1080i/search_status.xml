@@ -1,0 +1,330 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog">
+  <defaultcontrol>13004</defaultcontrol>
+  <coordinates><left>0</left><top>0</top><width>1920</width><height>1080</height></coordinates>
+  <animation effect="fade" start="0" end="100" time="160" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/stage-ambient.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture background="true" colordiffuse="4DFFFFFF">$INFO[Window().Property(info.fanart)]</texture>
+      <aspectratio>scale</aspectratio>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="99000000">bobbi/white.png</texture>
+      <animation effect="fade" start="100" end="52" time="0" condition="!Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+    </control>
+    <!-- Centered 960x840 Liquid Glass Modal -->
+    <control type="image">
+      <left>432</left><top>72</top><width>1056</width><height>936</height>
+      <texture border="64">bobbi/glass/modal-shadow.png</texture>
+    </control>
+    <control type="image">
+      <left>480</left><top>120</top><width>960</width><height>840</height>
+      <texture colordiffuse="FF25252C" border="46">bobbi/glass/modal-glass.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+    <control type="image">
+      <left>480</left><top>120</top><width>960</width><height>840</height>
+      <texture colordiffuse="FF50545C" border="46">bobbi/glass/modal-glass.png</texture>
+      <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+    <control type="image">
+      <left>480</left><top>120</top><width>960</width><height>840</height>
+      <texture border="46">bobbi/glass/modal-glass-rim.png</texture>
+    </control>
+
+    <control type="image">
+      <left>560</left><top>196</top><width>72</width><height>72</height>
+      <texture>bobbi/glass/icon-disc-44.png</texture>
+    </control>
+    <control type="image">
+      <left>576</left><top>212</top><width>40</width><height>40</height>
+      <texture colordiffuse="FFFFFFFF">bobbi/spinner.png</texture>
+      <animation effect="rotate" center="auto" start="0" end="-360" time="900" loop="true" condition="!Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+    </control>
+    <control type="label" id="13001">
+      <left>656</left><top>188</top><width>704</width><height>48</height>
+      <font>Head34</font>
+      <label>$INFO[Window().Property(search_heading)]</label>
+      <textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>656</left><top>240</top><width>704</width><height>28</height>
+      <font>NavHead24</font>
+      <label>$INFO[Window().Property(search_subheading)]</label>
+      <textcolor>E6EBEBF5</textcolor>
+      <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+    </control>
+    <control type="label">
+      <left>656</left><top>274</top><width>704</width><height>28</height>
+      <font>CardSub22</font>
+      <label>$INFO[Window().Property(search_hint)]</label>
+      <textcolor>DCEBEBF5</textcolor>
+      <animation effect="fade" start="100" end="52" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+    </control>
+    <control type="progress" id="13002">
+      <left>560</left><top>344</top><width>800</width><height>7</height>
+      <texturebg colordiffuse="48FFFFFF" border="4">bobbi/glass/progress-track.png</texturebg>
+      <midtexture colordiffuse="FFFFFFFF" border="4">bobbi/glass/progress-fill.png</midtexture>
+    </control>
+    <control type="group">
+      <left>560</left><top>388</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_0_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_0_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_0_status)]</label>
+        <textcolor>$INFO[Window().Property(task_0_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_0_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>430</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_1_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_1_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_1_status)]</label>
+        <textcolor>$INFO[Window().Property(task_1_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_1_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>472</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_2_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_2_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_2_status)]</label>
+        <textcolor>$INFO[Window().Property(task_2_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_2_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>514</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_3_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_3_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_3_status)]</label>
+        <textcolor>$INFO[Window().Property(task_3_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_3_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>556</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_4_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_4_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_4_status)]</label>
+        <textcolor>$INFO[Window().Property(task_4_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_4_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>598</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_5_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_5_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_5_status)]</label>
+        <textcolor>$INFO[Window().Property(task_5_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_5_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>640</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_6_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_6_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_6_status)]</label>
+        <textcolor>$INFO[Window().Property(task_6_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_6_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>682</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_7_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_7_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_7_status)]</label>
+        <textcolor>$INFO[Window().Property(task_7_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_7_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>724</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_8_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_8_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_8_status)]</label>
+        <textcolor>$INFO[Window().Property(task_8_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_8_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="group">
+      <left>560</left><top>766</top><width>800</width><height>38</height>
+      <visible>!String.IsEmpty(Window().Property(task_9_name))</visible>
+      <control type="label">
+        <width>450</width><height>38</height>
+        <font>Card26</font><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_9_name)]</label>
+        <textcolor>FFF5F5F7</textcolor>
+      </control>
+      <control type="label">
+        <left>460</left><width>200</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_9_status)]</label>
+        <textcolor>$INFO[Window().Property(task_9_color)]</textcolor>
+      </control>
+      <control type="label">
+        <left>670</left><width>130</width><height>38</height>
+        <font>CardSub22</font><align>right</align><aligny>center</aligny>
+        <label>$INFO[Window().Property(task_9_results)]</label>
+        <textcolor>E6EBEBF5</textcolor>
+        <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+      </control>
+    </control>
+    <control type="label">
+      <left>560</left><top>824</top><width>520</width><height>36</height>
+      <font>Card26</font>
+      <label>$INFO[Window().Property(search_results_count)]</label>
+      <textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>1080</left><top>824</top><width>280</width><height>36</height>
+      <font>CardSub22</font><align>right</align><aligny>center</aligny>
+      <label>$INFO[Window().Property(search_progress_text)]</label>
+      <textcolor>E6EBEBF5</textcolor>
+      <animation effect="fade" start="100" end="68" time="0" condition="Skin.HasSetting(BobbiLiquidGlassEnabled)">Conditional</animation>
+    </control>
+    <control type="button" id="13004">
+      <left>1140</left><top>874</top><width>220</width><height>60</height>
+      <label>取消搜索</label>
+      <font>Button24</font><align>center</align><aligny>center</aligny>
+      <texturefocus colordiffuse="FFFFFFFF" border="30,0,30,0">bobbi/glass/capsule-60.png</texturefocus>
+      <texturenofocus colordiffuse="24FFFFFF" border="30,0,30,0">bobbi/glass/capsule-60.png</texturenofocus>
+      <textcolor>FFF5F5F7</textcolor>
+      <focusedcolor>FF1D1D1F</focusedcolor>
+      <onup>13004</onup><ondown>13004</ondown><onleft>13004</onleft><onright>13004</onright>
+    </control>
+  </controls>
+</window>

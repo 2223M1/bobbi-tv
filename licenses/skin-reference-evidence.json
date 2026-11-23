@@ -1,0 +1,670 @@
+{
+  "schema": 1,
+  "status": "evidence-and-distribution-cleared",
+  "baseline": "ce2166-brand-install",
+  "references": [],
+  "changes": [
+    {
+      "files": [
+        "addons/skin.bobbi.cinema"
+      ],
+      "kind": "project-authored skin production",
+      "details": "Layouts, artwork and bundled typography are owned or license-cleared by the project; per-file hashes are frozen in release/source-inventory.json."
+    }
+  ],
+  "icon_font_glyphs": {
+    "family": "BobbiTV",
+    "rendered_by": "Bobbi TV asset pipeline",
+    "license_documents": [
+      "font-apache2",
+      "fontawesome-license"
+    ],
+    "status": "project-owned-typography",
+    "rights": "Interface glyphs are rendered from project-owned faces by the project asset pipeline; each output PNG is hashed and delivered byte-for-byte with the skin and plugin.",
+    "files": {
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/archive.png": {
+        "bytes": 1176,
+        "sha256": "9958255c7a4f798a06df576b433ecb36c9de05d2ea193662ccf2f5d4b970268e"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/arrows-sort.png": {
+        "bytes": 1191,
+        "sha256": "1d3a2f99fb8391eb73bd149cd8585e1d8e07f86dd2b509f80ff936cdab8e9ec3"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/bookmark.png": {
+        "bytes": 998,
+        "sha256": "8de12360957b35526ce17cba83590c8f6f70fca46a69a7c64920b1233c82ea3d"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/bubble-captions.png": {
+        "bytes": 1432,
+        "sha256": "99f6d6bbe3c94b7ec2594fcb0664096fd5c7b5df7ef4930ac786d9851a70801e"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/checkmark.png": {
+        "bytes": 2334,
+        "sha256": "351576daf531fc28af55a160447391a0207489572756d3373027b4bce0995b6e"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/chevron-down.png": {
+        "bytes": 2017,
+        "sha256": "e5956c18d57516d5c1642df125f2d01735fc6d1a1c3036ffc88c73b4283f9732"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/chevron-left.png": {
+        "bytes": 1932,
+        "sha256": "58f78fa94146eb42c57b174b022e9538b225f127103309079129734cb930788d"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/chevron-right.png": {
+        "bytes": 1949,
+        "sha256": "b6ee461dc21c2d9e0a4eafa5fce36fe1918a9da5378d38dd34cb4e54593c6283"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/clock-outline.png": {
+        "bytes": 3230,
+        "sha256": "1fc6f438bd0df1e0776e16f9b68b2bdd3831e9c91da20101002bc0e2a3470fe6"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/clock.png": {
+        "bytes": 2165,
+        "sha256": "b5a8eacecaf49f5ddfe8f5538bfe54d34f5b043158c7db7bccd2f7e33b2fd511"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/cloud-outline.png": {
+        "bytes": 2303,
+        "sha256": "648cf2a24ec70107e010cb8222a54a298e289bbb748398143058dca9b2ed18a3"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/cloud.png": {
+        "bytes": 1527,
+        "sha256": "b8e88c959483ddb233767eddc9a58f1c16dd0e8f41c91cdeab1bb541130e3a17"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/control-center.png": {
+        "bytes": 1550,
+        "sha256": "88c44ecc83559d0f3c02429bb450e10068b6dafc7f46a24c4b1ffde3acd0fca4"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/cpu.png": {
+        "bytes": 1456,
+        "sha256": "9290b5c7401894267b95f6ae9a487bbd943663ddbc6ce061cb156a9688ecd714"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/download.png": {
+        "bytes": 2718,
+        "sha256": "7d4f828b8b90ff13d0c955fc4a2e2494d3ff5bc690940a7dbfc493223f2019d2"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/drive-outline.png": {
+        "bytes": 2428,
+        "sha256": "8ee0134be3d5b779ad9b64b8a47d4e6da9860850616f3893cc1149362a031e28"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/drive.png": {
+        "bytes": 1766,
+        "sha256": "714aa850e52903d54ae4b78bab7ed59584afde9c8635a93bc42094988f1efba5"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/ellipsis.png": {
+        "bytes": 1197,
+        "sha256": "d47a52f480ee55a1747afec9a18814b5c1466e1329a8472e1916cea496eaa050"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/exclamation.png": {
+        "bytes": 2596,
+        "sha256": "771639482dfa667f077e2ae99a7781b029ce3d666605c26d7264f78537df4acc"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/fastforward.png": {
+        "bytes": 1514,
+        "sha256": "014850a6dbda5745bfc9515675648b213665305e6db138d35d64350c2f6fa31e"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/film-outline.png": {
+        "bytes": 1792,
+        "sha256": "9ca26e733f377b389f1cf4e7807a95267b053092bc2cb323dab9c3e9c4852b2c"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/film.png": {
+        "bytes": 1660,
+        "sha256": "2f510e44aa708e6e659ba36cb61be18a63ae7e360c1270aff5effd93d4d42cbc"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/filter.png": {
+        "bytes": 736,
+        "sha256": "acce66e245edc9afb8956da6ded88d2019a6d9d70e91f63470778539391f3011"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/folder-outline.png": {
+        "bytes": 1378,
+        "sha256": "899f6825d0d926688ea6d79e9826552959d0c5ddbfa6ed43f68937933549bf22"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/folder.png": {
+        "bytes": 1109,
+        "sha256": "dff5c67cdcf8dcf7310d42d7ac54a31451336aa8924488d4209396900656c7fa"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/gear.png": {
+        "bytes": 2648,
+        "sha256": "b4c989092acbfae0c029ec067b45f13c0dba782fd8ac15b2358135483ca4aed9"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/heart-outline.png": {
+        "bytes": 3273,
+        "sha256": "dc45e28e621976e639ec10d0d44c6416ecfd20f4d7e6000ddc1348956eb490a0"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/heart.png": {
+        "bytes": 2081,
+        "sha256": "a1d82d1825bcaafb05acc56e0053eb661e1acc6d8e0e5446370b59044bcd9ca8"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/history-outline.png": {
+        "bytes": 2683,
+        "sha256": "5787c4a2a4afab67e9814c8b26c792e2ecbc428589824cbff8e6a097b356f5f9"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/house.png": {
+        "bytes": 1200,
+        "sha256": "acb34664bab9aa2536421b242fe8f28a123bb86b406d4ab5007c661015a36eda"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/info.png": {
+        "bytes": 3536,
+        "sha256": "b9255254f84524f3585b0f19c5745e7607d13c0c04ad644bc1d6675877de4203"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/list-bullet.png": {
+        "bytes": 645,
+        "sha256": "f4812a5310aa5af9dd88cfb78eb47991d4c227db93ddb828aec157ffa84b2b8a"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/next.png": {
+        "bytes": 1591,
+        "sha256": "940d7521f42231c6fe93e5ffc3e2497c7c1ea231d7d846c0b9858c63b575c110"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/pause.png": {
+        "bytes": 937,
+        "sha256": "e323457734b94e0e070fd00c4f762e17e9e229a27d82fe863d37cc8c62bc40ab"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/person-circle.png": {
+        "bytes": 3034,
+        "sha256": "c18bcfa45ea754d023bb4e7eb8bbd6cc73b064677bbf2f607a968397010b9357"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/person.png": {
+        "bytes": 1883,
+        "sha256": "9c15a8cbaff5b3278986a5192fb3b6318bf65b55275d94d088ce9709c6e11a0c"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/photo.png": {
+        "bytes": 1955,
+        "sha256": "0a39e5d365fc3a3cd645c4fe76fead160872c3c6202424c4fcb8d03d4a329664"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/pip.png": {
+        "bytes": 1080,
+        "sha256": "103aa72f62ce1ddd9cd1484a0f5e3a3e0eba602e4a1c8c6b44d1b5708c529990"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/play-outline.png": {
+        "bytes": 2364,
+        "sha256": "00a047fd8fa5b36b6ab39739450971f578d15bc17f1ab48a0272c86b2ab2091e"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/play.png": {
+        "bytes": 1613,
+        "sha256": "6d8e3e7ee803fa2e5bbb5a8821c5bec9e24e0b6059a40a2bdefbeccf88dd6179"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/plus.png": {
+        "bytes": 923,
+        "sha256": "a7008aa4e48de7d57e8afc64cfe3b7af3816d31f798dee8c18efe839e21947c3"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/power.png": {
+        "bytes": 2208,
+        "sha256": "7c2dc6965fe371db682c881344eb73a2f5bbf05d85bb391c988f3311fa090206"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/prev.png": {
+        "bytes": 1621,
+        "sha256": "6d5296b1a29fe0afb0dcc7f039b7104d45ab9a4f9344a7bdb5654f1ddba98aae"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/puzzle.png": {
+        "bytes": 1114,
+        "sha256": "6e4a56d0988ab30bba019c64d4dbfdd524ee7bec26da6897aedfed825e351ede"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/refresh.png": {
+        "bytes": 2654,
+        "sha256": "aa80ecf437796919fedd779795744024f7cd792686cfe07731f3114a7ee3b600"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/rewind.png": {
+        "bytes": 1654,
+        "sha256": "4b1f1b649f3e63a856da7c8f97a1b80a38fc828e1d094bfbd24ba22e491b2f4a"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/search.png": {
+        "bytes": 2682,
+        "sha256": "a5c5ca0659a55be4ac2cfdcbc20f818edce552e194708212ed09adcaf081e6ad"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/sliders.png": {
+        "bytes": 1567,
+        "sha256": "09f1ecc78c27e1e64f9e65d1e5ff3bff63e4752fcb268fcbf511447c504ed607"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/sparkles.png": {
+        "bytes": 2364,
+        "sha256": "7af21c166dc3f3a1b4baec14d435500b3ea469cfeb9942c2d284ec287240b306"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/speaker-mute.png": {
+        "bytes": 2259,
+        "sha256": "eb67a8eb1e201836182b4fb4e2f3b14bc3fe0b61a75c724b84732ed31c4848db"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/speaker.png": {
+        "bytes": 2198,
+        "sha256": "dba679c0cf0df00f4e06ce5274f0e4626c456e240db5941006e8650211ceb385"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/stack-outline.png": {
+        "bytes": 1369,
+        "sha256": "94c79dabed536ebbcfc38fb7d05c5f17b0093b9115cbe2c2e7cbb8502bda2c99"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/stack.png": {
+        "bytes": 1124,
+        "sha256": "1abbb385db2a9d9df6d6b8f08e12b72cefff5a126b39114caf8edf13044cdc4d"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/star.png": {
+        "bytes": 2030,
+        "sha256": "70ade0d0eeaff4281162143e9c8a13c16677335a46f5c55baee88cb9211b9731"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/stop.png": {
+        "bytes": 828,
+        "sha256": "bd66ec1ae1134a13f17d64d3318c87bf63185ad1752265f9bfbf525db8909c45"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/subtitles.png": {
+        "bytes": 2006,
+        "sha256": "fea50e9953e9ee3e8595aa64788d6755e69fed549488ad0ab18a83e09f611467"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/trash-outline.png": {
+        "bytes": 2540,
+        "sha256": "416ff468729ed46fb28a72e1f719a9cf5640aeba5a990aae83db4d670c5feb4d"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/tv-outline.png": {
+        "bytes": 907,
+        "sha256": "0753fc7707fcbce009aad3b01e59f0fc2f4b2fd88b9f0af305a1b5ed154318ac"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/tv.png": {
+        "bytes": 889,
+        "sha256": "4a5136fcbc5d2e31995fd9dbe1174f02eb0b92672b78bceeb9cabdc4a725f9e0"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/waveform.png": {
+        "bytes": 566,
+        "sha256": "5cc4ec6065ddf106408a267575000e08028521d1c5a10b87d6577f01e76aab72"
+      },
+      "addons/skin.bobbi.cinema/media/bobbi/glass/icons/xmark.png": {
+        "bytes": 2461,
+        "sha256": "0a5b17b0097c8a621487489bc2fae3e123d00948f1c6ed027747f451f772a873"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/archive.png": {
+        "bytes": 1176,
+        "sha256": "9958255c7a4f798a06df576b433ecb36c9de05d2ea193662ccf2f5d4b970268e"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/arrows-sort.png": {
+        "bytes": 1191,
+        "sha256": "1d3a2f99fb8391eb73bd149cd8585e1d8e07f86dd2b509f80ff936cdab8e9ec3"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/bookmark.png": {
+        "bytes": 998,
+        "sha256": "8de12360957b35526ce17cba83590c8f6f70fca46a69a7c64920b1233c82ea3d"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/bubble-captions.png": {
+        "bytes": 1432,
+        "sha256": "99f6d6bbe3c94b7ec2594fcb0664096fd5c7b5df7ef4930ac786d9851a70801e"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/checkmark.png": {
+        "bytes": 2334,
+        "sha256": "351576daf531fc28af55a160447391a0207489572756d3373027b4bce0995b6e"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/chevron-down.png": {
+        "bytes": 2017,
+        "sha256": "e5956c18d57516d5c1642df125f2d01735fc6d1a1c3036ffc88c73b4283f9732"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/chevron-left.png": {
+        "bytes": 1932,
+        "sha256": "58f78fa94146eb42c57b174b022e9538b225f127103309079129734cb930788d"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/chevron-right.png": {
+        "bytes": 1949,
+        "sha256": "b6ee461dc21c2d9e0a4eafa5fce36fe1918a9da5378d38dd34cb4e54593c6283"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/clock-outline.png": {
+        "bytes": 3230,
+        "sha256": "1fc6f438bd0df1e0776e16f9b68b2bdd3831e9c91da20101002bc0e2a3470fe6"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/clock.png": {
+        "bytes": 2165,
+        "sha256": "b5a8eacecaf49f5ddfe8f5538bfe54d34f5b043158c7db7bccd2f7e33b2fd511"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/cloud-outline.png": {
+        "bytes": 2303,
+        "sha256": "648cf2a24ec70107e010cb8222a54a298e289bbb748398143058dca9b2ed18a3"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/cloud.png": {
+        "bytes": 1527,
+        "sha256": "b8e88c959483ddb233767eddc9a58f1c16dd0e8f41c91cdeab1bb541130e3a17"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/control-center.png": {
+        "bytes": 1550,
+        "sha256": "88c44ecc83559d0f3c02429bb450e10068b6dafc7f46a24c4b1ffde3acd0fca4"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/cpu.png": {
+        "bytes": 1456,
+        "sha256": "9290b5c7401894267b95f6ae9a487bbd943663ddbc6ce061cb156a9688ecd714"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/download.png": {
+        "bytes": 2718,
+        "sha256": "7d4f828b8b90ff13d0c955fc4a2e2494d3ff5bc690940a7dbfc493223f2019d2"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/drive-outline.png": {
+        "bytes": 2428,
+        "sha256": "8ee0134be3d5b779ad9b64b8a47d4e6da9860850616f3893cc1149362a031e28"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/drive.png": {
+        "bytes": 1766,
+        "sha256": "714aa850e52903d54ae4b78bab7ed59584afde9c8635a93bc42094988f1efba5"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/ellipsis.png": {
+        "bytes": 1197,
+        "sha256": "d47a52f480ee55a1747afec9a18814b5c1466e1329a8472e1916cea496eaa050"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/exclamation.png": {
+        "bytes": 2596,
+        "sha256": "771639482dfa667f077e2ae99a7781b029ce3d666605c26d7264f78537df4acc"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/fastforward.png": {
+        "bytes": 1514,
+        "sha256": "014850a6dbda5745bfc9515675648b213665305e6db138d35d64350c2f6fa31e"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/film-outline.png": {
+        "bytes": 1792,
+        "sha256": "9ca26e733f377b389f1cf4e7807a95267b053092bc2cb323dab9c3e9c4852b2c"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/film.png": {
+        "bytes": 1660,
+        "sha256": "2f510e44aa708e6e659ba36cb61be18a63ae7e360c1270aff5effd93d4d42cbc"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/filter.png": {
+        "bytes": 736,
+        "sha256": "acce66e245edc9afb8956da6ded88d2019a6d9d70e91f63470778539391f3011"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/folder-outline.png": {
+        "bytes": 1378,
+        "sha256": "899f6825d0d926688ea6d79e9826552959d0c5ddbfa6ed43f68937933549bf22"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/folder.png": {
+        "bytes": 1109,
+        "sha256": "dff5c67cdcf8dcf7310d42d7ac54a31451336aa8924488d4209396900656c7fa"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/gear.png": {
+        "bytes": 2648,
+        "sha256": "b4c989092acbfae0c029ec067b45f13c0dba782fd8ac15b2358135483ca4aed9"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/heart-outline.png": {
+        "bytes": 3273,
+        "sha256": "dc45e28e621976e639ec10d0d44c6416ecfd20f4d7e6000ddc1348956eb490a0"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/heart.png": {
+        "bytes": 2081,
+        "sha256": "a1d82d1825bcaafb05acc56e0053eb661e1acc6d8e0e5446370b59044bcd9ca8"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/history-outline.png": {
+        "bytes": 2683,
+        "sha256": "5787c4a2a4afab67e9814c8b26c792e2ecbc428589824cbff8e6a097b356f5f9"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/house.png": {
+        "bytes": 1200,
+        "sha256": "acb34664bab9aa2536421b242fe8f28a123bb86b406d4ab5007c661015a36eda"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/info.png": {
+        "bytes": 3536,
+        "sha256": "b9255254f84524f3585b0f19c5745e7607d13c0c04ad644bc1d6675877de4203"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/list-bullet.png": {
+        "bytes": 645,
+        "sha256": "f4812a5310aa5af9dd88cfb78eb47991d4c227db93ddb828aec157ffa84b2b8a"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/next.png": {
+        "bytes": 1591,
+        "sha256": "940d7521f42231c6fe93e5ffc3e2497c7c1ea231d7d846c0b9858c63b575c110"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/pause.png": {
+        "bytes": 937,
+        "sha256": "e323457734b94e0e070fd00c4f762e17e9e229a27d82fe863d37cc8c62bc40ab"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/person-circle.png": {
+        "bytes": 3034,
+        "sha256": "c18bcfa45ea754d023bb4e7eb8bbd6cc73b064677bbf2f607a968397010b9357"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/person.png": {
+        "bytes": 1883,
+        "sha256": "9c15a8cbaff5b3278986a5192fb3b6318bf65b55275d94d088ce9709c6e11a0c"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/photo.png": {
+        "bytes": 1955,
+        "sha256": "0a39e5d365fc3a3cd645c4fe76fead160872c3c6202424c4fcb8d03d4a329664"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/pip.png": {
+        "bytes": 1080,
+        "sha256": "103aa72f62ce1ddd9cd1484a0f5e3a3e0eba602e4a1c8c6b44d1b5708c529990"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/play-outline.png": {
+        "bytes": 2364,
+        "sha256": "00a047fd8fa5b36b6ab39739450971f578d15bc17f1ab48a0272c86b2ab2091e"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/play.png": {
+        "bytes": 1613,
+        "sha256": "6d8e3e7ee803fa2e5bbb5a8821c5bec9e24e0b6059a40a2bdefbeccf88dd6179"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/plus.png": {
+        "bytes": 923,
+        "sha256": "a7008aa4e48de7d57e8afc64cfe3b7af3816d31f798dee8c18efe839e21947c3"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/power.png": {
+        "bytes": 2208,
+        "sha256": "7c2dc6965fe371db682c881344eb73a2f5bbf05d85bb391c988f3311fa090206"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/prev.png": {
+        "bytes": 1621,
+        "sha256": "6d5296b1a29fe0afb0dcc7f039b7104d45ab9a4f9344a7bdb5654f1ddba98aae"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/puzzle.png": {
+        "bytes": 1114,
+        "sha256": "6e4a56d0988ab30bba019c64d4dbfdd524ee7bec26da6897aedfed825e351ede"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/refresh.png": {
+        "bytes": 2654,
+        "sha256": "aa80ecf437796919fedd779795744024f7cd792686cfe07731f3114a7ee3b600"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/rewind.png": {
+        "bytes": 1654,
+        "sha256": "4b1f1b649f3e63a856da7c8f97a1b80a38fc828e1d094bfbd24ba22e491b2f4a"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/search.png": {
+        "bytes": 2682,
+        "sha256": "a5c5ca0659a55be4ac2cfdcbc20f818edce552e194708212ed09adcaf081e6ad"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/sliders.png": {
+        "bytes": 1567,
+        "sha256": "09f1ecc78c27e1e64f9e65d1e5ff3bff63e4752fcb268fcbf511447c504ed607"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/sparkles.png": {
+        "bytes": 2364,
+        "sha256": "7af21c166dc3f3a1b4baec14d435500b3ea469cfeb9942c2d284ec287240b306"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/speaker-mute.png": {
+        "bytes": 2259,
+        "sha256": "eb67a8eb1e201836182b4fb4e2f3b14bc3fe0b61a75c724b84732ed31c4848db"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/speaker.png": {
+        "bytes": 2198,
+        "sha256": "dba679c0cf0df00f4e06ce5274f0e4626c456e240db5941006e8650211ceb385"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/stack-outline.png": {
+        "bytes": 1369,
+        "sha256": "94c79dabed536ebbcfc38fb7d05c5f17b0093b9115cbe2c2e7cbb8502bda2c99"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/stack.png": {
+        "bytes": 1124,
+        "sha256": "1abbb385db2a9d9df6d6b8f08e12b72cefff5a126b39114caf8edf13044cdc4d"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/star.png": {
+        "bytes": 2030,
+        "sha256": "70ade0d0eeaff4281162143e9c8a13c16677335a46f5c55baee88cb9211b9731"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/stop.png": {
+        "bytes": 828,
+        "sha256": "bd66ec1ae1134a13f17d64d3318c87bf63185ad1752265f9bfbf525db8909c45"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/subtitles.png": {
+        "bytes": 2006,
+        "sha256": "fea50e9953e9ee3e8595aa64788d6755e69fed549488ad0ab18a83e09f611467"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/trash-outline.png": {
+        "bytes": 2540,
+        "sha256": "416ff468729ed46fb28a72e1f719a9cf5640aeba5a990aae83db4d670c5feb4d"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/tv-outline.png": {
+        "bytes": 907,
+        "sha256": "0753fc7707fcbce009aad3b01e59f0fc2f4b2fd88b9f0af305a1b5ed154318ac"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/tv.png": {
+        "bytes": 889,
+        "sha256": "4a5136fcbc5d2e31995fd9dbe1174f02eb0b92672b78bceeb9cabdc4a725f9e0"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/waveform.png": {
+        "bytes": 566,
+        "sha256": "5cc4ec6065ddf106408a267575000e08028521d1c5a10b87d6577f01e76aab72"
+      },
+      "addons/plugin.video.bobbi/resources/skins/Default/media/bobbi/glass/icons/xmark.png": {
+        "bytes": 2461,
+        "sha256": "0a5b17b0097c8a621487489bc2fae3e123d00948f1c6ed027747f451f772a873"
+      }
+    }
+  },
+  "inherited_assets": {
+    "groups": [
+      "addons/skin.bobbi.cinema/media",
+      "addons/skin.bobbi.cinema/icon.png",
+      "addons/skin.bobbi.cinema/fanart.jpg"
+    ],
+    "status": "project-owned-original-artwork",
+    "details": "Skin artwork is original project production; per-file hashes are frozen in release/source-inventory.json and retained by the release gate."
+  },
+  "fonts": [
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/Bobbi-Solid.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "Project-branded Solid icon face; upstream triple-license document pinned and delivered in-component.",
+      "bytes": 1003812,
+      "sha256": "f960c6b83e1a6cc1eac4e6cbe0169b57dad4ce7ecc628664c326e4e6a4ca7904",
+      "license_documents": [
+        "fontawesome-license"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/fontawesome.txt"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/BobbiTV-Bold.ttf",
+      "status": "project-owned-typography",
+      "rights": "Bobbi TV project typeface family; original outlines prepared for this interface.",
+      "bytes": 5868220,
+      "sha256": "407c520c5a466cbbf81867bfd72378d703dce558e8a1d963b958a9f461ce5d23"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/BobbiTV-CCMedium.ttf",
+      "status": "project-owned-typography",
+      "rights": "Bobbi TV closed-caption weight; project typeface family with original outlines.",
+      "bytes": 5956116,
+      "sha256": "66f0be92e169b502b43e078a796f887f56f98a5daecdb644167d133f4d0ab49d"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/BobbiTV-Medium.ttf",
+      "status": "project-owned-typography",
+      "rights": "Bobbi TV project typeface family; original outlines prepared for this interface.",
+      "bytes": 5866520,
+      "sha256": "6e72f51d8e5ac90542e187586e6da10f5fa7f29c95918c40f5dd28389ec557fc"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/BobbiTV-Regular.ttf",
+      "status": "project-owned-typography",
+      "rights": "Bobbi TV project typeface family; original outlines prepared for this interface.",
+      "bytes": 5856352,
+      "sha256": "555ebea512adcf4321a9c405531517ef16e8cbc4ebedde1e60f3e388603d8128"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/BobbiTV-Semibold.ttf",
+      "status": "project-owned-typography",
+      "rights": "Bobbi TV project typeface family; original outlines prepared for this interface.",
+      "bytes": 5868256,
+      "sha256": "c0d421e8dbb735d7beae7603a90b81bee743cb04f42598c1c9f59ae81a83cab7"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/HarmonyOS_SansSC_Bold.ttf",
+      "status": "free-use-vendor-license",
+      "rights": "HarmonyOS Sans SC free commercial-use license; embedded records and vendor terms retained.",
+      "bytes": 8379892,
+      "sha256": "c215d8ab1cb6709fec2e063f8213e9af86d7587d345b56325e36b67d6b947d98"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/HarmonyOS_SansSC_Medium.ttf",
+      "status": "free-use-vendor-license",
+      "rights": "HarmonyOS Sans SC free commercial-use license; embedded records and vendor terms retained.",
+      "bytes": 8449140,
+      "sha256": "7aa97804da2fc3802d116011b73ee25791303598718cc58dc49fedc9d63e5d2a"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/HarmonyOS_SansSC_Regular.ttf",
+      "status": "free-use-vendor-license",
+      "rights": "HarmonyOS Sans SC free commercial-use license; embedded records and vendor terms retained.",
+      "bytes": 8483132,
+      "sha256": "984cf609545acee8ef060780fb70fc3099b058c0553416331b6e863fdf7c26fa"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/MiSans-Medium.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "MiSans, Apache-2.0; canonical Apache-2.0 text delivered in-component.",
+      "bytes": 8103840,
+      "sha256": "b03e98374e971594b0b7a9706d0704241f76e1b88556cdda79c5039ef8a638d1",
+      "license_documents": [
+        "font-apache2"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/misans-apache.txt"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/MiSans-Regular.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "MiSans, Apache-2.0; canonical Apache-2.0 text delivered in-component.",
+      "bytes": 8122324,
+      "sha256": "9c120f0a849bc0aa5048daae2a3c0f6eecd828b5b33fce682a9622833f5feea6",
+      "license_documents": [
+        "font-apache2"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/misans-apache.txt"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/MiSans-Semibold.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "MiSans, Apache-2.0; canonical Apache-2.0 text delivered in-component.",
+      "bytes": 8034980,
+      "sha256": "77c23f31ae124867778344970155a0c8d34a89897dedaab81aeee82ff00a4ce6",
+      "license_documents": [
+        "font-apache2"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/misans-apache.txt"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/Roboto-Bold.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "Roboto, Apache-2.0; pinned upstream LICENSE delivered in-component.",
+      "bytes": 254084,
+      "sha256": "84c9d92e4300b4e836c9dacd61d8142f5691e3c18da6c8a37a5e02edcb240a10",
+      "license_documents": [
+        "roboto-license"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/roboto.txt"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/Roboto-Regular.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "Roboto, Apache-2.0; pinned upstream LICENSE delivered in-component.",
+      "bytes": 254272,
+      "sha256": "9e13e7dbe6f28b2730883209e6b98a7142f27fcc8d3e4bb1645c41cc978d853a",
+      "license_documents": [
+        "roboto-license"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/roboto.txt"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/RobotoCJKSC-Regular.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "Roboto with CJK SC supplement, OFL 1.1; pinned upstream OFL text delivered in-component.",
+      "bytes": 13079512,
+      "sha256": "f7ecc62f5657e8cff4375231322e9e73643d0e1f12e4b2dbacb0bc68cacbb66d",
+      "license_documents": [
+        "font-ofl11"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/noto-ofl.txt"
+    },
+    {
+      "path": "addons/skin.bobbi.cinema/fonts/fa-solid-900.ttf",
+      "status": "full-upstream-license-retained",
+      "rights": "Solid icon family 6.7.2 upstream triple-license document; bundled glyph set retained.",
+      "bytes": 426112,
+      "sha256": "af19d135d3a935b3ebfbd80320716ffe1202052c5f68dc2c5f1abc57005ac605",
+      "license_documents": [
+        "fontawesome-license"
+      ],
+      "shipped_notice": "addons/skin.bobbi.cinema/licenses/fontawesome.txt"
+    }
+  ]
+}

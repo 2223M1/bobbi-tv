@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="resource.uisounds.bobbi-modern"
+       name="波比TV 音效 · -10 dB"
+       version="2026.9.6.0"
+       provider-name="2223M1">
+  <extension point="kodi.resource.uisounds"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">AM6B television UI sound theme</summary>
+    <summary lang="zh_CN">AM6B 电视端交互音效</summary>
+    <description lang="en_GB">User-supplied AM6BP_Sounds WAV files with uniform -10 dB PCM gain. Original sample rate, channels and duration preserved.</description>
+    <description lang="zh_CN">用户提供的 AM6BP_Sounds 界面音效从原素材统一降低 10 dB，保留采样率、声道和时长，不改变影片音量。</description>
+    <platform>all</platform>
+    <license>Private user-supplied media; no redistribution grant is asserted.</license>
+  </extension>
+</addon>

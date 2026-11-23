@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">600</defaultcontrol>
+  <onload>Control.SetFocus(600,2)</onload>
+  <onload>RunScript(plugin.video.bobbi,bobbi_osd=refresh)</onload>
+  <include>PanelOpen</include>
+  <depth>DepthOSD</depth>
+  <controls>
+    <!-- Clean stage canvas only when OSD is opened idle without active video plane -->
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/stage-ambient.png</texture>
+      <visible>!Player.HasVideo</visible>
+    </control>
+    <control type="group">
+      <visible>![Window.IsVisible(1144) | Window.IsVisible(1145) | Window.IsVisible(1114) | Window.IsVisible(1115) | Window.IsVisible(1116) | Window.IsVisible(PlayerProcessInfo) | Window.IsVisible(OSDSubtitleSettings) | Window.IsVisible(OSDAudioSettings) | Window.IsVisible(OSDVideoSettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(SliderDialog)]</visible>
+      <include>FadeVisible</include>
+      <include content="OSDScrim"><param name="top">480</param></include>
+
+      <!-- Top scrim + on-device AM/PM Liquid Glass clock pill @ right=1840 -->
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>180</height>
+        <texture>bobbi/glass/scrim-top.png</texture>
+      </control>
+      <include content="GlassCapsule">
+        <param name="x">1684</param><param name="y">46</param><param name="w">156</param><param name="h">52</param>
+      </include>
+      <control type="label">
+        <left>1684</left><top>46</top><width>156</width><height>52</height>
+        <label>$VAR[BobbiTimeAMPM]</label>
+        <font>NavClock20</font><textcolor>FFFFFFFF</textcolor><align>center</align><aligny>center</aligny>
+      </control>
+
+      <!-- Above Scrubber Left: Kicker (y=720) + Main Title (y=758, h=64) -->
+      <include content="OSDTitle"><param name="top">720</param><param name="width">1420</param></include>
+
+      <!-- Above Scrubber Right (y=758, right-aligned to x=1840): 4 circular 64x64 Liquid Glass discs -->
+      <control type="list" id="700">
+        <left>1536</left><top>758</top><width>160</width><height>64</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>0</scrolltime>
+        <onup condition="Player.SeekEnabled">87</onup>
+        <onup condition="!Player.SeekEnabled">noop</onup>
+        <ondown>720</ondown>
+        <onleft>720</onleft>
+        <onright>710</onright>
+        <itemlayout width="80" height="64">
+          <include content="RoundItem"><param name="list">700</param><param name="size">64</param><param name="glyph">28</param><param name="pad">18</param></include>
+        </itemlayout>
+        <focusedlayout width="80" height="64">
+          <include content="RoundItem"><param name="list">700</param><param name="size">64</param><param name="glyph">28</param><param name="pad">18</param><param name="focused">true</param></include>
+        </focusedlayout>
+        <content>
+          <item>
+            <label>字幕</label><icon>bobbi/glass/icons/bubble-captions.png</icon>
+            <onclick>ActivateWindow(1144)</onclick>
+          </item>
+          <item>
+            <label>音轨</label><icon>bobbi/glass/icons/waveform.png</icon>
+            <onclick>ActivateWindow(1145)</onclick>
+          </item>
+        </content>
+      </control>
+
+      <control type="list" id="710">
+        <left>1696</left><top>758</top><width>160</width><height>64</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>0</scrolltime>
+        <onup condition="Player.SeekEnabled">87</onup>
+        <onup condition="!Player.SeekEnabled">noop</onup>
+        <ondown>720</ondown>
+        <onleft>700</onleft>
+        <onright>noop</onright>
+        <itemlayout width="80" height="64">
+          <include content="RoundItem"><param name="list">710</param><param name="size">64</param><param name="glyph">28</param><param name="pad">18</param></include>
+        </itemlayout>
+        <focusedlayout width="80" height="64">
+          <include content="RoundItem"><param name="list">710</param><param name="size">64</param><param name="glyph">28</param><param name="pad">18</param><param name="focused">true</param></include>
+        </focusedlayout>
+        <content>
+          <item>
+            <label>画面</label><icon>bobbi/glass/icons/pip.png</icon>
+            <onclick>ActivateWindow(OSDVideoSettings)</onclick>
+          </item>
+          <item>
+            <label>更多</label><icon>bobbi/glass/icons/sliders.png</icon>
+            <onclick>ActivateWindow(1114)</onclick>
+          </item>
+        </content>
+      </control>
+
+      <!-- Full-Width on-device Liquid Glass Scrubber (x=80..1840, w=1760, top=842) -->
+      <include content="OSDProgress"><param name="top">842</param></include>
+
+      <!-- Seek trigger button (contract 87) -->
+      <control type="button" id="87">
+        <left>74</left><top>836</top><width>1772</width><height>26</height>
+        <label />
+        <onclick>RunScript(plugin.video.bobbi,bobbi_osd=seek)</onclick>
+        <enable>Player.SeekEnabled</enable>
+        <texturenofocus />
+        <texturefocus border="13">bobbi/glass/osd-scrubber-focus.png</texturefocus>
+        <onleft>noop</onleft><onright>noop</onright>
+        <onup>700</onup>
+        <ondown>600</ondown>
+      </control>
+      <control type="label">
+        <left>560</left><top>864</top><width>800</width><height>32</height>
+        <label>确认 输入时间跳转   ·   ↓ 控制栏</label>
+        <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><align>center</align><aligny>center</aligny>
+        <visible>Control.HasFocus(87)</visible>
+      </control>
+
+      <!-- Bottom Row Left (y=924, h=64): Kodi Transport (contract 600: 6 fixed slots, play at index 2) -->
+      <control type="list" id="600">
+        <left>80</left><top>924</top><width>456</width><height>64</height>
+        <orientation>horizontal</orientation>
+        <scrolltime>0</scrolltime>
+        <onup condition="Player.SeekEnabled">87</onup>
+        <onup condition="!Player.SeekEnabled">noop</onup>
+        <ondown>noop</ondown>
+        <onleft>noop</onleft>
+        <onright>720</onright>
+        <itemlayout width="76" height="64">
+          <include content="RoundItem"><param name="list">600</param><param name="size">64</param><param name="glyph">28</param><param name="pad">18</param></include>
+        </itemlayout>
+        <focusedlayout width="76" height="64">
+          <include content="RoundItem"><param name="list">600</param><param name="size">64</param><param name="glyph">28</param><param name="pad">18</param><param name="focused">true</param></include>
+        </focusedlayout>
+        <content>
+          <item>
+            <label>上一个</label><icon>bobbi/glass/icons/prev.png</icon>
+            <property name="hint">上一章 / 播放队列上一项</property>
+            <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapter_previous)</onclick>
+          </item>
+          <item>
+            <label>后退</label><icon>bobbi/glass/icons/rewind.png</icon>
+            <property name="hint">$VAR[BobbiSeekBackHint]</property>
+            <property name="unavailable">$VAR[BobbiSeekUnavailable]</property>
+            <onclick condition="Player.SeekEnabled">RunScript(plugin.video.bobbi,bobbi_osd=seek_back)</onclick>
+          </item>
+          <item>
+            <label>播放</label><icon>$VAR[PlayPauseIcon]</icon>
+            <property name="hint">$VAR[BobbiPauseHint]</property>
+            <property name="unavailable">$VAR[BobbiPauseUnavailable]</property>
+            <onclick condition="Player.PauseEnabled | Player.Forwarding | Player.Rewinding">RunScript(plugin.video.bobbi,bobbi_osd=toggle_pause)</onclick>
+          </item>
+          <item>
+            <label>前进</label><icon>bobbi/glass/icons/fastforward.png</icon>
+            <property name="hint">$VAR[BobbiSeekForwardHint]</property>
+            <property name="unavailable">$VAR[BobbiSeekUnavailable]</property>
+            <onclick condition="Player.SeekEnabled">RunScript(plugin.video.bobbi,bobbi_osd=seek_forward)</onclick>
+          </item>
+          <item>
+            <label>下一个</label><icon>bobbi/glass/icons/next.png</icon>
+            <property name="hint">下一章 / 播放队列下一项（不代表同版下一集）</property>
+            <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapter_next)</onclick>
+          </item>
+          <item>
+            <label>停止</label><icon>bobbi/glass/icons/stop.png</icon>
+            <property name="hint">停止播放并返回</property>
+            <onclick>RunScript(plugin.video.bobbi,bobbi_osd=stop)</onclick>
+          </item>
+        </content>
+      </control>
+
+      <!-- Bottom Row Right (x=556, y=924, h=64): on-device Liquid Glass Quick Pill Tabs -->
+      <control type="list" id="720">
+        <left>556</left><top>924</top><width>1284</width><height>64</height>
+        <orientation>horizontal</orientation>
+        <include>ListMotion</include>
+        <onup condition="Player.SeekEnabled">87</onup>
+        <onup condition="!Player.SeekEnabled">noop</onup>
+        <ondown>noop</ondown>
+        <onleft>600</onleft>
+        <onright>700</onright>
+        <itemlayout width="256" height="64">
+          <include content="ChipItem"><param name="w">244</param><param name="list">720</param></include>
+        </itemlayout>
+        <focusedlayout width="256" height="64">
+          <include content="ChipItem"><param name="w">244</param><param name="list">720</param><param name="focused">true</param></include>
+        </focusedlayout>
+        <content>
+          <item>
+            <label>信号与编码</label><icon>bobbi/glass/icons/info.png</icon>
+            <onclick>ActivateWindow(playerprocessinfo)</onclick>
+          </item>
+          <item>
+            <label>章节书签</label><icon>bobbi/glass/icons/bookmark.png</icon>
+            <onclick>RunScript(plugin.video.bobbi,bobbi_osd=chapters)</onclick>
+            <visible>Player.SeekEnabled</visible>
+          </item>
+          <item>
+            <label>杜比视界 VS10</label><icon>bobbi/glass/icons/sparkles.png</icon>
+            <onclick>ActivateWindow(1116)</onclick>
+            <visible>System.Platform.Linux</visible>
+          </item>
+          <item>
+            <label>播放速度</label><icon>bobbi/glass/icons/clock.png</icon>
+            <onclick>ActivateWindow(1115)</onclick>
+            <visible>Player.TempoEnabled | Player.SeekEnabled</visible>
+          </item>
+          <item>
+            <label>找中文字幕</label><icon>bobbi/glass/icons/search.png</icon>
+            <onclick>RunScript(script.bobbi.opensubtitles)</onclick>
+            <visible>System.HasAddon(script.bobbi.opensubtitles)</visible>
+          </item>
+        </content>
+      </control>
+    </control>
+  </controls>
+</window>

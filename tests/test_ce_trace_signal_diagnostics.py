@@ -1,0 +1,324 @@
+"""Tool-only signal characterization; no imports of the remote device entrypoint."""
+import ast
+from copy import deepcopy
+import io
+import json
+from pathlib import Path
+import re
+from types import SimpleNamespace
+
+import pytest
+
+SOURCE = Path(__file__).resolve().parents[1] / 'tools/ce_trial_remote.py'
+
+
+def functions(*names):
+    names = set(names) | {'decoder_snapshot', 'decoder_intervals', 'decoder_frame_pair'}
+    tree = ast.parse(SOURCE.read_text(encoding='utf-8'))
+    nodes = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name in names]
+    namespace = {}
+    exec(compile(ast.Module(body=nodes, type_ignores=[]), str(SOURCE), 'exec'), namespace)
+    return namespace
+
+
+def row(wall, seconds, frames, caching=False, phase='AV_STARTED', instance='one'):
+    return dict(wall=wall, seconds=seconds, speed=1, caching=caching, phase=phase,
+                native=dict(native_instance=instance, request_id='request'),
+                decoder_counters={'frame count': frames})
+
+
+@pytest.mark.parametrize('failure_at', [0, 2])
+@pytest.mark.parametrize('error_type', [RuntimeError, AssertionError, TimeoutError])
+def test_startup_capture_retains_partial_samples_and_stops_on_any_owner_read_failure(failure_at, error_type):
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        if len(calls) > failure_at:
+            raise error_type('private://signed-secret-must-not-be-exported')
+        result = row(clock[0], clock[0] + 1, len(calls) * 10)
+        result['labels'] = {'private': 'omitted'}
+        return result
+    ns.update(sample=sample, time=SimpleNamespace(
+        monotonic=lambda: clock[0], sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)))
+    trace, failure = ns['capture_startup_trace']({'owned': True})
+    assert len(calls) == failure_at + 1  # No retry through an ownership failure.
+    assert len(trace) == failure_at
+    assert all('labels' not in item for item in trace)
+    assert failure == dict(type=error_type.__name__, reason='STARTUP_OBSERVATION_INTERRUPTED',
+                          samples_retained=failure_at)
+    assert 'secret' not in repr((trace, failure))
+
+
+@pytest.mark.parametrize('failure_at', [0, 2])
+def test_owner_unavailable_reply_keeps_only_controlled_cause_without_retry(failure_at):
+    ns = functions('call', 'snapshot', 'capture_startup_trace')
+    clock, requests, sleeps = [0.0], [], []
+    private = 'https://signed.invalid/movie?token=private-reply-secret'
+
+    def read_config(path):
+        assert path == '/storage/.kodi/userdata/addon_data/script.module.bobbi.platform/runtime.json'
+        return SimpleNamespace(read_text=lambda: json.dumps(
+            {'port': 12345, 'token': 'private-config-secret'}))
+
+    def open_request(request, timeout):
+        requests.append(request)
+        assert request.url == 'http://127.0.0.1:12345/control'
+        assert json.loads(request.data) == {'action': 'playback', 'body': {'operation': 'snapshot'}}
+        assert timeout == .3
+        if len(requests) > failure_at:
+            reply = {'ok': False, 'error': {'message': private, 'token': 'private-reply-secret'}}
+        else:
+            result = row(clock[0], clock[0] + 1, len(requests) * 10)
+            result['labels'] = {'private': private}
+            reply = {'ok': True, 'result': result}
+        return io.StringIO(json.dumps(reply))
+
+    def sleep(seconds):
+        sleeps.append(seconds)
+        clock[0] += seconds
+
+    request_api = SimpleNamespace(
+        Request=lambda url, **kwargs: SimpleNamespace(url=url, **kwargs),
+        ProxyHandler=lambda proxies: proxies,
+        build_opener=lambda _: SimpleNamespace(open=open_request))
+    ns.update(Path=read_config, json=json, urllib=SimpleNamespace(request=request_api),
+              sample=lambda _: ns['snapshot'](),
+              time=SimpleNamespace(monotonic=lambda: clock[0], sleep=sleep))
+
+    trace, failure = ns['capture_startup_trace']({'owned': True})
+
+    assert len(requests) == failure_at + 1
+    assert sleeps == [.5] * failure_at  # The owner failure adds no retry or delay.
+    assert len(trace) == failure_at
+    assert failure == dict(type='RuntimeError', reason='STARTUP_OBSERVATION_INTERRUPTED',
+                          samples_retained=failure_at, cause='PLAYBACK_OWNER_UNAVAILABLE',
+                          owner_response='rejected_or_unspecified')
+    exported = json.dumps({'samples': trace, 'trace_error': failure})
+    assert 'private' not in exported and 'signed.invalid' not in exported
+    assert all('labels' not in item for item in trace)
+
+
+@pytest.mark.parametrize('error', [
+    RuntimeError('PLAYBACK_OWNER_UNAVAILABLE https://signed.invalid/?token=private-secret'),
+    RuntimeError('https://signed.invalid/?token=private-secret PLAYBACK_OWNER_UNAVAILABLE'),
+    RuntimeError('PLAYBACK_OWNER_UNAVAILABLE\n'),
+    RuntimeError(' PLAYBACK_OWNER_UNAVAILABLE'),
+    RuntimeError('playback_owner_unavailable'),
+    RuntimeError('UNKNOWN_OWNER_FAILURE'),
+    RuntimeError('PLAYBACK_OWNER_UNAVAILABLE', 'token=private-secret'),
+    RuntimeError(),
+    AssertionError('PLAYBACK_OWNER_UNAVAILABLE'),
+    TimeoutError('PLAYBACK_OWNER_UNAVAILABLE'),
+], ids=['url-suffix', 'url-prefix', 'newline', 'space-prefix', 'different-case',
+        'unknown', 'multiple-args', 'no-args', 'assertion', 'timeout'])
+def test_startup_capture_does_not_export_uncontrolled_cause(error):
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+
+    def sample(record):
+        calls.append(record)
+        if len(calls) > 2:
+            raise error
+        return row(clock[0], clock[0] + 1, len(calls) * 10)
+
+    ns.update(sample=sample, time=SimpleNamespace(
+        monotonic=lambda: clock[0], sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)))
+    trace, failure = ns['capture_startup_trace']({'owned': True})
+
+    assert len(calls) == 3 and len(trace) == 2 and clock[0] == 1
+    assert failure == dict(type=type(error).__name__, reason='STARTUP_OBSERVATION_INTERRUPTED',
+                          samples_retained=2)
+    assert 'secret' not in repr((trace, failure))
+
+
+def test_startup_capture_finishes_within_original_budget():
+    ns = functions('capture_startup_trace')
+    clock = [0.0]
+    ns.update(sample=lambda _: row(clock[0], clock[0] + 1, int(clock[0] * 24)),
+        time=SimpleNamespace(monotonic=lambda: clock[0],
+            sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)))
+    trace, failure = ns['capture_startup_trace']({}, budget=2)
+    assert len(trace) == 4 and clock[0] == 2 and failure is None
+
+
+def unavailable():
+    error = RuntimeError('PLAYBACK_OWNER_UNAVAILABLE')
+    error.owner_response = 'unavailable'
+    return error
+
+
+def test_explicit_owner_unavailable_retains_gap_and_failure_after_same_owner_recovers():
+    ns = functions('capture_startup_trace', 'startup_health', 'startup_signal_diagnostics', 'startup_coverage')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        if len(calls) == 2:
+            raise unavailable()
+        return row(clock[0], clock[0]+1, len(calls)*10)
+    ns.update(sample=sample, time=SimpleNamespace(monotonic=lambda: clock[0],
+        sleep=lambda seconds: clock.__setitem__(0, clock[0]+seconds)))
+    trace, failure = ns['capture_startup_trace']({'owned': True}, budget=2)
+    assert len(calls) == 4 and len(trace) == 4 and clock[0] == 2
+    assert trace[1]['acquisition_gap'] == 'OWNER_UNAVAILABLE' and trace[1]['phase'] is None
+    assert 'native' not in trace[1] and 'seconds' not in trace[1]
+    assert failure['owner_response'] == 'unavailable' and failure['samples_retained'] == 4
+    assert failure['acquisition_gaps'] == [dict(sample_started=.5, sample_completed=.5, recovered=True)]
+    health = ns['startup_health'](trace)
+    assert health['observation_gaps'] == 1 and health['no_observed_stall'] is False
+    assert ns['startup_signal_diagnostics'](trace)['observation_gap_events'] == [
+        dict(sample_index=1, cause='OWNER_UNAVAILABLE', wall=.5)]
+    assert ns['startup_coverage'](trace, health)['passed'] is False
+
+
+def test_explicit_unavailable_recovery_is_bounded_and_preserves_unresolved_gaps():
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        raise unavailable()
+    ns.update(sample=sample, time=SimpleNamespace(monotonic=lambda: clock[0],
+        sleep=lambda seconds: clock.__setitem__(0, clock[0]+seconds)))
+    trace, failure = ns['capture_startup_trace']({}, budget=2)
+    assert len(calls) == 4 and len(trace) == 3 and clock[0] == 1.5
+    assert len(failure['acquisition_gaps']) == 3
+    assert all(gap['recovered'] is False for gap in failure['acquisition_gaps'])
+
+
+@pytest.mark.parametrize('error', [AssertionError('USER_CHANGED_SELECTION'),
+    AssertionError('OTHER_INSTANCE'), RuntimeError('UNKNOWN_OWNER_FAILURE')])
+def test_unavailable_does_not_allow_retry_past_changed_or_unknown_owner(error):
+    ns = functions('capture_startup_trace')
+    clock, calls = [0.0], []
+    def sample(record):
+        calls.append(record)
+        raise unavailable() if len(calls) == 1 else error
+    ns.update(sample=sample, time=SimpleNamespace(monotonic=lambda: clock[0],
+        sleep=lambda seconds: clock.__setitem__(0, clock[0]+seconds)))
+    trace, failure = ns['capture_startup_trace']({}, budget=2)
+    assert len(calls) == 2 and len(trace) == 1 and clock[0] == .5
+    assert failure['type'] == type(error).__name__
+    assert failure['acquisition_gaps'][0]['recovered'] is False
+
+
+def test_call_only_classifies_exact_public_unavailable_enum_without_exporting_body():
+    ns = functions('call')
+    replies = iter([dict(ok=False, error='unavailable', token='secret'),
+                    dict(ok=False, error='unavailable secret'), dict(ok=False),
+                    dict(ok=False, error={'message':'unavailable'})])
+    ns.update(Path=lambda _: SimpleNamespace(read_text=lambda:json.dumps(dict(port=1,token='secret'))),
+        json=json, urllib=SimpleNamespace(request=SimpleNamespace(Request=lambda *a,**k:None,
+        ProxyHandler=lambda _:None,build_opener=lambda _:SimpleNamespace(
+            open=lambda *a,**k:io.StringIO(json.dumps(next(replies)))))))
+    classifications=[]
+    for _ in range(4):
+        with pytest.raises(RuntimeError) as caught:
+            ns['call']({'operation':'snapshot'})
+        classifications.append(caught.value.owner_response)
+        assert caught.value.args == ('PLAYBACK_OWNER_UNAVAILABLE',)
+    assert classifications == ['unavailable']+['rejected_or_unspecified']*3
+
+
+def test_clock_only_stationarity_is_separate_from_real_caching_without_rewriting_failure():
+    ns = functions('startup_health', 'startup_coverage', 'startup_signal_diagnostics')
+    samples = [row(i / 2, 1.114, 70 + i * 12) for i in range(6)]
+    samples += [row(3, 4.177, 133, True)]
+    samples += [row(i / 2, 4.177, 143, True) for i in range(7, 20)]
+    samples += [row(10, 4.487, 149)]
+    original = deepcopy(samples)
+    legacy = ns['startup_health'](samples)
+    assert legacy['max_observed_stall_seconds'] == 9.5
+    assert legacy['no_observed_stall'] is False
+    diagnostic = ns['startup_signal_diagnostics'](samples)
+    assert diagnostic['stationary_clock_with_decoder_progress_runs'][0]['wall_seconds'] == 2.5
+    assert diagnostic['caching_sample_runs'][0]['wall_seconds'] == 6.5
+    assert diagnostic['stationary_decoder_with_caching_runs'][0]['wall_seconds'] == 6
+    assert diagnostic['changes_legacy_result'] is False
+    assert diagnostic['render_continuity_proven'] is False
+    assert ns['startup_coverage'](samples, legacy)['passed'] is False
+    assert samples == original
+
+
+def test_clock_catchups_keep_signal_steps_but_do_not_claim_a_seek():
+    ns = functions('startup_signal_diagnostics')
+    samples = [row(0, .238, 45), row(.4, .238, 57), row(.91, 1.114, 70),
+               row(1.4, 1.114, 84), row(1.9, 4.177, 100)]
+    result = ns['startup_signal_diagnostics'](samples)
+    assert len(result['clock_step_events']) == 2
+    assert all(event['decoder_advanced'] for event in result['clock_step_events'])
+    assert all(event['meaning'] == 'CLOCK_STEP_NOT_SEEK_PROOF' for event in result['clock_step_events'])
+    assert result['decoder_counter_reset_events'] == []
+
+
+def test_negative_initial_pts_does_not_hide_a_caching_observation():
+    ns = functions('startup_signal_diagnostics')
+    result = ns['startup_signal_diagnostics']([
+        row(0, -.039, 72, True), row(.5, .001, 72, True), row(1, .001, 72, True)])
+    assert result['caching_sample_runs'][0]['wall_seconds'] == 1
+    assert result['stationary_decoder_with_caching_runs'][0]['wall_seconds'] == 1
+    assert result['changes_legacy_result'] is False
+
+
+def test_open_phase_sampling_gap_is_recorded_without_claiming_a_playback_freeze():
+    ns = functions('startup_signal_diagnostics')
+    result = ns['startup_signal_diagnostics']([row(0, -1, 0, phase='OPEN'),
+                                               row(2.668, -1, 0, phase='OPEN')])
+    assert result['observation_gap_events'] == [dict(first_index=0, last_index=1,
+        wall_seconds=2.668, first_phase='OPEN', last_phase='OPEN')]
+    assert result['stationary_decoder_with_caching_runs'] == []
+    assert result['clock_step_events'] == []
+
+
+@pytest.mark.parametrize('middle', ['gap', 'new_instance', 'invalid'])
+def test_diagnostic_runs_do_not_bridge_unobserved_or_unowned_intervals(middle):
+    ns = functions('startup_signal_diagnostics')
+    samples = [row(0, 2, 20, True), row(.5, 2, 20, True), row(1, 2, 20, True)]
+    if middle == 'gap':
+        samples[-1]['wall'] = 5
+    elif middle == 'new_instance':
+        samples[-1]['native']['native_instance'] = 'another'
+    else:
+        samples[-1]['seconds'] = float('nan')
+    result = ns['startup_signal_diagnostics'](samples)
+    assert result['stationary_decoder_with_caching_runs'][0]['last_index'] == 1
+    assert result['stationary_decoder_with_caching_runs'][0]['wall_seconds'] == .5
+
+
+def test_decoder_reset_and_negative_time_step_are_not_hidden():
+    ns = functions('startup_signal_diagnostics')
+    result = ns['startup_signal_diagnostics']([row(0, 10, 100), row(.5, 2, 4)])
+    assert result['clock_step_events'][0]['direction'] == 'backward'
+    assert result['decoder_counter_reset_events'] == [dict(first_index=0, last_index=1)]
+
+
+def test_sample_brackets_separate_rpc_observation_times_without_more_device_reads():
+    ns = functions('sample', 'seconds', 'request_status')
+    clock, calls = [100.0], []
+    def monotonic():
+        clock[0] += .01
+        return clock[0]
+    def state(record, observe=None):
+        clock[0] += .2
+        return {'desired': {'request_id': 'request'}}, {}, {'phase': 'AV_STARTED'}
+    def rpc(method, params=None):
+        calls.append(method)
+        clock[0] += .3
+        if method == 'Player.GetActivePlayers':
+            return [{'playerid': 1}]
+        if method == 'Player.GetProperties':
+            return dict(time=dict(hours=0, minutes=0, seconds=1, milliseconds=0),
+                        totaltime=dict(hours=1, minutes=0, seconds=0, milliseconds=0), speed=1)
+        if method == 'XBMC.GetInfoBooleans':
+            return {'Player.Caching': False}
+        return {}
+    ns.update(state=state, rpc=rpc, re=re, time=SimpleNamespace(monotonic=monotonic),
+              Path=lambda _: SimpleNamespace(read_text=lambda: 'vdec channel 0 statistics:\n device name : h264\nframe count : 24\n'))
+    value = ns['sample']({'request_id': 'request'})
+    times = value['observation_times']
+    assert times['sample_started'] < value['wall'] < times['player_time_started']
+    ordered = ('player_time_started', 'player_time_completed', 'caching_started', 'caching_completed',
+               'decoder_started', 'decoder_completed', 'sample_completed')
+    assert all(times[first] < times[last] for first, last in zip(ordered, ordered[1:]))
+    assert calls == ['Player.GetActivePlayers', 'Player.GetProperties', 'XBMC.GetInfoBooleans',
+                     'XBMC.GetInfoLabels', 'GUI.GetProperties']
+    assert value['seconds'] == 1 and value['decoder_counters']['frame count'] == 24

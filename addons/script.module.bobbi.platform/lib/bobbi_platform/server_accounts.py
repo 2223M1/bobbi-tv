@@ -1,0 +1,239 @@
+"""Registry-backed server authority. No extra credential/account persistence."""
+from copy import deepcopy
+import hashlib
+import json
+from pathlib import Path
+import sqlite3
+from threading import RLock
+from uuid import uuid4
+
+from bobbi_core.library_contract import Source, LibraryError, server_location, validate_source
+from .libraries import Registry
+from .pan_accounts import PanError, SERVER_PROVIDERS, empty_scope, scope
+
+
+class PlexBinding:
+    """Startup-captured existing settings; an observed change never revives."""
+    def __init__(self, read, current):
+        self.read, self.profile_current, self.revoked = read, current, False
+        self.saved = deepcopy(read())
+        if not self.current():
+            raise PanError('PAN_ACCOUNT_CHANGED')
+
+    def __repr__(self):
+        return '<Plex startup binding: credentials hidden>'
+
+    def current(self):
+        if not self.revoked:
+            try:
+                self.revoked = self.profile_current() is not True or self.read() != self.saved
+            except (OSError, ValueError, RuntimeError):
+                self.revoked = True
+        return not self.revoked
+
+
+class Accounts:
+    def __init__(self, root, plex=None, current=lambda: True):
+        self.path, self.plex, self.current = Path(root) / 'libraries.sqlite3', plex, current
+        self.lock, self.listeners, self.observed = RLock(), [], {}
+        self.observation_serial, self.observed_versions = 0, {}
+
+    def _registry(self):
+        # Strong checks retain the actual SQLite CAS, but a busy Registry is
+        # unavailable immediately, not a one-second wait on the playback actor.
+        return Registry(self.path, timeout=0)
+
+    def _source(self, store, provider):
+        rows = [source for source in store.sources() if source.kind == 'media_server'
+                and source.metadata['provider'] == provider]
+        if len(rows) > 1:
+            raise PanError('PAN_ACCOUNT_ID_INVALID')
+        return store.source_snapshot(rows[0].id) if rows else (None, None)
+
+    @staticmethod
+    def _scope(source, revision):
+        data = source.metadata
+        subject = json.dumps([data['server_id'], data['user_id']], separators=(',', ':'))
+        account = data['provider'] + ':' + hashlib.sha256(subject.encode('ascii')).hexdigest()
+        return scope(dict(provider=data['provider'], account_id=account, authenticated=True, epoch=0,
+                          source_id=source.id, generation=revision))
+
+    def _credentials(self, source):
+        if not self.current():
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        data = source.metadata
+        saved = dict(provider=data['provider'], location=source.location,
+                     server_id=data['server_id'], user_id=data['user_id'])
+        if data['provider'] == 'plex':
+            if (self.plex is None or not self.plex.current() or
+                    server_location(self.plex.saved.get('location', '')) != source.location):
+                raise PanError('PAN_CREDENTIALS_CHANGED')
+            saved.update(token=self.plex.saved['token'], user_token=self.plex.saved['user_token'])
+        else:
+            saved['token'] = source.password
+        return saved
+
+    def _notify(self, value):
+        with self.lock:
+            key = value['provider']
+            previous = self.observed.get(key)
+            self.observed[key] = value
+            self.observation_serial += 1
+            self.observed_versions[key] = self.observation_serial
+            if previous is not None and previous != value:
+                for listener in tuple(self.listeners):
+                    try:
+                        listener(dict(previous), dict(value))
+                    except Exception:
+                        pass  # Each consumer still checks its captured full scope.
+        return value
+
+    def snapshot(self, provider):
+        if provider not in dict(SERVER_PROVIDERS):
+            raise PanError('PAN_PROVIDER_INVALID')
+        store = self._registry()
+        try:
+            value = self._snapshot(store, provider)
+        finally:
+            store.close()
+        return self._notify(value)
+
+    def _snapshot(self, store, provider):
+        source, revision = self._source(store, provider)
+        if source is None:
+            return empty_scope(provider)
+        try:
+            self._credentials(source)
+            return self._scope(source, revision)
+        except (PanError, LibraryError):
+            return empty_scope(provider)
+
+    def require_current(self, expected, authenticated=True):
+        expected = scope(expected, authenticated=authenticated)
+        if expected != self.snapshot(expected['provider']):
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        return expected
+
+    def is_current(self, expected):
+        try:
+            self.require_current(expected, False)
+            return True
+        except (ValueError, OSError):
+            return False
+
+    def run_if_current(self, expected, operation, authenticated=True):
+        expected = self.require_current(expected, authenticated)
+        store = self._registry()
+        try:
+            source, revision = self._source(store, expected['provider'])
+            if source is None or self._scope(source, revision) != expected:
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            def publish():
+                self._credentials(source)
+                return operation()
+            return store.run_if_current(source, revision, publish)
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
+        finally:
+            store.close()
+
+    def credentials(self, expected):
+        self.require_current(expected)
+        store = self._registry()
+        try:
+            source, revision = self._source(store, expected['provider'])
+            if source is None or self._scope(source, revision) != expected:
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            return self._credentials(source)
+        finally:
+            store.close()
+
+    def subscribe(self, listener):
+        with self.lock:
+            self.listeners.append(listener)
+        def unsubscribe():
+            with self.lock:
+                if listener in self.listeners:
+                    self.listeners.remove(listener)
+        return unsubscribe
+
+    def poll(self):
+        with self.lock:
+            versions = dict(self.observed_versions)
+            providers = tuple(versions)
+        if not providers:
+            return
+        # One nonblocking, read-only opening for this observation pass. Busy
+        # storage is not logout; authoritative operations still recheck their
+        # full source/revision through require_current/run_if_current.
+        try:
+            store = Registry(self.path, read_only=True)
+            try:
+                values = [self._snapshot(store, provider) for provider in providers]
+            finally:
+                store.close()
+        except (LibraryError, OSError, sqlite3.Error):
+            # Observation failure is unknown, not an account-change event.
+            # Do not spuriously revoke an unchanged live selection. Explicit
+            # controls still fail closed under their fresh strong scope check.
+            return False
+        for value in values:
+            with self.lock:
+                provider = value['provider']
+                if self.observed_versions.get(provider) == versions[provider]:
+                    self._notify(value)
+        return True
+
+    def register(self, provider, name, location='', secret='', expected_source=None, client_factory=None,
+                 current=lambda: True, publish=lambda write: write()):
+        if not self.current() or not current():
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        if provider not in dict(SERVER_PROVIDERS):
+            raise PanError('PAN_PROVIDER_INVALID')
+        store = self._registry()
+        try:
+            previous, revision = self._source(store, provider)
+            if (previous.id if previous else None) != expected_source:
+                raise PanError('PAN_ACCOUNT_CHANGED')
+        finally:
+            store.close()
+        if provider == 'plex':
+            if self.plex is None or not self.plex.current() or location or secret:
+                raise PanError('PAN_CREDENTIALS_INVALID')
+            saved = dict(self.plex.saved, provider=provider)
+        else:
+            saved = dict(provider=provider, location=server_location(location), token=secret)
+        if client_factory is None:
+            from .pan_providers import descriptor
+            client_factory = lambda key, value: descriptor(key).client(value)
+        client = client_factory(provider, saved)
+        with client.session.budget(24):
+            sid, uid = client.verify()
+        if previous is not None and (sid, uid) != (previous.metadata['server_id'], previous.metadata['user_id']):
+            raise PanError('PAN_ACCOUNT_ID_INVALID')  # Explicit removal before a different account replaces it.
+        source = validate_source(Source(previous.id if previous else uuid4().hex, name, 'media_server',
+            server_location(saved['location']), password='' if provider == 'plex' else secret,
+            metadata=dict(schema=1, provider=provider, server_id=sid, user_id=uid)))
+        if not self.current() or not current() or provider == 'plex' and not self.plex.current():
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        store = self._registry()
+        try:
+            if not self.current() or not current():
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            publish(lambda: store.save(source, expected_snapshot=(previous, revision)))
+        finally:
+            store.close()
+        return self.snapshot(provider)
+
+    def logout(self, expected):
+        self.require_current(expected)
+        store = self._registry()
+        try:
+            source, revision = self._source(store, expected['provider'])
+            def remove():
+                store.db.execute('DELETE FROM sources WHERE id=?', (source.id,))
+                store.db.execute('DELETE FROM metadata WHERE key=?', ('source_revision:' + source.id,))
+            store.run_if_current(source, expected['generation'], remove)
+        finally:
+            store.close()
+        return self.snapshot(expected['provider'])

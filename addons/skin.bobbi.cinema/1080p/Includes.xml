@@ -1,0 +1,1197 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <include file="Defaults.xml" />
+  <include file="Variables.xml" />
+  <include file="Includes_Titles.xml" />
+  <include file="Includes_HomeRails.generated.xml" />
+  <include file="Includes_HomeHero.generated.xml" />
+  <include file="Includes_Views.xml" />
+  <include file="Includes_Home.xml" />
+  <include file="Includes_OSD.xml" />
+  <include file="Includes_Dialogs.xml" />
+
+  <!-- Same weight and same size for both lines (matching full-screen 1080p reference:
+       Wi-Fi / Home, Do Not / Disturb, Sleep / Timer). Hierarchy comes purely from ink alpha. -->
+  <include name="CCActionContent">
+    <param name="id" /><param name="title" /><param name="subtitle" />
+    <!-- Fit each unwarped PNG's visible ink, not its transparent 128 px canvas,
+         into the Wi-Fi reference slot (centred at 48,48 in the 208x96 pill). -->
+    <param name="glyph" /><param name="x" /><param name="y" /><param name="size" />
+    <definition>
+      <control type="image">
+        <left>$PARAM[x]</left><top>$PARAM[y]</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/$PARAM[glyph].png</texture>
+        <visible>!Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="image">
+        <left>$PARAM[x]</left><top>$PARAM[y]</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/$PARAM[glyph].png</texture>
+        <visible>Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="label">
+        <left>86</left><top>19</top><width>116</width><height>29</height>
+        <label>$PARAM[title]</label><aligny>center</aligny>
+        <font>CCLabel24</font><textcolor>FFF5F5F7</textcolor>
+        <visible>!Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="label">
+        <left>86</left><top>19</top><width>116</width><height>29</height>
+        <label>$PARAM[title]</label><aligny>center</aligny>
+        <font>CCLabel24</font><textcolor>FF1D1D1F</textcolor>
+        <visible>Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="label">
+        <left>86</left><top>47</top><width>116</width><height>29</height>
+        <label>$PARAM[subtitle]</label><aligny>center</aligny>
+        <font>CCLabel24</font><textcolor>A3F5F5F7</textcolor>
+        <visible>!Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="label">
+        <left>86</left><top>47</top><width>116</width><height>29</height>
+        <label>$PARAM[subtitle]</label><aligny>center</aligny>
+        <font>CCLabel24</font><textcolor>A31D1D1F</textcolor>
+        <visible>Control.HasFocus($PARAM[id])</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- Capture the Info item before closing changes ListItem's context. Kodi
+       refuses window activation while this modal dialog is still open. An
+       existing Videos window needs an update, without replacing Back history. -->
+  <include name="DetailFolderNavigation">
+    <param name="target" />
+    <param name="condition">true</param>
+    <definition>
+      <onclick condition="$PARAM[condition]">SetProperty(Bobbi.Detail.Target,"$PARAM[target]",home)</onclick>
+      <onclick condition="$PARAM[condition]">Dialog.Close(movieinformation,true)</onclick>
+      <onclick condition="$PARAM[condition] + Window.IsVisible(videos)">Container.Update("$INFO[Window(Home).Property(Bobbi.Detail.Target)]")</onclick>
+      <onclick condition="$PARAM[condition] + !Window.IsVisible(videos)">ActivateWindow(Videos,"$INFO[Window(Home).Property(Bobbi.Detail.Target)]",return)</onclick>
+      <onclick condition="$PARAM[condition]">ClearProperty(Bobbi.Detail.Target,home)</onclick>
+    </definition>
+  </include>
+
+  <!-- ===== depth constants (Kodi stereo depth; keep 0 for 2D) ===== -->
+  <constant name="DepthBackground">-0.2</constant>
+  <constant name="DepthContent">0.0</constant>
+  <constant name="DepthDialog">0.1</constant>
+  <constant name="DepthOSD">0.15</constant>
+
+  <!-- ===== layout constants ===== -->
+  <constant name="SafeX">80</constant>
+  <constant name="SafeR">1840</constant>
+  <constant name="ContentW">1760</constant>
+
+  <!-- Shared remote motion: a short ease-out on focus, a quieter release and
+       interruptible transitions. Directional input never waits for an animation. -->
+  <include name="Lift">
+    <param name="center">auto</param>
+    <param name="zoom">105</param>
+    <definition>
+      <animation effect="zoom" start="100" end="$PARAM[zoom]" time="150" tween="cubic" easing="out" center="$PARAM[center]" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">Focus</animation>
+    </definition>
+  </include>
+  <include name="PageOpen">
+    <animation effect="fade" start="0" end="100" time="180" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+    <animation effect="fade" start="100" end="0" time="120" tween="cubic" easing="in" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  </include>
+  <include name="PanelOpen">
+    <param name="slide">0,18</param>
+    <definition>
+      <animation type="WindowOpen" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">
+        <effect type="fade" start="0" end="100" time="170" tween="cubic" easing="out" />
+        <effect type="slide" start="$PARAM[slide]" end="0,0" time="200" tween="cubic" easing="out" />
+      </animation>
+      <animation type="WindowClose" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">
+        <effect type="fade" start="100" end="0" time="120" tween="cubic" easing="in" />
+        <effect type="slide" start="0,0" end="$PARAM[slide]" time="120" tween="cubic" easing="in" />
+      </animation>
+    </definition>
+  </include>
+  <include name="FadeVisible">
+    <param name="time">160</param>
+    <definition>
+      <animation effect="fade" time="$PARAM[time]" tween="cubic" easing="out" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">VisibleChange</animation>
+    </definition>
+  </include>
+  <!-- Kodi owns the HUD lifetime. A closing HUD must not linger over another
+       remote action after that lifetime has ended. -->
+  <include name="HudFade">
+    <animation effect="fade" start="0" end="100" time="120" tween="cubic" easing="out" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+    <animation effect="fade" start="100" end="0" time="100" tween="cubic" easing="in" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  </include>
+  <include name="MenuPop">
+    <param name="center">auto</param>
+    <definition>
+      <animation type="WindowOpen" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">
+        <effect type="fade" start="0" end="100" time="150" tween="cubic" easing="out" />
+        <effect type="zoom" start="97" end="100" center="$PARAM[center]" time="180" tween="cubic" easing="out" />
+      </animation>
+      <animation type="WindowClose" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">
+        <effect type="fade" start="100" end="0" time="110" tween="cubic" easing="in" />
+        <effect type="zoom" start="100" end="97" center="$PARAM[center]" time="110" tween="cubic" easing="in" />
+      </animation>
+    </definition>
+  </include>
+  <include name="ArtFade">
+    <include condition="!Skin.HasSetting(BobbiReduceMotion)">MotionArtBlend</include>
+    <include condition="Skin.HasSetting(BobbiReduceMotion)">MotionArtStill</include>
+  </include>
+  <include name="MotionArtBlend"><fadetime>180</fadetime></include>
+  <include name="MotionArtStill"><fadetime>0</fadetime></include>
+  <include name="ListMotion">
+    <include condition="!Skin.HasSetting(BobbiReduceMotion)">MotionListTravel</include>
+    <include condition="Skin.HasSetting(BobbiReduceMotion)">MotionListStill</include>
+  </include>
+  <include name="MotionListTravel"><scrolltime tween="cubic" easing="out">165</scrolltime></include>
+  <include name="MotionListStill"><scrolltime>0</scrolltime></include>
+
+  <!-- ===== canvas & backdrop ===== -->
+  <include name="Canvas">
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="bg">bobbi/white.png</texture>
+    </control>
+  </include>
+  <!-- Non-video browsing surfaces can share Settings' warm/cool charcoal
+       without tinting fanart or a video plane. Liquid retains each original. -->
+  <include name="BobbiBrowseCanvas">
+    <param name="liquid">bobbi/glass/stage-ambient.png</param>
+    <param name="tint">FFFFFFFF</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/settings-bg.png</texture>
+        <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture colordiffuse="$PARAM[tint]">$PARAM[liquid]</texture>
+        <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+    </definition>
+  </include>
+  <!-- on-device full-bleed ambient + atmospheric scrims -->
+  <include name="Backdrop">
+    <param name="art" />
+    <param name="visible">true</param>
+    <param name="dim">FF</param>
+    <definition>
+      <control type="group">
+        <visible>$PARAM[visible]</visible>
+        <control type="image">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <texture>bobbi/glass/stage-ambient.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <aspectratio>scale</aspectratio>
+          <texture background="true">$PARAM[art]</texture>
+          <include>ArtFade</include>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <texture>bobbi/glass/scrim-top.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <texture>bobbi/glass/scrim-left.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>1920</width><height>1080</height>
+          <texture>bobbi/glass/scrim-bottom.png</texture>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="DialogScrim">
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="4D000000">bobbi/white.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      <include>PageOpen</include>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture colordiffuse="classic_scrim">bobbi/white.png</texture>
+      <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      <include>PageOpen</include>
+    </control>
+  </include>
+
+  <!-- ===== GLES 2.0 Real-Time Liquid Glass Layer Capture Barriers ===== -->
+  <include name="LGBarrierScene">
+    <control type="image">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-scene.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+  </include>
+  <include name="LGBarrierHero">
+    <control type="image">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-hero.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+  </include>
+  <include name="LGBarrierNav">
+    <control type="image">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-nav1.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled) + !ControlGroup(9700).HasFocus()</visible>
+    </control>
+  </include>
+  <include name="LGBarrierSidebar">
+    <control type="image">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-sidebar.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+  </include>
+  <include name="LGBarrierCC">
+    <control type="image">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-cc.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+  </include>
+  <!-- One focusable button per action. A background-only capture in classic
+       must never be offered to the renderer as a refractive foreground. -->
+  <include name="CCIdleFace">
+    <param name="id" /><param name="width" /><param name="height" />
+    <param name="face" /><param name="optics" />
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[width]</width><height>$PARAM[height]</height>
+        <texture>$PARAM[face]</texture>
+        <visible>!Control.HasFocus($PARAM[id]) + !Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[width]</width><height>$PARAM[height]</height>
+        <texture diffuse="$PARAM[optics]">$PARAM[face]</texture>
+        <visible>!Control.HasFocus($PARAM[id]) + Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+    </definition>
+  </include>
+  <include name="LGBarrierModal">
+    <control type="image">
+      <left>0</left><top>0</top><width>1</width><height>1</height>
+      <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-modal.png</texture>
+      <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+    </control>
+  </include>
+
+  <!-- ===== navigation: premium TV (on-device) floating Liquid Glass sidebar =====
+       One include, two load-time forms (Kodi evaluates include conditions when
+       the window loads; SkinSettings reloads the skin after toggling):
+         SideNav  default: TV.app sidebar, collapses to a top-left glass capsule
+         TopNav   Skin.HasSetting(BobbiNavTopBar): centred glass tab capsule
+       Both own the same ids 9700/9701/9711..9715/9721..9723. -->
+  <include name="TopBar">
+    <param name="down">9000</param>
+    <param name="current">home</param>
+    <param name="library_pill">false</param>
+    <param name="hide_pill">false</param>
+    <param name="skip_nav_barrier">false</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>1</width><height>1</height>
+        <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-nav1.png</texture>
+        <visible>Skin.HasSetting(BobbiLiquidGlassEnabled) + !$PARAM[skip_nav_barrier] + [Skin.HasSetting(BobbiNavTopBar) | !ControlGroup(9700).HasFocus()]</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1</width><height>1</height>
+        <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-sidebar.png</texture>
+        <visible>Skin.HasSetting(BobbiLiquidGlassEnabled) + !Skin.HasSetting(BobbiNavTopBar) + ControlGroup(9700).HasFocus()</visible>
+      </control>
+      <include content="SideNav" condition="!Skin.HasSetting(BobbiNavTopBar)">
+        <param name="down" value="$PARAM[down]" />
+        <param name="library_pill" value="$PARAM[library_pill]" />
+        <param name="hide_pill" value="$PARAM[hide_pill]" />
+      </include>
+      <include content="TopNav" condition="Skin.HasSetting(BobbiNavTopBar)">
+        <param name="down" value="$PARAM[down]" />
+      </include>
+    </definition>
+  </include>
+  <include name="NavFade">
+    <animation effect="fade" time="150" tween="cubic" easing="out" reversible="true" condition="!Skin.HasSetting(BobbiReduceMotion)">VisibleChange</animation>
+  </include>
+  <!-- glass capsule: real GLES2 Liquid Glass (GlassRef circular-arc refraction + Dual Kawase) -->
+  <include name="GlassCapsule">
+    <param name="x">0</param>
+    <param name="y">0</param>
+    <param name="w">144</param>
+    <param name="h">56</param>
+    <param name="visible">true</param>
+    <definition>
+      <control type="image">
+        <left>$PARAM[x]</left><top>$PARAM[y]</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture diffuse="bobbi/glass/lg-nav-pill.png" border="28,0,28,0">bobbi/glass/glass-pill-56.png</texture>
+        <visible>$PARAM[visible]</visible>
+      </control>
+    </definition>
+  </include>
+  <!-- sidebar row: text-only togglebutton (a direct grouplist child so Kodi owns
+       up/down); its glyph is drawn by NavGlyph at the row's fixed position. -->
+  <include name="NavRow">
+    <param name="id" />
+    <param name="label" />
+    <param name="active">false</param>
+    <param name="action">noop</param>
+    <param name="path" />
+    <param name="directory">false</param>
+    <param name="section" />
+    <param name="setsection">true</param>
+    <definition>
+      <control type="togglebutton" id="$PARAM[id]">
+        <width>320</width><height>72</height>
+        <label>$PARAM[label]</label>
+        <altlabel>$PARAM[label]</altlabel>
+        <font>Nav29</font>
+        <textcolor>text</textcolor>
+        <focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>75</textoffsetx>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="focus">bobbi/glass/pill-320x72.png</texturefocus>
+        <texturenofocus />
+        <alttexturefocus colordiffuse="focus">bobbi/glass/pill-320x72.png</alttexturefocus>
+        <alttexturenofocus colordiffuse="14FFFFFF">bobbi/glass/pill-320x72.png</alttexturenofocus>
+        <usealttexture>$PARAM[active]</usealttexture>
+        <onclick condition="$PARAM[setsection]">SetProperty(BobbiSection,$PARAM[section],Home)</onclick>
+        <!-- ActivateWindow on an already active Videos window keeps its old
+             directory. Dispatch exactly one path update for in-window tabs. -->
+        <onclick condition="!$PARAM[directory]">$PARAM[action]</onclick>
+        <onclick condition="$PARAM[directory] + Window.IsActive(videos)">Container.Update("$PARAM[path]",replace)</onclick>
+        <onclick condition="$PARAM[directory] + !Window.IsActive(videos)">ActivateWindow(Videos,"$PARAM[path]",return)</onclick>
+      </control>
+    </definition>
+  </include>
+  <!-- on-device sidebar icon layout:
+       - badge=none   (Search): 22x22 bare native glyph on cx=81 (flips dark on focus)
+       - badge=focus  (Home / TV / Movie / Anime): 22x22 bare white native glyph when
+         unfocused; 44x44 concentric dark circular badge (14 px inset inside 72 px
+         focus capsule) + 20x20 white glyph when focused (matching on-device premium TV row)
+       - badge=always (Personal & Library section): permanent 44x44 dark circular
+         badge with subtle specular rim + 20x20 white glyph (matching Channels & Apps) -->
+  <include name="NavGlyph">
+    <param name="id" />
+    <param name="icon" />
+    <param name="yd" />
+    <param name="yg" />
+    <param name="unfocused_disc">false</param>
+    <param name="focused_disc">true</param>
+    <definition>
+      <control type="image">
+        <left>59</left><top>$PARAM[yd]</top><width>44</width><height>44</height>
+        <texture>bobbi/glass/icon-disc-44.png</texture>
+        <visible>$PARAM[unfocused_disc] + !Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="image">
+        <left>68</left><top>$PARAM[yg]</top><width>26</width><height>26</height>
+        <texture colordiffuse="text">$PARAM[icon]</texture>
+        <visible>!Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="image">
+        <left>59</left><top>$PARAM[yd]</top><width>44</width><height>44</height>
+        <texture>bobbi/glass/icon-disc-focus.png</texture>
+        <visible>$PARAM[focused_disc] + Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="image">
+        <left>68</left><top>$PARAM[yg]</top><width>26</width><height>26</height>
+        <texture colordiffuse="text">$PARAM[icon]</texture>
+        <visible>$PARAM[focused_disc] + Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="image">
+        <left>68</left><top>$PARAM[yg]</top><width>26</width><height>26</height>
+        <texture colordiffuse="on_focus">$PARAM[icon]</texture>
+        <visible>!$PARAM[focused_disc] + Control.HasFocus($PARAM[id])</visible>
+      </control>
+    </definition>
+  </include>
+  <include name="SideNav">
+    <param name="down">9000</param>
+    <param name="library_pill">false</param>
+    <param name="hide_pill">false</param>
+    <definition>
+      <!-- on-device keeps the outside stage at 93.4% brightness (whisper 7% dim) -->
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture colordiffuse="12000000">bobbi/white.png</texture>
+        <visible>ControlGroup(9700).HasFocus()</visible>
+        <include>NavFade</include>
+      </control>
+      <!-- collapsed: on-device exact "‹ ( [avatar] 波比TV )" glass capsule @ (50,50) 180x60 -->
+      <control type="group">
+        <visible>!ControlGroup(9700).HasFocus() + !$PARAM[library_pill] + !$PARAM[hide_pill]</visible>
+        <include>NavFade</include>
+        <control type="image">
+          <left>29</left><top>68</top><width>20</width><height>24</height>
+          <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/chevron-left.png</texture>
+        </control>
+        <control type="image">
+          <left>50</left><top>50</top><width>180</width><height>60</height>
+          <texture diffuse="bobbi/glass/lg-nav-pill.png">bobbi/glass/back-pill-180x60.png</texture>
+        </control>
+        <control type="image">
+          <left>55</left><top>55</top><width>50</width><height>50</height>
+          <texture>bobbi/glass/avatar-disc.png</texture>
+        </control>
+        <control type="label">
+          <left>117</left><top>50</top><width>100</width><height>60</height>
+          <label>波比TV</label>
+          <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <!-- collapsed Library variant: on-device exact "‹ ( [stack] 我的 )" glass capsule @ (50,50) 164x60 -->
+      <control type="group">
+        <visible>!ControlGroup(9700).HasFocus() + $PARAM[library_pill] + !$PARAM[hide_pill]</visible>
+        <include>NavFade</include>
+        <control type="image">
+          <left>29</left><top>68</top><width>20</width><height>24</height>
+          <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/chevron-left.png</texture>
+        </control>
+        <control type="image">
+          <left>50</left><top>50</top><width>164</width><height>60</height>
+          <texture diffuse="bobbi/glass/lg-nav-pill.png">bobbi/glass/back-pill-164x60.png</texture>
+        </control>
+        <control type="image">
+          <left>55</left><top>55</top><width>50</width><height>50</height>
+          <texture>bobbi/glass/pill-disc-50.png</texture>
+        </control>
+        <control type="image">
+          <left>64</left><top>64</top><width>32</width><height>32</height>
+          <texture colordiffuse="FFFFFFFF">bobbi/glass/icons/stack.png</texture>
+        </control>
+        <control type="label">
+          <left>117</left><top>50</top><width>80</width><height>60</height>
+          <label>我的</label>
+          <font>Capsule28</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <!-- expanded panel: on-device TV.app sub-pixel fit (340 x 1010 @ 35,35, continuous r=40.5) -->
+      <control type="group" id="9700">
+        <left>0</left><top>0</top><width>440</width><height>1080</height>
+        <animation type="Conditional" condition="!ControlGroup(9700).HasFocus() + !Skin.HasSetting(BobbiReduceMotion)" reversible="true">
+          <effect type="slide" start="0,0" end="-420,0" time="210" tween="cubic" easing="out" />
+          <effect type="fade" start="100" end="0" time="150" tween="cubic" easing="out" />
+        </animation>
+        <animation type="Conditional" condition="!ControlGroup(9700).HasFocus() + Skin.HasSetting(BobbiReduceMotion)" reversible="true">
+          <effect type="fade" start="100" end="0" time="0" />
+        </animation>
+        <control type="image">
+          <left>-29</left><top>-29</top><width>468</width><height>1138</height>
+          <!-- Retain a contact shadow on bright art without a charcoal halo. -->
+          <texture colordiffuse="48FFFFFF">bobbi/glass/sidebar-shadow.png</texture>
+          <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+        </control>
+        <control type="image">
+          <left>35</left><top>35</top><width>340</width><height>1010</height>
+          <texture colordiffuse="glass_blur" diffuse="bobbi/glass/lg-sidebar.png">bobbi/glass/sidebar-fill.png</texture>
+          <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+        </control>
+        <control type="image">
+          <left>35</left><top>35</top><width>340</width><height>1010</height>
+          <texture>bobbi/glass/sidebar-classic.png</texture>
+          <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+        </control>
+        <control type="image">
+          <left>35</left><top>35</top><width>340</width><height>1010</height>
+          <texture colordiffuse="glass_rim">bobbi/glass/sidebar-rim.png</texture>
+          <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+        </control>
+        <!-- header: 50x50 circular user avatar @ (55,55), 波比TV title @ x=120, clock @ right=352 -->
+        <control type="image">
+          <left>55</left><top>55</top><width>50</width><height>50</height>
+          <texture>bobbi/glass/avatar-disc.png</texture>
+        </control>
+        <control type="label">
+          <left>120</left><top>55</top><width>132</width><height>50</height>
+          <label>波比TV</label>
+          <font>NavUser25</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <left>202</left><top>55</top><width>150</width><height>50</height>
+          <label>$VAR[BobbiTimeAMPM]</label>
+          <font>NavClock20</font><textcolor>$VAR[BobbiSidebarClockColor]</textcolor><align>right</align><aligny>center</aligny>
+        </control>
+        <control type="grouplist" id="9701">
+          <left>45</left><top>163</top><width>320</width><height>876</height>
+          <orientation>vertical</orientation>
+          <itemgap>6</itemgap>
+          <scrolltime>0</scrolltime>
+          <onup>noop</onup>
+          <ondown>noop</ondown>
+          <onleft>noop</onleft>
+          <onright>$PARAM[down]</onright>
+          <include content="NavRow"><param name="id" value="9721" /><param name="label" value="搜索" /><param name="action" value="RunPlugin(plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=multi)" /><param name="section" value="none" /><param name="setsection" value="false" /></include>
+          <include content="NavRow"><param name="id" value="9711" /><param name="label" value="首页" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),home)" /><param name="action" value="ActivateWindow(Home)" /><param name="section" value="home" /></include>
+          <include content="NavRow"><param name="id" value="9712" /><param name="label" value="电视剧" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" /><param name="section" value="tv" /></include>
+          <include content="NavRow"><param name="id" value="9713" /><param name="label" value="电影" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" /><param name="section" value="movie" /></include>
+          <include content="NavRow"><param name="id" value="9714" /><param name="label" value="动漫" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" /><param name="section" value="anime" /></include>
+          <include content="NavRow"><param name="id" value="9715" /><param name="label" value="我的" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),mine)" /><param name="action" value="ActivateWindow(1197)" /><param name="section" value="mine" /></include>
+          <!-- Kodi links adjacent grouplist children by ID. A non-focusable
+               spacer needs an ID so the link can continue across it. -->
+          <control type="image" id="9723">
+            <width>320</width><height>326</height>
+            <texture />
+          </control>
+          <include content="NavRow"><param name="id" value="9722" /><param name="label" value="设置" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),settings)" /><param name="action" value="ActivateWindow(Settings)" /><param name="section" value="settings" /></include>
+        </control>
+        <!-- on-device icon & circular badge layout (cx=81, 26x26 normalized glyphs = 23 px ink, 78 px pitch) -->
+        <include content="NavGlyph"><param name="id" value="9721" /><param name="icon" value="bobbi/glass/icons/search.png" /><param name="yd" value="177" /><param name="yg" value="186" /><param name="focused_disc" value="false" /></include>
+        <include content="NavGlyph"><param name="id" value="9711" /><param name="icon" value="bobbi/glass/icons/house.png" /><param name="yd" value="255" /><param name="yg" value="264" /></include>
+        <include content="NavGlyph"><param name="id" value="9712" /><param name="icon" value="bobbi/glass/icons/tv.png" /><param name="yd" value="333" /><param name="yg" value="342" /></include>
+        <include content="NavGlyph"><param name="id" value="9713" /><param name="icon" value="bobbi/glass/icons/film.png" /><param name="yd" value="411" /><param name="yg" value="420" /></include>
+        <include content="NavGlyph"><param name="id" value="9714" /><param name="icon" value="bobbi/glass/icons/sparkles.png" /><param name="yd" value="489" /><param name="yg" value="498" /></include>
+        <include content="NavGlyph"><param name="id" value="9715" /><param name="icon" value="bobbi/glass/icons/stack.png" /><param name="yd" value="567" /><param name="yg" value="576" /></include>
+        <include content="NavGlyph"><param name="id" value="9722" /><param name="icon" value="bobbi/glass/icons/gear.png" /><param name="yd" value="977" /><param name="yg" value="986" /><param name="unfocused_disc" value="true" /></include>
+      </control>
+    </definition>
+  </include>
+  <!-- alternative: centred floating glass tab capsule (usable, brand-free) -->
+  <include name="TopNav">
+    <param name="down">9000</param>
+    <definition>
+      <control type="group" id="9700">
+        <left>0</left><top>0</top><width>1920</width><height>140</height>
+        <include content="GlassCapsule">
+          <param name="x">520</param><param name="y">40</param><param name="w">660</param><param name="h">76</param>
+        </include>
+        <control type="grouplist" id="9701">
+          <left>526</left><top>46</top><width>648</width><height>64</height>
+          <orientation>horizontal</orientation>
+          <align>center</align>
+          <itemgap>4</itemgap>
+          <scrolltime>0</scrolltime>
+          <onup>noop</onup>
+          <ondown>$PARAM[down]</ondown>
+          <onright>9721</onright>
+          <onleft>noop</onleft>
+          <include content="TopNavTab"><param name="id" value="9711" /><param name="label" value="首页" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),home)" /><param name="action" value="ActivateWindow(Home)" /><param name="section" value="home" /></include>
+          <include content="TopNavTab"><param name="id" value="9712" /><param name="label" value="电视剧" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),tv)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1" /><param name="section" value="tv" /></include>
+          <include content="TopNavTab"><param name="id" value="9713" /><param name="label" value="电影" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),movie)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1" /><param name="section" value="movie" /></include>
+          <include content="TopNavTab"><param name="id" value="9714" /><param name="label" value="动漫" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),anime)" /><param name="directory" value="true" /><param name="path" value="plugin://plugin.video.bobbi/?action=search_item&amp;api=tmdb&amp;mode=anime&amp;submode=tv&amp;category=Anime_Current_Quarter" /><param name="section" value="anime" /></include>
+          <include content="TopNavTab"><param name="id" value="9715" /><param name="label" value="我的" /><param name="active" value="String.IsEqual(Window(Home).Property(BobbiSection),mine)" /><param name="action" value="ActivateWindow(1197)" /><param name="section" value="mine" /></include>
+        </control>
+        <include content="TopNavIcon"><param name="id" value="9721" /><param name="x" value="1212" /><param name="icon" value="bobbi/glass/icons/search.png" /><param name="left" value="9701" /><param name="right" value="9722" /><param name="down" value="$PARAM[down]" /><param name="onclick" value="RunPlugin(plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=multi)" /></include>
+        <include content="TopNavIcon"><param name="id" value="9722" /><param name="x" value="1296" /><param name="icon" value="bobbi/glass/icons/gear.png" /><param name="left" value="9721" /><param name="right" value="noop" /><param name="down" value="$PARAM[down]" /><param name="onclick" value="ActivateWindow(Settings)" /></include>
+        <control type="group">
+          <visible>!Window.IsActive(shutdownmenu)</visible>
+          <include>NavFade</include>
+          <include content="GlassCapsule">
+            <param name="x">1698</param><param name="y">52</param><param name="w">156</param>
+          </include>
+          <control type="label">
+            <left>1698</left><top>52</top><width>156</width><height>56</height>
+            <label>$VAR[BobbiTimeAMPM]</label>
+            <font>Clock27</font><textcolor>text</textcolor><align>center</align><aligny>center</aligny>
+          </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="TopNavTab">
+    <param name="id" />
+    <param name="label" />
+    <param name="active">false</param>
+    <param name="action">noop</param>
+    <param name="path" />
+    <param name="directory">false</param>
+    <param name="section" />
+    <definition>
+      <control type="togglebutton" id="$PARAM[id]">
+        <width>auto</width><height>64</height>
+        <label>$PARAM[label]</label>
+        <altlabel>$PARAM[label]</altlabel>
+        <font>Nav29</font>
+        <textcolor>text2</textcolor>
+        <focusedcolor>on_focus</focusedcolor>
+        <textoffsetx>30</textoffsetx>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="32,0,32,0">bobbi/glass/capsule-64.png</texturefocus>
+        <texturenofocus />
+        <alttexturefocus colordiffuse="focus" border="32,0,32,0">bobbi/glass/capsule-64.png</alttexturefocus>
+        <alttexturenofocus colordiffuse="26FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</alttexturenofocus>
+        <usealttexture>$PARAM[active]</usealttexture>
+        <onclick>SetProperty(BobbiSection,$PARAM[section],Home)</onclick>
+        <onclick condition="!$PARAM[directory]">$PARAM[action]</onclick>
+        <onclick condition="$PARAM[directory] + Window.IsActive(videos)">Container.Update("$PARAM[path]",replace)</onclick>
+        <onclick condition="$PARAM[directory] + !Window.IsActive(videos)">ActivateWindow(Videos,"$PARAM[path]",return)</onclick>
+      </control>
+    </definition>
+  </include>
+  <include name="TopNavIcon">
+    <param name="id" />
+    <param name="x" />
+    <param name="icon" />
+    <param name="left">noop</param>
+    <param name="right">noop</param>
+    <param name="down">9000</param>
+    <param name="onclick">noop</param>
+    <definition>
+      <control type="button" id="$PARAM[id]">
+        <left>$PARAM[x]</left><top>46</top><width>64</width><height>64</height>
+        <label />
+        <texturefocus colordiffuse="focus">bobbi/glass/circle-128.png</texturefocus>
+        <texturenofocus colordiffuse="$VAR[BobbiTopIconSurface]">bobbi/glass/circle-128.png</texturenofocus>
+        <onleft>$PARAM[left]</onleft><onright>$PARAM[right]</onright><onup>noop</onup><ondown>$PARAM[down]</ondown>
+        <onclick>$PARAM[onclick]</onclick>
+      </control>
+      <control type="image">
+        <left>$PARAM[x]</left><top>46</top><width>64</width><height>64</height>
+        <texture colordiffuse="glass_rim">bobbi/glass/circle-128-rim.png</texture>
+        <visible>!Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="image">
+        <left>$PARAM[x]</left><top>46</top><width>64</width><height>64</height>
+        <texture colordiffuse="text">$PARAM[icon]</texture>
+        <animation effect="zoom" start="100" end="45" time="0" center="auto" condition="true">Conditional</animation>
+        <visible>!Control.HasFocus($PARAM[id])</visible>
+      </control>
+      <control type="image">
+        <left>$PARAM[x]</left><top>46</top><width>64</width><height>64</height>
+        <texture colordiffuse="on_focus">$PARAM[icon]</texture>
+        <animation effect="zoom" start="100" end="45" time="0" center="auto" condition="true">Conditional</animation>
+        <visible>Control.HasFocus($PARAM[id])</visible>
+      </control>
+    </definition>
+  </include>
+  <!-- ===== buttons (on-device Liquid Glass capsules & circular discs) ===== -->
+  <include name="PillButton">
+    <param name="id" />
+    <param name="label" />
+    <param name="icon">bobbi/glass/icons/play.png</param>
+    <param name="width">260</param>
+    <param name="visible">true</param>
+    <param name="enable">true</param>
+    <param name="onclick">noop</param>
+    <param name="onclick2">noop</param>
+    <param name="onclick3">noop</param>
+    <definition>
+      <control type="group" id="$PARAM[id]9">
+        <width>$PARAM[width]</width><height>72</height>
+        <visible>$PARAM[visible]</visible>
+        <control type="button" id="$PARAM[id]">
+          <left>0</left><top>0</top><width>$PARAM[width]</width><height>72</height>
+          <label />
+          <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
+          <texturenofocus diffuse="bobbi/glass/lg-pill.png" border="36,0,36,0">bobbi/glass/glass-pill-72.png</texturenofocus>
+          <enable>$PARAM[enable]</enable>
+          <onclick>$PARAM[onclick]</onclick>
+          <onclick>$PARAM[onclick2]</onclick>
+          <onclick>$PARAM[onclick3]</onclick>
+        </control>
+        <control type="image">
+          <left>32</left><top>22</top><width>28</width><height>28</height>
+          <texture colordiffuse="text">$PARAM[icon]</texture>
+          <visible>!Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="image">
+          <left>32</left><top>22</top><width>28</width><height>28</height>
+          <texture colordiffuse="on_focus">$PARAM[icon]</texture>
+          <visible>Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="label">
+          <left>74</left><top>0</top><width>$PARAM[width]</width><height>72</height>
+          <label>$PARAM[label]</label>
+          <font>Button24</font><textcolor>text</textcolor><aligny>center</aligny>
+          <visible>!Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="label">
+          <left>74</left><top>0</top><width>$PARAM[width]</width><height>72</height>
+          <label>$PARAM[label]</label>
+          <font>Button24</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+          <visible>Control.HasFocus($PARAM[id])</visible>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <include name="IconButton">
+    <param name="id" />
+    <param name="icon" />
+    <param name="size">72</param>
+    <param name="glyph">30</param>
+    <param name="pad">21</param>
+    <param name="visible">true</param>
+    <param name="onclick">noop</param>
+    <param name="onclick2">noop</param>
+    <param name="label" />
+    <definition>
+      <control type="group" id="$PARAM[id]9">
+        <width>$PARAM[size]</width><height>$PARAM[size]</height>
+        <visible>$PARAM[visible]</visible>
+        <control type="button" id="$PARAM[id]">
+          <left>0</left><top>0</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
+          <label />
+          <texturefocus colordiffuse="focus">bobbi/glass/circle-128.png</texturefocus>
+          <texturenofocus diffuse="bobbi/glass/lg-pill.png">bobbi/glass/glass-orb-128.png</texturenofocus>
+          <onclick>$PARAM[onclick]</onclick>
+          <onclick>$PARAM[onclick2]</onclick>
+          <include>Lift</include>
+        </control>
+        <control type="image">
+          <left>$PARAM[pad]</left><top>$PARAM[pad]</top>
+          <width>$PARAM[glyph]</width><height>$PARAM[glyph]</height>
+          <texture colordiffuse="text">$PARAM[icon]</texture>
+          <visible>!Control.HasFocus($PARAM[id])</visible>
+        </control>
+        <control type="image">
+          <left>$PARAM[pad]</left><top>$PARAM[pad]</top>
+          <width>$PARAM[glyph]</width><height>$PARAM[glyph]</height>
+          <texture colordiffuse="on_focus">$PARAM[icon]</texture>
+          <visible>Control.HasFocus($PARAM[id])</visible>
+          <include>Lift</include>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== static-list item layouts ===== -->
+  <include name="RoundItem">
+    <param name="size">64</param>
+    <param name="glyph">30</param>
+    <param name="pad">17</param>
+    <param name="list" />
+    <param name="focused">false</param>
+    <definition>
+      <control type="group">
+        <width>$PARAM[size]</width><height>$PARAM[size]</height>
+        <animation effect="fade" start="100" end="35" time="0" condition="String.IsEqual(ListItem.Property(unavailable),true)">Conditional</animation>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
+          <texture diffuse="bobbi/glass/lg-osd-pill.png">bobbi/glass/osd-disc-64.png</texture>
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+        </control>
+        <control type="group">
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+          <include content="Lift"><param name="zoom">108</param></include>
+          <control type="image">
+            <left>0</left><top>0</top><width>$PARAM[size]</width><height>$PARAM[size]</height>
+            <texture colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texture>
+          </control>
+          <control type="image">
+            <left>$PARAM[pad]</left><top>$PARAM[pad]</top><width>$PARAM[glyph]</width><height>$PARAM[glyph]</height>
+            <texture colordiffuse="FF1D1D1F">$INFO[ListItem.Icon]</texture>
+          </control>
+        </control>
+        <control type="image">
+          <left>$PARAM[pad]</left><top>$PARAM[pad]</top><width>$PARAM[glyph]</width><height>$PARAM[glyph]</height>
+          <texture colordiffuse="FFF5F5F7">$INFO[ListItem.Icon]</texture>
+          <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <include name="ChipItem">
+    <param name="w">260</param>
+    <param name="h">64</param>
+    <param name="list" />
+    <param name="focused">false</param>
+    <definition>
+      <control type="group">
+        <width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <animation effect="fade" start="100" end="35" time="0" condition="String.IsEqual(ListItem.Property(unavailable),true)">Conditional</animation>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="22FFFFFF" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+          <visible>[!$PARAM[focused] | !Control.HasFocus($PARAM[list])] + !String.IsEqual(ListItem.Property(primary),true)</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="glass_rim" border="32,0,32,0">bobbi/glass/capsule-64-rim.png</texture>
+          <visible>[!$PARAM[focused] | !Control.HasFocus($PARAM[list])] + !String.IsEqual(ListItem.Property(primary),true)</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="accent" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+          <visible>[!$PARAM[focused] | !Control.HasFocus($PARAM[list])] + String.IsEqual(ListItem.Property(primary),true)</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="focus" border="32,0,32,0">bobbi/glass/capsule-64.png</texture>
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+        </control>
+        <control type="group">
+          <visible>$PARAM[focused] + Control.HasFocus($PARAM[list]) | String.IsEqual(ListItem.Property(primary),true)</visible>
+          <control type="image">
+            <left>22</left><top>19</top><width>26</width><height>26</height>
+            <texture colordiffuse="on_focus">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>60</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label][COLOR B31D1D1F]$INFO[ListItem.Label2,  ,][/COLOR]</label>
+            <font>Card26</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+        <control type="group">
+          <visible>![$PARAM[focused] + Control.HasFocus($PARAM[list]) | String.IsEqual(ListItem.Property(primary),true)]</visible>
+          <control type="image">
+            <left>22</left><top>19</top><width>26</width><height>26</height>
+            <texture colordiffuse="text">$INFO[ListItem.Icon]</texture>
+          </control>
+          <control type="label">
+            <left>60</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+            <label>$INFO[ListItem.Label][COLOR 9CEBEBF5]$INFO[ListItem.Label2,  ,][/COLOR]</label>
+            <font>Card26</font><textcolor>text</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <include name="SheetItem">
+    <param name="w">624</param>
+    <param name="h">80</param>
+    <param name="list" />
+    <param name="focused">false</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>4</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="14FFFFFF" border="26">bobbi/glass/row-glass.png</texture>
+        <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>4</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="66FFFFFF" border="26">bobbi/glass/row-glass-rim.png</texture>
+        <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>4</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="focus" border="26">bobbi/glass/row-glass.png</texture>
+        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+      </control>
+      <control type="group">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>88</height>
+        <visible>$PARAM[focused] + Control.HasFocus($PARAM[list])</visible>
+        <control type="image">
+          <left>18</left><top>22</top><width>44</width><height>44</height>
+          <texture>bobbi/glass/icon-disc-focus.png</texture>
+        </control>
+        <control type="image">
+          <left>27</left><top>31</top><width>26</width><height>26</height>
+          <texture colordiffuse="text">$INFO[ListItem.Icon]</texture>
+        </control>
+        <control type="label">
+          <left>78</left><top>4</top><width>300</width><height>$PARAM[h]</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Card26</font><textcolor>on_focus</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <right>24</right><top>4</top><width>260</width><height>$PARAM[h]</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>CardSub22</font><textcolor>B31D1D1F</textcolor><align>right</align><aligny>center</aligny>
+          <scroll>true</scroll>
+        </control>
+      </control>
+      <control type="group">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>88</height>
+        <visible>!$PARAM[focused] | !Control.HasFocus($PARAM[list])</visible>
+        <control type="image">
+          <left>18</left><top>22</top><width>44</width><height>44</height>
+          <texture>bobbi/glass/icon-disc-44.png</texture>
+        </control>
+        <control type="image">
+          <left>27</left><top>31</top><width>26</width><height>26</height>
+          <texture colordiffuse="text">$INFO[ListItem.Icon]</texture>
+        </control>
+        <control type="label">
+          <left>78</left><top>4</top><width>300</width><height>$PARAM[h]</height>
+          <label>$INFO[ListItem.Label]</label>
+          <font>Card26</font><textcolor>text</textcolor><aligny>center</aligny>
+        </control>
+        <control type="label">
+          <right>24</right><top>4</top><width>260</width><height>$PARAM[h]</height>
+          <label>$INFO[ListItem.Label2]</label>
+          <font>CardSub22</font><textcolor>9CEBEBF5</textcolor><align>right</align><aligny>center</aligny>
+        </control>
+      </control>
+      <control type="image">
+        <right>20</right><top>32</top><width>24</width><height>24</height>
+        <texture colordiffuse="ok">bobbi/glass/icons/checkmark.png</texture>
+        <visible>String.IsEqual(ListItem.Property(selected),true) + ![$PARAM[focused] + Control.HasFocus($PARAM[list])]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- text-only Liquid Glass pill, a direct grouplist child (keeps Kodi core ids clickable) -->
+  <include name="TextPill">
+    <param name="id" />
+    <param name="label" />
+    <param name="width">220</param>
+    <param name="visible">true</param>
+    <param name="onclick">noop</param>
+    <param name="onclick2">noop</param>
+    <definition>
+      <control type="button" id="$PARAM[id]">
+        <width>$PARAM[width]</width><height>72</height>
+        <onclick>$PARAM[onclick]</onclick>
+        <onclick>$PARAM[onclick2]</onclick>
+        <label>$PARAM[label]</label>
+        <font>Button24</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor><disabledcolor>text_disabled</disabledcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
+        <texturenofocus diffuse="bobbi/glass/lg-pill.png" border="36,0,36,0">bobbi/glass/glass-pill-72.png</texturenofocus>
+        <visible>$PARAM[visible]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== poster card (2:3) used in rails, walls, related rows ===== -->
+  <include name="PosterArt">
+    <param name="w">232</param>
+    <param name="h">348</param>
+    <param name="art">$VAR[PosterImage]</param>
+    <definition>
+      <!-- on-device continuous card body + centered frosted badge for retry / missing-art state -->
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture>bobbi/glass/tile-$PARAM[w]x$PARAM[h].png</texture>
+      </control>
+      <control type="group">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <visible>String.IsEmpty(ListItem.Art(poster)) + String.IsEmpty(ListItem.Art(tvshow.poster)) + String.IsEmpty(ListItem.Art(season.poster)) + [String.IsEmpty(ListItem.Art(thumb)) | String.StartsWith(ListItem.Art(thumb),Default) | String.Contains(ListItem.Art(thumb),DefaultFolder)]</visible>
+        <control type="image">
+          <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+          <texture colordiffuse="22FFFFFF">bobbi/glass/glow-$PARAM[w]x$PARAM[h].png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>90</top><width>$PARAM[w]</width><height>62</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="24FFFFFF">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>90</top><width>$PARAM[w]</width><height>62</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="glass_rim">bobbi/glass/circle-128-rim.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>106</top><width>$PARAM[w]</width><height>30</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/refresh.png</texture>
+          <visible>$EXP[BobbiIsRetry]</visible>
+        </control>
+        <control type="image">
+          <left>0</left><top>106</top><width>$PARAM[w]</width><height>30</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="D9EBEBF5">bobbi/glass/icons/film-outline.png</texture>
+          <visible>!$EXP[BobbiIsRetry]</visible>
+        </control>
+        <control type="label">
+          <left>0</left><top>170</top><width>$PARAM[w]</width><height>32</height>
+          <label>加载失败</label>
+          <font>Card26</font><textcolor>FFF5F5F7</textcolor>
+          <align>center</align><aligny>center</aligny>
+          <visible>$EXP[BobbiIsRetry]</visible>
+        </control>
+        <control type="label">
+          <left>0</left><top>204</top><width>$PARAM[w]</width><height>26</height>
+          <label>按确认重新加载</label>
+          <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+          <align>center</align><aligny>center</aligny>
+          <visible>$EXP[BobbiIsRetry]</visible>
+        </control>
+        <control type="textbox">
+          <left>16</left><top>170</top><width>192</width><height>112</height>
+          <label>$VAR[TitlePrimary]</label>
+          <font>Card24</font><textcolor>E6F5F5F7</textcolor>
+          <align>center</align>
+          <visible>!$EXP[BobbiIsRetry]</visible>
+        </control>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobbi/glass/mask-$PARAM[w]x$PARAM[h].png">$PARAM[art]</texture>
+        <include>ArtFade</include>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture>bobbi/glass/rim-$PARAM[w]x$PARAM[h].png</texture>
+      </control>
+    </definition>
+  </include>
+  <!-- art badges: premium TV bottom capsule progress bar, playing disc, watched checkmark -->
+  <include name="ArtBadges">
+    <param name="w">232</param>
+    <param name="h">348</param>
+    <param name="barw">200</param>
+    <param name="bary">325</param>
+    <definition>
+      <control type="image">
+        <left>0</left><top>0</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture>bobbi/glass/progress-scrim-$PARAM[w]x$PARAM[h].png</texture>
+        <visible>!ListItem.IsPlaying + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]</visible>
+      </control>
+      <control type="progress">
+        <left>16</left><top>$PARAM[bary]</top><width>$PARAM[barw]</width><height>7</height>
+        <info>ListItem.Property(PercentPlayed)</info>
+        <texturebg colordiffuse="52FFFFFF" border="4">bobbi/glass/progress-track.png</texturebg>
+        <midtexture colordiffuse="FFFFFFFF" border="4">bobbi/glass/progress-fill.png</midtexture>
+        <visible>Integer.IsGreater(ListItem.Property(PercentPlayed),0) + !ListItem.IsPlaying</visible>
+      </control>
+      <control type="progress">
+        <left>16</left><top>$PARAM[bary]</top><width>$PARAM[barw]</width><height>7</height>
+        <info>ListItem.PercentPlayed</info>
+        <texturebg colordiffuse="52FFFFFF" border="4">bobbi/glass/progress-track.png</texturebg>
+        <midtexture colordiffuse="FFFFFFFF" border="4">bobbi/glass/progress-fill.png</midtexture>
+        <visible>String.IsEmpty(ListItem.Property(PercentPlayed)) + Integer.IsGreater(ListItem.PercentPlayed,0) + !ListItem.IsPlaying</visible>
+      </control>
+      <control type="image">
+        <left>16</left><top>$PARAM[bary]</top><width>14</width><height>7</height>
+        <texture colordiffuse="FFFFFFFF">bobbi/glass/progress-nub.png</texture>
+        <visible>!ListItem.IsPlaying + [Integer.IsGreater(ListItem.Property(PercentPlayed),0) | Integer.IsGreater(ListItem.PercentPlayed,0)]</visible>
+      </control>
+      <control type="group">
+        <visible>ListItem.IsPlaying</visible>
+        <control type="image">
+          <left>12</left><top>12</top><width>40</width><height>40</height>
+          <texture colordiffuse="E6000000">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>22</left><top>22</top><width>20</width><height>20</height>
+          <texture colordiffuse="text">bobbi/glass/icons/play.png</texture>
+        </control>
+      </control>
+      <control type="group">
+        <visible>Integer.IsGreater(ListItem.PlayCount,0) + !ListItem.IsPlaying + !Integer.IsGreater(ListItem.PercentPlayed,0) + !Integer.IsGreater(ListItem.Property(PercentPlayed),0)</visible>
+        <control type="image">
+          <left>12</left><top>12</top><width>36</width><height>36</height>
+          <texture colordiffuse="CC000000">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>21</left><top>21</top><width>18</width><height>18</height>
+          <texture colordiffuse="text">bobbi/glass/icons/checkmark.png</texture>
+        </control>
+      </control>
+    </definition>
+  </include>
+  <include name="FocusRing">
+    <param name="x">-8</param>
+    <param name="y">-8</param>
+    <param name="w">248</param>
+    <param name="h">364</param>
+    <definition>
+      <control type="image">
+        <left>$PARAM[x]</left><top>$PARAM[y]</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture colordiffuse="focus" border="44">bobbi/glass/ring-card.png</texture>
+      </control>
+    </definition>
+  </include>
+  <include name="CardShadow">
+    <param name="w">232</param>
+    <param name="h">348</param>
+    <definition>
+      <control type="image">
+        <left>-40</left><top>-40</top><width>$PARAM[w]</width><height>$PARAM[h]</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== text atoms ===== -->
+  <include name="SectionTitle">
+    <param name="label" />
+    <param name="x">80</param>
+    <param name="y">0</param>
+    <definition>
+      <control type="label">
+        <left>$PARAM[x]</left><top>$PARAM[y]</top><width>1200</width><height>44</height>
+        <label>$PARAM[label]</label>
+        <font>RailTitle30</font><textcolor>BFEBEBF5</textcolor><aligny>center</aligny>
+      </control>
+    </definition>
+  </include>
+  <include name="Chip">
+    <param name="label" />
+    <param name="visible">true</param>
+    <definition>
+      <control type="label">
+        <width>auto</width><height>36</height>
+        <label>$PARAM[label]</label>
+        <font>Badge18</font><textcolor>text</textcolor>
+        <aligny>center</aligny><textoffsetx>14</textoffsetx>
+        <visible>$PARAM[visible]</visible>
+      </control>
+    </definition>
+  </include>
+
+  <!-- ===== state blocks: loading / empty / error ===== -->
+  <include name="StateBlock">
+    <param name="x">80</param>
+    <param name="y">420</param>
+    <param name="w">1760</param>
+    <param name="loading">false</param>
+    <param name="empty">false</param>
+    <param name="emptytitle">这里还没有内容</param>
+    <param name="emptyhint">按 返回 键回到上一页</param>
+    <definition>
+      <control type="group">
+        <left>$PARAM[x]</left><top>$PARAM[y]</top><width>$PARAM[w]</width>
+        <control type="group">
+          <visible>$PARAM[loading]</visible>
+          <include>FadeVisible</include>
+          <control type="image">
+            <left>0</left><top>0</top><width>52</width><height>52</height>
+            <texture>bobbi/glass/icon-disc-44.png</texture>
+          </control>
+          <control type="image">
+            <left>12</left><top>12</top><width>28</width><height>28</height>
+            <texture colordiffuse="text">bobbi/spinner.png</texture>
+            <animation effect="rotate" end="-360" center="26,26" time="900" loop="true" condition="!Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+          </control>
+          <control type="label">
+            <left>72</left><top>0</top><width>1200</width><height>52</height>
+            <label>正在加载…</label><font>Card26</font><textcolor>text2</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+        <control type="group">
+          <visible>$PARAM[empty]</visible>
+          <include>FadeVisible</include>
+          <control type="image">
+            <left>0</left><top>4</top><width>56</width><height>56</height>
+            <texture>bobbi/glass/icon-disc-44.png</texture>
+          </control>
+          <control type="image">
+            <left>14</left><top>18</top><width>28</width><height>28</height>
+            <texture colordiffuse="text2">bobbi/glass/icons/info.png</texture>
+          </control>
+          <control type="label">
+            <left>76</left><top>0</top><width>1600</width><height>36</height>
+            <label>$PARAM[emptytitle]</label><font>Head30</font><textcolor>text</textcolor><aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>76</left><top>40</top><width>1600</width><height>28</height>
+            <label>$PARAM[emptyhint]</label><font>CardSub22</font><textcolor>9CEBEBF5</textcolor><aligny>center</aligny>
+          </control>
+        </control>
+      </control>
+    </definition>
+  </include>
+
+  <!-- hint footer -->
+  <include name="KeyHint">
+    <param name="label" />
+    <param name="x">80</param>
+    <param name="y">1018</param>
+    <param name="w">1760</param>
+    <param name="align">left</param>
+    <definition>
+      <control type="label">
+        <left>$PARAM[x]</left><top>$PARAM[y]</top><width>$PARAM[w]</width><height>28</height>
+        <label>$PARAM[label]</label>
+        <font>CardSub22</font><textcolor>73EBEBF5</textcolor><align>$PARAM[align]</align><aligny>center</aligny>
+      </control>
+    </definition>
+  </include>
+
+  <!-- hidden list that keeps a container from going to sleep -->
+  <include name="BusyOverlay">
+    <control type="group">
+      <visible>Window.IsActive(busydialog) | Window.IsActive(busydialognocancel)</visible>
+    </control>
+  </include>
+  <!-- Backend-maintained fallback for windows not yet redesigned. -->
+  <include file="Includes_Compatibility.xml" />
+</includes>

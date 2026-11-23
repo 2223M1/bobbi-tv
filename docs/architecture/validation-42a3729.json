@@ -1,0 +1,442 @@
+{
+  "schema": 1,
+  "status": "OFFLINE_VALIDATED_SPACE_BLOCKED_NOT_DEPLOYED",
+  "finalized": true,
+  "plan_complete": false,
+  "product_accepted": false,
+  "assembled_utc": "2026-11-14T00:21:03.211324+00:00",
+  "finalization_scope": "Closes this offline candidate evidence record, not the overall plan or device acceptance.",
+  "source": {
+    "commit": "42a3729db8de519346c1ebf9c1dc6d0cc1cd1cd1",
+    "tree": "1124dbe30c3eaf2af59f850ca4d44bb39a8a000d",
+    "sequence": 2026102136,
+    "clean_at_assembly": true,
+    "versions": {
+      "plugin.video.bobbi": "0.1.77",
+      "plugin.video.bobbi.library": "0.1.9",
+      "script.module.bobbi.platform": "0.1.83",
+      "script.bobbi.start": "0.2.101",
+      "script.module.bobbi.core": "0.1.75"
+    },
+    "qualification": "Product identity precedes the documentation-only evidence commit; all tests/builds use this exact product tree."
+  },
+  "changes": [
+    {
+      "commit": "b6688cb",
+      "change": "TimeoutError-only start-facts reread: at most three attempts in the original 0.9s scope, no new play or worker.",
+      "limitation": "Does not establish the cause of 2135 FACTS_ABSENT or interrupt indefinitely blocked Python IO."
+    },
+    {
+      "commit": "7cc2f9f",
+      "change": "Modal source/private-files/server entries use Kodi actions, not folder enumeration.",
+      "limitation": "New menu device/focus acceptance pending; old saved positive-handle folder URLs retain compatibility behavior."
+    },
+    {
+      "commit": "b065757",
+      "change": "One shared per-filesystem capacity budget for installers, updates, rollback and driver admission, checked before upload and at commit.",
+      "limitation": "Snapshots do not reserve blocks against unrelated writers; online manifests without layout use per-blob exact admission, not a full-release estimate."
+    },
+    {
+      "commit": "ec571f4",
+      "change": "Receipt-less diagnostics use frozen verified inputs in memory and never bootstrap/extract/recover.",
+      "limitation": "Historical runs without capacity inputs provide bounded hash-only diagnostics, not current signature or device prerequisite verification."
+    }
+  ],
+  "evidence_roots": {
+    "R": "D:\\AM6B-Project\\bobbi-tv-ce-search-recall-20261026",
+    "E": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\results",
+    "B": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\builds"
+  },
+  "evidence_columns": [
+    "root",
+    "relative_path",
+    "sha256",
+    "bytes"
+  ],
+  "evidence_registry": {
+    "assembler": [
+      "E",
+      "assemble_validation_42a3729.py",
+      "ca07899bc63ca73149dc7a5052e3f85b1de94702b5ca724465cc55b529595bfa",
+      20293
+    ],
+    "previous_deployed_record": [
+      "R",
+      "docs/architecture/validation-35b9d61.json",
+      "842a713e4ffac24d6592cb2615edf285c3316e9eafb22ac4bbb656795b5ec29d",
+      40183
+    ],
+    "source_inventory": [
+      "R",
+      "release/source-inventory.json",
+      "10df421388051b0ded96cfa95af2c96d39572370c7790823bbef10fef6480e95",
+      160303
+    ],
+    "primary": [
+      "E",
+      "42a3729-primary.xml",
+      "db0361b146c1fa4a3d9951f20fd0e041ccf84b7c30c33d92f56c8a0f28d1b6c5",
+      1341547
+    ],
+    "inherited": [
+      "E",
+      "42a3729-inherited.xml",
+      "459a3af1c4be56e434c374359fbef53f339f55fd6d0eda765f3e9f01c4ea3627",
+      449395
+    ],
+    "preparation": [
+      "E",
+      "42a3729-preparation.xml",
+      "a8a575d75d6dd5a1a26a2e2dc2dc3720661b1c42273e0404f72f3e1cd9e0527b",
+      41957
+    ],
+    "posix_junit": [
+      "E",
+      "42a3729-posix-final.xml",
+      "2cf2f3a3b0587f99224e44d72756c5a7a7211cc9354ce86b4ccc92f5abd8b1bb",
+      81924
+    ],
+    "posix_report": [
+      "E",
+      "42a3729-posix-final.json",
+      "6f1e0d548eaa3f70e5ff61a98d3f6bc433d613c485edea97bd8c772cc998dc21",
+      18162
+    ],
+    "android_packaging": [
+      "E",
+      "42a3729-android-packaging.xml",
+      "50619cecfcb666ba290ea5d9917ce91bba3c85e136d48d1b6061fde522ecbd6b",
+      11103
+    ],
+    "build_verification": [
+      "E",
+      "42a3729-build-verification.json",
+      "f791dc49e3b3a36bdff69a8e5d81f76a9b1a91dd396a5365026ce8a743432471",
+      25224
+    ],
+    "release_audit": [
+      "E",
+      "42a3729-release-independent-review.json",
+      "b4c3ed97a39a658ae7e14da78512c1b3cc539acae68757249d8b0f87d7510364",
+      17984
+    ],
+    "release_audit_config": [
+      "E",
+      "42a3729-release-audit-config.json",
+      "cf7ca52dd70237bb35d37315024331568de1142bb5b0bb634c56d71fcae356ff",
+      2415
+    ],
+    "architecture_review": [
+      "E",
+      "42a3729-architecture-review.json",
+      "56f6c2345c580ceecb142b024be8bb78c8122011f861e6db469b24e07f0922f5",
+      17596
+    ],
+    "capacity_current": [
+      "E",
+      "42a3729-readonly-capacity.json",
+      "c5388185f837a110c9cf8c77046247df8a5e1c2c34ac104581bc09471d96bf45",
+      4160
+    ],
+    "capacity_inputs": [
+      "E",
+      "42a3729-readonly-capacity.inputs.json",
+      "de719548ce71902ea674dc4744e55a10b764e9163a6808c3a4dc19fe31040872",
+      1346
+    ],
+    "capacity_offline": [
+      "E",
+      "capacity-preflight-offline-final.xml",
+      "f7eea3280a70d7a604a60c32fc4e8c863b2ebe14ca375c5018efb9cdbea37eac",
+      52805
+    ],
+    "capacity_review": [
+      "E",
+      "capacity-preflight-independent-review.json",
+      "9e6e45b79432bbb6d2c68d4cd6fadaf93cf244235f2218cb7043f092e43bfcd6",
+      6586
+    ],
+    "capacity_wording": [
+      "E",
+      "capacity-wording-delta-review.json",
+      "0b0ef89e52faaff5bc38b35b62a285c4b9fe841418f218ac90fda0909868b008",
+      2161
+    ],
+    "capacity_wording_tests": [
+      "E",
+      "capacity-wording-regression.xml",
+      "e6afe030c3ecb3b7794ebbfc105d26299e6ba0c836b01887ff73cc2da8803f58",
+      21241
+    ],
+    "menu_review": [
+      "E",
+      "library-modal-independent-review.json",
+      "c13d40e4d828568dc2180fcb6911f968b96a24d0ca9759d0debeef0588a0375b",
+      2670
+    ],
+    "menu_oldsource_negative": [
+      "E",
+      "library-modal-oldsource-negative-02.xml",
+      "f7c987419497bafc80efcacccc978cc4874daab21cb4c531763ad2926b200e66",
+      4322
+    ],
+    "facts_timeout_tests": [
+      "E",
+      "start-facts-timeout-only-offline-final.xml",
+      "0a57a60e8a38e6b21fbd4fc66d95f85cbafe2904b09159ce927019e341a2e311",
+      44959
+    ],
+    "observer_input_review": [
+      "E",
+      "42a3729-observer-input-review.json",
+      "7441232f7d5a0937746f647109416600d2a657ba598d3c988733306bec9ebb1d",
+      13037
+    ],
+    "observer_manifest": [
+      "E",
+      "42a3729-native-files-manifest.json",
+      "15bde42f540353e354f492c70849f2329852b54712691b7d6abbfa8a9efda3f6",
+      1838
+    ],
+    "observer_preparation": [
+      "E",
+      "42a3729-diagnostic-input-preparation.json",
+      "da88669bd6db6507ac33029b2306432e32551a892af23562f6edabeafaf44093",
+      658
+    ],
+    "observer_offline": [
+      "E",
+      "native-files-frozen-offline-review.json",
+      "57f92f1c8709502fb732c16bd3ba94f32df62b53bb0f3dd59bef6e43a3fae9c3",
+      6257
+    ],
+    "observer_review": [
+      "E",
+      "native-files-frozen-independent-review.json",
+      "1dc37143efe871470d936091cfb9e6140f7337b8bce56bfcb1e52125e5619cad",
+      3348
+    ],
+    "cache_220800_inspect": [
+      "E",
+      "pre2136-cache-220800-inspect.json",
+      "06a66f9968f9ea7c5f72be7bfdb60aaeeb41f103ff6359b0879cdae93f3fc2b8",
+      711
+    ],
+    "cache_235620_inspect": [
+      "E",
+      "pre2136-cache-235620-inspect.json",
+      "46464387fe8ebc15f1d6dc87aa71bd2de2249a1dfd359ffe36a2e072523c5300",
+      711
+    ],
+    "pre_primary": [
+      "E",
+      "pre2136-primary.xml",
+      "60e5e729fb7adbfa2dd8016861b7c059167887e1df255d8a97bd2c85fe1aedbe",
+      1336824
+    ],
+    "pre_inherited": [
+      "E",
+      "pre2136-inherited.xml",
+      "9161806b86247974828f9a3171018da84319880753ef5e6c821293e4f9e3c799",
+      451320
+    ],
+    "pre_posix": [
+      "E",
+      "pre2136-capacity-inspection-posix.xml",
+      "87a56ca18f1cc5e5f942d376725a89a4d9fc28b69acf1a1d0239efa58c764af8",
+      16243
+    ],
+    "architecture_graph.json": [
+      "E",
+      "42a3729-architecture-policy-a/graph.json",
+      "846f15bb780fcf259c850791e3255a608ff8375800b6e920db29587ba73a561f",
+      109915612
+    ],
+    "architecture_overview.md": [
+      "E",
+      "42a3729-architecture-policy-a/overview.md",
+      "97969eeb94cae4ad24e94a2c543edfd9bd5aa17473381e6296eb50fb586c8290",
+      6473
+    ],
+    "architecture_overview.mmd": [
+      "E",
+      "42a3729-architecture-policy-a/overview.mmd",
+      "eaa775e001bd0d44d1b571541156d6b9f1551b1923354eb2af7b4fb6d5bfadad",
+      4992
+    ],
+    "signed_bundle": [
+      "B",
+      "42a3729-signed/bobbi-private-2026102136-coreelec.bobbi-update.zip",
+      "e9464dbd0af958e92c7470d503e5f5ea03822cabf02c817208d6ed9ace0b64c0",
+      96338551
+    ],
+    "entry": [
+      "B",
+      "42a3729-signed/script.bobbi.start-0.2.101.zip",
+      "ed1ffe4c34e9c99fc963fea6a8bba74d486a1ed2b9357aa0154f7a5c416209c7",
+      96561613
+    ]
+  },
+  "tests": {
+    "groups": {
+      "primary": {
+        "counts": {
+          "passed": 8540,
+          "skipped": 22,
+          "xfailed": 1
+        },
+        "cases": 8563,
+        "evidence_id": "primary"
+      },
+      "inherited": {
+        "counts": {
+          "passed": 2470
+        },
+        "cases": 2470,
+        "evidence_id": "inherited"
+      },
+      "preparation": {
+        "counts": {
+          "passed": 254
+        },
+        "cases": 254,
+        "evidence_id": "preparation"
+      }
+    },
+    "windows_unique": 11287,
+    "windows_counts": {
+      "passed": 11264,
+      "skipped": 22,
+      "xfailed": 1
+    },
+    "posix_executions": 435,
+    "posix_cases_all_overlap_windows": true,
+    "ordinary_skips_proved_on_posix": 22,
+    "unresolved_ordinary_skips": 0,
+    "combined_unique": 11287,
+    "combined_passed": 11286,
+    "xfailed": [
+      {
+        "classname": "tests.test_ce2029_search_audit",
+        "name": "test_real_provider_never_publishes_explicit_live_action_for_animation[Keep Your Hands Off Eizouken! (Nogizaka46 Drama) - S01E01 (1080p)-aliases0]",
+        "reason": "Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama"
+      }
+    ],
+    "android_packaging_only": {
+      "passed": 72,
+      "compiled": false,
+      "linked": false,
+      "device_tested": false
+    },
+    "qualification": "Exact classname/name de-duplication. Local fixtures and packaging checks, not all 110 system scenarios, native rebuilding or live protocol acceptance."
+  },
+  "retained_failures": {
+    "pre_primary": {
+      "passed": 8480,
+      "skipped": 21,
+      "xfailed": 1,
+      "failed": 3
+    },
+    "pre_inherited": {
+      "passed": 2469,
+      "failed": 1
+    },
+    "pre_posix": {
+      "passed": 74,
+      "failed": 1
+    },
+    "causes": [
+      "Pre-freeze main run saw the earlier rollback exception path, a technical term in UI guidance and stale inventory.",
+      "Pre-freeze inherited release ZIP check saw stale inventory.",
+      "Initial WSL run could not read Windows worktree Git metadata; the frozen rerun used an ordinary ext4 clone and kept the real old-source negative control."
+    ],
+    "qualification": "Development runs retained; none substituted for the later frozen full regression."
+  },
+  "architecture": {
+    "tracked_files": 2381,
+    "typed_edges": 160824,
+    "unresolved_edges": 88964,
+    "configured_static_import_rules": 1,
+    "matches": 0,
+    "findings": 0,
+    "repeat_exports_byte_identical": true,
+    "manifest": "docs/architecture/ownership-manifest.json",
+    "qualification": "Configured core-to-platform static import rule only. Plain exports contain no rules; unresolved calls and all other dependency obligations remain explicit."
+  },
+  "builds": {
+    "components": 22,
+    "source_check_files": 63,
+    "independent_source_checks_equal": true,
+    "signed_sequence": 2026102136,
+    "comparison_baseline": "2acdba8/2134, not the immediate previous deployment",
+    "native_changed": false,
+    "native_rebuilt": false,
+    "native_current_binary_rehashed": false,
+    "native_historical_sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2"
+  },
+  "device": {
+    "deployed": false,
+    "staged": false,
+    "stopped": false,
+    "playback_attempted": false,
+    "removed_bytes": 0,
+    "last_deployed_commit": "35b9d61ebb9429f5b15e3b882efbfc9c022bd6ad",
+    "last_deployed_sequence": 2026102135,
+    "read_only_capacity": {
+      "required_bytes": 745897984,
+      "free_bytes": 563466240,
+      "shortfall_bytes": 182431744,
+      "remote_writes": false,
+      "result": "SpaceRequired",
+      "evidence_id": "capacity_current"
+    },
+    "cleanup": {
+      "approval": "awaiting_explicit_user_reply",
+      "performed": false,
+      "allowed_proposal_runs": [
+        "20261113-220800",
+        "20261113-235620"
+      ],
+      "proposed_target_suffix": "bootstrap/addons",
+      "estimated_logical_bytes": 382129627,
+      "preserved": [
+        "original signed bundles",
+        "rollback backups",
+        "account state",
+        "history",
+        "CD2"
+      ],
+      "qualification": "Only verified rebuildable expansion caches proposed; another idle/hash check required immediately before any approved deletion."
+    },
+    "observer": {
+      "prepared": true,
+      "contracts": 11,
+      "helpers": 2,
+      "live_baseline": false,
+      "live_binding": false,
+      "exact_terminal_history_proved": false,
+      "prior_stop_replayed": false
+    }
+  },
+  "interaction_matrix": {
+    "scenarios": 110,
+    "scenarios_sha256": "f390d1375f5010254edc74d99a868c965a0566a5c9ac9d12512cc12e70791558",
+    "statuses_unchanged": true,
+    "acceptance": "pending; local test count is not a system-interaction coverage rate"
+  },
+  "remaining": [
+    "New menu/focus and facts/history terminal live proof",
+    "Fixed 115 share stall, five cold/five warm, half-hour pause and CD2 ISO",
+    "Exact path resume, complete edition/multipart and automatic segment policies",
+    "Cross-source/account migration and real NAS/media-server validation",
+    "Automatic server progress sync and actual Direct Stream/Transcode sessions",
+    "All 110 system interactions, complete recovery/rollback and Android link/device proof"
+  ],
+  "public_distribution": {
+    "cleared": false,
+    "unresolved_source": 7,
+    "unresolved_full_license": 2,
+    "pushed": false
+  },
+  "next_step": "Obtain explicit narrow cache cleanup approval; recheck idle/hashes, reclaim only approved copies, then use a new immutable deployment run and fresh baseline/UI/history/Stop evidence."
+}

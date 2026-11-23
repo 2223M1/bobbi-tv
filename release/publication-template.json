@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "version": null,
+  "source_commit": null,
+  "track": "preview",
+  "assets": [],
+  "source_reproducibility_receipt": null,
+  "signed_bundle_receipt": null,
+  "entry_audit_receipt": null,
+  "license_manifest": "licenses/THIRD-PARTY.json",
+  "license_status": "unresolved",
+  "capability_matrix": "release/capability-matrix.json",
+  "tests": {"primary": "not_run", "private_baseline": "not_run", "preparation_regression": "not_run", "android_packaging": "not_run", "skip_xfail_reasons": []},
+  "publication": {"source_tag": "not_run", "github_release": "not_run", "preview_feed": "not_run", "stable_feed": "not_run", "dual_mirror_readback": "not_run"},
+  "device_gates": {"coreelec": "not_run", "android": "not_run", "real_cloud_accounts": "not_run"},
+  "promotable": false
+}

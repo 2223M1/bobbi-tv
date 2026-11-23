@@ -1,0 +1,76 @@
+"""One registry for stable, independently identity-checked 115 catalog sources.
+
+Discovery only: these adapters cannot claim a prepared file or start playback.
+The same provider names are retained in direct-source continuation receipts.
+"""
+from importlib import import_module
+
+
+PROVIDERS = ('qqdocs',)
+_CAPTURE = object()
+
+
+def providers():
+    from bobbi_platform.source_libraries import capture
+    try:
+        enabled = capture().current() is not None
+    except (ImportError, OSError, ValueError, RuntimeError):
+        enabled = False
+    return PROVIDERS + (('sharelib',) if enabled else ())
+
+
+def _adapter(name):
+    module_name = 'lib.clients.' + name + '_provider'
+    try:
+        return import_module(module_name)
+    except ModuleNotFoundError as error:
+        if error.name != module_name:
+            raise
+        return None  # An absent optional adapter cannot hide existing sources.
+
+
+def provider_for(source):
+    if getattr(source, 'type', '') != 'Direct':
+        return None
+    guid = str(getattr(source, 'guid', ''))
+    for name in providers():
+        if guid.startswith(name + ':'):
+            module = _adapter(name)
+            return name if module is not None and module.is_source(source) else None
+    return None
+
+
+def resolve_source(source, item):
+    name = provider_for(source)
+    if name is None:
+        raise ValueError('UNKNOWN_CATALOG_SOURCE')
+    return _adapter(name).resolve_source(source, item)
+
+
+def submit_catalogs(manager, ids, mode, season, episode, year, aliases, release_order,
+                    movie_years=None, context=_CAPTURE):
+    if context is _CAPTURE:
+        from bobbi_platform.source_libraries import capture_context
+        context = capture_context()
+    if context is None or not context.binding.is_current():
+        return
+    for name in PROVIDERS + (('sharelib',) if context.source is not None else ()):
+        module = _adapter(name)
+        if module is None:
+            continue
+        # qqdocs keeps its longstanding empty-provider completion contract.
+        # New optional integrations do not start work while disabled.
+        if name != 'qqdocs' and not module.enabled():
+            continue
+        options = dict(movie_years=movie_years)
+        if name == 'sharelib':
+            # Capture consent/profile before queueing; a late worker must not
+            # discover a replacement source or new profile on its own.
+            options['source_check'] = module._query_cancelled(manager.cancelled, context)
+            if options['source_check']():
+                continue
+        else:
+            options['context'] = context
+        manager.submit_task(module.SITE, name, module.find_sources,
+            ids, mode, season, episode, year, aliases, release_order,
+            manager.deadline, manager.cancelled, **options)

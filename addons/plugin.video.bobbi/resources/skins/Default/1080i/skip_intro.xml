@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<window>
+  <defaultcontrol always="true">4001</defaultcontrol>
+  <coordinates><left>1320</left><top>892</top></coordinates>
+  <animation type="WindowOpen" reversible="false" condition="!Skin.HasSetting(BobbiReduceMotion)">
+    <effect type="fade" start="0" end="100" time="200" />
+    <effect type="slide" start="32,0" end="0,0" time="220" tween="cubic" easing="out" />
+  </animation>
+  <animation effect="fade" start="100" end="0" time="160" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>-40</left><top>-36</top><width>600</width><height>148</height>
+      <texture border="64">bobbi/glass/modal-shadow.png</texture>
+    </control>
+    <control type="grouplist">
+      <left>0</left><top>4</top><width>520</width><height>68</height>
+      <orientation>horizontal</orientation><itemgap>12</itemgap><align>right</align>
+      <control type="button" id="4002">
+        <width>148</width><height>68</height>
+        <label>忽略</label>
+        <font>Button24</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="34,0,34,0">bobbi/glass/capsule-68.png</texturefocus>
+        <texturenofocus colordiffuse="CC17181D" border="34,0,34,0">bobbi/glass/capsule-68.png</texturenofocus>
+      </control>
+      <control type="button" id="4001">
+        <width>360</width><height>68</height>
+        <label>$INFO[Window().Property(skip_label)]</label>
+        <font>HeroPlay29</font><textcolor>FF1D1D1F</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="34,0,34,0">bobbi/glass/capsule-68.png</texturefocus>
+        <texturenofocus colordiffuse="FFE2E3E6" border="34,0,34,0">bobbi/glass/capsule-68.png</texturenofocus>
+      </control>
+    </control>
+  </controls>
+</window>

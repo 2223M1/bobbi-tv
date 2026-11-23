@@ -1,0 +1,454 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog">
+  <defaultcontrol always="true">100</defaultcontrol>
+  <visible>Player.HasMedia + Window.IsActive(PlayerControls) + !Window.IsActive(FullscreenVideo) + !Window.IsActive(Visualisation)</visible>
+  <coordinates>
+    <left>560</left>
+    <top>340</top>
+  </coordinates>
+  <include content="PanelOpen"><param name="slide">0,24</param></include>
+  <controls>
+    <!-- on-device Compact Now Playing Liquid Glass Card (800x380) -->
+    <control type="image">
+      <left>-48</left><top>-48</top><width>896</width><height>476</height>
+      <texture border="64">bobbi/glass/modal-shadow.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>800</width><height>380</height>
+      <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>800</width><height>380</height>
+      <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+    </control>
+
+    <!-- Artwork + Metadata Header -->
+    <control type="group">
+      <left>36</left><top>32</top>
+      <control type="image">
+        <left>0</left><top>0</top><width>148</width><height>148</height>
+        <texture colordiffuse="22FFFFFF" border="14">bobbi/glass/squircle-r14.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>148</width><height>148</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobbi/glass/squircle-r14.png">$INFO[Player.Art(thumb)]</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>148</width><height>148</height>
+        <texture colordiffuse="66FFFFFF" border="14">bobbi/glass/squircle-r14-rim.png</texture>
+      </control>
+
+      <control type="label">
+        <left>176</left><top>10</top><width>548</width><height>32</height>
+        <label>$INFO[MusicPlayer.Artist]$INFO[VideoPlayer.TVShowTitle]</label>
+        <font>HeroMeta24</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><aligny>center</aligny>
+      </control>
+      <control type="fadelabel">
+        <left>176</left><top>44</top><width>548</width><height>48</height>
+        <label>$INFO[Player.Title]</label>
+        <font>Head34</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+        <scrollout>false</scrollout><pauseatend>2000</pauseatend>
+      </control>
+      <control type="label">
+        <left>176</left><top>96</top><width>548</width><height>28</height>
+        <label>$INFO[MusicPlayer.Album]$INFO[VideoPlayer.Year]</label>
+        <font>CardSub22</font><textcolor>$VAR[BobbiPanelHint]</textcolor><aligny>center</aligny>
+      </control>
+    </control>
+
+    <!-- Scrubber & Time Readout -->
+    <control type="progress">
+      <left>36</left><top>204</top><width>728</width><height>12</height>
+      <info>Player.Progress</info>
+      <texturebg border="6">bobbi/glass/osd-scrubber-track.png</texturebg>
+      <midtexture border="6">bobbi/glass/osd-scrubber-fill.png</midtexture>
+    </control>
+    <control type="label">
+      <left>36</left><top>224</top><width>320</width><height>28</height>
+      <label>$INFO[Player.Time]</label>
+      <font>NavClock20</font><textcolor>FFFFFFFF</textcolor><aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>444</left><top>224</top><width>320</width><height>28</height>
+      <label>-$INFO[Player.TimeRemaining]</label>
+      <font>NavClock20</font><textcolor>$VAR[BobbiPanelCaption]</textcolor><align>right</align><aligny>center</aligny>
+    </control>
+
+    <!-- Non-LiveTV Transport Row (id=100) -->
+    <control type="group" id="100">
+      <left>36</left><top>276</top>
+      <defaultcontrol always="true">603</defaultcontrol>
+      <visible>!VideoPlayer.Content(LiveTV)</visible>
+
+      <!-- 600: Previous -->
+      <control type="button" id="600">
+        <left>0</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>609</onleft><onright>601</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick condition="Player.HasVideo">RunScript(plugin.video.bobbi,bobbi_osd=chapter_previous)</onclick>
+        <onclick condition="!Player.HasVideo">PlayerControl(Previous)</onclick>
+      </control>
+      <control type="image">
+        <left>19</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/prev.png</texture>
+        <visible>!Control.HasFocus(600)</visible>
+      </control>
+      <control type="image">
+        <left>19</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/prev.png</texture>
+        <visible>Control.HasFocus(600)</visible>
+      </control>
+
+      <!-- 601: Rewind -->
+      <control type="button" id="601">
+        <left>72</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>600</onleft><onright>603</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>PlayerControl(Rewind)</onclick>
+        <enable>Player.SeekEnabled</enable>
+      </control>
+      <control type="image">
+        <left>91</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/rewind.png</texture>
+        <visible>!Control.HasFocus(601)</visible>
+      </control>
+      <control type="image">
+        <left>91</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/rewind.png</texture>
+        <visible>Control.HasFocus(601)</visible>
+      </control>
+
+      <!-- 603: Play/Pause -->
+      <control type="togglebutton" id="603">
+        <left>144</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <usealttexture>Player.Paused | Player.Forwarding | Player.Rewinding</usealttexture>
+        <alttexturenofocus>bobbi/glass/osd-disc-64.png</alttexturenofocus>
+        <alttexturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</alttexturefocus>
+        <onleft>601</onleft><onright>602</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick condition="Player.HasVideo">RunScript(plugin.video.bobbi,bobbi_osd=toggle_pause)</onclick>
+        <onclick condition="!Player.HasVideo">PlayerControl(Play)</onclick>
+        <enable>Player.PauseEnabled | Player.Forwarding | Player.Rewinding</enable>
+      </control>
+      <control type="image">
+        <left>163</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">$VAR[PlayPauseIcon]</texture>
+        <visible>!Control.HasFocus(603)</visible>
+      </control>
+      <control type="image">
+        <left>163</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">$VAR[PlayPauseIcon]</texture>
+        <visible>Control.HasFocus(603)</visible>
+      </control>
+
+      <!-- 602: Stop -->
+      <control type="button" id="602">
+        <left>216</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>603</onleft><onright>604</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>down</onclick>
+        <onclick condition="Player.HasVideo">RunScript(plugin.video.bobbi,bobbi_osd=stop)</onclick>
+        <onclick condition="!Player.HasVideo">PlayerControl(Stop)</onclick>
+      </control>
+      <control type="image">
+        <left>235</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/stop.png</texture>
+        <visible>!Control.HasFocus(602)</visible>
+      </control>
+      <control type="image">
+        <left>235</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/stop.png</texture>
+        <visible>Control.HasFocus(602)</visible>
+      </control>
+
+      <!-- 604: Forward -->
+      <control type="button" id="604">
+        <left>288</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>602</onleft><onright>605</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>PlayerControl(Forward)</onclick>
+        <enable>Player.SeekEnabled</enable>
+      </control>
+      <control type="image">
+        <left>307</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/fastforward.png</texture>
+        <visible>!Control.HasFocus(604)</visible>
+      </control>
+      <control type="image">
+        <left>307</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/fastforward.png</texture>
+        <visible>Control.HasFocus(604)</visible>
+      </control>
+
+      <!-- 605: Next -->
+      <control type="button" id="605">
+        <left>360</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>604</onleft><onright>606</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick condition="Player.HasVideo">RunScript(plugin.video.bobbi,bobbi_osd=chapter_next)</onclick>
+        <onclick condition="!Player.HasVideo">PlayerControl(Next)</onclick>
+      </control>
+      <control type="image">
+        <left>379</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/next.png</texture>
+        <visible>!Control.HasFocus(605)</visible>
+      </control>
+      <control type="image">
+        <left>379</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/next.png</texture>
+        <visible>Control.HasFocus(605)</visible>
+      </control>
+
+      <!-- 606: Record -->
+      <control type="button" id="606">
+        <left>432</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>605</onleft><onright>607</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>PVR.ToggleRecordPlayingChannel</onclick>
+        <enable>PVR.CanRecordPlayingChannel</enable>
+        <animation effect="fade" start="100" end="35" time="75" condition="[!PVR.CanRecordPlayingChannel] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      </control>
+      <control type="image">
+        <left>454</left><top>22</top><width>20</width><height>20</height>
+        <texture colordiffuse="error">bobbi/dot.png</texture>
+        <animation effect="fade" start="100" end="35" time="75" condition="[!PVR.CanRecordPlayingChannel] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      </control>
+
+      <!-- 607: Repeat -->
+      <control type="button" id="607">
+        <left>520</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onclick>PlayerControl(Repeat)</onclick>
+        <onleft>606</onleft><onright>608</onright><onup>100</onup><ondown>100</ondown>
+      </control>
+      <control type="image">
+        <left>539</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/refresh.png</texture>
+        <visible>!Control.HasFocus(607)</visible>
+      </control>
+      <control type="image">
+        <left>539</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/refresh.png</texture>
+        <visible>Control.HasFocus(607)</visible>
+      </control>
+
+      <!-- 608: Shuffle -->
+      <control type="togglebutton" id="608">
+        <left>592</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <usealttexture>Playlist.IsRandom</usealttexture>
+        <alttexturenofocus>bobbi/glass/osd-disc-64.png</alttexturenofocus>
+        <alttexturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</alttexturefocus>
+        <onclick>PlayerControl(Random)</onclick>
+        <onleft>607</onleft><onright>609</onright><onup>100</onup><ondown>100</ondown>
+      </control>
+      <control type="image">
+        <left>611</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/arrows-sort.png</texture>
+        <visible>!Control.HasFocus(608)</visible>
+      </control>
+      <control type="image">
+        <left>611</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/arrows-sort.png</texture>
+        <visible>Control.HasFocus(608)</visible>
+      </control>
+
+      <!-- 609: Lyrics / Visualisation -->
+      <control type="togglebutton" id="609">
+        <left>664</left><top>0</top><width>64</width><height>64</height>
+        <label>31128</label><font />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <alttexturenofocus>bobbi/glass/osd-disc-64.png</alttexturenofocus>
+        <alttexturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</alttexturefocus>
+        <onleft>608</onleft><onright>600</onright><onup>100</onup><ondown>100</ondown>
+        <onclick>Close</onclick>
+        <onclick>ActivateWindow(Visualisation)</onclick>
+        <onclick>RunScript($INFO[Skin.String(LyricScript_Path)])</onclick>
+        <altclick>Skin.SetAddon(LyricScript_Path,xbmc.python.lyrics)</altclick>
+        <altclick>Close</altclick>
+        <altclick>RunScript($INFO[Skin.String(LyricScript_Path)])</altclick>
+        <usealttexture>String.IsEmpty(Skin.String(LyricScript_Path))</usealttexture>
+        <visible>Player.HasAudio</visible>
+      </control>
+      <control type="image">
+        <left>683</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/waveform.png</texture>
+        <visible>Player.HasAudio + !Control.HasFocus(609)</visible>
+      </control>
+      <control type="image">
+        <left>683</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/waveform.png</texture>
+        <visible>Player.HasAudio + Control.HasFocus(609)</visible>
+      </control>
+    </control>
+
+    <!-- LiveTV Transport Row (id=100) -->
+    <control type="group" id="100">
+      <left>36</left><top>276</top>
+      <defaultcontrol always="true">700</defaultcontrol>
+      <visible>VideoPlayer.Content(LiveTV)</visible>
+
+      <control type="button" id="701">
+        <left>0</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>706</onleft><onright>702</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>PlayerControl(Rewind)</onclick>
+        <enable>Player.SeekEnabled</enable>
+        <animation effect="fade" start="100" end="40" time="75" condition="[!Player.SeekEnabled] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      </control>
+      <control type="image">
+        <left>19</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/rewind.png</texture>
+        <visible>!Control.HasFocus(701)</visible>
+      </control>
+      <control type="image">
+        <left>19</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/rewind.png</texture>
+        <visible>Control.HasFocus(701)</visible>
+      </control>
+
+      <control type="button" id="702">
+        <left>72</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>701</onleft><onright>703</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>down</onclick>
+        <onclick>PlayerControl(Stop)</onclick>
+      </control>
+      <control type="image">
+        <left>91</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/stop.png</texture>
+        <visible>!Control.HasFocus(702)</visible>
+      </control>
+      <control type="image">
+        <left>91</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/stop.png</texture>
+        <visible>Control.HasFocus(702)</visible>
+      </control>
+
+      <control type="togglebutton" id="703">
+        <left>144</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <usealttexture>Player.Paused | Player.Forwarding | Player.Rewinding</usealttexture>
+        <alttexturenofocus>bobbi/glass/osd-disc-64.png</alttexturenofocus>
+        <alttexturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</alttexturefocus>
+        <onleft>702</onleft><onright>704</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>PlayerControl(Play)</onclick>
+        <enable>Player.PauseEnabled</enable>
+        <animation effect="fade" start="100" end="40" time="75" condition="[!Player.PauseEnabled] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      </control>
+      <control type="image">
+        <left>163</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">$VAR[PlayPauseIcon]</texture>
+        <visible>!Control.HasFocus(703)</visible>
+      </control>
+      <control type="image">
+        <left>163</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">$VAR[PlayPauseIcon]</texture>
+        <visible>Control.HasFocus(703)</visible>
+      </control>
+
+      <control type="button" id="704">
+        <left>216</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>703</onleft><onright>700</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>PlayerControl(Forward)</onclick>
+        <enable>Player.SeekEnabled</enable>
+        <animation effect="fade" start="100" end="40" time="75" condition="[!Player.SeekEnabled] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      </control>
+      <control type="image">
+        <left>235</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/fastforward.png</texture>
+        <visible>!Control.HasFocus(704)</visible>
+      </control>
+      <control type="image">
+        <left>235</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/fastforward.png</texture>
+        <visible>Control.HasFocus(704)</visible>
+      </control>
+
+      <control type="button" id="700">
+        <left>312</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>704</onleft><onright>705</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>ChannelDown</onclick>
+      </control>
+      <control type="image">
+        <left>331</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/icons/chevron-down.png</texture>
+        <visible>!Control.HasFocus(700)</visible>
+      </control>
+      <control type="image">
+        <left>331</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/icons/chevron-down.png</texture>
+        <visible>Control.HasFocus(700)</visible>
+      </control>
+
+      <control type="button" id="705">
+        <left>384</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>700</onleft><onright>706</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>ChannelUp</onclick>
+      </control>
+      <control type="image">
+        <left>403</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/icons/chevron-up.png</texture>
+        <visible>!Control.HasFocus(705)</visible>
+      </control>
+      <control type="image">
+        <left>403</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/icons/chevron-up.png</texture>
+        <visible>Control.HasFocus(705)</visible>
+      </control>
+
+      <control type="button" id="706">
+        <left>456</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>705</onleft><onright>707</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>PVR.ToggleRecordPlayingChannel</onclick>
+        <enable>PVR.CanRecordPlayingChannel</enable>
+        <animation effect="fade" start="100" end="35" time="75" condition="[!PVR.CanRecordPlayingChannel] + !Skin.HasSetting(BobbiReduceMotion)">Conditional</animation>
+      </control>
+      <control type="image">
+        <left>478</left><top>22</top><width>20</width><height>20</height>
+        <texture colordiffuse="error">bobbi/dot.png</texture>
+      </control>
+
+      <control type="button" id="707">
+        <left>664</left><top>0</top><width>64</width><height>64</height><label />
+        <texturenofocus>bobbi/glass/osd-disc-64.png</texturenofocus>
+        <texturefocus colordiffuse="FFFFFFFF">bobbi/glass/circle-128.png</texturefocus>
+        <onleft>706</onleft><onright>701</onright><onup>noop</onup><ondown>noop</ondown>
+        <onclick>ActivateWindow(PVRRadioRDSInfo)</onclick>
+        <visible>VideoPlayer.Content(LiveTV) + RDS.HasRadiotextPlus</visible>
+      </control>
+      <control type="image">
+        <left>683</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/info.png</texture>
+        <visible>VideoPlayer.Content(LiveTV) + RDS.HasRadiotextPlus + !Control.HasFocus(707)</visible>
+      </control>
+      <control type="image">
+        <left>683</left><top>19</top><width>26</width><height>26</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/info.png</texture>
+        <visible>VideoPlayer.Content(LiveTV) + RDS.HasRadiotextPlus + Control.HasFocus(707)</visible>
+      </control>
+    </control>
+  </controls>
+</window>

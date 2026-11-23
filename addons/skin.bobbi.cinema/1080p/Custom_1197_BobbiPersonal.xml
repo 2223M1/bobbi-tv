@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window id="1197">
+  <defaultcontrol always="false">9100</defaultcontrol>
+  <onload>SetProperty(BobbiSection,mine,Home)</onload>
+  <onload condition="String.IsEmpty(Window(Home).Property(BobbiPersonalTab))">SetProperty(BobbiPersonalTab,resume,Home)</onload>
+  <include>PageOpen</include>
+  <controls>
+    <include content="BobbiBrowseCanvas">
+      <param name="liquid">bobbi/white.png</param>
+      <param name="tint">FF1A1A1B</param>
+    </include>
+
+    <!-- Hidden resume preview container (contract 9130: data-only, never focusable) -->
+    <control type="list" id="9130">
+      <left>-4000</left><top>-4000</top><width>1</width><height>1</height>
+      <orientation>vertical</orientation>
+      <enable>false</enable>
+      <hitrect x="0" y="0" w="0" h="0" />
+      <itemlayout width="1" height="1" />
+      <focusedlayout width="1" height="1" />
+      <content target="videos" limit="1" browse="never">plugin://plugin.video.bobbi/?action=continue_watching_menu&amp;resume_preview=true</content>
+    </control>
+
+    <!-- Left Category Rail @ x=46, y=161 (318x70 stadium pill, 75 px pitch, 1:1 premium TV Library) -->
+    <control type="grouplist" id="9100">
+      <left>46</left><top>161</top><width>318</width><height>780</height>
+      <orientation>vertical</orientation>
+      <itemgap>5</itemgap>
+      <scrolltime>0</scrolltime>
+      <onup>9701</onup>
+      <ondown>noop</ondown>
+      <onleft>9701</onleft>
+      <onright>noop</onright>
+      <include content="PersonalNavRow">
+        <param name="id" value="9111" />
+        <param name="label" value="最近观看" />
+        <param name="tab" value="resume" />
+        <param name="grid" value="9201" />
+        <param name="active_cond" value="String.IsEqual(Window(Home).Property(BobbiPersonalTab),resume) | String.IsEmpty(Window(Home).Property(BobbiPersonalTab))" />
+        <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=files_history&quot;,return)" />
+      </include>
+      <include content="PersonalNavRow">
+        <param name="id" value="9113" />
+        <param name="label" value="电影" />
+        <param name="tab" value="movies" />
+        <param name="grid" value="9201" />
+        <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=movie&amp;page=1&quot;,return)" />
+      </include>
+      <include content="PersonalNavRow">
+        <param name="id" value="9114" />
+        <param name="label" value="剧集" />
+        <param name="tab" value="tv" />
+        <param name="grid" value="9201" />
+        <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=am6b_streaming_catalog&amp;section=tv&amp;page=1&quot;,return)" />
+      </include>
+      <include content="PersonalNavRow">
+        <param name="id" value="9115" />
+        <param name="label" value="我的收藏" />
+        <param name="tab" value="favs" />
+        <param name="grid" value="9205" />
+        <param name="fallback_action" value="ActivateWindow(favouritesbrowser)" />
+      </include>
+      <!-- Kodi links every grouplist child by ID, including the non-focusable divider. -->
+      <control type="image" id="9121">
+        <width>318</width><height>20</height>
+        <texture />
+      </control>
+      <control type="label" id="9122">
+        <width>318</width><height>36</height>
+        <label>云盘与媒体库</label>
+        <font>NavHead24</font><textcolor>80EBEBF5</textcolor>
+        <textoffsetx>16</textoffsetx><aligny>center</aligny>
+      </control>
+      <include content="PersonalNavRow">
+        <param name="id" value="9116" />
+        <param name="label" value="影视海报库" />
+        <param name="tab" value="catalog" />
+        <param name="grid" value="9201" />
+        <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi/?action=personal_catalog&quot;,return)" />
+      </include>
+      <include content="PersonalNavRow">
+        <param name="id" value="9117" />
+        <param name="label" value="云盘与共享源" />
+        <param name="tab" value="sources" />
+        <param name="grid" value="9207" />
+        <param name="fallback_action" value="ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi.library/&quot;,return)" />
+      </include>
+    </control>
+
+    <!-- Outline native glyph aligned on cx=81 (x=68, w=26) matching premium TV Library left rail -->
+    <include content="PersonalNavGlyph"><param name="id" value="9111" /><param name="tab" value="resume" /><param name="icon" value="bobbi/glass/icons/clock-outline.png" /><param name="yg" value="183" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9113" /><param name="tab" value="movies" /><param name="icon" value="bobbi/glass/icons/film-outline.png" /><param name="yg" value="258" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9114" /><param name="tab" value="tv" /><param name="icon" value="bobbi/glass/icons/tv-outline.png" /><param name="yg" value="333" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9115" /><param name="tab" value="favs" /><param name="icon" value="bobbi/glass/icons/heart-outline.png" /><param name="yg" value="408" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9116" /><param name="tab" value="catalog" /><param name="icon" value="bobbi/glass/icons/stack-outline.png" /><param name="yg" value="549" /></include>
+    <include content="PersonalNavGlyph"><param name="id" value="9117" /><param name="tab" value="sources" /><param name="icon" value="bobbi/glass/icons/cloud-outline.png" /><param name="yg" value="624" /></include>
+
+    <!-- Right Content Area: single on-demand 6-column 200x300 poster grid @ x=440..1840, y=160 -->
+    <control type="group">
+      <include content="PersonalPosterPanel">
+        <param name="id" value="9201" />
+        <param name="tab" value="resume" />
+        <param name="active_cond" value="!String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs) + !String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources)" />
+        <param name="content" value="$VAR[PersonalPosterContent]" />
+      </include>
+      <!-- Native Kodi favourites:// panel -->
+      <control type="panel" id="9205">
+        <left>420</left><top>142</top><width>1440</width><height>938</height>
+        <orientation>vertical</orientation>
+        <preloaditems>2</preloaditems>
+        <include>ListMotion</include>
+        <onleft>9100</onleft>
+        <onright>noop</onright>
+        <onup>9701</onup>
+        <ondown>noop</ondown>
+        <enable>String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs) + Integer.IsGreater(Container(9205).NumItems,0)</enable>
+        <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs)">Conditional</animation>
+        <itemlayout width="240" height="364">
+          <include content="PersonalPosterTile"><param name="grid" value="9205" /></include>
+        </itemlayout>
+        <focusedlayout width="240" height="364">
+          <include content="PersonalPosterTile"><param name="focused" value="true" /><param name="grid" value="9205" /></include>
+        </focusedlayout>
+        <content>favourites://</content>
+      </control>
+      <!-- Tab 7 ("网盘与 NAS"): 3-column 440x220 Liquid Glass source cards @ x=440..1840, y=160 -->
+      <control type="panel" id="9207">
+        <left>420</left><top>142</top><width>1440</width><height>938</height>
+        <orientation>vertical</orientation>
+        <preloaditems>2</preloaditems>
+        <include>ListMotion</include>
+        <onleft>9100</onleft>
+        <onright>noop</onright>
+        <onup>9701</onup>
+        <ondown>noop</ondown>
+        <enable>String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources) + Integer.IsGreater(Container(9207).NumItems,0)</enable>
+        <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources)">Conditional</animation>
+        <itemlayout width="480" height="312">
+          <include content="PersonalSourceTile" />
+        </itemlayout>
+        <focusedlayout width="480" height="312">
+          <include content="PersonalSourceTile"><param name="focused" value="true" /></include>
+        </focusedlayout>
+        <content target="videos">plugin://plugin.video.bobbi.library/</content>
+      </control>
+    </control>
+
+    <!-- Minimal console Library centered empty state (shown only when active category has 0 items) -->
+    <control type="group">
+      <left>440</left><top>360</top><width>1400</width><height>260</height>
+      <visible>[!String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs) + !String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources) + Integer.IsEqual(Container(9201).NumItems,0)] | [String.IsEqual(Window(Home).Property(BobbiPersonalTab),favs) + Integer.IsEqual(Container(9205).NumItems,0)] | [String.IsEqual(Window(Home).Property(BobbiPersonalTab),sources) + Integer.IsEqual(Container(9207).NumItems,0)]</visible>
+      <control type="image">
+        <left>672</left><top>0</top><width>56</width><height>56</height>
+        <texture colordiffuse="66EBEBF5">$VAR[PersonalEmptyIcon]</texture>
+      </control>
+      <control type="label">
+        <left>200</left><top>78</top><width>1000</width><height>44</height>
+        <label>$VAR[HubResumeStateTitle]</label>
+        <font>Head34</font><textcolor>E6F5F5F7</textcolor><align>center</align><aligny>center</aligny>
+        <visible>String.IsEqual(Window(Home).Property(BobbiPersonalTab),resume) | String.IsEmpty(Window(Home).Property(BobbiPersonalTab))</visible>
+      </control>
+      <control type="label">
+        <left>200</left><top>78</top><width>1000</width><height>44</height>
+        <label>$VAR[PersonalEmptyTitle]</label>
+        <font>Head34</font><textcolor>E6F5F5F7</textcolor><align>center</align><aligny>center</aligny>
+        <visible>!String.IsEqual(Window(Home).Property(BobbiPersonalTab),resume) + !String.IsEmpty(Window(Home).Property(BobbiPersonalTab))</visible>
+      </control>
+      <control type="label">
+        <left>200</left><top>128</top><width>1000</width><height>36</height>
+        <label>$VAR[HubResumeStateDescription]</label>
+        <font>HeroPlot24</font><textcolor>8AEBEBF5</textcolor><align>center</align><aligny>center</aligny>
+        <visible>String.IsEqual(Window(Home).Property(BobbiPersonalTab),resume) | String.IsEmpty(Window(Home).Property(BobbiPersonalTab))</visible>
+      </control>
+      <control type="label">
+        <left>200</left><top>128</top><width>1000</width><height>36</height>
+        <label>$VAR[PersonalEmptySub]</label>
+        <font>HeroPlot24</font><textcolor>8AEBEBF5</textcolor><align>center</align><aligny>center</aligny>
+        <visible>!String.IsEqual(Window(Home).Property(BobbiPersonalTab),resume) + !String.IsEmpty(Window(Home).Property(BobbiPersonalTab))</visible>
+      </control>
+    </control>
+
+    <include content="TopBar">
+      <param name="down" value="9100" />
+      <param name="current" value="mine" />
+      <param name="library_pill" value="true" />
+    </include>
+  </controls>
+</window>

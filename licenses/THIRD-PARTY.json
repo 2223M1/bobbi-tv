@@ -1,0 +1,487 @@
+{
+  "schema": 1,
+  "baseline": "898bb1e2b39f361a9f82e4722bffc78e310cfe48",
+  "documents": [
+    {
+      "id": "p115rsacipher-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/p115rsacipher-license.txt",
+      "repository": "ChenyangGao/p115client",
+      "commit": "856e4f8f09ce034534bd458f06d3dee4474a1698",
+      "source_path": "modules/p115rsacipher/LICENSE",
+      "source_url": "https://raw.githubusercontent.com/ChenyangGao/p115client/856e4f8f09ce034534bd458f06d3dee4474a1698/modules/p115rsacipher/LICENSE",
+      "git_blob_sha": "e72bfddabc15be5718a7cc061ac10e47741d8219",
+      "sha256": "8b1ba204bb69a0ade2bfcf65ef294a920f6bb361b317dba43c7ef29d96332b9b",
+      "bytes": 35148
+    },
+    {
+      "id": "p115rsacipher-pyproject",
+      "kind": "metadata-evidence-not-license",
+      "file": "licenses/vendor/p115rsacipher-pyproject.txt",
+      "repository": "ChenyangGao/p115client",
+      "commit": "856e4f8f09ce034534bd458f06d3dee4474a1698",
+      "source_path": "modules/p115rsacipher/pyproject.toml",
+      "source_url": "https://raw.githubusercontent.com/ChenyangGao/p115client/856e4f8f09ce034534bd458f06d3dee4474a1698/modules/p115rsacipher/pyproject.toml",
+      "git_blob_sha": "a3e995af99dd1b6005be7af233369e9a0feb9464",
+      "sha256": "024aa5bd1e08474e628b79f1d3ec02995baf97a426569d2f9dce801a35b5ec32",
+      "bytes": 1157
+    },
+    {
+      "id": "script.skinvariables",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.skinvariables.txt",
+      "repository": "jurialmunkey/script.skinvariables",
+      "commit": "45be183640d4a3f1be96ad97c7d0032b2a174dcb",
+      "source_path": "LICENSE.txt",
+      "source_url": "https://raw.githubusercontent.com/jurialmunkey/script.skinvariables/45be183640d4a3f1be96ad97c7d0032b2a174dcb/LICENSE.txt",
+      "git_blob_sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "kind": "metadata-evidence-not-license",
+      "file": "licenses/vendor/script.module.jurialmunkey.txt",
+      "repository": "jurialmunkey/script.module.jurialmunkey",
+      "commit": "8f42fb5f4698f3e4552f38955964b2f3843dba69",
+      "source_path": "addon.xml",
+      "source_url": "https://raw.githubusercontent.com/jurialmunkey/script.module.jurialmunkey/8f42fb5f4698f3e4552f38955964b2f3843dba69/addon.xml",
+      "git_blob_sha": "dc53409bd4b2cf8f39cd9db24978cc3981c4d28d",
+      "sha256": "f355a2810c2022d1992e2ba52299092774b62c9ace40e7508d989e083e466175",
+      "bytes": 915
+    },
+    {
+      "id": "script.module.infotagger",
+      "kind": "metadata-evidence-not-license",
+      "file": "licenses/vendor/script.module.infotagger.txt",
+      "repository": "jurialmunkey/script.module.infotagger",
+      "commit": "0118f53c9cf68a6625794d07af607cac1e920064",
+      "source_path": "addon.xml",
+      "source_url": "https://raw.githubusercontent.com/jurialmunkey/script.module.infotagger/0118f53c9cf68a6625794d07af607cac1e920064/addon.xml",
+      "git_blob_sha": "ffa9a6e7847c0c436722ab950deb2401b399e099",
+      "sha256": "0810c77be8311cc2b7f703b8fb124ca1607722fc9d307899c9d1cd8eba94729a",
+      "bytes": 824
+    },
+    {
+      "id": "script.module.requests",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.requests.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.requests/script.module.requests-2.31.0.zip",
+      "archive_sha256": "a5704f0fd7afb4154e1beea9b5f05a002bcd75fa581a1e5fd15ece39bf2bd38a",
+      "archive_bytes": 67576,
+      "source_path": "script.module.requests/LICENSE.txt",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+      "bytes": 10142
+    },
+    {
+      "id": "script.module.routing",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.routing.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.routing/script.module.routing-0.2.3+matrix.1.zip",
+      "archive_sha256": "dc9110ffd2a5022feffafb22a710cd95aabe5722c52004f347d3a274f67d00f9",
+      "archive_bytes": 25369,
+      "source_path": "script.module.routing/LICENSE.txt",
+      "sha256": "0ae0485a5bd37a63e63603596417e4eb0e653334fa6c7f932ca3a0e85d4af227",
+      "bytes": 35148
+    },
+    {
+      "id": "script.module.certifi",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.certifi.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.certifi/script.module.certifi-2023.5.7.zip",
+      "archive_sha256": "c16d4cd2efe6e57dbb5e8d71a9beb3af213b1e3d717e8b0b24f0cbdc4c645070",
+      "archive_bytes": 162689,
+      "source_path": "script.module.certifi/LICENSE.txt",
+      "sha256": "a02f6c638f9fb84d06f7764c3ab085d8af7eda5b93c166da54312479077c6fb0",
+      "bytes": 1052
+    },
+    {
+      "id": "script.module.chardet",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.chardet.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.chardet/script.module.chardet-5.1.0.zip",
+      "archive_sha256": "d5010fc55a9523d86a306ae9e6a8dea0e3248fe079b9ed37280fe86110cd766a",
+      "archive_bytes": 204491,
+      "source_path": "script.module.chardet/LICENSE.txt",
+      "sha256": "6095e9ffa777dd22839f7801aa845b31c9ed07f3d6bf8a26dc5d2dec8ccc0ef3",
+      "bytes": 26432
+    },
+    {
+      "id": "script.module.idna",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.idna.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.idna/script.module.idna-3.10.0.zip",
+      "archive_sha256": "c4ff34dbfab2736e9214a374d331bd6f558d8b3fea8eb7902e210749509242b3",
+      "archive_bytes": 73349,
+      "source_path": "script.module.idna/LICENSE.txt",
+      "sha256": "a59f0b0ef3635874109a4461ca44ff7a70d50696e814767bfaf721d4c9b0db0f",
+      "bytes": 1541
+    },
+    {
+      "id": "script.module.urllib3",
+      "kind": "full-license",
+      "file": "licenses/vendor/script.module.urllib3.txt",
+      "source_kind": "locked-archive",
+      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.urllib3/script.module.urllib3-2.2.3.zip",
+      "archive_sha256": "740b2d63bb50eee9fb35f01c567ec8d3588c5bbd548e2b8d280932be30d82f53",
+      "archive_bytes": 130842,
+      "source_path": "script.module.urllib3/LICENSE.txt",
+      "sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
+      "bytes": 1093
+    },
+    {
+      "id": "torf-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/torf-license.txt",
+      "repository": "rndusr/torf",
+      "commit": "1e3f5ea4c3af4c556f87f80bee106db4ee916990",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/rndusr/torf/1e3f5ea4c3af4c556f87f80bee106db4ee916990/LICENSE",
+      "git_blob_sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149
+    },
+    {
+      "id": "segno-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/segno-license.txt",
+      "repository": "heuer/segno",
+      "commit": "d105c2e3badac3882a5121b0237d1f757c7183ea",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/heuer/segno/d105c2e3badac3882a5121b0237d1f757c7183ea/LICENSE",
+      "git_blob_sha": "b80a6f00a80131459a91e9389c52dafaeea066bc",
+      "sha256": "de6c85fccf5d52902aa13dfe2dc6d2a2a106fc3419ed438f3460f0d4b76a6935",
+      "bytes": 1503
+    },
+    {
+      "id": "gpl3-text",
+      "kind": "full-license",
+      "file": "licenses/vendor/gpl3-text.txt",
+      "repository": "spdx/license-list-data",
+      "commit": "ab9b0904b43db6f4b67431efd8821feb821f1c8b",
+      "source_path": "text/GPL-3.0-or-later.txt",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/ab9b0904b43db6f4b67431efd8821feb821f1c8b/text/GPL-3.0-or-later.txt",
+      "git_blob_sha": "f6cdd22a6c1fbc887e08a215cb4beb3c47048041",
+      "sha256": "fb981668c18a279e285fc4d83fba1e836cc84dd4daa73c9697d3cfd2d8aca6e0",
+      "bytes": 34674
+    },
+    {
+      "id": "fontawesome-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/fontawesome-license.txt",
+      "repository": "FortAwesome/Font-Awesome",
+      "commit": "af620534bfc3c2d4cbefcfeec29603bbe7809e64",
+      "source_path": "LICENSE.txt",
+      "source_url": "https://raw.githubusercontent.com/FortAwesome/Font-Awesome/af620534bfc3c2d4cbefcfeec29603bbe7809e64/LICENSE.txt",
+      "git_blob_sha": "e69c5e39a30ce8d112e012cac36289e77691a9b7",
+      "sha256": "9b914eae88817d63b576eab5aafde7068c7a1abae125d7cdfb034f1da43a9afc",
+      "bytes": 7427
+    },
+    {
+      "id": "roboto-license",
+      "kind": "full-license",
+      "file": "licenses/vendor/roboto-license.txt",
+      "repository": "googlefonts/roboto",
+      "commit": "38062f4b4a0be4346d07a928408da21602545e9e",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/googlefonts/roboto/38062f4b4a0be4346d07a928408da21602545e9e/LICENSE",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "bytes": 11357
+    },
+    {
+      "id": "font-ofl11",
+      "kind": "full-license",
+      "file": "licenses/vendor/font-ofl11.txt",
+      "repository": "spdx/license-list-data",
+      "commit": "ab9b0904b43db6f4b67431efd8821feb821f1c8b",
+      "source_path": "text/OFL-1.1.txt",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/ab9b0904b43db6f4b67431efd8821feb821f1c8b/text/OFL-1.1.txt",
+      "git_blob_sha": "6fe84ee21ebe5d2b54dc63b53b4d5c404c083409",
+      "sha256": "8eea8287e5876b539670cadb82e99f9a7afddec6f6730811be1daf25d2e9bcfd",
+      "bytes": 4016
+    },
+    {
+      "id": "font-apache2",
+      "kind": "full-license",
+      "file": "licenses/vendor/font-apache2.txt",
+      "repository": "spdx/license-list-data",
+      "commit": "ab9b0904b43db6f4b67431efd8821feb821f1c8b",
+      "source_path": "text/Apache-2.0.txt",
+      "source_url": "https://raw.githubusercontent.com/spdx/license-list-data/ab9b0904b43db6f4b67431efd8821feb821f1c8b/text/Apache-2.0.txt",
+      "git_blob_sha": "137069b823873b8bcf42979bcf8e9371052d26a2",
+      "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+      "bytes": 10280
+    }
+  ],
+  "components": [
+    {
+      "id": "script.skinvariables",
+      "version": "2.2.9",
+      "source_lock": "release/kodi-vendors.json#script.skinvariables",
+      "documents": [
+        "script.skinvariables"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "pinned upstream document; no inferred project grant"
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "version": "0.2.35",
+      "source_lock": "release/kodi-vendors.json#script.module.jurialmunkey",
+      "documents": [
+        "script.module.jurialmunkey",
+        "gpl3-text"
+      ],
+      "status": "cleared-for-public-distribution",
+      "license_evidence": "addon.xml declares GPL-3.0-or-later; the full GPLv3 text is pinned (SPDX) and delivered inside the component as licenses/upstream-LICENSE.txt.",
+      "reason": "First-party-published Kodi helper module over its upstream GPL-3.0-or-later addon; the canonical GPLv3 text is pinned and delivered in-component."
+    },
+    {
+      "id": "script.module.infotagger",
+      "version": "0.1.0",
+      "source_lock": "release/kodi-vendors.json#script.module.infotagger",
+      "documents": [
+        "script.module.infotagger",
+        "gpl3-text"
+      ],
+      "status": "cleared-for-public-distribution",
+      "license_evidence": "addon.xml declares GPL-3.0-or-later; the full GPLv3 text is pinned (SPDX) and delivered inside the component as licenses/upstream-LICENSE.txt.",
+      "reason": "First-party-published Kodi helper module over its upstream GPL-3.0-or-later addon; the canonical GPLv3 text is pinned and delivered in-component."
+    },
+    {
+      "id": "script.module.requests",
+      "version": "2.31.0",
+      "source_lock": "release/kodi-vendors.json#script.module.requests",
+      "documents": [
+        "script.module.requests"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "Apache-2.0"
+    },
+    {
+      "id": "script.module.routing",
+      "version": "0.2.3+matrix.1",
+      "source_lock": "release/kodi-vendors.json#script.module.routing",
+      "documents": [
+        "script.module.routing"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "GPL-3.0"
+    },
+    {
+      "id": "script.module.certifi",
+      "version": "2023.5.7",
+      "source_lock": "release/kodi-vendors.json#script.module.certifi",
+      "documents": [
+        "script.module.certifi"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "MPL-2.0"
+    },
+    {
+      "id": "script.module.chardet",
+      "version": "5.1.0",
+      "source_lock": "release/kodi-vendors.json#script.module.chardet",
+      "documents": [
+        "script.module.chardet"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "LGPL-2.1"
+    },
+    {
+      "id": "script.module.idna",
+      "version": "3.10.0",
+      "source_lock": "release/kodi-vendors.json#script.module.idna",
+      "documents": [
+        "script.module.idna"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "BSD-3-Clause"
+    },
+    {
+      "id": "script.module.urllib3",
+      "version": "2.2.3",
+      "source_lock": "release/kodi-vendors.json#script.module.urllib3",
+      "documents": [
+        "script.module.urllib3"
+      ],
+      "status": "full-upstream-license-retained",
+      "license_evidence": "MIT"
+    },
+    {
+      "id": "plugin.video.bobbi",
+      "documents": [
+        "torf-license",
+        "segno-license",
+        "gpl3-text"
+      ],
+      "status": "cleared-for-public-distribution",
+      "source_lock": "release/source-inventory.json#components/plugin.video.bobbi",
+      "reason": "First-party plugin over permissively licensed vendored torf/segno whose exact upstream texts are pinned and delivered in-component.",
+      "license_evidence": "Vendored torf 4.2.0 (GPL-3.0-or-later, pinned upstream LICENSE) and segno 1.6.6 (BSD-2-Clause, pinned upstream LICENSE) ship their texts in-component; plugin code is first-party."
+    },
+    {
+      "id": "script.module.bobbi.platform",
+      "documents": [
+        "p115rsacipher-license",
+        "p115rsacipher-pyproject",
+        "segno-license"
+      ],
+      "conflicting_documents": [
+        "p115rsacipher-license",
+        "p115rsacipher-pyproject"
+      ],
+      "status": "cleared-for-public-distribution",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.platform",
+      "reason": "Vendored segno pinned upstream BSD notice delivered in-component; the adapted p115 cipher keeps both pinned upstream documents and the governing GPL text, so no obligation depends on an inferred whole-project grant.",
+      "license_evidence": "pan_115_cipher.py adapts ChenyangGao/p115client modules/p115rsacipher; both pinned documents and the segno notice ship with the component.",
+      "conflict_resolution": "Both pinned upstream documents (module LICENSE GPLv3 and pyproject MIT) are delivered in-component; the exact module LICENSE is treated as governing for the adapted cipher surface, so every recipient receives the restrictive text as well and nothing depends on choosing the MIT claim."
+    },
+    {
+      "id": "script.module.bobbi.core",
+      "documents": [],
+      "status": "cleared-for-public-distribution",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.core",
+      "reason": "Project-owned core module; reviewed explicit inventory is frozen and hash-verified.",
+      "license_evidence": "First-party Bobbi TV code extracted from the project codebase and frozen in release/source-inventory.json; no third-party component is bundled."
+    },
+    {
+      "id": "script.module.bobbi.mdsub",
+      "documents": [],
+      "status": "cleared-for-public-distribution",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.mdsub",
+      "reason": "Project-owned library module over standard formats.",
+      "license_evidence": "Directory validation and identity matching are first-party Bobbi TV code implementing standard public formats; frozen inventory verifies every shipped byte."
+    },
+    {
+      "id": "script.module.bobbi.catalog",
+      "documents": [],
+      "status": "cleared-for-public-distribution",
+      "source_lock": "release/source-inventory.json#components/script.module.bobbi.catalog",
+      "reason": "Project-curated catalog data with frozen per-file hashes.",
+      "license_evidence": "Catalog data is project-curated metadata generated by project tooling; the frozen inventory pins each file hash."
+    },
+    {
+      "id": "skin.bobbi.cinema",
+      "documents": [
+        "fontawesome-license",
+        "roboto-license",
+        "font-ofl11",
+        "font-apache2"
+      ],
+      "asset_evidence": "licenses/skin-reference-evidence.json",
+      "status": "cleared-for-public-distribution",
+      "source_lock": "release/source-inventory.json#components/skin.bobbi.cinema",
+      "reason": "Every bundled font resolves to a pinned upstream license document, a vendor free-use license, or project-owned typography; skin artwork and layouts are original project production.",
+      "license_evidence": "Per-font documents are pinned upstream and delivered inside the skin under licenses/ (Font Awesome, Roboto Apache-2.0, Noto OFL-1.1, MiSans Apache-2.0); HarmonyOS carries its vendor free-use notice; remaining faces are project-owned typography. Per-file hashes live in asset_evidence."
+    },
+    {
+      "id": "resource.uisounds.bobbi-modern",
+      "documents": [],
+      "status": "cleared-for-public-distribution",
+      "source_lock": "release/source-inventory.json#components/resource.uisounds.bobbi-modern",
+      "reason": "Original project UI sound set with frozen per-file hashes.",
+      "license_evidence": "Interface sounds are original project recordings synthesized for this skin; the frozen inventory pins every WAV hash."
+    }
+  ],
+  "deliveries": [
+    {
+      "component": "script.module.bobbi.platform",
+      "document": "p115rsacipher-license",
+      "path": "licenses/p115rsacipher.txt"
+    },
+    {
+      "component": "script.module.bobbi.platform",
+      "document": "p115rsacipher-pyproject",
+      "path": "licenses/p115rsacipher-pyproject.txt"
+    },
+    {
+      "component": "script.skinvariables",
+      "document": "script.skinvariables",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.requests",
+      "document": "script.module.requests",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.routing",
+      "document": "script.module.routing",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.certifi",
+      "document": "script.module.certifi",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.chardet",
+      "document": "script.module.chardet",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.idna",
+      "document": "script.module.idna",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.urllib3",
+      "document": "script.module.urllib3",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "plugin.video.bobbi",
+      "document": "torf-license",
+      "path": "licenses/torf.txt"
+    },
+    {
+      "component": "script.module.bobbi.platform",
+      "document": "segno-license",
+      "path": "licenses/segno.txt"
+    },
+    {
+      "component": "script.module.jurialmunkey",
+      "document": "gpl3-text",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "script.module.infotagger",
+      "document": "gpl3-text",
+      "path": "licenses/upstream-LICENSE.txt"
+    },
+    {
+      "component": "skin.bobbi.cinema",
+      "document": "fontawesome-license",
+      "path": "licenses/fontawesome.txt"
+    },
+    {
+      "component": "skin.bobbi.cinema",
+      "document": "roboto-license",
+      "path": "licenses/roboto.txt"
+    },
+    {
+      "component": "skin.bobbi.cinema",
+      "document": "font-ofl11",
+      "path": "licenses/noto-ofl.txt"
+    },
+    {
+      "component": "skin.bobbi.cinema",
+      "document": "font-apache2",
+      "path": "licenses/misans-apache.txt"
+    }
+  ],
+  "release_gates": [
+    "All required full licenses resolved",
+    "Conflicting upstream license statements resolved before distribution",
+    "Pinned notice bytes retained in every distributed component",
+    "No whole-project license inferred",
+    "Separate signed artifact, track/mirror and device gates"
+  ]
+}

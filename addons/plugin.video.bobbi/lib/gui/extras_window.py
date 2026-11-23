@@ -1,0 +1,872 @@
+import contextlib
+import json
+import threading
+from urllib.parse import urlencode
+
+import xbmcgui
+from bobbi_platform.artwork import image_url as tmdb_image_url
+
+from lib.api.fanart.fanart import get_fanart
+from lib.api.imdb.imdb_scraper import get_imdb_extras
+from lib.clients.tmdb.utils.utils import LANGUAGES
+from lib.clients.tmdb.people_client import (
+    relationship_cards, relationship_person, relationship_request, relationship_summaries,
+)
+from lib.gui.base_window import BaseWindow
+from lib.utils.general.utils import truncate_text
+from lib.utils.kodi.utils import (
+    build_url,
+    execute_builtin,
+    get_setting,
+    kodilog,
+    notification,
+    translation,
+)
+
+
+class ExtrasWindow(BaseWindow):
+    def __init__(self, xml_file, location, item_information=None, previous_window=None):
+        self._ui_lock = threading.RLock()
+        self._worker = threading.local()
+        self._generation = 0
+        self._closed = False
+        super().__init__(xml_file, location, item_information, previous_window)
+        self.tmdb_id = self.item_information.get("tmdb_id")
+        self.media_type = self.item_information.get("media_type")  # "movie" or "tv"
+        self.imdb_id = self.item_information.get("imdb_id", "")
+        self.title = self.item_information.get("title", "")
+
+        # Shared TMDB details data (populated by fetch_details_and_artwork)
+        self._tmdb_data = None
+        self._details_ready = threading.Event()
+
+        # UI Lists
+        self.cast_list_id = 2050
+        self.recommended_list_id = 2051
+        self.similar_list_id = 2052
+        self.reviews_list_id = 2054
+        self.comments_list_id = 2055
+        self.trivia_list_id = 2056
+        self.blunders_list_id = 2057
+        self.parental_guide_list_id = 2058
+        self.trakt_lists_id = 2059
+        self.youtube_list_id = 2060
+        self.more_year_list_id = 2061
+        self.more_genres_list_id = 2062
+        self.more_networks_list_id = 2063
+        self.collection_list_id = 2064
+
+    def onInit(self):
+        with self._ui_lock:
+            self._details_ready.set()
+            self._generation += 1
+            self._closed = False
+            self._tmdb_data = None
+            self._details_ready = threading.Event()
+            generation, ready = self._generation, self._details_ready
+        super().onInit()
+        self._init_properties()
+        self.set_button_labels()
+
+        # Start background threads to fetch data so GUI doesn't freeze
+        for fetch in (self.fetch_details_and_artwork, self.fetch_recommended, self.fetch_similar,
+                      self.fetch_imdb_data, self._fetch_after_details):
+            threading.Thread(target=self._run_worker, args=(generation, ready, fetch), daemon=True).start()
+
+        # Set focus to Play button initially
+        self.setFocusId(10)
+
+    def _active(self):
+        return not self._closed and getattr(self._worker, 'generation', self._generation) == self._generation
+
+    def _run_worker(self, generation, ready, fetch):
+        self._worker.generation, self._worker.ready = generation, ready
+        if self._active():
+            fetch()
+
+    def _publish(self, write):
+        # Close/reinitialization and a UI mutation are serialized. A check only
+        # before fetching cannot prevent a late control write after Back.
+        with self._ui_lock:
+            if self._active():
+                return write()
+
+    def setProperty(self, name, value):
+        return self._publish(lambda: super(ExtrasWindow, self).setProperty(name, value))
+
+    def _set_label(self, control_id, label):
+        self._publish(lambda: self.getControl(control_id).setLabel(label))
+
+    def _replace_items(self, control_id, items, count_property):
+        def publish():
+            control = self.getControlList(control_id)
+            control.reset()
+            for item in items[:20]:
+                control.addItem(item)
+            self.setProperty(count_property, f"({min(20, len(items))})")
+        self._publish(publish)
+
+    def _request(self, path, params):
+        return relationship_request(path, params, cancelled=lambda: not self._active(), raw=True)
+
+    def close(self):
+        with self._ui_lock:
+            self._closed = True
+            self._generation += 1
+            self._details_ready.set()
+            super().close()
+
+    def _init_properties(self):
+        """Initialize all window properties to safe defaults."""
+        for control_id in (self.cast_list_id, self.recommended_list_id, self.similar_list_id,
+                           self.reviews_list_id, self.comments_list_id, self.trivia_list_id,
+                           self.blunders_list_id, self.parental_guide_list_id, self.youtube_list_id,
+                           self.more_year_list_id, self.more_genres_list_id, self.more_networks_list_id,
+                           self.collection_list_id):
+            with contextlib.suppress(Exception):
+                self._publish(lambda: self.getControlList(control_id).reset())
+        self.setProperty("title", self.title)
+        self.setProperty("clearlogo", "false")
+        self.setProperty("fanart", "false")
+        self.setProperty("poster", "false")
+        self.setProperty("plot_enabled", "false")
+        self.setProperty("plot", "")
+        self.setProperty("genre", "")
+        self.setProperty("tmdb_rating", "false")
+        self.setProperty("imdb_rating", "false")
+        self.setProperty("metascore_rating", "false")
+        self.setProperty("tomatometer_rating", "false")
+        self.setProperty("tomatousermeter_rating", "false")
+        self.setProperty("display_extra_ratings", "false")
+        # Tab system
+        self.setProperty("active_tab", "overview")
+        self.setProperty("personal_supplements", "true" if self.tmdb_id and self.media_type in ('movie', 'tv') else "false")
+
+    def _fetch_after_details(self):
+        """Wait for TMDB details fetch, then populate sections that depend on it."""
+        getattr(self._worker, 'ready', self._details_ready).wait(timeout=15)
+        if not self._active() or not self._tmdb_data:
+            return
+        for populate in (self.fetch_cast, self._populate_youtube_videos, self._populate_collection,
+                         self._populate_more_from_year, self._populate_more_from_genres,
+                         self._populate_more_from_networks):
+            if not self._active():
+                return
+            try:
+                populate()
+            except Exception as e:
+                kodilog(f"Error populating extras: {e}")
+
+    # ─── TMDB Details + Artwork ───────────────────────────────────────────────
+
+    def fetch_details_and_artwork(self):
+        try:
+            path = "movie_details" if self.media_type == "movie" else "tv_details"
+            data = self._request(path, {"id": self.tmdb_id, 'append_to_response': 'credits,videos,external_ids'})
+            if not data or str(getattr(data, 'id', None)) != str(self.tmdb_id):
+                return
+            self._publish(lambda: setattr(self, '_tmdb_data', data))
+            if not self._active():
+                return
+
+            poster = ""
+            fanart = ""
+            tvdb_id = None
+
+            if data:
+                # ── Extract metadata ──
+                self._populate_metadata(data)
+
+                # ── Extract images ──
+                poster_path = getattr(data, "poster_path", "")
+                if poster_path:
+                    poster = tmdb_image_url(poster_path, 'w500')
+
+                backdrop_path = getattr(data, "backdrop_path", "")
+                if backdrop_path:
+                    fanart = tmdb_image_url(backdrop_path, 'original')
+
+                if self.media_type != "movie":
+                    external_ids = getattr(data, "external_ids", None)
+                    if external_ids:
+                        tvdb_id = external_ids.get("tvdb_id")
+                        if not self.imdb_id:
+                            self._publish(lambda: setattr(self, 'imdb_id', external_ids.get("imdb_id", "")))
+                else:
+                    if not self.imdb_id:
+                        self._publish(lambda: setattr(self, 'imdb_id', getattr(data, "imdb_id", "") or ""))
+
+            # Dependent panels need metadata, not the slower artwork fallback.
+            getattr(self._worker, 'ready', self._details_ready).set()
+            if not self._active():
+                return
+
+            # ── Fanart.tv for clearlogo and better backgrounds ──
+            language_index = get_setting("language", 18)
+            lang = "en"
+            with contextlib.suppress(Exception):
+                lang = LANGUAGES[int(language_index)].split("-")[0]
+
+            media_type_fa = "movies" if self.media_type == "movie" else "tv"
+            fa_id = str(self.tmdb_id)
+            if self.media_type != "movie" and tvdb_id:
+                fa_id = str(tvdb_id)
+
+            fa_data = get_fanart(media_type_fa, lang, fa_id)
+
+            clearlogo = fa_data.get("clearlogo", "")
+            if fa_data.get("fanart"):
+                fanart = fa_data.get("fanart")
+            if fa_data.get("poster"):
+                poster = fa_data.get("poster")
+
+            # Set properties if found
+            if poster:
+                self.setProperty("poster", poster)
+            if fanart:
+                self.setProperty("fanart", fanart)
+            if clearlogo:
+                self.setProperty("clearlogo", clearlogo)
+            else:
+                self.setProperty("clearlogo", "false")
+
+        except Exception as e:
+            kodilog(f"Error fetching details/artwork for extras: {e}")
+        finally:
+            getattr(self._worker, 'ready', self._details_ready).set()
+
+    def _populate_metadata(self, data):
+        """Extract and set genre, plot, rating, year, and runtime from TMDB details."""
+        try:
+            # Genre
+            genres = getattr(data, "genres", None)
+            if genres:
+                genre_names = []
+                for g in genres:
+                    name = g.get("name", "") if hasattr(g, "get") else getattr(g, "name", "")
+                    if name:
+                        genre_names.append(name)
+                if genre_names:
+                    self.setProperty("genre", " / ".join(genre_names))
+
+            # Plot
+            overview = getattr(data, "overview", "")
+            if overview:
+                self.setProperty("plot_enabled", "true")
+                self.setProperty("plot", truncate_text(str(overview)))
+
+            # Rating (TMDB)
+            vote_average = getattr(data, "vote_average", None)
+            if vote_average and float(vote_average) > 0:
+                self.setProperty("tmdb_rating", "true")
+                with contextlib.suppress(Exception):
+                    self._set_label(4005, f"{float(vote_average):.1f}")
+
+            # Year and runtime — populate Line 2 (control 2001)
+            line2_parts = []
+            if self.media_type == "movie":
+                release_date = getattr(data, "release_date", "")
+                if release_date:
+                    line2_parts.append(str(release_date)[:4])
+                runtime = getattr(data, "runtime", None)
+                if runtime:
+                    hours = int(runtime) // 60
+                    mins = int(runtime) % 60
+                    if hours:
+                        line2_parts.append(f"{hours}h {mins}m")
+                    else:
+                        line2_parts.append(f"{mins}m")
+            else:
+                first_air = getattr(data, "first_air_date", "")
+                if first_air:
+                    line2_parts.append(str(first_air)[:4])
+                num_seasons = getattr(data, "number_of_seasons", None)
+                if num_seasons:
+                    line2_parts.append(
+                        f"{num_seasons} Season{'s' if int(num_seasons) != 1 else ''}"
+                    )
+                status = getattr(data, "status", "")
+                if status:
+                    line2_parts.append(str(status))
+
+            if line2_parts:
+                with contextlib.suppress(Exception):
+                    self._set_label(2001, "  •  ".join(line2_parts))
+
+            # Vote count / Tagline — populate Line 3 (control 3001)
+            tagline = getattr(data, "tagline", "")
+            if tagline:
+                with contextlib.suppress(Exception):
+                    self._set_label(3001, f"[I]{tagline}[/I]")
+
+        except Exception as e:
+            kodilog(f"Error populating metadata: {e}")
+
+    # ─── Button Labels ────────────────────────────────────────────────────────
+
+    def set_button_labels(self):
+        self.setProperty("button10.label", translation(90413))
+        self.setProperty("button11.label", translation(90414))
+        self.setProperty("button15.label", translation(90035))
+        self.setProperty("button16.label", translation(90415))
+        self.setProperty("button17.label", translation(90416))
+
+    # ─── Cast ─────────────────────────────────────────────────────────────────
+
+    def fetch_cast(self):
+        if not self._active() or not self._tmdb_data:
+            return
+        try:
+            data = getattr(self._tmdb_data, 'credits', None)
+
+            if data and hasattr(data, "cast"):
+                items = []
+                for actor in data.cast[:20]:
+                    row = relationship_person(actor)
+                    if row:
+                        items.append(row[1])
+                self._replace_items(self.cast_list_id, items, "cast.number")
+        except Exception as e:
+            kodilog(f"Error fetching cast: {e}")
+
+    # ─── Recommended (2051) ───────────────────────────────────────────────────
+
+    def fetch_recommended(self):
+        if not self.tmdb_id:
+            return
+        try:
+            path = "movie_recommendations" if self.media_type == "movie" else "tv_recommendations"
+            data = self._request(path, {"id": self.tmdb_id, "page": 1})
+            self.populate_media_list(self.recommended_list_id, data, "recommended.number")
+        except Exception as e:
+            kodilog(f"Error fetching recommended: {e}")
+
+    # ─── Similar / More Like This (2052) ──────────────────────────────────────
+
+    def fetch_similar(self):
+        if not self.tmdb_id:
+            return
+        try:
+            path = "movie_similar" if self.media_type == "movie" else "tv_similar"
+            data = self._request(path, {"id": self.tmdb_id, "page": 1})
+            self.populate_media_list(self.similar_list_id, data, "similar.number")
+        except Exception as e:
+            kodilog(f"Error fetching similar: {e}")
+
+    # ─── Shared media list populator ──────────────────────────────────────────
+
+    def populate_media_list(self, list_id, tmdb_data, count_property, more_route=''):
+        if not self._active() or not tmdb_data:
+            return
+        try:
+            summaries = relationship_summaries(self._results(tmdb_data), self.media_type)
+            more = bool(more_route and len(summaries) > 20)
+            rows = relationship_cards(summaries[:19] if more else summaries,
+                                      cancelled=lambda: not self._active())
+            items = [item for _, item, _ in rows]
+            if more:
+                item = xbmcgui.ListItem(label='查看完整系列')
+                item.setProperty('name', '查看完整系列')
+                item.setProperty('browse_url', more_route)
+                item.setProperty('IsPlayable', 'false')
+                item.setArt({'thumb': 'DefaultFolder.png'})
+                item.setProperty('thumbnail', 'DefaultFolder.png')
+                items.append(item)
+            self._replace_items(list_id, items, count_property)
+        except Exception as e:
+            kodilog(f"Error populating media list {list_id}: {e}")
+
+    @staticmethod
+    def _results(data):
+        if isinstance(data, (list, tuple)):
+            return data
+        if isinstance(data, dict):
+            return data.get('results') or []
+        return getattr(data, 'results', None) or getattr(data, '_obj_list', None) or []
+
+    # ─── YouTube Videos (2060) ────────────────────────────────────────────────
+
+    def _populate_youtube_videos(self):
+        data = self._tmdb_data
+        if not data:
+            return
+
+        videos = getattr(data, "videos", None)
+        if not videos:
+            return
+
+        results = getattr(videos, "results", None)
+        if not results:
+            return
+
+        video_items = []
+        for v in results:
+            site = v.get("site", "")
+            if str(site).lower() != "youtube":
+                continue
+            video_items.append(v)
+
+        if not video_items:
+            return
+
+        items = []
+        for v in video_items[:20]:
+            name = v.get("name", "")
+            key = v.get("key", "")
+            vtype = v.get("type", "")
+            li = xbmcgui.ListItem(label=name)
+            li.setProperty("name", name)
+            li.setProperty("key", key)
+            li.setProperty("video_type", vtype)
+            thumb = f"https://img.youtube.com/vi/{key}/mqdefault.jpg"
+            li.setProperty("thumbnail", thumb)
+            li.setArt({"thumb": thumb, "icon": thumb})
+            items.append(li)
+        self._replace_items(self.youtube_list_id, items, "youtube_videos.number")
+
+    # ─── Collection (2064, movie only) ────────────────────────────────────────
+
+    def _populate_collection(self):
+        if self.media_type != "movie":
+            return
+
+        data = self._tmdb_data
+        if not data:
+            return
+
+        collection = getattr(data, "belongs_to_collection", None)
+        if not collection:
+            return
+
+        collection_id = collection.get("id")
+        collection_name = collection.get("name", "")
+        collection_poster = collection.get("poster_path", "")
+
+        if not collection_id:
+            return
+
+        self.setProperty("more_from_collection.name", collection_name)
+        if collection_poster:
+            self.setProperty(
+                "more_from_collection.poster",
+                tmdb_image_url(collection_poster, 'w300'),
+            )
+
+        # Fetch collection details
+        col_data = self._request("collection_details", collection_id)
+        if not col_data or str(getattr(col_data, 'id', None)) != str(collection_id):
+            return
+
+        parts = getattr(col_data, "parts", None)
+        if not parts:
+            return
+
+        self.populate_media_list(self.collection_list_id, parts, "more_from_collection.number",
+            more_route=build_url('handle_collection_details', collection_id=collection_id))
+
+    # ─── More from Year (2061) ────────────────────────────────────────────────
+
+    def _populate_more_from_year(self):
+        data = self._tmdb_data
+        if not data:
+            return
+
+        if self.media_type == "movie":
+            release_date = getattr(data, "release_date", "")
+        else:
+            release_date = getattr(data, "first_air_date", "")
+
+        if not release_date or len(str(release_date)) < 4:
+            return
+
+        year = str(release_date)[:4]
+
+        if self.media_type == "movie":
+            discover_data = self._request(
+                "discover_movie",
+                {
+                    "primary_release_year": year,
+                    "sort_by": "vote_count.desc",
+                    "page": 1,
+                },
+            )
+        else:
+            discover_data = self._request(
+                "discover_tv",
+                {
+                    "first_air_date_year": year,
+                    "sort_by": "vote_count.desc",
+                    "page": 1,
+                },
+            )
+
+        if discover_data:
+            # Filter out the current item
+            self._filter_and_populate(
+                self.more_year_list_id, discover_data, "more_from_year.number"
+            )
+
+    # ─── More from Genres (2062) ──────────────────────────────────────────────
+
+    def _populate_more_from_genres(self):
+        data = self._tmdb_data
+        if not data:
+            return
+
+        genres = getattr(data, "genres", None)
+        if not genres:
+            return
+
+        genre_ids = []
+        for g in genres:
+            gid = g.get("id") if hasattr(g, "get") else getattr(g, "id", None)
+            if gid:
+                genre_ids.append(str(gid))
+
+        if not genre_ids:
+            return
+
+        genre_str = ",".join(genre_ids[:3])
+
+        if self.media_type == "movie":
+            discover_data = self._request(
+                "discover_movie",
+                {
+                    "with_genres": genre_str,
+                    "sort_by": "vote_count.desc",
+                    "page": 1,
+                },
+            )
+        else:
+            discover_data = self._request(
+                "discover_tv",
+                {
+                    "with_genres": genre_str,
+                    "sort_by": "vote_count.desc",
+                    "page": 1,
+                },
+            )
+
+        if discover_data:
+            self._filter_and_populate(
+                self.more_genres_list_id, discover_data, "more_from_genres.number"
+            )
+
+    # ─── More from Networks (2063, TV only) ───────────────────────────────────
+
+    def _populate_more_from_networks(self):
+        if self.media_type != "tv":
+            return
+
+        data = self._tmdb_data
+        if not data:
+            return
+
+        networks = getattr(data, "networks", None)
+        if not networks:
+            return
+
+        network_ids = []
+        for n in networks:
+            nid = n.get("id") if hasattr(n, "get") else getattr(n, "id", None)
+            if nid:
+                network_ids.append(str(nid))
+
+        if not network_ids:
+            return
+
+        network_str = "|".join(network_ids[:3])
+
+        discover_data = self._request(
+            "discover_tv",
+            {
+                "with_networks": network_str,
+                "sort_by": "vote_count.desc",
+                "page": 1,
+            },
+        )
+
+        if discover_data:
+            self._filter_and_populate(
+                self.more_networks_list_id, discover_data, "more_from_networks.number"
+            )
+
+    def _filter_and_populate(self, list_id, tmdb_data, count_property):
+        """Populate a media list, filtering out the current item."""
+        summaries = relationship_summaries(self._results(tmdb_data), self.media_type)
+        self.populate_media_list(list_id, [item for item in summaries
+            if str(item['id']) != str(self.tmdb_id)], count_property)
+
+    # ─── IMDb/TMDB Reviews, Trivia, Blunders, Comments ────────────────────────
+
+    def fetch_imdb_data(self):
+        # Wait up to 5 seconds for fetch_details_and_artwork to set self.imdb_id
+        getattr(self._worker, 'ready', self._details_ready).wait(timeout=5)
+        if not self._active():
+            return
+
+        if not self.imdb_id:
+            # Still try TMDB reviews and Trakt comments even without IMDb ID
+            self._fetch_tmdb_reviews()
+            self._fetch_trakt_comments()
+            return
+
+        # Fetch all IMDb extras in a single GraphQL call
+        try:
+            extras = get_imdb_extras(self.imdb_id)
+
+            # 1. IMDb Reviews
+            try:
+                imdb_reviews = extras.get("reviews", [])
+                if imdb_reviews:
+                    self._populate_text_panel(
+                        self.reviews_list_id, imdb_reviews, "imdb_reviews.number"
+                    )
+            except Exception as e:
+                kodilog(f"Error populating IMDb reviews: {e}")
+
+            # 2. IMDb Trivia
+            try:
+                trivia = extras.get("trivia", [])
+                self._populate_text_panel(self.trivia_list_id, trivia, "imdb_trivia.number")
+            except Exception as e:
+                kodilog(f"Error populating trivia: {e}")
+
+            # 3. IMDb Goofs / Blunders
+            try:
+                blunders = extras.get("blunders", [])
+                self._populate_text_panel(self.blunders_list_id, blunders, "imdb_blunders.number")
+            except Exception as e:
+                kodilog(f"Error populating blunders: {e}")
+
+            # 4. IMDb Parental Guide
+            try:
+                guide_items = extras.get("parentsguide", [])
+                guide_texts = []
+                for item in guide_items:
+                    header = f"[B]{item['title']}[/B]"
+                    if item.get("ranking"):
+                        header += f" — {item['ranking']}"
+                    if item.get("content"):
+                        guide_texts.append(f"{header}[CR][CR]{item['content']}")
+                    else:
+                        guide_texts.append(header)
+                self._populate_text_panel(
+                    self.parental_guide_list_id,
+                    guide_texts,
+                    "imdb_parentsguide.number",
+                )
+            except Exception as e:
+                kodilog(f"Error populating parental guide: {e}")
+
+        except Exception as e:
+            kodilog(f"Error fetching IMDb GraphQL extras: {e}")
+
+        # 5. Trakt Comments (keep as separate source)
+        self._fetch_trakt_comments()
+
+    def _fetch_tmdb_reviews(self):
+        try:
+            path = "movie_reviews" if self.media_type == "movie" else "tv_reviews"
+            reviews_data = self._request(path, {"id": self.tmdb_id, "page": 1})
+            reviews_list = []
+            if reviews_data:
+                results = None
+                if hasattr(reviews_data, "results"):
+                    results = reviews_data.results
+                elif hasattr(reviews_data, "_obj_list"):
+                    results = reviews_data._obj_list
+
+                if results:
+                    for rev in results:
+                        content = getattr(rev, "content", "") or rev.get("content", "")
+                        author = getattr(rev, "author", "") or rev.get("author", "Unknown")
+                        if content:
+                            reviews_list.append(f"[B]{author}[/B]\n{content}")
+            self._populate_text_panel(self.reviews_list_id, reviews_list, "imdb_reviews.number")
+        except Exception as e:
+            kodilog(f"Error fetching TMDB reviews: {e}")
+
+    def _fetch_trakt_comments(self):
+        if not self._active():
+            return
+        try:
+            from lib.api.trakt.trakt import TraktAPI
+
+            trakt_comments_data = TraktAPI().lists.trakt_comments(
+                self.media_type, self.tmdb_id, sort_type="likes", page_no=1
+            )
+            comments_list = []
+            if isinstance(trakt_comments_data, tuple):
+                trakt_comments_data = trakt_comments_data[0]
+
+            if trakt_comments_data and isinstance(trakt_comments_data, list):
+                for comment in trakt_comments_data:
+                    text = comment.get("comment", "")
+                    user = comment.get("user", {}).get("username", "Unknown")
+                    if text:
+                        comments_list.append(f"[B]{user}[/B]\n{text}")
+            self._populate_text_panel(self.comments_list_id, comments_list, "trakt_comments.number")
+        except Exception as e:
+            kodilog(f"Error fetching trakt comments: {e}")
+            self._populate_text_panel(self.comments_list_id, [], "trakt_comments.number")
+
+    def _populate_text_panel(self, list_id, string_list, count_property):
+        try:
+            items = []
+            if string_list:
+                for text_item in string_list[:20]:
+                    li = xbmcgui.ListItem(label="")
+                    li.setProperty("text", text_item)
+                    items.append(li)
+            self._replace_items(list_id, items, count_property)
+        except Exception as e:
+            kodilog(f"Error populating text panel {list_id}: {e}")
+
+    # ─── Action Handling ──────────────────────────────────────────────────────
+
+    def handle_action(self, action_id, control_id=None):
+        if action_id == 7:  # Select/Click
+            self._handle_click(control_id)
+
+    def _handle_click(self, control_id):
+        # Buttons 10-17
+        if control_id == 10:  # Play
+            mode = "movies" if self.media_type == "movie" else "tv"
+            tv_data = self.item_information.get("tv_data", "{}")
+            if isinstance(tv_data, str):
+                try:
+                    tv_data = json.loads(tv_data)
+                except (TypeError, ValueError):
+                    tv_data = {}
+            from lib.utils.general.utils import normalize_tv_data
+            tv_data = normalize_tv_data(tv_data)
+            ids = json.dumps({'tmdb_id': self.tmdb_id, 'imdb_id': self.imdb_id})
+            self.close()
+            if mode == 'tv' and not (type(tv_data.get('season')) is int and tv_data['season'] >= 0
+                                     and type(tv_data.get('episode')) is int and tv_data['episode'] > 0):
+                execute_builtin('ActivateWindow(Videos,%s,return)' % build_url(
+                    'show_seasons_details', ids=ids, mode='tv', media_type='tv'))
+                return
+            execute_builtin(
+                f"PlayMedia({build_url('search', query=self.title, mode=mode, ids=ids, tv_data=json.dumps(tv_data))})"
+            )
+
+        elif control_id == 11:  # Trailer
+            self.close()
+            execute_builtin(
+                f"PlayMedia({build_url('play_trailer', tmdb_id=self.tmdb_id, media_type=self.media_type, title=self.title)})"
+            )
+
+        elif control_id == 15:  # Watchlist
+            try:
+                from lib.api.trakt.trakt import TraktAPI
+
+                TraktAPI().lists.add_to_watchlist(self.media_type, {"tmdb": self.tmdb_id})
+                notification(translation(90409))
+            except Exception as e:
+                kodilog(f"Error modifying trakt watchlist: {e}")
+                notification(translation(90410))
+
+        elif control_id == 16:  # Watched
+            try:
+                from lib.api.trakt.trakt import TraktAPI
+
+                if self.media_type == "movie":
+                    TraktAPI().lists.mark_as_watched("movie", None, None, {"tmdb": self.tmdb_id})
+                else:
+                    TraktAPI().lists.mark_as_watched("show", None, None, {"tmdb": self.tmdb_id})
+                notification(translation(90411))
+            except Exception as e:
+                kodilog(f"Error marking watched on trakt: {e}")
+                notification(translation(90412))
+
+        elif control_id == 17:  # Refresh
+            notification(translation(90402))
+            self.close()
+
+        elif control_id == 27 and self.tmdb_id and self.media_type in ('movie', 'tv'):
+            # The existing personal catalog chooses/revalidates its source. No
+            # stored locator, guessed association or automatic media playback.
+            metadata_key = 'tmdb:%s:%d' % (self.media_type, int(self.tmdb_id))
+            self.close()
+            execute_builtin('ActivateWindow(Videos,%s,return)' % build_url('personal_catalog',
+                mode='owned', metadata_key=metadata_key, section='supplements'))
+
+        # ── YouTube video click ──
+        elif control_id == self.youtube_list_id:
+            try:
+                item = self.getControlList(self.youtube_list_id).getSelectedItem()
+                key = item.getProperty("key")
+                if key:
+                    execute_builtin(
+                        'RunPlugin(plugin://plugin.video.youtube/play/?%s)' % urlencode({'video_id': key})
+                    )
+            except Exception as e:
+                kodilog(f"Error playing YouTube video: {e}")
+
+        # ── Cast click ──
+        elif control_id == self.cast_list_id:
+            item = self.getControlList(self.cast_list_id).getSelectedItem()
+            person_id = item.getProperty("id")
+            if person_id:
+                self.close()
+                execute_builtin('ActivateWindow(Videos,%s,return)' % build_url(
+                    'handle_tmdb_person_details', person_id=person_id, mode='multi', role='cast'))
+
+        # ── Media list clicks (recommended, similar, collection, more_from_*) ──
+        elif control_id in [
+            self.recommended_list_id,
+            self.similar_list_id,
+            self.collection_list_id,
+            self.more_year_list_id,
+            self.more_genres_list_id,
+            self.more_networks_list_id,
+        ]:
+            item = self.getControlList(control_id).getSelectedItem()
+            browse_url = item.getProperty('browse_url')
+            if browse_url:
+                self.close()
+                execute_builtin('ActivateWindow(Videos,%s,return)' % browse_url)
+                return
+            tmdb_id = item.getProperty("id")
+            media_type = item.getProperty("media_type")
+            title = item.getProperty("name")
+            if tmdb_id:
+                self.close()
+                execute_builtin(
+                    f"RunPlugin({build_url('extras', id=tmdb_id, media_type=media_type, title=title)})"
+                )
+
+        # ── Text list clicks (reviews, comments, trivia, blunders, parental guide) ──
+        elif control_id in [
+            self.reviews_list_id,
+            self.comments_list_id,
+            self.trivia_list_id,
+            self.blunders_list_id,
+            self.parental_guide_list_id,
+        ]:
+            item = self.getControlList(control_id).getSelectedItem()
+            text = item.getProperty("text")
+            if text:
+                # Remove markdown formatting for the text viewer
+                clean_text = (
+                    text.replace("[B]", "")
+                    .replace("[/B]", "")
+                    .replace("[I]", "")
+                    .replace("[/I]", "")
+                )
+
+                heading = translation(90632)
+                if control_id == self.reviews_list_id:
+                    heading = translation(90633)
+                elif control_id == self.comments_list_id:
+                    heading = translation(90634)
+                elif control_id == self.trivia_list_id:
+                    heading = translation(90635)
+                elif control_id == self.blunders_list_id:
+                    heading = translation(90636)
+                elif control_id == self.parental_guide_list_id:
+                    heading = translation(90637)
+
+                xbmcgui.Dialog().textviewer(heading, clean_text)

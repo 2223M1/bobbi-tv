@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<addon id="skin.bobbi.cinema" version="0.1.39" name="bobbi TV" provider-name="bobbi TV">
+	<requires>
+		<import addon="xbmc.gui" version="5.17.0" />
+		<import addon="script.skinvariables" version="2.2.2" />
+		<import addon="script.bobbi.setup" version="0.1.16" />
+		<import addon="plugin.video.bobbi" version="0.1.65" />
+	</requires>
+	<extension point="xbmc.gui.skin" debugging="false" effectslowdown="1.0">
+		<res width="1920" height="1080" aspect="16:9" default="true" folder="1080p" />
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+		<assets>
+			<icon>resources/icon.png</icon>
+			<fanart>resources/fanart.jpg</fanart>
+			</assets>
+		<news>Private new-UI candidate. Original fonts, icon glyphs and eight interface sounds restored; legacy updater and remote scripts remain disabled.</news>
+		<summary lang="zh_CN">波比TV：独立家庭影院皮肤，简洁导航、大海报和中文优先。</summary>
+		<summary lang="zh_TW">波比TV：獨立家庭影院面板。</summary>
+		<description lang="zh_CN">波比TV 家庭影院：浏览海报、查看影片详情、手动选择片源，使用字幕、音轨和剧集播放控制。</description>
+		<description lang="zh_TW">波比TV 家庭影院面板，在流暢執行的前提下提供直觀的海報瀏覽、劇集選擇、影片詳情與播放控制。</description>
+	<description lang="en_GB">TV cinema interface for browsing posters, choosing sources and controlling playback, subtitles and audio tracks.</description></extension>
+</addon>

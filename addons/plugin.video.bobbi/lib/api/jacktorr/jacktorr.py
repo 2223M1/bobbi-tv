@@ -1,0 +1,185 @@
+from json import dumps
+from urllib.parse import quote
+
+import requests
+from requests.auth import HTTPBasicAuth
+
+from lib.utils.kodi.utils import notification
+
+
+class TorrServer:
+    def __init__(self, host, port, username, password, ssl_enabled=False, session=None):
+        self._base_url = "{}://{}:{}".format("https" if ssl_enabled else "http", host, port)
+        self._username = username
+        self._password = password
+        self._auth = HTTPBasicAuth(self._username, self._password)
+        self._session = session or requests
+
+    @staticmethod
+    def _normalize_json_response(data):
+        """Normalize TorrServer responses that may return a list instead of a dict.
+
+        Some TorrServer versions wrap single-object responses in a list.
+        This helper unwraps the first element so callers can always
+        access keys like ["hash"] without TypeError.
+        """
+        if isinstance(data, list):
+            if not data:
+                raise TorrServerError("TorrServer returned empty list")
+            return data[0]
+        return data
+
+    def _extract_hash(self, response):
+        """Parse a TorrServer response and extract the torrent hash.
+
+        Handles both dict and list response formats defensively.
+        """
+        result = self._normalize_json_response(response.json())
+        return result["hash"]
+
+    @property
+    def torr_version(self):
+        """Tests server status"""
+        return self._get("/echo").content
+
+    def add_magnet(self, magnet, title="", poster="", data="", category=None):
+        payload = {
+            "action": "add",
+            "link": magnet,
+            "title": title,
+            "poster": poster,
+            "save_to_db": True,
+        }
+        if category in {"movie", "tv", "music", "other"}:
+            payload["category"] = category
+        return self._extract_hash(
+            self._post(
+                "/torrents",
+                data=dumps(payload),
+            )
+        )
+
+    def add_torrent(self, path, title="", poster="", data=""):
+        with open(path, "rb") as file:
+            return self._extract_hash(
+                self._post(
+                    "/torrent/upload",
+                    files={"file": file},
+                    data={
+                        "save": "true",
+                        "title": title,
+                        "poster": poster,
+                    },
+                )
+            )
+
+    def add_torrent_obj(self, obj, title="", poster="", data="", category=None):
+        payload = {
+            "save": "true",
+            "title": title,
+            "poster": poster,
+        }
+        if category in {"movie", "tv", "music", "other"}:
+            payload["category"] = category
+        return self._extract_hash(
+            self._post(
+                "/torrent/upload",
+                files={"file": obj},
+                data=payload,
+            )
+        )
+
+    def torrents(self):
+        """Read info about all torrents (doesn't fill file_stats info)
+
+        Returns the raw list from TorrServer. Unlike single-object endpoints,
+        /torrents list returns a proper JSON array — pass it through as-is.
+        """
+        return self._post("/torrents", data=dumps({"action": "list"})).json()
+
+    def get_torrent_info_by_hash(self, hash):
+        """Not extended info"""
+        return self._normalize_json_response(
+            self._post("/torrents", data=dumps({"action": "get", "hash": hash})).json()
+        )
+
+    def get_torrent_info(self, link):
+        """Read extended info of one torrent"""
+        return self._normalize_json_response(
+            self._get("/stream", params={"link": link, "stat": "true"}).json()
+        )
+
+    def get_torrent_file_info(self, link, file_index=1):
+        """Read extended info of file of torrent"""
+        return self._normalize_json_response(
+            self._get("/stream", params={"link": link, "index": file_index, "stat": "true"}).json()
+        )
+
+    def drop_torrent(self, hash):
+        return self._post("/torrents", data=dumps({"action": "drop", "hash": hash}))
+
+    def remove_torrent(self, info_hash, save_to_db=True):
+        """Delete torrent from TorrServer"""
+        return self._post(
+            "/torrents",
+            data=dumps({"action": "rem", "hash": info_hash, "save_to_db": save_to_db}),
+        )
+
+    def play_torrent(self, hash, id):
+        """Play given torrent referenced by hash"""
+        """ application/octet-stream """
+        return self._get("/play", params={"hash": hash, "id": id})
+
+    def play_stream(self, link, title="", poster=""):
+        """Play given torrent referenced by link"""
+        """ application/octet-stream """
+        return self._get(
+            "/stream",
+            params={"link": link, "title": title, "poster": poster, "play": "true"},
+        )
+
+    def preload_torrent(self, link, file_id=1, title=""):
+        """Preload torrent"""
+        return self._get(
+            "/stream",
+            params={
+                "link": link,
+                "index": file_id,
+                "title": title,
+                "stat": "true",
+                "preload": "true",
+            },
+        )
+
+    def get_stream_url(self, link, path, file_id):
+        """Returns the stream url"""
+        return f"{self._base_url}/stream/{quote(path)}?link={link}&index={file_id}&play"
+
+    def get_settings(self):
+        res = self._post("/settings", data=dumps({"action": "get"}))
+        return res.json()
+
+    def _post(self, url, **kwargs):
+        return self._request("post", url, **kwargs)
+
+    def _put(self, url, **kwargs):
+        return self._request("put", url, **kwargs)
+
+    def _get(self, url, **kwargs):
+        return self._request("get", url, **kwargs)
+
+    def _delete(self, url, **kwargs):
+        return self._request("delete", url, **kwargs)
+
+    def _request(self, method, url, **kwargs):
+        try:
+            return self._session.request(method, self._base_url + url, auth=self._auth, **kwargs)
+        except Exception as e:
+            raise TorrServerError(str(e)) from e
+
+
+class TorrServerError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+        notification(self.message)

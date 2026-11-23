@@ -1,0 +1,20 @@
+{
+  "schema": 2,
+  "default_track": "stable",
+  "tracks": {
+    "stable": {"feed": "repository/stable/current.json", "manifest_channel": "private-stable", "github_prerelease": false},
+    "preview": {"feed": "repository/preview/current.json", "manifest_channel": "private-candidate", "github_prerelease": true, "requires_explicit_user_selection": true}
+  },
+  "feed_fields": ["schema", "tag", "sequence", "url", "size", "sha256", "track", "manifest_channel", "prerelease", "versions"],
+  "mirror_channels": ["github", "gitee"],
+  "ordering": "Within the selected track, compare both valid mirrors by signed generation sequence; equal-sequence differing identity fails closed.",
+  "legacy_schema_1": {
+    "existing_pointer": "repository/current.json",
+    "rewrite": "Never insert a preview offer or schema-2 fields into the old pointer.",
+    "new_client_fallback": "Only when the versioned stable endpoint returns 404; accept only the exact stable identity below. Unknown legacy offers remain unverified.",
+    "approved_stable": {"tag": "ce2080", "sequence": 2026102080, "size": 95934438, "sha256": "39e2435a50bcb8e1832e7b03929a5efbeaa6d1d9f17ce5b3704287629620331c", "manifest_channel": "private-candidate"},
+    "evidence": "The existing repository/current.json and already-published CE2080 stable artifact; this is an exact historical exception, not a rule that private-candidate means stable."
+  },
+  "downgrade": "Changing track never resets high_watermark; wait for stable to catch up or explicitly use the existing verified recovery-point flow.",
+  "publication": "A source/tag, Release, preview pointer, stable pointer and dual-mirror readback are separate states. This change does not publish pointers or upgrade CE2096 to stable."
+}

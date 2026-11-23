@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">9000</defaultcontrol>
+  <depth>DepthDialog</depth>
+  <controls>
+    <include>DialogScrim</include>
+    <control type="group">
+      <centerleft>50%</centerleft><centertop>50%</centertop>
+      <width>760</width><height>420</height>
+      <include content="PanelOpen"><param name="slide">0,16</param></include>
+      <control type="image">
+        <left>-48</left><top>-48</top><width>856</width><height>516</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>760</width><height>420</height>
+        <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>760</width><height>420</height>
+        <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+      <control type="label" id="1">
+        <left>48</left><top>40</top><width>664</width><height>48</height>
+        <font>Head34</font><textcolor>FFFFFFFF</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+      <control type="textbox" id="9">
+        <left>56</left><top>104</top><width>648</width><height>156</height>
+        <font>Plot26</font><textcolor>D9EBEBF5</textcolor>
+        <align>center</align>
+        <autoscroll delay="5000" time="2000" repeat="6000">true</autoscroll>
+      </control>
+      <control type="progress" id="20">
+        <left>56</left><top>274</top><width>648</width><height>6</height>
+        <texturebg colordiffuse="48FFFFFF" border="4">bobbi/glass/progress-track.png</texturebg>
+        <midtexture colordiffuse="FFFFFFFF" border="4">bobbi/glass/progress-fill.png</midtexture>
+      </control>
+      <control type="grouplist" id="9000">
+        <left>48</left><top>308</top><width>664</width><height>66</height>
+        <orientation>horizontal</orientation>
+        <align>center</align>
+        <itemgap>14</itemgap>
+        <onup>noop</onup><ondown>noop</ondown>
+        <include content="DialogButton"><param name="id">11</param><param name="width">208</param></include>
+        <include content="DialogButton"><param name="id">10</param><param name="width">208</param></include>
+        <include content="DialogButton"><param name="id">12</param><param name="width">208</param></include>
+      </control>
+    </control>
+  </controls>
+</window>

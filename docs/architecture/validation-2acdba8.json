@@ -1,0 +1,1178 @@
+{
+  "schema": 1,
+  "status": "FROZEN_EVIDENCE_REVIEWED_ACCEPTANCE_FAILED_INCOMPLETE",
+  "finalized": true,
+  "plan_complete": false,
+  "product_accepted": false,
+  "assembled_utc": "2026-11-13T21:57:19.322774Z",
+  "source": {
+    "commit": "2acdba84f80f16d7e5452d93dace88396f7d3527",
+    "tree": "fce770a51c5aac9c151b5c1e61ffb742edc87e96",
+    "sequence": 2026102134,
+    "versions": {
+      "plugin.video.bobbi": "0.1.75",
+      "script.module.bobbi.core": "0.1.75",
+      "script.module.bobbi.platform": "0.1.81",
+      "script.bobbi.start": "0.2.99"
+    },
+    "previous": {
+      "commit": "ed645eece1dc340e52f1377731d5f1ff9d0804c8",
+      "tree": "edda8c37d4176bed7d74eaeab5024cf738c7b1d5",
+      "sequence": 2026102133
+    },
+    "qualification": "Source tree, source-check outputs, signed payload, entry ZIP, native binary and installed owned bytes are separately identified; none substitutes for the others. The source freeze remains 2acdba8 despite the later, separately excluded 2ef61e3 product commit.",
+    "initial_assembly_worktree_clean": true
+  },
+  "evidence_reference_convention": "evidence_ids name registry rows. Resolve each row using evidence_roots and evidence_columns. Referenced receipts retain their detailed hash-bound inputs; this compact record does not duplicate their large case/member inventories.",
+  "evidence_roots": {
+    "R": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026",
+    "G1": "D:/AM6B-Project/architecture-audit-2acdba8-final",
+    "G2": "D:/AM6B-Project/architecture-audit-2acdba8-final-repeat",
+    "B": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds",
+    "E": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+    "H": "D:/AM6B-Project/ce-iso-20261110"
+  },
+  "evidence_columns": [
+    "base",
+    "path",
+    "sha256",
+    "bytes"
+  ],
+  "evidence_registry": {
+    "prior_validation": [
+      "R",
+      "docs/architecture/validation-ed645ee.json",
+      "8ef0eb4d26cb70a491452b14b423bb8fbf37a3e7cda0f5fffeaaf13e523f38d3",
+      23451
+    ],
+    "windows_primary": [
+      "E",
+      "2acdba8-primary.json",
+      "416350fe18636affcbbe85e7ea853eba9d74dd118e34208c2628404e523dde59",
+      1546
+    ],
+    "windows_baseline": [
+      "E",
+      "2acdba8-baseline.json",
+      "2db8f5d576e374987db4920d07a1833b4610a7120f391a155f05c2dee2c78b11",
+      1479
+    ],
+    "windows_preparation": [
+      "E",
+      "2acdba8-preparation.json",
+      "be7eed1457ecf30198d184c86f2fda0856bf068174c78226e24565c6ac07ca32",
+      1496
+    ],
+    "linux_posix": [
+      "E",
+      "2acdba8-posix-contracts-report.json",
+      "4189c628d88bfea33fa1f4c62c254ac116491aabf90cce006666532a43ee7c19",
+      15844
+    ],
+    "linux_contracts": [
+      "E",
+      "2acdba8-linux-contract-supplement.json",
+      "0cdb07deaf899ee765d11ec681e3a48e0017431788e0214640087a78fc4474b8",
+      21332
+    ],
+    "linux_completion": [
+      "E",
+      "2acdba8-linux-completion-verification.json",
+      "a5354974d02f92b300ef1e00a584e4e7a6118b695a2f55224d9e9c96e40bf638",
+      21333
+    ],
+    "identity_audit": [
+      "E",
+      "2acdba8-test-identity-independent-audit.json",
+      "2920b97e31d48e47a01cf5aab9f1f92f07c4cb9501a9dd43247f1f980594650a",
+      6747760
+    ],
+    "architecture_report": [
+      "E",
+      "2acdba8-architecture-final-report.json",
+      "51b91a4d6d9909142205d152d086244dd96858f42724c627788ec2743976bcc8",
+      12907
+    ],
+    "contracts_graphs_report": [
+      "E",
+      "2acdba8-final-contracts-and-graphs-report.json",
+      "4a1d52404d5a125a84fb6a853aeb237c1b7185d9a91433b8acb2bbb84234f046",
+      3045
+    ],
+    "runner_scope_anchors": [
+      "E",
+      "2acdba8-runner-scope-and-anchors.json",
+      "549154108c1fe157b5e02a22d09ef261f402f5d3b1eff83e2eeb5cf7c8c1ae81",
+      3099
+    ],
+    "build_receipt": [
+      "E",
+      "2acdba8-build-verification.json",
+      "337978e2f0f2ed7025577dd580b936966f6319fa2cdcc660754613ac048048af",
+      25218
+    ],
+    "release_audit": [
+      "E",
+      "2acdba8-release-verification.json",
+      "0759759a99bd57c6f996a0709f0ea090ec2d2169dcab4872acfa1647afe4ecc2",
+      19447
+    ],
+    "release_audit_config": [
+      "E",
+      "2acdba8-release-audit-config.json",
+      "728293481c293c1b2b08e196780652f4e9b8ec01f578e3f774263e1dc5932c5e",
+      2178
+    ],
+    "release_audit_execution": [
+      "E",
+      "2acdba8-release-audit-execution.json",
+      "a544a17931ce9db4b40958f2f1d6fd951b2742512a2fc87597d108b78e426b1e",
+      3834
+    ],
+    "release_audit_helper": [
+      "E",
+      "release-identity-audit.py",
+      "f5f29c93741695e1b0cea1d174dcce014ea7488e8f45bbacdd10d43ad04860fc",
+      20225
+    ],
+    "identity_adapter": [
+      "E",
+      "2acdba8-test-identity-adapter.py",
+      "cc8437ba7a5c231565a3456f1fa0fd337b5c3ccb1739031d4c016c0582e8627a",
+      33365
+    ],
+    "graph_1": [
+      "G1",
+      "graph.json",
+      "b94c68c5e19ad37b156a9436390658ccef0db7e33ba9de596866f88c4d842ce7",
+      108998073
+    ],
+    "graph_2": [
+      "G2",
+      "graph.json",
+      "b94c68c5e19ad37b156a9436390658ccef0db7e33ba9de596866f88c4d842ce7",
+      108998073
+    ],
+    "overview_1": [
+      "G1",
+      "overview.md",
+      "dfbd14b7282f8ede2a3eb0cb978ed7c7b54f8e1a9e801b5cc6e794c56cf24570",
+      6473
+    ],
+    "overview_2": [
+      "G2",
+      "overview.md",
+      "dfbd14b7282f8ede2a3eb0cb978ed7c7b54f8e1a9e801b5cc6e794c56cf24570",
+      6473
+    ],
+    "mermaid_1": [
+      "G1",
+      "overview.mmd",
+      "72b359f1443a8493d47ceccc96efb836ecb1c4d18546d3e0d62bee14670a5ecd",
+      4992
+    ],
+    "mermaid_2": [
+      "G2",
+      "overview.mmd",
+      "72b359f1443a8493d47ceccc96efb836ecb1c4d18546d3e0d62bee14670a5ecd",
+      4992
+    ],
+    "ownership_manifest": [
+      "R",
+      "docs/architecture/ownership-manifest.json",
+      "c90448b362edb101c0afd04f582c7c12e4e522df0dfbd14920147990ceff64f1",
+      87941
+    ],
+    "signed_bundle": [
+      "B",
+      "2acdba8-releases/bobbi-private-2026102134-coreelec.bobbi-update.zip",
+      "e9918dd669e39f559e86e8d2ce023cd6eff41b6454196ca642f8a36d892f3c05",
+      96334555
+    ],
+    "entry_zip": [
+      "B",
+      "2acdba8-entry-artifacts/script.bobbi.start-0.2.99.zip",
+      "c74efa75ac7004923cb0898756a6d778ba5fb6ffb7a050ccecad9f2e39b5b8b6",
+      96546107
+    ],
+    "device_before": [
+      "E",
+      "device-2acdba8-before.json",
+      "513a93fe10c272019f003fe2741a36bad8c9ca70672a5107616396b6cee481b3",
+      5808
+    ],
+    "device_after": [
+      "E",
+      "device-2acdba8-after.json",
+      "5daf7f8866d44eaa9dda04427d9e0787c2d752b8c7db7a252b6e5513fa0253a0",
+      5760
+    ],
+    "stage": [
+      "R",
+      "review-evidence/ce-20261114-055150-stage.json",
+      "6f6b2ce6e9934b3a6d7ad8e9ca1b3cca73ab798d675c0f453e31285533292640",
+      154
+    ],
+    "upgrade": [
+      "R",
+      "review-evidence/ce-20261114-055150-upgrade.json",
+      "e24eb255da68b7ed3ffe11ac6224217901b9c187cc8c8106ab9eb48e2c683737",
+      319
+    ],
+    "deployment_run": [
+      "R",
+      "review-evidence/ce-deploy-runs/20261114-055150.json",
+      "ad38768933ebb5628ce0c754817c1f443c50edc68939bb977308b1ab780548bb",
+      474
+    ],
+    "installed_files": [
+      "R",
+      "review-evidence/ce2023/installed-files-1794606848261543300.json",
+      "1ddc2607a56f89f6f0d643b0944601694219554a92862cb0967556c8e198fc74",
+      313
+    ],
+    "attempt1_execute": [
+      "E",
+      "2acdba8-startup-1hz-execute.json",
+      "93e0f6acbd2ac100d481e1dc237bca009a218be9f52016f1f28936c6ac796f95",
+      556
+    ],
+    "attempt1_recovery": [
+      "E",
+      "2acdba8-startup-1hz-recovery.json",
+      "0ceb82a49a8579a0d8ddb819f0074aab44de167ce1d88161ed0b8d9cd8286530",
+      2968
+    ],
+    "idle_wake": [
+      "E",
+      "2acdba8-idle-wake.json",
+      "14f0d84ce931d6d1fe0b1eda0d37e8467d1f1a4035c61d9cb86e2ee02fdb656a",
+      871
+    ],
+    "attempt2_execute": [
+      "E",
+      "2acdba8-startup-1hz-attempt2-execute.json",
+      "6f4baca6a455c8d181433d123c9b26693f0c7706356c823168e0f8bf2925c60f",
+      1357
+    ],
+    "attempt2_samples": [
+      "E",
+      "2acdba8-startup-1hz-attempt2-execute-samples.json",
+      "ba7a9f200eacb6bde48c8443c30eab6090e7d102f26b13ef7a599f44be1c2afc",
+      59451
+    ],
+    "attempt2_analysis": [
+      "E",
+      "2acdba8-startup-1hz-attempt2-independent-analysis.json",
+      "beb72cfc43e580e31d88dbdf8a9d60c3e2dad82447fb674eb8888a46babf2db5",
+      43427
+    ],
+    "attempt2_stop": [
+      "E",
+      "campaign-2acdba8/ce-new-work-convergence1152acdba8-galactic_heroes-stop-1794607669442806500.json",
+      "b6d5b839df1e990be237ccb83411fc630340baf8e144bdd8c2f7f1236d3014d4",
+      2633
+    ],
+    "post_trial_health": [
+      "E",
+      "device-2acdba8-after-trial-stop.json",
+      "077d9b1855b53df5ac8cfe8642f1ad1175a55a4411bec7ae6704178613aa00d3",
+      5807
+    ],
+    "post_trial_log_classification": [
+      "E",
+      "device-2acdba8-after-trial-log-classification.json",
+      "2199665166cb2d162d7ce82a22e08510e1710c6da4810e67a9f7d424cda54bbf",
+      727
+    ],
+    "private_115_directory": [
+      "E",
+      "private-files-ui-2acdba8/115-directory.json",
+      "3b78e7686ae18e3b22a392d432baf7a90e1ec12bb3e2c98d4a11e3a56180a75e",
+      4445
+    ],
+    "private_movies_directory": [
+      "E",
+      "private-files-ui-2acdba8/movies-directory.json",
+      "2756c4841b16681ec841d56b9f2684d362d02915918506c0312330931227c84a",
+      6953
+    ],
+    "private_zootopia_directory": [
+      "E",
+      "private-files-ui-2acdba8/zootopia-directory.json",
+      "2ac389e34c011a6ad82607115323af5845aafd9dd077b034cee3b2fe41a252d1",
+      3445
+    ],
+    "private_video_actions": [
+      "E",
+      "private-files-ui-2acdba8/open-video-actions.json",
+      "bbadd3743dd54dca73a35b1e8cda3f71cdd3167db4cf96dc2b6935d5dc579fd0",
+      3238
+    ],
+    "private_play_select": [
+      "E",
+      "private-files-ui-2acdba8/play-original-once.json",
+      "7e86b82c34691dc19e89f4e2668862ac0d13a89592e3482cca3cfca64362822f",
+      2819
+    ],
+    "private_capture_binding": [
+      "E",
+      "private-files-ui-2acdba8/capture-binding.json",
+      "5ec773dc04e63177d009b06fa21834c0d5461f0ce84a4938c50d6986088095dc",
+      898
+    ],
+    "private_failure_dialog": [
+      "E",
+      "private-files-ui-2acdba8/play-failure-dialog.json",
+      "90e3f11024be5f41a7e0ff3c13e3fb1637148f5e10b60be72ac8539c36711eef",
+      2037
+    ],
+    "private_failure_screenshot": [
+      "E",
+      "private-files-ui-2acdba8/screenshot-20261113T221724Z-2bc86ec4.png",
+      "a10aa185a3b2373c7882bc5176e1b7caefaf35440f1f14fae10fccde10171236",
+      139594
+    ],
+    "private_after_select": [
+      "E",
+      "private-files-ui-2acdba8/read-after-select.json",
+      "1f572d63079f68f3fb2e07c17591031e517f8d87f9da0023fa26bdf80ba46e3b",
+      1622
+    ],
+    "private_dismiss": [
+      "E",
+      "private-files-ui-2acdba8/dismiss-failure-once.json",
+      "70a5462672b79d12ffb98563e59dc13cce549f9cce743a8133cd8391c9fc46b2",
+      2429
+    ],
+    "private_after_dismiss": [
+      "E",
+      "private-files-ui-2acdba8/read-after-dismiss.json",
+      "ae347373adf257717382cf8f374291c0ace3c1bab431655cfb749f30ea47e723",
+      1650
+    ],
+    "cache_disk_log": [
+      "E",
+      "device-2acdba8-cache-native-readonly.json",
+      "9464ff5f8a0b73fb0cd8a28b05ca8e6940cbe4bf9f3d3ce5c5bf8bed8f20370f",
+      7636
+    ],
+    "cache_runtime": [
+      "E",
+      "device-2acdba8-cache-runtime-readonly.json",
+      "3c0ec93688168df587d168611d8a3cbba6ddcf2dbedb2d1b389b83ef6d06ebc0",
+      646
+    ],
+    "cache_source_history_review": [
+      "E",
+      "cache_native_source_and_history_review.md",
+      "78459e64418e21d29045f23113671ef855e58847c7a16153b721f75ae1d523f6",
+      7339
+    ],
+    "excluded_oldsource_negative": [
+      "E",
+      "private-files-ui-2acdba8/modal-cleanup-oldsource-negative.xml",
+      "7931f56f6d55263f899683b85764a1f8a9258b0ce5af25af7c6c7e7ff022e8be",
+      9736
+    ],
+    "excluded_expanded_regression": [
+      "E",
+      "private-files-ui-2acdba8/modal-cleanup-expanded.xml",
+      "e417924ce304ac9a96b51e4e7c69c9e7c49ec190d505b99e84cf1fe7bc61ffbe",
+      72162
+    ],
+    "historical_iso_workaround": [
+      "H",
+      "ce2109/device-acceptance-summary.json",
+      "8f599a5e712c30491430186d5c54f9a887ca55d85b6fd1c7baf5372b5b09fc18",
+      4441
+    ],
+    "resolver_observer": [
+      "E",
+      "readonly_115_resolver_diagnostic.py",
+      "698b0fc282b5b5dc12ceb1e116ec2fde4a589a5cdb60f75eb8fdc16cfa28de41",
+      27889
+    ],
+    "redirect_observer": [
+      "E",
+      "readonly_115_redirect_diagnostic.py",
+      "dd4b0a6311f6b9a15128caa823cf76e727e4e6949d72833406e0cec6cb04d63f",
+      8278
+    ],
+    "resolver_readonly": [
+      "E",
+      "private-files-ui-2acdba8/resolver-readonly-once.json",
+      "924fea09b8bc9157c1347a4d62c862a10e53d0061ea333cdd166757fd235780c",
+      3227
+    ],
+    "resolver_redirect": [
+      "E",
+      "private-files-ui-2acdba8/resolver-redirect-once.json",
+      "c3d46e090661c936870f7fa5ce2313be68377b371c58baed71f0c814bf9611a0",
+      3958
+    ],
+    "error_guidance_negative": [
+      "E",
+      "private-files-ui-2acdba8/redirect-errors-negative.xml",
+      "000ddad2bb26496fcaa0d574eccd5723828dad10a8af581deb4b6d74ba3cbebc",
+      7481
+    ],
+    "error_guidance_regression": [
+      "E",
+      "private-files-ui-2acdba8/redirect-errors-regression.xml",
+      "b708846fd5c538d62cb67c7cff9b963575623c1c9cd043d77fdcc2f695471637",
+      13193
+    ],
+    "error_guidance_independent": [
+      "E",
+      "private-files-ui-2acdba8/redirect-errors-independent.xml",
+      "2c91011ad32c2d45a88cc6af480b71d6301c1743863a1f0967d658977c88a07c",
+      39670
+    ],
+    "error_guidance_review": [
+      "E",
+      "private-files-ui-2acdba8/redirect-errors-independent-review.json",
+      "f9b696eafae2a10a7b54ba39e51492387f5d48489726a3eaff33b4a04e1dc363",
+      2889
+    ]
+  },
+  "feature_scope": {
+    "areas": [
+      "Standard history saturation/coalescing",
+      "Same-attempt persistence receipts",
+      "Internal server read-only progress and on-demand native video facts"
+    ],
+    "boundaries": [
+      "Server progress functionality is internal and read-only; no server UI or automatic synchronization is claimed.",
+      "Ordinary share and standard playback paths do not gain video facts.",
+      "Native source tree and binary identity are unchanged.",
+      "Offline contracts establish bounded code behavior, not real-server, native playback, profile/account ownership or product acceptance."
+    ]
+  },
+  "offline": {
+    "evidence_ids": [
+      "windows_primary",
+      "windows_baseline",
+      "windows_preparation",
+      "linux_posix",
+      "linux_contracts",
+      "linux_completion",
+      "identity_audit"
+    ],
+    "windows_group_columns": [
+      "receipt",
+      "executions",
+      "passed",
+      "ordinary_skipped",
+      "xfailed",
+      "failed",
+      "errors"
+    ],
+    "windows_groups": [
+      [
+        "windows_primary",
+        8392,
+        8370,
+        21,
+        1,
+        0,
+        0
+      ],
+      [
+        "windows_baseline",
+        2470,
+        2470,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        "windows_preparation",
+        254,
+        254,
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "all_windows_group_exit_codes": 0,
+    "windows_source_unchanged": true,
+    "windows_clean_before_qualification": "Original receipts bind commit/tree and clean-after state but do not measure a status-before field. The independently inspected unchanged runner has a clean preflight and matching command recipes; no missing measured field is invented.",
+    "linux_family_columns": [
+      "receipt",
+      "groups",
+      "executions",
+      "passed",
+      "failed",
+      "errors",
+      "skipped"
+    ],
+    "linux_families": [
+      [
+        "linux_posix",
+        12,
+        312,
+        312,
+        0,
+        0,
+        0
+      ],
+      [
+        "linux_contracts",
+        6,
+        305,
+        305,
+        0,
+        0,
+        0
+      ],
+      [
+        "linux_completion",
+        14,
+        657,
+        657,
+        0,
+        0,
+        0
+      ]
+    ],
+    "linux_execution_instances": 1274,
+    "linux_provenance": [
+      "POSIX report binds the exact frozen commit/tree with clean before/after checks; its 312 cases are WSL POSIX/symlink and in-process contracts.",
+      "The 305-case contract supplement uses the exact complete-history native-Linux clone, per-process commit/tree checks and suite-level clean/fsck plus source hashes; per-group full inventories were not measured.",
+      "The 657-case completion supplement has 14 successful groups, clean exact commit/tree before/after, 2374 unchanged tracked inventory entries and complete real parent history of 188 commits/194 parent edges.",
+      "Completion used direct --linux --existing-repo execution; no Windows outer-orchestration receipt or Windows completion inventory exists."
+    ],
+    "exact_id_audit": {
+      "state": "VERIFIED_OFFLINE_TEST_IDENTITIES_NOT_ACCEPTANCE",
+      "method": "Exact case-sensitive classname and fully parameterized name join, with independently validated file/classname/name identities; no generated-ID coalescing.",
+      "windows_execution_instances": 11116,
+      "windows_unique_case_ids": 11116,
+      "windows_outcomes": {
+        "passed": 11094,
+        "skipped": 21,
+        "xfailed": 1,
+        "failed": 0,
+        "error": 0
+      },
+      "linux_unique_case_ids": 1274,
+      "linux_intersection_with_windows": 1274,
+      "linux_only_case_ids": 0,
+      "cross_platform_union_unique_case_ids": 11116,
+      "duplicate_windows_execution_identities": 0,
+      "duplicate_linux_execution_identities": 0,
+      "linux_family_pairwise_overlap": 0,
+      "windows_ordinary_skips": 21,
+      "exact_same_case_passed_linux": 21,
+      "unmatched_windows_ordinary_skips": 0,
+      "raw_to_file_identity_collisions": 0,
+      "windows_exact_case_ids_sha256": "b8f49d026e4af942d93594dc9c92a3c3142c4dba860c8729f68df66d4f478000",
+      "linux_exact_case_ids_sha256": "a67b7788e7aaa8e2db04041fa1da229bd92a7a48e364218e1b66d51057af3279",
+      "retained_xfail": {
+        "source": "tests/test_ce2029_search_audit.py",
+        "case_id_sha256": "245655a7d60fab787d59a2dad496a62df724773a28dcea5ed03412a27d7d5c2c",
+        "reason": "Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama."
+      },
+      "qualification": "Execution counts are not added as independent coverage. Exact-ID union is not automatically logical functional coverage. Passing POSIX counterparts does not convert the original Windows skips to Windows passes or erase the retained xfail."
+    }
+  },
+  "architecture": {
+    "evidence_ids": [
+      "architecture_report",
+      "contracts_graphs_report",
+      "runner_scope_anchors",
+      "graph_1",
+      "graph_2",
+      "overview_1",
+      "overview_2",
+      "mermaid_1",
+      "mermaid_2",
+      "ownership_manifest"
+    ],
+    "runs": 2,
+    "exit_codes": [
+      0,
+      0
+    ],
+    "graph_overview_and_mermaid_byte_equal": true,
+    "source_unchanged": true,
+    "inventory_files": 2374,
+    "loaded_sources": 1795,
+    "parsed_python_files": 1488,
+    "nodes": 64044,
+    "edges": 159480,
+    "edges_by_status": {
+      "candidate": 35870,
+      "confirmed": 7851,
+      "external": 27583,
+      "unresolved": 88176
+    },
+    "diagnostics": 0,
+    "boundary_findings": 0,
+    "scc_candidates": 20,
+    "module_collisions": 3,
+    "ownership_manifest": {
+      "nodes": 38,
+      "anchors": 125,
+      "exact_matches": 125,
+      "failures": 0
+    },
+    "input_fingerprint": "10e35ae8a6aaa3d96cfc8a93f7f7cf39107ceebb4ab144c990dfe6441e163392",
+    "graph_tool_sha256": "6146aeb9dbefd9153eba401d4e82c958a506d818c20c90ed47f0774a8089fb38",
+    "interpreter_cache_scope": "Existing isolated Python children can ignore parent bytecode settings. Authorized before/after inventories each contain 1398 cache paths with no observed path/content/size/mtime delta. This is not a filesystem write trace or unique attribution; no caches were removed.",
+    "qualification": "Full tracked static inventory/candidate graph only. Unresolved edges, SCC candidates and collisions remain. Confirmed literal bindings and manifest assertions do not prove runtime reachability, lifecycle correctness, native applied patches, deadlocks or executed tests."
+  },
+  "build_and_signing": {
+    "evidence_ids": [
+      "build_receipt",
+      "release_audit",
+      "release_audit_config",
+      "release_audit_execution",
+      "release_audit_helper",
+      "signed_bundle",
+      "entry_zip"
+    ],
+    "independent_audit_state": "VERIFIED_RELEASE_IDENTITIES_NOT_FULL_ACCEPTANCE",
+    "audit_exit_code": 0,
+    "audit_source_unchanged": true,
+    "inventory_sha256": "52b741d9003c3e5f1d131cc882d3b2e705d40348f476aad789c709e23a451903",
+    "components": 22,
+    "managed_source_files_verified": 1471,
+    "source_checks": {
+      "files_per_set": 63,
+      "sets": 2,
+      "byte_equal": true,
+      "actual_hashes_match_build_receipt": true,
+      "rerun_by_independent_auditor": false
+    },
+    "source_check_to_installable_changed_files": [
+      "application-input.json",
+      "manifest.json",
+      "script.module.bobbi.core/script.module.bobbi.core-0.1.75.zip",
+      "script.module.bobbi.core/script.module.bobbi.core-0.1.75.zip.sha256"
+    ],
+    "previous_release_delta": {
+      "changed_members": 20,
+      "modified": 19,
+      "added": 1,
+      "changed_components": [
+        "plugin.video.bobbi",
+        "script.bobbi.start",
+        "script.module.bobbi.core",
+        "script.module.bobbi.platform"
+      ],
+      "exact_match_to_committed_source_changes": true,
+      "unexpected_archive_changes": 0,
+      "application_input_metadata_unchanged": true
+    },
+    "signed_bundle": {
+      "sequence": 2026102134,
+      "profile": "coreelec",
+      "components": 22,
+      "exact_membership": true,
+      "runtime_verifier": "passed",
+      "independent_rsa_verifier": "passed",
+      "changed_manifest_rejected": true,
+      "changed_signature_rejected": true
+    },
+    "entry": {
+      "version": "0.2.99",
+      "sequence": 2026102134,
+      "members": 25,
+      "exact_membership": true,
+      "same_generation_bootstrap_files": 22,
+      "embedded_bundle_matches": true
+    },
+    "private_zip_resource_open_attempts": 0,
+    "signed_repeat_build_reproducibility_proved": false,
+    "qualification": "Existing build outputs, actual archive bytes, source delta and signatures are verified. No private key or private resource contents read. This does not establish licensing clearance, clean installation, playback, performance, native build reproducibility or full acceptance."
+  },
+  "deployment": {
+    "evidence_ids": [
+      "stage",
+      "upgrade",
+      "deployment_run",
+      "installed_files"
+    ],
+    "run_id": "20261114-055150",
+    "prior_sequence": 2026102133,
+    "current_sequence": 2026102134,
+    "stage": {
+      "executions": 1,
+      "exit_code": 0,
+      "state": "staged",
+      "components": 22,
+      "system_unchanged": true
+    },
+    "upgrade": {
+      "executions": 1,
+      "exit_code": 0,
+      "state": "upgraded",
+      "migration_performed": false,
+      "migration_policy": "existing-current-profile-preserved",
+      "cd2_and_mount_untouched": true,
+      "playback_verified": false
+    },
+    "deployed_candidate_zip_matches_signed_bundle": true,
+    "installed_owned_files": {
+      "transport_exit": 0,
+      "files": 1262,
+      "matched": true,
+      "mismatches": 0,
+      "expected_sequence": 2026102134
+    },
+    "qualification": "Successful current-profile upgrade and exact owned-program-file comparison only. Original dependencies and all user data were not compared; clean install, interrupted recovery/rollback, universal preservation and playback acceptance are unproved."
+  },
+  "health_and_preservation": {
+    "evidence_ids": [
+      "device_before",
+      "device_after"
+    ],
+    "probe_mode": "readonly",
+    "probe_cloud_requests": 0,
+    "before": {
+      "sequence": 2026102133,
+      "players": 0,
+      "window": 10000,
+      "kodi_service_pid": 10966,
+      "native_pid": 10974,
+      "state": "attention_required",
+      "startup_log_tracebacks": 3,
+      "startup_log_product_error_lines": 2
+    },
+    "after": {
+      "sequence": 2026102134,
+      "players": 0,
+      "window": 10000,
+      "kodi_service_pid": 15313,
+      "native_pid": 15321,
+      "kodi_service": "active",
+      "service_restarts": 0,
+      "state": "observed",
+      "startup_log_tracebacks": 0,
+      "startup_log_product_error_lines": 0,
+      "pending_transaction": false
+    },
+    "equal_sentinels": [
+      "115_account",
+      "pan_accounts",
+      "preparation",
+      "advancedsettings",
+      "native_abi",
+      "history",
+      "library",
+      "torrent_backend"
+    ],
+    "index_before_after": {
+      "schema": 4,
+      "integrity": "ok",
+      "typed_objects": 594,
+      "memberships": 594,
+      "reviews": 594,
+      "review_changes": 8,
+      "review_receipts": 8,
+      "scans": 16,
+      "file_segments": 0,
+      "segment_changes": 0,
+      "missing_tables": 0
+    },
+    "rollback_receipt_available": true,
+    "qualification": [
+      "Upgrade startup/home-idle health observation only, not playback or interaction acceptance.",
+      "Current log changed across restart; zero new-tail markers does not prove the historical query/startup failures were fixed.",
+      "Eight equal sentinels do not prove all user-data preservation, current account/profile ownership or precise filepointer continuity.",
+      "Saved login scope flags are not live/online authentication; rollback receipt presence is not tested recovery."
+    ],
+    "post_trial": {
+      "evidence_ids": [
+        "post_trial_health",
+        "post_trial_log_classification"
+      ],
+      "sequence": 2026102134,
+      "state": "attention_required",
+      "failure": "startup_log_attention",
+      "players": 0,
+      "window": 10000,
+      "kodi_service": "active",
+      "kodi_service_pid": 15313,
+      "native_pid": 15321,
+      "service_restarts": 0,
+      "pending_transaction": false,
+      "native_binary_hash_unchanged": true,
+      "index_schema": 4,
+      "index_integrity": "ok",
+      "typed_objects": 594,
+      "changed_sentinels": [
+        "history"
+      ],
+      "equal_sentinels": [
+        "115_account",
+        "pan_accounts",
+        "preparation",
+        "advancedsettings",
+        "native_abi",
+        "library",
+        "torrent_backend"
+      ],
+      "startup_log": {
+        "tracebacks": 0,
+        "broad_product_marker_lines": 2
+      },
+      "subsequent_classification": {
+        "matches": 2,
+        "level": "info",
+        "marker": "BOBBI-PROVIDERS",
+        "scope": "bounded_current_log_not_full_history"
+      },
+      "qualification": "Stop/home-idle health is observed. Classification explains the two broad markers but preserves the original health attention receipt; it is not an all-clear, playback acceptance or proof that the changed history sentinel belongs to the intended attempt/profile/exact file."
+    }
+  },
+  "native": {
+    "evidence_ids": [
+      "release_audit",
+      "device_before",
+      "device_after",
+      "attempt2_stop"
+    ],
+    "source_tree": "294abcde0b17995420d07bf49c268c715e6f9dc7",
+    "source_unchanged_since_2133": true,
+    "binary_sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+    "device_before_after_binary_hash_equal": true,
+    "rebuilt_for_2134": false,
+    "independent_release_auditor_rehashed_binary": false,
+    "idle_schema_control_actions_observed": [
+      "seek",
+      "audio_stream",
+      "manual_subtitle_stream",
+      "subtitle_visible"
+    ],
+    "scoped_controls": "one_original_stop_applied_full_controls_unverified",
+    "qualification": "Device receipts supply observed native hashes. One original Stop has a matching applied receipt. Idle schema fields and action enums alone do not prove full controls, OSD, media facts, patch application or AV-start acceptance."
+  },
+  "ordinary_trial": {
+    "state": "DIAGNOSTIC_REVIEWED_STALL_OBSERVED_NOT_ACCEPTED",
+    "evidence_ids": [
+      "attempt1_execute",
+      "attempt1_recovery",
+      "idle_wake",
+      "attempt2_execute",
+      "attempt2_samples",
+      "attempt2_analysis",
+      "attempt2_stop"
+    ],
+    "diagnostic_only": true,
+    "playback_accepted": false,
+    "performance_accepted": false,
+    "attempt1": {
+      "state": "unconfirmed_do_not_retry_select",
+      "transport_exit_code": 0,
+      "error": "AssertionError",
+      "descriptor": "DIAGNOSTIC_UNCONFIRMED_DO_NOT_RETRY_SELECT",
+      "sample_artifact_absent": true,
+      "recovery": {
+        "record_hash_matches_preselect_journal": true,
+        "selected_at_absent": true,
+        "selected_card_absent": true,
+        "request_id_absent": true,
+        "native_instance_absent": true,
+        "sidecar_missing": true,
+        "attempt_remains_consumed": true,
+        "retry_authorized": false
+      },
+      "qualification": "Retained-file recovery cannot reconstruct the missing stack or prove whether the original Select/preflight executed. The later picker-generation mismatch/offline replay is not backfilled as the original failure cause. No retry of this attempt occurred."
+    },
+    "separate_idle_wake": {
+      "dispatches": 1,
+      "playback_commands": 0,
+      "acknowledged": true,
+      "screen_saver_before": true,
+      "screen_saver_after": false,
+      "qualification": "One guarded idle noop; not a playback retry or acceptance result."
+    },
+    "attempt2": {
+      "state": "diagnostic_collected_not_acceptance",
+      "select_count": 1,
+      "selection_ack": "acknowledged",
+      "post_select_owner_reads": 1,
+      "target": {
+        "selection_epoch": 1,
+        "request_id": "e8957a34ef3b408b86459c90e6af12ce",
+        "native_instance": "9860eb69-a1cc-4798-841a-a5e4aa95ee9f",
+        "file_sha256": "b6a4004a87e2b629396ede99ea13e34be792c3e14fcde997f16833b0c4e66e80"
+      },
+      "points": 41,
+      "phase_counts": {
+        "NO_NATIVE": 2,
+        "OPEN": 7,
+        "AV_STARTED": 32
+      },
+      "pinned_native_endpoints": 78,
+      "analysis_integrity_or_shape_violations": 0,
+      "analysis_read_failures": 0,
+      "first_av_observed_seconds_after_select": 9.007306440966204,
+      "sampled_stall": {
+        "first_index": 12,
+        "last_index": 30,
+        "clock_seconds": 3.407,
+        "speed": 1,
+        "caching": true,
+        "sampled_endpoint_span_seconds": 18.002140403026715,
+        "decoder_frame_first": 141,
+        "decoder_frame_last": 238,
+        "frame_238_stationary_indices": [
+          25,
+          30
+        ],
+        "resumed_index": 31
+      },
+      "retained_preflight_failures": [
+        "attempt2 start RuntimeError/TRIAL_ERROR in assert_picker_idle/snapshot",
+        "attempt2 first cards TimeoutError/TRIAL_ERROR"
+      ],
+      "later_cards_observation": {
+        "exit_code": 0,
+        "cards_count": 5,
+        "selected": false
+      },
+      "qualification": "Later cards/capture do not convert the start/cards failures into query acceptance. Sample status ok means an observation succeeded, not healthy playback; recovery at sample 31 does not erase the stall."
+    },
+    "stop": {
+      "state": "confirmed",
+      "stopped": true,
+      "exit_code": 0,
+      "command_id": "7e28d2daa01249ae8572c163e27280c4",
+      "original_receipt_verified": true,
+      "receipt_status": "applied"
+    },
+    "qualification": "One 1 Hz diagnostic, not an ordinary-trace pass, continuous-rendering proof, exact between-sample transition time, root-cause finding, 5 cold plus 5 warm campaign, half-hour pause experiment or controlled A/B comparison. No CDN/CD2/decoder cause or sharelib equivalence is inferred."
+  },
+  "licensing": {
+    "evidence_ids": [
+      "release_audit"
+    ],
+    "manifest_sha256": "b204a17fd36921f6f99c84e59433064d8b36406942f86f2b2a489fe4fc988c15",
+    "unresolved_source": [
+      "plugin.video.bobbi",
+      "script.module.bobbi.platform",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.catalog",
+      "skin.bobbi.cinema",
+      "resource.uisounds.bobbi-modern"
+    ],
+    "unresolved_full_license": [
+      "script.module.jurialmunkey",
+      "script.module.infotagger"
+    ],
+    "distribution_cleared": false
+  },
+  "prior_acceptance_failures": {
+    "evidence_ids": [
+      "prior_validation"
+    ],
+    "prior_record_unchanged": true,
+    "prior_finalized_meaning": "Historical evidence-document completion only; not product or whole-plan acceptance.",
+    "retained": "2133 query/startup trace failures, recovered acquisition gap and strict plateaus remain historical failures despite Stop/history/later health. Older query/timeout, startup/observation, read/skip and clock/decoder classifications are retained through the pinned historical record.",
+    "qualification": "Historical failures are not silently relabeled as passes. They are not automatically asserted as newly observed 2134 failures; current trial/root-cause evidence is required."
+  },
+  "remaining_gates": [
+    "2134 attempt1 remains unconfirmed/no-retry; attempt2 start/cards failures and sampled clock stall, plus private original-file playback failure, remain. Root cause and same-attempt persistence/history acceptance are unresolved.",
+    "Public distribution remains blocked by seven unresolved-source and two unresolved-full-license components.",
+    "Android real-device acceptance and all 110 interaction scenarios remain open; no scenario outcome is changed by this record.",
+    "Five cold plus five warm controlled 115 samples and performance acceptance remain incomplete.",
+    "ISO; edition/copy/part identity; precise-path resume; media facts; segment policy and source remapping remain open.",
+    "Real 115 private-disk/NAS/server acceptance and server progress/extras/segments/transcode sessions remain open; no remote-write authority is added.",
+    "Interrupted rollback/data restore, clean install, universal profile safety, runtime ownership and full user-data preservation remain unproved.",
+    "Fixed-default-profile history does not measure active profile/current account/exact filepointer.",
+    "No whole-plan, performance or product acceptance."
+  ],
+  "drafting_agent_scope": {
+    "external_record_only": true,
+    "main_repository_edits": false,
+    "device_connections": false,
+    "controls_issued": false,
+    "signed_or_built_packages": false,
+    "private_resources_or_credentials_read": false,
+    "prior_evidence_overwritten": false,
+    "child_agents_spawned": 0,
+    "qualification": "This draft summarizes pinned receipts. The drafting agent independently ran the release-identity audit earlier, reviewed retained projections/screenshot and rechecked references, but did not rerun test suites, deploy, change settings or operate the device."
+  },
+  "publication": {
+    "state": "root_reviewed_record_published",
+    "record_reviewed": true,
+    "finalized": true,
+    "plan_complete": false,
+    "product_accepted": false,
+    "qualification": "Finalized means this evidence document has been reviewed, not product or whole-plan acceptance. Root rehashed the original 58 registry references and the eight added resolver/error-guidance references. Later source fixes remain undeployed and excluded from 2acdba8/2134. Original failures and historical 2133 record are retained."
+  },
+  "last_updated_utc": "2026-11-13T22:41:29Z",
+  "private_files_trial": {
+    "state": "DIRECTORY_ACCESS_OBSERVED_ORIGINAL_PLAYBACK_FAILED",
+    "evidence_ids": [
+      "private_115_directory",
+      "private_movies_directory",
+      "private_zootopia_directory",
+      "private_video_actions",
+      "private_play_select",
+      "private_capture_binding",
+      "private_failure_dialog",
+      "private_failure_screenshot",
+      "private_after_select",
+      "private_dismiss",
+      "private_after_dismiss"
+    ],
+    "directory_path_observed": [
+      "115",
+      "movies",
+      "Zootopia directory"
+    ],
+    "video_actions_observed": [
+      "play original file",
+      "view file information"
+    ],
+    "play_original_select_count": 1,
+    "native_av_start_observed": false,
+    "capture_binding": {
+      "state": "rejected",
+      "error": "PRESENTATION_MISMATCH",
+      "product_proof": false,
+      "ui_causality_proven": false,
+      "history_read": false,
+      "retry_allowed": false
+    },
+    "failure_dialog": {
+      "title": "未打开网盘文件",
+      "body": "连接或接口暂不可用，已保存的登录不会被清除。"
+    },
+    "before_dismiss": {
+      "request_id": "e5575fc1f9ad4d7bba24fdd4f810c089",
+      "cancelled": false,
+      "start_claimed": false,
+      "observed_once": false,
+      "observed_owner_empty": true,
+      "native_playback_receipt_empty": true
+    },
+    "dismiss_select_count": 1,
+    "after_dismiss": {
+      "same_request_id": true,
+      "cancelled": true,
+      "start_claimed": false,
+      "observed_once": false,
+      "observed_owner_empty": true,
+      "native_playback_receipt_empty": true,
+      "window": 10025
+    },
+    "qualification": "Directory/UI access is not playback, media-facts persistence or precise-path acceptance. Stale fullscreen/handoff fields still refer to the prior ordinary attempt, not this new private-file request. The generic error text does not establish a transport/resolver root cause. No retry or successful private playback is claimed.",
+    "independent_resolver_observations": {
+      "evidence_ids": [
+        "resolver_observer",
+        "redirect_observer",
+        "resolver_readonly",
+        "resolver_redirect"
+      ],
+      "executions": 2,
+      "https_requests_per_execution": 3,
+      "state": "failed",
+      "error": "PAN_REDIRECT_REJECTED",
+      "phase": "download_request",
+      "directory_and_metadata_identity_match": true,
+      "final_scope_fence_verified": true,
+      "download_url_resolved": false,
+      "redirect_followed": false,
+      "credentials_persisted": false,
+      "stream_registered": false,
+      "ticket_created": false,
+      "playback_attempted": false,
+      "redirect_classification": {
+        "status": 302,
+        "request_route": "download",
+        "location_parseable": true,
+        "scheme_https": true,
+        "absolute": true,
+        "host_class": "other",
+        "path_class": "other",
+        "path_known_variant": false,
+        "default_https_port": true,
+        "query_present": true,
+        "fragment_present": false,
+        "userinfo_present": false,
+        "location_sha256": "bd07bc370441943346415e42a3534839ee1c8911648f47a3f2e34638883b7c08"
+      },
+      "qualification": "These are new, independent resolver observations of the frozen production request logic, not recovered evidence of the earlier UI error. No Location was followed, alternate endpoint tried or native playback issued; no successful private-file playback, media facts, history or performance acceptance follows."
+    }
+  },
+  "cache_readonly": {
+    "evidence_ids": [
+      "cache_disk_log",
+      "cache_runtime",
+      "cache_source_history_review",
+      "historical_iso_workaround"
+    ],
+    "mutations_performed": false,
+    "runtime_settings_match_disk": {
+      "filecache.buffermode": 4,
+      "filecache.memorysize": 256,
+      "filecache.readfactor": 500,
+      "filecache.chunksize": 524288
+    },
+    "source_units": "The pinned source/history review interprets these as mode 4 (all remote filesystems), 256 MiB, fixed 5x read-rate factor, and a 512 KiB fallback chunk; these are not a guaranteed duration/throughput or proof that a specific path constructed CFileCache.",
+    "active_file_cache_construction_proven": false,
+    "iso_prefetch_runtime_proven": false,
+    "iso_disk_forwardprefetchpages": 0,
+    "retained_override": "Zero speculative ISO forward prefetch predates 2134 and matches the 2026-11-10 device-wide Jeanne Dielman workaround over Bobbi authenticated 115 share transport, not CD2. It is not a new 2134 change, installer default or sharelib default.",
+    "current_log_projection": {
+      "header_matched_lines": 1347,
+      "recognized_native_prefix_lines": 0,
+      "native_like_unrecognized_prefix_lines": 1,
+      "raw_lines_exported": false
+    },
+    "qualification": "Disk configuration and the four loaded Settings values are separate observations. No ISO runtime-loading/file-cache-construction proof, per-file/request correlation, fault-free conclusion or cause for the ordinary MKV stall follows. Source/history review is not a repeated historical playback test. Parameters were not changed."
+  },
+  "post_freeze_exclusions": {
+    "evidence_ids": [
+      "excluded_oldsource_negative",
+      "excluded_expanded_regression"
+    ],
+    "commit": "2ef61e3edec1321837abb4ac548bfb7113f660a7",
+    "tree": "db1b12ca0cacdf4b9abb246eeaff3ee9f03dc9fe",
+    "change": "pan_playback.play failure dialog moved after finally cleanup",
+    "root_reported_deployed": false,
+    "oldsource_negative_controls": {
+      "tests": 2,
+      "failures": 2
+    },
+    "later_expanded_regression": {
+      "tests": 390,
+      "passed": 390
+    },
+    "qualification": "The later cleanup/modal fix and its regressions are excluded from every 2acdba8 source/test/build/package/installed-identity proof and do not erase the deployed failure. Cleanup is best-effort and precedes the modal; failed cleanup RPCs do not guarantee background retirement.",
+    "additional_fixes": [
+      {
+        "commit": "685b98a759e6e4ba44ae84804e42950bc53b16dc",
+        "tree": "3a4a4eaf44d76443879784f34778e5d570d1b67e",
+        "change": "Preserve only exact PAN_REDIRECT_REJECTED/PAN_DOWNLOAD_ORIGIN_REJECTED across the existing IPC whitelist and display fixed, nonsecret guidance",
+        "evidence_ids": [
+          "error_guidance_negative",
+          "error_guidance_regression",
+          "error_guidance_independent",
+          "error_guidance_review"
+        ],
+        "deployed": false,
+        "negative_control": {
+          "failed": 4,
+          "passed": 6,
+          "deselected": 40
+        },
+        "regression": {
+          "passed": 89
+        },
+        "independent_regression": {
+          "passed": 208
+        },
+        "qualification": "Overlapping local tests are not added as unique coverage. This repairs error projection only, not the download protocol or original-file playback. Login retry behavior and destination rejection remain unchanged."
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "platform": "coreelec-amlogic-ng.arm-21",
+  "predecessor_sha256": "43f733dc7ae0bbe9cc505f6730d29bc17bae2f3587a2907cf46500bbb127ef60",
+  "patches": [
+    {"file": "ce-audible-tempo.patch", "sha256": "560d39132c7e47adb74183dd61e4c59b4a45a384e1f85b58230289a34690a077"}
+  ]
+}

@@ -1,0 +1,3186 @@
+{
+  "schema": 1,
+  "baseline_commit": "6cd23ee627977139e16ee7b37440665f436393cb",
+  "source": "Bobbi-Architecture-Convergence-Grand-Convergence-20261113.zip/Grand-Convergence/coverage-map.json",
+  "scope": "Latest offline candidate42a3729/2136 has frozen regression/build/static-graph evidence but is not deployed: read-only capacity fails and cleanup awaits approval. Device checkpoint remains35b9d61/2135. All110 scenario objects and all historical mappings stay unchanged; offline test counts do not establish complete system interaction coverage.",
+  "offline_candidate_checkpoint": {"record": "docs/architecture/validation-42a3729.json","commit": "42a3729db8de519346c1ebf9c1dc6d0cc1cd1cd1","tree": "1124dbe30c3eaf2af59f850ca4d44bb39a8a000d","sequence": 2026102136,"unique_cases": 11287,"combined_passed": 11286,"xfailed": 1,"unresolved_ordinary_skips": 0,"posix_executions_overlap": 435,"deployed": false,"device_blocker": "SpaceRequired; narrow rebuildable-cache cleanup awaits explicit approval","scenario_statuses_changed": false,"qualification": "Offline frozen candidate only; current deployed checkpoint below is unchanged."},
+  "previous_frozen_validation_record": "docs/architecture/validation-2acdba8.json",
+  "frozen_checkpoint": {
+    "record": "docs/architecture/validation-35b9d61.json",
+    "commit": "35b9d61ebb9429f5b15e3b882efbfc9c022bd6ad",
+    "tree": "1bb4ba7c7a683a177bba9821035ed534ebc169b4",
+    "targeted_tests_passed": 470,
+    "full_regression_rerun": false,
+    "native": "unchanged_980265b5_not_rebuilt_this_release",
+    "device_checkpoint": "First upgrade failed with OSError and restored2134 owned1262 bytes; errno/cause unproven, available space about97MiB. Four verified duplicate bootstrap trees reclaimed764472469 bytes without deleting original bundles, recovery backups or user data. New immutable run installs same2135 signed bundle, owned1262 match and eight upgrade sentinels equal. Ordinary UI original-file action reaches AV;11 samples advance45.870→56.798 with caching=false. Active observer fails FACTS_ABSENT; original scoped Stop applied once, history hash changes but exact terminal persistence unproven. Two error-level GetDirectory/plugin.video.bobbi lines and health attention retained. Native unchanged. No shared-source fix, long-run performance, full OSD/history, ISO/CD2 or5cold+5warm acceptance.",
+    "system_acceptance": "pending",
+    "osd_at_cutoff": "one_original_scoped_stop_applied_full_osd_not_tested",
+    "five_cold_five_warm": "not_completed",
+    "qualification": "All110 original scenarios and mappings/refs unchanged.470 targeted executions are not a full-suite count; UA and wrapper suites overlap and are not added. Latest frozen static graph and full suite belong to2134."
+  },
+  "e58718b_checkpoint": {
+    "record": "docs/architecture/validation-e58718b.json",
+    "commit": "e58718b783adb0803b0812db03bfd5d7f21d0b73",
+    "tree": "a4878a097ae19d8881c7da0326fb89af4065764d",
+    "main_unique_cases": 10443,
+    "original_windows_passed": 10421,
+    "original_windows_ordinary_skipped": 21,
+    "original_windows_xfailed": 1,
+    "same_skipped_cases_passed_on_linux": 21,
+    "unknown_skip_matches": 0,
+    "overlapping_executions_not_added": {
+      "linux_supplement": 306,
+      "posix_contracts": 312,
+      "linux_extra_guard": 117
+    },
+    "native": "unchanged_980265b5_not_rebuilt_this_release",
+    "device_checkpoint": "2129 owned1259 match; upgrade health observed/eight sentinels unchanged; ordinary query failed despite launch ACK and later same-picker card; selection reached AV but startup health failed with two observation gaps; stop observed without original command ID; post-playback health attention_required/history changed; subsequent rollback restores2128 owned1259 with high-watermark2129 and eight post-playback sentinels preserved, but health remains attention_required and no data restore/full rollback acceptance",
+    "system_acceptance": "pending",
+    "osd_at_cutoff": "not_completed_current_generation",
+    "five_cold_five_warm": "not_completed",
+    "qualification": "Existing scenario device=not_run_current_revision refers to the exact original cross-module scenario, not separately recorded installation or bounded observations. All110 scenario objects,83 partial local mappings,27 candidate-only mappings and original execution refs remain unchanged. Historical2128 OSD/native proof is not current-generation full acceptance; no performance improvement is claimed."
+  },
+  "ff0422c_checkpoint": {
+    "record": "docs/architecture/validation-ff0422c.json",
+    "commit": "ff0422cff75b58b72053898057d8b87356eea85c",
+    "tree": "ad8a4f130fe5be709049c16011fb2af321908ee8",
+    "offline_record_sha256": "b8b12c3615ae38f9bf8a4cbe4511da2f2ab23229501df36f37c5457de0be38b8",
+    "main_unique_cases": 10307,
+    "original_windows_passed": 10285,
+    "original_windows_ordinary_skipped": 21,
+    "original_windows_xfailed": 1,
+    "same_skipped_cases_passed_on_linux": 21,
+    "overlapping_executions_not_added": {
+      "linux_supplement": 304,
+      "posix_contracts": 312,
+      "native_pytest": 111
+    },
+    "device_checkpoint": "2128 owned1259 match and new native apply; attempt1 failure/PICKER_REPLACED retained; attempt2 reached AV but startup health failed; four original OSD commands narrowly matched; block_timing has two owner-read gaps and scoped STOP; post-test health attention_required",
+    "system_acceptance": "pending",
+    "osd_at_cutoff": "four_original_commands_narrow_pass_full_osd_incomplete",
+    "five_cold_five_warm": "not_completed",
+    "qualification": "Existing scenario device=not_run_current_revision concerns the exact original cross-module scenario, not the separately recorded installation or bounded device observations. The 83 partial local mappings and 27 candidate-only mappings remain unchanged. Only receipts listed in validation-ff0422c.json are included. Narrow OSD does not cover tempo, two independent 09/10 reads, full controls or new-instance recovery; all exact scenario statuses remain unchanged."
+  },
+  "2acdba8_checkpoint": {
+    "record": "docs/architecture/validation-2acdba8.json",
+    "commit": "2acdba84f80f16d7e5452d93dace88396f7d3527",
+    "tree": "fce770a51c5aac9c151b5c1e61ffb742edc87e96",
+    "main_unique_cases": 11116,
+    "original_windows_passed": 11094,
+    "original_windows_ordinary_skipped": 21,
+    "original_windows_xfailed": 1,
+    "same_skipped_cases_passed_on_linux": 21,
+    "unknown_skip_matches": 0,
+    "overlapping_executions_not_added": {
+      "linux_supplement": 657,
+      "posix_contracts": 312,
+      "history_and_server_contracts": 305
+    },
+    "native": "unchanged_980265b5_not_rebuilt_this_release",
+    "device_checkpoint": "2134 owned1262 match, eight sentinels equal across upgrade. One41-point1Hz startup diagnostic observes firstAV9.007306s and clock/caching plateau18.002140s, original Stop applied; attempt1 uncertainty and start/cards failures remain. Private115 directory succeeds, original-file play fails before native claim; dismissal cancels original request. Separate readonly resolver reaches metadata then rejects download redirect. Health attention retained. No media-facts, performance fix, ISO/CD2 or5cold+5warm acceptance.",
+    "system_acceptance": "pending",
+    "osd_at_cutoff": "one_original_scoped_stop_applied_full_osd_not_tested",
+    "five_cold_five_warm": "not_completed",
+    "qualification": "All110 original scenarios,83 partial local mappings,27 candidate-only mappings and their execution refs stay unchanged. Linux1274 executions exactly overlap Windows; union11116. Post-2acdba8 code is not in these receipts; narrow observations do not certify complete stages."
+  },
+  "scenarios": [
+    {
+      "id": "SYS-001",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Register a new source while another source is scanning; old scan cannot publish under the new source epoch.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint",
+        "local-source-consent-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-002",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Revoke a source account while a page query is in flight; old cards disappear immediately and late responses are discarded.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint",
+        "local-source-consent-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-003",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Interrupt a scan after enumeration but before index commit; resume is idempotent and does not duplicate files.",
+      "accepted_contract": "Interrupted scans retain committed pages and restart enumeration; no durable provider cursor contract means no resume claim.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-004",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Same path and filename with changed size/hash becomes a replacement identity and invalidates old parent evidence.",
+      "accepted_contract": "Keep the logical file ID and manual curation at the same path. Replace its observation, invalidate tickets, parent evidence and automatic resume eligibility.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-005",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Two providers expose the same work and same file; deduplication preserves provider provenance and playable target identity.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-006",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Provider rate limit returns PARTIAL with per-provider diagnostics and keeps completed providers' results.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-007",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Provider timeout and provider cancellation are distinct terminal states.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-008",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Delete a source while review preview is open; apply revalidates source and returns a typed conflict receipt.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-009",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Rename a source label while scan is active; source identity and account scope remain stable.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-010",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Mount path changes but maps to same file only after explicit target revalidation.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-011",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Two concurrent scan workers attempt same source; one shared scheduler prevents duplicate authority and stale commit.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-012",
+      "domain": "Catalog & source lifecycle",
+      "scenario": "Cold start after interrupted scan reconstructs task state without presenting stale progress as complete.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_scope_and_scan.py",
+        "tests/test_catalog_observation_order.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_scan_source_ports.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-013",
+      "domain": "Catalog review & supplements",
+      "scenario": "Preview candidate then modify source evidence before apply; final transaction rejects stale evidence.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity",
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-014",
+      "domain": "Catalog review & supplements",
+      "scenario": "Confirm a supplement relation, detach, attach reverse edge, then undo; cycle protection prevents invalid graph restoration.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity",
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-015",
+      "domain": "Catalog review & supplements",
+      "scenario": "Attempt three-level supplement nesting through create, edit, import and undo; every write path enforces one-level invariant.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity",
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-016",
+      "domain": "Catalog review & supplements",
+      "scenario": "Change supplement title while a temporary parent selection is present; saved parent remains unchanged unless explicitly changed.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity"
+      ]
+    },
+    {
+      "id": "SYS-017",
+      "domain": "Catalog review & supplements",
+      "scenario": "Delete/replace parent after preview; final apply returns verification_required or conflict with no silent remap.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity"
+      ]
+    },
+    {
+      "id": "SYS-018",
+      "domain": "Catalog review & supplements",
+      "scenario": "Filter confirmed files on a work version page; supplements never leak into the main file list.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-019",
+      "domain": "Catalog review & supplements",
+      "scenario": "Search supplement title in TV and phone; both receive the same paginated projection.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-020",
+      "domain": "Catalog review & supplements",
+      "scenario": "Undo a manually reviewed candidate; provenance remains auditable and export state is schema-valid.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity"
+      ]
+    },
+    {
+      "id": "SYS-021",
+      "domain": "Catalog review & supplements",
+      "scenario": "Export a mixed batch containing ignored, ambiguous, proposed and confirmed records; valid records export without all-or-nothing failure.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-022",
+      "domain": "Catalog review & supplements",
+      "scenario": "Import a parent and child supplement relation in separate pages; batch order and target evidence are deterministic.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-023",
+      "domain": "Catalog review & supplements",
+      "scenario": "Two editors update same review item; compare-and-swap prevents lost update.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity",
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-024",
+      "domain": "Catalog review & supplements",
+      "scenario": "Undo after a newer parent revision; old evidence is preserved and marked for re-verification.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_supplement_integrity.py",
+        "tests/test_catalog_supplements.py",
+        "tests/test_catalog_transfer_integrity.py",
+        "tests/frontend/test_phone_supplements.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity",
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-025",
+      "domain": "Version identity & resume",
+      "scenario": "One work with three files shows three exact source/file identities and technical metadata.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-026",
+      "domain": "Version identity & resume",
+      "scenario": "Two cuts with different runtimes maintain independent history and segment ranges.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history"
+      ]
+    },
+    {
+      "id": "SYS-027",
+      "domain": "Version identity & resume",
+      "scenario": "Same file path replaced by a new hash does not inherit old progress automatically.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history",
+        "local-network-checkpoint",
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-028",
+      "domain": "Version identity & resume",
+      "scenario": "Selected version disappears between list and play; resolver rejects stale selection and returns to version list.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint",
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-029",
+      "domain": "Version identity & resume",
+      "scenario": "One version's playback reaches completion while another remains partially watched; work aggregate remains explainable.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-030",
+      "domain": "Version identity & resume",
+      "scenario": "User preference selects compatible version; UI explains ranking inputs and allows manual override.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-031",
+      "domain": "Version identity & resume",
+      "scenario": "Device capability changes after preference saved; incompatible version is downgraded with explicit explanation.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-032",
+      "domain": "Version identity & resume",
+      "scenario": "Unknown HDR/audio codec metadata remains unknown rather than inferred from filename.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-033",
+      "domain": "Version identity & resume",
+      "scenario": "Version list sorts consistently across TV and phone under source filter changes.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-034",
+      "domain": "Version identity & resume",
+      "scenario": "Back from version details restores prior page, filters, selected item and focus.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-035",
+      "domain": "Version identity & resume",
+      "scenario": "Continue Watching card resumes the exact original file, not another version of the same work.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history"
+      ]
+    },
+    {
+      "id": "SYS-036",
+      "domain": "Version identity & resume",
+      "scenario": "History query returns correct file after provider account reconnect with changed source epoch.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_catalog_versions_and_workbench.py",
+        "tests/test_file_history_reservation.py",
+        "tests/test_ce2097_file_history.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history",
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-037",
+      "domain": "Playback control & observation",
+      "scenario": "Open playback request after owner epoch changes; stale request is rejected before native dispatch.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py",
+        "tests/test_playback_client_binding.py",
+        "tests/test_mounted_playback_binding.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone",
+        "local-prepared-handoff",
+        "local-prepared-consumers"
+      ]
+    },
+    {
+      "id": "SYS-038",
+      "domain": "Playback control & observation",
+      "scenario": "POST timeout after seek; phone reads original command receipt and never sends a second seek.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_command_ack.py",
+        "tests/private_baseline/test_user_transport_presentation.py",
+        "tests/private_baseline/test_osd_user_transport.py",
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py",
+        "tests/test_playback_client_binding.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone",
+        "local-phone-http"
+      ]
+    },
+    {
+      "id": "SYS-039",
+      "domain": "Playback control & observation",
+      "scenario": "Command is queued but player instance replaced; receipt remains bound to old expected instance.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_command_ack.py",
+        "tests/private_baseline/test_user_transport_presentation.py",
+        "tests/private_baseline/test_user_transport_window_intent.py",
+        "tests/private_baseline/test_osd_user_transport.py",
+        "native/tests/scoped_actor_test.cpp",
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py",
+        "tests/test_preparation_injection.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone",
+        "local-playback-read"
+      ]
+    },
+    {
+      "id": "SYS-040",
+      "domain": "Playback control & observation",
+      "scenario": "Command returns applied but observed position has not moved; UI separates receipt state from actual observation.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py",
+        "tests/test_preparation_owner_binding.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone",
+        "local-phone-http",
+        "local-playback-read"
+      ]
+    },
+    {
+      "id": "SYS-041",
+      "domain": "Playback control & observation",
+      "scenario": "Audio track selection with two same-language tracks shows exact active stream index and label.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-playback-read",
+        "local-trial-evidence"
+      ]
+    },
+    {
+      "id": "SYS-042",
+      "domain": "Playback control & observation",
+      "scenario": "Original-language hint exists but saved user choice wins; presentation reports preference hint, not false selected track.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-playback-read"
+      ]
+    },
+    {
+      "id": "SYS-043",
+      "domain": "Playback control & observation",
+      "scenario": "Manual subtitle off followed by delayed automatic subtitle callback remains off and status says manual control.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-playback-read",
+        "local-trial-evidence"
+      ]
+    },
+    {
+      "id": "SYS-044",
+      "domain": "Playback control & observation",
+      "scenario": "Native adapter lacks scoped atomic instance guard; scoped command is unavailable rather than downgraded to global JSON-RPC.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_user_transport_presentation.py",
+        "tests/private_baseline/test_osd_user_transport.py",
+        "tests/test_ce_native_user_transport_profile.py",
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone",
+        "local-playback-read",
+        "local-trial-evidence"
+      ]
+    },
+    {
+      "id": "SYS-045",
+      "domain": "Playback control & observation",
+      "scenario": "Standard adapter accepts history writes while profile changes; queued writes drain only to captured profile root.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history"
+      ]
+    },
+    {
+      "id": "SYS-046",
+      "domain": "Playback control & observation",
+      "scenario": "Worker shutdown with full queue drains all accepted writes or emits explicit incomplete-drain failure.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history",
+        "local-shutdown-composition",
+        "local-preparation-composition-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-047",
+      "domain": "Playback control & observation",
+      "scenario": "Phone authorization revoked during network response; late result cannot repopulate UI or retain CSRF.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone",
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-048",
+      "domain": "Playback control & observation",
+      "scenario": "Phone page reload while operation unknown shows reconciliation guidance; no command replay.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_phone_playback_recovery.py",
+        "tests/frontend/test_phone_playback.cjs",
+        "tests/test_standard_history_profile.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone",
+        "local-phone-http"
+      ]
+    },
+    {
+      "id": "SYS-049",
+      "domain": "Segments, chapters & next",
+      "scenario": "Manual intro segment is bounded by exact file identity and duration.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_playback_client_flows.py",
+        "tests/private_baseline/test_ce2095_next_picker_flow.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity",
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-050",
+      "domain": "Segments, chapters & next",
+      "scenario": "Recap and intro overlap; editor forces deterministic merge or conflict resolution.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py",
+        "tests/test_playback_client_flows.py",
+        "tests/private_baseline/test_ce2090_monitor_handoff.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity"
+      ]
+    },
+    {
+      "id": "SYS-051",
+      "domain": "Segments, chapters & next",
+      "scenario": "Public provider segment does not auto-skip before user policy and file matching are satisfied.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-052",
+      "domain": "Segments, chapters & next",
+      "scenario": "Cut mismatch invalidates provider timestamps even if title and work ID match.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-053",
+      "domain": "Segments, chapters & next",
+      "scenario": "Manual seek after skip prompt cancels pending auto action.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-054",
+      "domain": "Segments, chapters & next",
+      "scenario": "Outro skip preserves configured post-credit scene range.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity"
+      ]
+    },
+    {
+      "id": "SYS-055",
+      "domain": "Segments, chapters & next",
+      "scenario": "Credits marker and next-episode selection remain distinct operations.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity"
+      ]
+    },
+    {
+      "id": "SYS-056",
+      "domain": "Segments, chapters & next",
+      "scenario": "Next episode missing on same source returns to source picker rather than silently cross-provider.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-prepared-handoff",
+        "local-prepared-consumers"
+      ]
+    },
+    {
+      "id": "SYS-057",
+      "domain": "Segments, chapters & next",
+      "scenario": "Natural end-of-file triggers next policy once; repeated native events do not double-open.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-prepared-handoff",
+        "local-prepared-consumers",
+        "local-trial-evidence"
+      ]
+    },
+    {
+      "id": "SYS-058",
+      "domain": "Segments, chapters & next",
+      "scenario": "Phone and TV chapter selection target same exact timeline and current playback instance.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_native_completion_observation.py",
+        "tests/private_baseline/test_ce2095_next_picker_authority.py",
+        "tests/private_baseline/test_playback_presentation.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-059",
+      "domain": "Profile, migration & storage",
+      "scenario": "Profile A queues history write, switches to B, then A writer completes; write lands in A only.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py",
+        "tests/test_preparation_injection.py",
+        "tests/test_preparation_owner_binding.py",
+        "tests/test_profile_path_resolution.py",
+        "tests/test_playback_client_binding.py",
+        "tests/test_mounted_playback_binding.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history",
+        "local-shutdown-composition",
+        "local-preparation-composition-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-060",
+      "domain": "Profile, migration & storage",
+      "scenario": "Profile A -> B -> A creates new epoch; old A binding remains retired.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history",
+        "local-prepared-handoff",
+        "local-prepared-consumers",
+        "local-shutdown-composition",
+        "local-network-checkpoint",
+        "local-source-consent-checkpoint",
+        "local-server-checkpoint",
+        "local-preparation-composition-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-061",
+      "domain": "Profile, migration & storage",
+      "scenario": "Two writers complete in reverse order; no cross-profile writes or progress regression.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history"
+      ]
+    },
+    {
+      "id": "SYS-062",
+      "domain": "Profile, migration & storage",
+      "scenario": "Export includes only descriptive metadata and stable identities, never auth tokens or temporary URLs.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-063",
+      "domain": "Profile, migration & storage",
+      "scenario": "Import same archive twice; second run is idempotent and does not duplicate review history.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-064",
+      "domain": "Profile, migration & storage",
+      "scenario": "Import references to missing source; preview marks unresolved and retains user-entered notes.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-065",
+      "domain": "Profile, migration & storage",
+      "scenario": "Unicode path remap to new mount root; target evidence is revalidated before apply.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-066",
+      "domain": "Profile, migration & storage",
+      "scenario": "Import interrupted after partial batch; receipt reports committed and pending batches separately.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-067",
+      "domain": "Profile, migration & storage",
+      "scenario": "Concurrent local edit during import; CAS rejects stale batch and leaves committed prior batches auditable.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-068",
+      "domain": "Profile, migration & storage",
+      "scenario": "Schema migration 2 -> 3 preserves source rows and logical checksums.",
+      "accepted_contract": "The current SQLite owner accepts schema 0..4 and migrates existing schema 1/2/3 to 4 with an exclusive recovery backup. The original 2 -> 3 scenario is retained; local migration/guard fixtures are not a device upgrade receipt.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-catalog-schema-health"
+      ]
+    },
+    {
+      "id": "SYS-069",
+      "domain": "Profile, migration & storage",
+      "scenario": "Old program opens schema 3; safe refusal leaves DB bytes unchanged.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-catalog-schema-health"
+      ],
+      "accepted_contract": "Retained or incoming code must support every registered profile schema, including schema4 and committed WAL state. Otherwise refuse before code/service mutation; no automatic database downgrade or backup restore."
+    },
+    {
+      "id": "SYS-070",
+      "domain": "Profile, migration & storage",
+      "scenario": "Restore schema 2 backup, add a new note, then upgrade; backup and new facts are both accounted for.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_profile_bound_history.py",
+        "tests/test_injected_file_history.py",
+        "tests/test_catalog_manual_transfer.py",
+        "tests/test_ce_product_catalog_guard.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-catalog-schema-health"
+      ]
+    },
+    {
+      "id": "SYS-071",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "Account switch clears old personal rail before any new asynchronous refresh.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-shutdown-composition",
+        "local-source-consent-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-072",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "HomeRail refresh while focus changes; native list reidentifies current item without overriding user input.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-073",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "Empty rail differs from loading, stale, auth_required and error.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-shutdown-composition"
+      ]
+    },
+    {
+      "id": "SYS-074",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "Saved view rename/reorder/delete persists and home returns to same rail selection.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-075",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "Late artwork/metadata response after detail window closes cannot mutate reopened item.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-artwork-composition",
+        "local-artwork-ui",
+        "local-source-consent-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-076",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "People -> title -> version -> Back restores previous focus and scroll position.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-artwork-ui"
+      ]
+    },
+    {
+      "id": "SYS-077",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "Collection -> member -> version -> Back restores collection item.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-artwork-ui"
+      ]
+    },
+    {
+      "id": "SYS-078",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "Phone filter/page state and TV catalog projection agree on counts and membership.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone"
+      ]
+    },
+    {
+      "id": "SYS-079",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "Skin changes row/wall/combined view without changing catalog query or ownership logic.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-080",
+      "domain": "HomeRail, navigation & skin",
+      "scenario": "reference-skin OSD audio/subtitle selector labels match authoritative Bobbi presentation fields.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_focus_anchor.py",
+        "tests/test_home_presentation_runtime.py",
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/frontend/test_catalog_phone_contract.cjs"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-playback-read"
+      ]
+    },
+    {
+      "id": "SYS-081",
+      "domain": "External servers & playback capability",
+      "scenario": "Plex multi-version item maps to one work and multiple exact media files.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-082",
+      "domain": "External servers & playback capability",
+      "scenario": "Jellyfin media segments preserve type, begin/end and provider provenance.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-083",
+      "domain": "External servers & playback capability",
+      "scenario": "Direct Play remains original file; Direct Stream is reported as container remux; Transcode is separately reported.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-084",
+      "domain": "External servers & playback capability",
+      "scenario": "Server asks for transcoding because selected subtitle requires burn-in; UI reports actual reason and quality.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-085",
+      "domain": "External servers & playback capability",
+      "scenario": "Server capability changes after reconnect; old capability cache expires by server epoch.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-086",
+      "domain": "External servers & playback capability",
+      "scenario": "Server unavailable during playback; other sources remain browsable and local history remains intact.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-087",
+      "domain": "External servers & playback capability",
+      "scenario": "WebDAV server lacks range support; fallback path is explicit and bounded.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-088",
+      "domain": "External servers & playback capability",
+      "scenario": "HTTP redirects preserve authorization boundaries and do not leak credentials cross-host.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-server-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-089",
+      "domain": "External servers & playback capability",
+      "scenario": "115 scan rate-limit pause preserves cursor and does not mark scan complete.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-090",
+      "domain": "External servers & playback capability",
+      "scenario": "Provider metadata refresh cannot overwrite user-confirmed title/parent evidence.",
+      "status": "pending_system_acceptance",
+      "related_tests": [],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-091",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Canonical native patch series applies cleanly to exact recorded Kodi source revision.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-092",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Changed native translation unit compiles with production flags and links into candidate binary.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-093",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Native command ledger capacity exhaustion returns typed failure without evicting unresolved command IDs.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-094",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Addon package manifest contains every imported core/platform module for clean install.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-095",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Upgrade from previous addon version preserves profile and MediaIndex schema.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-catalog-schema-health"
+      ]
+    },
+    {
+      "id": "SYS-096",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Interrupted package install rolls back code files and leaves user data untouched.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-catalog-schema-health"
+      ]
+    },
+    {
+      "id": "SYS-097",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Program rollback and database rollback are tested independently.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-catalog-schema-health"
+      ]
+    },
+    {
+      "id": "SYS-098",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Android APK signature/version and ABI are checked before install.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-099",
+      "domain": "Native, packaging & deployment",
+      "scenario": "CoreELEC update receipt binds source commit, native binary hash, addon version and schema.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-catalog-schema-health"
+      ]
+    },
+    {
+      "id": "SYS-100",
+      "domain": "Native, packaging & deployment",
+      "scenario": "Device smoke test includes cold boot, playback, seek, subtitle/audio, natural next and clean shutdown.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/test_ce_product_catalog_guard.py",
+        "native/tests/test_android_native_proof.py",
+        "native/tests/test_ci_gate.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-trial-evidence"
+      ]
+    },
+    {
+      "id": "SYS-101",
+      "domain": "Performance & failure injection",
+      "scenario": "Ten concurrent title-detail opens do not produce N+1 people/collection requests.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-artwork-composition",
+        "local-artwork-ui"
+      ]
+    },
+    {
+      "id": "SYS-102",
+      "domain": "Performance & failure injection",
+      "scenario": "Slow metadata provider does not block first usable title detail.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-artwork-composition",
+        "local-artwork-ui",
+        "local-source-consent-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-103",
+      "domain": "Performance & failure injection",
+      "scenario": "Memory stays bounded while browsing thousands of catalog files and changing filters.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "candidate_mapping_only",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite."
+    },
+    {
+      "id": "SYS-104",
+      "domain": "Performance & failure injection",
+      "scenario": "Repeated opening/closing phone manager leaves no orphan worker, timer or request.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-phone"
+      ]
+    },
+    {
+      "id": "SYS-105",
+      "domain": "Performance & failure injection",
+      "scenario": "Kill process during review transaction; DB is either fully committed or fully rolled back.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-review-atomicity"
+      ]
+    },
+    {
+      "id": "SYS-106",
+      "domain": "Performance & failure injection",
+      "scenario": "Kill process during export; archive is complete or clearly absent, never half-published as valid.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-transfer-v3"
+      ]
+    },
+    {
+      "id": "SYS-107",
+      "domain": "Performance & failure injection",
+      "scenario": "Slow disk plus profile switch preserves accepted history writes.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-history"
+      ]
+    },
+    {
+      "id": "SYS-108",
+      "domain": "Performance & failure injection",
+      "scenario": "Network loss during scan produces resumable state and exact partial diagnostics.",
+      "accepted_contract": "Keep exact partial diagnostics. Restart scanning without claiming continuation from an unsafe or absent cursor.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-network-checkpoint",
+        "local-source-consent-checkpoint"
+      ]
+    },
+    {
+      "id": "SYS-109",
+      "domain": "Performance & failure injection",
+      "scenario": "Native crash/restart invalidates old player instance and blocks stale controls.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Verify the exact cross-module scenario, not merely the related module suite.",
+      "local_execution_refs": [
+        "local-prepared-handoff",
+        "local-trial-evidence"
+      ]
+    },
+    {
+      "id": "SYS-110",
+      "domain": "Performance & failure injection",
+      "scenario": "Cold and warm playback trials preserve all failures and produce reproducible measurements.",
+      "accepted_contract": "115 fixed file/start/audio/subtitles: five cold plus five warm trials, retaining every failure; ten observations do not establish a reliable P95.",
+      "status": "pending_system_acceptance",
+      "related_tests": [
+        "tests/private_baseline/test_public_detail_convergence.py",
+        "tests/test_phone_batch_frontend.py",
+        "tests/test_catalog_publication_locks.py",
+        "tests/test_ce_trial_metrics.py"
+      ],
+      "evidence_kind": "local_execution_partial_system_acceptance_pending",
+      "device": "not_run_current_revision",
+      "remaining": "Run the real fixed-115 five-cold/five-warm campaign on the frozen installed build with explicit file/start/audio/subtitle intent. Retain all ten outcomes; process-restart evidence must qualify cold labels, without claiming disk/CDN cold or reliable P95.",
+      "local_execution_refs": [
+        "local-trial-evidence"
+      ]
+    }
+  ],
+  "local_execution_evidence": {
+    "qualification": "JUnit receipts are immutable-by-digest local development checkpoints. A passing selected class is partial evidence only; neither it nor the complete suite promotes an original cross-module scenario to passed. Overlapping suites must not be summed as unique coverage. Mixed-suite failures/errors remain visible.",
+    "source_binding": "These JUnit XML files do not record an exact source-tree digest. The recorded timestamp and XML SHA256 bind the execution artifact, not the final worktree, installed add-ons or native binary.",
+    "device_qualification": "No device execution or protocol certification is claimed here. The fixed-115 five-cold/five-warm campaign is prepared but unrun.",
+    "receipts": [
+      {
+        "id": "history-isolation",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/history-isolation.xml",
+        "sha256": "f4f8675ffc156254a98bd0803fce5c3c2c84533a6a1171b7b9b4822006c4b6e3",
+        "started_at": "2026-11-13T14:29:29.069332+08:00",
+        "reported": {
+          "tests": 98,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "phone-all-after",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/phone-all-after.xml",
+        "sha256": "685bfc0a7f6529b93911805a970a4409d4581def1d4ac391faff3c1bdebbd5df",
+        "started_at": "2026-11-13T14:21:38.066601+08:00",
+        "reported": {
+          "tests": 89,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "phone-http-owner",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/phone-http-owner.xml",
+        "sha256": "0026b921649807c568f22c85909c8bbf454ca5799863f85ced68d48d54184f88",
+        "started_at": "2026-11-13T14:38:10.261931+08:00",
+        "reported": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "readonly-playback-after",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/readonly-playback-after.xml",
+        "sha256": "1f74b2ad1df9d6978679e1e2c914d69ae425b04bb79f767b37021bc3fd74f507",
+        "started_at": "2026-11-13T14:25:34.404366+08:00",
+        "reported": {
+          "tests": 121,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "prepared-owned-handoff-final",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/prepared-owned-handoff-final.xml",
+        "sha256": "6456a3780651de918b83ecd9d0bf242a0c9a6d8aa02dcfb19ed17ff0ebedb92d",
+        "started_at": "2026-11-13T15:50:10.814509+08:00",
+        "reported": {
+          "tests": 24,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "prepared-consumer-fixtures",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/prepared-consumer-fixtures.xml",
+        "sha256": "38aa2a48f464db7f98f6f290c0216c4c6efba6ab0db464d6f4c35ad58ab9915a",
+        "started_at": "2026-11-13T15:39:57.648218+08:00",
+        "reported": {
+          "tests": 108,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "final-composition-fixtures",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/final-composition-fixtures.xml",
+        "sha256": "b108f7b6c26d11d784d7916202d7252d182cbf7b8606b80064250897e5e20313",
+        "started_at": "2026-11-13T15:49:56.307137+08:00",
+        "reported": {
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "artwork-composition",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/artwork-composition.xml",
+        "sha256": "a51ca8e5ca9e9311e7ca4ba3377533d26fa3722ac7a8535025c1f2ada9b4dcd3",
+        "started_at": "2026-11-13T15:10:27.513396+08:00",
+        "reported": {
+          "tests": 42,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "artwork-ui",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/artwork-ui.xml",
+        "sha256": "7909582639879755fdce3833894d6a486bdb946723de435255438a6578446fac",
+        "started_at": "2026-11-13T15:10:29.590580+08:00",
+        "reported": {
+          "tests": 23,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "review-atomicity-green",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/review-atomicity-green.xml",
+        "sha256": "d4d7373466f187cac7b44a86f063aef82ac5b3d982da20c7bb041619b3011213",
+        "started_at": "2026-11-13T15:13:07.655831+08:00",
+        "reported": {
+          "tests": 116,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "supplement-transfer-green",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/supplement-transfer-green.xml",
+        "sha256": "88342239188a23b2948bc81858427412c127b38b4d32f445bd3b3423bc2fa5d9",
+        "started_at": "2026-11-13T15:32:28.452007+08:00",
+        "reported": {
+          "tests": 109,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "local-catalog-acceptance",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/local-catalog-acceptance.xml",
+        "sha256": "694b7b340b198b414c22ed1a9c4f3190fc8eb40cb451ba070aa9585c2ef5358a",
+        "started_at": "2026-11-13T15:51:17.356462+08:00",
+        "reported": {
+          "tests": 247,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "outcome": "passed",
+        "device_contacted": false
+      },
+      {
+        "id": "stage2-primary",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/stage2-primary.xml",
+        "sha256": "534f430236f7257f9c2eee4e8434dd1f22abd1c1871c4db28da1d4a045c09748",
+        "started_at": "2026-11-13T15:33:02.307612+08:00",
+        "reported": {
+          "tests": 7230,
+          "failures": 57,
+          "errors": 25,
+          "skipped": 15
+        },
+        "outcome": "mixed",
+        "device_contacted": false
+      }
+    ],
+    "executions": [
+      {
+        "id": "local-history",
+        "receipt_ref": "history-isolation",
+        "kind": "local_test_execution",
+        "scope": "Captured-root history, reservation, shutdown and standard-adapter fixtures; not device write durability or a completed system scenario.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-026",
+          "SYS-027",
+          "SYS-035",
+          "SYS-036",
+          "SYS-045",
+          "SYS-046",
+          "SYS-059",
+          "SYS-060",
+          "SYS-061",
+          "SYS-107"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_ce2015_shutdown",
+            "pytest_file": "tests/test_ce2015_shutdown.py",
+            "reported": {
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce2025_shutdown",
+            "pytest_file": "tests/test_ce2025_shutdown.py",
+            "reported": {
+              "tests": 12,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce2097_file_history",
+            "pytest_file": "tests/test_ce2097_file_history.py",
+            "reported": {
+              "tests": 23,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_file_history_reservation",
+            "pytest_file": "tests/test_file_history_reservation.py",
+            "reported": {
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_history_storage_isolation",
+            "pytest_file": "tests/test_history_storage_isolation.py",
+            "reported": {
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_injected_file_history",
+            "pytest_file": "tests/test_injected_file_history.py",
+            "reported": {
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_profile_bound_history",
+            "pytest_file": "tests/test_profile_bound_history.py",
+            "reported": {
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_standard_history_profile",
+            "pytest_file": "tests/test_standard_history_profile.py",
+            "reported": {
+              "tests": 4,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_standard_product",
+            "pytest_file": "tests/test_standard_product.py",
+            "reported": {
+              "tests": 15,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-phone",
+        "receipt_ref": "phone-all-after",
+        "kind": "local_test_execution",
+        "scope": "Phone grant/scope/read/recovery fixtures and local frontend contracts; a lost reply never authorizes replay. No real phone/Kodi acceptance.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-037",
+          "SYS-038",
+          "SYS-039",
+          "SYS-040",
+          "SYS-044",
+          "SYS-047",
+          "SYS-048",
+          "SYS-078",
+          "SYS-104"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_ce2097_phone_management",
+            "pytest_file": "tests/test_ce2097_phone_management.py",
+            "reported": {
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_phone_batch_frontend",
+            "pytest_file": "tests/test_phone_batch_frontend.py",
+            "reported": {
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_phone_http_rejections",
+            "pytest_file": "tests/test_phone_http_rejections.py",
+            "reported": {
+              "tests": 19,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_phone_local_scope",
+            "pytest_file": "tests/test_phone_local_scope.py",
+            "reported": {
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_phone_mounted_scope",
+            "pytest_file": "tests/test_phone_mounted_scope.py",
+            "reported": {
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_phone_playback_recovery",
+            "pytest_file": "tests/test_phone_playback_recovery.py",
+            "reported": {
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_phone_playback_scopes",
+            "pytest_file": "tests/test_phone_playback_scopes.py",
+            "reported": {
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_phone_profile_binding",
+            "pytest_file": "tests/test_phone_profile_binding.py",
+            "reported": {
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-phone-http",
+        "receipt_ref": "phone-http-owner",
+        "kind": "local_test_execution",
+        "scope": "Local browser/HTTP-to-owner contract test with a controlled backend; not device HTTP traffic or real seek certification.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-038",
+          "SYS-040",
+          "SYS-048"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.private_baseline.test_phone_playback_http_contract",
+            "pytest_file": "tests/private_baseline/test_phone_playback_http_contract.py",
+            "reported": {
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-playback-read",
+        "receipt_ref": "readonly-playback-after",
+        "kind": "local_test_execution",
+        "scope": "Read-only playback authority/presentation fixtures. They do not establish rendered audio/subtitle state on a device.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-039",
+          "SYS-040",
+          "SYS-041",
+          "SYS-042",
+          "SYS-043",
+          "SYS-044",
+          "SYS-080"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.private_baseline.test_playback_authority",
+            "pytest_file": "tests/private_baseline/test_playback_authority.py",
+            "reported": {
+              "tests": 78,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.private_baseline.test_playback_presentation",
+            "pytest_file": "tests/private_baseline/test_playback_presentation.py",
+            "reported": {
+              "tests": 43,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-prepared-handoff",
+        "receipt_ref": "prepared-owned-handoff-final",
+        "kind": "local_test_execution",
+        "scope": "Captured prepared-session owned-handoff fixtures. Real native restart/natural-next playback remains unrun.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-037",
+          "SYS-056",
+          "SYS-057",
+          "SYS-060",
+          "SYS-109"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.private_baseline.test_ce2090_owned_handoff",
+            "pytest_file": "tests/private_baseline/test_ce2090_owned_handoff.py",
+            "reported": {
+              "tests": 24,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-prepared-consumers",
+        "receipt_ref": "prepared-consumer-fixtures",
+        "kind": "local_test_execution",
+        "scope": "Bound prepared-reader continuation and transport recovery fixtures; no claim that absent/failed captures can recover by adopting another Host.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-037",
+          "SYS-056",
+          "SYS-057",
+          "SYS-060"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.private_baseline.test_bt_next_continuity",
+            "pytest_file": "tests/private_baseline/test_bt_next_continuity.py",
+            "reported": {
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.private_baseline.test_native_bt_next_handoff",
+            "pytest_file": "tests/private_baseline/test_native_bt_next_handoff.py",
+            "reported": {
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.private_baseline.test_transport_recovery",
+            "pytest_file": "tests/private_baseline/test_transport_recovery.py",
+            "reported": {
+              "tests": 30,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.private_baseline.test_transport_recovery_diagnostics",
+            "pytest_file": "tests/private_baseline/test_transport_recovery_diagnostics.py",
+            "reported": {
+              "tests": 47,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-shutdown-composition",
+        "receipt_ref": "final-composition-fixtures",
+        "kind": "local_test_execution",
+        "scope": "Resident shutdown and home-presentation composition fixtures after dependency injection; not cold-boot or device shutdown acceptance.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-046",
+          "SYS-059",
+          "SYS-060",
+          "SYS-071",
+          "SYS-073"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_ce2015_shutdown",
+            "pytest_file": "tests/test_ce2015_shutdown.py",
+            "reported": {
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_home_presentation_runtime",
+            "pytest_file": "tests/test_home_presentation_runtime.py",
+            "reported": {
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-artwork-composition",
+        "receipt_ref": "artwork-composition",
+        "kind": "local_test_execution",
+        "scope": "Artwork/cache composition and scope tests. Concurrent real-provider latency and device rendering remain separate acceptance work.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-075",
+          "SYS-101",
+          "SYS-102"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_artwork_presentation_scope",
+            "pytest_file": "tests/test_artwork_presentation_scope.py",
+            "reported": {
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_artwork_storage",
+            "pytest_file": "tests/test_artwork_storage.py",
+            "reported": {
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_image_cache",
+            "pytest_file": "tests/test_image_cache.py",
+            "reported": {
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-artwork-ui",
+        "receipt_ref": "artwork-ui",
+        "kind": "local_test_execution",
+        "scope": "Public-detail and artwork UI fixtures; original windows/focus paths are exercised locally, not on the production skin/device.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-075",
+          "SYS-076",
+          "SYS-077",
+          "SYS-101",
+          "SYS-102"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.private_baseline.test_artwork_presentation",
+            "pytest_file": "tests/private_baseline/test_artwork_presentation.py",
+            "reported": {
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.private_baseline.test_public_detail_convergence",
+            "pytest_file": "tests/private_baseline/test_public_detail_convergence.py",
+            "reported": {
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-review-atomicity",
+        "receipt_ref": "review-atomicity-green",
+        "kind": "local_test_execution",
+        "scope": "Transactional review/segments/supplement invariants with injected failures. Rollback injection is not an OS process-kill or power-loss test.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-013",
+          "SYS-014",
+          "SYS-015",
+          "SYS-016",
+          "SYS-017",
+          "SYS-020",
+          "SYS-023",
+          "SYS-024",
+          "SYS-049",
+          "SYS-050",
+          "SYS-054",
+          "SYS-055",
+          "SYS-105"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_catalog_review_atomicity",
+            "pytest_file": "tests/test_catalog_review_atomicity.py",
+            "reported": {
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_segments",
+            "pytest_file": "tests/test_catalog_segments.py",
+            "reported": {
+              "tests": 32,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_supplement_integrity",
+            "pytest_file": "tests/test_catalog_supplement_integrity.py",
+            "reported": {
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_supplements",
+            "pytest_file": "tests/test_catalog_supplements.py",
+            "reported": {
+              "tests": 27,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_transfer_integrity",
+            "pytest_file": "tests/test_catalog_transfer_integrity.py",
+            "reported": {
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_media_library_index",
+            "pytest_file": "tests/test_media_library_index.py",
+            "reported": {
+              "tests": 38,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-transfer-v3",
+        "receipt_ref": "supplement-transfer-green",
+        "kind": "local_test_execution",
+        "scope": "Descriptive segment/supplement transfer and per-record admission/CAS/receipt fixtures. Archive/external filesystem crash durability is not certified.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-014",
+          "SYS-015",
+          "SYS-021",
+          "SYS-022",
+          "SYS-023",
+          "SYS-024",
+          "SYS-049",
+          "SYS-062",
+          "SYS-063",
+          "SYS-064",
+          "SYS-065",
+          "SYS-066",
+          "SYS-067",
+          "SYS-106"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_catalog_review_atomicity",
+            "pytest_file": "tests/test_catalog_review_atomicity.py",
+            "reported": {
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_segment_transfer",
+            "pytest_file": "tests/test_catalog_segment_transfer.py",
+            "reported": {
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_segments",
+            "pytest_file": "tests/test_catalog_segments.py",
+            "reported": {
+              "tests": 32,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_supplement_integrity",
+            "pytest_file": "tests/test_catalog_supplement_integrity.py",
+            "reported": {
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_supplement_transfer",
+            "pytest_file": "tests/test_catalog_supplement_transfer.py",
+            "reported": {
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_supplements",
+            "pytest_file": "tests/test_catalog_supplements.py",
+            "reported": {
+              "tests": 27,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_transfer_integrity",
+            "pytest_file": "tests/test_catalog_transfer_integrity.py",
+            "reported": {
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_catalog_transfer_settings_ui",
+            "pytest_file": "tests/test_catalog_transfer_settings_ui.py",
+            "reported": {
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-catalog-schema-health",
+        "receipt_ref": "local-catalog-acceptance",
+        "kind": "local_test_execution",
+        "scope": "Offline schema3/4, WAL and multi-profile code-compatibility refusal plus read-only health-probe fixtures. No installation, rollback, profile inspection or migration was run on a device.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-068",
+          "SYS-069",
+          "SYS-070",
+          "SYS-095",
+          "SYS-096",
+          "SYS-097",
+          "SYS-099"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_ce_catalog_rollback_guard",
+            "pytest_file": "tests/test_ce_catalog_rollback_guard.py",
+            "reported": {
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_personal_catalog_health",
+            "pytest_file": "tests/test_ce_personal_catalog_health.py",
+            "reported": {
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_product_catalog_guard",
+            "pytest_file": "tests/test_ce_product_catalog_guard.py",
+            "reported": {
+              "tests": 21,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-trial-evidence",
+        "receipt_ref": "local-catalog-acceptance",
+        "kind": "local_test_execution",
+        "scope": "Offline collectors, exact stream projection, owner/receipt/order guards and ten-slot campaign ledger tests. The actual fixed-115 five-cold/five-warm campaign, native controls and cold boot were not run.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-041",
+          "SYS-043",
+          "SYS-044",
+          "SYS-057",
+          "SYS-100",
+          "SYS-109",
+          "SYS-110"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_ce_trace_signal_diagnostics",
+            "pytest_file": "tests/test_ce_trace_signal_diagnostics.py",
+            "reported": {
+              "tests": 34,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_after_eof",
+            "pytest_file": "tests/test_ce_trial_after_eof.py",
+            "reported": {
+              "tests": 13,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_awake",
+            "pytest_file": "tests/test_ce_trial_awake.py",
+            "reported": {
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_campaign",
+            "pytest_file": "tests/test_ce_trial_campaign.py",
+            "reported": {
+              "tests": 35,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_cases",
+            "pytest_file": "tests/test_ce_trial_cases.py",
+            "reported": {
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_control_boundaries",
+            "pytest_file": "tests/test_ce_trial_control_boundaries.py",
+            "reported": {
+              "tests": 18,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_metrics",
+            "pytest_file": "tests/test_ce_trial_metrics.py",
+            "reported": {
+              "tests": 11,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_next_chain",
+            "pytest_file": "tests/test_ce_trial_next_chain.py",
+            "reported": {
+              "tests": 33,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_read_budget",
+            "pytest_file": "tests/test_ce_trial_read_budget.py",
+            "reported": {
+              "tests": 20,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_sidecar",
+            "pytest_file": "tests/test_ce_trial_sidecar.py",
+            "reported": {
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce_trial_stream_evidence",
+            "pytest_file": "tests/test_ce_trial_stream_evidence.py",
+            "reported": {
+              "tests": 9,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce2015_trial_receipts",
+            "pytest_file": "tests/test_ce2015_trial_receipts.py",
+            "reported": {
+              "tests": 7,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_ce2025_trial_identity",
+            "pytest_file": "tests/test_ce2025_trial_identity.py",
+            "reported": {
+              "tests": 2,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-network-checkpoint",
+        "receipt_ref": "stage2-primary",
+        "kind": "local_test_execution",
+        "scope": "Selected passing local network-path/profile-worker classes inside a mixed development run. Metadata observations are weak identity, cancellation is between I/O, and no SMB/NFS/WebDAV server or range fallback is device-certified.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-001",
+          "SYS-002",
+          "SYS-003",
+          "SYS-004",
+          "SYS-007",
+          "SYS-008",
+          "SYS-010",
+          "SYS-011",
+          "SYS-012",
+          "SYS-013",
+          "SYS-027",
+          "SYS-028",
+          "SYS-047",
+          "SYS-060",
+          "SYS-087",
+          "SYS-108"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_catalog_worker_profile",
+            "pytest_file": "tests/test_catalog_worker_profile.py",
+            "reported": {
+              "tests": 5,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_network_catalog_source",
+            "pytest_file": "tests/test_network_catalog_source.py",
+            "reported": {
+              "tests": 44,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-source-consent-checkpoint",
+        "receipt_ref": "stage2-primary",
+        "kind": "local_test_execution",
+        "scope": "Selected source-consent and bound ShareReader fixtures inside a mixed run; captured root/Host/endpoint generations do not revive after A-B-A.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-001",
+          "SYS-002",
+          "SYS-060",
+          "SYS-071",
+          "SYS-075",
+          "SYS-102",
+          "SYS-108"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_share_reader_isolation",
+            "pytest_file": "tests/test_share_reader_isolation.py",
+            "reported": {
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          {
+            "class_name": "tests.test_source_library_isolation",
+            "pytest_file": "tests/test_source_library_isolation.py",
+            "reported": {
+              "tests": 8,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-server-checkpoint",
+        "receipt_ref": "stage2-primary",
+        "kind": "local_test_execution",
+        "scope": "Only the 17 media-server tests recorded at this earlier checkpoint, not later-added server cases. Native provider scopes/original-file/part/HTTP fixtures do not certify live servers, exact resume, remux, transcode or subtitle burn-in.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-005",
+          "SYS-025",
+          "SYS-027",
+          "SYS-028",
+          "SYS-036",
+          "SYS-060",
+          "SYS-081",
+          "SYS-083",
+          "SYS-085",
+          "SYS-086",
+          "SYS-088"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_media_servers",
+            "pytest_file": "tests/test_media_servers.py",
+            "reported": {
+              "tests": 17,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "local-preparation-composition-checkpoint",
+        "receipt_ref": "stage2-primary",
+        "kind": "local_test_execution",
+        "scope": "Selected injected Session capability/lifecycle fixtures inside a mixed run; PreparedSession isolation tests added later are not claimed by this receipt.",
+        "system_acceptance": "pending",
+        "device_contacted": false,
+        "scenario_ids": [
+          "SYS-046",
+          "SYS-059",
+          "SYS-060"
+        ],
+        "selected_test_classes": [
+          {
+            "class_name": "tests.test_preparation_composition",
+            "pytest_file": "tests/test_preparation_composition.py",
+            "reported": {
+              "tests": 22,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

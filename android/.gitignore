@@ -1,0 +1,8 @@
+app/src/main/jniLibs/
+app/src/main/assets/engine-provenance.json
+app/src/main/assets/TorrServer-GPL-3.0.txt
+app/src/main/assets/fonts/
+app/src/main/assets/repository.bobbi.zip
+local.properties
+.gradle/
+**/build/

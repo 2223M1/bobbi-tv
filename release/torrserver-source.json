@@ -1,0 +1,10 @@
+{
+  "commit": "a86d8fa7fd4e07605f240fe69bf299392f7cb023",
+  "repository": "https://github.com/YouROK/TorrServer",
+  "version": "MatriX.147",
+  "archive_sha256": "2c8000fadc20a96d99621881e8e9552b832419d4a33b0354b3ae794c17f6a743",
+  "archive_bytes": 53820472,
+  "license": "GPL-3.0",
+  "modified": false,
+  "build": "Upstream build scripts and go.mod/go.sum retained in the corresponding source archive; binary hashes in android/toolchain-lock.json."
+}

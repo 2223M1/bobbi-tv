@@ -1,0 +1,14 @@
+diff --git a/xbmc/guilib/listproviders/DirectoryProvider.cpp b/xbmc/guilib/listproviders/DirectoryProvider.cpp
+--- a/xbmc/guilib/listproviders/DirectoryProvider.cpp
++++ b/xbmc/guilib/listproviders/DirectoryProvider.cpp
+@@ -295,6 +295,10 @@ void CDirectoryProvider::Fetch(std::vector<std::shared_ptr<CGUIListItem>>& items)
+   items.clear();
+   for (const auto& i : m_items)
+   {
++    // A job can complete after Update released m_section. Evaluate the actual
++    // items being published under this same lock, including their first frame
++    // and any account visibility change since Update.
++    i->UpdateVisibility(m_parentID);
+     if (i->IsVisible())
+       items.push_back(i);
+   }

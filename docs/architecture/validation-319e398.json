@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "status": "offline_passed_device_startup_failed_acceptance_incomplete",
+  "source": {
+    "commit": "319e3987f3a196ac9d5e214a82fcdf1ceed2a9c2",
+    "tree": "9a1814f2e0bf66f643f83e27e38c7bf669e9b9de",
+    "later_source_baseline": "51317effaef2f84953eeb48eea486f0239da693f",
+    "later_source_deployed": false,
+    "qualification": "319 device evidence does not validate later resolve-proof, start-facts or SQLite changes. 55 and 2b validation records remain historical."
+  },
+  "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+  "full_offline_record": {
+    "path": "validation-319e398-offline.json",
+    "sha256": "7ef35685827273cf36fb400429b6f5b5899e88a5739da81d82981d632b9d5b2b",
+    "bytes": 181604,
+    "scope": "Complete immutable-source test/build/graph ledger; device receipts are separately bound below."
+  },
+  "offline": {
+    "windows": {
+      "primary_passed": 7602,
+      "baseline_passed": 1735,
+      "preparation_passed": 254,
+      "total_passed": 9591,
+      "ordinary_skipped": 21,
+      "xfailed": 1,
+      "failed": 0,
+      "errors": 0,
+      "xfail": "Retained Eizouken/Nogizaka46 provider row lacks strong type evidence; not silently reclassified."
+    },
+    "wsl_twelve_groups": {"passed": 312, "failed": 0, "receipt": "319e398-posix-contracts-report.json"},
+    "wsl_original_supplement": {
+      "passed": 245,
+      "failed": 2,
+      "receipt": "319e398-posix-supplement-contracts-report.json",
+      "diagnosis": "Linux Git could not read Windows linked-worktree metadata while fixtures captured audit_commit, before product behavior assertions.",
+      "original_failures_retained": true
+    },
+    "native_linux_git_recheck": {
+      "passed": 11,
+      "failed": 0,
+      "receipt": "319e398-native-ce2048-linux-report.json",
+      "sha256": "5b281485782d05aafe3686412a747c373f572e04ba492f15dd8f9c9ade1baa24",
+      "scope": "All original CE2048 cases in authentic same-commit/tree Linux Git snapshot, unchanged before/after. Not a native player rebuild or Android link/device proof."
+    },
+    "accounting": "Windows groups are disjoint. WSL/Linux reruns overlap and are not added to 9591. All 21 Windows skipped case IDs have separate Linux pass evidence; Windows skips and original failures remain recorded."
+  },
+  "graph": {
+    "revision": "319e398",
+    "two_graph_and_overview_exports_identical": true,
+    "sha256": "d8ad8d23f06c5c97ac49b44d2fff438ab48e68138eeb29fa2ff1b62b70244e7f",
+    "files": 2321,
+    "python_ast": 1448,
+    "nodes": 60791,
+    "edges": 150672,
+    "confirmed": 7533,
+    "candidate": 34299,
+    "external": 25963,
+    "unresolved": 82877,
+    "diagnostics": 0,
+    "qualification": "Static evidence for 319 only, not later 513 source, runtime reachability or system acceptance."
+  },
+  "build_and_install": {
+    "source_check_equal_files": 63,
+    "installable_components": 22,
+    "sequence": 2026102127,
+    "run_id": "20261113-220800",
+    "package_sha256": "0e8cde491d6a39c445167d6eb7bce7024b9b3cf1c375e006ea64653aecacc44d",
+    "entry_version": "0.2.92",
+    "entry_sha256": "4c020b65e2499288a457033769bb9d9d3ae1e9e075f9be7722e2363339293f7d",
+    "installable_manifest_sha256": "ce162fe468030fecf5643879e9c7661d1a3061414afdefbac39b08f508805529",
+    "review_evidence_root": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence",
+    "deployment": {"path": "ce-deploy-runs/20261113-220800.json", "sha256": "7553a1e039779b4a02db5e16eeffb1f0339f1da9a7a93cfeb4c198b35eddeb81"},
+    "upgrade": {"path": "ce-20261113-220800-upgrade.json", "sha256": "d74aafa0ba075d0bf84a42365f850098b7d90bdb0734f61ac41964e00fea901b", "state": "upgraded", "playback_verified": false},
+    "installed_files": {"path": "ce2023/installed-files-1794578956540329400.json", "sha256": "011bd2f3709bb9229309dbde3e4b5585aced6365e51c94fc5ca44447053da71c", "matching_owned_files": 1257},
+    "qualification": "Deployment candidate hash matches the actual package; its 22 components match the clean 319 manifest. Owned-file comparison excludes original dependencies/user data. 2b product payload bytes are identical, but source provenance and execution receipts differ; its failed validation is not relabelled."
+  },
+  "device": {
+    "native_sha256": "7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c",
+    "after_upgrade": {
+      "path": "device-afterupgrade-319e398.json",
+      "sha256": "65465de9cf56644bc17ffc33334cfc1fae35310fe449123f45a9e1936d2a8145",
+      "pending_transaction": false,
+      "kodi": "active, zero restarts",
+      "catalog": "schema 4, integrity ok, 594 typed objects",
+      "saved_logins": ["115", "baidu"],
+      "qualification": "Read-only health sample, zero cloud requests; saved login and rollback receipt presence are not online authentication or recovery acceptance. Health alone contains no source commit/tree."
+    },
+    "cold_attempt_1": {
+      "cards": "campaign-319e398/ce-new-work-convergence115c319e398-galactic_heroes-cards-1794579064831557200.json",
+      "cards_sha256": "662462bb516188d072d66d0f72b4b01b923438acd77254ad9888b9a3fda1e069",
+      "failure": "PICKER_FIRST_ITEM_NOT_OBSERVED",
+      "completion": "search-failure-319e398-cold1-completion.json",
+      "completion_sha256": "f77b25ccfe1a1a903499d7dffa5bdb7021bde9b5f19821ed7750eb2fd84bc482",
+      "providers": "sharelib FAILED/OperationalError/count 0; local/setup/qqdocs complete with 0; Jackett partial with 17 timeouts; AnimeGarden timeout with 2 timeouts.",
+      "qualification": "Transport completed; ordinary search acceptance failed. OperationalError alone does not establish locked database, missing table or another unique cause."
+    },
+    "warm_attempt_2": {
+      "work": "Legend of the Galactic Heroes (1988), S01E01",
+      "request_id": "8a6d23dd5e4e480880ce50eae1215574",
+      "native_instance": "469137c8-270f-4a3a-8c4e-b2d2975cb428",
+      "select": "campaign-319e398/ce-new-work-convergence115c319e398-galactic_heroes-select-1794579470110732200.json",
+      "select_sha256": "416b8f25000438da953a14ca6044f37b43adc2aee8b4a82f9e1d3ea5041bf0a7",
+      "complete_timeline": {"path": "warm2-319e398-playback-supply-analysis.json", "sha256": "aaba35e49837e93b3ae8e1420ac580844127f0645fa11408eb2b45f64bb33042"},
+      "samples": 80,
+      "av_samples": 67,
+      "select_to_av_observed_seconds": 6.710545006906614,
+      "trace_passed": false,
+      "max_composite_health_anomaly_seconds": 21.854577330173925,
+      "clock_discontinuities": 1,
+      "observation_gaps": 0,
+      "timeline": "i0-1 no native; i2-12 OPEN; i13 first AV; i20-62 caching with media clock 3.483s; i63 recovers; i79 media 11.824s. i2-79 retain the same request/native instance.",
+      "presentation": {"path": "presentation-319e398-warm2.json", "sha256": "13dbd093917cb528147f1833254d493911a79568f8784a5cdfde00965c4576a6", "handoff": "CONFIRMED", "fullscreen_requested": true, "fullscreen_confirmed": true, "window": 12005},
+      "later_metrics": {"path": "campaign-319e398/ce-new-work-convergence115c319e398-galactic_heroes-metrics-1794579558007490400.json", "sha256": "1b22248d70b8e9dfff8590a99dcf306e51e3c6aa2d069bde5370f468cc67433b", "samples": 30, "media_seconds": [70.533, 99.545]},
+      "qualification": "Fullscreen succeeds in this sample; startup health still fails. The OR health interval is not continuous decoder freeze. Later advancing samples do not erase failure or prove continuous rendering; unavailable metrics trace/zero events do not mean zero network IO. URL hashes are transport identities, not content hashes."
+    },
+    "osd": {
+      "scope": "Same warm playback instance only; original command receipts plus post-observations, not full OSD acceptance.",
+      "subtitle_cht_after": {"path": "osd-subtitle-cht-after-319e398.json", "sha256": "d4f41dd0b752b85221dd6af62d44b136537a14bfcc6169ce802eb75c7da2f4c8", "command_id": "c7fb6e637d78474ab026b6279ad37b3a", "action": "manual_subtitle_stream", "state": "applied", "selected_subtitle_index": 1, "subtitle_visible": true},
+      "subtitle_off_after": {"path": "osd-subtitle-off-after-319e398.json", "sha256": "c361d2262a6291c9b41b036f3b6a1d4b18a8c1930930158d61a3e133bd6194af", "command_id": "683051541b7b449d97ba58c304fb8470", "action": "subtitle_visible", "state": "applied", "subtitle_visible": false},
+      "subtitle_chs_after": {"path": "osd-subtitle-chs-after-319e398.json", "sha256": "4aa99921ceb6844f547f5c8303d98a75aed6ede89b56c983a914f4a20331e188", "command_id": "580bda7f445d472abb4f78e9d1d403cf", "action": "manual_subtitle_stream", "state": "applied", "selected_subtitle_index": 0, "subtitle_visible": true},
+      "audio_after": {"path": "osd-audio-after-319e398.json", "sha256": "7c603eba9e8aac4a69bb7bff4313dddfffb28994171601d11f1fd0ab6229a40a", "command_id": "08ea678ecfc646a3962362f28af6760a", "action": "audio_stream", "state": "applied", "selected_audio_index": 0, "available_audio_tracks": 1},
+      "seek_before": {"path": "osd-seek-before-319e398.json", "sha256": "6dae97512e1d9ed9eb20310cffeba1dfd149f217c66378533ae52a0ec54ac036", "position_ms": 1122571, "user_intent": 4},
+      "seek_after": {"path": "osd-seek-after-319e398.json", "sha256": "d28a02e302a76ec18bccfaed08b30b481289b0853ba6f8a82f1014125c4a461d", "command_id": "ecee4c4b7dd645038df2823827bdf205", "action": "seek", "state": "applied", "position_ms": 1155138, "user_intent": 5},
+      "command_binding": "seek-before/after native_commands records bind all five applied commands to the same warm request/native/file identity.",
+      "qualification": "Only one audio track exists, so this is manual re-selection, not cross-track switching. Seek position delta includes playback between samples, not exact seek displacement or latency. Snapshots are non-atomic and screenshots exclude the video plane. Extra unknown collector replies have no command_id and do not contradict the five identified applied controls. Subtitle rendering and full interaction intersections are unproven."
+    },
+    "ordinary_scoped_stop": {
+      "path": "campaign-319e398/ce-new-work-convergence115c319e398-galactic_heroes-stop-1794580609771451000.json",
+      "sha256": "dddc1af3c749fce17aa5d751f4024d19705443897f55c136ddbaf48f33f8a124",
+      "exit_code": 0,
+      "transport_exit_code": 0,
+      "trial_exit_code": 0,
+      "stopped": true,
+      "seconds": 1.49,
+      "qualification": "Before snapshot retains the warm request/native instance at media 1171.086s, caching false and CHS visible. This receipt does not separately record a stop command_id or after/Home snapshot."
+    },
+    "acceptance": "NOT_PASSED"
+  },
+  "remaining": [
+    "Resolve the preserved cold-search/startup failures and complete the planned five-cold/five-warm comparison without treating ten samples as reliable P95.",
+    "Full OSD, phone, natural EOF/history/next and profile intersections; all 110 system scenarios.",
+    "Independent build/deploy/acceptance for later 51317ef source; no inherited 319 device proof.",
+    "Real private-cloud/NAS/server protocols, rollback/data recovery and Android hardware/link validation."
+  ],
+  "public_release_clearance": false,
+  "qualification": "Concise evidence index, not a completion certificate. Original failures and release-license blockers remain; later transport A/B diagnostics are excluded."
+}

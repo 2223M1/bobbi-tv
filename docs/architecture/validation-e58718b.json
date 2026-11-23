@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "status": "offline_passed_deployed_device_acceptance_failed_incomplete",
+  "source": {
+    "commit": "e58718b783adb0803b0812db03bfd5d7f21d0b73",
+    "tree": "a4878a097ae19d8881c7da0326fb89af4065764d",
+    "qualification": "Frozen tested and packaged product identity; later documentation or product commits do not relabel these receipts."
+  },
+  "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+  "build_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds",
+  "review_evidence_root": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence",
+  "integrated_changes": {
+    "account_guard_commit": "5e6c153bc19cbe5735e16bc8b2f750e80c1ab03c",
+    "query_acceptance_commit": "b5f1189561d15cd491136b4104cfb73b453df0a1",
+    "qualification": "ShareStream validates immutable scope structure once but rechecks full account/generation under the original authority lock; no cached authorization result or block/timeout/cache policy change. Query tools distinguish launch acknowledgement from completed error-free same-picker query. These changes are included in this source's main regressions, not added again as separate functional coverage or evidence of a performance fix."
+  },
+  "offline": {
+    "primary": {"path":"e58718b-primary.json","sha256":"dfffaa02de8f85f93ba82b146f1f5c4ae9fc048d7ac2ec5896b58584cec90418","passed":7996,"ordinary_skipped":21,"xfailed":1},
+    "baseline": {"path":"e58718b-baseline.json","sha256":"38a89e727f1cd4712f7edb41040b7300ba72b630ebacd1fb359bece37484a246","passed":2171},
+    "preparation": {"path":"e58718b-preparation.json","sha256":"6e970a77a660f1681877e6c7b0552533ad1eaee732a2713b2b03ad57db941214","passed":254},
+    "main_unique_cases":10443,"windows_passed":10421,"ordinary_skipped":21,"xfailed":1,"failed":0,"errors":0,
+    "skip_coverage": {"path":"e58718b-windows-linux-skip-coverage.json","sha256":"dde004164a45590466694cd8a056a65bc0fabeea8c4c4ea5f1f51a453128a365","same_case_linux_passed":21,"unknown":0},
+    "identity_rule": "Case-sensitive (file, classname, full parameterized name); no duplicate main IDs. Fourteen Linux matches have exact XML file/classname/name; seven infer file from the same-source receipt's unique profile test target. Original Windows outcomes remain unchanged.",
+    "xfail": "tests/test_ce2029_search_audit.py::test_real_provider_never_publishes_explicit_live_action_for_animation[Keep Your Hands Off Eizouken! (Nogizaka46 Drama) - S01E01 (1080p)-aliases0]",
+    "xfail_reason": "Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama",
+    "overlapping_executions_not_added": {
+      "linux_supplement": {"path":"e58718b-linux-supplement-20261114-01/report.json","sha256":"2b0b8b85f6635a2830249b49e434420619767f328b1f36ab621274d184bd88bd","passed":306},
+      "linux_inner_report": {"path":"e58718b-linux-supplement-20261114-01/linux-report.json","sha256":"8b9f55b698d75c510f159a75e31052c909f376758cfb4dce717fcd0f73498873"},
+      "posix_twelve_groups": {"path":"e58718b-posix-contracts-report.json","sha256":"9eba17ab68e62491e84c18fa17c7569d89e2b5011bb8da54021aef7e15c43994","passed":312},
+      "linux_extra_guard": {"path":"e58718b-linux-guard-extra-20261114-01/report.json","sha256":"9d53712f24f1c62fef643ae8d063980703d3aa4eac4846557ada9ff0d741b874","bound_guard_passed":82,"block_startup_passed":35,"passed":117}
+    },
+    "qualification": "Receipts bind their external XML/log artifacts; no new combined offline ledger is asserted. Supplemental/POSIX/guard execution layers overlap and are not added to unique functional coverage. Historical native Python111 belongs to ff0422c, not a new native run."
+  },
+  "graph": {
+    "combined_report": {"path":"e58718b-final-contracts-and-graphs-report.json","sha256":"9caa97c8f95dca20962be4ffd12e723d4678138209a8751d82e4b483ea28945b"},
+    "record": {"path":"e58718b-architecture-final-report.json","sha256":"0474ab1e263da535883f4463182330fbae311183a09a616aa33b90f22e887ae3"},
+    "directories":["D:/AM6B-Project/architecture-audit-e58718b-final","D:/AM6B-Project/architecture-audit-e58718b-final-repeat"],
+    "two_exports_identical":true,"sha256":"fe160b44178338941415aaa01ad0832f2ede0f82c8437155f79ec2b6d1f5db16",
+    "files":2349,"python_ast":1469,"nodes":62080,"edges":154494,
+    "confirmed":7650,"candidate":35060,"external":26800,"unresolved":84984,
+    "diagnostics":0,"scc_candidates":19,"module_collisions":3,
+    "qualification":"Deterministic static extraction, not full runtime reachability, zero architectural debt or system acceptance."
+  },
+  "build_and_install": {
+    "release_verification":{"path":"e58718b-release-verification.json","sha256":"98af77b1e8a544906fa556e5e085a2ef703e552fa9de551a1cbbd281b978c417"},
+    "build_verification":{"path":"e58718b-build-verification.json","sha256":"ce5a91b7be5f3a3bbe7d12012c1dfa8edb7c998aebc7c496bf2527af6880f463"},
+    "private_audit":{"path":"e58718b-private-audit.json","sha256":"8df9ce68daa28267f04a3602ad9086e948e323be70f5bb16f7ef42581b6201a0"},
+    "entry_audit":{"path":"e58718b-entry-audit.json","sha256":"1949913135ac7dc72e80371694a9dd52f0636bac87ee2ccbc42318ad2720eab3"},
+    "inventory_sha256":"0e2f4141456e196f66c5a768b24e9d46e828fbce091c090a44a3693d7dd6e10d",
+    "managed_inventory_files_checked":1468,"source_check_equal_files":63,"installable_components":22,"sequence":2026102129,
+    "package":{"path":"e58718b-releases/bobbi-private-2026102129-coreelec.bobbi-update.zip","root":"build_root","sha256":"e738ef97cab80de33f3f8f3a06b67b9d273ddc2e117a7f46cd47524a8a4639c6","bytes":96315515},
+    "entry":{"path":"e58718b-entry/script.bobbi.start-0.2.94.zip","root":"build_root","sha256":"c7d9d7ef0d5afb502e218f3cf393656935fb894968ea5a337bd73e8d5287f743","bytes":96527067,"members":25,"bootstrap_files":22},
+    "changed_components_since_ff0422c":["plugin.video.bobbi","script.bobbi.start","script.module.bobbi.core"],
+    "payload_change_scope":"Three addon.xml version files and bobbi_core/share_stream.py; core/plugin version0.1.70 and entry0.2.94. Declared application-input metadata unchanged.",
+    "deployment":{"path":"ce-deploy-runs/20261114-004258.json","root":"review_evidence_root","sha256":"0593116b4c48c8769d79493989c6e6dd5b83953e66c7b5e667fb07f4f3678730"},
+    "upgrade":{"path":"ce-20261114-004258-upgrade.json","root":"review_evidence_root","sha256":"24045a219f7285b026a37b96278554e68551041710fd60c2419953e1f211b0d8","playback_verified":false},
+    "installed_files":{"path":"ce2023/installed-files-1794588500534812000.json","root":"review_evidence_root","sha256":"f1f9f6554ab5aa7872679166d7c14a7b06dc4f286492af01100819f6a05cc9f9","matching_owned_files":1259,"mismatches":0},
+    "qualification":"Source-check outputs are non-installable/non-signable; runtime and independent cryptographic verification bind the actual installable package, component hashes and entry membership. Release verification independently rechecked existing outputs, not rebuilt them. Its then-unassessed Windows/deployment scope is superseded only by the separate completed receipts above, not rewritten. No repeated signed-package reproducibility, full dependencies/user-data audit or public-distribution clearance is claimed."
+  },
+  "native": {
+    "sha256":"980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+    "rebuilt_for_this_release":false,"changed_during_upgrade":false,
+    "historical_record":{"path":"E-native-freeze-ff0422-20261113-2345/record.json","sha256":"00297a1e008125910a70bf1096b462590ed980ef8bf33c2b92db963a0bc68a52"},
+    "qualification":"The existing ff0422c native binary is reused; the native source diff since that freeze contains only documentation. Historical compile/link/actor proof is not a new e58718b native rebuild."
+  },
+  "device": {
+    "acceptance":"failed_incomplete",
+    "before_upgrade":{"path":"device-before-2129-freeze.json","sha256":"50158dcfe7c6fdc9cef394cb0d574dcf4810320d05e4a80077dff9f1a01270ec"},
+    "after_upgrade":{"path":"device-after-2129-upgrade.json","sha256":"67fc2a4c9b821be1a297c37dc1616e14ab014724c6e36c31fc3537e2581a8fed","state":"observed","sequence":2026102129,"pending_transaction":false,"kodi_active":true,"kodi_restarts":0,"catalog_schema":4,"catalog_integrity":"ok","typed_objects":594,"probe_cloud_requests":0,"unchanged_sentinels":8},
+    "upgrade_qualification":"Eight sentinel hashes match only across the before/after upgrade window. This is not all-user-data, live-account, subsequent-playback, recovery or long-duration health acceptance.",
+    "ordinary_attempt_1": {
+      "start":{"path":"campaign-e58718b/ce-new-work-convergence115e58718b-galactic_heroes-start-1794588540988242800.json","sha256":"f5ceab8195ca6ddb05004dcebce810f80c44679e9d6bfa60d29a4ae54de581d9","exit_code":1,"transport_exit_code":0,"trial_exit_code":1},
+      "query":{"launch_accepted":true,"accepted":false,"completed":false,"reason":"QUERY_ERROR_OBSERVED","loading":"true","source_count":1,"samples":12},
+      "later_cards":{"path":"campaign-e58718b/ce-new-work-convergence115e58718b-galactic_heroes-cards-1794588567843417000.json","sha256":"1ee1ae922d7b3def407dbea60fadd27d619a41225f7ad342576c9541fa524a20","same_picker":true,"items":1},
+      "select":{"path":"campaign-e58718b/ce-new-work-convergence115e58718b-galactic_heroes-select-1794588623360539100.json","sha256":"d01551edf536abbd3442894f7cad8bfcdc7523046bdc598c7876592c429df6dd","exit_code":1,"transport_exit_code":0,"trial_exit_code":1},
+      "request_id":"149be46d83b34c61892c71af7c38ad90","native_instance":"6162b040-7eb3-44cf-be65-2bb297d2a440",
+      "select_to_av_observed_seconds":6.696768320,
+      "startup_health":{"trace_passed":false,"reason":"STARTUP_OBSERVATION_INTERRUPTED","av_samples":66,"max_observed_stall_seconds":17.85751099814661,"clock_discontinuities":5,"observation_gaps":2,"whole_startup_or_render_continuity_proven":false},
+      "stop":{"path":"campaign-e58718b/ce-new-work-convergence115e58718b-galactic_heroes-stop-1794588669245792300.json","sha256":"7e2ee395443dc52d61d3f71de6745ba1eab1f6b2f142f3eea93757e22c91762d","stopped":true,"original_command_id_retained":false},
+      "qualification":"The later same-picker card and ordinary Input.Select/start-over/AV do not erase the initial query failure. Composite observed-health failure and missing observations remain; the metric is not an exact continuous decode stall. Stop observation does not prove original command receipt persistence. No fixed cold/warm comparison, continuous rendered playback or performance improvement is established."
+    },
+    "search_log_diagnostic":{"path":"device-e58718b-search-events-source-unmeasured.json","sha256":"c4375de4127b4a34fd3f5a527c6ae99a016d32b8c156242c085ede5036bea7d5","inspected_source":null,"qualification":"Read-only log projection does not measure source identity. Provider rows have chronological attribution, not matching invocation IDs. The earlier device-e58718b-search-events.json has an incorrect hard-coded ff0422c source label; preserved but excluded as source-binding evidence. This diagnostic cannot override the ordinary query receipt."},
+    "block_timing":{
+      "path":"e58718b-block-timing-collected.json","sha256":"c0ea69850fb5daf7df62e3556d1e03da187bfa583da5e494eb578beeb20b58fe","state":"completed","diagnostic_only":true,"product_proof":false,
+      "log":{"path":"ce-playback-log-diagnostic-1794588796409451200.json","root":"review_evidence_root","sha256":"4c8f412d88032844824335e1c19078bd766d8eabfa346c7a76a1fed15a062734"},
+      "analysis":{"path":"e58718b-block-timing-analysis.json","sha256":"d1b8af47f21c15770a46de1ded6ca691cfc2df2d2368e934d582a253200d32a2"},
+      "planned":90,"collected":90,"scheduler_gaps":0,"matching_native_tuple_samples":89,"native_tuple_unavailable_indices":[0],"native_monotonic_unavailable_indices":[1,2,3,4,5,6,7,8,9],
+      "av_samples":77,"caching_true_samples":24,"caching_media_seconds":3.283,"first_to_last_caching_sample_start_seconds":11.495683,"play_to_av_observed_upper_bound_seconds":6.748233,
+      "main_http12_seconds":{"wall":42.502,"gate":0.466,"fetch":40.343,"write":1.482,"connect_within_fetch":14.021724,"read_wait_within_fetch":17.479550,"grant_within_fetch":0.000979,"consumer_cancel_cross_phase":6.848469,"socket_send_within_write":1.026071},
+      "stop_confirmed":true,"settings_unchanged":true,"native_unchanged":true,
+      "qualification":"90 scheduled slots are not 90 authoritative native states or continuous playback. Sample0 lacks a native tuple; OPEN samples1-9 lack native timestamps. All78 retained ShareStream rows match the diagnostic transport hash and one log binding tuple, but log/native request and file hashes are distinct identities, not equated. Caching sample span is not exact continuous stall time. Cumulative nested timing fields are not additive; consumer-cancel does not isolate account CPU or lock waiting. HTTP12 suppresses41 internal details. Uncontrolled prior-run comparisons prove neither guard improvement nor regression. Historical crash-file listings are not new crash evidence. This diagnostic does not replace the failed ordinary attempt."
+    },
+    "after_playback":{"path":"device-after-2129-playback.json","sha256":"c2bc3da708f1f98a303f16e806c24fd3b4afb05a8c33b19ffbfde233b2ff43d0","state":"attention_required","broad_product_error_matches":1,"tracebacks":0,"kodi_restarts":0,"same_native_pid":27941,"catalog_schema":4,"catalog_integrity":"ok","typed_objects":594,"unchanged_sentinels":7,"history_changed":true,"qualification":"Preserve the health alert. Seven sentinel hashes match after-upgrade; history changed during playback. Broad error-pattern count is not independently classified here, and zero tracebacks/restarts does not prove full health."},
+    "program_rollback":{
+      "operation":{"path":"ce-20261114-004258-rollback.json","root":"review_evidence_root","sha256":"7906b28c322c056ca0f07de10c3847832c33da8b85b4e36d5af736c653a669c2","state":"rolled_back","migration_performed":false,"playback_verified":false},
+      "installed_files":{"path":"ce2023/installed-files-1794588977645526100.json","root":"review_evidence_root","sha256":"b88c8ccd723620db870b753d53c994cfa4eadaab236da2a3acf6b762ae9e4842","matching_owned_files":1259,"mismatches":0},
+      "after":{"path":"device-after-2129-program-rollback.json","sha256":"39dca33780ec4ade21f90d02bcac413dcfbe392857ca2d3496a70bfc9ea22e07","state":"attention_required","traceback_headings":3,"broad_product_error_matches":0,"catalog_schema":4,"catalog_integrity":"ok","typed_objects":594,"unchanged_sentinels_relative_to_after_playback":8,"native_unchanged":true,"pending_transaction":false},
+      "traceback_classification":{"path":"device-2129-rollback-tracebacks-separated.json","sha256":"42ebc60733871e7f11f60c954653b2c999f0e5b0f522527ecf6c916c140b4bdb","source_revision_measured":false,"error_types":["TimeoutError","ReadTimeoutError","ReadTimeout"],"terminal_caller_addon":"service.subtitles.a4ksubtitles","terminal_caller_line":73},
+      "last_observed_high_watermark_sequence":2026102129,"last_observed_installed_payload_sequence":2026102128,"last_observed_installed_source":"ff0422cff75b58b72053898057d8b87356eea85c","core_plugin_version":"0.1.69","entry_version":"0.2.93",
+      "qualification":"Successful owned-program byte rollback to2128, with high-watermark2129 retained. Eight sentinels including the latest history match the post-playback snapshot. No database restoration occurred. Three traceback headings classify as a network-timeout chain through requests/urllib3 and the unmanaged third-party subtitle caller, not three proven player failures; the plugin was not changed and attention_required is retained. No post-rollback playback, TV-confirmation path, comprehensive data restore, interruption or full-health acceptance."
+    },
+    "full_osd":"not_completed_current_generation","five_cold_five_warm":"not_completed",
+    "evidence_cutoff":"Listed2129 deployment, ordinary attempt, diagnostic, post-playback health and subsequent program rollback to2128. At this cutoff high-watermark2129 does not mean e58718b is still installed. Historical2128 OSD/native proof retains its original scope; later product candidates and deployments are excluded."
+  },
+  "historical_annotations": {
+    "ff0422c_record":"docs/architecture/validation-ff0422c.json",
+    "health_log_classification":{"path":"device-2128-health-log-classification.json","sha256":"eb50c7d3761ce03a6882e30dbdbd09ad6bca876d3b42e039000286516e552bc2","matched_rows":2,"actual_kodi_level":"info","marker":"BOBBI-PROVIDERS","qualification":"Later read-only classification of the two broad health matches. Original attention_required receipt, provider PARTIAL and playback failures remain unchanged; no retroactive full-health pass."}
+  },
+  "remaining_gates": [
+    "All110 exact cross-module scenarios remain pending; 83 partial local mappings and 27 candidate-only mappings are unchanged.",
+    "Ordinary query and startup health failed; full OSD, exact EOF/Stop/history/next/profile/version chain and fixed-file five-cold/five-warm remain incomplete.",
+    "Cut/multipart identities, full media facts/preferences, automatic segments and source remapping retain their gaps.",
+    "Real115/NAS/server protocols, server progress and Direct Stream/Transcode/HLS lifecycles remain unaccepted.",
+    "Program rollback bytes are narrowly verified, but post-rollback playback/full health, data restore/interruption and Android clean-link/APK/device remain unproved.",
+    "Distribution remains blocked by seven unresolved-source and two unresolved-full-license entries, including the p115rsacipher GPLv3 LICENSE versus MIT metadata conflict."
+  ],
+  "history_preserved":["validation-ba4c238.json","validation-a725b84.json","validation-55b4f9b.json","validation-2b263bb.json","validation-319e398.json","validation-ff0422c.json","original offline ledgers, failed inventories, superseded native candidates and device failures"]
+}

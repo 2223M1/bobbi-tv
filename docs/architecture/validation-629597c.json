@@ -1,0 +1,827 @@
+{
+  "schema": 1,
+  "status": "offline_passed_deployed_device_acceptance_failed_incomplete",
+  "finalized": true,
+  "plan_complete": false,
+  "source": {
+    "commit": "629597c7c6655a992438f1903e3066dfa72cf61a",
+    "tree": "bd0bff705783c7440ed4ea64952270d9ca3c817c",
+    "qualification": "Commit/tree and clean statuses refer only to the frozen validation source.before/source.after in the independent audit. Later dirty-worktree changes are outside that frozen identity; this document does not re-label the current working tree or HEAD as the tested source. This summary does not establish universal runtime ownership, profile safety, or playback acceptance.",
+    "frozen_validation_worktree_clean": true,
+    "frozen_clean_evidence": {
+      "path": "629597c-validation-independent-audit.json",
+      "sha256": "250b347f6e719560d9aa748cc88e90ef1f72cd994e8a986a3865e53a278c7c7f",
+      "fields": [
+        "source.before",
+        "source.after",
+        "source.unchanged"
+      ],
+      "before_status": "",
+      "after_status": "",
+      "unchanged": true
+    },
+    "current_worktree_is_not_the_frozen_validation_identity": true
+  },
+  "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+  "build_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds",
+  "review_evidence_root": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence",
+  "evidence_reference_convention": "Relative path defaults to evidence_root; root selects another named root; absolute paths are used directly. When git_snapshot is present, SHA-256 binds the exact Git blob at its commit/repository_path, not mutable working-tree bytes at path. Other hashes bind existing local bytes. Neither form is a new execution.",
+  "reference_validation": {
+    "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/docs/architecture/validation-1eb2e58.json",
+    "sha256": "6f9c6c04485dc6ac2e3892e3d7b13272c8414fd3aafa0b509969a0c9696b9929",
+    "git_snapshot": {
+      "commit": "629597c7c6655a992438f1903e3066dfa72cf61a",
+      "repository_path": "docs/architecture/validation-1eb2e58.json",
+      "blob": "cbdec7fb673211c3a20b3177d1eb7cfe83597f06"
+    }
+  },
+  "integrated_changes": {
+    "qualification": "Runtime/profile ownership and catalog filter changes are bounded by their source, manifest and contract tests. No full profile-safe claim is made.",
+    "filter_scope": "Entry captures settings once; source-search transform forwards the captured getter into catalog screening and processing; the three pre-transform title-fallback screening branches use that same getter while preserving client forwarding.",
+    "filter_contract_tests": 62,
+    "remaining_ambient_state": [
+      "Debrid globals, caches, token construction and OAuth constructors",
+      "Independent provider quality builders in bobi_library, mdsub, sharelib and qqdocs",
+      "Metadata helper caches/settings, live skin, dynamic external scraper internals and live YouTube availability"
+    ],
+    "complete_runtime_ownership_proved": false
+  },
+  "offline": {
+    "state": "passed_with_original_skips_and_expected_failure_preserved",
+    "independent_audit": {
+      "path": "629597c-validation-independent-audit.json",
+      "sha256": "250b347f6e719560d9aa748cc88e90ef1f72cd994e8a986a3865e53a278c7c7f"
+    },
+    "independent_auditor": {
+      "path": "629597c-validation-independent-auditor.py",
+      "sha256": "32c82abcc92b0686ef6287ae3243be51dedad3c69df1c331667ecb8e8c84a8b2"
+    },
+    "windows": {
+      "unique_case_ids": 10736,
+      "passed": 10714,
+      "ordinary_skipped": 21,
+      "xfailed": 1,
+      "failed": 0,
+      "errors": 0,
+      "duplicate_case_ids": 0,
+      "case_ids_sha256": "d6a51f59468db3f18d3e0a391a30adc180bf93a9e956f1f98111fa714a72c0e9",
+      "groups": [
+        {
+          "name": "primary",
+          "cases": 8123,
+          "passed": 8101,
+          "ordinary_skipped": 21,
+          "xfailed": 1,
+          "failed": 0,
+          "errors": 0,
+          "xml": {
+            "path": "629597c-primary.xml",
+            "sha256": "2555a23e2b758aae91780fafaf9e9248f1bc0974417217789dbe7a25d0ca3de8"
+          },
+          "receipt": {
+            "path": "629597c-primary.json",
+            "sha256": "6625d5069dee9433d1fd7ae29ddfd353a93765bb5a10ea3ffe43f1441f8367d1"
+          }
+        },
+        {
+          "name": "baseline",
+          "cases": 2359,
+          "passed": 2359,
+          "ordinary_skipped": 0,
+          "xfailed": 0,
+          "failed": 0,
+          "errors": 0,
+          "xml": {
+            "path": "629597c-baseline.xml",
+            "sha256": "2b2545ec49d56222550e7e939c1a8f24434c7aa92fb9153bd1d68f5ad4a3d1bf"
+          },
+          "receipt": {
+            "path": "629597c-baseline.json",
+            "sha256": "6a41063cd2aee7b5bfaddff2c4cef21713fd59ddce9f3d01fa69ee9a268f8892"
+          }
+        },
+        {
+          "name": "preparation",
+          "cases": 254,
+          "passed": 254,
+          "ordinary_skipped": 0,
+          "xfailed": 0,
+          "failed": 0,
+          "errors": 0,
+          "xml": {
+            "path": "629597c-preparation.xml",
+            "sha256": "cf38387cdeddc3aa9822ae956818eaf172e94b364e4a575b93fed1c009aa3b8e"
+          },
+          "receipt": {
+            "path": "629597c-preparation.json",
+            "sha256": "0a188641d893a9972c193e33404859e622ac193b369939533d8661d9a6353330"
+          }
+        }
+      ],
+      "xfail": {
+        "case_id": [
+          "tests/test_ce2029_search_audit.py",
+          "tests.test_ce2029_search_audit",
+          "test_real_provider_never_publishes_explicit_live_action_for_animation[Keep Your Hands Off Eizouken! (Nogizaka46 Drama) - S01E01 (1080p)-aliases0]"
+        ],
+        "reason": "Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama",
+        "preserved": true
+      }
+    },
+    "linux_runtime_supplement": {
+      "groups": 11,
+      "passed": 507,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "outer_report": {
+        "path": "629597c-linux-runtime-supplement-20261114-01/report.json",
+        "sha256": "8b9adb2cc59ab8ee0b8b395982eb0f0b5c91a2119665f4332aa6d47179d173be"
+      },
+      "inner_report": {
+        "path": "629597c-linux-runtime-supplement-20261114-01/linux-report.json",
+        "sha256": "30be88b3a26cd8dcd743e95338d7925e7a72bff9a3788e3672c969b99eec5ca3"
+      },
+      "source_unchanged": true
+    },
+    "posix_contracts": {
+      "groups": 12,
+      "passed": 312,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": {
+        "path": "629597c-posix-contracts-report.json",
+        "sha256": "1e123865ae4982fce2d4f4808b0f7e66c71d796f41a7f8dbef6e34330c702001"
+      }
+    },
+    "exact_skip_join": {
+      "ordinary_windows_skips": 21,
+      "same_case_linux_passes": 21,
+      "unmatched": 0,
+      "report": {
+        "path": "629597c-windows-linux-skip-coverage.json",
+        "sha256": "9a4052c54b25506c439bf659f9e3abcf794a1fdebcf7805e9cbbe54b01175aa9"
+      },
+      "case_identity": "Case-sensitive normalized (file, classname, full parameterized name). Missing Linux file attributes are inferred only unambiguously from explicit hash-bound command targets and, for multi-module targets, matching classname.",
+      "windows_outcomes_changed": false
+    },
+    "qualification": "Linux/runtime/POSIX executions overlap the Windows cases and are not added to the 10,736 unique Windows functional cases. Audit reparsed existing artifacts; it did not rerun tests, regenerate graphs, contact the device or accept deployment/playback."
+  },
+  "graph": {
+    "state": "two_byte_identical_static_exports",
+    "report": {
+      "path": "629597c-architecture-final-report.json",
+      "sha256": "c3ffad31fb9e36e493b8dba721aa30f7f56480120650bc1e3c3b113e32a6b053"
+    },
+    "run_1": {
+      "path": "D:/AM6B-Project/architecture-audit-629597c-final/graph.json",
+      "sha256": "f4d9fdfecb196f1392e1cebbfc6957b580ab69cfe3b2014a167e0e14c8ec1cf9"
+    },
+    "run_2": {
+      "path": "D:/AM6B-Project/architecture-audit-629597c-final-repeat/graph.json",
+      "sha256": "f4d9fdfecb196f1392e1cebbfc6957b580ab69cfe3b2014a167e0e14c8ec1cf9"
+    },
+    "byte_identical": true,
+    "graph_bytes_each": 107084175,
+    "inventory_files": 2360,
+    "loaded_sources": 1781,
+    "parsed_python_files": 1477,
+    "nodes": 62992,
+    "edges": 156786,
+    "unresolved_edges": 86510,
+    "scc_candidates": 20,
+    "module_collisions": 3,
+    "diagnostics": 0,
+    "declared_boundary_rules": 1,
+    "boundary_findings": 0,
+    "ownership_edges": 110,
+    "ownership_anchors_exact_and_same_in_both": true,
+    "manifest": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/docs/architecture/ownership-manifest.json",
+      "sha256": "88d89a54ba25f066e8e4dd96ac513b90b6889016fa253717dca54dbaa8466738",
+      "git_snapshot": {
+        "commit": "629597c7c6655a992438f1903e3066dfa72cf61a",
+        "repository_path": "docs/architecture/ownership-manifest.json",
+        "blob": "ad45e978bc920b07858457e1bfd4fa9ef03d4fff"
+      }
+    },
+    "dependency_debt": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/docs/architecture/dependency-debt.json",
+      "sha256": "87b2969fb26e25960d00d5b66d411720338d65b801dccf1ecad532ab6659f100",
+      "git_snapshot": {
+        "commit": "629597c7c6655a992438f1903e3066dfa72cf61a",
+        "repository_path": "docs/architecture/dependency-debt.json",
+        "blob": "026a67e394a72bf8d287a6a5f9bec1d3e04da067"
+      }
+    },
+    "dependency_debt_core": {},
+    "dependency_debt_platform": {},
+    "qualification": "Deterministic static inventory/candidate graph only. Cleared declared import-boundary exceptions do not prove whole-program resolution, runtime reachability, complete lifecycle ownership, or universal profile safety. Manifest ownership edges are reviewed assertions, not runtime observations."
+  },
+  "build_and_install": {
+    "state": "build_and_release_identities_verified_deployment_receipts_bound_not_playback_accepted",
+    "build_verification": {
+      "path": "629597c-build-verification.json",
+      "sha256": "be03f43dadf3baedc7574e4737eba986b2bebf0e46e9e17f49874cbb6f89cf39"
+    },
+    "source_check": {
+      "output_files_each": 63,
+      "all_63_file_hashes_equal": true,
+      "installable_components": 22,
+      "inventory_sha256": "b68e33a458c454ee5546bb9ad613a0bca75db5befcbdebcfafcfd128cdc31ad3",
+      "qualification": "Two independent source-check outputs are byte-identical; this is not repeat-build reproducibility of the signed private package."
+    },
+    "private_audit": {
+      "path": "629597c-private-audit.json",
+      "sha256": "0f557bec708c36b183bfd07150cfcedaf89a0f8a395d516590394fbcf185c332"
+    },
+    "private_audit_result": {
+      "profile": "coreelec",
+      "components": 22,
+      "signature": "passed",
+      "all_component_hashes": "passed",
+      "total_component_files": 1470,
+      "negative_controls": [
+        "wrong profile rejected",
+        "tampered signature rejected",
+        "tampered component rejected",
+        "missing component rejected"
+      ]
+    },
+    "entry_audit": {
+      "path": "629597c-entry-audit.json",
+      "sha256": "0f30df4934c6865c6361fe22f0a7d5493c00f75a0b44dc2e6185185592fc505a"
+    },
+    "entry_audit_result": {
+      "kodi_addon_xml": "passed",
+      "complete_signature": "passed",
+      "embedded_complete_payload": true,
+      "same_generation_bootstrap": "passed",
+      "pinned_component_notices": "passed",
+      "isolated_bootstrap_import": "passed",
+      "signed_entry_members": "passed",
+      "account_state_copied": false
+    },
+    "independent_public_key_release_verification": {
+      "path": "629597c-release-verification.json",
+      "sha256": "e035539889705e5c7141576bfef51eea7db8dd1d409cbf9c5f932d135cca35bb"
+    },
+    "independent_public_key_verifier": {
+      "path": "629597c-release-verifier.py",
+      "sha256": "61c7e3fcc5d42311b15ae8ae29f0b40e8ef9f71df7fbf8acaa90c7e037a00ac9"
+    },
+    "public_key_verification": {
+      "runtime_verifier": "passed",
+      "independent_cryptography_verifier": "passed",
+      "changed_manifest_rejected": true,
+      "changed_signature_rejected": true,
+      "public_trust_sha256": "a4fe050314256b7455ce55c787aa294c194059507c7c9637c8a65c3fcb55841b",
+      "private_key_read": false
+    },
+    "signed_bundle": {
+      "path": "629597c-releases/bobbi-private-2026102131-coreelec.bobbi-update.zip",
+      "sha256": "ac57ff1227799dd566ae87bf2d556d4ea77c10ef6b3f6702e3a5ef51407809e7",
+      "root": "build_root",
+      "bytes": 96322682,
+      "sequence": 2026102131,
+      "profile": "coreelec",
+      "components": 22,
+      "exact_membership": true,
+      "all_component_hashes_match_installable": true
+    },
+    "entry": {
+      "path": "629597c-entry-artifacts/script.bobbi.start-0.2.96.zip",
+      "sha256": "17c87a43be18b53d8bd94c9b88a51bdfcd5305a22308897644f34fd5d2e31649",
+      "root": "build_root",
+      "bytes": 96534234,
+      "version": "0.2.96",
+      "sequence": 2026102131,
+      "members": 25,
+      "exact_membership": true,
+      "embedded_bundle_sha256": "ac57ff1227799dd566ae87bf2d556d4ea77c10ef6b3f6702e3a5ef51407809e7",
+      "same_signed_generation_bootstrap_files": 22
+    },
+    "deployment": {
+      "run_id": "20261114-025908",
+      "sequence": 2026102131,
+      "candidate_sha256": "ac57ff1227799dd566ae87bf2d556d4ea77c10ef6b3f6702e3a5ef51407809e7",
+      "run": {
+        "path": "ce-deploy-runs/20261114-025908.json",
+        "sha256": "5b6cdbfc682d73926f51c26db52320c8514751fe8ade5576f40be76bace2c920",
+        "root": "review_evidence_root"
+      },
+      "stage": {
+        "path": "ce-20261114-025908-stage.json",
+        "sha256": "6f6b2ce6e9934b3a6d7ad8e9ca1b3cca73ab798d675c0f453e31285533292640",
+        "root": "review_evidence_root"
+      },
+      "upgrade": {
+        "path": "ce-20261114-025908-upgrade.json",
+        "sha256": "56821cc0f2d6db313372670bd59cbd3f836ef6ea9437cdf8e650a7bc75928ab0",
+        "root": "review_evidence_root"
+      },
+      "transition_baseline": {
+        "path": "ce-deploy-runs/20261114-025908.transition-baseline.json",
+        "sha256": "5c22fc6ef2ba13b1671600631081f202a02847d38f59ce7b8dc68062487690ae",
+        "root": "review_evidence_root"
+      },
+      "stage_exit": 0,
+      "upgrade_exit": 0,
+      "stage_components": 22,
+      "migration_performed": false,
+      "migration_policy": "existing-current-profile-preserved",
+      "cd2_and_mount_untouched": true,
+      "playback_verified": false,
+      "installed_files": {
+        "path": "ce2023/installed-files-1794596634457633100.json",
+        "sha256": "7afa30ccb068c17711438acd1ddb95593e657c9831e27dd92f099f0491c6e944",
+        "root": "review_evidence_root",
+        "expected_sequence": 2026102131,
+        "observed_sequence": 2026102131,
+        "owned_files": 1260,
+        "matched": true,
+        "mismatches": 0,
+        "qualification": "Owned installed files only. Original dependencies and user data are neither compared nor overwritten by this verification."
+      },
+      "qualification": "Candidate hash binds the deployment receipt to the audited frozen-source release. Successful stage/upgrade and owned-file verification do not prove clean-device installation, all-user-data preservation, recovery compatibility, or playback. Upgrade was dispatched while the first aggregate skip join was unresolved; its corrected join is recorded separately."
+    },
+    "distribution_cleared": false,
+    "unresolved_license_items": {
+      "unresolved_source": [
+        "plugin.video.bobbi",
+        "script.module.bobbi.platform",
+        "script.module.bobbi.core",
+        "script.module.bobbi.mdsub",
+        "script.module.bobbi.catalog",
+        "skin.bobbi.cinema",
+        "resource.uisounds.bobbi-modern"
+      ],
+      "unresolved_full_license": [
+        "script.module.jurialmunkey",
+        "script.module.infotagger"
+      ]
+    }
+  },
+  "native": {
+    "sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+    "native_source_tree": "294abcde0b17995420d07bf49c268c715e6f9dc7",
+    "same_native_git_tree_as_previous": true,
+    "rebuilt": false,
+    "historical_record": {
+      "path": "E-native-freeze-ff0422-20261113-2345/record.json",
+      "sha256": "00297a1e008125910a70bf1096b462590ed980ef8bf33c2b92db963a0bc68a52"
+    },
+    "current_device_hash_observed_in": "device.after_2131_health",
+    "qualification": "Release-only audit reused historical native identity and did not rehash the current binary; the separate bounded after-2131 health receipt reports the same native hash. No new native build or playback acceptance is implied."
+  },
+  "device": {
+    "state": "failed_incomplete_original_stop_applied",
+    "after_2131_health": {
+      "path": "device-after-2131-upgrade.json",
+      "sha256": "240243070cf5cf6472aa757fde1daea30aaad3629d121a01008e0080bde4e98b",
+      "snapshot_time": "2026-11-14 03:03:51",
+      "exit_code": 0,
+      "readonly": true,
+      "cloud_requests_initiated": 0,
+      "failures": [],
+      "active_players": [],
+      "sequence": 2026102131,
+      "pending_transaction": false,
+      "kodi_active": true,
+      "kodi_pid": 4830,
+      "reported_restarts": 0,
+      "native_pid": 4839,
+      "current_log_tail_truncated": false,
+      "current_log_tail_tracebacks": 0,
+      "current_log_tail_product_error_lines": 0,
+      "index_integrity": "ok",
+      "index_schema_user_version": 4,
+      "index_missing_tables": [],
+      "qualification": "One bounded read-only snapshot, not continuous health or playback proof. Rollback available records receipt presence, not exercised recovery or compatibility admission."
+    },
+    "subtitle_idle_entry": {
+      "path": "629597c-subtitle-idle-entry.json",
+      "sha256": "b61181d6309efbf19fc810bce7e36386169b9e457c12d5753d70f5a8c7cdcf98",
+      "exit_code": 0,
+      "passed": true,
+      "launches": 1,
+      "guard_window": 12002,
+      "exact_guard_dismissed": true,
+      "controls_sent": 0,
+      "subtitle_downloading_tested": false,
+      "active_playback_tested": false
+    },
+    "current_trial": {
+      "trial_id": "convergence115629597c",
+      "scenario": "galactic_heroes",
+      "status": "failed_incomplete",
+      "active": false,
+      "qualification": "Two distinct start attempts. Original query and picker results remain distinct; attempt 2 playback occurred, failed startup acceptance, and received its one original scoped Stop. Finalization of this record does not complete product acceptance.",
+      "attempts": [
+        {
+          "attempt": 1,
+          "playback_performed": false,
+          "query": {
+            "accepted": false,
+            "completed": false,
+            "reason": "QUERY_ERROR_OBSERVED",
+            "source_count": 4,
+            "error": "1 个来源查询失败或超时"
+          },
+          "picker_wait_reason": "PICKER_WAIT_SCOPE",
+          "cards_reason": "PICKER_REPLACED",
+          "original_picker_generation": 13,
+          "observed_replacement_generation": 14,
+          "old_trial_rebound": false,
+          "bound_receipts": [
+            {
+              "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-start-1794596699459909300.json",
+              "sha256": "6ccf53ef7c44afbb4d96b91117fed4e6518dbc912398c9028a78e08b51785ec8"
+            },
+            {
+              "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-picker_wait-1794596736451981900.json",
+              "sha256": "fd95ae9fee41e4fdbe7b9484bc75d4d546465ade383a0add9ceea79ba610e57d"
+            },
+            {
+              "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-inspect-1794596774841440700.json",
+              "sha256": "b4d14c14ef856251ab6521fa97df8c0bcc68ce8686dfd4cfe0b958dd972269ac"
+            },
+            {
+              "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-cards-1794596992153897900.json",
+              "sha256": "29b1181a6ca0b7e34c84bd97172576a58f50ff332422abb581c07f8741eae634"
+            },
+            {
+              "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-inspect-1794597001525869400.json",
+              "sha256": "1b5fbd0992854bd4b6c14880b824fc79e1b3276002dc5bb03e2c4185a6d2299a"
+            }
+          ],
+          "later_same_picker_status": {
+            "loading": false,
+            "source_count": 4,
+            "displayed_providers_failed_or_timed_out": 2,
+            "qualification": "From the retained later inspect receipt, not the initial query acceptance."
+          }
+        },
+        {
+          "attempt": 2,
+          "regression_attempt": true,
+          "start": {
+            "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-start-1794597105831064700.json",
+            "sha256": "d8f526951f5a99bb7d67d786f34304d3c913381da0aaa132bb8e58a2c231944a"
+          },
+          "start_transport_exit": 0,
+          "start_trial_exit": 2,
+          "query": {
+            "accepted": null,
+            "completed": false,
+            "reason": "QUERY_PENDING",
+            "source_count": 4,
+            "picker_generation": 17,
+            "picker_intent": 2,
+            "tmdb_id": 27660,
+            "kind": "tv"
+          },
+          "cards": {
+            "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-cards-1794597139133800700.json",
+            "sha256": "cc84e5704c3da196b4256a5f22949e231cdc9fd5b3a031f3f081dbe60a70960c"
+          },
+          "cards_exit": 0,
+          "exact_source_key": "ab766ee89fdc3b95bb4ee9f0424420c985ce7d296c90fb3cfdbdd42ce8dbc8b1",
+          "source_site": "精选源库 · 115",
+          "select": {
+            "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-select-1794597193643052000.json",
+            "sha256": "82f63316c93226e4db22a63f148575b41ffbd241284d328aab4546ee92dfa180"
+          },
+          "select_transport_exit": 0,
+          "select_trial_exit": 1,
+          "playback_performed": true,
+          "playback_accepted": false,
+          "reason": "STARTUP_OBSERVATION_INTERRUPTED",
+          "trace_passed": false,
+          "request_id": "1e0b7ab19c7542a7b9d699e228548e91",
+          "file_identity_sha256": "90bff13fd6a8562e65f7c6dd0ac2c1f4fc08d41ccb386feb39905ac0dd988b31",
+          "native_instance": "ba7f2b75-6426-45be-bde3-b287ae56e883",
+          "select_to_first_observed_av_upper_bound_seconds": 7.221078149974346,
+          "original_trace_health": {
+            "no_observed_stall": false,
+            "max_observed_stall_seconds": 26.1731834881939,
+            "clock_discontinuities": 4,
+            "observation_gaps": 1,
+            "stall_threshold_seconds": 1
+          },
+          "qualification": "First observed AV is an observation upper bound, not exact startup time. Playback/control/terminal observations do not erase the failed startup or missing sample."
+        }
+      ],
+      "attended_wake": {
+        "path": "device-629597c-attended-wake.json",
+        "sha256": "6367950df02ae32532f50de63443de27aeb5f88eb160fe1456cab70c1e6aae2a",
+        "dispatch_count": 1,
+        "passed": true,
+        "generation_before": 14,
+        "generation_after": 14,
+        "old_trial_rebound": false,
+        "playback_controls_sent": 0,
+        "qualification": "Separate attended screensaver wake only; did not bind the old trial to the replacement picker."
+      },
+      "playback_performed": true,
+      "playback_accepted": false,
+      "original_stop": {
+        "path": "campaign-629597c/ce-new-work-convergence115629597c-galactic_heroes-stop-1794597204883825400.json",
+        "sha256": "7eab4be2ce1d50e49c9c1b6da5fa4c564b94df1dcbbdbcfb26059f67e2672c8c",
+        "exit_code": 0,
+        "state": "confirmed",
+        "stopped": true,
+        "command_id": "437ba38b32b54a92b3d16615c09e532f",
+        "request_id": "1e0b7ab19c7542a7b9d699e228548e91",
+        "receipt_status": "applied",
+        "original_receipt_verified": true,
+        "journal_sha256": "30eaa8a641bee83620a843766eb1ff59ab8b3dae01159a2a5bc266aebe576464",
+        "qualification": "One original scoped Stop receipt; no new Stop or scenario is inferred."
+      },
+      "exact_history": {
+        "path": "exact-history-629597c-original-stop.json",
+        "sha256": "867f199e1c34fecfb17ec381d8c0b132a64d0c40472d3ee53a285cb1ff68ed4a",
+        "scope": "fixed_default_profile_history",
+        "diagnostic_only": true,
+        "product_proof": false,
+        "unique_match": true,
+        "primary_media_identity_matches": true,
+        "request_id": "1e0b7ab19c7542a7b9d699e228548e91",
+        "current_time": 16.893,
+        "total_time": 1444.945,
+        "terminal_reason": "STOP",
+        "completed": false,
+        "active_profile": "unmeasured",
+        "current_account": "unmeasured",
+        "exact_file_pointer": "unmeasured",
+        "qualification": "A unique request/media match in fixed-default-profile history only. This does not establish active-profile/account ownership or exact filepointer equality, and does not accept failed startup."
+      },
+      "provider_events_attempt1": {
+        "path": "device-629597c-search-events-attempt1.json",
+        "sha256": "1c6fd1aea53eb01a1599a9be6287244de5ef817fa81610b2e0521494d79a500a",
+        "jackett": {
+          "status": "PARTIAL",
+          "planned": 72,
+          "succeeded": 11,
+          "failed": 2,
+          "timed_out": 6,
+          "skipped": 53
+        },
+        "qualification": "Read-only allowlisted event parser. It does not inspect installed source; installation identity is established by the separate owned-file receipt."
+      },
+      "provider_events_after_trial": {
+        "path": "device-629597c-search-events-after-trial.json",
+        "sha256": "e66fa751a3be51b35db59e0e0dfd08f7a9f307e435bd78756f76166c0483051d",
+        "provider_diagnostic_count": 2,
+        "diagnostics": [
+          {
+            "attempt": 1,
+            "timestamp": "2026-11-14 03:05:00.631",
+            "sharelib": {
+              "state": "PARTIAL",
+              "count": 1,
+              "planned": 4,
+              "succeeded": 4,
+              "truncated": 1
+            },
+            "jackett": {
+              "state": "PARTIAL",
+              "count": 3,
+              "planned": 72,
+              "succeeded": 11,
+              "failed": 2,
+              "timed_out": 6,
+              "skipped": 53
+            },
+            "animegarden": {
+              "state": "PARTIAL",
+              "count": 0,
+              "planned": 3,
+              "succeeded": 1,
+              "timed_out": 1,
+              "skipped": 1
+            }
+          },
+          {
+            "attempt": 2,
+            "timestamp": "2026-11-14 03:11:45.743",
+            "sharelib": {
+              "state": "PARTIAL",
+              "count": 1,
+              "planned": 4,
+              "succeeded": 4,
+              "truncated": 1
+            },
+            "jackett": {
+              "state": "PARTIAL",
+              "count": 3,
+              "planned": 72,
+              "succeeded": 21,
+              "failed": 4,
+              "timed_out": 7,
+              "skipped": 40
+            },
+            "animegarden": {
+              "state": "PARTIAL",
+              "count": 0,
+              "planned": 4,
+              "succeeded": 2,
+              "timed_out": 0,
+              "skipped": 2
+            }
+          }
+        ],
+        "qualification": "Two real provider diagnostic events, not two failures total. First/second Jackett failed counts are 2/4; provider diagnostics, card availability and query acceptance are distinct. Read-only log parser does not inspect installed source."
+      },
+      "final_acceptance": "failed_incomplete",
+      "independent_startup_analysis": {
+        "path": "629597c-device-startup-independent-analysis.json",
+        "sha256": "8db647b6b1972756650039f1cbcbc01cf3fef1d710fbf451f91faf535fc62acd"
+      },
+      "independent_startup_summary": {
+        "zero_based_indices": true,
+        "legacy_composite_anomaly": {
+          "first_index": 19,
+          "last_index": 71,
+          "wall_seconds": 26.1731834881939,
+          "media_delta": 1.142,
+          "frame_delta": 125
+        },
+        "strict_clock_plateau": {
+          "first_index": 22,
+          "last_index": 71,
+          "wall_seconds": 24.64234917704016,
+          "media_time": 3.819,
+          "frame_delta": 121
+        },
+        "strict_clock_and_decoder_plateau": {
+          "first_index": 55,
+          "last_index": 71,
+          "wall_seconds": 8.046517976094037,
+          "media_time": 3.819,
+          "frame_count": 262
+        },
+        "gap": {
+          "sample_index": 13,
+          "failed_read_seconds": 0.2895392330829054,
+          "sample_acquisition_seconds": 0.2896811468526721,
+          "neighbor_successful_sample_wall_separation_seconds": 1.0904499730095267
+        },
+        "qualification": "The 26.173-second composite health anomaly is not a continuous clock/decoder freeze. No range crosses gap13. None of the gap durations establishes device outage duration. Later observed progress and Stop do not accept startup."
+      }
+    },
+    "historical_115_red_case": {
+      "status": "unresolved_not_reclassified",
+      "source_commit": "1eb2e58b668916b950d332337486109184c48a18",
+      "source_tree": "4245e79c3c3087f0aa60ec6a20fe83cd236300bf",
+      "sequence": 2026102130,
+      "ordinary_analysis": {
+        "path": "1eb2e58-ordinary-independent-analysis-v2.json",
+        "sha256": "18884cb157cd8f7c97485bf44fb4a9fcd3396eafcc82956621a22ecdfe84f53c"
+      },
+      "diagnostic_analysis": {
+        "path": "1eb2e58-diagnostic-independent-analysis.json",
+        "sha256": "5428669d55c7c7beccf1f77741b4896d7ca706d695a0d429848446194ec93dd2"
+      },
+      "root_cause_fix_demonstrated": false,
+      "findings": [
+        "Initial TRIAL_ERROR and later interrupted startup remain failed/incomplete despite first observed AV around 7.726 seconds.",
+        "Valid adjacent samples 39-59 show 9.812 seconds of stationary media/frame endpoints; this does not bridge missing sample 38.",
+        "Later sparse samples show local progress only and cannot retroactively turn the failed startup into success.",
+        "Diagnostic playback and its terminal Stop are a separate scope and do not fill the ordinary trial's missing evidence."
+      ],
+      "qualification": "Current source, offline tests, installation and limited health do not establish that the old 115 red case is fixed."
+    },
+    "after_trial_stop_health": {
+      "path": "device-629597c-after-trial-stop.json",
+      "sha256": "2884d2c68cb01d54ac88cbbd871b6392963a18d13544c73ec9c79c7f15bc9335",
+      "snapshot_time": "2026-11-14 03:14:44",
+      "exit_code": 0,
+      "original_state": "attention_required",
+      "original_failures": [
+        "startup_log_attention"
+      ],
+      "active_players": [],
+      "gui_window": 10000,
+      "sequence": 2026102131,
+      "pending_transaction": false,
+      "kodi_active": true,
+      "kodi_pid": 4830,
+      "reported_restarts": 0,
+      "native_pid": 4839,
+      "index_integrity": "ok",
+      "index_schema_user_version": 4,
+      "index_missing_tables": [],
+      "current_log_tail_tracebacks": 0,
+      "current_log_tail_product_error_lines": 2,
+      "sentinels_compared_to_after_2131_health": {
+        "unchanged": [
+          "115_account",
+          "pan_accounts",
+          "preparation",
+          "advancedsettings",
+          "native_abi",
+          "library",
+          "torrent_backend"
+        ],
+        "changed": [
+          "history"
+        ],
+        "qualification": "History change is consistent with the new terminal history observation. Seven equal sentinels do not prove preservation of every user-data file."
+      },
+      "qualification": "Original attention status is retained. Idle homepage, no observed restart and valid index are bounded post-stop observations, not recovery compatibility or playback success."
+    },
+    "final_log_classification": {
+      "path": "device-629597c-final-log-classification.json",
+      "sha256": "d644dd5fffcd8696f2bd352bdba2cd5b486b7e4ec4f00fd3a84156dcc72ba132",
+      "exit_code": 0,
+      "scope": "bounded_current_log_not_full_history",
+      "truncated": false,
+      "matches": 2,
+      "levels": [
+        "info",
+        "info"
+      ],
+      "markers": [
+        "BOBBI-PROVIDERS"
+      ],
+      "changes_original_health_attention": false,
+      "changes_playback_acceptance": false,
+      "qualification": "Both broad-match log lines classify as INFO provider summaries; the original health receipt and its startup_log_attention remain unchanged."
+    }
+  },
+  "remaining_gates": [
+    "Current attempt 2 STARTUP_OBSERVATION_INTERRUPTED, its acquisition gap and stationary clock/decoder intervals remain unresolved; later local progress, original Stop and idle health do not reclassify startup.",
+    "Provider diagnostics retain partial coverage: first/second Jackett failed operations 2/4 and timeouts 6/7. Query and provider failures are not erased by finding/selecting a card.",
+    "Historical 115 startup/observation failure remains unresolved with no demonstrated root-cause fix.",
+    "Active profile, current account and exact filepointer equality are unmeasured by the fixed-default-profile history probe.",
+    "Universal profile safety, complete runtime ownership, clean-device installation, all-user-data preservation and exercised rollback recovery remain unproven.",
+    "Public distribution remains uncleared because of unresolved source/full-license items.",
+    "Complete edition/copy/part identity, precise path resume, media facts, automated segment policy and source remapping remain open.",
+    "Server progress/extras/segments/transcode sessions and real 115 private disk/NAS/server acceptance remain open.",
+    "Five cold plus five warm controlled 115 samples, all 110 interaction scenarios, interrupted rollback/data restore and Android device acceptance remain uncompleted."
+  ],
+  "history_preserved": {
+    "old_validation_unmodified": true,
+    "old_evidence_overwritten": false,
+    "skip_join_first_attempt": {
+      "path": "629597c-skip-join-attempt1.json",
+      "sha256": "ec2b9cc8a0d870c41e905db6fa69e9a8eae5dc59f98c2d26b43b2b4a05da15f9",
+      "exit_code": 1,
+      "error_type": "KeyError",
+      "missing_field": "groups",
+      "cause": "Outer transport report supplied instead of the hash-bound inner Linux groups report.",
+      "corrected_input": "629597c-linux-runtime-supplement-20261114-01/linux-report.json",
+      "test_outcomes_modified": false
+    },
+    "entry_output_misuse": {
+      "artifact": {
+        "path": "629597c-entry",
+        "sha256": "17c87a43be18b53d8bd94c9b88a51bdfcd5305a22308897644f34fd5d2e31649",
+        "root": "build_root"
+      },
+      "metadata": {
+        "path": "629597c-entry.json",
+        "sha256": "30854a4507ed2e1fc568677af85a35b3ae9c4b9c2a2ad0b2158c1c43a7cbbedb",
+        "root": "build_root"
+      },
+      "cause": "Initial --output was interpreted as a file, not a directory.",
+      "retained": true,
+      "overwritten": false,
+      "same_bytes_as_correct_entry": true
+    },
+    "independent_auditor_failed_invocations": [
+      {
+        "path": "629597c-validation-independent-attempt1.json",
+        "sha256": "4f01abe9b4fbef2b10af02ba72b85ad05e0244db0f08053ab88c57171be9930d",
+        "exit_code": 1,
+        "error_type": "AssertionError",
+        "cause": "Audit helper conflated an empty git-status field with the aggregate report status value passed.",
+        "product_test_failure": false
+      },
+      {
+        "path": "629597c-validation-independent-attempt2.json",
+        "sha256": "445626097150a7b3cb93653609e76eace264ac67222016069ffc389e3c871f32",
+        "exit_code": 1,
+        "error_type": "AssertionError",
+        "cause": "Initial parser accepted missing file attributes only for one command target; POSIX preparation invocation named two modules. Corrected inference requires an exact unambiguous classname-to-target match.",
+        "product_test_failure": false
+      }
+    ],
+    "qualification": "Harness/input/format failures remain visible. Corrected joins/audits do not alter original test outcomes, erase previous failures or convert historical device results."
+  },
+  "evidence_summary_finalized": true,
+  "drafting_agent_scope": {
+    "local_receipt_reads_and_hash_checks_only": true,
+    "new_tests_run": false,
+    "graphs_regenerated": false,
+    "device_contacted": false,
+    "network_operations": false,
+    "written_artifacts": [
+      "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/validation-629597c-draft.json",
+      "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/629597c-device-startup-independent-analysis.json"
+    ],
+    "source_modified_by_drafting_agent": false
+  }
+}

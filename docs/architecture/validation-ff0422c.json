@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "status": "offline_passed_deployed_device_acceptance_in_progress",
+  "source": {
+    "commit": "ff0422cff75b58b72053898057d8b87356eea85c",
+    "tree": "ad8a4f130fe5be709049c16011fb2af321908ee8",
+    "qualification": "Tested product identity; later documentation commits do not relabel these tests or payloads. Historical validation files are unchanged."
+  },
+  "tooling_followup": {
+    "integrated_commit":"b5f1189561d15cd491136b4104cfb73b453df0a1",
+    "tested_commit":"f9667d2b68dfa9b028d4fff17e5939af770a3d9e",
+    "same_tree":"bcd800cf00c4d13902a7528b8adea37d962e7044",
+    "record":{"path":"trial-query-exit-20261114-validation.json","sha256":"37c29835b5aab585256ddb03110262c1d7db91c83afbef97489201b309bc8033"},
+    "tests":{"passed":214,"path":"trial-query-exit-20261114-tests.xml","sha256":"ef35e8a4bd3eefdf59469e64f94a230570459588652f5b9e5cb627412cab1cf6"},
+    "contract":"start/requery exit0 now requires launch ACK plus same-picker completed error-free query; a healthy zero-count result is valid. Explicit query error is exit1; pending/incomplete/legacy launch-only evidence is exit2.",
+    "qualification":"Local tool contracts only, not device-tested or a rebuilt product. The original attempt1 exit0 bytes remain unchanged; its explicit same-picker error reclassifies read-only as exit1. Tool tests are not added to the frozen product totals."
+  },
+  "evidence_root": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results",
+  "full_offline_record": {
+    "path": "validation-ff0422c-offline.json",
+    "sha256": "b8b12c3615ae38f9bf8a4cbe4511da2f2ab23229501df36f37c5457de0be38b8",
+    "bytes": 1818416,
+    "scope": "Complete offline ledger, excluding all device evidence; the separate device receipts below do not change that scope."
+  },
+  "offline": {
+    "main_unique_cases": 10307,
+    "windows": {"primary_passed":7860,"baseline_passed":2171,"preparation_passed":254,"total_passed":10285,"ordinary_skipped":21,"xfailed":1,"failed":0,"errors":0},
+    "same_skipped_cases_passed_on_linux": 21,
+    "unknown_skip_matches": 0,
+    "identity_rule": "Case-sensitive XML (file, classname, full parameterized name); 7 Linux rows infer file from the receipt's unique test target. No case folding or duplicate main IDs.",
+    "xfail": "tests/test_ce2029_search_audit.py::test_real_provider_never_publishes_explicit_live_action_for_animation[Keep Your Hands Off Eizouken! (Nogizaka46 Drama) - S01E01 (1080p)-aliases0]",
+    "xfail_reason": "Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama",
+    "overlapping_executions": {"linux_supplement_passed":304,"posix_twelve_groups_passed":312,"native_pytest_passed":111},
+    "accounting": "Original Windows outcomes remain. Supplemental/POSIX/native and actor proof counts are not added as new functional coverage."
+  },
+  "graph": {
+    "two_exports_identical": true,
+    "sha256": "783661e63c6d47bc3d835c606d501c9da1bfa6de6c4e294fb13788e6c18c7289",
+    "files":2347,"python_ast":1468,"nodes":61964,"edges":154161,
+    "confirmed":7649,"candidate":34993,"external":26717,"unresolved":84802,
+    "diagnostics":0,"scc_candidates":19,"module_collisions":3,
+    "qualification": "Deterministic static extraction, not complete runtime reachability or zero architectural debt."
+  },
+  "build_and_install": {
+    "source_check_equal_files": 63,
+    "installable_components": 22,
+    "sequence": 2026102128,
+    "package_sha256": "d3b0c5b6c7d8d6cefa2e88ab4faa34b8748f4b3d1ce5fb84a89a6185c1eb1d09",
+    "entry_version": "0.2.93",
+    "entry_sha256": "0350a77aaa43f9970220d9ebb581e7c55ba42908928bffba454e4626133d42a9",
+    "review_evidence_root": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence",
+    "deployment": {"path":"ce-deploy-runs/20261113-235620.json","sha256":"c5e48ae392837de5f3be8064643c38a6d0eea5580b90db161a84c068073e5694"},
+    "upgrade": {"path":"ce-20261113-235620-upgrade.json","sha256":"61b9d9222faeb7356abf480a657215b3a16ef30c116f06735072bcf5e5acd2ff","playback_verified":false},
+    "installed_files": {"path":"ce2023/installed-files-1794585498126608400.json","sha256":"b88c8ccd723620db870b753d53c994cfa4eadaab236da2a3acf6b762ae9e4842","matching_owned_files":1259,"matched":true},
+    "qualification": "Owned program files only, excluding original dependencies and user data. Source-check reproducibility is separate from signature/component/entry verification and does not claim repeated signed-package builds or full recovery acceptance."
+  },
+  "device": {
+    "acceptance": "in_progress",
+    "native_apply": {
+      "path":"native-ff0422c-deploy/ce-native2128-apply-1794585543829194800.json",
+      "sha256":"bc10c3b6b393dfac6d4590557b8079494caddd340c05878587dfffdbe6351160",
+      "state":"applied",
+      "old_native_sha256":"7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c",
+      "new_native_sha256":"980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2"
+    },
+    "after_native": {
+      "path":"device-ff0422c-after-native.json",
+      "sha256":"be7027c1dacba9eff8dbc8b5f13b354b52607df68f58e66be01637b665d5685e",
+      "sequence":2026102128,"pending_transaction":false,"kodi_active":true,"kodi_restarts":0,
+      "catalog_schema":4,"catalog_integrity":"ok","typed_objects":594,"probe_cloud_requests":0,
+      "qualification":"One read-only health observation; not real-account authentication, playback, recovery or long-duration stability proof."
+    },
+    "attempt_1": {
+      "start":{"path":"campaign-ff0422c/ce-new-work-convergence115ff0422c-galactic_heroes-start-1794585673072009400.json","sha256":"c345b0febe0cbd8f053ac83d4b0010a7b9cac0590ee9e6b2c79e3a8f2c49bd6b","exit_code":0},
+      "initial_observation":"13 samples include empty source/item counts, then a present failure prompt; the command's zero exit is not search/playback acceptance.",
+      "later_picker":{"path":"device-ff0422c-cold1-picker.json","sha256":"236d6ebd82c753b59fa0924510eb3d4e64a88e55ed7150685bdb8f1472fe51f7","source_count":1,"items":1,"failure_prompt_present":true,"players":0},
+      "completion_reference":{"path":"device-ff0422c-search12-events.json","sha256":"43be78924916b17b96fcbcb9ff49522b2c8c27ca114e49500537e1d762a9c817","scope":"Only the first invocation 18ab60a335874dd5b9cfb0885f609f5b and the subsequent 2026-11-14 00:01:15.101 provider row are cited. That row has no invocation ID and is attributed chronologically, after the first plan and before the second invocation; later invocation events are excluded.","sharelib_state":"PARTIAL","sharelib_count":1},
+      "original_cards":{"path":"campaign-ff0422c/ce-new-work-convergence115ff0422c-galactic_heroes-cards-1794585981997428200.json","sha256":"3dbe2c9166b3e51d72d6550766b32c5319aeb215fc7c1b2a279f3bcda0d17ba0","exit_code":1,"reason":"PICKER_REPLACED"},
+      "qualification":"Late PARTIAL output does not erase the initial failure prompt or authorize using a replacement picker as the original receipt. No successful selection, AV-start or performance acceptance follows from this checkpoint. The attempt's cold label does not prove disk/CDN cold."
+    },
+    "attempt_2": {
+      "start":{"path":"campaign-ff0422c/ce-new-work-convergence115ff0422c-galactic_heroes-start-1794586167704396600.json","sha256":"c214f6f9cbf87067de77dbc562ae1503370b9e48fbd11919487c4d76e7fe0da7"},
+      "cards":{"path":"campaign-ff0422c/ce-new-work-convergence115ff0422c-galactic_heroes-cards-1794586191995957700.json","sha256":"c1b451fc79c4ab668c43d989f772dc204a4a7d6a2876d3ad9ec361f3741ec804"},
+      "select":{"path":"campaign-ff0422c/ce-new-work-convergence115ff0422c-galactic_heroes-select-1794586254015376300.json","sha256":"0946ab9730d4f502966cdd86a55a9d0bb9aa99bd5e999f3d5e4e7b56bb7e6e13","exit_code":1,"transport_exit_code":0,"trial_exit_code":1},
+      "select_to_av_observed_seconds":8.694920828100294,
+      "startup_health":{"passed":false,"max_observed_stall_seconds":21.90061168698594,"clock_discontinuities":6,"observation_gaps":0},
+      "qualification":"Selection and AV observation do not erase the original startup-health failure or establish continuous rendered playback, a cold/warm comparison or performance acceptance."
+    },
+    "osd": {
+      "path":"ff0422c-osd-validation.json","sha256":"5f2241c5a1ac49006e605b2b8ef055f07cef77ef85d28a47c32183177d04d58f",
+      "status":"passed_narrow_transport_observations_with_exclusions",
+      "request_id":"d0ce97d612d041ed98f3bd9be2d41acf","native_instance":"628c67a8-574e-4874-8b38-cecdcf2ed2cb",
+      "four_original_commands":["pause","resume","2x_trickplay_to_1x_resume","stop"],
+      "original_expected_and_applied_replies_match":true,
+      "confirmation_open_cancel":"Transport sequence/user intent and original command IDs unchanged in operator-described sequence; JSON alone does not prove UI button or text.",
+      "stop":"Original command archived as STOP with current player absent; original expected fields and applied receipts retained. Pending Stop property remains present.",
+      "limitations":["02 was an invalid pause attempt; successful pause begins at03.","TempoEnabled=false and Player.Tempo empty: no tempo enable/adjust/reset acceptance.","09/10 have identical bytes and no call IDs/timestamps: no proof of two independent invocations, delayed fresh read, retention duration or second terminal event.","Non-atomic probes; no new-instance recovery, full OSD, seek/rewind/audio/subtitles, races, alternate devices or performance acceptance."]
+    },
+    "block_timing": {
+      "path":"ff0422c-block-timing-collected.json","sha256":"e71d65daadbed9a5b819f221be15bf452ecfeac7aa35a5765c2a6f7b23de60ad",
+      "state":"completed_with_gaps","diagnostic_only":true,"product_proof":false,
+      "planned_points":90,"collected_points":88,"owner_read_timeout_indices":[17,26],"stop_confirmed":true,
+      "sample_observations":{"same_native_target_samples":88,"av_samples":71,"av_speed":1,"caching_true_samples":25,"caching_position_seconds":3.244,"first_to_last_caching_sample_span_seconds_approx":12.369},
+      "sample_qualification":"25 caching samples include an intervening owner-read gap; their first/last timestamp span is not an exact continuous stall duration. Sampled zero decoder-error counters do not certify the whole interval. Native and log binding hashes are different fields, associated only through the matched transport scope.",
+      "log":{"path":"ce-playback-log-diagnostic-1794586675567252400.json","root":"review_evidence_root","sha256":"ae06b40e71fe20bb5687a42e9ead8b0f2e5757e525baf941fe1789a2f2c78ce5"},
+      "http19_seconds":{"wall":39.847,"gate":0.334,"fetch":37.681,"write":1.579,"connect_within_fetch":13.012594,"read_wait_within_fetch":15.080361,"grant_within_fetch":0.02809,"consumer_cancel_cross_phase":7.887515,"socket_send_within_write":1.031737},
+      "qualification":"The two owner TimeoutError/READ_UNAVAILABLE gaps remain missing observations. Timings are cumulative/nested, not additive or proof that account CPU/locks caused all cancellation time. A 1-second delivery window is a soft threshold checked after reads, not a deadline. Suppressed detail rows prevent exhaustive fetch accounting. Diagnostic STOP is scoped and confirmed; no ordinary-selection, continuous-playback, performance-root-cause or improvement claim. Listed historical crash artifacts are not new crash evidence."
+    },
+    "after_osd_diagnostic": {
+      "path":"device-ff0422c-after-osd-diagnostic.json","sha256":"bcf734ae5c15219f225d51c291b2a4ed565042fe2aaf0c8ac3199e2dc08d7838",
+      "state":"attention_required","failure":"startup_log_attention","product_error_lines":2,"tracebacks":0,"kodi_restarts":0,"same_native_pid":23274,
+      "sequence":2026102128,"pending_transaction":false,"catalog_schema":4,"catalog_integrity":"ok","typed_objects":594,
+      "sentinels":"Seven observed sentinels match after-native; history changed during the playback tests. Saved login observations match. This is not an all-sentinels-unchanged or all-user-data-preserved claim.",
+      "qualification":"A zero probe exit does not erase attention_required. Stable PID/zero restart and no traceback do not imply absence of product errors or full health acceptance."
+    },
+    "osd_at_cutoff":"four_original_commands_narrow_pass_full_osd_incomplete",
+    "five_cold_five_warm":"not_completed",
+    "evidence_cutoff":"Includes only listed deployment, attempts1/2, narrow original-command OSD, block_timing diagnostic and post-test health evidence. The offline ledger remains unchanged; later candidate fixes or device runs are not incorporated."
+  },
+  "remaining_gates": [
+    "All 110 cross-module scenarios remain pending; stage0/1 tracking is partial, not completion.",
+    "Full OSD, exact EOF/Stop/history/next/profile/version chain, fixed-file five-cold/five-warm and actual protocol acceptance remain incomplete.",
+    "Cut/multipart identities, full media facts/preferences, automatic segments, source remapping, server progress and Direct Stream/Transcode lifecycles retain their documented gaps.",
+    "Current-generation program rollback/data restore/interruption and Android clean-link/APK/device remain unproved.",
+    "Distribution remains blocked by seven unresolved-source and two unresolved-full-license entries, including unresolved p115rsacipher license conflict."
+  ],
+  "history_preserved": ["validation-ba4c238.json","validation-a725b84.json","validation-55b4f9b.json","validation-2b263bb.json","validation-319e398.json","integration-2b9f855-primary.xml two inventory failures","superseded native candidate and tempo-failure receipts cited by full_offline_record"]
+}

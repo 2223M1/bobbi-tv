@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  波比TV 压缩包/合集选集面板 (SourcePackSelect) — 1:1 glass (on-device) Split Stage.
+  Contracts preserved 100%: list 1000, scrollbar 1111, resolving/instant_close properties.
+-->
+<window type="dialog">
+  <defaultcontrol always="true">1000</defaultcontrol>
+  <coordinates><left>0</left><top>0</top></coordinates>
+  <animation effect="fade" start="0" end="100" time="180" tween="cubic" easing="out" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowOpen</animation>
+  <animation effect="fade" start="100" end="0" time="120" tween="cubic" easing="in" condition="!Skin.HasSetting(BobbiReduceMotion)">WindowClose</animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/settings-bg.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <aspectratio>scale</aspectratio>
+      <texture background="true" colordiffuse="36FFFFFF">$INFO[Window().Property(info.fanart)]</texture>
+    </control>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>1080</height>
+      <texture>bobbi/glass/scrim-vignette.png</texture>
+    </control>
+
+    <control type="label">
+      <left>360</left><top>46</top><width>1200</width><height>64</height>
+      <label>选择剧集文件</label>
+      <font>SettingsTitle50</font><textcolor>FF989DA8</textcolor>
+      <align>center</align><aligny>center</aligny>
+    </control>
+
+    <!-- Left Showcase Column -->
+    <control type="group">
+      <left>126</left><top>166</top><width>560</width><height>760</height>
+      <control type="image">
+        <left>62</left><top>-48</top><width>436</width><height>606</height>
+        <texture>bobbi/glass/shadow-340x510.png</texture>
+      </control>
+      <control type="image">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <texture>bobbi/glass/tile-340x510.png</texture>
+      </control>
+      <control type="group">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <visible>String.IsEmpty(Window().Property(info.poster))</visible>
+        <control type="image">
+          <left>0</left><top>211</top><width>340</width><height>88</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="20FFFFFF">bobbi/glass/circle-128.png</texture>
+        </control>
+        <control type="image">
+          <left>0</left><top>233</top><width>340</width><height>44</height>
+          <aspectratio align="center" aligny="center">keep</aspectratio>
+          <texture colordiffuse="8CEBEBF5">bobbi/glass/icons/folder-outline.png</texture>
+        </control>
+      </control>
+      <control type="image">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <aspectratio scalediffuse="false">scale</aspectratio>
+        <texture background="true" diffuse="bobbi/glass/mask-340x510.png">$INFO[Window().Property(info.poster)]</texture>
+      </control>
+      <control type="image">
+        <left>110</left><top>0</top><width>340</width><height>510</height>
+        <texture>bobbi/glass/rim-340x510.png</texture>
+      </control>
+      <control type="label">
+        <left>0</left><top>538</top><width>560</width><height>44</height>
+        <label>$INFO[Window().Property(info.display_title)]$INFO[Window().Property(info.season_episode),   ·   ]</label>
+        <font>Head34</font><textcolor>FFF5F5F7</textcolor>
+        <align>center</align><aligny>center</aligny>
+        <scroll>true</scroll>
+      </control>
+      <control type="label">
+        <left>0</left><top>588</top><width>560</width><height>28</height>
+        <label>$INFO[Container(1000).NumItems,合集内共 , 个文件]</label>
+        <font>Card24</font><textcolor>FF8E8E93</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+    </control>
+
+    <!-- Right Floating Semicircular Capsule List -->
+    <control type="group">
+      <visible>!String.IsEqual(Window().Property(resolving),true) + !String.IsEqual(Window().Property(instant_close),true)</visible>
+      <control type="list" id="1000">
+        <left>860</left><top>166</top><width>900</width><height>832</height>
+        <pagecontrol>1111</pagecontrol>
+        <onleft>1000</onleft><onright>1111</onright>
+        <onup>1000</onup><ondown>1000</ondown>
+        <scrolltime tween="cubic" easing="out">180</scrolltime>
+        <preloaditems>2</preloaditems>
+        <itemlayout width="900" height="78">
+          <control type="image">
+            <left>0</left><top>6</top><width>900</width><height>66</height>
+            <texture colordiffuse="1CFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+          </control>
+          <control type="image">
+            <left>24</left><top>25</top><width>28</width><height>28</height>
+            <texture colordiffuse="F2F5F5F7">bobbi/glass/icons/film-outline.png</texture>
+          </control>
+          <control type="label">
+            <left>68</left><top>6</top><width>780</width><height>66</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+          </control>
+          <control type="image">
+            <left>860</left><top>30</top><width>18</width><height>18</height>
+            <texture colordiffuse="8CEBEBF5">bobbi/glass/icons/chevron-right.png</texture>
+          </control>
+        </itemlayout>
+        <focusedlayout width="900" height="78">
+          <control type="image">
+            <left>-12</left><top>-6</top><width>924</width><height>90</height>
+            <texture border="26,20,26,20">bobbi/glass/settings-pill-shadow-780x66.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>6</top><width>900</width><height>66</height>
+            <texture colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>0</left><top>6</top><width>900</width><height>66</height>
+            <texture colordiffuse="32FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texture>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>24</left><top>25</top><width>28</width><height>28</height>
+            <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/film-outline.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>24</left><top>25</top><width>28</width><height>28</height>
+            <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/film-outline.png</texture>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>68</left><top>6</top><width>780</width><height>66</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Label28</font><textcolor>FF1D1D1F</textcolor><aligny>center</aligny>
+            <scroll>true</scroll><scrollspeed>45</scrollspeed>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+          <control type="label">
+            <left>68</left><top>6</top><width>780</width><height>66</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>Label28</font><textcolor>FFF5F5F7</textcolor><aligny>center</aligny>
+            <visible>!Control.HasFocus(1000)</visible>
+          </control>
+          <control type="image">
+            <left>860</left><top>30</top><width>18</width><height>18</height>
+            <texture colordiffuse="FF6E6E73">bobbi/glass/icons/chevron-right.png</texture>
+            <visible>Control.HasFocus(1000)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <control type="scrollbar" id="1111">
+        <left>1780</left><top>176</top><width>6</width><height>812</height>
+        <visible>Control.IsVisible(1000)</visible>
+        <texturesliderbackground colordiffuse="18FFFFFF" border="3">bobbi/glass/progress-track.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="4CFFFFFF" border="3">bobbi/glass/progress-fill.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="FFFFFFFF" border="3">bobbi/glass/progress-fill.png</texturesliderbarfocus>
+        <showonepage>false</showonepage><orientation>vertical</orientation>
+        <onleft>1000</onleft><onright>1000</onright>
+      </control>
+    </control>
+  </controls>
+</window>

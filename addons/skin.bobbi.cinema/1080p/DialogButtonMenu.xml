@@ -1,0 +1,345 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">9012</defaultcontrol>
+  <depth>DepthDialog</depth>
+  <controls>
+    <include>LGBarrierCC</include>
+    <!-- Backdrop only: classic softens the live GUI in its own half-resolution
+         slot, never enabling the liquid foreground. Without GLES the tint remains. -->
+    <control type="group">
+      <include>PageOpen</include>
+      <control type="image">
+        <left>0</left><top>0</top><width>1</width><height>1</height>
+        <texture colordiffuse="01FFFFFF">bobbi/glass/lg-barrier-cc-backdrop.png</texture>
+        <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture diffuse="bobbi/glass/lg-cc-matte-soften.png">am6b/transparent.png</texture>
+        <visible>!Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture diffuse="bobbi/glass/lg-cc-soften.png">am6b/transparent.png</texture>
+        <visible>Skin.HasSetting(BobbiLiquidGlassEnabled)</visible>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1920</width><height>1080</height>
+        <texture>bobbi/glass/cc-scrim.png</texture>
+      </control>
+    </control>
+
+    <!-- Full-screen 1080p calibrated Control Center @ (1421,52) 432x512 -> x=1421..1853, header cy=80 -->
+    <control type="group" id="9000">
+      <left>1421</left><top>52</top><width>437</width><height>512</height>
+      <include content="MenuPop"><param name="center">1782,80</param></include>
+
+      <!-- Header Row (y=52..108, cy=80): Semibold Clock @ x=1476 + 56x56 Active CC Disc @ x=1754 + 34x34 Rimmed Avatar @ x=1824 -->
+      <control type="label">
+        <left>55</left><top>0</top><width>160</width><height>56</height>
+        <label>$VAR[BobbiTimeAMPM]</label>
+        <font>CCClock24</font><textcolor>E6F5F5F7</textcolor>
+        <align>left</align><aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>333</left><top>0</top><width>56</width><height>56</height>
+        <texture colordiffuse="FFF5F5F7">bobbi/glass/circle-128.png</texture>
+      </control>
+      <control type="image">
+        <left>344</left><top>11</top><width>34</width><height>34</height>
+        <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/control-center.png</texture>
+      </control>
+      <control type="image">
+        <left>403</left><top>11</top><width>34</width><height>34</height>
+        <texture>bobbi/glass/cc-avatar-34.png</texture>
+      </control>
+
+      <!-- Power tile (208x208, continuous r=48); action pills use 208x96 semicircular ends on a 16 px grid. -->
+      <control type="group">
+        <left>0</left><top>80</top><width>208</width><height>208</height>
+        <include content="Lift"><param name="center">104,184</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>264</width><height>264</height>
+          <texture>bobbi/glass/cc-power-208x208-shadow.png</texture>
+        </control>
+        <control type="button" id="9010">
+          <left>0</left><top>0</top><width>208</width><height>208</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-power-208x208-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>noop</onup><ondown>9011</ondown>
+          <onleft>noop</onleft><onright>9012</onright>
+          <onclick>Quit()</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9010" /><param name="width" value="208" /><param name="height" value="208" />
+          <param name="face" value="bobbi/glass/cc-power-208x208.png" /><param name="optics" value="bobbi/glass/lg-cc-power-r48.png" />
+        </include>
+        <control type="image">
+          <left>56</left><top>39</top><width>96</width><height>96</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/cc-power-mark.png</texture>
+          <visible>!Control.HasFocus(9010)</visible>
+        </control>
+        <control type="image">
+          <left>56</left><top>39</top><width>96</width><height>96</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/cc-power-mark.png</texture>
+          <visible>Control.HasFocus(9010)</visible>
+        </control>
+        <control type="label">
+          <left>14</left><top>158</top><width>180</width><height>32</height>
+          <label>关机</label>
+          <font>CCLabel24</font><textcolor>FFF5F5F7</textcolor><align>center</align><aligny>center</aligny>
+          <visible>!Control.HasFocus(9010)</visible>
+        </control>
+        <control type="label">
+          <left>14</left><top>158</top><width>180</width><height>32</height>
+          <label>关机</label>
+          <font>CCLabel24</font><textcolor>FF1D1D1F</textcolor><align>center</align><aligny>center</aligny>
+          <visible>Control.HasFocus(9010)</visible>
+        </control>
+      </control>
+
+      <!-- Action 9012: 返回影院 -->
+      <control type="group">
+        <left>224</left><top>80</top><width>208</width><height>96</height>
+        <include content="Lift"><param name="center">328,128</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>264</width><height>152</height>
+          <texture>bobbi/glass/cc-pill-208x96-shadow.png</texture>
+        </control>
+        <control type="button" id="9012">
+          <left>0</left><top>0</top><width>208</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>noop</onup><ondown>9013</ondown>
+          <onleft>9010</onleft><onright>noop</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9012" /><param name="width" value="208" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <include content="CCActionContent">
+          <param name="id" value="9012" /><param name="title" value="返回影院" /><param name="subtitle" value="继续观看" />
+          <param name="glyph" value="house" /><param name="x" value="28" /><param name="y" value="28" /><param name="size" value="39" />
+        </include>
+      </control>
+
+      <!-- Action 9013: 重启系统 -->
+      <control type="group">
+        <left>224</left><top>192</top><width>208</width><height>96</height>
+        <include content="Lift"><param name="center">328,240</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>264</width><height>152</height>
+          <texture>bobbi/glass/cc-pill-208x96-shadow.png</texture>
+        </control>
+        <control type="button" id="9013">
+          <left>0</left><top>0</top><width>208</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9012</onup><ondown>9014</ondown>
+          <onleft>9010</onleft><onright>noop</onright>
+          <onclick>Reset()</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9013" /><param name="width" value="208" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <include content="CCActionContent">
+          <param name="id" value="9013" /><param name="title" value="重启系统" /><param name="subtitle" value="CoreELEC" />
+          <param name="glyph" value="refresh" /><param name="x" value="25" /><param name="y" value="25" /><param name="size" value="46" />
+        </include>
+      </control>
+
+      <!-- Action 9011: 重载界面 -->
+      <control type="group">
+        <left>0</left><top>304</top><width>208</width><height>96</height>
+        <include content="Lift"><param name="center">104,352</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>264</width><height>152</height>
+          <texture>bobbi/glass/cc-pill-208x96-shadow.png</texture>
+        </control>
+        <control type="button" id="9011">
+          <left>0</left><top>0</top><width>208</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9010</onup><ondown>9021</ondown>
+          <onleft>noop</onleft><onright>9014</onright>
+          <onclick>ReloadSkin()</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9011" /><param name="width" value="208" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <include content="CCActionContent">
+          <param name="id" value="9011" /><param name="title" value="重载界面" /><param name="subtitle" value="波比TV" />
+          <param name="glyph" value="tv-outline" /><param name="x" value="25" /><param name="y" value="25" /><param name="size" value="47" />
+        </include>
+      </control>
+
+      <!-- Action 9014: 系统信息 -->
+      <control type="group">
+        <left>224</left><top>304</top><width>208</width><height>96</height>
+        <include content="Lift"><param name="center">328,352</param><param name="zoom">104</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>264</width><height>152</height>
+          <texture>bobbi/glass/cc-pill-208x96-shadow.png</texture>
+        </control>
+        <control type="button" id="9014">
+          <left>0</left><top>0</top><width>208</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-pill-208x96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9013</onup><ondown>9023</ondown>
+          <onleft>9011</onleft><onright>noop</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick>ActivateWindow(SystemInfo)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9014" /><param name="width" value="208" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-pill-208x96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <include content="CCActionContent">
+          <param name="id" value="9014" /><param name="title" value="系统信息" /><param name="subtitle" value="硬件与网络" />
+          <param name="glyph" value="cpu" /><param name="x" value="28" /><param name="y" value="28" /><param name="size" value="39" />
+        </include>
+      </control>
+
+      <!-- Quick actions (4x 96x96 orbs on 16 px pitch: 0..96, 112..208, 224..320, 336..432) -->
+      <control type="group">
+        <left>0</left><top>416</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">48,464</param><param name="zoom">106</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>152</width><height>152</height>
+          <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
+        </control>
+        <control type="button" id="9021">
+          <left>0</left><top>0</top><width>96</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9011</onup><ondown>noop</ondown>
+          <onleft>noop</onleft><onright>9022</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick>ActivateWindow(SkinSettings)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9021" /><param name="width" value="96" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-orb-96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/sliders.png</texture>
+          <visible>!Control.HasFocus(9021)</visible>
+        </control>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/sliders.png</texture>
+          <visible>Control.HasFocus(9021)</visible>
+        </control>
+      </control>
+
+      <control type="group">
+        <left>112</left><top>416</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">160,464</param><param name="zoom">106</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>152</width><height>152</height>
+          <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
+        </control>
+        <control type="button" id="9022">
+          <left>0</left><top>0</top><width>96</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9011</onup><ondown>noop</ondown>
+          <onleft>9021</onleft><onright>9023</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick>ActivateWindow(Videos,&quot;plugin://plugin.video.bobbi.library/&quot;,return)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9022" /><param name="width" value="96" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-orb-96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/cloud-outline.png</texture>
+          <visible>!Control.HasFocus(9022)</visible>
+        </control>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/cloud-outline.png</texture>
+          <visible>Control.HasFocus(9022)</visible>
+        </control>
+      </control>
+
+      <control type="group">
+        <left>224</left><top>416</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">272,464</param><param name="zoom">106</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>152</width><height>152</height>
+          <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
+        </control>
+        <control type="button" id="9023">
+          <left>0</left><top>0</top><width>96</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9014</onup><ondown>noop</ondown>
+          <onleft>9022</onleft><onright>9024</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick>ActivateWindow(Settings)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9023" /><param name="width" value="96" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-orb-96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/gear.png</texture>
+          <visible>!Control.HasFocus(9023)</visible>
+        </control>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/gear.png</texture>
+          <visible>Control.HasFocus(9023)</visible>
+        </control>
+      </control>
+
+      <control type="group">
+        <left>336</left><top>416</top><width>96</width><height>96</height>
+        <include content="Lift"><param name="center">384,464</param><param name="zoom">106</param></include>
+        <control type="image">
+          <left>-28</left><top>-28</top><width>152</width><height>152</height>
+          <texture>bobbi/glass/cc-orb-96-shadow.png</texture>
+        </control>
+        <control type="button" id="9024">
+          <left>0</left><top>0</top><width>96</width><height>96</height>
+          <label />
+          <texturefocus>bobbi/glass/cc-orb-96-focus.png</texturefocus>
+          <texturenofocus />
+          <onup>9014</onup><ondown>noop</ondown>
+          <onleft>9023</onleft><onright>noop</onright>
+          <onclick>Dialog.Close(shutdownmenu)</onclick>
+          <onclick>RunPlugin(&quot;plugin://plugin.video.bobbi/?action=bobbi_search_prompt&amp;section=multi&quot;)</onclick>
+        </control>
+        <include content="CCIdleFace">
+          <param name="id" value="9024" /><param name="width" value="96" /><param name="height" value="96" />
+          <param name="face" value="bobbi/glass/cc-orb-96.png" /><param name="optics" value="bobbi/glass/lg-cc-pill.png" />
+        </include>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FFF5F5F7">bobbi/glass/icons/search.png</texture>
+          <visible>!Control.HasFocus(9024)</visible>
+        </control>
+        <control type="image">
+          <left>28</left><top>28</top><width>40</width><height>40</height>
+          <texture colordiffuse="FF1D1D1F">bobbi/glass/icons/search.png</texture>
+          <visible>Control.HasFocus(9024)</visible>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <depth>DepthOSD</depth>
+  <visible>[Player.Seeking | Player.DisplayAfterSeek | Player.Paused | Player.Forwarding | Player.Rewinding | Player.HasPerformedSeek(3) | !String.IsEmpty(Player.SeekNumeric)] + !Window.IsActive(videoosd) + !Window.IsActive(1144) + !Window.IsActive(1145) + !Window.IsActive(1114) + !Window.IsActive(1115) + !Window.IsActive(1116) + !Window.IsActive(osdsubtitlesettings) + !Window.IsActive(osdaudiosettings) + !Window.IsActive(osdvideosettings)</visible>
+  <include>HudFade</include>
+  <controls>
+    <include content="OSDScrim"><param name="top">600</param></include>
+    <control type="group">
+      <left>80</left><top>786</top>
+      <control type="image">
+        <left>0</left><top>4</top><width>32</width><height>32</height>
+        <texture colordiffuse="FFFFFFFF">$VAR[SeekStateIcon]</texture>
+      </control>
+      <control type="label">
+        <left>46</left><top>0</top><width>960</width><height>40</height>
+        <label>$VAR[SeekStateLabel]$INFO[Player.Chapter,   ·   第 , 章]$INFO[Player.ChapterName,  ·  ]</label>
+        <font>Head30</font><textcolor>FFFFFFFF</textcolor><shadowcolor>66000000</shadowcolor><aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>1040</left><top>0</top><width>720</width><height>40</height>
+        <label>$VAR[SeekTimeLabel]</label>
+        <font>Clock27</font><textcolor>D9EBEBF5</textcolor><shadowcolor>66000000</shadowcolor><align>right</align><aligny>center</aligny>
+      </control>
+    </control>
+    <include content="OSDProgress"><param name="top">842</param></include>
+  </controls>
+</window>

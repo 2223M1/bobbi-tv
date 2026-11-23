@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window type="dialog" id="1144">
+  <defaultcontrol always="true">2024</defaultcontrol>
+  <depth>DepthOSD</depth>
+  <onload>SetProperty(Bobbi.OSD.StreamPanel,$VAR[BobbiNextStreamPanel],Home)</onload>
+  <onload condition="String.IsEmpty(Window(Home).Property(Bobbi.OSD.NextStreamPanel)) | String.IsEqual(Window(Home).Property(Bobbi.OSD.StreamPanel),opening)">RunScript(plugin.video.bobbi,bobbi_osd=open_subtitle_panel)</onload>
+  <onload>ClearProperty(Bobbi.OSD.NextStreamPanel,Home)</onload>
+  <onunload>ClearProperty(Bobbi.OSD.StreamPanel,Home)</onunload>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top><width>1920</width><height>320</height>
+      <texture>bobbi/glass/scrim-top.png</texture>
+    </control>
+    <include content="OSDScrim"><param name="top">520</param></include>
+    <include content="StreamPicker">
+      <param name="type">subtitle</param>
+      <param name="issub">true</param>
+      <param name="title">字幕</param>
+      <param name="full">OSDSubtitleSettings</param>
+      <param name="fulllabel">字幕设置</param>
+      <param name="offlabel">$VAR[SubtitleToggleLabel]</param>
+      <param name="window">1144</param>
+      <param name="apply">set_player_subtitle</param>
+    </include>
+  </controls>
+</window>

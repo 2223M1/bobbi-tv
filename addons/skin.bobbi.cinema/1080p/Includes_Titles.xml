@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<includes>
+  <variable name="TitlePrimary">
+    <value condition="!String.IsEmpty(ListItem.Property(Bobbi.Title.zh))">$INFO[ListItem.Property(Bobbi.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.TVShowTitle)">$INFO[ListItem.TVShowTitle]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.zh))">$INFO[ListItem.Property(AM6B.Title.zh)]</value>
+    <value condition="!String.IsEmpty(ListItem.Title)">$INFO[ListItem.Title]</value>
+    <value>$INFO[ListItem.Label]</value>
+  </variable>
+  <variable name="TitleSecondary">
+    <value condition="!String.IsEmpty(ListItem.Property(Bobbi.Title.en)) + !String.IsEqual(ListItem.Property(Bobbi.Title.en),ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(ListItem.Property(Bobbi.Title.en),ListItem.TVShowTitle) + !String.IsEqual(ListItem.Property(Bobbi.Title.en),ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(Bobbi.Title.en),ListItem.Title)">$INFO[ListItem.Property(Bobbi.Title.en)]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.en)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.TVShowTitle) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.en),ListItem.Title)">$INFO[ListItem.Property(AM6B.Title.en)]</value>
+    <value condition="!String.IsEmpty(ListItem.OriginalTitle) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(ListItem.OriginalTitle,ListItem.TVShowTitle) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.OriginalTitle,ListItem.Title)">$INFO[ListItem.OriginalTitle]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(AM6B.Title.original)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.TVShowTitle) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Property(AM6B.Title.original),ListItem.Title)">$INFO[ListItem.Property(AM6B.Title.original)]</value>
+    <value condition="!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Label2,ListItem.Property(Bobbi.Title.zh)) + !String.IsEqual(ListItem.Label2,ListItem.TVShowTitle) + !String.IsEqual(ListItem.Label2,ListItem.Property(AM6B.Title.zh)) + !String.IsEqual(ListItem.Label2,ListItem.Title) + !String.IsEqual(ListItem.Label2,ListItem.Label)">$INFO[ListItem.Label2]</value>
+  </variable>
+  <variable name="SeasonLabel">
+    <value condition="!String.IsEmpty(ListItem.Property(Bobbi.SeasonName)) + !String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,0)">第$INFO[ListItem.Season]季 · $INFO[ListItem.Property(Bobbi.SeasonName)]</value>
+    <value condition="!String.IsEmpty(ListItem.Property(Bobbi.SeasonName))">$INFO[ListItem.Property(Bobbi.SeasonName)]</value>
+    <value condition="String.IsEqual(ListItem.Season,0)">特别篇</value>
+    <value condition="!String.IsEmpty(ListItem.Season) + !String.IsEqual(ListItem.Season,-1)">第$INFO[ListItem.Season]季</value>
+  </variable>
+  <variable name="EpisodeLabel">
+    <value condition="!String.IsEmpty(ListItem.Episode) + !String.IsEqual(ListItem.Episode,-1)">第$INFO[ListItem.Episode]集</value>
+  </variable>
+  <variable name="EpisodeTitle">
+    <value condition="String.IsEqual(ListItem.DBType,episode) + !String.IsEmpty(ListItem.Title) + !String.IsEqual(ListItem.Title,ListItem.TVShowTitle) + ![String.StartsWith(ListItem.Title,第) + String.EndsWith(ListItem.Title,集)]">$INFO[ListItem.Title]</value>
+  </variable>
+  <variable name="EpisodeTitleSep">
+    <value condition="String.IsEqual(ListItem.DBType,episode) + !String.IsEmpty(ListItem.Title) + !String.IsEqual(ListItem.Title,ListItem.TVShowTitle) + ![String.StartsWith(ListItem.Title,第) + String.EndsWith(ListItem.Title,集)]">   $INFO[ListItem.Title]</value>
+  </variable>
+</includes>

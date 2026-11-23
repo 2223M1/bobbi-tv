@@ -1,0 +1,29 @@
+{
+  "format_version": 1,
+  "candidate_header_sha256": "07aa16fa20d0d7c3c73db376257749f1b19f6d002722269ee7c35e56c3168963",
+  "fmt": {
+    "version": "10.2.1",
+    "upstream": "https://github.com/fmtlib/fmt/tree/10.2.1",
+    "copied_from": "AM6B-F9-Build-20260905:/opt/am6b-maintainable-r10-20260922/build.CoreELEC-Amlogic-ng.arm-21/build/libfmt-10.2.1",
+    "files": {
+      "fmt/core.h": "143d591df63db5b20786eb8ca756012e0b7e2c6dab7f002488e2c701e897a91f",
+      "fmt/format.h": "63bd5a34d139bfca1727bfbaf941afbb5751c871adaaa91b77dce58a70723073",
+      "fmt/format-inl.h": "c390df52884480b131dffd17842af3dde8eae6cd7f1aafda30b63efa369d6e61",
+      "fmt/LICENSE": "07580f2a3b35709ce703d523f447b242f6dfec7582a8c0df102c7fa2849375f8"
+    }
+  },
+  "kodi": {
+    "default_source": "/opt/am6b-maintainable-r10-20260922/build.CoreELEC-Amlogic-ng.arm-21/build/kodi-e0614d7a6713369bbcfe42152223f1cdaec3dbf1",
+    "files": {
+      "xbmc/utils/Variant.cpp": "107c0d8e79ba8e7cdb826aaea110163de92ef54ec4c3c5457c75ddf8ea9e30e8",
+      "xbmc/utils/Variant.h": "18b9657ea27c4cf4eecf4e8eed66bc146e1a46e7f6847b79d4aa11308758ee3a",
+      "xbmc/cores/VideoSettings.cpp": "e50f76452e6e35276d19134978cf11b1ff7559ffc2f4f6c69d1c7d69121a5951",
+      "xbmc/cores/VideoSettings.h": "8838544baf5c058a0d94c53d99b8cfc8e49dc93248b0875d7a2f5ac3d4f02918",
+      "xbmc/cores/BobiGuiGate.h": "41dec1fd9678c633ce93b17723857f7156e87010cf9f9b34db5e846c23e64355",
+      "xbmc/utils/Map.h": "c7e143561b1721c72206bb40b87a5a247d8e439116283e29522b3bda0fa85e15",
+      "xbmc/threads/CriticalSection.h": "d3aef1093c444e7755a22a9eb99afa3b43d8de81967507873d5b2412db111dbe",
+      "xbmc/threads/Lockables.h": "11640649df716783a636da54cc4bf3a1bab82b566369dca3a8344e37ef7e0718",
+      "xbmc/platform/posix/threads/RecursiveMutex.h": "370e5ece608201b4cdd6f5ff4e38abe1d760643d9ad28b588680990040133f82"
+    }
+  }
+}

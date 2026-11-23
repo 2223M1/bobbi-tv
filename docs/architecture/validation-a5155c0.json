@@ -1,0 +1,1700 @@
+{
+  "schema": "bobbi-independent-validation-v1",
+  "status": "FINALIZED_FROZEN_PARTIAL_VALIDATION_NOT_FULL_ACCEPTANCE",
+  "finalized": true,
+  "plan_complete": false,
+  "assembled_utc": "2026-11-13T20:05:59.7888301Z",
+  "source": {
+    "repository": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026",
+    "commit": "a5155c08859fd88ec364ff5f4190af7336f46153",
+    "tree": "577634bc4724f118a4dd4aa4928545d809dc6b63",
+    "working_tree_status_at_draft_read": [],
+    "frozen_sequence": 2026102132,
+    "source_freeze_evidence_ids": [
+      "validation_audit",
+      "contracts_graphs_audit",
+      "release_verification"
+    ]
+  },
+  "evidence_reference_convention": "Each evidence ID resolves to an absolute local path, SHA256 of exact bytes and byte length in evidence_registry. Embedded package member hashes and source-tree identities are explicitly labeled and are not claims of separate local files.",
+  "evidence_registry": {
+    "validation_audit": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-validation-independent-audit.json",
+      "sha256": "baaba9dabab4446ed1024a9344fdb2815653acfae70006387568e681be4ef7b0",
+      "bytes": 6168985
+    },
+    "counting_note": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-validation-counting-note.json",
+      "sha256": "cdd96383ba9aa6018026259150b74b830116293a3b2df60ac32ab06c6ca84d4c",
+      "bytes": 2242
+    },
+    "contracts_graphs_audit": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-contracts-graphs-independent-audit.json",
+      "sha256": "3386935c1cba805b07cf0387c826c94a5ca2a7abb4f6ffebff9aa8862d2191c4",
+      "bytes": 57101
+    },
+    "manifest_anchor_audit": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-manifest-anchors-independent.json",
+      "sha256": "299181432d150beba4a02884e4ead07da8f4ce97219bfbde3534f5b04cd92c19",
+      "bytes": 68580
+    },
+    "build_verification": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-build-verification.json",
+      "sha256": "2b403647960f5d78b2fa28f8579cd36e93fb378dcec42e7d727c07495ab2a4f8",
+      "bytes": 25218
+    },
+    "release_verification": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-release-verification.json",
+      "sha256": "6ba0a604955c82c239f7f3775df810413249582257faf5c2ed072a674a061df9",
+      "bytes": 14702
+    },
+    "release_verifier": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-release-verifier.py",
+      "sha256": "47461e24ed06c0d9c299bb63da1fea8009b294f5a56176f82d2e26030899d9a4",
+      "bytes": 23163
+    },
+    "entry_audit": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-entry-audit.json",
+      "sha256": "c91becd2add230a1419613138c8ef9bc899db1ab137f4b926e59a71f387d3dd1",
+      "bytes": 491
+    },
+    "primary_receipt": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-primary.json",
+      "sha256": "219f1b62499b8d180b0bdf79e54a32cbd8db056166635d06ffc5375f8620b8a2",
+      "bytes": 1546
+    },
+    "baseline_receipt": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-baseline.json",
+      "sha256": "16f1cb47c157ad64b3564468ef8d993cdfbefae503d2396719bfe6869cf0d97a",
+      "bytes": 1479
+    },
+    "preparation_receipt": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-preparation.json",
+      "sha256": "81a41122ff61f64e22b1e637789cacc8fb42d0a32e26dfc8fe620c05b8030150",
+      "bytes": 1496
+    },
+    "primary_xml": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-primary.xml",
+      "sha256": "a57008a3e5bd5bbe33b0a6a9e887f3193486c4b848e4ada40a42d2ddb085991e",
+      "bytes": 1703719
+    },
+    "baseline_xml": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-baseline.xml",
+      "sha256": "58b39abca7e05ff823cc2faf98cba162f09a1e88e63ee0edae42d43946ffc836",
+      "bytes": 613794
+    },
+    "preparation_xml": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-preparation.xml",
+      "sha256": "e6876833a05005c5e38aa8569b95d45020b491228c229e8e179a835d25c1347d",
+      "bytes": 61626
+    },
+    "final_contracts_graphs": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-final-contracts-and-graphs-report.json",
+      "sha256": "7fc71e3f555fc3a877f91e053b4483c6ac2c3248a60e079e369ef11e7f263a83",
+      "bytes": 3045
+    },
+    "before_upgrade": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-before-2132-upgrade.json",
+      "sha256": "ec12125645394098da37f67591d4de918db38e718080c90704db72ceb361536b",
+      "bytes": 5806
+    },
+    "before_log_classification": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-before-2132-log-classification.json",
+      "sha256": "9cb33fa483b55ac21b1546459b491fc93a0eab302e62d7e998591c9bd9844960",
+      "bytes": 727
+    },
+    "after_upgrade": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-after-2132-upgrade.json",
+      "sha256": "401fcbccb1cb3be29c8fb87a42f2112b3403d9021411252f577bd9a4bc206edb",
+      "bytes": 5758
+    },
+    "after_diagnostic": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-a5155c0-after-diagnostic.json",
+      "sha256": "498277f6d831bf8a5fafaf745698a02269eb09d41126ad693d3c916413ac45cb",
+      "bytes": 5758
+    },
+    "diagnostic_terminal": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-block-timing-collected-terminal.json",
+      "sha256": "04b9f6f4b4e260466c7930c78adf600e1a8d701cf8288bc592560736d2a180e6",
+      "bytes": 132424
+    },
+    "diagnostic_intermediate": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-block-timing-collected.json",
+      "sha256": "7b02b0b6b53bd70ef4560fcaaed36a3a3383dca036973159f190e203789099d5",
+      "bytes": 57802
+    },
+    "diagnostic_intermediate_named_final": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-block-timing-collected-final.json",
+      "sha256": "e4487bbe74a7966cee351caf1653561b95ccaf106e00aed24daaad514d592a43",
+      "bytes": 131145
+    },
+    "deployment_run": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce-deploy-runs/20261114-035537.json",
+      "sha256": "01e4ff0aa6dbada69df1cb78de4cdeb7bcea594f503e071bfce189dd4dd913a7",
+      "bytes": 474
+    },
+    "deployment_transition_baseline": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce-deploy-runs/20261114-035537.transition-baseline.json",
+      "sha256": "c6fa7f30d678476fb27eafa0b74bc46f4c96c771bfe588287d9bfc97a32a1419",
+      "bytes": 2438
+    },
+    "deployment_stage": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce-20261114-035537-stage.json",
+      "sha256": "6f6b2ce6e9934b3a6d7ad8e9ca1b3cca73ab798d675c0f453e31285533292640",
+      "bytes": 154
+    },
+    "deployment_upgrade": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce-20261114-035537-upgrade.json",
+      "sha256": "fbb2a4791144d6c96c52947f9d61bd7c9b858a338f098ad19a9c1c9bceffa230",
+      "bytes": 319
+    },
+    "installed_files": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce2023/installed-files-1794600001156368600.json",
+      "sha256": "bc6a66ac6a7bc49b7e43a1f345e1e3e58f29f394c4a1c024d93d129e6031e374",
+      "bytes": 313
+    },
+    "diagnostic_log": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce-playback-log-diagnostic-1794600128614679600.json",
+      "sha256": "7dcb598155992e38215435cf77d23367fefd68ca52ce79845bc486b1642c161d",
+      "bytes": 71861
+    },
+    "prior_validation": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/docs/architecture/validation-629597c.json",
+      "sha256": "2a35b831f1dec84fe560051b3ae6d26b5612a81ba31778485f5909319d66f16f",
+      "bytes": 37004
+    },
+    "server_history_terminal_probe": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-server-history-terminal-probe.json",
+      "sha256": "8bc23444467dbef8fe1256cf6384347fa8ea9b70f4bd828e64ec27f10a98694d",
+      "bytes": 3149
+    },
+    "signed_bundle": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/a5155c0-releases/bobbi-private-2026102132-coreelec.bobbi-update.zip",
+      "sha256": "2bdce7db7176be342ae36ad813c47518fea5393b7d8a5c043e5351736852d841",
+      "bytes": 96326886
+    },
+    "entry_zip": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/a5155c0-entry-artifacts/script.bobbi.start-0.2.97.zip",
+      "sha256": "289214a5890ae6f236be86794ff82e620586f1975e9b5cceda4b4b8645670bdd",
+      "bytes": 96538438
+    },
+    "diagnostic_analysis": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-diagnostic-analysis.json",
+      "sha256": "bb52e123d19772c8ed5ed21fe2c4ee1f9e38332b1decaf53844c249723e4d332",
+      "bytes": 32152
+    },
+    "diagnostic_independent_recompute": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-diagnostic-independent-recompute.json",
+      "sha256": "141b40fb43fa148df92f33690e743c69974278fa88b92a40df73518ef6e292e2",
+      "bytes": 20193
+    },
+    "diagnostic_analyzer": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/analyze-a5155c0-diagnostic.py",
+      "sha256": "0aa8b3ffccb4703b0b9e20234d769012557d6709818cd605705d984df0d00d37",
+      "bytes": 8362
+    },
+    "attended_home_wake": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-a5155c0-attended-home-wake.json",
+      "sha256": "161f9c4e13ff49e98afb4f57e9e162364a8e399425438f8fecb6605cfa82d199",
+      "bytes": 754
+    },
+    "ordinary_start_asleep": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign-a5155c0/ce-new-work-convergence115a5155c0-galactic_heroes-start-1794600719000145400.json",
+      "sha256": "380c3f828c869683e7c2ed4a9e37a584ad26aa17678b657c2f11164836c79435",
+      "bytes": 986
+    },
+    "ordinary_start_timeout": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign-a5155c0/ce-new-work-convergence115a5155c0-galactic_heroes-start-1794600788787358300.json",
+      "sha256": "37a4a02ca8b6851f635e74608bf9e068d6c45802b52f632fd1aaf8b08b10c290",
+      "bytes": 1763
+    },
+    "ordinary_inspect": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign-a5155c0/ce-new-work-convergence115a5155c0-galactic_heroes-inspect-1794600834737633500.json",
+      "sha256": "929dc243a418925b34ce02b2a8eded3c67a36ea7dc0703c56ef79ed95161dd63",
+      "bytes": 5559
+    },
+    "ordinary_cards": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign-a5155c0/ce-new-work-convergence115a5155c0-galactic_heroes-cards-1794600870569172300.json",
+      "sha256": "23b206921b2ca912b8abf46de59026890d87c3f266d4921e0d90f09377a193f7",
+      "bytes": 4649
+    },
+    "ordinary_select_unselected": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign-a5155c0/ce-new-work-convergence115a5155c0-galactic_heroes-select-1794600896393045500.json",
+      "sha256": "7470d922288c0eeb9b11fa0388cd59177f0809290e19f90dc4346c6745f9c3a2",
+      "bytes": 911
+    },
+    "ordinary_select": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign-a5155c0/ce-new-work-convergence115a5155c0-galactic_heroes-select-1794601111150824300.json",
+      "sha256": "c79a5685912aeb21552a21df8017a9ef2e295874e9f3954f03fd075ee361a709",
+      "bytes": 410761
+    },
+    "ordinary_stop": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign-a5155c0/ce-new-work-convergence115a5155c0-galactic_heroes-stop-1794601125704506900.json",
+      "sha256": "df01527e5eb2f20ca18ab9ab703eaee88af02088e7363d28b3590a89f2f7354e",
+      "bytes": 2633
+    },
+    "ordinary_log": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce-playback-log-1794601160447264700.json",
+      "sha256": "2b20817798a247f3d7c6e608daba7955bb3c4b66a56807766b3b94d667cdb870",
+      "bytes": 58774
+    },
+    "after_trial_stop": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-a5155c0-after-trial-stop.json",
+      "sha256": "0c79b506038970ec8acd683bd54b6130852aea9e40ef3f0ddeb5d78ebdd8209c",
+      "bytes": 5805
+    },
+    "final_log_classification": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-a5155c0-final-log-classification.json",
+      "sha256": "17903f69f416c6ee12a210799f4438c1d7d923e5a672c5f84cdda0f69eb1e42f",
+      "bytes": 503
+    },
+    "ordinary_history": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/history-a5155c0-exact-request.json",
+      "sha256": "2776d1b0dfacdc8f275b60e7d527dbf3198cc1350c55055a49f23619ff2517f0",
+      "bytes": 1882
+    },
+    "ordinary_history_self_test": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/history-a5155c0-self-test.json",
+      "sha256": "bb787e2e58b90171a7a2655f6dd394bdf0cb08431849d25f482978cff435d2be",
+      "bytes": 1503
+    },
+    "ordinary_history_wrapper": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/exact_request_history_a5155c0.py",
+      "sha256": "154b01fe316e1bdfe809c31a42520bcb886c99320dc5b2080edca25a554559b3",
+      "bytes": 1870
+    },
+    "ordinary_history_probe_v2": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/exact_request_history_probe_v2.py",
+      "sha256": "acf34e125e6a07b0ba9afe988f5458fc917ae51758cebba76db685e5581eb988",
+      "bytes": 11253
+    },
+    "ordinary_history_probe_base": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/exact_request_history_probe.py",
+      "sha256": "15ac03e95307be0a7353daeb96266935d24eac11c677ab42daab10f4f00b2ead",
+      "bytes": 24201
+    },
+    "ordinary_history_dispatch": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/tools/ce_115_direct_trial.py",
+      "sha256": "0f4959d22a81876e796866c1917358e2b276113bfbf87fa8ae01b5ad074fb547",
+      "bytes": 6312
+    },
+    "ordinary_history_helper": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/tools/ce_115_direct_remote.py",
+      "sha256": "0062871b0ccc43e2d530138a444a0100ffa9113a72cbbb5a8ff8cb7117dd803d",
+      "bytes": 23952
+    },
+    "ordinary_driver_template": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/tools/ce_trial_remote.py",
+      "sha256": "9d9f8aa796ac4d4632eb5c2a73ec11ba004fac326ef2204994a7130d09e3f95e",
+      "bytes": 72905
+    },
+    "ordinary_independent_analyzer": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/analyze-a5155c0-ordinary-independent.py",
+      "sha256": "02c6cda8ac3a927405169d738d9474d5af46adf046313bc3e222ec3ec13c7ffc",
+      "bytes": 15555
+    },
+    "ordinary_independent_analysis": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-ordinary-independent-analysis.json",
+      "sha256": "98868822113719a6c180c2e4a6276e60011005ce461b5a05675173af632590e1",
+      "bytes": 24734
+    }
+  },
+  "offline": {
+    "evidence_ids": [
+      "validation_audit",
+      "counting_note",
+      "primary_receipt",
+      "baseline_receipt",
+      "preparation_receipt",
+      "primary_xml",
+      "baseline_xml",
+      "preparation_xml"
+    ],
+    "windows": {
+      "unique_logical_cases": 10811,
+      "unique_exact_case_ids": 10811,
+      "passed": 10789,
+      "ordinary_platform_skipped": 21,
+      "expected_failures": 1,
+      "failed": 0,
+      "errors": 0,
+      "duplicate_exact_case_ids": 0,
+      "exact_case_ids_sha256": "ae66154366b786edd093ecdebefcbe174bf47fa51912f5c45e97e4d3aa909a8f",
+      "groups": [
+        {
+          "name": "primary",
+          "cases": 8146,
+          "passed": 8124,
+          "ordinary_platform_skipped": 21,
+          "expected_failures": 1,
+          "receipt_evidence_id": "primary_receipt",
+          "xml_evidence_id": "primary_xml"
+        },
+        {
+          "name": "baseline",
+          "cases": 2411,
+          "passed": 2411,
+          "ordinary_platform_skipped": 0,
+          "expected_failures": 0,
+          "receipt_evidence_id": "baseline_receipt",
+          "xml_evidence_id": "baseline_xml"
+        },
+        {
+          "name": "preparation",
+          "cases": 254,
+          "passed": 254,
+          "ordinary_platform_skipped": 0,
+          "expected_failures": 0,
+          "receipt_evidence_id": "preparation_receipt",
+          "xml_evidence_id": "preparation_xml"
+        }
+      ],
+      "expected_failure": {
+        "case_id": [
+          "tests/test_ce2029_search_audit.py",
+          "tests.test_ce2029_search_audit",
+          "test_real_provider_never_publishes_explicit_live_action_for_animation[Keep Your Hands Off Eizouken! (Nogizaka46 Drama) - S01E01 (1080p)-aliases0]"
+        ],
+        "case_id_sha256": "245655a7d60fab787d59a2dad496a62df724773a28dcea5ed03412a27d7d5c2c",
+        "outcome": "xfailed",
+        "file_inferred_from_unique_command_target": false,
+        "file_resolution_basis": "explicit XML file",
+        "skip_message": "Known live-action row lacks strong type evidence in retained provider data; do not guess from a performer name plus Drama"
+      }
+    },
+    "linux": {
+      "completion_supplement_passes": 657,
+      "posix_contract_passes": 312,
+      "execution_instances": 969,
+      "unique_exact_case_ids": 969,
+      "exact_ids_overlapping_windows": 968,
+      "windows_skips_with_exact_linux_pass_match": 21,
+      "unmatched_windows_skips": 0,
+      "posix_evidence_ids": [
+        "contracts_graphs_audit",
+        "final_contracts_graphs"
+      ],
+      "additional_functional_coverage_counted": 0,
+      "exact_cross_platform_id_union": 10812,
+      "logical_cross_platform_case_union_after_documented_uuid_pair_coalescing": 10811,
+      "uuid_identity_qualification": "One parameter branch in test_old_expected_is_not_replaced_with_fresh_authority uses collection-time str(uuid4()). Windows/Linux UUID values produce distinct exact IDs but not a new logical case. See counting_note; the original audit exact-ID union is retained.",
+      "qualification": "Linux execution counts are not added to the Windows functional total. Windows skips/xfail remain recorded as their original outcomes."
+    },
+    "qualification": "Existing frozen-run XML/receipt and independent identity joins were read; this drafting agent did not rerun tests. Offline passing counts do not establish live playback, account, device or performance acceptance."
+  },
+  "architecture": {
+    "evidence_ids": [
+      "validation_audit",
+      "contracts_graphs_audit",
+      "manifest_anchor_audit",
+      "final_contracts_graphs"
+    ],
+    "repeat_graphs_byte_identical": true,
+    "graph_sha256": "69ff8fb7b9db34c8fffe59b15925a4fe9125073fb9951cab6c3fccb6625088e6",
+    "manifest_sha256": "a658808edf13eedc52768608f10a4e49ba3a08227f508dd9236d5ece87a978c2",
+    "manifest_frozen_blob": "6e463c62e4dd3c29e0338ceeed6d5d5f599ac89e",
+    "ownership_edges": 115,
+    "unique_anchor_triples": 114,
+    "unique_anchor_files": 89,
+    "nodes_declared": 37,
+    "declared_boundary_rules": 1,
+    "exact_frozen_anchor_matches": 115,
+    "parse_diagnostics": [],
+    "declared_boundary_findings": [],
+    "dependency_exception_maps": {
+      "core": {},
+      "platform": {}
+    },
+    "unresolved_edges": 86886,
+    "scc_candidates": 20,
+    "module_collisions": 3,
+    "qualification": "No findings in the declared static import boundary and no exception-map entries; unresolved/candidate edges and unreviewed runtime state remain outside this claim"
+  },
+  "build_and_signing": {
+    "evidence_ids": [
+      "build_verification",
+      "release_verification",
+      "release_verifier",
+      "entry_audit",
+      "signed_bundle",
+      "entry_zip"
+    ],
+    "source_check": {
+      "outputs": 2,
+      "files_per_output": 63,
+      "all_file_hashes_equal": true,
+      "source_check_manifests_installable": false,
+      "rerun_by_drafting_agent": false
+    },
+    "inventory": {
+      "components": 22,
+      "verified_nonprivate_files": 1470,
+      "sha256": "3bd23310f8d71688d49c5e14c849ca7a318921974062228a0eb03dda0a58ee29"
+    },
+    "previous_release": {
+      "commit": "629597c7c6655a992438f1903e3066dfa72cf61a",
+      "tree": "bd0bff705783c7440ed4ea64952270d9ca3c817c",
+      "sequence": 2026102131,
+      "components_verified": 22,
+      "inventory_members_verified": 1469,
+      "changed_components": [
+        "plugin.video.bobbi",
+        "script.bobbi.start",
+        "script.module.bobbi.core"
+      ],
+      "changed_managed_members": 9,
+      "modifications": 8,
+      "additions": 1,
+      "exact_archive_delta_matches_committed_source_changes": true,
+      "unexpected_archive_changes": [],
+      "changed_managed_archive_members": [
+        {
+          "status": "M",
+          "member": "plugin.video.bobbi/addon.xml",
+          "old_sha256": "4983aefc2eddf736d161a352e03f5ba99658efd54c1a5f0c4480a9a2c0ba9f29",
+          "new_sha256": "0057c0e5cf3671836fcf00a59ff754693c5ec17b1d51d3c8404de1b3a3a0cc2b"
+        },
+        {
+          "status": "M",
+          "member": "plugin.video.bobbi/lib/api/debrid/base.py",
+          "old_sha256": "b949ef73d59a0999f33ae1d2a78924c246ada7ff6b60c9dbe98386846bf1578d",
+          "new_sha256": "8af8d1b3adb75a1a97fb0886d3055b2e61a8c403c7c3cf606b11c64ed0137e20"
+        },
+        {
+          "status": "M",
+          "member": "plugin.video.bobbi/lib/search.py",
+          "old_sha256": "4c3d628957f7d2aa5b2974ee6b3e7d61eceb71c4ce3317fb6088a4b765a97258",
+          "new_sha256": "d3f3ef26551a5b00fb7aa4fb49d8704ab15cace7b9308d2c1d0e3f20e69427c0"
+        },
+        {
+          "status": "M",
+          "member": "plugin.video.bobbi/lib/utils/debrid/debrid_utils.py",
+          "old_sha256": "46a1b055de45d4019d4fa7171ba54f26855d211a5420338ebeaf90d287aa4310",
+          "new_sha256": "c63b0d1ed61402b9814a6a453e2bf47be321bef2e2e7d3a0c7607afd8c2b903b"
+        },
+        {
+          "status": "A",
+          "member": "plugin.video.bobbi/lib/utils/debrid/search_check.py",
+          "old_sha256": null,
+          "new_sha256": "31ebec5d29a664aed8221ba97c07fe805099837413ef0aaa5a1c5cf076d54ee0"
+        },
+        {
+          "status": "M",
+          "member": "script.bobbi.start/addon.xml",
+          "old_sha256": "28e5bb95e4ccad6d4c3b698573135203b1670208ee57cb3f2efbe188da4730b4",
+          "new_sha256": "86176ef70f7abff42f380d2927695dcd5ed7f8f954135e9f9b1367ba9a9c4598"
+        },
+        {
+          "status": "M",
+          "member": "script.module.bobbi.core/addon.xml",
+          "old_sha256": "b5d2fe94e1e175c4c54a9f6e57305d61f977e4927a22327978a4fcc0bf01550a",
+          "new_sha256": "0fb47d19c1b6b84d521d4e9343ff3f25b7a82b0a505b80d5fad2a35e6f22c1df"
+        },
+        {
+          "status": "M",
+          "member": "script.module.bobbi.core/lib/bobbi_core/progressive_search.py",
+          "old_sha256": "89bae7c029497a4e83dc3ebc6df1ea269de241d11c47a6b9c57ee85d43f5265b",
+          "new_sha256": "acae61b368c96b273d44fdff71e86db6e2722f422999a1915077d6c7c4ea5d30"
+        },
+        {
+          "status": "M",
+          "member": "script.module.bobbi.core/lib/bobbi_core/share_stream.py",
+          "old_sha256": "c0c8dc1a859a66c550b35ae3cdf5a0f51d5f7f71199672600d1ddef9a8b76d92",
+          "new_sha256": "357526739495cdc575f2f8fd1894e4000e85c32c1125478c33291013dc014682"
+        }
+      ]
+    },
+    "signed_bundle": {
+      "evidence_id": "signed_bundle",
+      "sequence": 2026102132,
+      "profile": "coreelec",
+      "components": 22,
+      "exact_membership": true,
+      "all_component_hashes_match_installable": true,
+      "embedded_manifest_sha256": "ef85f2aeb5f50e9245d5bf5e8c413e7eae8fb968696886403dc304c6e0dca218",
+      "embedded_signature_sha256": "ca2a1d9d103a9ee54d31066a40c62cc1616eacb7295e6ee5cbea724311fcd46e",
+      "public_trust_sha256": "a4fe050314256b7455ce55c787aa294c194059507c7c9637c8a65c3fcb55841b",
+      "runtime_verifier": "passed",
+      "independent_cryptography_verifier": "passed",
+      "changed_manifest_rejected": true,
+      "changed_signature_rejected": true,
+      "repeated_signed_build_reproducibility_proved": false
+    },
+    "entry": {
+      "evidence_id": "entry_zip",
+      "version": "0.2.97",
+      "sequence": 2026102132,
+      "members": 25,
+      "exact_membership": true,
+      "embedded_bundle_sha256": "2bdce7db7176be342ae36ad813c47518fea5393b7d8a5c043e5351736852d841",
+      "same_signed_generation_bootstrap_files": 22,
+      "bootstrap_compared_directly_to_embedded_generation": true,
+      "kodi_addon_identity": "passed",
+      "isolated_bootstrap_import": "passed",
+      "clean_device_installation_proved": false
+    },
+    "qualification": "Build/release receipts have narrower scopes than this assembled draft. The release-only receipt's historical main-suite-pending note is not rewritten; later completed offline tests are separately evidenced above. No private key or private-resource contents were read by this drafting agent."
+  },
+  "deployment": {
+    "evidence_ids": [
+      "deployment_run",
+      "deployment_transition_baseline",
+      "deployment_stage",
+      "deployment_upgrade",
+      "installed_files",
+      "before_upgrade",
+      "after_upgrade"
+    ],
+    "run_id": "20261114-035537",
+    "recorded_remote_run_directory": "/storage/.local/share/bobbi-private-deploy/20261114-035537",
+    "transferred_candidate_sha256": "2bdce7db7176be342ae36ad813c47518fea5393b7d8a5c043e5351736852d841",
+    "candidate_equals_verified_signed_bundle": true,
+    "transition_baseline_sha256": "c6fa7f30d678476fb27eafa0b74bc46f4c96c771bfe588287d9bfc97a32a1419",
+    "stage": {
+      "exit_code": 0,
+      "result": {
+        "state": "staged",
+        "components": 22,
+        "system_unchanged": true
+      },
+      "diagnostic_present": false
+    },
+    "upgrade": {
+      "exit_code": 0,
+      "result": {
+        "state": "upgraded",
+        "program_sequence": 2026102132,
+        "migration": {
+          "performed": false,
+          "policy": "existing-current-profile-preserved"
+        },
+        "cd2_and_mount_untouched": true,
+        "playback_verified": false
+      },
+      "diagnostic_present": false
+    },
+    "installed_owned_files": {
+      "expected_sequence": 2026102132,
+      "observed_sequence": 2026102132,
+      "files": 1261,
+      "matched": true,
+      "mismatches": [],
+      "transport_exit": 0,
+      "scope": "Owned program files; original dependencies and user data not overwritten or compared"
+    },
+    "qualification": "Existing deployment and installed-file receipts, not a new device operation by this agent. Upgrade explicitly reports playback_verified=false. 1261 owned files are neither the 1470 non-private build inventory nor proof of all dependency/user-data integrity."
+  },
+  "health_and_preservation": {
+    "evidence_ids": [
+      "before_upgrade",
+      "before_log_classification",
+      "after_upgrade",
+      "after_diagnostic",
+      "after_trial_stop",
+      "final_log_classification",
+      "ordinary_history"
+    ],
+    "before_upgrade": {
+      "observed_at_as_recorded": "2026-11-14 03:46:29",
+      "sequence": 2026102131,
+      "state": "attention_required",
+      "failures": [
+        "startup_log_attention"
+      ],
+      "players": [],
+      "window_id": 10000,
+      "kodi_service": {
+        "ActiveState": "active",
+        "MainPID": "4830",
+        "NRestarts": "0"
+      },
+      "native_pid": 4839,
+      "native_sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+      "owned_generation_versions": {
+        "plugin.video.bobbi": "0.1.72",
+        "plugin.video.bobbi.library": "0.1.8",
+        "script.module.bobbi.core": "0.1.72",
+        "script.module.bobbi.platform": "0.1.79",
+        "skin.bobbi.cinema": "0.1.19",
+        "script.bobbi.start": "0.2.96"
+      },
+      "pending_transaction": false,
+      "rollback_receipt_present": true,
+      "rollback_qualification": "Receipt presence only; no recovery or compatibility admission performed.",
+      "index": {
+        "exists": true,
+        "user_version": 4,
+        "integrity": "ok",
+        "rows": {
+          "objects": 0,
+          "memberships": 594,
+          "reviews": 594,
+          "review_changes": 8,
+          "review_receipts": 8,
+          "scans": 16,
+          "typed_objects": 594,
+          "file_segments": 0,
+          "segment_changes": 0
+        },
+        "counts_exact": {
+          "objects": true,
+          "memberships": true,
+          "reviews": true,
+          "review_changes": true,
+          "review_receipts": true,
+          "scans": true,
+          "typed_objects": true,
+          "file_segments": true,
+          "segment_changes": true
+        },
+        "missing_tables": []
+      },
+      "health_probe_cloud_requests": 0,
+      "authentication_qualification": "Ten cloud-provider saved scope flags only; not live or online authentication.",
+      "native_capabilities_qualification": "Idle playback lacks a runtime receipt; schema presence is not execution or OSD acceptance."
+    },
+    "after_upgrade": {
+      "observed_at_as_recorded": "2026-11-14 04:00:02",
+      "sequence": 2026102132,
+      "state": "observed",
+      "failures": [],
+      "players": [],
+      "window_id": 10000,
+      "kodi_service": {
+        "ActiveState": "active",
+        "MainPID": "7981",
+        "NRestarts": "0"
+      },
+      "native_pid": 7989,
+      "native_sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+      "owned_generation_versions": {
+        "plugin.video.bobbi": "0.1.73",
+        "plugin.video.bobbi.library": "0.1.8",
+        "script.module.bobbi.core": "0.1.73",
+        "script.module.bobbi.platform": "0.1.79",
+        "skin.bobbi.cinema": "0.1.19",
+        "script.bobbi.start": "0.2.97"
+      },
+      "pending_transaction": false,
+      "rollback_receipt_present": true,
+      "rollback_qualification": "Receipt presence only; no recovery or compatibility admission performed.",
+      "index": {
+        "exists": true,
+        "user_version": 4,
+        "integrity": "ok",
+        "rows": {
+          "objects": 0,
+          "memberships": 594,
+          "reviews": 594,
+          "review_changes": 8,
+          "review_receipts": 8,
+          "scans": 16,
+          "typed_objects": 594,
+          "file_segments": 0,
+          "segment_changes": 0
+        },
+        "counts_exact": {
+          "objects": true,
+          "memberships": true,
+          "reviews": true,
+          "review_changes": true,
+          "review_receipts": true,
+          "scans": true,
+          "typed_objects": true,
+          "file_segments": true,
+          "segment_changes": true
+        },
+        "missing_tables": []
+      },
+      "health_probe_cloud_requests": 0,
+      "authentication_qualification": "Ten cloud-provider saved scope flags only; not live or online authentication.",
+      "native_capabilities_qualification": "Idle playback lacks a runtime receipt; schema presence is not execution or OSD acceptance."
+    },
+    "after_diagnostic": {
+      "observed_at_as_recorded": "2026-11-14 04:02:09",
+      "sequence": 2026102132,
+      "state": "observed",
+      "failures": [],
+      "players": [],
+      "window_id": 10000,
+      "kodi_service": {
+        "ActiveState": "active",
+        "MainPID": "7981",
+        "NRestarts": "0"
+      },
+      "native_pid": 7989,
+      "native_sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+      "owned_generation_versions": {
+        "plugin.video.bobbi": "0.1.73",
+        "plugin.video.bobbi.library": "0.1.8",
+        "script.module.bobbi.core": "0.1.73",
+        "script.module.bobbi.platform": "0.1.79",
+        "skin.bobbi.cinema": "0.1.19",
+        "script.bobbi.start": "0.2.97"
+      },
+      "pending_transaction": false,
+      "rollback_receipt_present": true,
+      "rollback_qualification": "Receipt presence only; no recovery or compatibility admission performed.",
+      "index": {
+        "exists": true,
+        "user_version": 4,
+        "integrity": "ok",
+        "rows": {
+          "objects": 0,
+          "memberships": 594,
+          "reviews": 594,
+          "review_changes": 8,
+          "review_receipts": 8,
+          "scans": 16,
+          "typed_objects": 594,
+          "file_segments": 0,
+          "segment_changes": 0
+        },
+        "counts_exact": {
+          "objects": true,
+          "memberships": true,
+          "reviews": true,
+          "review_changes": true,
+          "review_receipts": true,
+          "scans": true,
+          "typed_objects": true,
+          "file_segments": true,
+          "segment_changes": true
+        },
+        "missing_tables": []
+      },
+      "health_probe_cloud_requests": 0,
+      "authentication_qualification": "Ten cloud-provider saved scope flags only; not live or online authentication.",
+      "native_capabilities_qualification": "Idle playback lacks a runtime receipt; schema presence is not execution or OSD acceptance."
+    },
+    "sentinels": [
+      {
+        "name": "115_account",
+        "before_upgrade_sha256": "78a7e89420bc5310dd02989c6d6ed81e2b45d901339ba519e55b6c83a53f7942",
+        "after_upgrade_sha256": "78a7e89420bc5310dd02989c6d6ed81e2b45d901339ba519e55b6c83a53f7942",
+        "after_diagnostic_sha256": "78a7e89420bc5310dd02989c6d6ed81e2b45d901339ba519e55b6c83a53f7942",
+        "unchanged_through_all_three": true
+      },
+      {
+        "name": "pan_accounts",
+        "before_upgrade_sha256": "d350bd19c819d8b8db58159914c2ff885c616ac711e304489fb0a1b868441ce7",
+        "after_upgrade_sha256": "d350bd19c819d8b8db58159914c2ff885c616ac711e304489fb0a1b868441ce7",
+        "after_diagnostic_sha256": "d350bd19c819d8b8db58159914c2ff885c616ac711e304489fb0a1b868441ce7",
+        "unchanged_through_all_three": true
+      },
+      {
+        "name": "preparation",
+        "before_upgrade_sha256": "75394fd6c55f5e048361199aa2fa673e1728c7b15a23c19f6159ae0543937d90",
+        "after_upgrade_sha256": "75394fd6c55f5e048361199aa2fa673e1728c7b15a23c19f6159ae0543937d90",
+        "after_diagnostic_sha256": "75394fd6c55f5e048361199aa2fa673e1728c7b15a23c19f6159ae0543937d90",
+        "unchanged_through_all_three": true
+      },
+      {
+        "name": "advancedsettings",
+        "before_upgrade_sha256": "b03b2ef2d411241b0c92639d0fdc2044a63f13c4ae291f998e7bfdc8dcb12e6d",
+        "after_upgrade_sha256": "b03b2ef2d411241b0c92639d0fdc2044a63f13c4ae291f998e7bfdc8dcb12e6d",
+        "after_diagnostic_sha256": "b03b2ef2d411241b0c92639d0fdc2044a63f13c4ae291f998e7bfdc8dcb12e6d",
+        "unchanged_through_all_three": true
+      },
+      {
+        "name": "native_abi",
+        "before_upgrade_sha256": "f8d6eef7dca215fe192c7c1daa8ed840d7133c85caeb2a632ddbdb6a51a05a12",
+        "after_upgrade_sha256": "f8d6eef7dca215fe192c7c1daa8ed840d7133c85caeb2a632ddbdb6a51a05a12",
+        "after_diagnostic_sha256": "f8d6eef7dca215fe192c7c1daa8ed840d7133c85caeb2a632ddbdb6a51a05a12",
+        "unchanged_through_all_three": true
+      },
+      {
+        "name": "history",
+        "before_upgrade_sha256": "5df6eb32b528ee52701fa1659fdd4eabc44f2a97c1ccaf2e26e29a9dcce4ae3a",
+        "after_upgrade_sha256": "5df6eb32b528ee52701fa1659fdd4eabc44f2a97c1ccaf2e26e29a9dcce4ae3a",
+        "after_diagnostic_sha256": "5df6eb32b528ee52701fa1659fdd4eabc44f2a97c1ccaf2e26e29a9dcce4ae3a",
+        "unchanged_through_all_three": true
+      },
+      {
+        "name": "library",
+        "before_upgrade_sha256": "1e5b59d716d6cde5543d075a65a585a591a1721d4356004501692b936e742740",
+        "after_upgrade_sha256": "1e5b59d716d6cde5543d075a65a585a591a1721d4356004501692b936e742740",
+        "after_diagnostic_sha256": "1e5b59d716d6cde5543d075a65a585a591a1721d4356004501692b936e742740",
+        "unchanged_through_all_three": true
+      },
+      {
+        "name": "torrent_backend",
+        "before_upgrade_sha256": "140fea016f30c51374bc61fb6b09c302ea629bc2d3573b83ccf16f7b509b46ae",
+        "after_upgrade_sha256": "140fea016f30c51374bc61fb6b09c302ea629bc2d3573b83ccf16f7b509b46ae",
+        "after_diagnostic_sha256": "140fea016f30c51374bc61fb6b09c302ea629bc2d3573b83ccf16f7b509b46ae",
+        "unchanged_through_all_three": true
+      }
+    ],
+    "sentinel_count": 8,
+    "all_eight_unchanged": true,
+    "before_health_attention_preserved": true,
+    "before_log_classification": {
+      "bounded_current_log": true,
+      "original_before_health_receipt_reclassified": false,
+      "recorded_matches": [
+        {
+          "level": "info",
+          "markers": [
+            "BOBBI-PROVIDERS"
+          ],
+          "line_sha256": "42d839b20b829f8e55c6538f49b50f45e39238e6d47a38dcd3cd965ee2a2749d"
+        },
+        {
+          "level": "info",
+          "markers": [
+            "BOBBI-PROVIDERS"
+          ],
+          "line_sha256": "c840b1a2d27ffd07e4f9b0c38f96acf9ebc312562564c74e2020b42c70189608"
+        }
+      ],
+      "qualification": "Classification only; no change to prior health receipts or playback acceptance."
+    },
+    "native_sha256_unchanged_all_three": true,
+    "native_pid_before_upgrade": 4839,
+    "native_pid_after_upgrade": 7989,
+    "native_pid_after_diagnostic": 7989,
+    "post_upgrade_to_post_diagnostic_pid_unchanged": true,
+    "qualification": "Eight named file hashes and bounded health/index observations only. Saved login flags are not online authentication, idle native schema declarations are not executed controls, and rollback receipt presence is not exercised recovery. Upgrade changed the native PID; only the post-upgrade-to-post-diagnostic PID is unchanged. After the later ordinary trial, native and Kodi PIDs and native binary still match the post-diagnostic observation; seven sentinels match and history changes. The unique fixed-default-profile request STOP is separately observed, not proof of all history contents or active profile/account/file pointer. Final health remains attention_required with INFO+failed classification retained.",
+    "all_eight_unchanged_scope": "Before upgrade, after upgrade and after opt-in diagnostic only; excludes the later ordinary trial.",
+    "after_ordinary_trial": {
+      "state": "attention_required",
+      "failures": [
+        "startup_log_attention"
+      ],
+      "idle": true,
+      "window_id": 10000,
+      "sequence": 2026102132,
+      "same_native_pid": true,
+      "same_service_pid": true,
+      "same_native_sha256": true,
+      "unchanged_sentinels": [
+        "115_account",
+        "pan_accounts",
+        "preparation",
+        "advancedsettings",
+        "native_abi",
+        "library",
+        "torrent_backend"
+      ],
+      "changed_sentinels": [
+        "history"
+      ],
+      "startup_log": {
+        "available": true,
+        "scope": "current_kodi_log_tail",
+        "truncated": false,
+        "tracebacks": 0,
+        "product_error_lines": 1
+      },
+      "final_fixed_vocabulary_classification": {
+        "mode": "readonly_fixed_vocabulary",
+        "truncated": false,
+        "log_tail_sha256": "d2345fe49634c5b4f341f26f68b4a274986c0fd0153cfaaa079926bcc088a82c",
+        "matches": [
+          {
+            "line_sha256": "66b31ee3237b982253322e42c9e774781ab26708758d7619c85c2a6e217a61c9",
+            "level": "info",
+            "markers": [
+              "failed"
+            ],
+            "url_present": false,
+            "bytes": 1183
+          }
+        ]
+      },
+      "attention_required_is_not_rewritten": true
+    },
+    "all_eight_unchanged_after_ordinary_trial": false
+  },
+  "bounded_115_diagnostic": {
+    "evidence_ids": [
+      "diagnostic_terminal",
+      "diagnostic_log",
+      "diagnostic_intermediate",
+      "diagnostic_intermediate_named_final",
+      "after_diagnostic"
+    ],
+    "run_id": "8245d8251fd945f98913eb33a289470d",
+    "request_id": "55f97757bbd14f939342ff4af772153d",
+    "native_instance": "28811e2b-3ca7-4732-86ed-ec6206be946b",
+    "route": "sharestream-block-timing",
+    "tool_revision": 12,
+    "state": "completed_with_gaps",
+    "diagnostic_only": true,
+    "product_proof": false,
+    "retry_allowed": false,
+    "sampling": {
+      "admission_deadline_monotonic": 2015333.189971741,
+      "sample_interval_seconds": 0.5,
+      "planned_points": 90,
+      "collected_points": 87,
+      "error_points": 2,
+      "skipped_points": 1,
+      "unstarted_points": 0,
+      "has_gaps": true,
+      "stopped_reason": "schedule_complete",
+      "qualification": "Deadline bounds new sample admission. Expired slots are skipped, read-channel failures are missing observations, and neither missed reads nor playback/control are replayed. An in-flight read reports its actual completion and overrun; it does not extend the admission window.",
+      "monotonic_ended": 2015333.190415164,
+      "overrun_seconds": 0.0004434229340404272
+    },
+    "sampling_missing_observations": [
+      {
+        "schedule_index": 28,
+        "kind": "owner_read_unavailable",
+        "error_type": "TimeoutError"
+      },
+      {
+        "schedule_index": 29,
+        "kind": "skipped_point",
+        "qualification": "No observed value is imputed for this schedule gap."
+      },
+      {
+        "schedule_index": 33,
+        "kind": "owner_read_unavailable",
+        "error_type": "TimeoutError"
+      }
+    ],
+    "observed_start_bounds_seconds": {
+      "play_to_first_av": 9.074812114005908,
+      "resolve_to_first_av": 9.645969913108274,
+      "qualification": "Observed upper bounds in this diagnostic, not controlled startup-performance samples."
+    },
+    "stop": {
+      "recorded_state": "confirmed",
+      "stop_issued": true,
+      "terminal_reason": "STOP",
+      "recorded_confirmation_basis": "post_command_scoped_terminal_stop",
+      "same_scope_post_command_terminal_observed": true,
+      "command_id_execution_receipt_proved": false,
+      "qualification": "One Stop was followed by a STOP terminal observation for the same captured request/native instance. This is not a command_id-correlated execution receipt and does not independently prove causality or control acceptance."
+    },
+    "log_export": {
+      "structured_observations": 78,
+      "original_structured_observations": 78,
+      "dropped_structured_observations": 0,
+      "protected_observations_original": 27,
+      "protected_observations_dropped": 0,
+      "protected_observations_complete": true,
+      "internal_suppressed_count": 33,
+      "internal_suppression_equals_export_loss": false,
+      "scope_matches_terminal_receipt": {
+        "request_id": true,
+        "run_id": true,
+        "native_instance": true,
+        "terminal_receipt_sha256": true
+      },
+      "qualification": "Zero exporter truncation loss does not mean zero acquisition gaps or zero internal rate suppression. The crash-hash list is not classified here as new crashes."
+    },
+    "earlier_snapshots": [
+      {
+        "evidence_id": "diagnostic_intermediate",
+        "state": "observing",
+        "samples": 41,
+        "retained": true,
+        "terminal": false
+      },
+      {
+        "evidence_id": "diagnostic_intermediate_named_final",
+        "state": "observing",
+        "samples": 87,
+        "retained": true,
+        "terminal": false
+      }
+    ],
+    "filename_final_does_not_imply_terminal_state": true,
+    "settings_unchanged_as_reported": true,
+    "observed_user_files_unchanged_as_reported": true,
+    "offline_timing_analysis": {
+      "status": "independently_recomputed_observations_not_root_cause",
+      "evidence_ids": [
+        "diagnostic_analysis",
+        "diagnostic_independent_recompute",
+        "diagnostic_analyzer"
+      ],
+      "binding_checks": {
+        "receipt_hash": true,
+        "run_request_instance_route_revision": true,
+        "native_request_hash": true,
+        "file_identity_hash": true,
+        "transport_join": true,
+        "share_binding_tuples": 1,
+        "physical_share_request_and_file_not_native_ids": true,
+        "unbound_indices": [
+          0
+        ]
+      },
+      "independent_valid_contiguous_runs_exactly_match_previous": true,
+      "missing_indices_not_bridged": [
+        28,
+        29,
+        33
+      ],
+      "longest_clock_stationary_sampled_endpoints": {
+        "first_schedule_index": 34,
+        "last_schedule_index": 62,
+        "first_wall": 2015305.283476154,
+        "last_wall": 2015319.193024108,
+        "first_media_seconds": 3.109,
+        "last_media_seconds": 3.109,
+        "first_primary_frames": 154,
+        "last_primary_frames": 220,
+        "sampled_endpoint_span_seconds": 13.909547953866422
+      },
+      "decoder_frames_advanced_during_longest_clock_stationary_run": 66,
+      "longest_joint_clock_and_primary_decoder_stationary_sampled_endpoints": {
+        "first_schedule_index": 45,
+        "last_schedule_index": 62,
+        "first_wall": 2015310.693391841,
+        "last_wall": 2015319.193024108,
+        "first_media_seconds": 3.109,
+        "last_media_seconds": 3.109,
+        "first_primary_frames": 220,
+        "last_primary_frames": 220,
+        "sampled_endpoint_span_seconds": 8.499632267048582
+      },
+      "stream": {
+        "main_http": 6,
+        "wall_ms": 41611,
+        "fetch_ms": 39121,
+        "wait_ms": 398,
+        "write_ms": 1790,
+        "high_level_unassigned_ms": 302,
+        "end_after_sampling_deadline_seconds": 2.076209258986637,
+        "consumer_cancel_calls": 33146,
+        "account_guard_calls": 33146,
+        "nested_wall_thread_cpu_microseconds": {
+          "consumer_cancel": {
+            "wall_us": 11975746,
+            "thread_cpu_us": 3444663,
+            "non_cpu_difference_us": 8531083
+          },
+          "account_guard": {
+            "wall_us": 5653015,
+            "thread_cpu_us": 435953,
+            "non_cpu_difference_us": 5217062
+          },
+          "socket_probe": {
+            "wall_us": 4451747,
+            "thread_cpu_us": 1261931,
+            "non_cpu_difference_us": 3189816
+          }
+        },
+        "nested_metrics_are_additive": false,
+        "wall_minus_thread_cpu_is_pure_lock_wait": false,
+        "retained_fetches": 10,
+        "all_retained_fetches_shorter_than_requested": true,
+        "fetch_ranges_contiguous": true
+      },
+      "interpretation": [
+        "原分析的绑定、计时、有效连续采样区段均由独立实现重算一致。缺失 28/29/33 不能跨接。",
+        "最长 clock+caching 连续采样端点跨度为 13.90955s；其中 decoder frame 与 clock 同停的最长连续端点跨度为 8.49963s，不能将前者全称解码器停顿。",
+        "read_block 是上游 setup/read/retry/取消检查等合计，不是 CDN 纯下载时间。account/socket 计时嵌套于 consumer_cancel 并落在 fetch/write 等区间，不能重复求和。",
+        "wall-thread_cpu 包含锁等待、系统调度、阻塞 IO 与仪表开销；没有锁等待分项或其他线程栈，不能单凭它确认 GIL/CPU/账号锁根因。",
+        "第一批 10 个保留 fetch 均不足请求的 8MiB，且源码在 1s body window 后主动关上游再请求后缀。32KiB read1 每次返回可更小，取消检查会被短碎片放大；不可据此降低账号授权检查。",
+        "scoped playback_presentation 持账号锁跨 native IO 的本地屏障复现是独立结构证据，不将本次实机 plateau 改写为已解释。",
+        "此次是 6.14GB TV 单样本诊断，非原用户让娜迪尔曼 ISO，也不是普通播放/暂停半小时/性能提升验收。"
+      ],
+      "performance_improvement_claimed": false,
+      "root_cause_attributed": false,
+      "qualification": "Existing root analysis and independently authored recomputation receipts are hash-bound to the terminal/log inputs. This drafting agent read and joined them; it did not rerun the analyzers or operate the device. Sampled endpoint spans are not continuous-renderer proofs, and nested wall/CPU figures cannot identify a lock/GIL/CDN cause."
+    },
+    "limitations": [
+      "Not ordinary source-selection acceptance",
+      "Not renewal or account-revocation proof",
+      "Kodi may update per-file watch records and logs",
+      "Observed AV time is an upper bound",
+      "Windowed diagnostic with no automatic external subtitle discovery",
+      "Compare resolve-to-AV: sharestream obtains its CDN grant on GET"
+    ],
+    "qualification": "A bounded diagnostic with gaps does not close historical 115 startup failures, ordinary source-selection acceptance, renewal/revocation, controlled cold/warm sample or performance gates."
+  },
+  "native": {
+    "evidence_ids": [
+      "release_verification",
+      "before_upgrade",
+      "after_upgrade",
+      "after_diagnostic"
+    ],
+    "sha256": "980265b54e3c6993268de894353e5f1291e791253d9f52e99943819997139fe2",
+    "source_tree": "294abcde0b17995420d07bf49c268c715e6f9dc7",
+    "rebuilt": false,
+    "native_source_changed_since_previous": false,
+    "device_hash_reported_same_in_three_health_receipts": true,
+    "qualification": "Release audit reused historical native provenance; separate recorded health probes observed the matching device hash. No new native build or playback certification is inferred."
+  },
+  "licensing": {
+    "evidence_id": "release_verification",
+    "component_manifest_sha256": "b204a17fd36921f6f99c84e59433064d8b36406942f86f2b2a489fe4fc988c15",
+    "unresolved_source_components": [
+      "plugin.video.bobbi",
+      "script.module.bobbi.platform",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.catalog",
+      "skin.bobbi.cinema",
+      "resource.uisounds.bobbi-modern"
+    ],
+    "unresolved_full_license_components": [
+      "script.module.jurialmunkey",
+      "script.module.infotagger"
+    ],
+    "public_distribution_cleared": false
+  },
+  "known_frozen_defect": {
+    "evidence_id": "server_history_terminal_probe",
+    "source_commit": "a5155c08859fd88ec364ff5f4190af7336f46153",
+    "status": "confirmed_memory_only_counterexample_not_fixed_in_this_freeze",
+    "behavior": "StandardSession.close emits SERVICE_STOPPED; FileHistory's whitelist rejects it. The probe observes latest position42 but persisted STARTED position10 remains. An isolated follow-up fix is outside a5155c0 and outside this draft.",
+    "qualification": "Not a newly executed device test, not an expansion into server remote progress synchronization."
+  },
+  "prior_acceptance_failures": {
+    "evidence_id": "prior_validation",
+    "old_document_unchanged": true,
+    "retained_remaining_gates_verbatim": [
+      "Current attempt 2 STARTUP_OBSERVATION_INTERRUPTED, its acquisition gap and stationary clock/decoder intervals remain unresolved; later local progress, original Stop and idle health do not reclassify startup.",
+      "Provider diagnostics retain partial coverage: first/second Jackett failed operations 2/4 and timeouts 6/7. Query and provider failures are not erased by finding/selecting a card.",
+      "Historical 115 startup/observation failure remains unresolved with no demonstrated root-cause fix.",
+      "Active profile, current account and exact filepointer equality are unmeasured by the fixed-default-profile history probe.",
+      "Universal profile safety, complete runtime ownership, clean-device installation, all-user-data preservation and exercised rollback recovery remain unproven.",
+      "Public distribution remains uncleared because of unresolved source/full-license items.",
+      "Complete edition/copy/part identity, precise path resume, media facts, automated segment policy and source remapping remain open.",
+      "Server progress/extras/segments/transcode sessions and real 115 private disk/NAS/server acceptance remain open.",
+      "Five cold plus five warm controlled 115 samples, all 110 interaction scenarios, interrupted rollback/data restore and Android device acceptance remain uncompleted."
+    ],
+    "context": "The words current attempt in the retained text refer to the prior 629597c validation's attempts, not the new 2132 bounded diagnostic. Their failure classifications are preserved, not overwritten by later progress/STOP/health observations."
+  },
+  "remaining_gates": [
+    "Licensing remains unresolved for seven source items and two full-license items; public distribution is not cleared.",
+    "Android real-device acceptance remains uncompleted.",
+    "All 110 interaction scenarios are not completed; no scenario object or outcome is rewritten here.",
+    "Five cold plus five warm controlled 115 samples, historical startup/observation root-cause resolution and ordinary source-selection acceptance remain uncompleted.",
+    "The new diagnostic contains two read failures and one skipped sample; completed_with_gaps is not full product or performance acceptance.",
+    "Interrupted rollback/data restore, clean-device installation, universal profile safety and complete user-data preservation remain unproved.",
+    "Complete edition/copy/part identity, precise path resume, media facts, segment policy/source remapping and real private disk/NAS/server acceptance remain open.",
+    "Server remote progress/extras/transcode sessions remain outside this validation; no remote-write authority or replay behavior is introduced.",
+    "The SERVICE_STOPPED local file-history close defect remains in the frozen source; later isolated work is not retroactively counted in a5155c0.",
+    "The timing analysis is independently recomputed but does not establish a root cause or performance improvement.",
+    "The same-generation ordinary 115 regression is closed through an applied original Stop and a unique fixed-default-profile request history record, but the original trace failed. Two-source query failure/timeout, start timeout, unselected first site attempt and strict clock/decoder plateaus remain recorded; ordinary source-selection/product acceptance is not granted."
+  ],
+  "history_preserved": {
+    "previous_validation_evidence_id": "prior_validation",
+    "previous_validation_overwritten": false,
+    "earlier_diagnostic_observing_snapshots_retained": true,
+    "prior_failure_classifications_changed": false,
+    "tests_outcomes_changed": false,
+    "uuid_extra_id_relabelled_as_new_functional_test": false,
+    "ordinary_attempt_failures_and_trace_failure_preserved": true,
+    "final_health_attention_required_preserved": true
+  },
+  "drafting_agent_scope": {
+    "inputs_read_only": true,
+    "files_created": [
+      "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/validation-a5155c0-draft.json",
+      "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/analyze-a5155c0-ordinary-independent.py",
+      "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/a5155c0-ordinary-independent-analysis.json"
+    ],
+    "main_repository_modified": false,
+    "old_validation_modified": false,
+    "device_contacted": false,
+    "tests_run": false,
+    "graphs_generated": false,
+    "packages_rebuilt": false,
+    "private_credentials_or_resource_contents_read": false,
+    "qualification": "Historical external assembly scope: independent offline assembly, exact-byte reference hashing and numerical recomputation of existing receipts. The separate root-reviewed publication below changes documentation only; finalized does not mean product acceptance or overall plan completion."
+  },
+  "last_updated_utc": "2026-11-13 20:26:29 UTC",
+  "ordinary_search_regression": {
+    "status": "completed_stop_and_history_closed_trace_failed_not_accepted",
+    "run_id": "convergence115a5155c0",
+    "attempt": 2,
+    "evidence_ids": [
+      "ordinary_start_asleep",
+      "ordinary_start_timeout",
+      "ordinary_inspect",
+      "ordinary_cards",
+      "ordinary_select_unselected",
+      "ordinary_select",
+      "ordinary_stop",
+      "ordinary_log",
+      "after_trial_stop",
+      "final_log_classification",
+      "after_diagnostic",
+      "attended_home_wake",
+      "ordinary_history",
+      "ordinary_history_self_test",
+      "ordinary_history_wrapper",
+      "ordinary_history_probe_v2",
+      "ordinary_history_probe_base",
+      "ordinary_history_dispatch",
+      "ordinary_history_helper",
+      "ordinary_driver_template",
+      "ordinary_independent_analyzer",
+      "ordinary_independent_analysis"
+    ],
+    "attended_home_wake": {
+      "exit_code": 0,
+      "diagnostic_present": false,
+      "result": {
+        "operation": "attended_home_wake",
+        "dispatch_count": 1,
+        "before": {
+          "players": [],
+          "window": 10000,
+          "generation": 16,
+          "intent": 0,
+          "flags": {
+            "System.DPMSActive": false,
+            "System.HasModalDialog": false,
+            "System.ScreenSaverActive": true
+          }
+        },
+        "after": {
+          "players": [],
+          "window": 10000,
+          "generation": 16,
+          "intent": 0,
+          "flags": {
+            "System.DPMSActive": false,
+            "System.HasModalDialog": false,
+            "System.ScreenSaverActive": false
+          }
+        },
+        "passed": true,
+        "old_trial_rebound": false,
+        "playback_controls_sent": 0
+      }
+    },
+    "attempts_preserved": [
+      {
+        "evidence_id": "ordinary_start_asleep",
+        "attempt": 1,
+        "operation": "start",
+        "exit_code": 1,
+        "transport_exit_code": 0,
+        "trial_exit_code": 1,
+        "error": "AssertionError",
+        "reason": "DISPLAY_ASLEEP_ATTENDED_WAKE_REQUIRED",
+        "selected": null,
+        "sample_count": 0
+      },
+      {
+        "evidence_id": "ordinary_start_timeout",
+        "attempt": 2,
+        "operation": "start",
+        "exit_code": 1,
+        "transport_exit_code": 0,
+        "trial_exit_code": 1,
+        "error": "TimeoutError",
+        "reason": "TRIAL_ERROR",
+        "selected": null,
+        "sample_count": 0
+      },
+      {
+        "evidence_id": "ordinary_inspect",
+        "attempt": 2,
+        "operation": "inspect",
+        "exit_code": 0,
+        "transport_exit_code": 0,
+        "trial_exit_code": 0,
+        "error": null,
+        "reason": null,
+        "selected": null,
+        "sample_count": 0
+      },
+      {
+        "evidence_id": "ordinary_cards",
+        "attempt": 2,
+        "operation": "cards",
+        "exit_code": 0,
+        "transport_exit_code": 0,
+        "trial_exit_code": 0,
+        "error": null,
+        "reason": null,
+        "selected": false,
+        "sample_count": 0
+      },
+      {
+        "evidence_id": "ordinary_select_unselected",
+        "attempt": 2,
+        "operation": "select",
+        "exit_code": 2,
+        "transport_exit_code": 0,
+        "trial_exit_code": 2,
+        "error": null,
+        "reason": null,
+        "selected": false,
+        "sample_count": 0
+      },
+      {
+        "evidence_id": "ordinary_select",
+        "attempt": 2,
+        "operation": "select",
+        "exit_code": 1,
+        "transport_exit_code": 0,
+        "trial_exit_code": 1,
+        "error": null,
+        "reason": null,
+        "selected": true,
+        "sample_count": 80
+      },
+      {
+        "evidence_id": "ordinary_stop",
+        "attempt": 2,
+        "operation": "stop",
+        "exit_code": 0,
+        "transport_exit_code": 0,
+        "trial_exit_code": 0,
+        "error": null,
+        "reason": null,
+        "selected": null,
+        "sample_count": 0
+      }
+    ],
+    "query_limitations": {
+      "inspect_error_label": "2 个来源查询失败或超时",
+      "available_cards": 4,
+      "first_select_selected": false,
+      "first_select_samples": 0,
+      "site_mismatch_explanation": "Root operator reports wrong site text; the failed select receipt itself only proves selected=false, no samples and no record.",
+      "selected_site": "自选源库 · 115"
+    },
+    "binding": {
+      "request_id": "55a2f5bc0c7b48358eaa42414ad1f5ee",
+      "native_instance": "02b05b90-ec46-4d86-b9e3-1391040b2318",
+      "native_bound_sample_count": 77,
+      "all_nonempty_native_bindings_match": true,
+      "stop_matches_request_native_file_and_original_command": true,
+      "history_select_stop_and_dispatch_hashes_match": true,
+      "selected_card_exactly_matches_one_prior_card": true
+    },
+    "sampling": {
+      "sample_count": 80,
+      "phase_counts": {
+        "None": 3,
+        "OPEN": 15,
+        "AV_STARTED": 62
+      },
+      "av_sample_count": 62,
+      "first_av_index": 18,
+      "first_av_seconds": -0.003,
+      "last_av_seconds": 3.339,
+      "select_to_av_observed_upper_bound_seconds": 9.305341676110402,
+      "first_av_sample_wall_latency_seconds": 9.307091674068943,
+      "first_av_timestamp_qualification": "Recorded immediately after first native AV_STARTED read and before sample wall timestamp; exact matching template verified. Initial player time is negative, not positive playback proof.",
+      "adjacent_wall_max_seconds": 0.9784269309602678,
+      "non_ok_reads": [],
+      "longest_runs": {
+        "clock_stationary": {
+          "first_index": 24,
+          "first_wall": 2016329.605519604,
+          "first_media_seconds": 3.339,
+          "first_primary_frames": 146,
+          "last_index": 79,
+          "last_wall": 2016357.237265929,
+          "last_media_seconds": 3.339,
+          "last_primary_frames": 274,
+          "sampled_endpoint_span_seconds": 27.63174632517621,
+          "primary_frame_delta": 128
+        },
+        "clock_and_primary_decoder_stationary": {
+          "first_index": 53,
+          "first_wall": 2016344.240931431,
+          "first_media_seconds": 3.339,
+          "first_primary_frames": 234,
+          "last_index": 77,
+          "last_wall": 2016356.216629644,
+          "last_media_seconds": 3.339,
+          "last_primary_frames": 234,
+          "sampled_endpoint_span_seconds": 11.975698212860152,
+          "primary_frame_delta": 0
+        },
+        "caching": {
+          "first_index": 24,
+          "first_wall": 2016329.605519604,
+          "first_media_seconds": 3.339,
+          "first_primary_frames": 146,
+          "last_index": 79,
+          "last_wall": 2016357.237265929,
+          "last_media_seconds": 3.339,
+          "last_primary_frames": 274,
+          "sampled_endpoint_span_seconds": 27.63174632517621,
+          "primary_frame_delta": 128
+        }
+      },
+      "rule": "Array-adjacent AV_STARTED samples, matching native tuple, successful player reads, speed=1 and exact clock equality; positive wall gap <=2s, nonoverlapping sample reads. Joint runs also require identified same primary decoder, successful/nonoverlapping decoder reads, stable dimensions and nondecreasing counters, with equal frame count. Break at every failed predicate. No schedule IDs exist in this receipt.",
+      "interpretation": "Sampled endpoint spans only; neither continuous renderer behavior nor exact transition times are measured."
+    },
+    "original_failure_preserved": {
+      "trace_passed": false,
+      "trace_health": {
+        "no_observed_stall": false,
+        "max_observed_stall_seconds": 28.1991438891273,
+        "clock_discontinuities": 2,
+        "observation_gaps": 0,
+        "stall_threshold_seconds": 1
+      },
+      "trace_coverage": {
+        "legacy_health": {
+          "no_observed_stall": false,
+          "max_observed_stall_seconds": 28.1991438891273,
+          "clock_discontinuities": 2,
+          "observation_gaps": 0,
+          "stall_threshold_seconds": 1
+        },
+        "av_sample_count": 62,
+        "positive_av_sample_count": 61,
+        "positive_adjacent_interval_count": 60,
+        "longest_contiguous_positive_av_span_seconds": 30.12864627316594,
+        "whole_startup_or_render_continuity_proven": false,
+        "status": "observed_anomaly",
+        "reason": "ORIGINAL_HEALTH_FAILURE_PRESERVED",
+        "passed": false
+      },
+      "legacy_max_is_composite_not_strict_plateau": true
+    },
+    "stop": {
+      "state": "confirmed",
+      "stopped": true,
+      "command_id": "8462903be7874d2eba224b88849639f7",
+      "admission_status": "queued",
+      "receipt": {
+        "command_id": "8462903be7874d2eba224b88849639f7",
+        "status": "applied"
+      },
+      "original_receipt_verified": true,
+      "dispatch_attempted": true,
+      "qualification": "One original recorded Stop command with applied receipt; no replay performed by this analysis."
+    },
+    "health": {
+      "state": "attention_required",
+      "failures": [
+        "startup_log_attention"
+      ],
+      "idle": true,
+      "window_id": 10000,
+      "sequence": 2026102132,
+      "same_native_pid": true,
+      "same_service_pid": true,
+      "same_native_sha256": true,
+      "unchanged_sentinels": [
+        "115_account",
+        "pan_accounts",
+        "preparation",
+        "advancedsettings",
+        "native_abi",
+        "library",
+        "torrent_backend"
+      ],
+      "changed_sentinels": [
+        "history"
+      ],
+      "startup_log": {
+        "available": true,
+        "scope": "current_kodi_log_tail",
+        "truncated": false,
+        "tracebacks": 0,
+        "product_error_lines": 1
+      },
+      "final_fixed_vocabulary_classification": {
+        "mode": "readonly_fixed_vocabulary",
+        "truncated": false,
+        "log_tail_sha256": "d2345fe49634c5b4f341f26f68b4a274986c0fd0153cfaaa079926bcc088a82c",
+        "matches": [
+          {
+            "line_sha256": "66b31ee3237b982253322e42c9e774781ab26708758d7619c85c2a6e217a61c9",
+            "level": "info",
+            "markers": [
+              "failed"
+            ],
+            "url_present": false,
+            "bytes": 1183
+          }
+        ]
+      },
+      "attention_required_is_not_rewritten": true
+    },
+    "exact_request_history": {
+      "scope": "fixed_default_profile_history",
+      "state": "observed",
+      "observation": {
+        "field_status": {
+          "completed": "valid",
+          "current_time": "valid",
+          "terminal_reason": "valid",
+          "total_time": "valid"
+        },
+        "fields": {
+          "completed": false,
+          "current_time": 15.841000000000001,
+          "terminal_reason": "STOP",
+          "total_time": 1444.945
+        },
+        "match_status": "unique",
+        "media_identity": {
+          "episode": "match",
+          "mode": "match",
+          "pointer_media": "match",
+          "season": "match",
+          "tmdb_id": "match"
+        },
+        "primary_media_identity_matches": true,
+        "unique_match": true
+      },
+      "active_profile": "unmeasured",
+      "current_account": "unmeasured",
+      "exact_file_pointer": "unmeasured",
+      "product_proof": false,
+      "self_test_state": "passed",
+      "self_test_check_count": 38
+    },
+    "ordinary_log_projection": {
+      "raw_lines_exported": false,
+      "outer_request_matches": true,
+      "structured_rows": 63,
+      "binding_tuple_count": 1,
+      "log_binding_tuples": [
+        {
+          "run": "2db10468e2d4445a",
+          "request": "1d0095a0f1e28fcf",
+          "transport": "fd27344f181c801466abf108c458ecd24a6ad854aa5d317370b14259f4a39b5a",
+          "file": "6fdd9d0bf10768182760821f7be663bbf401503652e3b1102a93cf497d769310"
+        }
+      ],
+      "explicit_diagnostic_scope": null,
+      "explicit_transport_scope_matched": null,
+      "retention": {
+        "original_counts": {
+          "lines": 78,
+          "share_observations": 63
+        },
+        "dropped": {
+          "lines": 0,
+          "share_observations": 0
+        },
+        "protected_observations_original": 20,
+        "protected_observations_dropped": 0,
+        "protected_observations_complete": true
+      },
+      "get_ends": [
+        {
+          "http": 13,
+          "start": 6137433577,
+          "end": 6137957864,
+          "offset": 6137957865,
+          "monotonic_us": 2016322924997,
+          "observation_begin_us": 2016321833647,
+          "wall_ms": 1091,
+          "wait_ms": 4,
+          "fetch_ms": 1026,
+          "write_ms": 47,
+          "delivered": 524288,
+          "bytes": 524288,
+          "suppressed": 0,
+          "phase": "end",
+          "stage": "write",
+          "outcome": "complete",
+          "reason": "range_complete",
+          "cancel": "none",
+          "method": "GET"
+        },
+        {
+          "http": 12,
+          "start": 0,
+          "end": 6137957864,
+          "offset": 1068623,
+          "monotonic_us": 2016323240459,
+          "observation_begin_us": 2016318495928,
+          "wall_ms": 4744,
+          "wait_ms": 993,
+          "fetch_ms": 3649,
+          "write_ms": 56,
+          "delivered": 1068623,
+          "bytes": 1068623,
+          "suppressed": 0,
+          "phase": "end",
+          "stage": "body",
+          "outcome": "cancelled",
+          "reason": "SHARE_STOPPED",
+          "cancel": "socket_error",
+          "method": "GET"
+        },
+        {
+          "http": 14,
+          "start": 165004,
+          "end": 6137957864,
+          "offset": 114519385,
+          "monotonic_us": 2016371858912,
+          "observation_begin_us": 2016322953355,
+          "wall_ms": 48905,
+          "wait_ms": 280,
+          "fetch_ms": 46018,
+          "write_ms": 2151,
+          "delivered": 114419864,
+          "bytes": 129410833,
+          "suppressed": 50,
+          "phase": "end",
+          "stage": "write",
+          "outcome": "cancelled",
+          "reason": "delivery_incomplete",
+          "cancel": "socket_error",
+          "method": "GET"
+        }
+      ],
+      "suppressed_terminal_sum": 50,
+      "binding_qualification": "Outer log request matches native request. Structured run/request/file are their own transport identities; no explicit diagnostic receipt digest or transport-scope match is supplied. Do not equate physical file with FileRef/native request."
+    },
+    "search_trial_receipts_status": "independently_recomputed_and_exact_byte_bound",
+    "search_or_playback_acceptance_claimed": false,
+    "limitations": [
+      "One attended ordinary regression, not a controlled five-cold/five-warm comparison or performance improvement.",
+      "Asleep-start failure, subsequent start timeout, two-source query failure label, and first unselected site attempt are retained.",
+      "Original trace failure remains failure; legacy composite anomaly duration is not substituted for strict recomputed plateaus.",
+      "Ordinary log does not carry the explicit diagnostic receipt/transport binding; stream counters are descriptive, not root cause proof.",
+      "INFO+failed classification explains the broad health marker without erasing attention_required.",
+      "Unique STOP history in fixed default profile does not measure active profile, current account or exact file pointer; its terminal position is later than the sampled trace.",
+      "No device calls, writes, playback controls, large tests or source changes were performed by this analyzer."
+    ]
+  },
+  "post_freeze_changes_not_in_2132": {
+    "observed_main_checkout_commit": "a6a5083138a49c798112304f54002ab0e7a99c23",
+    "excluded_commits": [
+      {
+        "commit": "2c44dda6984be3a66b34348f8cc330205088cab9",
+        "subject": "Persist standard service-close file history with existing reason"
+      },
+      {
+        "commit": "9cf7ffa358e777d4bebc56a4658a8821e0b4db29",
+        "subject": "Stabilize playback regression case identity"
+      },
+      {
+        "commit": "c69f3f60f08bb5a2cdbba5e71170d02f7470ea77",
+        "subject": "Avoid account lock during playback presentation reads"
+      },
+      {
+        "commit": "a6a5083138a49c798112304f54002ab0e7a99c23",
+        "subject": "fix(history): retain latest native report within active writer job"
+      }
+    ],
+    "qualification": "These later repository commits are not part of frozen a5155c0 or deployed sequence2026102132 and do not retroactively change its source, test IDs, package or acceptance evidence.",
+    "pending_source_inventory_qualification": "Current addon versions and source inventory target an unfrozen 2026102133 candidate; they are not evidence of a deployed 2133 payload or acceptance. This document records only frozen a5155c0 / deployed 2026102132."
+  },
+  "finalization": {
+    "scope": "Evidence assembly for frozen a5155c0 / sequence2026102132 only.",
+    "product_or_performance_acceptance": false,
+    "plan_complete": false,
+    "main_repository_publication": "Root-reviewed publication to docs/architecture/validation-a5155c0.json; frozen evidence identity and failure records retained.",
+    "remaining_failure_and_gap_records_preserved": true,
+    "external_finalized_source": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/validation-a5155c0-draft.json",
+      "sha256": "266fbc514b8bcf1475ce5827776a34a320feb1eb2eddec0bd91eb633603c6d45",
+      "bytes": 72392,
+      "unchanged": true
+    },
+    "publication_scope": [
+      "docs/architecture/validation-a5155c0.json",
+      "docs/architecture/convergence.md",
+      "docs/architecture/interaction-coverage.json",
+      "release/capability-matrix.json"
+    ]
+  }
+}

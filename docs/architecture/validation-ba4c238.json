@@ -1,0 +1,579 @@
+{
+  "schema": 1,
+  "scope": "Frozen ba4c238 product: local tests, deterministic extraction/source-check and one successful CoreELEC upgrade/health/schema migration. Subsequent cold-start owner admission failed; this candidate has NOT passed acceptance. No complete product/playback acceptance or public release clearance.",
+  "recorded_at_utc": "2026-11-13T08:33:37Z",
+  "source_identity": {
+    "commit": "ba4c238feabf93417404606c3e810b8150fbf86a",
+    "tree": "39d025001d2b2048b57aa5c8ffa7f5335db68ab4",
+    "committed_at": "2026-11-13T16:13:07+08:00",
+    "baseline_commit": "6cd23ee627977139e16ee7b37440665f436393cb",
+    "repository": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026",
+    "catalog_schema": 4,
+    "worktree_clean_before_documentation": true,
+    "documentation_binding": "This record and related documentation changes are a later overlay. They do not change the tested product commit, immutable graph tree or artifact source identity; there is no self-referential documentation-commit claim.",
+    "inventory_sha256": "bd39287d02345230a73379379d0bb682eb71c7ec1ba54819967145939c38db8f",
+    "build_tool_sha256": "2bfe435c0c4d378acb3f6b3542d51cf17c8edd3694124642d176e72948d7b7da"
+  },
+  "local_execution": {
+    "state": "three_groups_completed",
+    "source_binding": {
+      "type": "coordinator_execution_context",
+      "description": "The coordinator ran the three groups against clean ba4c238. This documentation task read complete XML and recomputed its hash; XML has no embedded commit/tree digest. Preserve the execution context and do not infer source identity solely from filenames.",
+      "xml_embeds_source_digest": false,
+      "interpreter": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/venv/Scripts/python.exe",
+      "exact_commands": "Retained in coordinator task execution history, not embedded in these JUnit files."
+    },
+    "groups": [
+      {
+        "file": "ba4c238-primary.xml",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/ba4c238-primary.xml",
+        "sha256": "18f2d8810437ddba6467b659d5436a87bc769bfd806f33b8de3dfdd6ae00112e",
+        "timestamp": "2026-11-13T16:13:19.224016+08:00",
+        "reported": {
+          "failures": 0,
+          "errors": 0,
+          "tests": 7378,
+          "skipped": 15
+        },
+        "duration_seconds": 608.571,
+        "xfail": 1,
+        "source_binding_properties": [],
+        "passed": 7363,
+        "ordinary_skipped": 14
+      },
+      {
+        "file": "ba4c238-baseline.xml",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/ba4c238-baseline.xml",
+        "sha256": "000c5a4dfdda987a36e30ce24f402c57caabc368c56794cd46a9b15ddb13d6c9",
+        "timestamp": "2026-11-13T16:13:29.416113+08:00",
+        "reported": {
+          "failures": 0,
+          "errors": 0,
+          "tests": 1551,
+          "skipped": 0
+        },
+        "duration_seconds": 39.359,
+        "xfail": 0,
+        "source_binding_properties": [],
+        "passed": 1551,
+        "ordinary_skipped": 0
+      },
+      {
+        "file": "ba4c238-preparation.xml",
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/ba4c238-preparation.xml",
+        "sha256": "f16d89525adff53a15ba51795aec6478c4fcdec4ccd351ac5af5c6f0489e7803",
+        "timestamp": "2026-11-13T16:23:26.787757+08:00",
+        "reported": {
+          "failures": 0,
+          "errors": 0,
+          "tests": 254,
+          "skipped": 0
+        },
+        "duration_seconds": 9.237,
+        "xfail": 0,
+        "source_binding_properties": [],
+        "passed": 254,
+        "ordinary_skipped": 0
+      }
+    ],
+    "qualification": "Counts are per execution group, not a claim of unique scenario coverage. JUnit skipped includes xfail; primary has 14 ordinary skips and 1 xfail, not 15 ordinary skips plus another xfail.",
+    "osd_fixture": {
+      "receipt_ref": "ba4c238-baseline.xml",
+      "class_name": "tests.private_baseline.test_osd_playback_contract",
+      "reported": {
+        "tests": 97,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "delivery_cases": [
+        {
+          "error": 0,
+          "name": "test_real_release_zip_contains_owned_osd_and_matches_reviewed_inventory",
+          "classname": "tests.private_baseline.test_osd_playback_contract",
+          "skipped": 0,
+          "failure": 0
+        },
+        {
+          "error": 0,
+          "name": "test_signed_install_preserves_upstream_and_installed_owned_osd_still_runs[original]",
+          "classname": "tests.private_baseline.test_osd_playback_contract",
+          "skipped": 0,
+          "failure": 0
+        },
+        {
+          "error": 0,
+          "name": "test_signed_install_preserves_upstream_and_installed_owned_osd_still_runs[99.0.0]",
+          "classname": "tests.private_baseline.test_osd_playback_contract",
+          "skipped": 0,
+          "failure": 0
+        }
+      ],
+      "real_paths": "Full release archiver ZIP/inventory, signature/Installer/dependency path with original and newer upstream preserved, installed owned OSD/router/boot gate.",
+      "simulated": "Kodi and native player remain simulated; no device stream/seek/chapter effectiveness is proved.",
+      "managed_scope": [
+        "scoped_seek",
+        "audio_selection",
+        "subtitle_selection_and_visibility",
+        "chapter_navigation_using_scoped_seek"
+      ],
+      "excluded_scope": [
+        "full_native_settings",
+        "speed",
+        "play_pause_stop",
+        "all_remaining_osd_interactions"
+      ]
+    },
+    "retained_earlier_mixed_runs": [
+      {
+        "file": "final-primary.xml",
+        "path": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\results\\final-primary.xml",
+        "state": "parseable_junit",
+        "sha256": "b0157e70645dd1870ae3fe610126f82eee1737e6378617be08e33361fb1c39a8",
+        "timestamp": "2026-11-13T15:56:54.634495+08:00",
+        "reported": {
+          "tests": 7369,
+          "failures": 8,
+          "skipped": 15,
+          "errors": 0
+        },
+        "xfail": 1,
+        "source_binding_properties": [],
+        "osd_delivery_cases": []
+      },
+      {
+        "file": "stage2-primary.xml",
+        "path": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\results\\stage2-primary.xml",
+        "state": "parseable_junit",
+        "sha256": "534f430236f7257f9c2eee4e8434dd1f22abd1c1871c4db28da1d4a045c09748",
+        "timestamp": "2026-11-13T15:33:02.307612+08:00",
+        "reported": {
+          "tests": 7230,
+          "failures": 57,
+          "skipped": 15,
+          "errors": 25
+        },
+        "xfail": 1,
+        "source_binding_properties": [],
+        "osd_delivery_cases": []
+      },
+      {
+        "file": "supplement-parent-availability-negative.xml",
+        "path": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\results\\supplement-parent-availability-negative.xml",
+        "state": "parseable_junit",
+        "sha256": "f5da23688055625d8e400fd19218c8a2620e18668d13d0067a5a8101d474a435",
+        "timestamp": "2026-11-13T16:02:53.183135+08:00",
+        "reported": {
+          "tests": 2,
+          "failures": 1,
+          "skipped": 0,
+          "errors": 0
+        },
+        "xfail": 0,
+        "source_binding_properties": [],
+        "osd_delivery_cases": []
+      },
+      {
+        "file": "supplement-parent-availability-green.xml",
+        "path": "D:\\AM6B-Project\\AM6B\\tmp\\bobbi-convergence-20261113\\results\\supplement-parent-availability-green.xml",
+        "state": "parseable_junit",
+        "sha256": "6ec1365b06951aa648d67f4e34c40ef1997cfdc76bb3c669a50d43905b57e83b",
+        "timestamp": "2026-11-13T16:03:06.839100+08:00",
+        "reported": {
+          "tests": 67,
+          "failures": 0,
+          "skipped": 0,
+          "errors": 0
+        },
+        "xfail": 0,
+        "source_binding_properties": [],
+        "osd_delivery_cases": []
+      }
+    ],
+    "interaction_qualification": {
+      "checklist": "docs/architecture/interaction-coverage.json",
+      "pending_system_scenarios": 110,
+      "note": "The checklist's local refs remain historical partial checkpoints. This separate record does not promote any of the 110 scenarios or erase intermediate failures."
+    }
+  },
+  "architecture_graph": {
+    "first": "D:/AM6B-Project/architecture-audit-ba4c238-final/graph.json",
+    "repeat": "D:/AM6B-Project/architecture-audit-ba4c238-final-repeat/graph.json",
+    "mode": "git_revision",
+    "commit": "ba4c238feabf93417404606c3e810b8150fbf86a",
+    "tree": "39d025001d2b2048b57aa5c8ffa7f5335db68ab4",
+    "bytes": 100642557,
+    "byte_equal": true,
+    "sha256": "8188f0c1b19c437901b81e151bdd38b24ba2909d64b02a6779954280c68bec9a",
+    "generated_in": "Dedicated frozen-graph task before the documentation overlay",
+    "boundary_review_required": [
+      {
+        "path": "addons/script.module.bobbi.core/lib/bobbi_core/preparation_client.py",
+        "line": 24,
+        "target": "bobbi_platform.runtime.call"
+      },
+      {
+        "path": "addons/script.module.bobbi.core/lib/bobbi_core/preparation_client.py",
+        "line": 40,
+        "target": "bobbi_platform.runtime.call"
+      },
+      {
+        "path": "addons/script.module.bobbi.core/lib/bobbi_core/playback_ipc.py",
+        "line": 14,
+        "target": "bobbi_platform.runtime.call"
+      }
+    ],
+    "inventory_files": 2298,
+    "loaded_sources": 1721,
+    "inventory_only": 577,
+    "parsed_python_files": 1429,
+    "nodes": 59441,
+    "edges": 147573,
+    "edges_by_status": {
+      "confirmed": 7433,
+      "candidate": 33742,
+      "external": 25359,
+      "unresolved": 81039
+    },
+    "diagnostics": 0,
+    "qualification": "Deterministic static extraction and reviewed manifest assertions; not exhaustive runtime reachability, executed ownership proof or zero architectural debt."
+  },
+  "artifacts": {
+    "reproducible_source_check": {
+      "first_directory": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/ba4c238-check-a",
+      "repeat_directory": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/ba4c238-check-b",
+      "comparison": "Same relative file set; SHA256 of all 63 files compared and equal.",
+      "files": 63,
+      "all_file_sha256_equal": true,
+      "component_count": 22,
+      "installable": false,
+      "distribution_cleared": false,
+      "manifests": [
+        {
+          "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/ba4c238-check-a/manifest.json",
+          "sha256": "6095f049261d2a380d102ee04dad0770e75921a738d195c8aedc446a7b3c0077"
+        },
+        {
+          "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/ba4c238-check-b/manifest.json",
+          "sha256": "6095f049261d2a380d102ee04dad0770e75921a738d195c8aedc446a7b3c0077"
+        }
+      ],
+      "source_binding": "Both manifests record ba4c238/tree39d0250, worktree_dirty=false and the source inventory/build tool hashes above.",
+      "qualification": "This comparison does not claim the separately signed update ZIP or bootstrap ZIP was built twice."
+    },
+    "private_installable": {
+      "component_count": 22,
+      "manifest": {
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/ba4c238-installable/manifest.json",
+        "sha256": "12f67a1afe910609a2fc38c1b6809a201624913987b7d1289860a4d99a70e051"
+      },
+      "update_bundle": {
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/bobbi-ba4c238-2026102124-coreelec.bobbi-update.zip",
+        "sha256": "a279bbdd4ffd66e136820fd0a4d81d2a13c74632d55594aa6aa2ea421ee3bd1c"
+      },
+      "entry_zip": {
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/script.bobbi.start-0.2.90-ba4c238.zip",
+        "sha256": "f5426d7d35ff0dfaf5a36ffc8df37c347c07c6ef86514da65c4b68aefee8cb70",
+        "version": "0.2.90",
+        "bytes": 96504093
+      },
+      "entry_receipt": {
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/builds/script.bobbi.start-0.2.90-ba4c238.json",
+        "sha256": "82480623a6d63e13e25d0a22aed44d3c3df2c4c9f74af9a82661ba771a2cdd68"
+      },
+      "expected_sequence": 2026102124,
+      "source_binding": "The installable manifest independently records the same clean frozen commit/tree and inventory/build-tool hashes.",
+      "signature_scope": "Coordinator signed/staged/upgraded the private package. This documentation task independently recomputed archive hashes, not a separate signature verifier execution.",
+      "manifest_device_verified": false,
+      "distribution_cleared": false
+    }
+  },
+  "coreelec": {
+    "state": "upgrade_health_migration_passed_but_candidate_acceptance_failed",
+    "before_sequence": 2026102123,
+    "installed_sequence": 2026102124,
+    "staging_id": "20261113-162500",
+    "staging_id_source": "coordinator operation report",
+    "owned_program_receipt": {
+      "path": "D:/AM6B-Project/bobbi-tv-ce-search-recall-20261026/review-evidence/ce2023/installed-files-1794558321117773100.json",
+      "sha256": "d5585a42aa5d10184606961d9fddc077f28cc48a0eae3bbaabb94437fbfb19bd"
+    },
+    "owned_program_verification": {
+      "expected_sequence": 2026102124,
+      "actual_sequence": 2026102124,
+      "files": 1256,
+      "matched": true,
+      "mismatches": [],
+      "binding": "Coordinator invoked the installed-file verifier for the signed bundle. Receipt contains expected sequence/match outcome; archive hash is recorded separately above.",
+      "receipt_embeds_bundle_hash": false,
+      "excluded": "Original upstream dependencies and all user data are not covered by this owned-program file comparison."
+    },
+    "before_health": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-before-final.json",
+      "sha256": "46c3254459fe0f2d2f2dff6a13bb8103e555f46eeeb848c5744d40bd6bf124da",
+      "observed_at": "2026-11-13 15:55:08",
+      "phase": "before",
+      "sequence": 2026102123,
+      "state": "passed",
+      "native_sha256": "7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c",
+      "cloud_requests_initiated_by_probe": 0,
+      "qualifies_current_frozen_source": false
+    },
+    "after_health": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/device-after-upgrade.json",
+      "sha256": "4f111f8570c2d79bebda4904f7709d911c7fa47daa551fecf627ae9f8e20bd3e"
+    },
+    "observed_after_at": "2026-11-13 16:25:22",
+    "health": {
+      "state": "passed",
+      "pending_transaction": false,
+      "rollback_available": true,
+      "kodi_active": true,
+      "kodi_restarts": 0,
+      "startup_tracebacks": 0,
+      "startup_product_error_lines": 0,
+      "catalog_integrity": "ok",
+      "catalog_schema": 4,
+      "typed_objects": 594,
+      "cloud_requests_initiated_by_probe": 0
+    },
+    "preservation": {
+      "sentinel_classes": [
+        "115_account",
+        "pan_accounts",
+        "preparation",
+        "advancedsettings",
+        "native_abi",
+        "history",
+        "library",
+        "torrent_backend"
+      ],
+      "sentinel_count": 8,
+      "sentinel_summaries_equal": true,
+      "existing_provider_login_statuses_equal": true,
+      "existing_provider_rows": 10,
+      "after_provider_rows": 13,
+      "added_provider_rows": [
+        {
+          "provider": "plex",
+          "authenticated": false
+        },
+        {
+          "provider": "jellyfin",
+          "authenticated": false
+        },
+        {
+          "provider": "emby",
+          "authenticated": false
+        }
+      ],
+      "login_list_byte_equality_claimed": false,
+      "cloud115_authenticated_preserved": true,
+      "native_sha256_before": "7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c",
+      "native_sha256_after": "7e88830c9cb24ef22a64a521a035a5ba411d17aeb57af2ba9db874fd9689294c",
+      "qualification": "Existing sentinel and login-state preservation is not a fresh provider protocol login or complete user-data file comparison."
+    },
+    "schema_migration": {
+      "before": {
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/migration-before.json",
+        "sha256": "4d7c1fece57ca19324b344f4a8bfd116163ff96f9668c2c444445c99dce4f431"
+      },
+      "after": {
+        "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/migration-after.json",
+        "sha256": "0662cc24f1f71fae422e08861242a9d6ae334550aa6cd574eb72a4d01ef2e82d"
+      },
+      "from_schema": 3,
+      "to_schema": 4,
+      "original_tables": 18,
+      "table_names_counts_and_content_sha256_equal": true,
+      "typed_objects_before_and_after": 594,
+      "matching_backup": {
+        "name": "media-index.sqlite3.schema3.bak",
+        "sha256": "f5800727516827582d6e47daddec70a7aea6d37a56223844764343288cb078ec"
+      },
+      "backup_matches_original_logical_snapshot": true,
+      "qualification": "One observed profile's actual migration consistency, not rollback, data restore, all-profile/all-schema combinations, process loss or power-loss recovery."
+    },
+    "playback_acceptance": "start_precondition_failed_before_search_no_valid_playback_acceptance",
+    "current_generation_rollback_restore": "not_run",
+    "natural_next_acceptance": "not_run_current_source",
+    "osd_real_control_acceptance": "not_run_current_source",
+    "qualification": "Installed frozen owned components on the existing native binary. No new native binary was built, and this is not complete device certification.",
+    "readonly_rollback_guard": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/readonly-rollback-guard.json",
+      "sha256": "dac4c025ffca5e07689cd391367372bc5ae35c6ef5abe5e7178107e361b4dca9",
+      "expected_sequence": 2026102124,
+      "observed_schemas": [
+        4
+      ],
+      "retained_supported_schemas": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "deployment_preflight": {
+        "state": "incompatible_rejected",
+        "reason": "CE_CATALOG_SCHEMA_INCOMPATIBLE_REQUIRES_EXPLICIT_OFFLINE_RESTORE"
+      },
+      "product_shared_guard": {
+        "state": "incompatible_rejected",
+        "reason": "CE_CATALOG_SCHEMA_INCOMPATIBLE_REQUIRES_EXPLICIT_OFFLINE_RESTORE"
+      },
+      "product_journal_preflights": [
+        {
+          "profile": 1,
+          "state": "unproven_rejected",
+          "reason": "CE_CATALOG_PROGRAM_SCHEMA_UNPROVEN"
+        }
+      ],
+      "tracked_files": 13,
+      "tracked_data_and_program_metadata_unchanged": true,
+      "services_unchanged": true,
+      "schemas_unchanged": true,
+      "mutation_performed": false,
+      "rollback_executed": false,
+      "database_restore_executed": false,
+      "qualification": "Read-only production guard refusal only. No TV confirmation accepted and no exact product-journal rollback success, installer rollback or database restore is claimed."
+    },
+    "home_navigation": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/ui-home-navigation.json",
+      "sha256": "3742e10b2b71b910c4c7ca68b46338f2c9040e378aaab254c066e02dd5aee564",
+      "mode": "home-nav",
+      "steps": 11,
+      "passed": true,
+      "qualification": "Only the recorded Home focus transitions; some rail labels remained unavailable/error. Not all content readiness, public detail/back flows or playback acceptance."
+    },
+    "failed_start": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign/ce-new-work-convergence115ba4c238-galactic_heroes-start-1794558471527938000.json",
+      "sha256": "496e600900a0340837210280181e882b15525bc98afc792f14a933f43a3f7c4b",
+      "exit_code": 1,
+      "transport_exit_code": 0,
+      "trial_exit_code": 1,
+      "error": "TimeoutError",
+      "reason": "TRIAL_ERROR",
+      "relevant_stack": [
+        "prepare_home",
+        "assert_picker_idle",
+        "snapshot",
+        "call"
+      ],
+      "phase": "before_search_or_valid_playback",
+      "retained": true,
+      "qualification": "Actual candidate failure, not erased by local test/install success. No valid cold/warm playback outcome or completed campaign is claimed."
+    },
+    "owner_latency_after_failure": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/owner-latency-after-cold-failure.json",
+      "sha256": "322dc020e9264d47befa89ac3d61e7061a8fd0fe3a6cfd134804921565f28a0c",
+      "mutation_performed": false,
+      "owner": {
+        "timeouts": 3,
+        "max_ms": 302.185,
+        "accepted": 4,
+        "requests": 12,
+        "min_ms": 152.669,
+        "unavailable": 5
+      },
+      "native": {
+        "requests": 12,
+        "max_ms": 4.048,
+        "accepted": 12,
+        "min_ms": 1.582
+      },
+      "qualification": "Short read-only diagnostic comparison. 8 of 12 owner requests were not accepted while all 12 native reads were accepted. This establishes observed owner unavailability/latency, not its causal mechanism or a performance optimization result."
+    },
+    "idle_metrics_before_failure": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/campaign/ce-new-work-convergence115ba4c238-galactic_heroes-metrics-1794558404883894800.json",
+      "sha256": "7afe2ae735b35a701b9e55fd02ed25330f750f0df69a13c865ec188c588390c2",
+      "mode": "readonly",
+      "condition": "idle",
+      "cache_state": "unknown",
+      "samples": 3,
+      "errors": 0,
+      "elapsed_seconds": 3.000135062960908,
+      "source_tree_binding": "operator-supplied label; compare installed source hashes separately",
+      "qualification": "Not a cold/warm playback sample, exact first-frame/seek/input latency, Kodi-attributed network measurement or P95 basis."
+    }
+  },
+  "native_and_android": {
+    "host_semantics": {
+      "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/native-gate/gate-result.json",
+      "sha256": "fd0983a18a502380400204fde853a2689f7dad749b05341d23f5460ac8f1fd36",
+      "state": "HOST_SEMANTICS_PASSED",
+      "android_linked": false,
+      "real_device_verified": false,
+      "source_base": "a3a448d26b8d560a65655dab2cd122994dc4e146",
+      "series_sha256": "2a7fed3b11747470566f9eb69a64d3d26557db218b1975aad4d3dcdebe424345",
+      "frozen_repository_series_hash_matches": true,
+      "summary_logs": [
+        {
+          "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/native-gate/generic-semantics.log",
+          "sha256": "7b5c75887bead2ae4786445f18646073baa7a313e74dec7be9db045a385d98be",
+          "semantic_tests": 7
+        },
+        {
+          "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/native-gate/completion-negative-controls.log",
+          "sha256": "3c534871142d806d6ddfb9aaf8e8a3f4bd8608233588e030702646160f96d4e7",
+          "negative_controls": 2,
+          "expected_nonzero_exit_codes": [
+            1,
+            1
+          ]
+        }
+      ],
+      "missing_relative_logs_in_copied_E_folder": [
+        "init.log",
+        "fetch.log",
+        "checkout.log",
+        "apply-series.log"
+      ]
+    },
+    "android_clean_link": false,
+    "android_apk_signed": false,
+    "android_installed": false,
+    "android_real_device_verified": false,
+    "qualification": "Host C++ semantics and negative controls do not establish Android linkage/signing or runtime behavior."
+  },
+  "release_gates": {
+    "distribution_clearance": "blocked_unresolved_components",
+    "license_register": "licenses/THIRD-PARTY.json",
+    "unresolved_source": [
+      "plugin.video.bobbi",
+      "script.module.bobbi.platform",
+      "script.module.bobbi.core",
+      "script.module.bobbi.mdsub",
+      "script.module.bobbi.catalog",
+      "skin.bobbi.cinema",
+      "resource.uisounds.bobbi-modern"
+    ],
+    "unresolved_full_license": [
+      "script.module.jurialmunkey",
+      "script.module.infotagger"
+    ],
+    "p115rsacipher": {
+      "revision": "856e4f8f09ce034534bd458f06d3dee4474a1698",
+      "retained_documents": [
+        "p115rsacipher-license",
+        "p115rsacipher-pyproject"
+      ],
+      "conflict": "GPLv3 module LICENSE versus MIT pyproject metadata",
+      "resolution": "unresolved; no whole-platform grant inferred"
+    },
+    "qualification": "Retained notices, passing tests, reproducibility, signatures and internal candidate installation do not resolve rights or authorize a public distribution."
+  },
+  "remaining_acceptance": {
+    "system_scenarios": "All 110 remain pending; local suites are not a scenario pass count.",
+    "performance_115": "Campaign paused after actual cold-start prepare_home owner snapshot TimeoutError before search. Preserve this failed attempt; diagnose and bind any changed code to a new source/artifact/device identity before completing fixed-file/start/audio/subtitle five-cold/five-warm acceptance. Three idle metric samples are not playback outcomes; no reliable P95 or fastest claim.",
+    "personal_115": "Experimental; real account enumeration/revalidation/MKV/ISO acceptance not run.",
+    "network_paths": "Experimental SMB/NFS/WebDAV; weak metadata and start-only identity; real NAS/blocked-VFS acceptance not run.",
+    "media_servers": "Experimental original-file Range Direct Play only, start-only, no automatic part chaining; live server acceptance, progress synchronization, Direct Stream/Transcode/HLS/session lifecycle incomplete.",
+    "version_and_segments": "Explicit cut/multipart identities, complete technical media facts, automatic segment/credits policy and safe cross-source annotation migration remain incomplete.",
+    "playback_controls": "Scoped seek/audio/subtitle/chapter local code and fixtures exist; actual device effectiveness and broader control convergence remain pending.",
+    "overall": "ba4c238 installed successfully but candidate acceptance did not pass. Owner admission failure is under investigation; no root cause is established by this record. G0-G9 and the 110 scenarios are not collectively complete."
+  },
+  "documentation_audit": {
+    "path": "D:/AM6B-Project/AM6B/tmp/bobbi-convergence-20261113/results/final-documentation-audit.json",
+    "observed_at_utc": "2026-11-13T08:22:33Z",
+    "qualification": "Historical pre-completion audit. Its then-missing primary/preparation and pre-upgrade statements are superseded by the actual later receipts in this record, not retroactively rewritten."
+  }
+}

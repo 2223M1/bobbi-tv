@@ -1,0 +1,6 @@
+{
+  "platform": "coreelec-amlogic-ng.arm-21",
+  "patches": [
+    {"file": "ce-bluray-page-load.patch", "sha256": "1f8e2057a9d4d60f064cf57457e32e33c9178e827b769c638069a839b67a13cb"}
+  ]
+}

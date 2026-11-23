@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">9001</defaultcontrol>
+  <coordinates>
+    <left>0</left>
+    <top>0</top>
+  </coordinates>
+  <controls>
+    <include>DialogScrim</include>
+    <control type="group">
+      <centerleft>50%</centerleft><centertop>50%</centertop>
+      <width>1180</width><height>460</height>
+      <include content="PanelOpen"><param name="slide">0,16</param></include>
+      <control type="image">
+        <left>-48</left><top>-48</top><width>1276</width><height>556</height>
+        <texture border="64">bobbi/glass/modal-shadow.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1180</width><height>460</height>
+        <texture colordiffuse="$VAR[BobbiMattePanelColor]" border="46">bobbi/glass/modal-glass.png</texture>
+      </control>
+      <control type="image">
+        <left>0</left><top>0</top><width>1180</width><height>460</height>
+        <texture colordiffuse="glass_rim" border="46">bobbi/glass/modal-glass-rim.png</texture>
+      </control>
+
+      <control type="label" id="2">
+        <left>48</left><top>34</top><width>1084</width><height>48</height>
+        <label>$LOCALIZE[21421]</label>
+        <font>Head34</font><textcolor>FFFFFFFF</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+
+      <control type="label">
+        <left>48</left><top>94</top><width>1084</width><height>34</height>
+        <label>21422</label>
+        <font>Card24</font><textcolor>$VAR[BobbiPanelCaption]</textcolor>
+        <align>center</align><aligny>center</aligny>
+      </control>
+
+      <control type="group" id="9001">
+        <control type="button" id="15">
+          <left>48</left><top>148</top><width>534</width><height>66</height>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>on_focus</focusedcolor>
+          <textoffsetx>28</textoffsetx><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="22FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onright>16</onright><onleft>16</onleft><onup>9000</onup><ondown>17</ondown>
+        </control>
+        <control type="button" id="16">
+          <left>598</left><top>148</top><width>534</width><height>66</height>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>on_focus</focusedcolor>
+          <textoffsetx>28</textoffsetx><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="22FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onright>15</onright><onleft>15</onleft><onup>9000</onup><ondown>17</ondown>
+        </control>
+      </control>
+
+      <control type="edit" id="17">
+        <left>48</left><top>230</top><width>814</width><height>66</height>
+        <font>Label28</font><textcolor>text</textcolor><focusedcolor>text</focusedcolor><invalidcolor>error</invalidcolor>
+        <textoffsetx>28</textoffsetx><aligny>center</aligny>
+        <texturefocus border="33,0,33,0">bobbi/glass/capsule-focus-ring.png</texturefocus>
+        <texturenofocus colordiffuse="22FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <label />
+        <hinttext>16028</hinttext>
+        <onup>9001</onup><onleft>20</onleft><onright>20</onright><ondown>9000</ondown>
+      </control>
+
+      <control type="button" id="20">
+        <left>878</left><top>230</top><width>254</width><height>66</height>
+        <label>1024</label>
+        <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus colordiffuse="22FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <onup>9001</onup><onleft>17</onleft><onright>17</onright><ondown>9000</ondown>
+      </control>
+
+      <control type="group" id="9000">
+        <control type="button" id="18">
+          <left>312</left><top>346</top><width>270</width><height>66</height>
+          <label>186</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>on_focus</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="22FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onup>17</onup><onleft>19</onleft><onright>19</onright><ondown>9001</ondown>
+        </control>
+        <control type="button" id="19">
+          <left>598</left><top>346</top><width>270</width><height>66</height>
+          <label>222</label>
+          <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>on_focus</focusedcolor>
+          <align>center</align><aligny>center</aligny>
+          <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+          <texturenofocus colordiffuse="22FFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+          <onup>17</onup><onleft>18</onleft><onright>18</onright><ondown>9001</ondown>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

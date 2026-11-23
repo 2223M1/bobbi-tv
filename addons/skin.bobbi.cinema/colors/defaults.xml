@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<colors>
+  <!-- premium TV (on-device) neutral palette: near-black canvas, graphite glass,
+       label / secondaryLabel / tertiaryLabel whites, light-grey focus. -->
+  <color name="bg">FF050506</color>
+  <color name="bg_dim">E6050506</color>
+  <color name="scrim">B3000000</color>
+  <color name="surface">FF1C1C1E</color>
+  <color name="surface_hi">FF2C2C2E</color>
+  <color name="surface_line">FF3A3A3C</color>
+  <color name="panel">FC1C1C1E</color>
+  <color name="glass">B81A1B1F</color>
+  <color name="glass_blur">AD16171B</color>
+  <color name="classic_panel">FF50545C</color>
+  <color name="classic_control">FF5A5E65</color>
+  <color name="classic_scrim">59191B20</color>
+  <color name="glass_rim">FFFFFFFF</color>
+  <color name="text">FFF5F5F7</color>
+  <color name="text2">B3EBEBF5</color>
+  <color name="text3">73EBEBF5</color>
+  <color name="text_disabled">FF48484A</color>
+  <color name="on_focus">FF1D1D1F</color>
+  <color name="focus">FFECECEE</color>
+  <color name="accent">FFE5E5EA</color>
+  <color name="accent_soft">33E5E5EA</color>
+  <color name="accent_text">FFE5E5EA</color>
+  <color name="ok">FF30D158</color>
+  <color name="warn">FFFFD60A</color>
+  <color name="error">FFFF453A</color>
+  <color name="info">FF64D2FF</color>
+  <color name="white">FFF5F5F7</color>
+  <color name="grey">B3EBEBF5</color>
+  <color name="grey2">73EBEBF5</color>
+  <color name="black">FF050506</color>
+  <color name="background">FF050506</color>
+  <color name="selected">FFE5E5EA</color>
+  <color name="invalid">FFFF453A</color>
+  <color name="green">FF30D158</color>
+  <color name="text_shadow">C0000000</color>
+  <color name="grey3">FF636366</color>
+  <color name="surface2">FF2C2C2E</color>
+  <color name="blue">FFE5E5EA</color>
+  <color name="lightblue">FFE5E5EA</color>
+  <color name="orange">FFE5E5EA</color>
+  <color name="red">FFFF453A</color>
+  <color name="warning">FFFFD60A</color>
+  <!-- Compatibility names retained by Kodi's legacy windows. -->
+  <color name="button_focus">FFFFFFFF</color>
+  <color name="Box2">FF3A3A3C</color>
+  <color name="Fallback">FF1C1C1E</color>
+</colors>

@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "policy": "No new reverse imports. These explicit existing debts are not architectural approval; remove each exception when its live callers migrate.",
+  "core": {},
+  "platform": {}
+}

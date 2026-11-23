@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="false">9711</defaultcontrol>
+  <onload condition="Skin.HasSetting(BobiReduceMotion)">Skin.SetBool(BobbiReduceMotion)</onload>
+  <onload condition="Skin.HasSetting(BobiReduceMotion)">Skin.Reset(BobiReduceMotion)</onload>
+  <onload condition="Skin.HasSetting(BobiNavTopBar)">Skin.SetBool(BobbiNavTopBar)</onload>
+  <onload condition="Skin.HasSetting(BobiNavTopBar)">Skin.Reset(BobiNavTopBar)</onload>
+  <onload>SetProperty(BobbiSection,home,Home)</onload>
+  <include>PageOpen</include>
+  <controls>
+    <include>Canvas</include>
+    <include>HomeStage</include>
+    <!-- One visible rail slot. Providers stay alive offscreen; an empty leading
+         group must not make Kodi's first-focusable ScrollTo(0) show a blank. -->
+    <control type="group" id="9000">
+      <left>0</left><top>580</top><width>1920</width><height>420</height>
+      <onup>9701</onup>
+      <include>HomeRails</include>
+    </control>
+    <control type="label" id="9791">
+      <left>-2000</left><top>0</top><width>800</width><height>1</height>
+      <label>$VAR[HomeContentFocus]</label>
+    </control>
+    <!-- the populated rail under the visible one; it peeks below (1.5-rail layout) -->
+    <control type="label" id="9792">
+      <left>-2000</left><top>0</top><width>800</width><height>1</height>
+      <label>$VAR[HomeNextRail]</label>
+    </control>
+    <!-- Snapshot the same rail the hero shows, not the on-screen card slot. -->
+    <control type="label" id="9794">
+      <left>-2000</left><width>80</width><height>1</height><label>$VAR[BobbiPageItem]</label>
+    </control>
+    <control type="label" id="9795">
+      <left>-2000</left><width>80</width><height>1</height><label>$VAR[BobbiPageCount]</label>
+    </control>
+    <control type="label">
+      <left>80</left><top>790</top><width>1600</width><height>48</height>
+      <label>正在加载片单…</label><font>Card26</font><textcolor>text3</textcolor>
+      <visible>$EXP[BobbiHomeUpdating] + !$EXP[BobbiHomeHasItems]</visible>
+    </control>
+    <!-- name of the row below (kept for scripts/tests; the peek itself is visual) -->
+    <control type="label" id="9790">
+      <left>-2000</left><top>0</top><width>800</width><height>1</height>
+      <label>$VAR[NextRailTitle]</label>
+    </control>
+    <!-- offline / all catalogue rails empty -->
+    <control type="group">
+      <visible>!$EXP[BobbiHomeUpdating] + !$EXP[BobbiHomeHasItems]</visible>
+      <include content="StateBlock">
+        <param name="y">640</param>
+        <param name="empty">true</param>
+        <param name="emptytitle">片单暂时无法加载</param>
+        <param name="emptyhint">首次使用请到「我的」配置影院；网盘与 NAS 也在「我的」里添加</param>
+      </include>
+      <control type="button" id="9870">
+        <left>80</left><top>830</top><width>260</width><height>72</height>
+        <label>打开我的</label>
+        <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
+        <texturenofocus colordiffuse="2EFFFFFF" border="36,0,36,0">bobbi/glass/capsule-72.png</texturenofocus>
+        <onup>9701</onup><onleft>9701</onleft><onright>noop</onright><ondown>noop</ondown>
+        <onback>SetFocus(9701)</onback>
+        <onclick>ActivateWindow(1197)</onclick>
+      </control>
+    </control>
+    <include content="TopBar">
+      <param name="down" value="SetFocus($VAR[HomeContentFocus])" />
+    </include>
+  </controls>
+</window>

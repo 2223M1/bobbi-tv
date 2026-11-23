@@ -1,0 +1,29 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+.venv-closure/
+build/
+dist/
+local.properties
+.gradle/
+*.keystore
+*.jks
+*.pem
+# Public upstream CA bundle, pinned by release/kodi-vendors.json.
+# This is not a device/signing private key; keep every other PEM ignored.
+!third_party/addons/script.module.certifi/lib/certifi/cacert.pem
+.private/
+staging/
+/test-results/
+/review-evidence/
+/review-packages/
+# Local runtime/account state is never part of a source handoff.
+/profile/
+/profiles/
+/userdata/
+# Project application key is deliberately injected into signed PRIVATE client
+# bundles. Keep plaintext out of source/logs, never substitute Juku credentials.
+/addons/script.module.bobbi.core/resources/tmdb-project.json
+addons/script.module.bobbi.catalog/resources/catalog.sqlite3.*
+addons/script.module.bobbi.catalog/resources/catalog.sqlite3-*

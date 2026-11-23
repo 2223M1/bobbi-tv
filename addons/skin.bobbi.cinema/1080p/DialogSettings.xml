@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<window>
+  <defaultcontrol always="true">5</defaultcontrol>
+  <depth>DepthOSD</depth>
+  <controls>
+    <control type="group">
+      <visible>!Window.IsVisible(sliderdialog)</visible>
+      <include content="SheetShell"><param name="width">840</param></include>
+      <control type="group">
+        <right>0</right><top>0</top><width>840</width><height>1080</height>
+        <include content="PanelOpen"><param name="slide">48,0</param></include>
+        <control type="label">
+          <left>48</left><top>116</top><width>744</width><height>32</height>
+          <label>$VAR[SettingsSheetContext]</label>
+          <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+        </control>
+        <control type="grouplist" id="5">
+          <left>48</left><top>168</top><width>744</width><height>704</height>
+          <orientation>vertical</orientation>
+          <itemgap>12</itemgap>
+          <pagecontrol>60</pagecontrol>
+          <include>ListMotion</include>
+          <onup>5</onup><ondown>5</ondown>
+          <onleft>noop</onleft>
+          <onright>60</onright>
+        </control>
+        <control type="scrollbar" id="60">
+          <left>804</left><top>172</top><width>4</width><height>696</height>
+          <orientation>vertical</orientation>
+          <showonepage>false</showonepage>
+          <texturesliderbackground colordiffuse="1AFFFFFF">bobbi/white.png</texturesliderbackground>
+          <texturesliderbar colordiffuse="66FFFFFF">bobbi/white.png</texturesliderbar>
+          <texturesliderbarfocus colordiffuse="FFFFFFFF">bobbi/white.png</texturesliderbarfocus>
+          <onleft>5</onleft><onright>9000</onright>
+        </control>
+        <control type="textbox" id="6">
+          <left>56</left><top>888</top><width>728</width><height>64</height>
+          <font>CardSub22</font><textcolor>9CEBEBF5</textcolor>
+          <autoscroll delay="5000" time="2000" repeat="6000">ControlGroup(5).HasFocus</autoscroll>
+        </control>
+        <control type="grouplist" id="9000">
+          <left>48</left><top>968</top><width>744</width><height>68</height>
+          <orientation>horizontal</orientation><itemgap>12</itemgap>
+          <onup>5</onup><ondown>5</ondown><onleft>5</onleft><onright>noop</onright>
+          <include content="DialogButton"><param name="id">28</param><param name="width">220</param></include>
+          <include content="DialogButton"><param name="id">29</param><param name="width">220</param></include>
+          <include content="DialogButton"><param name="id">30</param><param name="width">260</param></include>
+        </control>
+      </control>
+      <control type="group">
+        <left>-2000</left>
+        <include content="SettingTemplates"><param name="w">744</param></include>
+      </control>
+    </control>
+  </controls>
+</window>
