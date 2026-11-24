@@ -89,6 +89,7 @@
       "lib/bobbi_platform/playback_accounts.py",
       "lib/bobbi_platform/playback_client.py",
       "lib/bobbi_platform/prepared_sessions.py",
+      "lib/bobbi_platform/qr.py",
       "lib/bobbi_platform/release_trust.json",
       "lib/bobbi_platform/runtime.py",
       "lib/bobbi_platform/scan_sources.py",

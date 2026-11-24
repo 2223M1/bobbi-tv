@@ -3,9 +3,9 @@ from os import path
 import xbmcgui
 import xbmcvfs
 
+from bobbi_platform.qr import write_png
 from lib.jacktook.utils import ADDON_PATH, kodilog
 from lib.utils.kodi.utils import ADDON_PROFILE_PATH
-from lib.vendor.segno import make as segnomake
 
 
 def make_qrcode(url):
@@ -17,9 +17,7 @@ def make_qrcode(url):
 
         art_path = path.join(ADDON_PROFILE_PATH, "qr.png")
         kodilog(f"Creating QR code for URL: {art_path}")
-        qrcode = segnomake(url, micro=False)
-        qrcode.save(art_path, scale=20)
-        return art_path
+        return write_png(url, art_path, scale=20, border=4, micro=False)
     except Exception as e:
         kodilog("Error creating QR code: %s", e)
 

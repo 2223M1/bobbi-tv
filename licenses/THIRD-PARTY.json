@@ -318,13 +318,12 @@
       "id": "plugin.video.bobbi",
       "documents": [
         "torf-license",
-        "segno-license",
         "gpl3-text"
       ],
       "status": "cleared-for-public-distribution",
       "source_lock": "release/source-inventory.json#components/plugin.video.bobbi",
-      "reason": "First-party plugin over permissively licensed vendored torf/segno whose exact upstream texts are pinned and delivered in-component.",
-      "license_evidence": "Vendored torf 4.2.0 (GPL-3.0-or-later, pinned upstream LICENSE) and segno 1.6.6 (BSD-2-Clause, pinned upstream LICENSE) ship their texts in-component; plugin code is first-party."
+      "reason": "First-party plugin over GPL-3.0-or-later vendored torf whose exact upstream text is pinned and delivered in-component; QR rendering uses bobbi_platform.qr.",
+      "license_evidence": "Vendored torf 4.2.0 (GPL-3.0-or-later, pinned upstream LICENSE) ships its text in-component; Segno ships once in script.module.bobbi.platform; plugin code is first-party."
     },
     {
       "id": "script.module.bobbi.platform",

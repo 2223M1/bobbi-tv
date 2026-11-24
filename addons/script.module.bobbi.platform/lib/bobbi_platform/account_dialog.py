@@ -13,10 +13,10 @@ def safe_close(window):
 def render_qr(window, image, state):
     """Only the UI thread writes the temporary image and touches Kodi controls."""
     import base64
-    from ._vendor import segno
     from .pan_accounts import PanError
+    from .qr import write_png
     if type(state.get('qr')) is str:
-        segno.make(state['qr'], micro=False).save(str(image), scale=10, border=4)
+        write_png(state['qr'], image, scale=10, border=4, micro=False)
     elif type(state.get('qr_png')) is str and len(state['qr_png']) <= 10924:
         raw = base64.b64decode(state['qr_png'], validate=True)
         if not raw.startswith(b'\x89PNG\r\n\x1a\n') or len(raw) > 8192:

@@ -457,7 +457,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_ui.py",
-        "line": 92,
+        "line": 96,
         "anchor": "def review_item(dialog, expected, item, source_id=None, context=None, *, candidate_tools=None):"
       },
       "note": "Candidate adapter is passed through single/group/continued rounds while the original two-value review context, profile binding and receipt workflow remain unchanged. Missing candidate service is reported locally."
@@ -469,7 +469,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_ui.py",
-        "line": 683,
+        "line": 687,
         "anchor": "def manage_scope(expected, dialog=None, context=None, *, phone_launcher=None):"
       },
       "note": "Shared scope menu invokes only the explicit phone launcher; missing capability cannot create a grant. Existing phone launcher and PhoneManagement remain authorization owners."
@@ -493,7 +493,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_ui.py",
-        "line": 514,
+        "line": 518,
         "anchor": "def _open_catalog(expected, **query):"
       },
       "note": "Independent platform entry preserves synchronous ActivateWindow and the sole plugin directory renderer without importing that renderer. Saved legacy management URL compatibility remains."
@@ -649,7 +649,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/phone_management.py",
-        "line": 187,
+        "line": 244,
         "anchor": "class PhoneManagement:"
       },
       "note": "Reviewed responsibility declaration: TV-approved bounded phone grant; command correlation only, not playback truth. Not a runtime test result."
@@ -721,7 +721,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/phone_management.py",
-        "line": 389,
+        "line": 467,
         "anchor": "def handle(self, path, headers, raw):"
       },
       "note": "Reviewed responsibility declaration: Browser action allowlist -> PhoneManagement -> bound Host transport. Not a runtime test result."
@@ -1129,7 +1129,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
-        "line": 247,
+        "line": 250,
         "anchor": "self.prepared_session = from_host(self.host, body.get('account'))"
       },
       "note": "Standard playback captures PreparedSession at request admission and keeps that same session for continuation; a missing session is not replaced by an ambient lookup. Reviewed static responsibility, not device execution evidence."
