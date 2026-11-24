@@ -6,11 +6,77 @@ import json
 import socket
 from typing import Any, Callable, Mapping, Optional
 from urllib.parse import quote, urljoin, urlsplit
+import zlib
 
 MAX_RESOURCE_JSON_BYTES = 1024 * 1024
 MIN_CACHE_TTL_SECONDS = 60
 MAX_CACHE_TTL_SECONDS = 24 * 60 * 60
 MAX_REDIRECTS = 5
+ALLOWED_CONTENT_ENCODINGS = frozenset(("", "identity", "gzip", "x-gzip", "deflate"))
+
+
+def read_bounded_http_body(response: Any, max_bytes: int = MAX_RESOURCE_JSON_BYTES) -> bytes:
+    """Read HTTP response bytes with strict Content-Encoding and pre-decompression caps."""
+    headers = getattr(response, "headers", None) or {}
+    raw_encoding = str(headers.get("Content-Encoding") or "").strip().lower()
+    if "," in raw_encoding or raw_encoding not in ALLOWED_CONTENT_ENCODINGS:
+        raise ValueError("unsupported content encoding")
+    content_length = headers.get("Content-Length")
+    if content_length is not None:
+        try:
+            parsed_len = int(content_length)
+        except (TypeError, ValueError):
+            raise ValueError("invalid content length") from None
+        if parsed_len < 0 or parsed_len > max_bytes:
+            raise ValueError("response too large")
+    raw_stream = getattr(response, "raw", None)
+    if raw_stream is not None and hasattr(raw_stream, "read"):
+        decompressor = None
+        if raw_encoding in ("gzip", "x-gzip"):
+            decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
+        elif raw_encoding == "deflate":
+            decompressor = zlib.decompressobj(-zlib.MAX_WBITS)
+        out = bytearray()
+        wire_seen = 0
+        while True:
+            try:
+                chunk = raw_stream.read(8192, decode_content=False)
+            except TypeError:
+                chunk = raw_stream.read(8192)
+            if not chunk:
+                break
+            wire_seen += len(chunk)
+            if wire_seen > max_bytes:
+                raise ValueError("response too large")
+            if decompressor is not None:
+                remaining = max_bytes + 1 - len(out)
+                try:
+                    decoded = decompressor.decompress(chunk, max(1, remaining))
+                except zlib.error:
+                    if raw_encoding == "deflate" and len(out) == 0 and wire_seen == len(chunk):
+                        decompressor = zlib.decompressobj()
+                        decoded = decompressor.decompress(chunk, max(1, remaining))
+                    else:
+                        raise ValueError("invalid compressed response") from None
+                out.extend(decoded)
+                if len(out) > max_bytes or decompressor.unconsumed_tail:
+                    raise ValueError("response too large")
+            else:
+                out.extend(chunk)
+                if len(out) > max_bytes:
+                    raise ValueError("response too large")
+        if decompressor is not None:
+            out.extend(decompressor.flush(max_bytes + 1 - len(out)))
+            if len(out) > max_bytes:
+                raise ValueError("response too large")
+        return bytes(out)
+
+    content = bytearray()
+    for chunk in response.iter_content(chunk_size=8192):
+        content.extend(chunk)
+        if len(content) > max_bytes:
+            raise ValueError("response too large")
+    return bytes(content)
 
 
 def is_safe_http_url(url: Any, resolve_dns: bool = True) -> bool:

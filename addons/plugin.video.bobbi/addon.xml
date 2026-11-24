@@ -1,10 +1,11 @@
 <addon id="plugin.video.bobbi" name="bobbi Cinema · CE 候选" version="0.1.97" provider-name="bobbi TV">
   <requires>
-    <import addon="script.module.bobbi.core" version="0.1.85" />
+    <import addon="script.module.bobbi.core" version="0.1.89" />
     <import addon="script.module.bobbi.mdsub" version="0.1.1" />
     <import addon="script.module.bobbi.catalog" version="0.1.5" />
     <import addon="xbmc.python" version="3.00.0" />
-    <import addon="script.module.requests" version="2.25.1" />
+    <import addon="script.module.requests" version="2.31.0" />
+    <import addon="script.module.urllib3" version="2.2.3" />
     <import addon="script.module.routing" version="0.2.3" />
     <import addon="plugin.video.bobbi.torrent" version="0.1.15" optional="true" />
   <import addon="script.module.bobbi.platform" version="0.1.99" /><import addon="plugin.video.bobbi.library" version="0.1.8" /></requires>

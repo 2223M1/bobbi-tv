@@ -27,6 +27,7 @@ from lib.clients.stremio.constants import (
     decode_selected_ids,
     encode_selected_ids,
 )
+from bobbi_core.http_policy import read_bounded_http_body
 from lib.clients.stremio.protocol import (
     MAX_RESOURCE_JSON_BYTES,
     is_safe_http_url,
@@ -236,27 +237,28 @@ def format_stremio_addon(addon, selected=None):
 
 def _fetch_manifest(url, initial_url):
     def try_fetch(target_url):
+        session = requests.Session()
+        session.trust_env = False
+        resp = None
         try:
             if not _allowed_manifest_url(target_url):
                 raise ValueError("manifest destination rejected")
             kodilog(f"[WebServer] Fetching Stremio manifest: {_safe_url_description(target_url)}")
+            headers = dict(USER_AGENT_HEADER)
+            headers.setdefault("Accept-Encoding", "identity")
             resp = request_with_safe_redirects(
-                requests.get,
+                session.get,
                 target_url,
                 validator=_allowed_manifest_url,
-                headers=USER_AGENT_HEADER,
+                headers=headers,
                 timeout=10,
                 stream=True,
             )
             resp.raise_for_status()
             if not _allowed_manifest_url(resp.url):
                 raise ValueError("manifest redirect rejected")
-            content = bytearray()
-            for chunk in resp.iter_content(chunk_size=8192):
-                content.extend(chunk)
-                if len(content) > MAX_RESOURCE_JSON_BYTES:
-                    raise ValueError("manifest too large")
-            manifest = json.loads(content.decode("utf-8"))
+            raw = read_bounded_http_body(resp, max_bytes=MAX_RESOURCE_JSON_BYTES)
+            manifest = json.loads(raw.decode("utf-8"))
             if not isinstance(manifest, dict):
                 raise ValueError("manifest invalid")
             return resp, manifest, None
@@ -264,6 +266,10 @@ def _fetch_manifest(url, initial_url):
             return None, None, str(ex) or type(ex).__name__
         except Exception as ex:
             return None, None, type(ex).__name__
+        finally:
+            if resp is not None and hasattr(resp, "close"):
+                resp.close()
+            session.close()
 
     resp, manifest, error = try_fetch(url)
 

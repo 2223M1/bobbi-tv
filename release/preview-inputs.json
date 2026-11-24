@@ -287,6 +287,7 @@
       "lib/requests/__init__.py",
       "lib/requests/__version__.py",
       "lib/requests/_internal_utils.py",
+      "lib/requests/_types.py",
       "lib/requests/adapters.py",
       "lib/requests/api.py",
       "lib/requests/auth.py",

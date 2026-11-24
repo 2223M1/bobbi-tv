@@ -1309,7 +1309,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/addon.xml",
-        "line": 16,
+        "line": 17,
         "anchor": "<extension point=\"xbmc.python.script\" library=\"osd.py\" />"
       },
       "note": "The updatable owned add-on explicitly ships osd.py as its script entry and declares core/platform dependencies. This removes reliance on deploying Bobbi code inside a preserved third-party dependency; no package was installed for this declaration."

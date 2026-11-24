@@ -66,11 +66,11 @@
       "id": "script.module.requests",
       "kind": "full-license",
       "file": "licenses/vendor/script.module.requests.txt",
-      "source_kind": "locked-archive",
-      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.requests/script.module.requests-2.31.0.zip",
-      "archive_sha256": "a5704f0fd7afb4154e1beea9b5f05a002bcd75fa581a1e5fd15ece39bf2bd38a",
-      "archive_bytes": 67576,
-      "source_path": "script.module.requests/LICENSE.txt",
+      "repository": "psf/requests",
+      "commit": "6e83187b8feb273ed4c6cdab5efd8d54901dfab3",
+      "source_path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/psf/requests/6e83187b8feb273ed4c6cdab5efd8d54901dfab3/LICENSE",
+      "git_blob_sha": "67db8588217f266eb561f75fae738656325deac9",
       "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
       "bytes": 10142
     },
@@ -126,11 +126,11 @@
       "id": "script.module.urllib3",
       "kind": "full-license",
       "file": "licenses/vendor/script.module.urllib3.txt",
-      "source_kind": "locked-archive",
-      "archive_url": "https://mirrors.kodi.tv/addons/omega/script.module.urllib3/script.module.urllib3-2.2.3.zip",
-      "archive_sha256": "740b2d63bb50eee9fb35f01c567ec8d3588c5bbd548e2b8d280932be30d82f53",
-      "archive_bytes": 130842,
-      "source_path": "script.module.urllib3/LICENSE.txt",
+      "repository": "urllib3/urllib3",
+      "commit": "b1d30ab61fe0db8f11092805e8c5ac43e091064a",
+      "source_path": "LICENSE.txt",
+      "source_url": "https://raw.githubusercontent.com/urllib3/urllib3/b1d30ab61fe0db8f11092805e8c5ac43e091064a/LICENSE.txt",
+      "git_blob_sha": "e6183d0276b26c5b87aecccf8d0d5bcd7b1148d4",
       "sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686",
       "bytes": 1093
     },
@@ -256,7 +256,7 @@
     },
     {
       "id": "script.module.requests",
-      "version": "2.31.0",
+      "version": "2.34.2",
       "source_lock": "release/kodi-vendors.json#script.module.requests",
       "documents": [
         "script.module.requests"
@@ -306,7 +306,7 @@
     },
     {
       "id": "script.module.urllib3",
-      "version": "2.2.3",
+      "version": "2.8.0",
       "source_lock": "release/kodi-vendors.json#script.module.urllib3",
       "documents": [
         "script.module.urllib3"

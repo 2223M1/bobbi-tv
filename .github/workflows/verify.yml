@@ -30,6 +30,8 @@ jobs:
         run: python tools/vendor_licenses.py
       - name: Check generated Home rails without rewriting sources
         run: python tools/generate_home_rails.py --check
+      - name: Bundled HTTP runtime equivalence contracts
+        run: python -B -m pytest -q -rs tests/test_vendored_http_runtime.py --junitxml=test-results/ci-vendor-runtime.xml
       # The inherited Kodi mock harness is intentionally a separate process.
       - name: Primary tests
         run: python -m pytest -q -rs tests --ignore=tests/private_baseline --ignore=tests/preparation_regression --junitxml=test-results/ci-primary.xml

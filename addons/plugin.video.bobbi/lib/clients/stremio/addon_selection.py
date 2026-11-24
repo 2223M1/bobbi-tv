@@ -35,7 +35,11 @@ from lib.clients.stremio.helpers import (
     set_addon_alias,
     set_catalog_alias,
 )
-from lib.clients.stremio.protocol import is_safe_http_url, request_with_safe_redirects
+from lib.clients.stremio.protocol import (
+    is_safe_http_url,
+    read_bounded_http_body,
+    request_with_safe_redirects,
+)
 from lib.db.cached import cache
 from lib.utils.general.utils import USER_AGENT_HEADER
 from lib.utils.kodi.settings import get_int_setting
@@ -97,30 +101,31 @@ def _fetch_manifest(url):
     if not manifest_url or not is_safe_http_url(manifest_url):
         raise ValueError("invalid manifest URL")
 
-    response = request_with_safe_redirects(
-        requests.get,
-        manifest_url,
-        validator=is_safe_http_url,
-        headers=USER_AGENT_HEADER,
-        timeout=get_int_setting("stremio_timeout"),
-        stream=True,
-    )
-    response.raise_for_status()
-    final_url = _safe_manifest_url(response.url)
-    if not final_url or not is_safe_http_url(final_url):
-        raise ValueError("unsafe redirect")
+    headers = dict(USER_AGENT_HEADER)
+    headers.setdefault("Accept-Encoding", "identity")
+    session = requests.Session()
+    session.trust_env = False
+    response = None
+    try:
+        response = request_with_safe_redirects(
+            session.get,
+            manifest_url,
+            validator=is_safe_http_url,
+            headers=headers,
+            timeout=get_int_setting("stremio_timeout"),
+            stream=True,
+        )
+        response.raise_for_status()
+        final_url = _safe_manifest_url(response.url)
+        if not final_url or not is_safe_http_url(final_url):
+            raise ValueError("unsafe redirect")
+        raw = read_bounded_http_body(response, max_bytes=MAX_MANIFEST_BYTES)
+    finally:
+        if response is not None and hasattr(response, "close"):
+            response.close()
+        session.close()
 
-    content_length = response.headers.get("Content-Length")
-    if content_length and int(content_length) > MAX_MANIFEST_BYTES:
-        raise ValueError("manifest too large")
-
-    content = bytearray()
-    for chunk in response.iter_content(chunk_size=8192):
-        content.extend(chunk)
-        if len(content) > MAX_MANIFEST_BYTES:
-            raise ValueError("manifest too large")
-
-    manifest = json.loads(content.decode("utf-8"))
+    manifest = json.loads(raw.decode("utf-8"))
     if not isinstance(manifest, dict) or not (manifest.get("id") or manifest.get("name")):
         raise ValueError("invalid manifest")
     if not isinstance(manifest.get("resources", []), (list, dict, str)):
