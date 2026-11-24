@@ -85,6 +85,57 @@ def source_check_evidence(first, second):
 MIRRORS = {'dual': ('github', 'gitcode'), 'github-only': ('github',)}
 
 
+def collect_publication_evidence(root=ROOT):
+    """Collect recursive SHA256 identities of all license, skin-evidence, and generated-UI artifacts."""
+    root = Path(root).resolve()
+    paths = set()
+    licenses_dir = root / 'licenses'
+    if licenses_dir.is_dir():
+        for p in licenses_dir.rglob('*'):
+            if p.is_file():
+                paths.add(p.resolve())
+    third_party = licenses_dir / 'THIRD-PARTY.json'
+    if third_party.is_file():
+        tp_data = json.loads(third_party.read_text(encoding='utf-8'))
+        for doc in tp_data.get('documents', []):
+            doc_path = (root / doc['file']).resolve()
+            if doc_path.is_file():
+                paths.add(doc_path)
+        for delivery in tp_data.get('deliveries', []):
+            for base in ('addons', 'third_party/addons'):
+                cand = (root / base / delivery['component'] / delivery['path']).resolve()
+                if cand.is_file():
+                    paths.add(cand)
+    skin_ev = licenses_dir / 'skin-reference-evidence.json'
+    if skin_ev.is_file():
+        se_data = json.loads(skin_ev.read_text(encoding='utf-8'))
+        for rel in (se_data.get('icon_font_glyphs') or {}).get('files', {}):
+            cand = (root / rel).resolve()
+            if cand.is_file():
+                paths.add(cand)
+        for font_entry in se_data.get('fonts', []):
+            if isinstance(font_entry, dict):
+                for field in ('path', 'shipped_notice'):
+                    val = font_entry.get(field)
+                    if isinstance(val, str) and val:
+                        cand = (root / val).resolve()
+                        if cand.is_file():
+                            paths.add(cand)
+    for extra_rel in (
+        'release/capability-matrix.json',
+        'release/source-inventory.json',
+        'release/kodi-vendors.json',
+        'ui/glass_assets.json',
+        'ui/rails/home_rails.json',
+        'addons/skin.bobbi.cinema/1080p/Includes_HomeRails.generated.xml',
+        'addons/skin.bobbi.cinema/1080p/Includes_HomeHero.generated.xml',
+    ):
+        cand = (root / extra_rel).resolve()
+        if cand.is_file():
+            paths.add(cand)
+    return [identity(p) for p in sorted(paths, key=lambda x: x.as_posix())]
+
+
 def prepare(bundle, entry, component_assets, feeds, output, *, track, github_release, source_checks,
             mirror_policy='dual'):
     from audit_ce_entry import audit
@@ -162,7 +213,7 @@ def prepare(bundle, entry, component_assets, feeds, output, *, track, github_rel
     receipt = dict(schema=3, mirror_policy=mirror_policy, commit=commit, tree=tree, tag=tag, track=track, sequence=manifest['sequence'],
                    assets=assets, feeds=feed_rows, offers=offers, github_release=identity(github_release),
                    source_checks=source_evidence,
-                   evidence=[identity(ROOT / 'licenses/THIRD-PARTY.json'), identity(ROOT / 'release/capability-matrix.json')],
+                   evidence=collect_publication_evidence(ROOT),
                    created_at=int(time.time()))
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return receipt

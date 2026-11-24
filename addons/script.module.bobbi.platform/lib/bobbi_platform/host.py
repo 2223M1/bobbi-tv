@@ -53,6 +53,7 @@ class Host:
         self.account_changes = Event()
         self.owner_account_changed = None
         self.playback_observers = []
+        self._emby_av_recorded = []
         self.owned_tracks = {}
         self.emby_invalidation = None
         self.emby_sessions = None
@@ -648,6 +649,24 @@ class Host:
             self.playback_observers.append(listener)
 
     def notify_playback_event(self, payload):
+        if isinstance(payload, dict) and payload.get('event') == 'AV_START':
+            meta = payload.get('source_meta')
+            req_id = payload.get('request_id')
+            if isinstance(meta, dict) and meta.get('provider') == 'emby' and isinstance(req_id, str) and req_id:
+                record_now = False
+                with self.lock:
+                    if req_id not in self._emby_av_recorded:
+                        self._emby_av_recorded.append(req_id)
+                        if len(self._emby_av_recorded) > 128:
+                            del self._emby_av_recorded[:-128]
+                        record_now = True
+                if record_now and self.check_profile():
+                    try:
+                        started_m = float(meta.get('handoff_monotonic') or time.monotonic())
+                    except (TypeError, ValueError):
+                        started_m = time.monotonic()
+                    from .optimization import observe
+                    observe(self.root, 'emby_play', 'ok', started_m)
         with self.lock:
             listeners = tuple(self.playback_observers)
         for fn in listeners:

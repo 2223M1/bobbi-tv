@@ -334,7 +334,7 @@ class Maintenance:
         if not folder.exists():
             return []
         paths = []
-        for name in ('online.partial', 'online-resume.json'):
+        for name in ('online.partial', 'online-resume.json', 'components-absence-v1.json'):
             path = folder/name
             if path.exists() or path.is_symlink(): paths.append(path)
         components = _safe_path(folder/'components-v1')

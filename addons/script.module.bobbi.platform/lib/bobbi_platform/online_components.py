@@ -15,6 +15,8 @@ import shutil
 import stat
 import tempfile
 import time
+from urllib.error import HTTPError
+from urllib.parse import urlsplit
 import zipfile
 import zlib
 
@@ -25,7 +27,83 @@ from .updates import MAX_MANIFEST, UpdateError, _safe_path
 
 METADATA_LIMIT = MAX_MANIFEST + 4096
 CACHE_NAME = re.compile(r'[a-f0-9]{64}\.zip')
+ABSENCE_FILE = 'components-absence-v1.json'
+ABSENCE_TTL = 21600
+ABSENCE_MAX = 16
 ERRORS = (UpdateError, OSError, ValueError, zipfile.BadZipFile, EOFError, zlib.error)
+
+
+class _MetadataNotFoundError(UpdateError):
+    """Explicit 404 on the optional `.components-v1.zip` discovery archive."""
+
+
+def _absence_key(offer: dict) -> str:
+    host = (urlsplit(offer['url']).netloc or 'default').lower()
+    return f"{host}|{offer['tag'].lower()}|{offer['sha256']}"
+
+
+def _load_absence_records(work: Path, now: float) -> dict[str, float]:
+    path = _regular(work / ABSENCE_FILE)
+    if not path.exists():
+        return {}
+    try:
+        if path.stat().st_size > 16384:
+            path.unlink(missing_ok=True)
+            return {}
+        raw = json.loads(path.read_text(encoding='utf-8'))
+        if type(raw) is not dict or raw.get('schema') != 1 or type(raw.get('entries')) is not dict:
+            return {}
+        valid = {}
+        for k, exp in raw['entries'].items():
+            if isinstance(k, str) and len(k) <= 200 and type(exp) in (int, float) and now < float(exp) <= now + ABSENCE_TTL + 60:
+                valid[k] = float(exp)
+        return valid
+    except (OSError, ValueError, TypeError):
+        return {}
+
+
+def _save_absence_records(work: Path, entries: dict[str, float]) -> None:
+    path = _regular(work / ABSENCE_FILE)
+    trimmed = dict(sorted(entries.items(), key=lambda kv: kv[1], reverse=True)[:ABSENCE_MAX])
+    payload = json.dumps({'schema': 1, 'entries': trimmed}, separators=(',', ':'), sort_keys=True).encode('utf-8')
+    fd, tmp_name = tempfile.mkstemp(prefix='.absence-', suffix='.tmp', dir=str(work))
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, 'wb') as f:
+            f.write(payload)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def _is_known_absent(work: Path, offer: dict, *, clock=time.time) -> bool:
+    now = float(clock())
+    entries = _load_absence_records(work, now)
+    return _absence_key(offer) in entries
+
+
+def _record_absent_404(work: Path, offer: dict, *, clock=time.time) -> None:
+    now = float(clock())
+    entries = _load_absence_records(work, now)
+    entries[_absence_key(offer)] = now + ABSENCE_TTL
+    try:
+        _save_absence_records(work, entries)
+    except OSError:
+        pass
+
+
+def _clear_absent_record(work: Path, offer: dict, *, clock=time.time) -> None:
+    now = float(clock())
+    entries = _load_absence_records(work, now)
+    key = _absence_key(offer)
+    if key in entries:
+        entries.pop(key, None)
+        try:
+            _save_absence_records(work, entries)
+        except OSError:
+            pass
 
 
 def component_name(row):
@@ -215,8 +293,13 @@ def _reuse(offer, cache, trust, cancelled, progress, deadline, report):
             received(len(block))
         online._transfer(url, maximum, counted, cancelled, lambda _: None,
                          expected=expected, deadline=until)
-    receive(root+metadata_name(offer['tag']), METADATA_LIMIT, chunks.append,
-            until=min(reuse_deadline, time.monotonic()+15))
+    try:
+        receive(root+metadata_name(offer['tag']), METADATA_LIMIT, chunks.append,
+                until=min(reuse_deadline, time.monotonic()+15))
+    except HTTPError as error:
+        if error.code == 404:
+            raise _MetadataNotFoundError('ONLINE_COMPONENTS_ABSENT_404') from error
+        raise
     raw, signature, manifest = metadata(b''.join(chunks), trust)
     online.check_offer_manifest(offer, manifest)
     rows = manifest['components']
@@ -261,11 +344,15 @@ def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: Non
                 cache.prepare()
                 usable = True
                 if cache.entries():
-                    report['mode'] = 'components'
-                    selected = _reuse(offer, cache, trust, cancelled, progress, deadline, report)
-                    with SignedBundle(selected, trust, 'coreelec') as signed:
-                        online.check_offer_manifest(offer, signed.check_all())
-                    active()
+                    if _is_known_absent(work, offer):
+                        report['components_absent_cached'] = True
+                    else:
+                        report['mode'] = 'components'
+                        selected = _reuse(offer, cache, trust, cancelled, progress, deadline, report)
+                        with SignedBundle(selected, trust, 'coreelec') as signed:
+                            online.check_offer_manifest(offer, signed.check_all())
+                        _clear_absent_record(work, offer)
+                        active()
             except online.Cancelled:
                 raise
             except ERRORS as error:
@@ -273,8 +360,12 @@ def download(offer, work, trust, cancelled=lambda: False, progress=lambda _: Non
                 if selected is not None:
                     selected.unlink(missing_ok=True)
                     selected = None
+                if isinstance(error, _MetadataNotFoundError):
+                    _record_absent_404(work, offer)
+                    report['fallback'] = 'HTTPError'
+                else:
+                    report['fallback'] = type(error).__name__  # No URL or response body.
                 report['mode'] = 'full-fallback'
-                report['fallback'] = type(error).__name__  # No URL or response body.
                 report['reused_bytes'] = 0
             if selected is None:
                 progress(0)

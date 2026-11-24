@@ -103,6 +103,7 @@ def validate_owned_source_meta(meta: dict | None) -> dict:
         'identity_mode',
         'initial_ticks',
         'initial_played',
+        'handoff_monotonic',
     }
     if set(meta) - allowed:
         raise ValueError('OWNED_SOURCE_META_INVALID')
@@ -186,6 +187,8 @@ class OwnedPlaybackReservation:
         raw_url = url.partition('|')[0]
         check_media({'url': raw_url})
         meta = validate_owned_source_meta(source_meta)
+        if meta.get('provider') == 'emby' and 'handoff_monotonic' not in meta:
+            meta['handoff_monotonic'] = f'{time.monotonic():.3f}'
         info_dict = dict(info or {})
         art_dict = dict(art or {})
         data: dict = {
