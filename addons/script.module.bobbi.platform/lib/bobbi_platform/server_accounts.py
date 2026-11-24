@@ -38,10 +38,10 @@ class Accounts:
         self.lock, self.listeners, self.observed = RLock(), [], {}
         self.observation_serial, self.observed_versions = 0, {}
 
-    def _registry(self):
+    def _registry(self, *, timeout=0):
         # Strong checks retain the actual SQLite CAS, but a busy Registry is
         # unavailable immediately, not a one-second wait on the playback actor.
-        return Registry(self.path, timeout=0)
+        return Registry(self.path, timeout=timeout)
 
     def _source(self, store, provider):
         if provider == 'emby':

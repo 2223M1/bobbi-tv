@@ -396,7 +396,7 @@ def reserve_playback(
         raise ValueError('OWNED_SELECTION_LOCATOR_REQUIRED')
     active_transport = transport if transport is not None else capture_transport(binding=binding)
     bound_profile, playback_client, host_call = active_transport
-    status = host_call('status', {}, timeout=0.5)
+    status = host_call('status', {}, timeout=1.5)
     adapter = status.get('playback_adapter') if isinstance(status, dict) else None
     allowed_adapters = ('native', 'standard', 'starting') if allow_starting else ('native', 'standard')
     if adapter not in allowed_adapters:

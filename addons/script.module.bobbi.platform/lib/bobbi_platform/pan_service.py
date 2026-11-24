@@ -696,7 +696,7 @@ class PanService:
             raise PanError('PAN_SCOPE_INVALID')
         sid = source_scope['source_id']
         gen = source_scope['generation']
-        store = self.servers._registry()
+        store = self.servers._registry(timeout=0.5)
         try:
             src, rev = store.source_snapshot(sid)
         except LibraryError:
@@ -720,12 +720,12 @@ class PanService:
                 if open_session
                 else client.direct_original(item_id, media_id, authenticated=authenticated)
             )
-        store = self.servers._registry()
+        store = self.servers._registry(timeout=0.5)
         try:
             current_src, current_rev = store.source_snapshot(sid)
             if current_src != src or current_rev != gen or not self.servers.current():
                 raise PanError('PAN_ACCOUNT_CHANGED')
-            return store.run_if_current(src, gen, lambda: result)
+            return result
         except LibraryError:
             raise PanError('PAN_ACCOUNT_CHANGED') from None
         finally:
