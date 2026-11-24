@@ -1,4 +1,5 @@
 """Real picker callbacks + session/pump + native-list FIFO model; no playback."""
+from collections import Counter
 from pathlib import Path
 from threading import Event
 
@@ -121,12 +122,14 @@ def test_retry_has_native_theme_button_and_remote_navigation():
     assert xml.findtext('.//control[@id="1300"]/onleft') == '1500'
 
 
-def test_actual_source_entry_reuses_metadata_and_only_resubmits_failed_provider(monkeypatch, tmp_path):
+@pytest.mark.parametrize('first_provider', ['good', 'bad'])
+def test_actual_source_entry_reuses_metadata_and_only_resubmits_failed_provider(monkeypatch, tmp_path, first_provider):
     from lib import search
     from lib.clients import bobbi_library, catalog_providers, mdsub_provider
     from lib.clients.tmdb.utils import utils
     from lib.utils.general import cinema_source_rank
     metadata, requests = [], []
+    first_recorded = Event()
     monkeypatch.setattr(search, 'get_setting', lambda key, default=None: default)
     monkeypatch.setattr(search, 'reconcile_source_selection', lambda **kw: None)
     monkeypatch.setattr(search, '_build_search_cache_scope', lambda *a: 'fixture')
@@ -145,11 +148,18 @@ def test_actual_source_entry_reuses_metadata_and_only_resubmits_failed_provider(
     from bobbi_platform import paths
     # Exercise the actual entry capture, cache and OS admission in this profile.
     monkeypatch.setattr(paths, '_translated_profile_root', lambda addon: tmp_path / addon)
+    def record(provider):
+        # Exercise both legal first-round schedules without changing the worker pool.
+        if provider != first_provider:
+            assert first_recorded.wait(2), 'The first provider did not enter'
+        requests.append(provider)
+        if provider == first_provider:
+            first_recorded.set()
     def healthy():
-        requests.append('good')
+        record('good')
         return []
     def failed():
-        requests.append('bad')
+        record('bad')
         return SearchResults([], SearchCompletion(1, failed=1))
     def submit(manager, *a, **kw):
         manager.submit_task('Good', 'jackett', healthy)
@@ -159,9 +169,17 @@ def test_actual_source_entry_reuses_metadata_and_only_resubmits_failed_provider(
         assert source_pump.current.__self__.root('plugin.video.bobbi') == tmp_path / 'plugin.video.bobbi'
         assert source_pump.scope_current()
         source_pump.thread.join(3)
+        assert not source_pump.thread.is_alive(), 'The initial round did not finish'
+        assert Counter(requests) == Counter(good=1, bad=1)
+        assert requests[0] == first_provider
+        first_round = tuple(requests)
+        assert metadata == [1]
         assert source_pump.retry_failed()
         source_pump.thread.join(3)
-        assert requests == ['good', 'bad', 'bad']
+        assert not source_pump.thread.is_alive(), 'The retry round did not finish'
+        assert tuple(requests[:len(first_round)]) == first_round
+        assert requests[len(first_round):] == ['bad']
+        assert Counter(requests) == Counter(good=1, bad=2)
         return False
     monkeypatch.setattr(search, 'show_source_select', choose)
     search._run_progressive_source_entry({'force_select': True}, 'Fixture', {'tmdb_id': 1},
