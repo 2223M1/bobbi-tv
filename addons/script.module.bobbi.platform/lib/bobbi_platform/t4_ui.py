@@ -46,13 +46,105 @@ def _pick(dialog, title, entries):
     return entries[i][1] if 0 <= i < len(entries) else None
 
 
+def export_probed_lives_playlist(raw_config: bytes, export_dir, *, index: int = 0, fetch_fn=None) -> dict:
+    """Format-probed standalone M3U8 export for TVBox lives entries; NEVER touches PVR settings (R19-09, R19-10)."""
+    import hashlib
+    from pathlib import Path
+    import time
+
+    doc = t4.document(raw_config)
+    lives = doc.get('lives')
+    if not isinstance(lives, list) or not (0 <= index < len(lives)) or not isinstance(lives[index], dict):
+        raise LibraryError('INVALID_DOCUMENT')
+    entry = lives[index]
+    raw_url = str(entry.get('url') or '').strip()
+    checked_url = t4.endpoint(raw_url)
+    end = time.monotonic() + 8.0
+    raw_body = (fetch_fn(checked_url) if fetch_fn is not None else read(checked_url, end, lambda: False))
+    if not isinstance(raw_body, (bytes, bytearray)) or not (1 <= len(raw_body) <= 512 * 1024):
+        raise LibraryError('T4_LIMIT')
+    try:
+        text_body = bytes(raw_body).decode('utf-8-sig')
+    except UnicodeError:
+        raise LibraryError('INVALID_DOCUMENT') from None
+    stripped = text_body.lstrip()
+    if not stripped or stripped.startswith(('<', '{', '[')):
+        raise LibraryError('INVALID_DOCUMENT')
+
+    lines = [ln.strip() for ln in stripped.splitlines() if ln.strip()]
+    m3u_lines = ['#EXTM3U']
+    channel_count = 0
+    if lines[0].upper().startswith('#EXTM3U'):
+        for ln in lines[1:]:
+            if ln.upper().startswith('#EXTINF:'):
+                m3u_lines.append(ln)
+            elif ln.startswith(('http://', 'https://')) and ' ' not in ln:
+                m3u_lines.append(ln)
+                channel_count += 1
+    else:
+        current_group = '直播'
+        for ln in lines:
+            if ln.endswith(',#genre#'):
+                current_group = _clean_label(ln[:-8], 60, '直播')
+                continue
+            cname, sep, curl = ln.partition(',')
+            curl = curl.strip()
+            if sep and cname.strip() and curl.startswith(('http://', 'https://')) and ' ' not in curl:
+                safe_name = _clean_label(cname, 120, '频道')
+                m3u_lines.append(f'#EXTINF:-1 group-title="{current_group}",{safe_name}')
+                m3u_lines.append(curl)
+                channel_count += 1
+
+    if channel_count == 0:
+        raise LibraryError('INVALID_DOCUMENT')
+
+    out_dir = Path(export_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    digest = hashlib.sha256(checked_url.encode('utf-8')).hexdigest()[:8]
+    out_path = out_dir / f'bobbi-lives-{digest}.m3u8'
+    out_path.write_text('\n'.join(m3u_lines) + '\n', encoding='utf-8')
+    return {
+        'path': str(out_path),
+        'channel_count': channel_count,
+        'name': str(entry.get('name') or f'live_{index + 1}')[:80],
+    }
+
+
 def add(dialog, vfs, store, previous=None):
     from .paths import ProfileBinding
     from .source_library_ui import operation
     binding = ProfileBinding()
     expected = store.source_snapshot(previous.id) if previous else (None, None)
-    method = _pick(dialog, '小雅 / TVBox（T4）', [('输入订阅网址', 'url'), ('选择配置文件', 'file')])
+    method = _pick(
+        dialog,
+        '小雅 / TVBox（T4）',
+        [
+            ('输入订阅网址（支持 Yatse 粘贴）', 'url'),
+            ('选择本机 / U盘 / 共享 JSON 文件', 'file'),
+            ('手机扫码上传配置文件（支持大文件分片）', 'phone'),
+            ('改连原生 WebDAV / AList 或 Emby 媒体服', 'native_handoff'),
+        ],
+    )
     if not method:
+        return False
+    if method == 'phone':
+        import xbmc
+        xbmc.executebuiltin('RunPlugin(plugin://plugin.video.bobbi/?action=source_import_manage_phone)')
+        return False
+    if method == 'native_handoff':
+        from . import library_ui, server_ui
+        target = _pick(
+            dialog,
+            '选择原生连接方式',
+            [('WebDAV / AList 网盘', 'webdav'), ('Emby / Jellyfin 媒体服务器', 'server')],
+        )
+        if target == 'webdav':
+            src = library_ui._network(dialog, 'webdav')
+            if src is not None and dialog.yesno('添加“' + src.name + '”', src.location + '\n仅保存到本机。'):
+                store.save(src)
+                return True
+        elif target == 'server':
+            return bool(server_ui.add(dialog, store))
         return False
     if method == 'url':
         location = dialog.input('输入 T4 配置网址（仅本机保存）')
@@ -63,7 +155,9 @@ def add(dialog, vfs, store, previous=None):
             previous = next((s for s in store.sources() if s.kind == 't4' and s.location == location), None)
             if previous:
                 expected = store.source_snapshot(previous.id)
-        parsed = operation(lambda end, stop: t4.preview(read(location, end, stop), location))
+        raw_bytes = operation(lambda end, stop: read(location, end, stop))
+        if raw_bytes is None:
+            return False
     else:
         location = ''
         path = dialog.browse(1, '选择 T4 配置文件', 'files', mask='.json')
@@ -71,13 +165,14 @@ def add(dialog, vfs, store, previous=None):
             return False
         fh = vfs.File(path)
         try:
-            parsed = t4.preview(bytes(fh.readBytes(MAX_CATALOG_BYTES + 1)))
+            raw_bytes = bytes(fh.readBytes(MAX_CATALOG_BYTES + 1))
         finally:
             fh.close()
-    if parsed is None:
-        return False
-    summary = '可用 %d 个 · 不支持的类型 %d 个 · 无效 %d 个' % (
-        len(parsed.sites), parsed.unsupported, parsed.invalid)
+    diag = t4.diagnose_config(raw_bytes, location)
+    parsed = t4.preview(raw_bytes, location)
+    summary = diag.get('summary_zh') or (
+        '可用 %d 个 · 不支持的类型 %d 个 · 无效 %d 个' % (len(parsed.sites), parsed.unsupported, parsed.invalid)
+    )
     if not parsed.sites:
         dialog.ok('未导入 T4 站点', summary + '\n' + MESSAGES['T4_NO_SITES'])
         return False

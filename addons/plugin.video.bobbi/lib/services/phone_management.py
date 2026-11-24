@@ -3,12 +3,15 @@
 This owns no sources, cloud credentials, media files, jobs or playback. Only a
 short-lived single-browser permission is retained in memory.
 """
+import base64
 import hmac
 from copy import deepcopy
 from hashlib import sha256
 from http.cookies import SimpleCookie
 import ipaddress
 import json
+import os
+from pathlib import Path
 import re
 import secrets
 from threading import Event, RLock
@@ -17,12 +20,15 @@ from urllib.parse import urlsplit
 
 MAX_BODY = 8192
 MAX_REPLY = 16384
+MAX_IMPORT_BYTES = 2 * 1024 * 1024
+MAX_IMPORT_CHUNK = 4096
 SESSION_SECONDS = 900
 COOKIE = 'bobbi_management'
 SCOPES = frozenset(('catalog_read', 'catalog_review', 'catalog_tasks'))
 PLAYBACK_SCOPES = frozenset(('playback_read', 'playback_control'))
 STREMIO_SCOPES = frozenset(('stremio_addons',))
-LOCAL_SCOPES = frozenset(('stremio_addons',))
+SOURCE_IMPORT_SCOPES = frozenset(('source_import',))
+LOCAL_SCOPES = frozenset(('stremio_addons', 'source_import'))
 ACTION_SCOPE = {
     'catalog_sources': 'catalog_read', 'catalog_items': 'catalog_read', 'catalog_jobs': 'catalog_read',
     'catalog_history': 'catalog_read',
@@ -38,6 +44,11 @@ ACTION_SCOPE = {
     'stremio_add': 'stremio_addons',
     'stremio_toggle': 'stremio_addons',
     'stremio_remove': 'stremio_addons',
+    'source_import_status': 'source_import',
+    'source_import_begin': 'source_import',
+    'source_import_chunk': 'source_import',
+    'source_import_commit': 'source_import',
+    'source_import_cancel': 'source_import',
 }
 PLAYBACK_INSTANCE = ('boot_id', 'epoch', 'request_id', 'native_instance', 'file_sha256', 'selection_epoch')
 
@@ -94,6 +105,60 @@ def parameters(action, args):
         if set(args) != {'id'} or type(addon_id) is not str or not 0 < len(addon_id) <= 512 or '\x00' in addon_id:
             raise PhoneError('INVALID_REQUEST', 400)
         return dict(id=addon_id)
+    if action.startswith('source_import_'):
+        if action == 'source_import_status':
+            if args:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {}
+        if action == 'source_import_begin':
+            if not ({'upload_id', 'file_name', 'total_bytes', 'sha256'} <= set(args) <= {
+                'upload_id', 'file_name', 'total_bytes', 'sha256', 'base_url'
+            }):
+                raise PhoneError('INVALID_REQUEST', 400)
+            uid = _id(args['upload_id'], 32)
+            fname = args.get('file_name')
+            total = args.get('total_bytes')
+            digest = _id(args.get('sha256'), 64)
+            base_url = args.get('base_url', '')
+            if (
+                type(fname) is not str or not 1 <= len(fname.strip()) <= 128
+                or any(ord(c) < 32 or c in '/\\' for c in fname)
+                or type(total) is not int or type(total) is bool
+                or not 1 <= total <= MAX_IMPORT_BYTES
+                or type(base_url) is not str or len(base_url) > 2048
+                or any(ord(c) < 32 for c in base_url)
+            ):
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {
+                'upload_id': uid,
+                'file_name': fname.strip(),
+                'total_bytes': total,
+                'sha256': digest,
+                'base_url': base_url.strip(),
+            }
+        if action == 'source_import_chunk':
+            if set(args) != {'upload_id', 'offset', 'data_b64'}:
+                raise PhoneError('INVALID_REQUEST', 400)
+            uid = _id(args['upload_id'], 32)
+            off = args.get('offset')
+            b64 = args.get('data_b64')
+            if (
+                type(off) is not int or type(off) is bool or not 0 <= off < MAX_IMPORT_BYTES
+                or type(b64) is not str or not 1 <= len(b64) <= 6000 or not b64.isascii()
+            ):
+                raise PhoneError('INVALID_REQUEST', 400)
+            try:
+                raw_chunk = base64.b64decode(b64, validate=True)
+            except (ValueError, TypeError):
+                raise PhoneError('INVALID_REQUEST', 400) from None
+            if not 1 <= len(raw_chunk) <= MAX_IMPORT_CHUNK:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {'upload_id': uid, 'offset': off, 'chunk': raw_chunk}
+        if action in ('source_import_commit', 'source_import_cancel'):
+            if set(args) != {'upload_id'}:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {'upload_id': _id(args['upload_id'], 32)}
+        raise PhoneError('ACTION_FORBIDDEN')
     if action in ('playback_presentation', 'playback_receipt', 'playback_command', 'playback_forget'):
         from bobbi_core.playback_presentation import command, expected
         try:
@@ -200,6 +265,28 @@ PLAYBACK_FIELDS = frozenset(('available', 'reason', 'expected', 'boot_id', 'epoc
 STREMIO_FIELDS = frozenset(('items', 'addon', 'manifest', 'valid', 'success', 'id', 'name',
     'description', 'version', 'host', 'logo', 'logo_rejected', 'types', 'capabilities',
     'selected', 'stream', 'catalog', 'tv'))
+SOURCE_IMPORT_FIELDS = frozenset((
+    'state', 'upload_id', 'offset', 'total_bytes', 'cancelled', 'committed', 'awaiting_tv_confirm',
+    'diagnosis', 'ok', 'error_code', 'sha256', 'byte_length', 'can_save_t4', 'counts',
+    'type4', 'type3', 'unsupported_type', 'unsupported_headers', 'invalid', 'lives',
+    'summary_zh', 'type4_names', 'type3_names', 'lives_names', 'unsupported_top_fields',
+))
+
+
+def public_source_import(value, depth=0):
+    if depth > 6:
+        raise PhoneError('INVALID_REPLY', 502)
+    if type(value) is dict:
+        return {k: public_source_import(v, depth + 1) for k, v in value.items() if k in SOURCE_IMPORT_FIELDS}
+    if type(value) is list:
+        if len(value) > 64:
+            raise PhoneError('INVALID_REPLY', 502)
+        return [public_source_import(v, depth + 1) for v in value]
+    if value is None or type(value) in (bool, int, float):
+        return value
+    if type(value) is str and len(value) <= 1024 and '://' not in value and '\x00' not in value:
+        return value
+    raise PhoneError('INVALID_REPLY', 502)
 
 
 def public_stremio(value, depth=0, key=None):
@@ -252,7 +339,8 @@ class PhoneManagement:
             else None
         )
         if self.local_scope is not None:
-            if self.local_scope not in LOCAL_SCOPES or not set(scopes) <= STREMIO_SCOPES:
+            allowed_local = STREMIO_SCOPES if self.local_scope == 'stremio_addons' else SOURCE_IMPORT_SCOPES
+            if self.local_scope not in LOCAL_SCOPES or not set(scopes) <= allowed_local:
                 raise PhoneError('ACTION_FORBIDDEN')
             self.profile_binding = profile_binding or (ProfileBinding() if rpc is None else None)
             if self.profile_binding is not None:
@@ -291,13 +379,20 @@ class PhoneManagement:
         if (parts.scheme != 'http' or not (address.is_private or address.is_loopback)
                 or parts.path or parts.query or parts.fragment or parts.username or parts.password
                 or not parts.port or not 1 <= parts.port <= 65535
-                or not set(scopes) <= SCOPES | PLAYBACK_SCOPES | STREMIO_SCOPES
+                or not set(scopes) <= SCOPES | PLAYBACK_SCOPES | STREMIO_SCOPES | SOURCE_IMPORT_SCOPES
                 or ('playback_control' in scopes and 'playback_read' not in scopes)):
             raise PhoneError('ORIGIN_FORBIDDEN')
         self.origin, self.host, self.rpc, self.clock = origin, parts.netloc, rpc, clock
         self.scopes, self.lock = frozenset(scopes), RLock()
         self.revoked = Event()
         self.previews = {}
+        self._staged_import = None
+        self.committed_import = None
+        self._staging_dir = (
+            Path(self.profile_binding.root('script.module.bobbi.platform')) / 'source-import-staging'
+            if self.profile_binding is not None
+            else None
+        )
         # Session-only correlation hints survive page reload and another tab.
         # They never execute/retry a command or replace the owner's receipts.
         self.playback_operations = {}
@@ -396,6 +491,7 @@ class PhoneManagement:
                     scopes=sorted(self.scopes),
                     playback_operations=deepcopy(list(self.playback_operations.values())),
                     catalog_kind=('stremio' if self.local_scope == 'stremio_addons' else
+                                  'source_import' if self.local_scope == 'source_import' else
                                   'local' if self.reference_kind == 'local_path' else
                                   'network' if self.reference_kind == 'network_path' else
                                   'mounted' if self.path_source else 'native'),
@@ -502,6 +598,8 @@ class PhoneManagement:
             args = parameters(action, body['params'])
             if action.startswith('stremio_'):
                 return self._handle_stremio(action, args)
+            if action.startswith('source_import_'):
+                return self._handle_source_import(action, args)
             if action == 'playback_forget':
                 return self._forget_playback(args), None
             if action == 'playback_command' and not self._remember_playback(args):
@@ -607,6 +705,172 @@ class PhoneManagement:
             raise PhoneError('REPLY_TOO_LARGE', 502)
         return projected, None
 
+    def _cleanup_staged_import(self):
+        staged = getattr(self, '_staged_import', None)
+        self._staged_import = None
+        if staged and staged.get('path') is not None:
+            try:
+                Path(staged['path']).unlink(missing_ok=True)
+            except OSError:
+                pass
+        sdir = getattr(self, '_staging_dir', None)
+        if sdir is not None and sdir.is_dir():
+            try:
+                if not any(sdir.iterdir()):
+                    sdir.rmdir()
+            except OSError:
+                pass
+
+    @staticmethod
+    def _project_diagnosis(diag: dict) -> dict:
+        return {
+            'ok': bool(diag.get('ok')),
+            'error_code': diag.get('error_code'),
+            'sha256': diag.get('sha256', ''),
+            'byte_length': int(diag.get('byte_length') or 0),
+            'can_save_t4': bool(diag.get('can_save_t4')),
+            'counts': dict(diag.get('counts') or {}),
+            'summary_zh': str(diag.get('summary_zh') or '')[:900],
+            'type4_names': [str(s.get('name') or s.get('key') or '')[:80] for s in (diag.get('type4_sites') or [])[:24]],
+            'type3_names': [str(s.get('name') or s.get('key') or '')[:80] for s in (diag.get('type3_spiders') or [])[:24]],
+            'lives_names': [str(s.get('name') or '')[:80] for s in (diag.get('lives_subscriptions') or [])[:16]],
+            'unsupported_top_fields': [str(k)[:40] for k in (diag.get('unsupported_top_fields') or [])[:16]],
+        }
+
+    def _handle_source_import(self, action, args):
+        from bobbi_core import t4
+        self._live()
+        self._account()
+        if self._staging_dir is None:
+            raise PhoneError('MANAGEMENT_UNAVAILABLE', 503)
+
+        if action == 'source_import_status':
+            if self._staged_import is not None:
+                st = self._staged_import
+                res = {
+                    'state': 'receiving',
+                    'upload_id': st['upload_id'],
+                    'offset': st['offset'],
+                    'total_bytes': st['total_bytes'],
+                }
+            elif self.committed_import is not None:
+                ci = self.committed_import
+                res = {
+                    'state': 'committed',
+                    'committed': True,
+                    'awaiting_tv_confirm': bool(ci['diagnosis'].get('can_save_t4')),
+                    'diagnosis': self._project_diagnosis(ci['diagnosis']),
+                }
+            else:
+                res = {'state': 'idle'}
+            return public_source_import(res), None
+
+        if action == 'source_import_begin':
+            self._cleanup_staged_import()
+            self.committed_import = None
+            self._staging_dir.mkdir(parents=True, exist_ok=True)
+            part_path = self._staging_dir / (args['upload_id'] + '.part')
+            try:
+                part_path.unlink(missing_ok=True)
+                fd = os.open(str(part_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+                os.close(fd)
+            except OSError:
+                raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+            self._staged_import = {
+                'upload_id': args['upload_id'],
+                'file_name': args['file_name'],
+                'total_bytes': args['total_bytes'],
+                'sha256': args['sha256'],
+                'base_url': args['base_url'],
+                'offset': 0,
+                'path': part_path,
+            }
+            res = {
+                'state': 'receiving',
+                'upload_id': args['upload_id'],
+                'offset': 0,
+                'total_bytes': args['total_bytes'],
+            }
+            return public_source_import(res), None
+
+        if action == 'source_import_cancel':
+            if self._staged_import and self._staged_import['upload_id'] == args['upload_id']:
+                self._cleanup_staged_import()
+            return public_source_import({'state': 'idle', 'cancelled': True}), None
+
+        staged = self._staged_import
+        if staged is None or staged['upload_id'] != args['upload_id']:
+            raise PhoneError('UPLOAD_NOT_FOUND', 404)
+
+        if action == 'source_import_chunk':
+            off = args['offset']
+            chunk = args['chunk']
+            cur_off = staged['offset']
+            if off == cur_off:
+                if cur_off + len(chunk) > staged['total_bytes']:
+                    self._cleanup_staged_import()
+                    raise PhoneError('CHUNK_OFFSET_MISMATCH', 409)
+                try:
+                    with open(staged['path'], 'ab') as fh:
+                        fh.write(chunk)
+                except OSError:
+                    self._cleanup_staged_import()
+                    raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+                staged['offset'] = cur_off + len(chunk)
+            elif off < cur_off and off + len(chunk) <= cur_off:
+                # Idempotent retry verification: exact byte match at previously written offset!
+                try:
+                    with open(staged['path'], 'rb') as fh:
+                        fh.seek(off)
+                        existing = fh.read(len(chunk))
+                except OSError:
+                    self._cleanup_staged_import()
+                    raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+                if not hmac.compare_digest(existing, chunk):
+                    self._cleanup_staged_import()
+                    raise PhoneError('CHUNK_OFFSET_MISMATCH', 409)
+            else:
+                self._cleanup_staged_import()
+                raise PhoneError('CHUNK_OFFSET_MISMATCH', 409)
+            res = {
+                'state': 'receiving',
+                'upload_id': staged['upload_id'],
+                'offset': staged['offset'],
+                'total_bytes': staged['total_bytes'],
+            }
+            return public_source_import(res), None
+
+        # source_import_commit
+        if staged['offset'] != staged['total_bytes']:
+            raise PhoneError('UPLOAD_INCOMPLETE', 409)
+        try:
+            raw_bytes = Path(staged['path']).read_bytes()
+        except OSError:
+            self._cleanup_staged_import()
+            raise PhoneError('MANAGEMENT_UNAVAILABLE', 503) from None
+        self._cleanup_staged_import()
+        actual_sha = sha256(raw_bytes).hexdigest()
+        if not hmac.compare_digest(actual_sha, staged['sha256']) or len(raw_bytes) != staged['total_bytes']:
+            raise PhoneError('UPLOAD_HASH_MISMATCH', 400)
+        diag = t4.diagnose_config(raw_bytes, base_url=staged['base_url'])
+        can_save = bool(diag.get('can_save_t4'))
+        self.committed_import = {
+            'file_name': staged['file_name'],
+            'base_url': staged['base_url'],
+            'raw_bytes': raw_bytes if can_save else None,
+            'diagnosis': diag,
+        }
+        res = {
+            'state': 'committed',
+            'committed': True,
+            'awaiting_tv_confirm': can_save,
+            'diagnosis': self._project_diagnosis(diag),
+        }
+        projected = public_source_import(res)
+        if len(encode(projected)) > MAX_REPLY:
+            raise PhoneError('REPLY_TOO_LARGE', 502)
+        return projected, None
+
     def revoke(self):
         # Immediate logical revocation, even while an already-admitted domain
         # call is in flight. This does not undo a committed mapping mutation.
@@ -614,3 +878,4 @@ class PhoneManagement:
         self.closed = True
         self._session = self._csrf = self._challenge = None
         self.playback_operations.clear()
+        self._cleanup_staged_import()

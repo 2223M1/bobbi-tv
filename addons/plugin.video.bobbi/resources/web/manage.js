@@ -36,6 +36,42 @@
   }
   function failure(code, message) {const error=new Error(message);error.code=code;return error;}
   function utf8Size(text) {return encodeURIComponent(text).replace(/%[0-9A-F]{2}|[^%]/g,'x').length;}
+  function sha256Hex(bytes) {
+    const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    let h0=0x6a09e667,h1=0xbb67ae85,h2=0x3c6ef372,h3=0xa54ff53a,h4=0x510e527f,h5=0x9b05688c,h6=0x1f83d9ab,h7=0x5be0cd19;
+    const len=bytes.length, bitHi=Math.floor((len*8)/0x100000000), bitLo=(len*8)>>>0;
+    const padLen=((len+9+63)&~63), buf=new Uint8Array(padLen), dv=new DataView(buf.buffer);
+    buf.set(bytes);buf[len]=0x80;dv.setUint32(padLen-8,bitHi,false);dv.setUint32(padLen-4,bitLo,false);
+    const w=new Uint32Array(64), rotr=(x,n)=>(x>>>n)|(x<<(32-n));
+    for(let i=0;i<padLen;i+=64) {
+      for(let j=0;j<16;j++)w[j]=dv.getUint32(i+j*4,false);
+      for(let j=16;j<64;j++) {
+        const s0=rotr(w[j-15],7)^rotr(w[j-15],18)^(w[j-15]>>>3);
+        const s1=rotr(w[j-2],17)^rotr(w[j-2],19)^(w[j-2]>>>10);
+        w[j]=(w[j-16]+s0+w[j-7]+s1)>>>0;
+      }
+      let a=h0,b=h1,c=h2,d=h3,e=h4,f=h5,g=h6,h=h7;
+      for(let j=0;j<64;j++) {
+        const S1=rotr(e,6)^rotr(e,11)^rotr(e,25), ch=(e&f)^((~e)&g), t1=(h+S1+ch+K[j]+w[j])>>>0;
+        const S0=rotr(a,2)^rotr(a,13)^rotr(a,22), maj=(a&b)^(a&c)^(b&c), t2=(S0+maj)>>>0;
+        h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
+      }
+      h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;h4=(h4+e)>>>0;h5=(h5+f)>>>0;h6=(h6+g)>>>0;h7=(h7+h)>>>0;
+    }
+    return [h0,h1,h2,h3,h4,h5,h6,h7].map(v=>v.toString(16).padStart(8,'0')).join('');
+  }
+  function bytesToBase64(slice) {
+    let bin='';
+    for(let i=0;i<slice.length;i++)bin+=String.fromCharCode(slice[i]);
+    return btoa(bin);
+  }
   function frozen(value) {
     if (value && typeof value==='object') {Object.values(value).forEach(frozen);Object.freeze(value);}
     return value;
@@ -627,6 +663,82 @@
     byId('rows').replaceChildren(addCard,...(items.length?items.map(stremioCard):[node('p','当前暂无自定义 Stremio 插件源。')]));
     status('已读取 Stremio 插件源（共 '+items.length+' 项）。');
   }
+  function renderImportDiagnosis(box, diag, awaitingTv) {
+    box.replaceChildren();
+    if(!diag)return;
+    const card=node('article',undefined,'card');
+    const c=diag.counts||{};
+    card.append(node('h3',diag.can_save_t4?'校验通过 · 等待电视端确认保存':'配置诊断结果（未写入电视片库）'));
+    card.append(node('p',diag.summary_zh||'已完成结构诊断。'));
+    card.append(node('small','SHA256：'+(diag.sha256||'').slice(0,16)+'… · 大小：'+(diag.byte_length||0)+' 字节'));
+    card.append(node('small','可用 type-4：'+(c.type4||0)+' · 传统 type-3 Spider：'+(c.type3||0)+
+      ' · 请求头受限：'+(c.unsupported_headers||0)+' · 直播订阅：'+(c.lives||0)));
+    if(Array.isArray(diag.type4_names)&&diag.type4_names.length) {
+      card.append(node('p','可导入 T4 站点：'+diag.type4_names.join('、'),'muted'));
+    }
+    if(Array.isArray(diag.type3_names)&&diag.type3_names.length) {
+      card.append(node('p','识别到的传统 type-3 Spider（需外部 T4 桥接或改连原生 AList/WebDAV/Emby）：'+
+        diag.type3_names.slice(0,10).join('、')+(diag.type3_names.length>10?' 等':''),'muted'));
+    }
+    if(awaitingTv) {
+      card.append(node('p','请在电视上关闭二维码窗口并在确认框中选择“是”完成保存。'));
+    }
+    box.append(card);
+  }
+  async function loadSourceImport() {
+    const page=viewGeneration, cur=await rpc('source_import_status',{});
+    if(page!==viewGeneration)return;
+    byId('previous').disabled=true;byId('next').disabled=true;
+    const uploadCard=node('section',undefined,'card');
+    uploadCard.append(node('h2','上传 TVBox / 小雅 T4 JSON 配置文件'),
+      node('p','采用 4 KB 受控分片上传（最大 2 MB），支持在普通局域网 HTTP 环境校验整包 SHA-256。0 个可用 type-4 站点时绝不污染电视片库。','muted'));
+    const fileLabel=node('label','选择本地 JSON 配置文件'), fileInput=node('input');
+    fileInput.type='file';fileInput.accept='.json,application/json';
+    fileLabel.append(fileInput);uploadCard.append(fileLabel);
+    const baseInput=field(uploadCard,'可选订阅基址（用于解析相对 ./spider.jar 或相对 api，可留空）','url','');
+    baseInput.maxLength=2048;
+    const progressText=node('small','尚未选择文件。'), resultBox=node('div'), actions=node('div',undefined,'row');
+    let activeUploadId=cur.upload_id||null;
+    actions.append(button('开始分片上传并诊断',async()=>{
+      const chosen=fileInput.files&&fileInput.files[0];
+      if(!chosen)throw new Error('请先选择一份 JSON 配置文件。');
+      if(chosen.size<1||chosen.size>2097152)throw new Error('文件大小须在 1 B 到 2 MB 之间。');
+      const rawBuf=new Uint8Array(await chosen.arrayBuffer());
+      const digest=sha256Hex(rawBuf), uploadId=id();
+      activeUploadId=uploadId;
+      progressText.textContent='正在初始化上传（共 '+rawBuf.length+' 字节）…';
+      await rpc('source_import_begin',{
+        upload_id:uploadId,
+        file_name:(chosen.name||'config.json').slice(0,128),
+        total_bytes:rawBuf.length,
+        sha256:digest,
+        base_url:baseInput.value.trim()
+      });
+      const CHUNK=4096;
+      for(let pos=0;pos<rawBuf.length;pos+=CHUNK) {
+        if(authClosed||page!==viewGeneration)return;
+        const slice=rawBuf.subarray(pos,Math.min(pos+CHUNK,rawBuf.length));
+        await rpc('source_import_chunk',{upload_id:uploadId,offset:pos,data_b64:bytesToBase64(slice)});
+        progressText.textContent='已上传 '+Math.min(pos+CHUNK,rawBuf.length)+' / '+rawBuf.length+' 字节…';
+      }
+      const committed=await rpc('source_import_commit',{upload_id:uploadId});
+      activeUploadId=null;
+      progressText.textContent='上传与整包 SHA-256 核验已完成。';
+      renderImportDiagnosis(resultBox,committed.diagnosis,committed.awaiting_tv_confirm===true);
+      status(committed.awaiting_tv_confirm?'配置校验通过，请回到电视确认保存。':'已完成配置诊断（无可直接保存的 type-4 站点）。');
+    }),button('取消暂存分片',async()=>{
+      if(!activeUploadId){progressText.textContent='当前无进行中的分片上传。';return;}
+      await rpc('source_import_cancel',{upload_id:activeUploadId});
+      activeUploadId=null;progressText.textContent='已取消并清理暂存分片。';
+      status('已清理暂存分片。');
+    }));
+    uploadCard.append(progressText,actions);
+    if(cur.state==='committed'&&cur.diagnosis) {
+      renderImportDiagnosis(resultBox,cur.diagnosis,cur.awaiting_tv_confirm===true);
+    }
+    byId('rows').replaceChildren(uploadCard,resultBox);
+    status('手机配置分片导入已就绪。');
+  }
   function scheduleJobs(reset=false,failed=false) {
     clearTimeout(pollTimer);pollTimer=null;
     if(reset){pollUntil=Date.now()+120000;pollDelay=5000;}
@@ -648,6 +760,7 @@
     byId('back').disabled=tab!=='items'||!trail.length;
     if(tab==='playback'){await loadPlayback();return;}
     if(tab==='stremio'){await loadStremio();return;}
+    if(tab==='sourceImport'){await loadSourceImport();return;}
     if(tab==='items') {
       const filters={...query,text:byId('keyword').value.trim(),review_state:byId('state').value||null,
         media_kind:byId('mediaKind').value||null,availability:byId('availability').value||null,
@@ -683,7 +796,7 @@
     status('已读取当前状态 · 第 '+(pageIndex+1)+' 页。关闭浏览器不会取消后台任务。');
     if(currentTab==='jobs') {jobsActive=rows.some(row=>['queued','running'].includes(row.state));pollDelay=5000;scheduleJobs(!automatic);}
   }
-  ['items','sources','jobs','history','playback','stremio'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
+  ['items','sources','jobs','history','playback','stremio','sourceImport'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
   byId('refresh').addEventListener('click',()=>guarded(load));
   for(const control of ['state','mediaKind'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQuery();await load();}));
   for(const control of ['availability','sort'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQueryPage();await load();}));
@@ -895,9 +1008,11 @@
     byId('batch').classList.toggle('hidden',!hasCatalog);
     byId('playbackTab').classList.toggle('hidden',!grantedScopes.includes('playback_read'));
     byId('stremioTab').classList.toggle('hidden',!grantedScopes.includes('stremio_addons'));
+    byId('sourceImportTab').classList.toggle('hidden',!grantedScopes.includes('source_import'));
     if(!hasCatalog&&grantedScopes.includes('stremio_addons'))tab='stremio';
+    if(!hasCatalog&&grantedScopes.includes('source_import'))tab='sourceImport';
     if(mountedSource){byId('clearSource').disabled=true;byId('clearSource').textContent='当前授权已固定来源';}
-    byId('historyTab').classList.toggle('hidden',!hasCatalog||['mounted','local','network','stremio'].includes(session.catalog_kind));
+    byId('historyTab').classList.toggle('hidden',!hasCatalog||['mounted','local','network','stremio','source_import'].includes(session.catalog_kind));
     byId('workspace').classList.remove('hidden');await load();
   });
 })();

@@ -90,3 +90,107 @@ def stremio_manage_phone(params):
     finally:
         server.stop()
         kodilog('Paired Stremio phone management stopped')
+
+
+def source_import_manage_phone(params):
+    """Paired phone chunked upload for TVBox / T4 JSON configs with TV-side final confirmation (R19)."""
+    from urllib.parse import urlsplit
+    import xbmc
+    import xbmcgui
+    import xbmcvfs
+    from bobbi_core import t4
+    from bobbi_platform import library_ui, server_ui
+    from bobbi_platform.paths import ProfileBinding
+    from lib.services.phone_management import PhoneManagement, SOURCE_IMPORT_SCOPES
+
+    dialog = xbmcgui.Dialog()
+    if not dialog.yesno(
+        '允许手机扫码上传配置文件？',
+        '仅在可信局域网使用。扫码者可分片上传一份最多 2 MB 的 JSON 配置文件进行诊断；'
+        '写入片库前仍须在电视上确认。关闭此二维码窗口立即撤销授权并清理临时分片。',
+    ):
+        return False
+
+    binding = ProfileBinding()
+    origin = 'http://%s:%d' % (get_local_ip(), _SERVER_PORT)
+    manager = PhoneManagement(
+        {'local_scope': 'source_import'},
+        origin,
+        scopes=SOURCE_IMPORT_SCOPES,
+        profile_binding=binding,
+    )
+    server = StremioWebServer(port=_SERVER_PORT, phone_management=manager)
+    server.start()
+    if not server.is_running:
+        manager.revoke()
+        dialog.ok('手机上传暂不可用', '端口可能已被使用，请关闭原手机管理窗口后重试。')
+        return False
+
+    try:
+        qr_path = make_qrcode(manager.pairing_url)
+        qr = QRProgressDialog('qr_dialog.xml', ADDON_PATH)
+        qr.setup(
+            title='手机上传配置 · 上传完成后按返回确认',
+            qr_code=qr_path or '',
+            url=manager.pairing_url,
+            user_code='',
+            is_debrid=False,
+            url_label_id=90670,
+        )
+        qr.doModal()
+    finally:
+        server.stop()
+        kodilog('Paired source_import phone session stopped')
+
+    committed = manager.committed_import
+    if not committed:
+        return False
+
+    diag = committed['diagnosis']
+    if not diag.get('can_save_t4') or not committed.get('raw_bytes'):
+        dialog.ok('配置文件诊断（未修改片库）', diag.get('summary_zh') or '没有可用的 type-4 站点。')
+        if (diag.get('counts') or {}).get('type3', 0) > 0:
+            nxt = dialog.select(
+                '后续操作建议',
+                ['暂不添加（保持原片库不变）', '改连原生 WebDAV / AList 网盘', '改连原生 Emby / Jellyfin 媒体服'],
+            )
+            if nxt in (1, 2):
+                store = library_ui.registry(xbmcvfs.translatePath)
+                try:
+                    if nxt == 1:
+                        src = library_ui._network(dialog, 'webdav')
+                        if src is not None and dialog.yesno('添加“' + src.name + '”', src.location + '\n仅保存到本机。'):
+                            store.save(src)
+                            xbmc.executebuiltin('Container.Refresh')
+                            return True
+                    else:
+                        if server_ui.add(dialog, store):
+                            xbmc.executebuiltin('Container.Refresh')
+                            return True
+                finally:
+                    store.close()
+        return False
+
+    binding.require_current()
+    base_url = committed.get('base_url') or ''
+    parsed = t4.preview(committed['raw_bytes'], base_url)
+    origins = sorted({urlsplit(s['api']).scheme + '://' + urlsplit(s['api']).netloc for s in parsed.sites})
+    summary = diag.get('summary_zh') or ('可用 %d 个站点' % len(parsed.sites))
+    if not dialog.yesno('确认导入手机上传的 T4 站点？', summary + '\n允许按需连接：\n' + '\n'.join(origins)):
+        return False
+
+    store = library_ui.registry(xbmcvfs.translatePath)
+    try:
+        previous = (
+            next((s for s in store.sources() if s.kind == 't4' and s.location == base_url), None)
+            if base_url
+            else None
+        )
+        expected = store.source_snapshot(previous.id) if previous else (None, None)
+        binding.require_current()
+        store.save(parsed.source(base_url, previous), expected_snapshot=expected)
+    finally:
+        store.close()
+    xbmc.executebuiltin('Container.Refresh')
+    dialog.ok('T4 站点已保存', '打开“我的片库”可按站点浏览与搜索。')
+    return True

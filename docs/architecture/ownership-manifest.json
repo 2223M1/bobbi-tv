@@ -649,7 +649,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/phone_management.py",
-        "line": 244,
+        "line": 331,
         "anchor": "class PhoneManagement:"
       },
       "note": "Reviewed responsibility declaration: TV-approved bounded phone grant; command correlation only, not playback truth. Not a runtime test result."
@@ -721,7 +721,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/phone_management.py",
-        "line": 467,
+        "line": 563,
         "anchor": "def handle(self, path, headers, raw):"
       },
       "note": "Reviewed responsibility declaration: Browser action allowlist -> PhoneManagement -> bound Host transport. Not a runtime test result."
