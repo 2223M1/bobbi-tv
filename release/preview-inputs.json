@@ -141,6 +141,7 @@
       "lib/bobbi_core/android_font_decoder.py",
       "lib/bobbi_core/anime_range_candidates.py",
       "lib/bobbi_core/authenticated_cd2.py",
+      "lib/bobbi_core/bounded_http.py",
       "lib/bobbi_core/candidate_metadata.py",
       "lib/bobbi_core/candidate_titles.py",
       "lib/bobbi_core/capabilities.py",

@@ -9,8 +9,9 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, HTTPCookieProcessor, ProxyHandler, Request, build_opener
 
+from bobbi_core.bounded_http import AttemptHandle, BoundedHTTPHandler, BoundedHTTPSHandler
 from .pan_accounts import PanError
-from .pan_request_policy import RateLimited, retry_after, safe_read, SAFE_OPERATIONS
+from .pan_request_policy import RateLimited, raw_retry_after, retry_after, safe_read, SAFE_OPERATIONS
 
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36'
@@ -232,12 +233,13 @@ class HandoffRedirect(HTTPRedirectHandler):
 
 
 class Session:
-    def __init__(self, provider, saved=None, opener=None, clock=time.monotonic):
+    def __init__(self, provider, saved=None, opener=None, clock=time.monotonic, *, ssl_context=None):
         if provider not in DOMAINS and provider not in TOKEN_ROUTES:
             raise PanError('PAN_PROVIDER_INVALID')
         self.provider, self.jar, self.clock = provider, CookieJar(), clock
         self.deadline = None
         self.operation = None
+        self._active_attempt = None
         if saved is not None:
             _, saved = credentials(provider, saved)
             for row in saved['cookies']:
@@ -245,7 +247,18 @@ class Session:
                     row['domain'], row['domain'].startswith('.'), row['domain'].startswith('.'),
                     row['path'], True, True, None, True, None, None, {}))
         redirect = HandoffRedirect() if provider == '189' else NoRedirect()
-        self.opener = opener or build_opener(ProxyHandler({}), redirect, HTTPCookieProcessor(self.jar))
+        def _current_attempt(req):
+            if self._active_attempt is not None:
+                return self._active_attempt
+            t = req.timeout if isinstance(req.timeout, (int, float)) else 8.0
+            return AttemptHandle(deadline=self.clock() + t, clock=self.clock)
+        self.opener = opener or build_opener(
+            ProxyHandler({}),
+            redirect,
+            HTTPCookieProcessor(self.jar),
+            BoundedHTTPHandler(_current_attempt),
+            BoundedHTTPSHandler(_current_attempt, ssl_context=ssl_context),
+        )
 
     def __repr__(self):
         return '<Pan HTTPS session: credentials hidden>'
@@ -298,7 +311,7 @@ class Session:
                 if (operation is None or operation.kind not in SAFE_OPERATIONS or attempt
                         or not safe_read(self.provider, method, url)):
                     raise
-                operation.wait(error.delay)
+                operation.wait(error.raw_delay)
 
     def _request_once(self, url, query=None, body=None, limit=MAX_REPLY, headers=None, form=None, metadata=False, xml_body=None):
         if metadata and self.provider != '189':
@@ -419,63 +432,75 @@ class Session:
             ('xunlei', 'https://xluser-ssl.xunlei.com/v1/auth/token')}
         shield_error = self.provider == 'xunlei' and (parsed.hostname == 'api-pan.xunlei.com'
             or parsed.path == '/v1/shield/captcha/init')
+        def _check():
+            if self.operation is not None:
+                self.operation.check()
+            if self.deadline is not None and self.clock() >= self.deadline:
+                raise PanError('PAN_NETWORK_ERROR')
+        prev_attempt = self._active_attempt
         try:
-            try:
-                reply = self.opener.open(Request(url, data=data, headers=headers), timeout=timeout)
-            except HTTPError as error:
-                if not (error.code == 400 and oauth_error or error.code in (400, 401, 403) and shield_error
-                        or error.code in (301, 302, 303, 307, 308) and metadata):
-                    raise
-                reply = error  # OAuth pending is structured, bounded JSON, not success.
-            with reply:
-                if reply.status == 429:
-                    raise RateLimited(retry_after(reply.headers.get('Retry-After')))
-                if metadata and reply.status in (301, 302, 303, 307, 308):
-                    return b'', reply.status, reply.headers.get('Location')
-                if reply.status != 200 and not (reply.status == 400 and oauth_error
-                        or reply.status in (400, 401, 403) and shield_error):
-                    raise PanError('PAN_HTTP_REJECTED')
-                length = reply.headers.get('Content-Length')
-                if length is not None:
-                    if not re.fullmatch(r'[0-9]{1,10}', str(length)) or int(length) > limit:
+            with AttemptHandle(deadline=deadline, clock=self.clock, check=_check) as attempt:
+                self._active_attempt = attempt
+                try:
+                    reply = self.opener.open(Request(url, data=data, headers=headers), timeout=timeout)
+                except HTTPError as error:
+                    if not (error.code == 400 and oauth_error or error.code in (400, 401, 403) and shield_error
+                            or error.code in (301, 302, 303, 307, 308) and metadata):
+                        raise
+                    reply = error  # OAuth pending is structured, bounded JSON, not success.
+                with reply:
+                    if reply.status == 429:
+                        hdr = reply.headers.get('Retry-After')
+                        raise RateLimited(retry_after(hdr), raw_delay=raw_retry_after(hdr))
+                    if metadata and reply.status in (301, 302, 303, 307, 308):
+                        attempt.finish()
+                        return b'', reply.status, reply.headers.get('Location')
+                    if reply.status != 200 and not (reply.status == 400 and oauth_error
+                            or reply.status in (400, 401, 403) and shield_error):
+                        raise PanError('PAN_HTTP_REJECTED')
+                    length = reply.headers.get('Content-Length')
+                    if length is not None:
+                        if not re.fullmatch(r'[0-9]{1,10}', str(length)) or int(length) > limit:
+                            raise PanError('PAN_REPLY_INVALID')
+                        length = int(length)
+                    raw = bytearray()
+                    reader = getattr(reply, 'read1', reply.read)
+                    while True:
+                        _check()
+                        remaining = deadline - self.clock()
+                        if remaining <= 0:
+                            raise PanError('PAN_NETWORK_ERROR')
+                        sock = getattr(getattr(getattr(reply, 'fp', None), 'raw', None), '_sock', None)
+                        if sock is not None:
+                            sock.settimeout(remaining)
+                        chunk = reader(min(65536, limit + 1 - len(raw)))
+                        if self.clock() >= deadline:
+                            raise PanError('PAN_NETWORK_ERROR')
+                        if not chunk:
+                            break
+                        raw.extend(chunk)
+                        if len(raw) > limit:
+                            raise PanError('PAN_REPLY_INVALID')
+                    if length is not None and len(raw) != length:
                         raise PanError('PAN_REPLY_INVALID')
-                    length = int(length)
-                raw = bytearray()
-                reader = getattr(reply, 'read1', reply.read)
-                while True:
-                    if self.operation is not None:
-                        self.operation.check()
-                    remaining = deadline - self.clock()
-                    if remaining <= 0:
-                        raise PanError('PAN_NETWORK_ERROR')
-                    sock = getattr(getattr(getattr(reply, 'fp', None), 'raw', None), '_sock', None)
-                    if sock is not None:
-                        sock.settimeout(remaining)
-                    chunk = reader(min(65536, limit + 1 - len(raw)))
-                    if self.clock() >= deadline:
-                        raise PanError('PAN_NETWORK_ERROR')
-                    if not chunk:
-                        break
-                    raw.extend(chunk)
-                    if len(raw) > limit:
-                        raise PanError('PAN_REPLY_INVALID')
-                if length is not None and len(raw) != length:
-                    raise PanError('PAN_REPLY_INVALID')
-                if shield_error and reply.status != 200:
-                    try:
-                        error_value = json.loads(raw)
-                        if type(error_value) is not dict or not (error_value.get('error') or error_value.get('error_code')):
-                            raise ValueError
-                    except ValueError:
-                        raise PanError('PAN_REPLY_INVALID') from None
+                    if shield_error and reply.status != 200:
+                        try:
+                            error_value = json.loads(raw)
+                            if type(error_value) is not dict or not (error_value.get('error') or error_value.get('error_code')):
+                                raise ValueError
+                        except ValueError:
+                            raise PanError('PAN_REPLY_INVALID') from None
+                    attempt.finish()
             return (bytes(raw), reply.status, None) if metadata else bytes(raw)
         except PanError:
             raise
         except HTTPError as error:
-            delay = retry_after(getattr(error.headers, 'get', lambda key: None)('Retry-After')) if error.code == 429 else None
+            hdr = getattr(error.headers, 'get', lambda key: None)('Retry-After') if error.code == 429 else None
+            delay = retry_after(hdr) if error.code == 429 else None
+            raw_delay = raw_retry_after(hdr) if error.code == 429 else None
             error.close()
             if delay is not None:
-                raise RateLimited(delay) from None
+                raise RateLimited(delay, raw_delay=raw_delay) from None
             raise PanError('PAN_LOGIN_REQUIRED' if error.code in (401, 403) else 'PAN_HTTP_REJECTED') from None
         except RemoteDisconnected:
             # This connection error also inherits HTTPException; classify it
@@ -484,4 +509,8 @@ class Session:
         except (HTTPException, ValueError):
             raise PanError('PAN_REPLY_INVALID') from None
         except OSError:
+            if self.operation is not None:
+                self.operation.check()
             raise PanError('PAN_NETWORK_ERROR') from None
+        finally:
+            self._active_attempt = prev_attempt

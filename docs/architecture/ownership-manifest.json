@@ -1069,7 +1069,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_http.py",
-        "line": 50,
+        "line": 51,
         "anchor": "class Session:"
       },
       "note": "Credentials stay in origin-bound headers with size/deadline limits and redirect rejection. Optional explicit methods/statuses/empty replies preserve the original GET/POST JSON defaults; a lost response is never retried. These transport options enable no progress writer or automatic synchronization and export no credential-bearing playback locator. Static responsibility, not device evidence."

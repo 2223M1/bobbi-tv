@@ -7,6 +7,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit, unquote
 from urllib.request import Request, build_opener, ProxyHandler, HTTPRedirectHandler
 
+from bobbi_core.bounded_http import AttemptHandle, BoundedHTTPHandler, BoundedHTTPSHandler
 from bobbi_core.library_contract import server_location
 from .pan_accounts import PanError
 
@@ -48,7 +49,7 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 class Session:
-    def __init__(self, provider, base, secret, opener=None, clock=time.monotonic, *, device_id=None):
+    def __init__(self, provider, base, secret, opener=None, clock=time.monotonic, *, device_id=None, ssl_context=None):
         if provider not in ('plex', 'jellyfin', 'emby'):
             raise PanError('PAN_PROVIDER_INVALID')
         if device_id is not None and (provider != 'emby' or type(device_id) is not str
@@ -57,8 +58,25 @@ class Session:
         self.device_id = device_id
         self.provider, self.base = provider, server_location(base)
         self.secret = None if device_id and secret is None else token(secret)
-        self.opener = opener or build_opener(ProxyHandler({}), NoRedirect())
         self.clock, self.deadline, self.operation = clock, None, None
+        self._active_attempt = None
+        def _current_attempt(req):
+            if self._active_attempt is not None:
+                return self._active_attempt
+            t = req.timeout if isinstance(req.timeout, (int, float)) else 8.0
+            return AttemptHandle(deadline=self.clock() + t, clock=self.clock)
+        self.opener = opener or build_opener(
+            ProxyHandler({}),
+            NoRedirect(),
+            BoundedHTTPHandler(_current_attempt),
+            BoundedHTTPSHandler(_current_attempt, ssl_context=ssl_context),
+        )
+
+    def _check_budget(self):
+        if self.operation:
+            self.operation.check()
+        if self.deadline is not None and self.clock() >= self.deadline:
+            raise PanError('PAN_BUDGET_EXHAUSTED')
 
     def __repr__(self):
         return '<Server HTTP: credentials hidden>'
@@ -89,23 +107,30 @@ class Session:
         if self.operation:
             self.operation.consume_request()
             timeout = min(timeout, self.operation.deadline - self.operation.clock())
-        if self.deadline:
+        if self.deadline is not None:
             timeout = min(timeout, self.deadline - self.clock())
         if timeout <= 0:
             raise PanError('PAN_BUDGET_EXHAUSTED')
+        attempt_deadline = self.clock() + timeout
         headers = self.headers() if authenticated else {}
         headers.update({'Range': 'bytes=0-0', 'Accept-Encoding': 'identity', 'Connection': 'close'})
         request = Request(url, headers=headers)
+        prev_attempt = self._active_attempt
         try:
-            with self.opener.open(request, timeout=timeout) as raw:
-                if raw.geturl() != url:
-                    raise PanError('PAN_REDIRECT_REJECTED')
-                reply = Response(raw)
-                size, _ = probe_evidence(reply, require_etag=False)
-                mime = reply.headers.get('Content-Type', '').partition(';')[0].strip().lower()
-                if mime in ('video/vnd.mpeg.dash.mpd', 'audio/mpegurl', 'audio/x-mpegurl'):
-                    raise PanError('PAN_MEDIA_UNSUPPORTED')
-                return size, mime
+            with AttemptHandle(deadline=attempt_deadline, clock=self.clock, check=self._check_budget) as attempt:
+                self._active_attempt = attempt
+                with self.opener.open(request, timeout=timeout) as raw:
+                    if raw.geturl() != url:
+                        raise PanError('PAN_REDIRECT_REJECTED')
+                    reply = Response(raw)
+                    size, _ = probe_evidence(reply, require_etag=False)
+                    mime = reply.headers.get('Content-Type', '').partition(';')[0].strip().lower()
+                    if mime in ('video/vnd.mpeg.dash.mpd', 'audio/mpegurl', 'audio/x-mpegurl'):
+                        raise PanError('PAN_MEDIA_UNSUPPORTED')
+                    attempt.finish()
+                    return size, mime
+        except PanError:
+            raise
         except HTTPError as error:
             error.close()
             if authenticated and error.code in (401, 403):
@@ -117,7 +142,10 @@ class Session:
         except LibraryError:
             raise PanError('PAN_MEDIA_UNSUPPORTED') from None
         except (OSError, URLError):
+            self._check_budget()
             raise PanError('PAN_NETWORK_ERROR') from None
+        finally:
+            self._active_attempt = prev_attempt
 
     @contextmanager
     def budget(self, seconds):
@@ -154,31 +182,35 @@ class Session:
             raise PanError('PAN_ROUTE_REJECTED')
         if self.operation:
             self.operation.consume_request()
-        timeout = min(8, self.deadline - self.clock()) if self.deadline else 8
+        timeout = min(8, self.deadline - self.clock()) if self.deadline is not None else 8
         if self.operation:
             timeout = min(timeout, self.operation.deadline - self.operation.clock())
         if timeout <= 0:
             raise PanError('PAN_BUDGET_EXHAUSTED')
+        attempt_deadline = self.clock() + timeout
         headers = dict(self.headers(), Accept='application/json', **{'Cache-Control': 'no-store'})
         payload = None if data is None else json.dumps(data, allow_nan=False).encode('utf-8')
         if payload is not None:
             headers['Content-Type'] = 'application/json'
+        prev_attempt = self._active_attempt
         try:
-            with self.opener.open(Request(url, data=payload, headers=headers, method=method), timeout=timeout) as reply:
-                if reply.status not in success_statuses or not at_origin(self.base, reply.geturl()):
-                    raise PanError('PAN_HTTP_REJECTED')
-                raw = bytearray()
-                while True:
-                    if self.operation:
-                        self.operation.check()
-                    if self.deadline and self.clock() >= self.deadline:
-                        raise PanError('PAN_BUDGET_EXHAUSTED')
-                    chunk = reply.read(min(65536, MAX_REPLY + 1 - len(raw)))
-                    if not chunk:
-                        break
-                    raw.extend(chunk)
-                    if len(raw) > MAX_REPLY:
-                        raise PanError('PAN_REPLY_INVALID')
+            with AttemptHandle(deadline=attempt_deadline, clock=self.clock, check=self._check_budget) as attempt:
+                self._active_attempt = attempt
+                with self.opener.open(Request(url, data=payload, headers=headers, method=method), timeout=timeout) as reply:
+                    if reply.status not in success_statuses or not at_origin(self.base, reply.geturl()):
+                        raise PanError('PAN_HTTP_REJECTED')
+                    raw = bytearray()
+                    reader = getattr(reply, 'read1', reply.read)
+                    while True:
+                        self._check_budget()
+                        chunk = reader(min(16384, MAX_REPLY + 1 - len(raw)))
+                        if not chunk:
+                            break
+                        raw.extend(chunk)
+                        if len(raw) > MAX_REPLY:
+                            raise PanError('PAN_REPLY_INVALID')
+                    attempt.finish()
+            self._check_budget()
             if not raw and empty_response:
                 return None
             def unique(pairs):
@@ -202,14 +234,19 @@ class Session:
                 elif type(node) is list:
                     pending.extend((child, depth + 1) for child in node)
             return value
+        except PanError:
+            raise
         except HTTPError as error:
             error.close()
             code = {401: 'PAN_SERVER_UNAUTHORIZED', 403: 'PAN_SERVER_FORBIDDEN',
                     404: 'PAN_SERVER_NOT_FOUND', 429: 'PAN_RATE_LIMITED'}.get(error.code)
             raise PanError(code if code and self.provider == 'emby' else 'PAN_HTTP_REJECTED') from None
         except (URLError, OSError):
+            self._check_budget()
             raise PanError('PAN_NETWORK_ERROR') from None
         except (ValueError, UnicodeError, RecursionError) as error:
             if isinstance(error, PanError):
                 raise
             raise PanError('PAN_REPLY_INVALID') from None
+        finally:
+            self._active_attempt = prev_attempt

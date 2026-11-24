@@ -6,16 +6,24 @@ import socket
 import time
 from urllib.parse import urlsplit
 
+from bobbi_core.bounded_http import AttemptCancelled, AttemptHandle, bind_connection
 from bobbi_core.library_contract import MAX_CATALOG_BYTES, LibraryError
 from bobbi_core import t4
 from .source_media_http import connection as source_connection
 
 
-def connection(url, remaining):
-    return source_connection(url, remaining, invalid='T4_URL', unavailable='T4_NETWORK')
+def connection(url, remaining, *, attempt=None, ssl_context=None):
+    return source_connection(
+        url,
+        remaining,
+        invalid='T4_URL',
+        unavailable='T4_NETWORK',
+        attempt=attempt,
+        ssl_context=ssl_context,
+    )
 
 
-def read(url, deadline, cancelled):
+def read(url, deadline, cancelled, *, ssl_context=None):
     def remaining():
         if cancelled():
             raise LibraryError('T4_CANCELLED')
@@ -24,32 +32,49 @@ def read(url, deadline, cancelled):
             raise LibraryError('T4_TIMEOUT')
         return min(value, 6)
 
-    conn, target = connection(url, remaining)
-    try:
-        conn.request('GET', target, headers={
-            'Accept': 'application/json', 'Accept-Encoding': 'identity', 'Connection': 'close'})
-        reply = conn.getresponse()
-        if reply.status in (401, 403):
-            raise LibraryError('T4_AUTH')
-        if 300 <= reply.status < 400:
-            raise LibraryError('T4_REDIRECT')
-        if reply.status != 200 or reply.getheader('Content-Encoding', 'identity').lower() != 'identity':
-            raise LibraryError('T4_NETWORK')
-        raw = bytearray()
-        while True:
-            remaining()
-            chunk = reply.read1(min(65536, MAX_CATALOG_BYTES + 1 - len(raw)))
-            if not chunk:
-                return bytes(raw)
-            raw.extend(chunk)
-            if len(raw) > MAX_CATALOG_BYTES:
-                raise LibraryError('T4_LIMIT')
-    except (TimeoutError, socket.timeout):
-        raise LibraryError('T4_TIMEOUT') from None
-    except (HTTPException, OSError, UnicodeError):
-        raise LibraryError('T4_NETWORK') from None
-    finally:
-        conn.close()
+    with AttemptHandle(deadline=deadline, cancelled=cancelled) as attempt:
+        if connection is _DEFAULT_CONNECTION:
+            conn, target = connection(url, remaining, attempt=attempt, ssl_context=ssl_context)
+        else:
+            conn, target = connection(url, remaining)
+        bind_connection(conn, attempt)
+        try:
+            conn.request('GET', target, headers={
+                'Accept': 'application/json', 'Accept-Encoding': 'identity', 'Connection': 'close'})
+            reply = conn.getresponse()
+            if reply.status in (401, 403):
+                raise LibraryError('T4_AUTH')
+            if 300 <= reply.status < 400:
+                raise LibraryError('T4_REDIRECT')
+            if reply.status != 200 or reply.getheader('Content-Encoding', 'identity').lower() != 'identity':
+                raise LibraryError('T4_NETWORK')
+            raw = bytearray()
+            while True:
+                remaining()
+                chunk = reply.read1(min(65536, MAX_CATALOG_BYTES + 1 - len(raw)))
+                if not chunk:
+                    attempt.finish()
+                    return bytes(raw)
+                raw.extend(chunk)
+                if len(raw) > MAX_CATALOG_BYTES:
+                    raise LibraryError('T4_LIMIT')
+        except LibraryError:
+            raise
+        except AttemptCancelled:
+            raise LibraryError('T4_CANCELLED') from None
+        except (TimeoutError, socket.timeout):
+            raise LibraryError('T4_TIMEOUT') from None
+        except (HTTPException, OSError, UnicodeError):
+            if cancelled():
+                raise LibraryError('T4_CANCELLED') from None
+            if time.monotonic() >= deadline:
+                raise LibraryError('T4_TIMEOUT') from None
+            raise LibraryError('T4_NETWORK') from None
+        finally:
+            conn.close()
+
+
+_DEFAULT_CONNECTION = connection
 
 
 def _origin(url):

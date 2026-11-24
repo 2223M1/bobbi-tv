@@ -13,25 +13,32 @@ SAFE_OPERATIONS = frozenset(('directory', 'metadata', 'scan'))
 SCAN_LIMITS = dict(seconds=1800, max_requests=2400, max_pages=1200, max_items=12000)
 
 
-def retry_after(value, wall=time.time):
-    """Malformed/oversized advice never extends a local deadline."""
+def raw_retry_after(value, wall=time.time):
+    """Parse Retry-After into uncapped seconds (bounded to 10 years; 1.0 on invalid)."""
     if type(value) is not str or not 0 < len(value) <= 128:
         return 1.0
     if re.fullmatch(r'[0-9]{1,10}', value):
-        return min(MAX_COOLDOWN, float(value))
+        return min(315360000.0, float(value))
     try:
         parsed = parsedate_to_datetime(value)
         if parsed.tzinfo is None or not re.fullmatch(r'[A-Za-z]{3}, [0-9]{2} [A-Za-z]{3} [0-9]{4} [0-9:]{8} GMT', value):
             return 1.0
-        return min(MAX_COOLDOWN, max(0.0, parsed.timestamp() - wall()))
+        return min(315360000.0, max(0.0, parsed.timestamp() - wall()))
     except (ValueError, OverflowError, TypeError):
         return 1.0
 
 
+def retry_after(value, wall=time.time):
+    """Malformed/oversized advice never extends a local deadline."""
+    return min(MAX_COOLDOWN, raw_retry_after(value, wall=wall))
+
+
 class RateLimited(PanError):
-    def __init__(self, delay=1.0):
+    def __init__(self, delay=1.0, *, raw_delay=None, retry_at=None):
         super().__init__('PAN_RATE_LIMITED')
         self.delay = min(MAX_COOLDOWN, max(0.0, delay))
+        self.raw_delay = max(self.delay, float(raw_delay)) if raw_delay is not None else max(0.0, float(delay))
+        self.retry_at = retry_at
 
 
 class Cooldowns:
@@ -118,8 +125,9 @@ class Operation:
 
     def wait(self, delay):
         self.check()
-        if self.clock() + delay >= self.deadline:
-            raise PanError('PAN_RATE_LIMITED')
+        now = self.clock()
+        if now + delay >= self.deadline:
+            raise RateLimited(delay, raw_delay=delay, retry_at=now + delay)
         # Account checks every tick; explicit cancel wakes immediately.
         end = self.clock() + delay
         while self.clock() < end:

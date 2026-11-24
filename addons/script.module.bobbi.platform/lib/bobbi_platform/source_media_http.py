@@ -2,12 +2,23 @@
 from contextlib import contextmanager
 from http.client import HTTPConnection, HTTPSConnection, HTTPException
 import ipaddress
-import socket
-from urllib.parse import urlsplit
 import re
+import socket
+import time
+from urllib.parse import urlsplit
 
+from bobbi_core.bounded_http import (
+    AttemptCancelled,
+    AttemptHandle,
+    bind_connection,
+    header_phase,
+    open_connection,
+)
 from bobbi_core.library_contract import LibraryError
 from bobbi_core.source_endpoint import endpoint
+
+_STD_HTTP = HTTPConnection
+_STD_HTTPS = HTTPSConnection
 
 
 # Only these fixed categories may cross the device-local control socket.
@@ -44,34 +55,64 @@ MESSAGES = {
 }
 
 
-def connection(url, remaining, *, invalid='SOURCE_HTTP_URL', unavailable='MEDIA_UNAVAILABLE'):
+def connection(
+    url,
+    remaining,
+    *,
+    invalid='SOURCE_HTTP_URL',
+    unavailable='MEDIA_UNAVAILABLE',
+    attempt=None,
+    ssl_context=None,
+    connect_cap=None,
+):
     """Both JSON and media connect to the vetted address, preserving TLS SNI."""
     u = urlsplit(endpoint(url, invalid))
-    def connect_peer(address, timeout, source_address=None):
-        # Connect exactly the vetted DNS answer; the TLS layer still verifies the original host.
-        for family, socktype, proto, _, sockaddr in socket.getaddrinfo(*address, type=socket.SOCK_STREAM):
-            ip = ipaddress.ip_address(sockaddr[0].split('%')[0])
-            ip = getattr(ip, 'ipv4_mapped', None) or ip
-            if ip.is_unspecified or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
-                raise LibraryError(invalid)
-            if u.scheme == 'http' and not ip.is_private:
-                raise LibraryError('T4_URL')
-            s = socket.socket(family, socktype, proto)
-            try:
-                s.settimeout(remaining())
-                s.connect(sockaddr)
-                return s
-            except OSError:
-                s.close()
-            except BaseException:
-                s.close()
-                raise
-        raise LibraryError(unavailable)
+    if attempt is None:
+        def _check():
+            if remaining() <= 0:
+                raise TimeoutError('HTTP deadline exceeded')
+        attempt = AttemptHandle(check=_check, read_window=remaining())
+
+    def validate_address(raw_addr):
+        ip = ipaddress.ip_address(raw_addr.split('%')[0])
+        ip = getattr(ip, 'ipv4_mapped', None) or ip
+        if ip.is_unspecified or ip.is_loopback or ip.is_link_local or ip.is_multicast or ip.is_reserved:
+            raise LibraryError(invalid)
+        if u.scheme == 'http' and not ip.is_private:
+            raise LibraryError('T4_URL')
 
     cls = HTTPSConnection if u.scheme == 'https' else HTTPConnection
-    conn = cls(u.hostname, port=u.port, timeout=remaining())
-    conn._create_connection = connect_peer
-    return conn, (u.path or '/') + ('?' + u.query if u.query else '')
+    std_cls = _STD_HTTPS if u.scheme == 'https' else _STD_HTTP
+    if cls is not std_cls:
+        target = (u.path or '/') + ('?' + u.query if u.query else '')
+        conn = cls(u.hostname, port=u.port, timeout=remaining())
+        bind_connection(conn, attempt)
+        return conn, target
+
+    conn, target = open_connection(
+        url,
+        attempt,
+        validate_address=validate_address,
+        ssl_context=ssl_context,
+        connect_cap=connect_cap,
+    )
+    orig_connect = conn.connect
+
+    def connect_mapped():
+        try:
+            orig_connect()
+        except LibraryError:
+            raise
+        except (AttemptCancelled, TimeoutError, socket.timeout):
+            raise
+        except OSError:
+            raise LibraryError(unavailable) from None
+
+    conn.connect = connect_mapped
+    return conn, target
+
+
+_DEFAULT_CONNECTION = connection
 
 
 class Response:
@@ -90,6 +131,10 @@ class Response:
 
 
 class Session:
+    def __init__(self, *, ssl_context=None):
+        self.cancelled = None
+        self.ssl_context = ssl_context
+
     def __enter__(self):
         return self
 
@@ -97,22 +142,42 @@ class Session:
         pass  # Connections belong to individual bounded responses, never pooled.
 
     @contextmanager
-    def get(self, url, *, headers, stream, allow_redirects, timeout):
+    def get(self, url, *, headers, stream, allow_redirects, timeout, deadline=None, cancelled=None):
         if not stream or allow_redirects:
             raise LibraryError('MEDIA_RANGE_INVALID')
-        conn, target = connection(url, lambda: timeout[0])
-        try:
-            conn.request('GET', target, headers=headers)
-            if conn.sock is not None:
-                conn.sock.settimeout(timeout[1])
-            with conn.getresponse() as reply:
-                yield Response(reply)
-        except TimeoutError:
-            raise LibraryError('MEDIA_TIMEOUT') from None
-        except (HTTPException, OSError, UnicodeError):
-            raise LibraryError('MEDIA_UNAVAILABLE') from None
-        finally:
-            conn.close()
+        connect_cap, read_window = timeout if isinstance(timeout, tuple) else (timeout, timeout)
+        active_cancel = cancelled or self.cancelled
+        with AttemptHandle(
+            deadline=deadline,
+            cancelled=active_cancel,
+            read_window=read_window if deadline is None else None,
+        ) as attempt:
+            if connection is _DEFAULT_CONNECTION:
+                conn, target = connection(
+                    url,
+                    lambda: attempt.remaining(connect_cap),
+                    attempt=attempt,
+                    ssl_context=self.ssl_context,
+                    connect_cap=connect_cap,
+                )
+            else:
+                conn, target = connection(url, lambda: attempt.remaining(connect_cap))
+                bind_connection(conn, attempt)
+            try:
+                conn.request('GET', target, headers=headers)
+                with header_phase(attempt, read_window if deadline is None else None):
+                    reply = conn.getresponse()
+                with reply:
+                    yield Response(reply)
+                    attempt.finish()
+            except LibraryError:
+                raise
+            except (AttemptCancelled, TimeoutError, socket.timeout):
+                raise LibraryError('MEDIA_TIMEOUT') from None
+            except (HTTPException, OSError, UnicodeError):
+                raise LibraryError('MEDIA_UNAVAILABLE') from None
+            finally:
+                conn.close()
 
 
 def evidence(response, *, require_etag=True):
@@ -148,8 +213,12 @@ def probe_evidence(reply, *, require_etag=True):
     return int(match[1]), tag
 
 
-def probe(url, headers, session_factory=Session):
-    with session_factory() as session, session.get(url, headers=dict(headers, Range='bytes=0-0', **{
-            'Accept-Encoding': 'identity', 'Connection': 'close'}), stream=True,
-            allow_redirects=False, timeout=(3, 4)) as reply:
-        return probe_evidence(reply)
+def probe(url, headers, session_factory=Session, *, deadline=None, cancelled=None):
+    probe_deadline = deadline if deadline is not None else (time.monotonic() + 7.0)
+    req_headers = dict(headers, Range='bytes=0-0', **{'Accept-Encoding': 'identity', 'Connection': 'close'})
+    with session_factory() as session:
+        kwargs = dict(headers=req_headers, stream=True, allow_redirects=False, timeout=(3, 4))
+        if isinstance(session, Session):
+            kwargs.update(deadline=probe_deadline, cancelled=cancelled)
+        with session.get(url, **kwargs) as reply:
+            return probe_evidence(reply)
