@@ -218,6 +218,9 @@ class StandardPlayback:
         self.prepared_session = None
         self.events = Queue(maxsize=64)
         self.bound = ''
+        self.bound_epoch = 0
+        self._overflow_lock = Lock()
+        self._overflowed = []
         self.last_handoff = None
         self.subtitle_worker = self.subtitle_job = self.subtitle_pending = None
         self.history = HistoryWriter(host.report, profile_root=getattr(host, 'plugin_root', None))
@@ -356,12 +359,33 @@ class StandardPlayback:
         self.subtitle_worker.start()
 
     def event(self, kind):
-        # Callback captures the association established by actual AV samples,
-        # not whichever pending selection happens to exist when dequeued.
+        # Callback captures the association established by actual AV samples
+        # once on entry. Overflow records THIS captured request/epoch for the
+        # serial resident tick; a callback thread never retires a newer session.
+        request = getattr(self, 'bound', '') or ''
+        epoch = getattr(self, 'bound_epoch', 0)
         try:
-            self.events.put_nowait((self.bound, kind))
+            self.events.put_nowait((request, epoch, kind))
         except Full:
-            self.session.retire('EVENT_OVERFLOW')
+            if request and not getattr(self, 'closed', False):
+                lock = getattr(self, '_overflow_lock', None)
+                if lock is None:
+                    self._overflow_lock = lock = Lock()
+                with lock:
+                    overflowed = getattr(self, '_overflowed', None)
+                    if overflowed is None:
+                        self._overflowed = overflowed = []
+                    entry = (request, epoch)
+                    if entry not in overflowed:
+                        overflowed.append(entry)
+                        while len(overflowed) > 16:
+                            overflowed.pop(0)
+            host = getattr(self, 'host', None)
+            if host is not None and hasattr(host, 'report'):
+                try:
+                    host.report('STANDARD_EVENT_OVERFLOW')
+                except Exception:
+                    pass
 
     def open_next(self, data):
         handoff, request = None, None
@@ -393,15 +417,42 @@ class StandardPlayback:
                 self.session.retire(status.upper())
             self.host.report('STANDARD_NEXT_' + status.upper())
 
+    def _consume_overflows(self):
+        lock = getattr(self, '_overflow_lock', None)
+        if lock is None:
+            return
+        with lock:
+            overflowed = getattr(self, '_overflowed', None)
+            if not overflowed:
+                return
+            pending = list(overflowed)
+            overflowed.clear()
+        for request, epoch in pending:
+            if (request and self.session.current_request(request)
+                    and (not epoch or self.session.current['generation'] == epoch)):
+                self.session.retire('EVENT_OVERFLOW')
+
     def tick(self):
         self._subtitles()
         playing = self.player.isPlaying()
+        seen_stale = set()
         while True:
             try:
-                request, kind = self.events.get_nowait()
+                queued = self.events.get_nowait()
             except Empty:
                 break
+            if len(queued) == 3:
+                request, epoch, kind = queued
+            else:
+                request, kind = queued
+                epoch = 0
+            if not request or not self.session.current_request(request):
+                seen_stale.add(request)
+                continue
+            if epoch and self.session.current['generation'] != epoch:
+                continue
             self.session.terminal(request, kind, playing)
+        self._consume_overflows()
         if playing:
             try:
                 from bobbi_platform.standard_subtitle_ui import request_id
@@ -412,10 +463,12 @@ class StandardPlayback:
                 request = request_id(self.player) if video else ''
                 if self.session.observe_other(request, url):
                     self.bound = ''
+                    self.bound_epoch = 0
                 elif video:
                     position, duration = self.player.getTime(), self.player.getTotalTime()
                     if self.session.observe(request, url, position, duration):
                         self.bound = request
+                        self.bound_epoch = self.session.current['generation']
             except RuntimeError:
                 pass  # Opening/seeking is not evidence of end or error.
         self.session.tick(playing=self.player.isPlaying())
