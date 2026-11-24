@@ -142,18 +142,23 @@ def prepare(bundle, entry, component_assets, feeds, output, *, track, github_rel
     if Path(bundle).name != Path(release_url(tag)).name:
         raise ValueError('Canonical complete package filename required')
     assets = {Path(bundle).name: identity(bundle), Path(entry).name: identity(entry)}
-    # Compare against the actual signed source, not a hand-edited asset listing.
-    from build_component_assets import build
-    with tempfile.TemporaryDirectory(prefix='bobbi-release-assets-') as temporary:
-        rebuilt = Path(temporary) / 'expected'
-        build(bundle, rebuilt, tag)
-        if {p.name for p in Path(component_assets).iterdir()} != {p.name for p in rebuilt.iterdir()}:
-            raise ValueError('Component asset vector differs')
-        for path in rebuilt.iterdir():
-            actual = identity(Path(component_assets) / path.name)
-            if actual['sha256'] != identity(path)['sha256']:
-                raise ValueError('Component asset changed')
-            assets[path.name] = actual
+    if component_assets is not None:
+        # Compare against the actual signed source, not a hand-edited asset listing.
+        from build_component_assets import build
+        with tempfile.TemporaryDirectory(prefix='bobbi-release-assets-') as temporary:
+            rebuilt = Path(temporary) / 'expected'
+            build(bundle, rebuilt, tag)
+            if {p.name for p in Path(component_assets).iterdir()} != {p.name for p in rebuilt.iterdir()}:
+                raise ValueError('Component asset vector differs')
+            for path in rebuilt.iterdir():
+                actual = identity(Path(component_assets) / path.name)
+                if actual['sha256'] != identity(path)['sha256']:
+                    raise ValueError('Component asset changed')
+                assets[path.name] = actual
+    if 'assets' in metadata:
+        remote_names = {a.get('name') for a in metadata['assets'] if isinstance(a, dict)}
+        if remote_names != set(assets):
+            raise ValueError('GitHub release asset set differs from expected publication assets')
     receipt = dict(schema=3, mirror_policy=mirror_policy, commit=commit, tree=tree, tag=tag, track=track, sequence=manifest['sequence'],
                    assets=assets, feeds=feed_rows, offers=offers, github_release=identity(github_release),
                    source_checks=source_evidence,
@@ -244,7 +249,8 @@ def readback(receipt, channel, report, transfer=_transfer, *, staged=False, read
         metadata = _json(b''.join(chunks))
         if (metadata.get('tag_name') != receipt['tag'] or metadata.get('draft') is not False
                 or metadata.get('prerelease') is not (receipt['track'] == 'preview')
-                or metadata.get('target_commitish') != receipt['commit']):
+                or metadata.get('target_commitish') != receipt['commit']
+                or ('assets' in metadata and {a.get('name') for a in metadata['assets'] if isinstance(a, dict)} != set(receipt['assets']))):
             raise ValueError('Remote GitHub release identity differs')
         result['github_release_identity'] = 'matched'
         targets = []
@@ -355,8 +361,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest='operation', required=True)
     stage = sub.add_parser('prepare')
-    for name in ('bundle', 'entry', 'component-assets', 'github-feed', 'output'):
+    for name in ('bundle', 'entry', 'github-feed', 'output'):
         stage.add_argument('--' + name, required=True, type=Path)
+    stage.add_argument('--component-assets', type=Path, help='Optional pre-built component asset directory')
     stage.add_argument('--gitcode-feed', type=Path, help='Required for the default dual-mirror policy')
     stage.add_argument('--mirror-policy', choices=tuple(MIRRORS), default='dual')
     stage.add_argument('--track', choices=('stable', 'preview'), required=True)

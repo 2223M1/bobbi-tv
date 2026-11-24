@@ -251,3 +251,19 @@ def test_scoped_promotion_failures_leave_previous_pointer(publication, fault):
     before = {p: p.read_bytes() for p in target.rglob('*') if p.is_file()}
     with pytest.raises(ValueError): gate.promote(r, 'github', target, report, transfer)
     assert before == {p: p.read_bytes() for p in target.rglob('*') if p.is_file()}
+
+
+def test_remote_release_rejects_unexpected_extra_component_assets(publication):
+    r, target, report, remote, _, _ = scoped(publication, 'github-only')
+    r['assets'].pop('component.zip')
+    def transfer_with_extra(url, limit, consume, *args, **kwargs):
+        if url.startswith('https://api.github.com/'):
+            raw = json.dumps(dict(
+                tag_name=r['tag'], draft=False, prerelease=True, target_commitish=r['commit'],
+                assets=[{'name': 'complete.zip'}, {'name': 'entry.zip'}, {'name': 'bobbi-component-extra.zip'}]
+            )).encode()
+        else:
+            raw = remote[url]
+        consume(raw)
+    with pytest.raises(ValueError, match='release identity'):
+        gate.promote(r, 'github', target, report, transfer_with_extra)
