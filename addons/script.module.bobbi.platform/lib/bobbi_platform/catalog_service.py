@@ -240,7 +240,14 @@ class CatalogService:
     def _admit(self, port, expected, source_id, parent):
         # Called under the sole worker lock; each port supplies its own CAS.
         self._live_profile()
-        task = port.publish(expected, lambda: self.index.start(source_id, expected))
+        task = port.publish(
+            expected,
+            lambda: (
+                self.index.start(source_id, expected)
+                if port.mounted
+                else self.index.start_resumable(source_id, expected, parent, resumable=True)
+            ),
+        )
         self.task, self.cancel_event, self.max_queue = task, Event(), 1
         try:
             self.worker = Thread(target=self._scan, args=(task, port, parent, expected), name='bobbi-library-scan', daemon=True)
@@ -282,19 +289,178 @@ class CatalogService:
                         result = port.publish(expected, write)
                     self._profile()
                     return result
-                pending = deque([(root_parent, 0)])
                 excluded_versions = False
-                visited = {root_parent}
-                while pending:
-                    safe(local=True)
-                    parent, depth = pending.popleft()
-                    page, cursor, seen_cursors, seen_pages, seen_entries = 1, None, set(), set(), set()
+                if port.mounted:
+                    pending = deque([(root_parent, 0)])
+                    visited = {root_parent}
+                    while pending:
+                        safe(local=True)
+                        parent, depth = pending.popleft()
+                        page, cursor, seen_cursors, seen_pages, seen_entries = 1, None, set(), set(), set()
+                        while True:
+                            if self.stop.is_set() or self.cancel_event.is_set():
+                                operation.cancelled.set()
+                            safe(local=True)
+                            if self.cancel_event.wait(.05 if self.playing() else .001):
+                                operation.cancelled.set()
+                            safe(local=True)
+                            result = port.page(operation, expected, parent, page, cursor)
+                            excluded_versions |= result.get('excluded_versions') is True
+                            safe()
+                            rows = result['items']
+                            if type(rows) is not list or len(rows) > SCAN_WINDOW:
+                                raise ValueError('SCAN_INVALID_PAGE')
+                            signature = result['signature']
+                            if signature is not None:
+                                if signature and signature in seen_pages:
+                                    raise ValueError('SCAN_PAGE_CYCLE')
+                                if seen_entries.intersection(signature):
+                                    raise ValueError('SCAN_PAGE_CYCLE')
+                                if signature:
+                                    seen_pages.add(signature)
+                                    seen_entries.update(signature)
+                            refs, descriptions = [], {}
+                            for row in rows:
+                                if row['directory'] is not None:
+                                    folder = row['directory']
+                                    if folder in visited:
+                                        continue
+                                    if depth >= MAX_DEPTH or len(visited) >= MAX_DIRECTORIES:
+                                        raise ValueError('SCAN_DIRECTORY_LIMIT')
+                                    visited.add(folder)
+                                    pending.append((folder, depth + 1))
+                                    self.max_queue = max(self.max_queue, len(pending))
+                                elif row['reference'] is not None:
+                                    refs.append(row['reference'])
+                                    if 'description' in row:
+                                        descriptions[row['reference']['id']] = row['description']
+                            checkpoint = dict(parent=parent, page=page, cursor=cursor,
+                                queued=len(pending), depth=depth)
+                            safe(local=True)
+                            commit(lambda: self.index.mounted_batch(task, refs, checkpoint, len(rows)))
+                            if result.get('has_more') is not True:
+                                break
+                            if not rows:
+                                raise ValueError('SCAN_INCOMPLETE_PAGE')
+                            next_cursor = result.get('next_cursor')
+                            if next_cursor is not None:
+                                if not next_cursor or next_cursor in seen_cursors:
+                                    raise ValueError('SCAN_CURSOR_CYCLE')
+                                seen_cursors.add(next_cursor)
+                                cursor = next_cursor
+                            page += 1
+                else:
                     while True:
+                        safe(local=True)
+                        peek = self.index.frontier_peek(task)
+                        if peek is None or peek['empty']:
+                            break
+                        node = peek['node']
+                        is_leaf = bool(node['leaf'])
+                        if is_leaf:
+                            leaf_nodes = peek.get('leaf_nodes') or [node]
+                            refs, descriptions, pop_seqs, continuations, finished_keys = [], {}, [], [], []
+                            scanned_total = 0
+                            last_parent, last_page, last_depth = node['node_key'], node['next_page'], node['depth']
+                            deferred_err = None
+
+                            def flush_leaves():
+                                if not pop_seqs:
+                                    return
+                                est_q = max(0, peek['queued'] - len(pop_seqs) + len(continuations))
+                                cp = dict(parent=last_parent[:256], page=last_page, cursor=None, queued=est_q, depth=last_depth)
+                                fstep = dict(
+                                    pop_seqs=list(pop_seqs),
+                                    pages_delta=len(pop_seqs),
+                                    dir_key=last_parent,
+                                    is_leaf=True,
+                                    declared_total=None,
+                                    entry_sigs=[],
+                                    new_leaves=[],
+                                    new_dirs=[],
+                                    dir_count=peek['state']['dir_count'],
+                                    partial_latch=False,
+                                    continuations=list(continuations),
+                                    finished_leaf_keys=list(finished_keys),
+                                )
+                                commit(
+                                    lambda: self.index.frontier_batch(
+                                        task,
+                                        list(refs),
+                                        cp,
+                                        scanned_total,
+                                        descriptions=dict(descriptions) if descriptions else None,
+                                        frontier_step=fstep,
+                                    )
+                                )
+                                refs.clear()
+                                descriptions.clear()
+                                pop_seqs.clear()
+                                continuations.clear()
+                                finished_keys.clear()
+
+                            for lnode in leaf_nodes:
+                                try:
+                                    if self.stop.is_set() or self.cancel_event.is_set():
+                                        operation.cancelled.set()
+                                    safe(local=True)
+                                    if self.playing() and self.cancel_event.wait(.05):
+                                        operation.cancelled.set()
+                                    safe(local=True)
+                                    lparent = lnode['node_key']
+                                    lpage = lnode['next_page']
+                                    lcursor = lnode['cursor']
+                                    lres = port.page(operation, expected, lparent, lpage, lcursor)
+                                    excluded_versions |= lres.get('excluded_versions') is True
+                                    safe()
+                                    lrows = lres['items']
+                                    if type(lrows) is not list or len(lrows) > SCAN_WINDOW:
+                                        raise ValueError('SCAN_INVALID_PAGE')
+                                    lrefs = [r['reference'] for r in lrows if r.get('reference') is not None]
+                                    if pop_seqs and (len(refs) + len(lrefs) > 20 or scanned_total + len(lrows) > 20):
+                                        safe(local=True)
+                                        flush_leaves()
+                                        scanned_total = 0
+                                    for r in lrows:
+                                        if r.get('reference') is not None:
+                                            refs.append(r['reference'])
+                                            if 'description' in r:
+                                                descriptions[r['reference']['id']] = r['description']
+                                    pop_seqs.append(lnode['seq'])
+                                    scanned_total += len(lrows)
+                                    last_parent, last_page, last_depth = lparent, lpage, lnode['depth']
+                                    if lres.get('has_more') is True:
+                                        if not lrows:
+                                            raise ValueError('SCAN_INCOMPLETE_PAGE')
+                                        continuations.append(dict(
+                                            priority=0,
+                                            node_key=lparent,
+                                            depth=lnode['depth'],
+                                            leaf=1,
+                                            next_page=lpage + 1,
+                                            cursor=lres.get('next_cursor'),
+                                        ))
+                                    else:
+                                        finished_keys.append(lparent)
+                                except Exception as exc:
+                                    deferred_err = exc
+                                    break
+                            if pop_seqs:
+                                try:
+                                    flush_leaves()
+                                except Exception:
+                                    if deferred_err is None:
+                                        raise
+                            if deferred_err is not None:
+                                raise deferred_err
+                            continue
+                        parent = node['node_key']
+                        depth = node['depth']
+                        page = node['next_page']
+                        cursor = node['cursor']
                         if self.stop.is_set() or self.cancel_event.is_set():
                             operation.cancelled.set()
                         safe(local=True)
-                        # Yield between requests, more aggressively during
-                        # playback; never monopolize a provider's client lock.
                         if self.cancel_event.wait(.05 if self.playing() else .001):
                             operation.cancelled.set()
                         safe(local=True)
@@ -304,47 +470,99 @@ class CatalogService:
                         rows = result['items']
                         if type(rows) is not list or len(rows) > SCAN_WINDOW:
                             raise ValueError('SCAN_INVALID_PAGE')
+                        declared_total = result.get('declared_total')
+                        if (
+                            not is_leaf
+                            and declared_total is not None
+                            and peek['expected_total'] is not None
+                            and declared_total != peek['expected_total']
+                        ):
+                            raise ValueError('SCAN_TOTAL_CHANGED')
                         signature = result['signature']
+                        entry_sigs = []
                         if signature is not None:
-                            if signature and signature in seen_pages:
+                            entry_sigs = [encode(item) for item in signature]
+                            if peek['seen_entries'].intersection(entry_sigs):
                                 raise ValueError('SCAN_PAGE_CYCLE')
-                            if seen_entries.intersection(signature):
-                                raise ValueError('SCAN_PAGE_CYCLE')
-                            if signature:
-                                seen_pages.add(signature)
-                                seen_entries.update(signature)
                         refs, descriptions = [], {}
+                        new_leaves, new_dirs = [], []
+                        dir_count = peek['state']['dir_count']
+                        hit_dir_limit = False
+                        seen_new_dirs = set()
                         for row in rows:
                             if row['directory'] is not None:
                                 folder = row['directory']
-                                if folder in visited:
-                                    continue
-                                if depth >= MAX_DEPTH or len(visited) >= MAX_DIRECTORIES:
-                                    raise ValueError('SCAN_DIRECTORY_LIMIT')
-                                visited.add(folder)
-                                pending.append((folder, depth + 1))
-                                self.max_queue = max(self.max_queue, len(pending))
+                                if row.get('leaf_container') is True:
+                                    # Media item leaves (e.g. Emby item:*) are NOT real directories.
+                                    new_leaves.append((folder, depth + 1))
+                                else:
+                                    if folder in seen_new_dirs or self.index.frontier_known_dir(task, folder):
+                                        continue
+                                    if depth >= MAX_DEPTH or dir_count >= MAX_DIRECTORIES:
+                                        hit_dir_limit = True
+                                        continue
+                                    seen_new_dirs.add(folder)
+                                    dir_count += 1
+                                    new_dirs.append((folder, depth + 1))
                             elif row['reference'] is not None:
                                 refs.append(row['reference'])
                                 if 'description' in row:
                                     descriptions[row['reference']['id']] = row['description']
-                        checkpoint = dict(parent=parent, page=page, cursor=cursor,
-                            queued=len(pending), depth=depth)
+                        has_more = result.get('has_more') is True
+                        next_cursor = None
+                        if has_more:
+                            if not rows:
+                                raise ValueError('SCAN_INCOMPLETE_PAGE')
+                            raw_cursor = result.get('next_cursor')
+                            if raw_cursor is not None:
+                                if not raw_cursor or raw_cursor in peek['seen_cursors']:
+                                    raise ValueError('SCAN_CURSOR_CYCLE')
+                                next_cursor = raw_cursor
+                        est_queued = max(0, peek['queued'] - 1 + len(new_leaves) + len(new_dirs) + (1 if has_more else 0))
+                        self.max_queue = max(self.max_queue, est_queued)
+                        checkpoint = dict(
+                            parent=parent[:256],
+                            page=page,
+                            cursor=(cursor[:256] if isinstance(cursor, str) else None),
+                            queued=est_queued,
+                            depth=depth,
+                        )
+                        frontier_step = dict(
+                            pop_seq=node['seq'],
+                            dir_key=parent,
+                            is_leaf=is_leaf,
+                            declared_total=declared_total,
+                            entry_sigs=entry_sigs,
+                            new_leaves=new_leaves,
+                            new_dirs=new_dirs,
+                            dir_count=dir_count,
+                            partial_latch=hit_dir_limit,
+                            continuation=(
+                                dict(
+                                    priority=(0 if is_leaf else 1),
+                                    node_key=parent,
+                                    depth=depth,
+                                    leaf=int(is_leaf),
+                                    next_page=page + 1,
+                                    cursor=next_cursor,
+                                )
+                                if has_more
+                                else None
+                            ),
+                        )
                         safe(local=True)
-                        write_batch = self.index.mounted_batch if port.mounted else self.index.batch
-                        commit(lambda: write_batch(task, refs, checkpoint, len(rows), descriptions=descriptions)
-                               if descriptions else write_batch(task, refs, checkpoint, len(rows)))
-                        if result.get('has_more') is not True:
-                            break
-                        if not rows:
-                            raise ValueError('SCAN_INCOMPLETE_PAGE')
-                        next_cursor = result.get('next_cursor')
-                        if next_cursor is not None:
-                            if not next_cursor or next_cursor in seen_cursors:
-                                raise ValueError('SCAN_CURSOR_CYCLE')
-                            seen_cursors.add(next_cursor)
-                            cursor = next_cursor
-                        page += 1
+                        commit(
+                            lambda: self.index.frontier_batch(
+                                task,
+                                refs,
+                                checkpoint,
+                                len(rows),
+                                descriptions=descriptions or None,
+                                frontier_step=frontier_step,
+                            )
+                        )
+                        if hit_dir_limit:
+                            raise ValueError('SCAN_DIRECTORY_LIMIT')
                 safe()
                 # Account CAS also encloses the absence inference boundary.
                 if excluded_versions:
@@ -365,11 +583,11 @@ class CatalogService:
                 state, reason = 'interrupted', 'ACCOUNT_REVOKED'
             else:
                 code = str(error)
-                if code in {'PAN_INCOMPLETE_PAGE', 'PAN_PAGE_EXPIRED', 'SCAN_TOTAL_CHANGED'}:
+                if code in {'PAN_INCOMPLETE_PAGE', 'PAN_PAGE_EXPIRED', 'SCAN_TOTAL_CHANGED', 'SCAN_DIRECTORY_LIMIT'}:
                     state, reason = 'interrupted', code
                 else:
                     reason = code if code in {'SCAN_INVALID_PAGE', 'SCAN_PAGE_CYCLE', 'SCAN_DIRECTORY_LIMIT',
-                        'SCAN_CURSOR_CYCLE', 'SCAN_INCOMPLETE_PAGE', 'PAN_BUDGET_EXHAUSTED',
+                        'SCAN_CURSOR_CYCLE', 'SCAN_INCOMPLETE_PAGE', 'SCAN_FRONTIER_LIMIT', 'PAN_BUDGET_EXHAUSTED',
                         'PAN_OPERATION_TIMEOUT', 'PAN_RATE_LIMITED', 'CATALOG_SOURCE_UNAVAILABLE',
                         'CATALOG_AUTHORITY_CHANGED', 'CATALOG_RECHECK_INCOMPLETE', 'CATALOG_SOURCE_UNSUPPORTED',
                         'CATALOG_NETWORK_INCOMPLETE', 'CATALOG_NETWORK_METADATA_REQUIRED'} else 'SCAN_UNAVAILABLE'

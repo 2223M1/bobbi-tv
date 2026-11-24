@@ -177,6 +177,8 @@ class Client:
         self._identity(user_scoped_read=True)
         offset = (page - 1) * size
         excluded = {}
+        operation = getattr(self.session, 'operation', None)
+        is_scan = operation is not None and operation.kind == 'scan'
         if parent.startswith('item:'):
             entry = _id(parent[5:])
             item = self._item(entry)
@@ -185,12 +187,19 @@ class Client:
             items = rows[offset:offset + size]
         else:
             rows, total = self.page_rows(parent, page, size)
-            items = [dict(file_id=('folder:' if row.get('IsFolder') is True else 'item:') + _id(row.get('Id')),
-                name=text(row.get('Name')), directory=True, size=0) for row in rows]
+            items = [
+                dict(
+                    file_id=('folder:' if row.get('IsFolder') is True else 'item:') + _id(row.get('Id')),
+                    name=text(row.get('Name')),
+                    directory=True,
+                    size=0,
+                    **({'leaf_container': True} if is_scan and row.get('IsFolder') is not True else {}),
+                )
+                for row in rows
+            ]
         if offset > total or len({row['file_id'] for row in items}) != len(items):
             raise PanError('PAN_REPLY_INVALID')
-        operation = getattr(self.session, 'operation', None)
-        if operation is not None and operation.kind == 'scan':
+        if is_scan:
             progress = getattr(operation, '_server_pages', {})
             previous, ids = progress.get(parent), {row['file_id'] for row in items}
             if previous and (previous[0] != total or previous[1] != offset or ids & previous[2]):
@@ -198,6 +207,8 @@ class Client:
             progress[parent] = (total, offset + len(items), ids | (previous[2] if previous else set()))
             operation._server_pages = progress
         result = dict(items=items, has_more=offset + len(items) < total)
+        if is_scan:
+            result['declared_total'] = total
         if excluded:
             result['excluded_versions'] = excluded
         if parent.startswith('item:') and operation is not None and operation.kind == 'scan':

@@ -105,10 +105,94 @@ class MediaIndex:
                 if rebuild:
                     self._rebuild_projection()
                 self.db.execute('PRAGMA user_version=4')
+            self._attach_frontier()
             self.query_reader = catalog_query.CatalogQuery(self)
         except BaseException:
             self.db.close()
             raise
+
+    def _attach_frontier(self):
+        """Open bounded sidecar frontier DB (WAL) without altering main user_version=4 shape."""
+        self.frontier_path = Path(str(self.path) + '.frontier.sqlite3')
+        if self.frontier_path.is_symlink():
+            raise ValueError('CATALOG_STORAGE_UNSAFE')
+        if self.frontier_path.exists():
+            healthy = False
+            try:
+                probe = sqlite3.connect(str(self.frontier_path), timeout=.15)
+                try:
+                    fver = probe.execute('PRAGMA user_version').fetchone()[0]
+                    qchk = probe.execute('PRAGMA quick_check').fetchone()[0]
+                    healthy = fver in (0, 1, 2) and qchk == 'ok'
+                finally:
+                    probe.close()
+            except sqlite3.Error:
+                healthy = False
+            if not healthy:
+                for suffix in ('', '-journal', '-wal', '-shm'):
+                    candidate = Path(str(self.frontier_path) + suffix)
+                    if candidate.is_symlink():
+                        raise ValueError('CATALOG_STORAGE_UNSAFE')
+                    if candidate.exists():
+                        candidate.unlink()
+        if not self.frontier_path.exists():
+            fd = os.open(str(self.frontier_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            os.close(fd)
+        self.frontier_db = sqlite3.connect(str(self.frontier_path), timeout=.15, check_same_thread=False)
+        self.frontier_db.row_factory = sqlite3.Row
+        self.frontier_db.execute('PRAGMA journal_mode=WAL')
+        self.frontier_db.execute('PRAGMA synchronous=NORMAL')
+        with self.frontier_db:
+            fver = self.frontier_db.execute('PRAGMA user_version').fetchone()[0]
+            if fver != 2:
+                for tbl in ('scan_state', 'scan_dirs', 'scan_nodes', 'scan_page_entries', 'scan_page_cursors'):
+                    self.frontier_db.execute(f'DROP TABLE IF EXISTS {tbl}')
+            for sql in (
+                'CREATE TABLE IF NOT EXISTS scan_state('
+                'source TEXT PRIMARY KEY,provider TEXT NOT NULL,account TEXT NOT NULL,'
+                'scope_digest TEXT NOT NULL,root_parent TEXT NOT NULL,scan_generation TEXT NOT NULL,'
+                'last_task TEXT NOT NULL,last_batch TEXT NOT NULL,resumed INTEGER NOT NULL,'
+                'partial_latch INTEGER NOT NULL,dir_count INTEGER NOT NULL,updated REAL NOT NULL)',
+                'CREATE TABLE IF NOT EXISTS scan_dirs('
+                'source TEXT NOT NULL,scan_generation TEXT NOT NULL,dir_key TEXT NOT NULL,'
+                'depth INTEGER NOT NULL,expected_total INTEGER,PRIMARY KEY(source,scan_generation,dir_key))',
+                'CREATE TABLE IF NOT EXISTS scan_nodes('
+                'source TEXT NOT NULL,scan_generation TEXT NOT NULL,priority INTEGER NOT NULL,'
+                'seq INTEGER PRIMARY KEY AUTOINCREMENT,node_key TEXT NOT NULL,depth INTEGER NOT NULL,'
+                'leaf INTEGER NOT NULL,next_page INTEGER NOT NULL,cursor TEXT)',
+                'CREATE INDEX IF NOT EXISTS scan_nodes_order ON scan_nodes(source,scan_generation,priority,seq)',
+                'CREATE TABLE IF NOT EXISTS scan_page_entries('
+                'source TEXT NOT NULL,scan_generation TEXT NOT NULL,dir_key TEXT NOT NULL,'
+                'entry_sig TEXT NOT NULL,PRIMARY KEY(source,scan_generation,dir_key,entry_sig))',
+                'CREATE TABLE IF NOT EXISTS scan_page_cursors('
+                'source TEXT NOT NULL,scan_generation TEXT NOT NULL,dir_key TEXT NOT NULL,'
+                'cursor TEXT NOT NULL,PRIMARY KEY(source,scan_generation,dir_key,cursor))',
+            ):
+                self.frontier_db.execute(sql)
+            self.frontier_db.execute('PRAGMA user_version=2')
+            # Invalidate any frontier superseded while running under a downgraded reader/writer
+            # or interrupted between main commit and frontier commit (half-write recovery).
+            for frow in self.frontier_db.execute('SELECT source,provider,account,last_task,last_batch FROM scan_state').fetchall():
+                latest = self.db.execute(
+                    'SELECT id,state FROM scans WHERE provider=? AND account=? AND source=? ORDER BY updated DESC,id DESC LIMIT 1',
+                    (frow['provider'], frow['account'], frow['source']),
+                ).fetchone()
+                latest_batch = self.db.execute(
+                    'SELECT digest FROM scan_batches WHERE task=? ORDER BY rowid DESC LIMIT 1',
+                    (frow['last_task'],),
+                ).fetchone()
+                expected_batch = latest_batch[0] if latest_batch is not None else ''
+                if (
+                    latest is None
+                    or latest['id'] != frow['last_task']
+                    or latest['state'] == 'completed'
+                    or frow['last_batch'] != expected_batch
+                ):
+                    self._clear_frontier(frow['source'])
+
+    def _clear_frontier(self, source):
+        for tbl in ('scan_state', 'scan_dirs', 'scan_nodes', 'scan_page_entries', 'scan_page_cursors'):
+            self.frontier_db.execute(f'DELETE FROM {tbl} WHERE source=?', (source,))
 
     def _backup_for_migration(self, version):
         """Publish a complete, exclusive recovery point for this exact upgrade.
@@ -165,6 +249,8 @@ class MediaIndex:
 
     def close(self):
         with self.lock:
+            if getattr(self, 'frontier_db', None) is not None:
+                self.frontier_db.close()
             self.db.close()
 
     def _rebuild_projection(self):
@@ -406,8 +492,15 @@ class MediaIndex:
             if sources:
                 self.db.execute('UPDATE memberships SET available=0 WHERE source NOT IN (' +
                     ','.join('?' for _ in sources) + ')', sources)
+                with self.frontier_db:
+                    for tbl in ('scan_state', 'scan_dirs', 'scan_nodes', 'scan_page_entries', 'scan_page_cursors'):
+                        self.frontier_db.execute(f'DELETE FROM {tbl} WHERE source NOT IN (' +
+                            ','.join('?' for _ in sources) + ')', sources)
             else:
                 self.db.execute('UPDATE memberships SET available=0')
+                with self.frontier_db:
+                    for tbl in ('scan_state', 'scan_dirs', 'scan_nodes', 'scan_page_entries', 'scan_page_cursors'):
+                        self.frontier_db.execute(f'DELETE FROM {tbl}')
             if previous != set(sources):
                 changed_sources = previous.symmetric_difference(sources)
                 for row in self.db.execute('SELECT DISTINCT p.provider,p.account,p.namespace FROM catalog_rows p '
@@ -434,11 +527,164 @@ class MediaIndex:
             self.db.execute('DELETE FROM temp.scan_point_observations')
             self.db.execute('DELETE FROM scans WHERE id IN (SELECT id FROM scans ORDER BY updated DESC,id DESC LIMIT -1 OFFSET ?)', (MAX_JOBS - 1,))
             self.db.execute('DELETE FROM scan_batches WHERE task NOT IN (SELECT id FROM scans)')
+            with self.frontier_db:
+                self._clear_frontier(source)
             task = uuid4().hex
             self.db.execute('INSERT INTO scans VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 (task, source, encode(expected), *catalog_query.scope_key(expected)[:2],
                  'queued', 0, 0, 0, 0, '{}', '', self.now()))
         return task
+
+    def start_resumable(self, source, expected, root_parent, *, resumable=True):
+        identifier(source)
+        if type(root_parent) is not str or len(root_parent) > 4096:
+            raise ValueError('CATALOG_SOURCE_INVALID')
+        provider, account = catalog_query.scope_key(expected)[:2]
+        scope_digest = hashlib.sha256(encode([expected, root_parent]).encode()).hexdigest()
+        with self.transaction():
+            active = self.db.execute("SELECT id FROM scans WHERE state IN ('queued','running')").fetchall()
+            if active:
+                raise ValueError('CATALOG_SCAN_BUSY')
+            prior = self.db.execute(
+                'SELECT id,state FROM scans WHERE provider=? AND account=? AND source=? ORDER BY updated DESC,id DESC LIMIT 1',
+                (provider, account, source),
+            ).fetchone()
+            fstate = self.frontier_db.execute('SELECT * FROM scan_state WHERE source=?', (source,)).fetchone()
+            prior_batch = (
+                self.db.execute(
+                    'SELECT digest FROM scan_batches WHERE task=? ORDER BY rowid DESC LIMIT 1',
+                    (prior['id'],),
+                ).fetchone()
+                if prior is not None
+                else None
+            )
+            expected_batch = prior_batch[0] if prior_batch is not None else ''
+            self.db.execute('DELETE FROM temp.scan_point_observations')
+            self.db.execute('DELETE FROM scans WHERE id IN (SELECT id FROM scans ORDER BY updated DESC,id DESC LIMIT -1 OFFSET ?)', (MAX_JOBS - 1,))
+            self.db.execute('DELETE FROM scan_batches WHERE task NOT IN (SELECT id FROM scans)')
+            task = uuid4().hex
+            now = self.now()
+            self.db.execute('INSERT INTO scans VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                (task, source, encode(expected), provider, account,
+                 'queued', 0, 0, 0, 0, '{}', '', now))
+            can_resume = False
+            if (
+                resumable
+                and bool(expected_batch)
+                and fstate is not None
+                and prior is not None
+                and prior['id'] == fstate['last_task']
+                and prior['state'] in ('interrupted', 'canceled', 'failed')
+                and fstate['last_batch'] == expected_batch
+                and (fstate['provider'], fstate['account'], fstate['scope_digest'], fstate['root_parent'])
+                == (provider, account, scope_digest, root_parent)
+            ):
+                pending_cnt = self.frontier_db.execute(
+                    'SELECT count(*) FROM scan_nodes WHERE source=? AND scan_generation=?',
+                    (source, fstate['scan_generation']),
+                ).fetchone()[0]
+                can_resume = pending_cnt > 0
+            with self.frontier_db:
+                if can_resume:
+                    self.frontier_db.execute(
+                        'UPDATE scan_state SET last_task=?,last_batch=?,resumed=1,updated=? WHERE source=?',
+                        (task, '', now, source),
+                    )
+                else:
+                    self._clear_frontier(source)
+                    self.frontier_db.execute(
+                        'INSERT INTO scan_state VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                        (source, provider, account, scope_digest, root_parent, task, task, '', 0, 0, 1, now),
+                    )
+                    self.frontier_db.execute(
+                        'INSERT INTO scan_dirs VALUES(?,?,?,?,NULL)',
+                        (source, task, root_parent, 0),
+                    )
+                    self.frontier_db.execute(
+                        'INSERT INTO scan_nodes(source,scan_generation,priority,node_key,depth,leaf,next_page,cursor) VALUES(?,?,?,?,?,?,?,?)',
+                        (source, task, 1, root_parent, 0, 0, 1, None),
+                    )
+        return task
+
+    def frontier_peek(self, task):
+        with self.lock:
+            run = self._scan(task)
+            fstate = self.frontier_db.execute(
+                'SELECT * FROM scan_state WHERE source=? AND last_task=?',
+                (run['source'], task),
+            ).fetchone()
+            if fstate is None:
+                return None
+            gen = fstate['scan_generation']
+            node = self.frontier_db.execute(
+                'SELECT * FROM scan_nodes WHERE source=? AND scan_generation=? ORDER BY priority ASC,seq ASC LIMIT 1',
+                (run['source'], gen),
+            ).fetchone()
+            if node is None:
+                return dict(empty=True, state=dict(fstate), queued=0)
+            queued = self.frontier_db.execute(
+                'SELECT count(*) FROM scan_nodes WHERE source=? AND scan_generation=?',
+                (run['source'], gen),
+            ).fetchone()[0]
+            if node['leaf']:
+                leaf_rows = [
+                    dict(r)
+                    for r in self.frontier_db.execute(
+                        'SELECT * FROM scan_nodes WHERE source=? AND scan_generation=? AND leaf=1 ORDER BY priority ASC,seq ASC LIMIT 20',
+                        (run['source'], gen),
+                    ).fetchall()
+                ]
+                return dict(
+                    empty=False,
+                    state=dict(fstate),
+                    node=dict(node),
+                    leaf_nodes=leaf_rows,
+                    queued=queued,
+                    expected_total=None,
+                    seen_entries=set(),
+                    seen_cursors=set(),
+                )
+            dir_row = self.frontier_db.execute(
+                'SELECT expected_total FROM scan_dirs WHERE source=? AND scan_generation=? AND dir_key=?',
+                (run['source'], gen, node['node_key']),
+            ).fetchone()
+            seen_entries = {
+                r[0]
+                for r in self.frontier_db.execute(
+                    'SELECT entry_sig FROM scan_page_entries WHERE source=? AND scan_generation=? AND dir_key=?',
+                    (run['source'], gen, node['node_key']),
+                ).fetchall()
+            }
+            seen_cursors = {
+                r[0]
+                for r in self.frontier_db.execute(
+                    'SELECT cursor FROM scan_page_cursors WHERE source=? AND scan_generation=? AND dir_key=?',
+                    (run['source'], gen, node['node_key']),
+                ).fetchall()
+            }
+            return dict(
+                empty=False,
+                state=dict(fstate),
+                node=dict(node),
+                queued=queued,
+                expected_total=(dir_row['expected_total'] if dir_row else None),
+                seen_entries=seen_entries,
+                seen_cursors=seen_cursors,
+            )
+
+    def frontier_known_dir(self, task, dir_key):
+        with self.lock:
+            run = self._scan(task)
+            fstate = self.frontier_db.execute(
+                'SELECT scan_generation FROM scan_state WHERE source=? AND last_task=?',
+                (run['source'], task),
+            ).fetchone()
+            if fstate is None:
+                return False
+            return self.frontier_db.execute(
+                'SELECT 1 FROM scan_dirs WHERE source=? AND scan_generation=? AND dir_key=?',
+                (run['source'], fstate['scan_generation'], dir_key),
+            ).fetchone() is not None
 
     def begin(self, task):
         with self.transaction():
@@ -476,10 +722,13 @@ class MediaIndex:
     def batch(self, task, refs, checkpoint, scanned, descriptions=None):
         return self._batch(task, refs, checkpoint, scanned, mounted=False, descriptions=descriptions)
 
+    def frontier_batch(self, task, refs, checkpoint, scanned, descriptions=None, *, frontier_step=None):
+        return self._batch(task, refs, checkpoint, scanned, mounted=False, descriptions=descriptions, frontier_step=frontier_step)
+
     def mounted_batch(self, task, refs, checkpoint, scanned):
         return self._batch(task, refs, checkpoint, scanned, mounted=True)
 
-    def _batch(self, task, refs, checkpoint, scanned, mounted, descriptions=None):
+    def _batch(self, task, refs, checkpoint, scanned, mounted, descriptions=None, frontier_step=None):
         if type(refs) is not list or len(refs) > 20 or type(scanned) is not int or not 0 <= scanned <= 20:
             raise ValueError('CATALOG_BATCH_INVALID')
         if mounted:
@@ -502,8 +751,14 @@ class MediaIndex:
             run = self._scan(task)
             if run['state'] != 'running' or run['cancel_requested']:
                 raise ValueError('CATALOG_SCAN_STOPPED')
+            fstate = None if mounted else self.frontier_db.execute(
+                'SELECT * FROM scan_state WHERE source=? AND last_task=?',
+                (run['source'], task),
+            ).fetchone()
+            membership_gen = fstate['scan_generation'] if fstate is not None else task
             # Duplicate committed page retries are no-ops, including counts.
-            batch_id = hashlib.sha256(checkpoint_raw.encode()).hexdigest()
+            batch_key = checkpoint_raw if frontier_step is None else encode([checkpoint, frontier_step.get('pop_seqs') or frontier_step.get('pop_seq')])
+            batch_id = hashlib.sha256(batch_key.encode()).hexdigest()
             if self.db.execute('SELECT 1 FROM scan_batches WHERE task=? AND digest=?', (task, batch_id)).fetchone():
                 return
             discovered, changed = 0, False
@@ -540,9 +795,9 @@ class MediaIndex:
                         self.db.execute('INSERT INTO objects VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET ref=excluded.ref',
                             (ref['id'], ref['provider'], ref['account_id'], encode(ref)))
                 previous = self.db.execute('SELECT generation,available FROM memberships WHERE source=? AND file=?', (run['source'], ref['id'])).fetchone()
-                discovered += int(previous is None or previous[0] != task)
+                discovered += int(previous is None or previous[0] != membership_gen)
                 self.db.execute('INSERT INTO memberships VALUES(?,?,?,1) ON CONFLICT(source,file) DO UPDATE SET generation=excluded.generation,available=1',
-                    (run['source'], ref['id'], task))
+                    (run['source'], ref['id'], membership_gen))
                 state, reason, candidates = review.suggestion(ref['name'])
                 self.db.execute("INSERT OR IGNORE INTO reviews VALUES(?,?,?,?,0,NULL,'filename')",
                     (ref['id'], state, reason, encode(candidates)))
@@ -560,9 +815,74 @@ class MediaIndex:
                 changed = changed or ref_changed or description_changed or previous is None or not previous['available']
             if changed:
                 self._changed(run['scope'])
-            self.db.execute('UPDATE scans SET pages=pages+1,scanned=scanned+?,discovered=discovered+?,checkpoint=?,updated=? WHERE id=?',
-                (scanned, discovered, checkpoint_raw, self.now(), task))
+            now = self.now()
+            pages_delta = int(frontier_step.get('pages_delta', 1)) if frontier_step is not None else 1
+            self.db.execute('UPDATE scans SET pages=pages+?,scanned=scanned+?,discovered=discovered+?,checkpoint=?,updated=? WHERE id=?',
+                (pages_delta, scanned, discovered, checkpoint_raw, now, task))
             self.db.execute('INSERT INTO scan_batches VALUES(?,?)', (task, batch_id))
+            if frontier_step is not None and fstate is not None:
+                sgen = fstate['scan_generation']
+                src = run['source']
+                pop_seqs = frontier_step.get('pop_seqs') or [frontier_step['pop_seq']]
+                with self.frontier_db:
+                    self.frontier_db.executemany(
+                        'DELETE FROM scan_nodes WHERE source=? AND scan_generation=? AND seq=?',
+                        [(src, sgen, s) for s in pop_seqs],
+                    )
+                    if not frontier_step['is_leaf'] and frontier_step.get('declared_total') is not None:
+                        self.frontier_db.execute(
+                            'UPDATE scan_dirs SET expected_total=? WHERE source=? AND scan_generation=? AND dir_key=?',
+                            (frontier_step['declared_total'], src, sgen, frontier_step['dir_key']),
+                        )
+                    if frontier_step.get('entry_sigs'):
+                        self.frontier_db.executemany(
+                            'INSERT OR IGNORE INTO scan_page_entries VALUES(?,?,?,?)',
+                            [(src, sgen, frontier_step['dir_key'], sig) for sig in frontier_step['entry_sigs']],
+                        )
+                    for leaf_key, leaf_depth in frontier_step.get('new_leaves', ()):
+                        self.frontier_db.execute(
+                            'INSERT INTO scan_nodes(source,scan_generation,priority,node_key,depth,leaf,next_page,cursor) VALUES(?,?,0,?,?,1,1,NULL)',
+                            (src, sgen, leaf_key, leaf_depth),
+                        )
+                    for dir_key, dir_depth in frontier_step.get('new_dirs', ()):
+                        self.frontier_db.execute(
+                            'INSERT OR IGNORE INTO scan_dirs VALUES(?,?,?,?,NULL)',
+                            (src, sgen, dir_key, dir_depth),
+                        )
+                        self.frontier_db.execute(
+                            'INSERT INTO scan_nodes(source,scan_generation,priority,node_key,depth,leaf,next_page,cursor) VALUES(?,?,1,?,?,0,1,NULL)',
+                            (src, sgen, dir_key, dir_depth),
+                        )
+                    continuations = frontier_step.get('continuations')
+                    if continuations is None:
+                        continuations = [frontier_step['continuation']] if frontier_step.get('continuation') is not None else []
+                    for cont in continuations:
+                        if cont.get('cursor') is not None:
+                            self.frontier_db.execute(
+                                'INSERT OR IGNORE INTO scan_page_cursors VALUES(?,?,?,?)',
+                                (src, sgen, cont['node_key'], cont['cursor']),
+                            )
+                        self.frontier_db.execute(
+                            'INSERT INTO scan_nodes(source,scan_generation,priority,node_key,depth,leaf,next_page,cursor) VALUES(?,?,?,?,?,?,?,?)',
+                            (src, sgen, cont['priority'], cont['node_key'], cont['depth'], cont['leaf'], cont['next_page'], cont['cursor']),
+                        )
+                    if frontier_step['is_leaf'] and not continuations:
+                        finished_keys = frontier_step.get('finished_leaf_keys') or [frontier_step['dir_key']]
+                        self.frontier_db.executemany(
+                            'DELETE FROM scan_page_entries WHERE source=? AND scan_generation=? AND dir_key=?',
+                            [(src, sgen, fk) for fk in finished_keys],
+                        )
+                    queued_cnt = self.frontier_db.execute(
+                        'SELECT count(*) FROM scan_nodes WHERE source=? AND scan_generation=?',
+                        (src, sgen),
+                    ).fetchone()[0]
+                    if queued_cnt > 65536:
+                        raise ValueError('SCAN_FRONTIER_LIMIT')
+                    new_latch = 1 if (fstate['partial_latch'] or frontier_step.get('partial_latch')) else 0
+                    self.frontier_db.execute(
+                        'UPDATE scan_state SET last_batch=?,dir_count=?,partial_latch=?,updated=? WHERE source=?',
+                        (batch_id, frontier_step['dir_count'], new_latch, now, src),
+                    )
 
     def finish(self, task, state, reason=''):
         if state not in TERMINAL or not re.fullmatch('[A-Z_]{0,64}', reason):
@@ -571,12 +891,43 @@ class MediaIndex:
             row = self._scan(task)
             if row['state'] in TERMINAL:
                 return scan_snapshot(row)
+            fstate = self.frontier_db.execute(
+                'SELECT * FROM scan_state WHERE source=? AND last_task=?',
+                (row['source'], task),
+            ).fetchone()
             if row['cancel_requested'] and state == 'completed':
                 state, reason = 'canceled', 'CANCEL_CONFIRMED'
+            scan_gen = fstate['scan_generation'] if fstate is not None else task
+            if state == 'completed' and fstate is not None:
+                partial_latch = bool(fstate['partial_latch'])
+                resumed = bool(fstate['resumed'])
+                with self.frontier_db:
+                    self._clear_frontier(row['source'])
+                if partial_latch:
+                    state, reason = 'interrupted', 'SCAN_DIRECTORY_LIMIT'
+                elif resumed:
+                    # Multi-run resumed scans without an immutable upstream snapshot
+                    # publish all newly discovered/updated members, but never withdraw
+                    # unseen members as absent (REV-07).
+                    state, reason = 'interrupted', 'SCAN_RESUMED_PARTIAL'
+            elif fstate is not None and reason in {
+                'PAN_INCOMPLETE_PAGE',
+                'PAN_PAGE_EXPIRED',
+                'SCAN_TOTAL_CHANGED',
+                'SCAN_PAGE_CYCLE',
+                'SCAN_CURSOR_CYCLE',
+                'SCAN_INVALID_PAGE',
+                'SCAN_FRONTIER_LIMIT',
+                'ACCOUNT_REVOKED',
+                'PROFILE_CHANGED',
+                'CATALOG_AUTHORITY_CHANGED',
+            }:
+                with self.frontier_db:
+                    self._clear_frontier(row['source'])
             if state == 'completed':
                 missing = self.db.execute('UPDATE memberships SET available=0 WHERE source=? AND generation!=? AND available=1 AND NOT EXISTS('
                     'SELECT 1 FROM temp.scan_point_observations p WHERE p.task=? AND p.file=memberships.file)',
-                    (row['source'], task, task))
+                    (row['source'], scan_gen, task))
                 if missing.rowcount:
                     self._changed(row['scope'])
             self.db.execute('DELETE FROM temp.scan_point_observations WHERE task=?', (task,))

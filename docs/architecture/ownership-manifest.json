@@ -541,7 +541,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/media_library_index.py",
-        "line": 476,
+        "line": 722,
         "anchor": "def batch(self, task, refs, checkpoint, scanned, descriptions=None):"
       },
       "note": "Optional sidecar uses the same scan page transaction and checkpoint, existing candidates storage, no additional writer or schema table. Selected/FileRef stay unchanged."
@@ -745,7 +745,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/media_library_index.py",
-        "line": 790,
+        "line": 1141,
         "anchor": "def apply(self, expected, request_id, commands):"
       },
       "note": "Reviewed responsibility declaration: Preview -> transactional revalidation -> idempotent receipt -> undo. Not a runtime test result."

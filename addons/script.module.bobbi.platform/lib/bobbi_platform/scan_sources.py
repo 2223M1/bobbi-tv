@@ -78,7 +78,11 @@ class NativePort:
             raise ValueError('SCAN_INVALID_PAGE')
         for row in rows:
             if row.get('directory') is True:
-                entries.append(dict(directory=row[descriptor(expected['provider']).parent_field], reference=None))
+                entries.append(dict(
+                    directory=row[descriptor(expected['provider']).parent_field],
+                    reference=None,
+                    leaf_container=bool(row.get('leaf_container')),
+                ))
             else:
                 reference = (from_selected(expected, row, parent)
                     if any(row.get('name', '').lower().endswith(ext) for ext in VIDEO_EXTENSIONS) else None)
@@ -88,7 +92,8 @@ class NativePort:
                 entries.append(entry)
         return dict(items=entries, signature=tuple((r.get('file_id'), r.get('directory')) for r in rows),
                     has_more=result.get('has_more') is True, next_cursor=result.get('next_cursor'),
-                    excluded_versions=bool(result.get('excluded_versions')))
+                    excluded_versions=bool(result.get('excluded_versions')),
+                    declared_total=result.get('declared_total'))
 
 
 class MountedPort:
