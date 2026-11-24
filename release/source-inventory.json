@@ -1100,7 +1100,7 @@
       "lib/bobbi_core/subtitle_reference.py": "30c80099217ed35fd73daabf9f51e03fe87884071eab2c4fa9ec2f36a370cf3a",
       "lib/bobbi_core/subtitle_store.py": "508628d936fae43518c17afe05b8402360da43d7a5616b41dde797ebb50c5d55",
       "lib/bobbi_core/subtitle_timing.py": "b938c59be816ca215a8e247a51b1a63ff388f151ea144020c6c5c8f19e30569a",
-      "lib/bobbi_core/t4.py": "924e5e286d1114ba9b2a45f96ffe60a4c8d2b130ed26ce25edff05a229a89d7f",
+      "lib/bobbi_core/t4.py": "a8e8994721c526eb8116488d709cbbdc460b680da0504b8737c469a38af586ec",
       "lib/bobbi_core/torrent_episode_matching.py": "ee5fed831a7328f1d551bcfd25d95250f5b1f1fbacb710e6517a9faf0620db2f",
       "lib/bobbi_core/torrent_metadata.py": "d34c155b77a87fa299d1b0bf01841497363231eaa6cbfd0187a5d0b5ac1de1de",
       "lib/bobbi_core/torrent_selection.py": "44413ed47b968e8fe08d321ccc486cc7974942ec7a25c74a13da6c94b3723d1b",
