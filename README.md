@@ -17,7 +17,7 @@
 
 ## 下载
 
-**[正式版下载](https://github.com/2223M1/bobbi-tv/releases/latest) · [国内镜像](https://gitee.com/M12223/bobbi-tv-updates)**
+**[正式版下载](https://github.com/2223M1/bobbi-tv/releases/latest) · [国内镜像](https://gitcode.com/BobbiZerri/bobbi-tv-updates/releases)**
 
 版本与更新说明以下载页为准。
 
