@@ -1249,7 +1249,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/router.py",
-        "line": 320,
+        "line": 321,
         "anchor": "if action in ('osd_streams', 'osd_apply'):"
       },
       "note": "osd_streams renders read-only captured stream rows; osd_apply forwards the original row token. Both routes are owned product code and do not load vendor player helpers. Static routing declaration."

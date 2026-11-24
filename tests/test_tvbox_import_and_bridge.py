@@ -423,3 +423,35 @@ def test_check_t4_bridge_cli_respects_searchable_flag():
     )
     assert res_search['steps']['search'] == 'PASS'
     assert res_search['steps']['play'].startswith('PASS')
+
+
+def test_router_dispatches_source_import_manage_phone_without_tmdb_init(monkeypatch):
+    """Real-device regression: RunPlugin(?action=source_import_manage_phone) must dispatch directly in router.py."""
+    from types import SimpleNamespace
+    monkeypatch.syspath_prepend(str(ROOT / 'addons/plugin.video.bobbi'))
+    from lib import router
+
+    called = []
+    ended = []
+    monkeypatch.setitem(
+        sys.modules,
+        'lib.clients.stremio.manage_phone',
+        SimpleNamespace(source_import_manage_phone=lambda p: called.append(dict(p)) or True),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        'xbmcplugin',
+        SimpleNamespace(endOfDirectory=lambda h, succeeded=True, cacheToDisc=True: ended.append((h, succeeded, cacheToDisc))),
+    )
+    assert router._get_route_handler('source_import_manage_phone') is router._route_stremio
+
+    monkeypatch.setattr(sys, 'argv', ['plugin://plugin.video.bobbi/', '-1', '?action=source_import_manage_phone'])
+    router.addon_router()
+    assert called == [{'action': 'source_import_manage_phone'}]
+    assert ended == []
+
+    monkeypatch.setattr(sys, 'argv', ['plugin://plugin.video.bobbi/', '7', '?action=source_import_manage_phone'])
+    router.addon_router()
+    assert len(called) == 2
+    assert ended == [(7, False, False)]
+

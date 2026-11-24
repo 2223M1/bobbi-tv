@@ -278,7 +278,7 @@
       "lib/player.py": "a6104656395a636c0d1a2c52aec4123725571d54106ed71f6688727101ce4bbc",
       "lib/portable.py": "43aedca9c852e9a76a8556b6c31e295078ee1d5dc94be1a951d74824d5562c5b",
       "lib/portable_runtime.py": "a8b0fbf3ef912021eb74a854ea8b52344790b8c0d0f8bd14909548ee0f6b64be",
-      "lib/router.py": "0ce8e9b4c813d61f0b4a33ed808e37e8e90b22c31a72d471db92c2f05b614038",
+      "lib/router.py": "ebaac6c993e038203bdddf6744af9ea9a8211c384aeee2ed19969295df1f55c7",
       "lib/search.py": "8bbf3001d50d42ec01f2f59f917c1f2988b7ae27919c4792cb2aca05534bcaf5",
       "lib/services/autostart.py": "b50007dfa6eed78e01ba8342ec91508297e98b94860e5182d04b9aeaec24cb58",
       "lib/services/background_service.py": "4d26403ae6ae2b7bf9c0ec3fa9fec8889ad7db4cb001fe723bc7dc10641f2ba5",

@@ -126,6 +126,7 @@ _AM6B_FAST_ACTIONS = frozenset(
 
 def _is_stremio_action(action):
     return action.startswith(("stremio_", "list_stremio")) or action in {
+        "source_import_manage_phone",
         "clear_stremio_search_history",
         "list_catalog",
         "list_catalog_genres",
@@ -352,6 +353,15 @@ def addon_router(*, prepare_catalog=None):
         if action == 'emby_rail':
             from bobbi_platform.emby_dynamic import execute_home_rail
             return execute_home_rail(int(sys.argv[1]), params)
+
+        if action == 'source_import_manage_phone':
+            from lib.clients.stremio.manage_phone import source_import_manage_phone
+            try:
+                return source_import_manage_phone(params)
+            finally:
+                if int(sys.argv[1]) >= 0:
+                    import xbmcplugin
+                    xbmcplugin.endOfDirectory(int(sys.argv[1]), succeeded=False, cacheToDisc=False)
 
         if action == 'bobbi_retry_rail':
             from lib.cinema.focus_anchor import bump
