@@ -95,7 +95,7 @@ def execute(handle, params):
             for source in store.sources():
                 kind, label2 = source_presentation(source)
                 rows.append(item(source.name, route(action='browse', source=source.id),
-                                 folder=(source.kind not in ('media_server', 't4') or
+                                 folder=(source.kind != 'media_server' or
                                          source.metadata.get('provider') == 'emby'), playable=False,
                                  label2=label2, properties={'Bobbi.Library.Kind': kind}))
             rows.append(item('个人云盘', route(action='native_files'), False, playable=False,
@@ -104,24 +104,19 @@ def execute(handle, params):
             rows.append(item('影视海报库', 'plugin://plugin.video.bobbi/?action=personal_catalog',
                 label2='已刮削电影、剧集与多版本片源',
                 properties={'Bobbi.Library.Kind': 'personal_catalog'}))
-        elif action in ('browse', 'play', 'play_pointer', 'emby_page', 'emby_play', 'emby_search', 'emby_mark'):
+        elif action in (
+            'browse', 'play', 'play_pointer',
+            'emby_page', 'emby_play', 'emby_search', 'emby_mark',
+            't4_site', 't4_cat', 't4_search', 't4_detail', 't4_play',
+        ):
             source = store.get(params.get('source', ''))
             if action.startswith('emby_') or (action == 'browse' and source.kind == 'media_server'
                                               and source.metadata.get('provider') == 'emby'):
                 from bobbi_platform.emby_dynamic import execute as online
                 return online(handle, params, store, item)
-            if source.kind == 't4':
-                if action != 'browse' or set(params) != {'action', 'source'}:
-                    raise LibraryError('INVALID_VALUE')
-                from bobbi_platform.t4_ui import browse as browse_t4
-                try:
-                    browse_t4(xbmcgui.Dialog(), store, source)
-                except LibraryError as error:
-                    if error.code != 'T4_CANCELLED':
-                        raise
-                if handle >= 0:
-                    xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
-                return
+            if action.startswith('t4_') or (action == 'browse' and source.kind == 't4'):
+                from bobbi_platform.t4_ui import execute_directory as t4_directory
+                return t4_directory(handle, params, store, item)
             if source.kind == 'media_server':
                 if action != 'browse' or set(params) - {'action', 'source'}:
                     raise LibraryError('INVALID_VALUE')
@@ -259,7 +254,7 @@ def execute(handle, params):
         xbmcplugin.addDirectoryItems(handle, rows, len(rows))
         xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
     except (LibraryError, OSError, RuntimeError, ValueError):
-        if action in ('play', 'play_pointer', 'emby_play') and (handoff is None or handoff.state in ('selected', 'cancelled')):
+        if action in ('play', 'play_pointer', 'emby_play', 't4_play') and (handoff is None or handoff.state in ('selected', 'cancelled')):
             xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
         raise
     finally:
@@ -277,5 +272,5 @@ if __name__ == '__main__':
         xbmc.log('[bobbi] library operation failed: ' + type(error).__name__, xbmc.LOGWARNING)
         xbmcgui.Dialog().ok('片库暂时不可用', message(error))
         # No alternate source or playback retry after an uncertain submission.
-        if handle >= 0 and query.get('action') not in ('play', 'play_pointer', 'emby_play', 'emby_mark'):
+        if handle >= 0 and query.get('action') not in ('play', 'play_pointer', 'emby_play', 'emby_mark', 't4_play'):
             xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)

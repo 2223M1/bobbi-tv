@@ -1,6 +1,7 @@
 """Small strict primitives shared by independently implemented token adapters."""
 from copy import deepcopy
 import re
+import time
 from urllib.parse import urlsplit
 
 from .pan_accounts import PanError
@@ -52,6 +53,59 @@ def saved(provider, value, fields):
 def page_number(page, size):
     if type(page) is not int or not 1 <= page <= 10000 or type(size) is not int or not 1 <= size <= 20:
         raise PanError('PAN_PAGE_INVALID')
+
+
+def parse_download_expiry(explicit_value=None, url='', *, now=None):
+    """Parse explicit UTC expiry timestamp or signed query epoch without fabricating fixed TTLs (REV-08)."""
+    from datetime import datetime, timezone
+    import math
+    from urllib.parse import parse_qsl
+    cur = time.time() if now is None else float(now)
+
+    def _valid_epoch(ts):
+        if type(ts) not in (int, float) or type(ts) is bool or not math.isfinite(ts):
+            return None
+        val = float(ts)
+        if 1_000_000_000_000 <= val <= 9_999_999_999_999:
+            val /= 1000.0
+        if cur + 20.0 < val <= cur + 7 * 86400:
+            return val
+        return None
+
+    if explicit_value is not None:
+        if type(explicit_value) in (int, float) and type(explicit_value) is not bool:
+            hit = _valid_epoch(explicit_value)
+            if hit is not None:
+                return hit
+        elif isinstance(explicit_value, str):
+            s = explicit_value.strip()
+            if re.fullmatch(r'[1-9][0-9]{9,12}', s):
+                hit = _valid_epoch(int(s))
+                if hit is not None:
+                    return hit
+            if s.endswith('Z') or '+' in s[10:] or '-' in s[10:]:
+                iso = s[:-1] + '+00:00' if s.endswith('Z') else s
+                try:
+                    dt = datetime.fromisoformat(iso)
+                    if dt.tzinfo is not None:
+                        hit = _valid_epoch(dt.astimezone(timezone.utc).timestamp())
+                        if hit is not None:
+                            return hit
+                except ValueError:
+                    pass
+
+    if isinstance(url, str) and '?' in url:
+        try:
+            q = dict(parse_qsl(urlsplit(url).query, max_num_fields=64))
+        except ValueError:
+            q = {}
+        for key in ('Expires', 'expires', 'x-oss-expires', 'X-Amz-Expires-Epoch', 'e', 't'):
+            raw_v = q.get(key)
+            if isinstance(raw_v, str) and re.fullmatch(r'[1-9][0-9]{9,12}', raw_v):
+                hit = _valid_epoch(int(raw_v))
+                if hit is not None:
+                    return hit
+    return None
 
 
 def scan_page_proof(session, parent, items, *, page, size, total=None, has_more=False):

@@ -131,6 +131,9 @@ def registry_requirements(userdata, master_addon_data=None):
                     kind = record['kind']
                     if kind == 't4':
                         required.add('t4')
+                        sites = record.get('metadata', {}).get('sites', ())
+                        if isinstance(sites, list) and any(isinstance(s, dict) and 'headers' in s for s in sites):
+                            required.add('t4_headers')
                     elif kind == 'media_server':
                         provider = record['metadata']['provider']
                         if provider == 'emby':

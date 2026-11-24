@@ -5,7 +5,7 @@ import ipaddress
 import re
 import socket
 import time
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 
 from bobbi_core.bounded_http import (
     AttemptCancelled,
@@ -50,6 +50,7 @@ MESSAGES = {
     'T4_MEDIA_ORIGIN': '此媒体不在已验证的站点域名内，暂不能安全播放。',
     'T4_HEADERS': '此片源要求未支持的媒体请求头。',
     'T4_CHANGED': '站点、线路或分集已变化，请重新选择。',
+    'T4_TOKEN_EXPIRED': '选片令牌已过期或来源已更新，请返回上一级重新打开目录。',
     'SOURCE_HTTP_URL': '原片地址不在允许的网络范围内。',
     'SOURCE_STREAM_CHANGED': '来源或文件已经变化，请返回重新选片。',
 }
@@ -130,10 +131,28 @@ class Response:
             yield chunk
 
 
+def _origin_key(url: str) -> tuple[str, str | None, int]:
+    u = urlsplit(url)
+    return u.scheme.lower(), (u.hostname or '').lower(), u.port or (443 if u.scheme.lower() == 'https' else 80)
+
+
+def _strip_redirect_headers(headers: dict, prev_url: str, next_url: str) -> dict:
+    if _origin_key(prev_url) == _origin_key(next_url):
+        return dict(headers)
+    stripped = {}
+    for k, v in headers.items():
+        kl = k.lower()
+        if kl in ('authorization', 'cookie', 'referer', 'x-emby-token', 'x-plex-token'):
+            continue
+        stripped[k] = v
+    return stripped
+
+
 class Session:
-    def __init__(self, *, ssl_context=None):
+    def __init__(self, *, ssl_context=None, max_redirects: int = 0):
         self.cancelled = None
         self.ssl_context = ssl_context
+        self.max_redirects = max_redirects
 
     def __enter__(self):
         return self
@@ -142,34 +161,64 @@ class Session:
         pass  # Connections belong to individual bounded responses, never pooled.
 
     @contextmanager
-    def get(self, url, *, headers, stream, allow_redirects, timeout, deadline=None, cancelled=None):
+    def get(self, url, *, headers, stream, allow_redirects, timeout, deadline=None, cancelled=None, max_redirects=None):
         if not stream or allow_redirects:
             raise LibraryError('MEDIA_RANGE_INVALID')
+        allowed_hops = self.max_redirects if max_redirects is None else int(max_redirects)
         connect_cap, read_window = timeout if isinstance(timeout, tuple) else (timeout, timeout)
         active_cancel = cancelled or self.cancelled
-        with AttemptHandle(
-            deadline=deadline,
-            cancelled=active_cancel,
-            read_window=read_window if deadline is None else None,
-        ) as attempt:
-            if connection is _DEFAULT_CONNECTION:
-                conn, target = connection(
-                    url,
-                    lambda: attempt.remaining(connect_cap),
-                    attempt=attempt,
-                    ssl_context=self.ssl_context,
-                    connect_cap=connect_cap,
-                )
-            else:
-                conn, target = connection(url, lambda: attempt.remaining(connect_cap))
-                bind_connection(conn, attempt)
+        overall_deadline = deadline if deadline is not None else (time.monotonic() + connect_cap + read_window)
+        cur_url = url
+        cur_headers = dict(headers)
+        visited = {cur_url}
+
+        for hop in range(allowed_hops + 1):
+            hop_conn = None
             try:
-                conn.request('GET', target, headers=headers)
-                with header_phase(attempt, read_window if deadline is None else None):
-                    reply = conn.getresponse()
-                with reply:
-                    yield Response(reply)
-                    attempt.finish()
+                with AttemptHandle(
+                    deadline=overall_deadline,
+                    cancelled=active_cancel,
+                    read_window=read_window if deadline is None else None,
+                ) as attempt:
+                    if connection is _DEFAULT_CONNECTION:
+                        hop_conn, target = connection(
+                            cur_url,
+                            lambda: attempt.remaining(connect_cap),
+                            attempt=attempt,
+                            ssl_context=self.ssl_context,
+                            connect_cap=connect_cap,
+                        )
+                    else:
+                        hop_conn, target = connection(cur_url, lambda: attempt.remaining(connect_cap))
+                        bind_connection(hop_conn, attempt)
+                    hop_conn.request('GET', target, headers=cur_headers)
+                    with header_phase(attempt, read_window if deadline is None else None):
+                        reply = hop_conn.getresponse()
+                    if reply.status in (301, 302, 303, 307, 308) and allowed_hops > 0:
+                        loc = reply.getheader('Location', '')
+                        reply.close()
+                        hop_conn.close()
+                        hop_conn = None
+                        if hop >= allowed_hops or not loc or any(ord(c) < 32 or ord(c) == 127 for c in loc):
+                            raise LibraryError('MEDIA_REDIRECT')
+                        next_url = urljoin(cur_url, loc.strip())
+                        if next_url in visited:
+                            raise LibraryError('MEDIA_REDIRECT')
+                        prev_scheme = urlsplit(cur_url).scheme.lower()
+                        next_scheme = urlsplit(next_url).scheme.lower()
+                        if prev_scheme == 'https' and next_scheme != 'https':
+                            raise LibraryError('MEDIA_REDIRECT')
+                        endpoint(next_url, 'SOURCE_HTTP_URL')
+                        cur_headers = _strip_redirect_headers(cur_headers, cur_url, next_url)
+                        cur_url = next_url
+                        visited.add(cur_url)
+                        continue
+                    with reply:
+                        resp = Response(reply)
+                        resp.final_url = cur_url
+                        yield resp
+                        attempt.finish()
+                        return
             except LibraryError:
                 raise
             except (AttemptCancelled, TimeoutError, socket.timeout):
@@ -177,7 +226,9 @@ class Session:
             except (HTTPException, OSError, UnicodeError):
                 raise LibraryError('MEDIA_UNAVAILABLE') from None
             finally:
-                conn.close()
+                if hop_conn is not None:
+                    hop_conn.close()
+        raise LibraryError('MEDIA_REDIRECT')
 
 
 def evidence(response, *, require_etag=True):
@@ -222,3 +273,24 @@ def probe(url, headers, session_factory=Session, *, deadline=None, cancelled=Non
             kwargs.update(deadline=probe_deadline, cancelled=cancelled)
         with session.get(url, **kwargs) as reply:
             return probe_evidence(reply)
+
+
+def probe_stream(url, headers, session_factory=Session, *, max_redirects=3, deadline=None, cancelled=None):
+    """Probe finite Range media with controlled <=3-hop redirect and strong_etag vs weak_session classification."""
+    probe_deadline = deadline if deadline is not None else (time.monotonic() + 9.0)
+    req_headers = dict(headers, Range='bytes=0-0', **{'Accept-Encoding': 'identity', 'Connection': 'close'})
+    with session_factory() as session:
+        kwargs = dict(headers=req_headers, stream=True, allow_redirects=False, timeout=(3, 5))
+        if isinstance(session, Session):
+            kwargs.update(deadline=probe_deadline, cancelled=cancelled, max_redirects=max_redirects)
+        with session.get(url, **kwargs) as reply:
+            size, raw_tag = probe_evidence(reply, require_etag=False)
+            mime = reply.headers.get('Content-Type', '').partition(';')[0].strip().lower()
+            strong = bool(raw_tag and re.fullmatch(r'"[!#-~]{1,128}"', raw_tag))
+            return {
+                'size': size,
+                'etag': raw_tag if strong else '',
+                'mime': mime,
+                'identity_mode': 'strong_etag' if strong else 'weak_session',
+                'final_url': getattr(reply, 'final_url', url),
+            }

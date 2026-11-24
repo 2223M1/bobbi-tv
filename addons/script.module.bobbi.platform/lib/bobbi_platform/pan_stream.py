@@ -93,6 +93,9 @@ def address(value, resolved, clock=time.time, header_check=None):
     if not (header_check or headers)(value, resolved['url'], h):
         raise PanError('PAN_DOWNLOAD_ORIGIN_REJECTED')
     expiry = resolved.get('expires_at')
+    if expiry is None:
+        from .pan_tokens import parse_download_expiry
+        expiry = parse_download_expiry(None, resolved['url'], now=clock())
     if expiry is not None and (type(expiry) not in (int, float) or not math.isfinite(expiry)
             or not clock() < expiry <= clock() + 7 * 86400):
         raise PanError('PAN_EXPIRY_INVALID')

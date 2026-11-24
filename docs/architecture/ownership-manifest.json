@@ -757,7 +757,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_compatibility.py",
-        "line": 213,
+        "line": 216,
         "anchor": "def check_program(userdata, root, expected_digest=None, master_addon_data=None):"
       },
       "note": "Reviewed responsibility declaration: All registered profile schemas versus retained or incoming code, before mutation. Not a runtime test result."

@@ -14,7 +14,7 @@ MAX_CATALOG_BYTES = 2 * 1024 * 1024
 MAX_ITEMS = 2000
 MAX_SOURCES = 32
 # Installer reads this literal from the signed target, never imports target code.
-REGISTRY_READ_FEATURES = ('t4', 'multi_emby')
+REGISTRY_READ_FEATURES = ('t4', 'multi_emby', 't4_headers')
 MAX_DIRECTORY_ITEMS = 10000
 SCHEMES = frozenset(('smb', 'nfs', 'dav', 'davs'))
 VIDEO_EXTENSIONS = frozenset(('.mkv', '.mp4', '.m4v', '.mov', '.avi', '.webm', '.ts',

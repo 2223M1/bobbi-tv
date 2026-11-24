@@ -111,6 +111,7 @@
       "lib/bobbi_platform/standard_subtitle_ui.py",
       "lib/bobbi_platform/stop_monitor.py",
       "lib/bobbi_platform/t4_http.py",
+      "lib/bobbi_platform/t4_tokens.py",
       "lib/bobbi_platform/t4_ui.py",
       "lib/bobbi_platform/torrserver.py",
       "lib/bobbi_platform/transport_preferences.py",

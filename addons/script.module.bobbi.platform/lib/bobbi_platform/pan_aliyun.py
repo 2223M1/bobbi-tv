@@ -162,8 +162,13 @@ class Client:
         if value.get('size') != selected['size'] or type(value.get('size')) is not int:
             raise PanError('PAN_FILE_CHANGED')
         url = original_url(value.get('url'), ('alipan.com', 'aliyundrive.com', 'aliyunpds.com'))
-        return dict(url=url, size=selected['size'], original=True,
+        from .pan_tokens import parse_download_expiry
+        exp = parse_download_expiry(value.get('expiration'), url)
+        out = dict(url=url, size=selected['size'], original=True,
             headers={'User-Agent': USER_AGENT, 'Referer': 'https://www.alipan.com/'})
+        if exp is not None:
+            out['expires_at'] = exp
+        return out
 
 
 class Login:
