@@ -69,7 +69,8 @@ def test_owned_files_are_exclusive_revocable_and_match_shipped_guard(tmp_path, m
 
 
 @pytest.mark.parametrize('old,consent,eligible,changed', [(True, True, True, True), (False, True, True, False), (True, False, True, False), (True, True, False, False)])
-def test_upgrade_only_refreshes_previously_owned_opt_in(tmp_path, monkeypatch, old, consent, eligible, changed):
+@pytest.mark.parametrize('old_unit', tuple(s.OLD_UNITS.values()))
+def test_upgrade_only_refreshes_previously_owned_opt_in(tmp_path, monkeypatch, old, consent, eligible, changed, old_unit):
     from bobbi_platform import paths
     monkeypatch.setattr(paths, 'profile_root', lambda: Path('/storage/.kodi/userdata/addon_data/script.module.bobbi.platform'))
     monkeypatch.setattr(s, 'coreelec', lambda: True)
@@ -77,7 +78,7 @@ def test_upgrade_only_refreshes_previously_owned_opt_in(tmp_path, monkeypatch, o
     monkeypatch.setattr(s.HostOptics, 'available', lambda self: eligible)
     monkeypatch.setattr(s.boot, 'opted_in', lambda _: consent)
     host = s.HostOptics(True)
-    original = s.PREVIOUS_UNIT if old else b'local owner'
+    original = old_unit if old else b'local owner'
     host.drop.parent.mkdir(parents=True)
     host.drop.write_bytes(original)
     s.refresh_owned()

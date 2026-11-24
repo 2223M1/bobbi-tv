@@ -13,7 +13,7 @@ from bobbi_platform.updates import UpdateError
 from test_online_updates import Response, offer_for, tracked_offer
 from test_ce_general_installer import package, signing
 
-MIRROR = 'https://gitee.com/M12223/bobbi-tv-updates'
+MIRROR = 'https://gitcode.com/BobbiZerri/bobbi-tv-updates'
 
 
 def mirror_offer(raw):
@@ -23,14 +23,14 @@ def mirror_offer(raw):
 
 
 def test_default_discovery_is_domestic_and_offer_schema_remains_one():
-    assert online.OFFER_URL == MIRROR + '/raw/master/repository/current.json'
+    assert online.OFFER_URL == 'https://raw.gitcode.com/BobbiZerri/bobbi-tv-updates/raw/main/repository/current.json'
     value = mirror_offer(b'blob')
     assert online.parse_offer(json.dumps(value)) == value
     assert online.parse_offer(json.dumps(offer_for(b'blob')))['schema'] == 1
 
 
 @pytest.mark.parametrize('url', [
-    MIRROR.replace('M12223', 'another') + '/releases/download/ce2054/BobbiTV-CE2054.bobbi-update.zip',
+    MIRROR.replace('BobbiZerri', 'another') + '/releases/download/ce2054/BobbiTV-CE2054.bobbi-update.zip',
     MIRROR + '/releases/download/ce2053/BobbiTV-CE2054.bobbi-update.zip',
     MIRROR + '/releases/download/ce2054/BobbiTV-CE2054.bobbi-update.zip?token=anything',
     'https://foruda.gitee.com/attach_file/123/BobbiTV-CE2054.bobbi-update.zip',
@@ -40,41 +40,25 @@ def test_discovery_cannot_nominate_other_projects_or_cdn_urls(url):
         online.parse_offer(json.dumps(dict(mirror_offer(b'blob'), url=url)))
 
 
-@pytest.mark.parametrize('url', [
-    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json',
-    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture&signature=fixture',
-    MIRROR + '/attach_files/123/download/BobbiTV-CE2054.bobbi-update.zip',
-    'https://foruda.gitee.com/attach_file/123/BobbiTV-CE2054.bobbi-update.zip?signature=fixture',
-    'https://foruda.gitee.com/attach_file/123/bobbitv-ce2055.bobbi-update.zip?token=fixture&ts=123&attname=fixture',
-])
-def test_domestic_redirects_only_admit_known_delivery_routes(url):
-    redirected = online._Redirects().redirect_request(Request(mirror_offer(b'x')['url']), None, 302, '', {}, url)
-    assert redirected.full_url == url
+CDN = 'https://file-cdn.gitcode.com/11470074/releases/untagger_' + 'a'*32 + '/'
+NAME = 'BobbiTV-CE2054.bobbi-update.zip'
 
 
-@pytest.mark.parametrize('url', [
-    'http://foruda.gitee.com/attach_file/123/BobbiTV-CE2054.bobbi-update.zip',
-    'https://foruda.gitee.com.evil.invalid/attach_file/123/BobbiTV-CE2054.bobbi-update.zip',
-    'https://user@foruda.gitee.com/attach_file/123/BobbiTV-CE2054.bobbi-update.zip',
-    'https://foruda.gitee.com:8443/attach_file/123/BobbiTV-CE2054.bobbi-update.zip',
-    'https://foruda.gitee.com/attach_file/123/BobbiTV-CE2054.bobbi-update.zip#fragment',
-    'https://gitee.com/login',
-    'https://raw.giteeusercontent.com/elsewhere/repository/current.json',
-    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?url=https%3A%2F%2Fexample.org',
-    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture',
-    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture&signature=',
-    'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json?metadata=fixture&signature=a&signature=b',
-])
-def test_domestic_redirect_policy_has_no_wildcard_hosts_or_login_hops(url):
-    with pytest.raises(UpdateError, match='ONLINE_REDIRECT_REJECTED'):
-        online._Redirects().redirect_request(Request(mirror_offer(b'x')['url']), None, 302, '', {}, url)
-
-
-def test_real_ce_signed_raw_redirect_with_signature_only():
-    path = 'https://raw.giteeusercontent.com/M12223/bobbi-tv-updates/raw/master/repository/current.json'
-    assert online._allowed_redirect(path + '?signature=fixture')
-    for suffix in ('?signature=', '?signature=a&signature=b', '?signature=a&extra=b'):
-        assert not online._allowed_redirect(path + suffix)
+def test_real_gitcode_redirect_stays_bound_to_origin_and_exact_asset():
+    url = CDN + NAME + '?auth_key=1700000000-0-0-deadbeef'
+    req = Request(mirror_offer(b'x')['url'])
+    assert online._Redirects().redirect_request(req, None, 302, '', {}, url).full_url == url
+    for bad in (url.replace('11470074','99'), url.replace('2054','2055'),
+                url.replace('file-cdn.gitcode.com','file-cdn.gitcode.com.other.invalid'),
+                url.replace('https:','http:'), url.replace('untagger_', 'private_'),
+                url.replace('?auth_key=', '?target='), url+'#x',url+'&auth_key=x',
+                url.replace('1700000000-0-0-deadbeef',''), url.replace(NAME,'other.zip')):
+        with pytest.raises(UpdateError, match='ONLINE_REDIRECT_REJECTED'):
+            online._Redirects().redirect_request(req, None, 302, '', {}, bad)
+    for bad in (online.feed_url('stable','gitcode'), req.full_url.replace('BobbiZerri','other'),
+                req.full_url.replace('gitcode.com','github.com')):
+        with pytest.raises(UpdateError, match='ONLINE_REDIRECT_REJECTED'):
+            online._Redirects().redirect_request(Request(bad), None, 302, '', {}, url)
 
 
 def test_discovery_falls_back_once_only_on_transport_failure(monkeypatch):
@@ -86,7 +70,7 @@ def test_discovery_falls_back_once_only_on_transport_failure(monkeypatch):
         return Response(json.dumps(tracked_offer(b'blob')).encode())
     monkeypatch.setattr(online, '_open', open_response)
     assert online.latest() == tracked_offer(b'blob')
-    assert calls == [online.feed_url('stable', mirror) for mirror in ('gitee', 'github')]
+    assert calls == [online.feed_url('stable', mirror) for mirror in ('gitcode', 'github')]
 
 
 @pytest.mark.parametrize('failure', ['cancel', 'json', 'length', 'redirect'])
@@ -179,13 +163,9 @@ def test_certificate_failure_does_not_silently_switch_host(monkeypatch):
     assert len(calls) == 1
 
 
-def test_mirror_builder_rejects_free_attachment_limit_before_publishing(tmp_path, monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / 'tools'))
-    from build_online_repository import publish
-    large = tmp_path/'large.zip'
-    with large.open('wb') as stream:
-        stream.truncate(100_000_001)
-    output = tmp_path/'feed'
-    with pytest.raises(ValueError, match='100M'):
-        publish(large, output, 'ce2055')
-    assert not output.exists()
+def test_retired_gitee_never_enters_discovery_or_artifact_fallback():
+    with pytest.raises(UpdateError):
+        online.feed_url('stable', 'gitee')
+    with pytest.raises(UpdateError):
+        online.release_url('ce2183', 'gitee')
+    assert not online._allowed_redirect('https://foruda.gitee.com/attach_file/1/' + NAME)

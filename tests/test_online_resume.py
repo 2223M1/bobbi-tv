@@ -294,7 +294,7 @@ def test_resume_headers_do_not_leak_into_nested_discovery(payload, monkeypatch):
     raw, offer, work, trust = payload
     interrupt(monkeypatch,*payload)
     def response(url):
-        if url in (online.feed_url('stable', source) for source in ('gitee', 'github')):
+        if url in (online.feed_url('stable', source) for source in ('gitcode', 'github')):
             assert headers() == {}
             return Response(json.dumps(tracked_offer()).encode())
         before = headers()

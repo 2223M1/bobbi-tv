@@ -331,14 +331,13 @@ def test_new_assets_keep_old_feed_schema_and_are_reproducible(tmp_path, signing,
 
 
 @pytest.mark.parametrize('host,path', [
-    ('gitee.com', '/M12223/bobbi-tv-updates/attach_files/123/download/'),
-    ('foruda.gitee.com', '/attach_file/123/'),
+    ('file-cdn.gitcode.com', '/11470074/releases/untagger_' + 'a'*32 + '/'),
 ])
 def test_component_redirects_remain_in_existing_delivery_namespaces(host, path):
     for filename in ['BobbiTV-CE2064.components-v1.zip', 'bobbi-component-'+'a'*64+'.zip']:
-        assert online._allowed_redirect('https://'+host+path+filename)
-        assert not online._allowed_redirect('http://'+host+path+filename)
-        assert not online._allowed_redirect('https://'+host+'.invalid'+path+filename)
+        assert online._allowed_redirect('https://'+host+path+filename+'?auth_key=fixture')
+        assert not online._allowed_redirect('http://'+host+path+filename+'?auth_key=fixture')
+        assert not online._allowed_redirect('https://'+host+'.invalid'+path+filename+'?auth_key=fixture')
     assert not online._allowed_redirect('https://'+host+path+'arbitrary.zip')
 
 

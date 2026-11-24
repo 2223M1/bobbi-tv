@@ -65,7 +65,7 @@ def test_latest_uses_fixed_index_and_limits_bytes(monkeypatch):
         return Response(json.dumps(offer).encode())
     monkeypatch.setattr(online, '_open', open_response)
     assert online.latest() == offer
-    assert calls == [online.feed_url('stable', mirror) for mirror in ('gitee', 'github')]
+    assert calls == [online.feed_url('stable', mirror) for mirror in ('gitcode', 'github')]
     monkeypatch.setattr(online, '_open', lambda _: Response(b' '*32769, headers={}))
     with pytest.raises(UpdateError, match='ONLINE_LENGTH_INVALID'): online.latest()
 

@@ -6,7 +6,7 @@
     "preview": {"feed": "repository/preview/current.json", "manifest_channel": "private-candidate", "github_prerelease": true, "requires_explicit_user_selection": true}
   },
   "feed_fields": ["schema", "tag", "sequence", "url", "size", "sha256", "track", "manifest_channel", "prerelease", "versions"],
-  "mirror_channels": ["github", "gitee"],
+  "mirror_channels": ["github", "gitcode"],
   "ordering": "Within the selected track, compare both valid mirrors by signed generation sequence; equal-sequence differing identity fails closed.",
   "legacy_schema_1": {
     "existing_pointer": "repository/current.json",

@@ -47,7 +47,7 @@ def build(bundle, output, tag, trust=None):
         assets.insert(0, dict(file=name, bytes=len(metadata_raw), sha256=hashlib.sha256(metadata_raw).hexdigest()))
     return dict(schema=1, protocol='components-v1', tag=tag, sequence=manifest['sequence'],
                 assets=assets, published=False,
-                release_roots=[release_url(tag, source).rsplit('/', 1)[0]+'/' for source in ('gitee', 'github')])
+                release_roots=[release_url(tag, source).rsplit('/', 1)[0]+'/' for source in ('gitcode', 'github')])
 
 
 if __name__ == '__main__':

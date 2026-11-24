@@ -26,7 +26,7 @@ def publication(tmp_path):
         path.write_bytes(name.encode())
         feeds[name] = gate.identity(path)
     receipt = dict(schema=2, track='preview', commit='a' * 40, tree='b' * 40, tag='ce2067',
-                   assets=assets, feeds={'github': feeds, 'gitee': feeds})
+                   assets=assets, feeds={'github': feeds, 'gitcode': feeds})
     target = tmp_path / 'repository/preview'
     target.mkdir(parents=True)
     (target / 'current.json').write_bytes(b'previous pointer')
@@ -101,7 +101,7 @@ def test_invalid_feed_member_never_escapes_output_root(publication):
     assert (target / 'current.json').read_bytes() == b'previous pointer'
 
 
-@pytest.mark.parametrize('mirror', ['github', 'gitee'])
+@pytest.mark.parametrize('mirror', ['github', 'gitcode'])
 @pytest.mark.parametrize('fault', ['stale', 'corrupt', 'timeout'])
 def test_each_actual_track_feed_must_read_back_before_any_promotion(publication, mirror, fault):
     receipt, target, report, transfer, _ = publication
@@ -218,10 +218,10 @@ def test_stage_with_old_live_pointer_then_verify_actual_published_feed(publicati
     after = gate.readback(r, 'github', report, transfer)
     assert after['phase'] == 'live-feed-readback' and after['passed']
     assert len(after['files']) == sum(len(r['assets'])+len(items) for items in r['feeds'].values())
-    if policy == 'github-only': assert not any('gitee' in url for url in calls)
+    if policy == 'github-only': assert not any('gitcode' in url for url in calls)
 
 
-@pytest.mark.parametrize('fault', ['remote-ahead','remote-conflict','local-ahead','new-broken','gitee-broken',
+@pytest.mark.parametrize('fault', ['remote-ahead','remote-conflict','local-ahead','new-broken','gitcode-broken',
                                    'different-versioned-zip','wrong-mirror','altered-offer','missing-mirror'])
 def test_scoped_promotion_failures_leave_previous_pointer(publication, fault):
     r, target, report, remote, _, transfer = scoped(publication, 'dual')
@@ -231,12 +231,12 @@ def test_scoped_promotion_failures_leave_previous_pointer(publication, fault):
         if fault == 'local-ahead': (target/'current.json').write_bytes(raw)
         else: remote[url] = raw
     if fault == 'new-broken': remote[gate.release_url(r['tag'], 'github').rsplit('/',1)[0]+'/complete.zip'] = b'bad'
-    if fault == 'gitee-broken': remote[gate.release_url(r['tag'], 'gitee').rsplit('/',1)[0]+'/entry.zip'] = b'bad'
+    if fault == 'gitcode-broken': remote[gate.release_url(r['tag'], 'gitcode').rsplit('/',1)[0]+'/entry.zip'] = b'bad'
     if fault == 'different-versioned-zip':
         (target/'start').mkdir(); (target/'start/new.zip').write_bytes(b'existing package')
     if fault == 'wrong-mirror': r['mirror_policy'] = 'github-only'
     if fault == 'altered-offer': r['offers']['github']['sequence'] += 1
-    if fault == 'missing-mirror': r['feeds'].pop('gitee')
+    if fault == 'missing-mirror': r['feeds'].pop('gitcode')
     before = {p: p.read_bytes() for p in target.rglob('*') if p.is_file()}
     with pytest.raises(ValueError): gate.promote(r, 'github', target, report, transfer)
     assert before == {p: p.read_bytes() for p in target.rglob('*') if p.is_file()}

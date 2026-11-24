@@ -93,7 +93,7 @@ def test_track_switch_never_mutates_install_journal_or_highwater(entry, monkeypa
 
 def test_one_unavailable_mirror_still_reports_valid_other(monkeypatch):
     def respond(url):
-        if 'gitee.com' in url: raise URLError(TimeoutError())
+        if 'gitcode.com' in url: raise URLError(TimeoutError())
         return Response(json.dumps(tracked_offer()).encode())
     monkeypatch.setattr(online, '_open', respond)
     report = {}
@@ -108,7 +108,7 @@ def test_missing_versioned_stable_entry_only_migrates_known_legacy_bytes(monkeyp
     def respond(url):
         calls.append(url)
         if '/stable/' in url: raise HTTPError(url, 404, '', {}, None)
-        return Response(json.dumps(offer_for(b'unknown') if 'gitee.com' in url else known).encode())
+        return Response(json.dumps(offer_for(b'unknown') if 'gitcode.com' in url else known).encode())
     monkeypatch.setattr(online, '_open', respond)
     assert online.latest() == known
     assert len(calls) == 4

@@ -58,7 +58,7 @@ def transfer(url,maximum,consume,*args,**kwargs):
     consume(json.dumps(offers[len(urls)-1]).encode())
 old._transfer=transfer
 assert old.latest(track='stable') == offers[1]
-assert urls == [old.feed_url('stable', source) for source in ('gitee','github')]
+assert urls == [old.feed_url('stable', source) for source in (('gitcode','github') if 'gitcode.com' in old.OFFER_URL else ('gitee','github'))]
 """
     calls, notifications = [], []
     for version, sequence in [('2.0.0', 2026102165), ('3.0.0', 2026102166)]:
@@ -69,13 +69,13 @@ assert urls == [old.feed_url('stable', source) for source in ('gitee','github')]
                        input=json.dumps([old_feed, new]), text=True, check=True)
         def response(url):
             calls.append(url)
-            return Response(json.dumps(old_feed if url == online.feed_url('stable', 'gitee') else new).encode())
+            return Response(json.dumps(old_feed if url == online.feed_url('stable', 'gitcode') else new).encode())
         monkeypatch.setattr(online, '_open', response)
         before = (e.work/'installation.json').read_bytes()
         assert notice.check(e.work, lambda: False, notifications.append) == 'notified'
         assert notice.check(e.work, lambda: False, notifications.append) == 'seen'
         assert (e.work/'installation.json').read_bytes() == before
-        assert set(calls) == {online.feed_url('stable', source) for source in ('gitee', 'github')}
+        assert set(calls) == {online.feed_url('stable', source) for source in ('gitcode', 'github')}
         # Installation only at the separate, explicit acceptance boundary.
         e.installer.apply(artifact)
         assert read_installation(e.work)['high_watermark'] == sequence

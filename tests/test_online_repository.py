@@ -78,7 +78,7 @@ def test_github_discovery_still_works_with_actual_ce2054_entry():
     assert offer == parse_offer(current)
     assert offer['url'] == release_url(offer['tag'], 'github')
     with pytest.raises(UpdateError, match='ONLINE_OFFER_INVALID'):
-        legacy.parse_offer(json.dumps(dict(offer, url=release_url(offer['tag'], 'gitee'))))
+        legacy.parse_offer(json.dumps(dict(offer, url=release_url(offer['tag'], 'gitcode'))))
 
 
 def test_actual_published_launcher_bootstraps_without_installed_modules(tmp_path):
@@ -99,7 +99,7 @@ def test_actual_published_launcher_bootstraps_without_installed_modules(tmp_path
         'from bobbi_platform.ce_install_ui import main; '
         'from bobbi_platform.online_updates import OFFER_URL, latest, download; '
         'assert OFFER_URL == sys.argv[2]; '
-        'assert "bobbi_core" not in sys.modules', str(tmp_path), MIRROR_FEED + 'current.json'],
+        'assert "bobbi_core" not in sys.modules', str(tmp_path), 'https://gitee.com/M12223/bobbi-tv-updates/raw/master/repository/current.json'],
         cwd=tmp_path, check=True, timeout=15)
 
 

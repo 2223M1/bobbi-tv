@@ -81,7 +81,8 @@ def source_check_evidence(first, second):
         for path in sorted(Path(folder).rglob('*')) if path.is_file()])
 
 
-MIRRORS = {'dual': ('github', 'gitee'), 'github-only': ('github',)}
+# Old Gitee receipts have a different feed set and must use their original checkout.
+MIRRORS = {'dual': ('github', 'gitcode'), 'github-only': ('github',)}
 
 
 def prepare(bundle, entry, component_assets, feeds, output, *, track, github_release, source_checks,
@@ -180,7 +181,7 @@ def _pointer_guard(raw, receipt, mirror):
 
 def _mirrors(receipt):
     schema = receipt.get('schema')
-    mirrors = ('github', 'gitee') if schema == 2 else (
+    mirrors = ('github', 'gitcode') if schema == 2 else (
         MIRRORS.get(receipt.get('mirror_policy'), ()) if schema == 3 else ())
     if (not mirrors or set(receipt['feeds']) != set(mirrors) or receipt.get('track') not in ('stable', 'preview')
             or (schema == 3 and set(receipt.get('offers', ())) != set(mirrors))):
@@ -320,7 +321,7 @@ if __name__ == '__main__':
     stage = sub.add_parser('prepare')
     for name in ('bundle', 'entry', 'component-assets', 'github-feed', 'output'):
         stage.add_argument('--' + name, required=True, type=Path)
-    stage.add_argument('--gitee-feed', type=Path, help='Required for the default dual-mirror policy')
+    stage.add_argument('--gitcode-feed', type=Path, help='Required for the default dual-mirror policy')
     stage.add_argument('--mirror-policy', choices=tuple(MIRRORS), default='dual')
     stage.add_argument('--track', choices=('stable', 'preview'), required=True)
     stage.add_argument('--github-release', type=Path, required=True, help='Frozen GitHub release JSON with resolved target commit')
@@ -329,14 +330,14 @@ if __name__ == '__main__':
     for operation in ('verify', 'promote'):
         step = sub.add_parser(operation)
         step.add_argument('--receipt', required=True, type=Path)
-        step.add_argument('--channel', required=True, choices=('github', 'gitee'))
+        step.add_argument('--channel', required=True, choices=('github', 'gitcode'))
         step.add_argument('--report', required=True, type=Path)
         if operation == 'promote':
             step.add_argument('--target', required=True, type=Path, help='Local repository/stable or repository/preview directory')
     args = parser.parse_args()
     if args.operation == 'prepare':
         feeds = dict(github=args.github_feed)
-        if args.gitee_feed is not None: feeds['gitee'] = args.gitee_feed
+        if args.gitcode_feed is not None: feeds['gitcode'] = args.gitcode_feed
         result = prepare(args.bundle, args.entry, args.component_assets, feeds, args.output,
                          mirror_policy=args.mirror_policy,
                          track=args.track, github_release=args.github_release,

@@ -14,7 +14,7 @@ from bobbi_platform.offline_updates import SignedBundle, load_trust
 from bobbi_platform.online_updates import release_url, parse_offer
 
 
-def publish(bundle, output, tag, source='gitee', track='stable', prerelease=None):
+def publish(bundle, output, tag, source='gitcode', track='stable', prerelease=None):
     if not re.fullmatch(r'ce[1-9][0-9]{3,7}', tag):
         raise ValueError('Invalid release tag')
     output = Path(output)
@@ -22,8 +22,6 @@ def publish(bundle, output, tag, source='gitee', track='stable', prerelease=None
         raise ValueError('Repository output must be new')
     bundle = Path(bundle)
     url = release_url(tag, source)
-    if source == 'gitee' and bundle.stat().st_size > 100_000_000:
-        raise ValueError('Gitee attachment exceeds the free 100M limit')
     with SignedBundle(bundle, load_trust(), 'coreelec') as signed:
         manifest = signed.check_all()
         offer = dict(schema=2, tag=tag, sequence=manifest['sequence'], size=bundle.stat().st_size,
@@ -78,7 +76,7 @@ if __name__ == '__main__':
     parser.add_argument('--bundle', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--tag', required=True)
-    parser.add_argument('--source', choices=('gitee', 'github'), default='gitee')
+    parser.add_argument('--source', choices=('gitcode', 'github'), default='gitcode')
     parser.add_argument('--track', choices=('stable', 'preview'), required=True)
     args = parser.parse_args()
     print(json.dumps(publish(args.bundle, args.output, args.tag, args.source, args.track), indent=2))

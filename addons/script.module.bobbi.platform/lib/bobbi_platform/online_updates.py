@@ -9,7 +9,7 @@ import time
 import zipfile
 import zlib
 from urllib.error import HTTPError, URLError
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from .offline_updates import MAX_BUNDLE, SignedBundle
@@ -17,8 +17,8 @@ from .online_transport import CancellableHTTPSHandler
 from .online_partial import PartialDownload
 from .updates import MAX_REDIRECTS, UpdateError, _json, _safe_path, allowed_release_redirect
 
-MIRROR_ROOT = 'https://gitee.com/M12223/bobbi-tv-updates'
-MIRROR_FEED = MIRROR_ROOT + '/raw/master/repository/'
+MIRROR_ROOT = 'https://gitcode.com/BobbiZerri/bobbi-tv-updates'
+MIRROR_FEED = 'https://raw.gitcode.com/BobbiZerri/bobbi-tv-updates/raw/main/repository/'
 OFFER_URL = MIRROR_FEED + 'current.json'
 FALLBACK_OFFER_URL = 'https://raw.githubusercontent.com/2223M1/bobbi-tv/main/repository/current.json'
 TRANSFER_SECONDS = 600
@@ -31,9 +31,9 @@ LEGACY_STABLE = ('ce2080', 2026102080, 95934438,
 
 
 def feed_url(track, source):
-    if track not in TRACKS or source not in ('gitee', 'github'):
+    if track not in TRACKS or source not in ('gitcode', 'github'):
         raise UpdateError('ONLINE_TRACK_MISMATCH')
-    root = MIRROR_FEED if source == 'gitee' else FALLBACK_OFFER_URL.rsplit('/', 1)[0] + '/'
+    root = MIRROR_FEED if source == 'gitcode' else FALLBACK_OFFER_URL.rsplit('/', 1)[0] + '/'
     return root + track + '/current.json'
 
 
@@ -64,10 +64,10 @@ class Cancelled(UpdateError):
     pass
 
 
-def release_url(tag, source='gitee'):
+def release_url(tag, source='gitcode'):
     if not isinstance(tag, str) or not re.fullmatch(r'ce[1-9][0-9]{3,7}', tag):
         raise UpdateError('ONLINE_OFFER_INVALID')
-    roots = {'gitee': MIRROR_ROOT, 'github': 'https://github.com/2223M1/bobbi-tv'}
+    roots = {'gitcode': MIRROR_ROOT, 'github': 'https://github.com/2223M1/bobbi-tv'}
     if source not in roots:
         raise UpdateError('ONLINE_OFFER_INVALID')
     return roots[source] + '/releases/download/' + tag + '/BobbiTV-' + tag.upper() + '.bobbi-update.zip'
@@ -82,22 +82,13 @@ def _allowed_redirect(value):
         url = urlsplit(value)
         if url.scheme != 'https' or url.fragment:
             return False
-        if url.netloc == 'raw.giteeusercontent.com':
-            # Gitee signs anonymous raw redirects. These short-lived delivery
-            # parameters are not account credentials and never enter the feed.
-            query = parse_qsl(url.query, keep_blank_values=True, strict_parsing=True)
-            member = (r'(?:current\.json|addons\.xml(?:\.md5|\.sha256)?|index\.html|'
-                r'script\.bobbi\.start/script\.bobbi\.start-[0-9.]+\.zip(?:\.sha256)?|'
-                r'repository\.bobbi/repository\.bobbi-[0-9.]+\.zip(?:\.sha256)?)')
-            return (re.fullmatch(r'/M12223/bobbi-tv-updates/raw/master/repository/(?:(?:stable|preview)/)?' + member, url.path) is not None and
-                    (not url.query or (sorted(key for key, _ in query) in (['signature'], ['metadata', 'signature']) and
-                     all(value for _, value in query))))
-        filename = r'(?:BobbiTV-CE[1-9][0-9]{3,7}\.(?:bobbi-update|components-v1)|bobbi-component-[a-f0-9]{64})\.zip'
-        if url.netloc == 'gitee.com':
-            return not url.query and re.fullmatch(
-                r'/M12223/bobbi-tv-updates/attach_files/[1-9][0-9]*/download/' + filename, url.path) is not None
-        return (url.netloc == 'foruda.gitee.com' and
-                re.fullmatch(r'/attach_file/[1-9][0-9]*/' + filename, url.path, re.IGNORECASE) is not None)
+        # GitCode release redirects are transient: only this project's CDN
+        # namespace and published artifact names, never a persistent auth URL.
+        filename = (r'(?:BobbiTV-CE[1-9][0-9]{3,7}\.(?:bobbi-update|components-v1)|'
+                    r'bobbi-component-[a-f0-9]{64}|script\.bobbi\.start-[0-9.]+-CE[1-9][0-9]{3,7})\.zip')
+        return (url.netloc == 'file-cdn.gitcode.com'
+                and re.fullmatch(r'/11470074/releases/untagger_[a-f0-9]{32}/' + filename, url.path) is not None
+                and re.fullmatch(r'auth_key=[A-Za-z0-9._~-]{1,512}', url.query) is not None)
     except ValueError:
         return False
 
@@ -118,6 +109,12 @@ class _Redirects(HTTPRedirectHandler):
         self.count += 1
         if self.count > MAX_REDIRECTS or not _allowed_redirect(newurl):
             raise UpdateError('ONLINE_REDIRECT_REJECTED')
+        if urlsplit(newurl).netloc == 'file-cdn.gitcode.com':
+            parent = urlsplit(req.full_url)
+            if (parent.scheme != 'https' or parent.netloc != 'gitcode.com' or parent.query or parent.fragment
+                    or not re.fullmatch(r'/BobbiZerri/bobbi-tv-updates/releases/download/ce[1-9][0-9]{3,7}/[^/]+', parent.path)
+                    or parent.path.rsplit('/', 1)[-1] != urlsplit(newurl).path.rsplit('/', 1)[-1]):
+                raise UpdateError('ONLINE_REDIRECT_REJECTED')
         redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
         # We never reuse the connection. Do not drain an unbounded redirect
         # body before following a permitted URL.
@@ -252,7 +249,7 @@ def check_offer_manifest(offer, manifest):
 
 def latest(cancelled=lambda: False, *, track='stable', report=None):
     deadline = time.monotonic() + min(TRANSFER_SECONDS, DISCOVERY_SECONDS)
-    urls = tuple(feed_url(track, source) for source in ('gitee', 'github'))
+    urls = tuple(feed_url(track, source) for source in ('gitcode', 'github'))
     candidates, unavailable = [], []
     last_error = None
     for index, url in enumerate(urls):

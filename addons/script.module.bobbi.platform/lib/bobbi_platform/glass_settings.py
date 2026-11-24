@@ -10,8 +10,9 @@ from .ce_update_notice import coreelec
 from .paths import ProfileBinding
 
 SETTING = 'BobbiLiquidGlassEnabled'
-GUARD_HASH = '08576e40aae95c1bc37fc7c5b43ce115a6bd34b42e74ff4e6bee9930a074ee38'
-PREVIOUS_HASH = 'b6ea905c6f5d96731f37bc474f08c423d89d7d35fa0821aaa456d71ee2f376d2'
+GUARD_HASH = '51cc4c15f7e7d4a99f63181e26ec3f5c79e31d63186d71a0ee8dabff10c4dbd7'
+PREVIOUS_HASH = '08576e40aae95c1bc37fc7c5b43ce115a6bd34b42e74ff4e6bee9930a074ee38'
+EARLIER_HASH = 'b6ea905c6f5d96731f37bc474f08c423d89d7d35fa0821aaa456d71ee2f376d2'
 SNAPSHOT = Path('.local/share/bobbi-glass-optin') / GUARD_HASH / 'ce_glass_boot.py'
 DROP = Path('.config/system.d/kodi.service.d/86-bobbi-opt-in-glass.conf')
 UNIT = ('# Bobbi TV: user-enabled stock CE optics\n[Service]\n'
@@ -21,6 +22,11 @@ UNIT = ('# Bobbi TV: user-enabled stock CE optics\n[Service]\n'
 
 
 PREVIOUS_UNIT = UNIT.replace(GUARD_HASH.encode(), PREVIOUS_HASH.encode())
+OLD_UNITS = {digest: UNIT.replace(GUARD_HASH.encode(), digest.encode()) for digest in (PREVIOUS_HASH, EARLIER_HASH)}
+
+
+def _previous(path):
+    return any(_matches(path, unit) for unit in OLD_UNITS.values())
 
 
 def _ordinary(path):
@@ -95,7 +101,7 @@ class HostOptics:
         if not self.exe.is_file() or not self.running.samefile(self.exe) or boot.sha(self.exe) != boot.STOCK_CE213_AMLOGIC_NG:
             return False
         _ordinary(self.drop)
-        if self.drop.exists() and not (_matches(self.drop, UNIT) or _matches(self.drop, PREVIOUS_UNIT)):
+        if self.drop.exists() and not (_matches(self.drop, UNIT) or _previous(self.drop)):
             return False
         for conf in self.drop.parent.glob('*.conf'):
             if conf != self.drop:
@@ -128,14 +134,14 @@ class HostOptics:
         if hashlib.sha256(data).hexdigest() != GUARD_HASH:
             raise ValueError('GLASS_GUARD_CHANGED')
         _place(self.snapshot, data)
-        if _matches(self.drop, PREVIOUS_UNIT):
+        if _previous(self.drop):
             self.drop.unlink()
         _place(self.drop, UNIT)  # Last step; no reload, restart or touch of other units.
 
     def disable(self):
         if not self.master or not coreelec():
             return
-        for digest, unit in ((GUARD_HASH, UNIT), (PREVIOUS_HASH, PREVIOUS_UNIT)):
+        for digest, unit in ((GUARD_HASH, UNIT), *OLD_UNITS.items()):
             if _matches(self.drop, unit):
                 self.drop.unlink()
                 snapshot = self.snapshot.parent.parent / digest / self.snapshot.name
@@ -151,7 +157,7 @@ def refresh_owned():
     if not coreelec() or profile_root() != Path('/storage/.kodi/userdata/addon_data/script.module.bobbi.platform'):
         return
     host = HostOptics(True)
-    if (_matches(host.drop, PREVIOUS_UNIT) and boot.opted_in(host.storage / '.kodi/userdata')
+    if (_previous(host.drop) and boot.opted_in(host.storage / '.kodi/userdata')
             and host.available()):
         host.enable()
 
