@@ -173,6 +173,19 @@ def resolve_selected(data, cancelled, *, session=None):
 def next_data(current, cancelled, *, session=None):
     if current.get('file_evidence') == 'USER_CONFIRMED_FILE' or cancelled():
         return None
+    if isinstance(current.get('_owned_next'), dict):
+        from bobbi_platform.owned_playback import resolve_owned_next
+        owned_next = deepcopy(current['_owned_next'])
+        next_item = resolve_owned_next(current, owned_next, cancelled)
+        if not next_item or cancelled():
+            return None
+        next_item.update(
+            request_id=uuid4().hex,
+            selection_policy='exact',
+            _account=deepcopy(current['_account']),
+            direct_playback_handoff=True,
+        )
+        return next_item
     from lib.utils.player.direct_continuity import is_catalog_source, next_direct_data
     if is_catalog_source(current):
         data, _ = next_direct_data(current, cancelled)
@@ -226,7 +239,8 @@ class StandardPlayback:
         self.history = HistoryWriter(host.report, profile_root=getattr(host, 'plugin_root', None))
         self.session = StandardSession(getattr(host, 'playback_accounts', host.accounts), history=self.history.save,
             next_loader=self.next_with_subtitle, open_next=self.open_next,
-            paused=lambda: xbmc.getCondVisibility('Player.Paused'))
+            paused=lambda: xbmc.getCondVisibility('Player.Paused'),
+            observer=getattr(host, 'notify_playback_event', None))
         parent = self
         class Player(xbmc.Player):
             def onPlayBackEnded(self):

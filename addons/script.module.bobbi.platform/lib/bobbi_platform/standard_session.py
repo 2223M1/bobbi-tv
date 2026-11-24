@@ -14,14 +14,35 @@ from .playback import check_media
 
 class StandardSession:
     def __init__(self, accounts, history=lambda data: None, next_loader=None,
-                 open_next=lambda data: None, clock=time.monotonic, *, paused=lambda: False):
+                 open_next=lambda data: None, clock=time.monotonic, *, paused=lambda: False,
+                 observer=None):
         self.accounts, self.history = accounts, history
         self.next_loader, self.open_next, self.clock = next_loader, open_next, clock
         self.paused = paused
+        self.observer = observer
         self.current = None
         self.generation = 0
         self.worker = self.job = None
         self.closed = False
+
+    def _emit_observation(self, event, row, **extra):
+        if self.observer is None or not row:
+            return
+        payload = dict(
+            event=event,
+            request_id=row['request_id'],
+            generation=row['generation'],
+            account=deepcopy(row['account']),
+            position=row['position'],
+            duration=row['duration'],
+            paused=bool(row.get('last_paused', False)),
+            data=deepcopy(row.get('data') or {}),
+        )
+        payload.update(extra)
+        try:
+            self.observer(payload)
+        except Exception:
+            pass
 
     def current_request(self, request):
         row = self.current
@@ -45,6 +66,7 @@ class StandardSession:
             row['next_data'] = None
             if row['state'] == 'playing':
                 self._save(row, reason)
+                self._emit_observation('TERMINAL', row, reason=reason)
             row['state'] = 'retired'
 
     def select(self, request, account):
@@ -104,18 +126,37 @@ class StandardSession:
             return False
         first = row['state'] == 'submitted'
         now = self.clock()
-        row.update(state='playing', observed=now)
+        prev_pos = row['position']
+        prev_obs = row['progress_observed']
+        prev_paused = bool(row.get('last_paused', False))
+        cur_paused = bool(self.paused())
+        row.update(state='playing', observed=now, last_paused=cur_paused)
         observed = (type(position) in (int, float) and type(duration) in (int, float)
                     and 0 <= position <= duration and 0 < duration < 864000)
         if observed:
             row.update(position=float(position), duration=float(duration), progress_observed=now)
         if first:
+            row['last_emit_at'] = now
             self._save(row, 'STARTED')
+            self._emit_observation('AV_START', row, observed_clock=observed)
             if data.get('_pan_file') and data.get('_file_history') and data.get('selection_policy') == 'exact':
                 from bobbi_core.playback_completion import FileProgressCheckpoint
                 row['checkpoint'] = FileProgressCheckpoint()
+        else:
+            trigger = None
+            if cur_paused != prev_paused:
+                trigger = 'Pause' if cur_paused else 'Unpause'
+            elif observed and prev_obs is not None:
+                expected_advance = 0.0 if prev_paused else max(0.0, now - prev_obs)
+                if abs(float(position) - (prev_pos + expected_advance)) >= 4.0:
+                    trigger = 'TimeUpdate'
+            if trigger is None and observed and (now - row.get('last_emit_at', 0.0)) >= 10.0:
+                trigger = 'TimeUpdate'
+            if trigger is not None:
+                row['last_emit_at'] = now
+                self._emit_observation('PROGRESS', row, trigger=trigger, observed_clock=observed)
         checkpoint = row.get('checkpoint')
-        if checkpoint and observed and checkpoint.due(now, position, duration, paused=self.paused()) and not first:
+        if checkpoint and observed and checkpoint.due(now, position, duration, paused=cur_paused) and not first:
             self._save(row, 'PROGRESS')
         return True
 
@@ -140,8 +181,9 @@ class StandardSession:
             return False
         row = self.current
         if row['state'] == 'ended' and kind in ('STOPPED', 'ERROR'):
-            self.retire('STOP' if kind == 'STOPPED' else 'ERROR')
-            self._save(row, 'STOP' if kind == 'STOPPED' else 'ERROR')
+            term_reason = 'STOP' if kind == 'STOPPED' else 'ERROR'
+            self.retire(term_reason)
+            self._save(row, term_reason)
             return False
         if row['state'] != 'playing':
             return False
@@ -153,6 +195,7 @@ class StandardSession:
         reason = 'NATURAL_EOF' if natural else ('STOP' if kind == 'STOPPED' else 'ERROR')
         row.update(state='ended' if natural else 'retired', terminal=self.clock())
         self._save(row, reason)
+        self._emit_observation('TERMINAL', row, reason=reason)
         if not natural:
             row['cancel'].set()
         return natural

@@ -139,10 +139,10 @@ def execute(handle, params):
                 if action == 'play_pointer':
                     from bobbi_platform.source_pointers import read
                     from bobbi_platform.source_streams import local_media_url
-                    from bobbi_platform.runtime import bind_call
                     from bobbi_platform.paths import ProfileBinding
+                    from bobbi_platform.owned_playback import library_source_scope, reserve_playback
+                    from bobbi_core.playback_request import SelectionChanged
                     binding = ProfileBinding()
-                    call = bind_call(binding.root() / 'runtime.json')
                     current, revision = store.source_snapshot(source.id)
                     if current != source:
                         raise LibraryError('SOURCE_STREAM_CHANGED')
@@ -154,10 +154,45 @@ def execute(handle, params):
                         return
                     if not binding.is_current() or store.source_snapshot(source.id) != (source, revision):
                         raise LibraryError('SOURCE_STREAM_CHANGED')
-                    result = call('source_stream_open', dict(source_id=source.id, generation=revision,
-                        request_id=request, selection=dict(kind='strm', relative=relative, observation=observation)),
-                        timeout=18)
-                    url, title = local_media_url(result), relative.rsplit('/', 1)[-1][:-5]
+                    src_scope = library_source_scope(source.id, revision)
+                    with reserve_playback(
+                        f'strm://{source.id}/{relative}',
+                        src_scope,
+                        binding=binding,
+                        request_id=request,
+                        allow_starting=True,
+                    ) as reservation:
+                        result = reservation.host_call('source_stream_open', dict(
+                            source_id=source.id,
+                            generation=revision,
+                            request_id=request,
+                            selection=dict(kind='strm', relative=relative, observation=observation),
+                        ), timeout=18)
+                        url = local_media_url(result)
+                        title = relative.rsplit('/', 1)[-1][:-5]
+                        try:
+                            reservation.submit(
+                                handle,
+                                url,
+                                title=title,
+                                source_meta={
+                                    'provider': 'strm',
+                                    'source_id': source.id,
+                                    'source_generation': revision,
+                                    'item_id': relative[:256],
+                                    'identity_mode': str(result.get('identity_mode', 'strong_etag')),
+                                },
+                                start_over=True,
+                                ready=lambda: (
+                                    not xbmc.Monitor().abortRequested()
+                                    and xbmcgui.Window(10000).getProperty(SELECTION) == request
+                                    and binding.is_current()
+                                    and store.source_snapshot(source.id) == (source, revision)
+                                ),
+                            )
+                        except SelectionChanged:
+                            xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
+                    return
                 elif source.kind == 'catalog':
                     chosen = next((entry for entry in source.items if entry.id == params.get('entry')), None)
                     if chosen is None:

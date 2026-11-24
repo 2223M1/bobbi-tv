@@ -14,11 +14,20 @@ def rpc(method, params=None):
 
 def make_item(url, data):
     import xbmcgui
+    raw_url = url.partition('|')[0]
     item = xbmcgui.ListItem(label=data.get('title', 'bobbi'), path=url)
     item.setProperty('IsPlayable', 'true')
-    if data.get('title'):
-        item.getVideoInfoTag().setTitle(data['title'])
+    if isinstance(data.get('mime'), str) and data['mime']:
+        item.setContentLookup(False)
+        item.setMimeType(data['mime'])
+    video_info = dict(data.get('video_info') or {})
+    if data.get('title') and 'title' not in video_info:
+        video_info['title'] = data['title']
+    if video_info:
+        item.setInfo('video', video_info)
     tag = item.getVideoInfoTag()
+    if data.get('title'):
+        tag.setTitle(data['title'])
     tv = data.get('tv_data') or {}
     for key, setter in (('season', 'setSeason'), ('episode', 'setEpisode')):
         value = tv.get(key)
@@ -34,19 +43,20 @@ def make_item(url, data):
     request = data.get('request_id')
     if request:
         item.setProperty('bobbi.standard.request', request)
-        tag.setUniqueID(request, 'bobbi_request')
-    if data.get('_pan_file'):
-        position = data.get('_file_resume_position', 0)
-        if type(position) in (int, float) and 0 < position <= 864000:
-            item.setProperty('StartOffset', str(position))
+        if hasattr(tag, 'setUniqueID'):
+            tag.setUniqueID(request, 'bobbi_request')
+    resume_pos = data.get('_resume_offset_seconds')
+    if data.get('_pan_file') and resume_pos is None:
+        resume_pos = data.get('_file_resume_position', 0)
     if data.get('_mounted_path') or data.get('_bobbi_start_over') is True:
         # Mounted stat is not a strong resume identity. Do not inherit Kodi's
-        # old same-path offset after remount/replacement. Original browsing is
-        # unchanged; server entries also explicitly start at zero until a
-        # reliable content-observation contract can authorize their resume.
+        # old same-path offset after remount/replacement.
         item.setProperty('StartOffset', '0')
+    elif type(resume_pos) in (int, float) and 0 < resume_pos <= 864000:
+        item.setProperty('StartOffset', str(resume_pos))
     # Do not override global audio/HDR/codec/refresh-rate/OSD settings. Original
     # language and Chinese preference are a first-run user-confirmed setting.
+    _ = raw_url
     return item
 
 

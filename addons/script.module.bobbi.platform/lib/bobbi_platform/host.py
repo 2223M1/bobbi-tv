@@ -52,6 +52,9 @@ class Host:
         self.calls, self.revocations = Queue(maxsize=32), Queue(maxsize=32)
         self.account_changes = Event()
         self.owner_account_changed = None
+        self.playback_observers = []
+        self.owned_tracks = {}
+        self._registry_mtime_ns = None
         self.lock = Lock()
         self.engine_check = 0
         self.diagnostic_due, self.diagnostic_worker = time.monotonic() + 30, None
@@ -71,7 +74,12 @@ class Host:
         def prepare():
             self.accounts = AccountManager(self.root / '115-os_linux.json')
             from .playback_accounts import PlaybackAccounts
-            self.playback_accounts = PlaybackAccounts(self.accounts, lambda: self.pans)
+            self.playback_accounts = PlaybackAccounts(
+                self.accounts,
+                lambda: None if self.stopping.is_set() else self._pans(),
+                registry_root=self.root,
+                current=lambda: not self.stopping.is_set() and self.check_profile(),
+            )
             self.unsubscribe = self.accounts.subscribe(self._account_changed)
         self.runtime.start(prepare=prepare)
         try:
@@ -433,6 +441,52 @@ class Host:
             if len(json.dumps(result, ensure_ascii=True).encode('utf-8')) > 15500:
                 raise ValueError('SHARE_SEARCH_REPLY_LIMIT')
             return self.accounts.run_if_current(expected, lambda: result)
+        if action == 'owned_playback_reserve' and set(body) == {'request_id', 'account'}:
+            import re
+            req_id = body.get('request_id')
+            if not isinstance(req_id, str) or not re.fullmatch(r'[0-9a-f]{32}', req_id):
+                raise ValueError('OWNED_TRACK_INVALID')
+            if self.playback_accounts is not None:
+                self.playback_accounts.require_current(body['account'])
+            with self.lock:
+                self._active_owned_request = req_id
+                self.owned_tracks[req_id] = dict(account=dict(body['account']), data=None, cancelled=False)
+                while len(self.owned_tracks) > 32:
+                    self.owned_tracks.pop(next(iter(self.owned_tracks)))
+            return {'reserved': True, 'request_id': req_id}
+        if action == 'owned_playback_current' and set(body) == {'request_id'}:
+            req_id = body.get('request_id')
+            with self.lock:
+                entry = self.owned_tracks.get(req_id)
+                active = getattr(self, '_active_owned_request', None) == req_id
+            if not entry or not active or entry.get('cancelled'):
+                return {'current': False}
+            ok = self.playback_accounts.is_current(entry['account']) if self.playback_accounts else True
+            return {'current': bool(ok)}
+        if action == 'owned_playback_cancel' and set(body) == {'request_id'}:
+            req_id = body.get('request_id')
+            with self.lock:
+                entry = self.owned_tracks.get(req_id)
+                if entry is not None:
+                    entry['cancelled'] = True
+                if getattr(self, '_active_owned_request', None) == req_id:
+                    self._active_owned_request = None
+            return {'cancelled': True}
+        if action == 'owned_playback_track' and set(body) == {'request_id', 'account', 'data'}:
+            import re
+            req_id = body.get('request_id')
+            if not isinstance(req_id, str) or not re.fullmatch(r'[0-9a-f]{32}', req_id):
+                raise ValueError('OWNED_TRACK_INVALID')
+            if self.playback_accounts is not None:
+                self.playback_accounts.require_current(body['account'])
+            with self.lock:
+                entry = self.owned_tracks.get(req_id)
+                if entry is not None and (entry.get('cancelled') or getattr(self, '_active_owned_request', req_id) != req_id):
+                    raise ValueError('OWNED_SELECTION_SUPERSEDED')
+                self.owned_tracks[req_id] = dict(account=dict(body['account']), data=dict(body['data']), cancelled=False)
+                while len(self.owned_tracks) > 32:
+                    self.owned_tracks.pop(next(iter(self.owned_tracks)))
+            return {'tracked': True}
         if action in ('playback', 'standard_playback'):
             if '_verified_transport' in body:
                 raise ValueError('PRIVATE_TRANSPORT_PROOF_REQUIRED')
@@ -513,15 +567,38 @@ class Host:
         result = self.native_rpc('Player.BobiControl', command)
         return isinstance(result, dict) and result.get('queued') is True
 
+    def subscribe_playback(self, listener):
+        with self.lock:
+            self.playback_observers.append(listener)
+
+    def notify_playback_event(self, payload):
+        with self.lock:
+            listeners = tuple(self.playback_observers)
+        for fn in listeners:
+            try:
+                fn(payload)
+            except Exception:
+                pass
+
     def tick(self):
         if not self.check_profile() or self.stopping.is_set():
             return
-        if getattr(self.pans, 'servers', None) is not None and time.monotonic() >= self.server_poll_due:
+        if time.monotonic() >= self.server_poll_due:
             self.server_poll_due = time.monotonic() + 1
+            reg_path = self.root / 'libraries.sqlite3'
             try:
-                self.pans.servers.poll()  # Local Registry changes; never network IO.
-            except (ValueError, OSError, RuntimeError):
-                self.account_changes.set()
+                mtime_ns = reg_path.stat().st_mtime_ns if reg_path.is_file() else None
+            except OSError:
+                mtime_ns = None
+            if mtime_ns != self._registry_mtime_ns:
+                if self._registry_mtime_ns is not None:
+                    self.account_changes.set()
+                self._registry_mtime_ns = mtime_ns
+            if getattr(self.pans, 'servers', None) is not None:
+                try:
+                    self.pans.servers.poll()  # Local Registry changes; never network IO.
+                except (ValueError, OSError, RuntimeError):
+                    self.account_changes.set()
         # Revoke old scopes before accepting later opens/continuations. The
         # authority also guards each scoped command under AccountManager CAS.
         if self.account_changes.is_set() and self.owner_account_changed is not None:

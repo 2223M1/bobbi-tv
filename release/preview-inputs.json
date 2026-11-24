@@ -61,6 +61,7 @@
       "lib/bobbi_platform/online_transport.py",
       "lib/bobbi_platform/online_updates.py",
       "lib/bobbi_platform/optimization.py",
+      "lib/bobbi_platform/owned_playback.py",
       "lib/bobbi_platform/pair_code.py",
       "lib/bobbi_platform/pairing.py",
       "lib/bobbi_platform/pan_115.py",

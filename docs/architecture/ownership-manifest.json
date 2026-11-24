@@ -613,7 +613,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 685,
+        "line": 762,
         "anchor": "def close(self):"
       },
       "note": "Reviewed responsibility declaration: Profile-bound Host startup, service admission, draining and close. Not a runtime test result."
@@ -901,7 +901,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 676,
+        "line": 753,
         "anchor": "session_factory = partial(Session, lock_factory=InstanceLock,"
       },
       "note": "Platform composition injects lock, pairing, font decoder and actual resident Host owner_call into Session. Dispatch and lease checks bracket owner reads; core cannot discover a later runtime. Resource/lock ordering stays with PreparationHost/Session. Post-55b4f9b documentation supplement, absent from that frozen manifest/graph; not execution evidence."
@@ -985,7 +985,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 179,
+        "line": 187,
         "anchor": "file_facts=getattr(self.file_history, 'media_facts', None), profile_current=self.check_profile)"
       },
       "note": "The same captured Host profile fence is injected into the common CatalogService for every source port. Reviewed static responsibility, not device execution evidence."
@@ -1129,7 +1129,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/plugin.video.bobbi/lib/services/standard_playback.py",
-        "line": 250,
+        "line": 264,
         "anchor": "self.prepared_session = from_host(self.host, body.get('account'))"
       },
       "note": "Standard playback captures PreparedSession at request admission and keeps that same session for continuation; a missing session is not replaced by an ambient lookup. Reviewed static responsibility, not device execution evidence."
