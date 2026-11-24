@@ -16,8 +16,23 @@ def media(data):
         return None
     # Playback accepts some legacy metadata shapes. This optional projection
     # only describes an already structured identity; unknown shapes stay quiet.
-    ids, tv_data = data.get('ids'), data.get('tv_data')
-    if type(ids) is not dict or type(tv_data) is not dict:
+    tv_data = data.get('tv_data')
+    if type(tv_data) is not dict:
+        return None
+    emby_ref = data.get('_emby_season_ref')
+    if type(emby_ref) is str and re.fullmatch(r'[0-9a-f]{16}', emby_ref):
+        try:
+            values = [tv_data.get('season'), tv_data.get('episode')]
+            if any(type(value) not in (str, int) or not str(value).isdecimal() for value in values):
+                return None
+            season, episode = map(int, values)
+            if not (0 <= season <= 999 and 0 < episode <= 99999):
+                return None
+            return 'emby:season:%s:s%d:e%d' % (emby_ref, season, episode)
+        except (ValueError, TypeError):
+            return None
+    ids = data.get('ids')
+    if type(ids) is not dict:
         return None
     try:
         values = [ids.get('tmdb_id'), tv_data.get('season'), tv_data.get('episode')]
@@ -68,7 +83,7 @@ def checked(value):
         raise ValueError('NEXT_SUMMARY_INVALID')
     for key in ('current_media_ref', 'next_media_ref'):
         if value[key] is not None and (type(value[key]) is not str or not re.fullmatch(
-                r'tmdb:tv:[1-9][0-9]{0,9}:s[0-9]{1,3}:e[1-9][0-9]{0,4}', value[key])):
+                r'(?:tmdb:tv:[1-9][0-9]{0,9}|emby:season:[0-9a-f]{16}):s[0-9]{1,3}:e[1-9][0-9]{0,4}', value[key])):
             raise ValueError('NEXT_SUMMARY_INVALID')
     family = value['release_family_ref']
     if family is not None and (type(family) is not str or not re.fullmatch('[0-9a-f]{64}', family)):

@@ -172,7 +172,12 @@ class WidgetRefreshService:
                     self._pending_container_source = sid
                     hub.mark_confirmed(sid, gen, offline=False)
         if revs:
-            self._offer({'emby_server': ','.join(revs)})
+            joined = ','.join(revs)
+            self._offer({
+                'emby_server': joined,
+                'emby_resume': joined,
+                'emby_recent': joined,
+            })
 
     def _wait(self, monitor, seconds=None):
         deadline = monotonic() + (self.interval if seconds is None else seconds)

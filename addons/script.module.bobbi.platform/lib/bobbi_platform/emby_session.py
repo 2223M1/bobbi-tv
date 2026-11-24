@@ -866,8 +866,14 @@ def resolve_next_episode_data(current: dict, spec: dict, cancelled) -> dict | No
         server_id=saved['server_id'],
         user_id=saved['user_id'],
     )
+    season_ref = hashlib.sha256(f'{source_id}:{season_id}'.encode('utf-8')).hexdigest()[:16]
+    family_ref = hashlib.sha256(f'emby:{source_id}:{generation}:{season_id}'.encode('utf-8')).hexdigest()
     return {
         '_account': scope,
+        'mode': 'tv',
+        '_emby_season_ref': season_ref,
+        'prepared_version_key': family_ref,
+        '_next_cloud_verified': True,
         'url': opened['url'] + options,
         'title': title,
         'source_title': title,

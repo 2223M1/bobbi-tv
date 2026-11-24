@@ -217,6 +217,15 @@ class OwnedPlaybackReservation:
             data['subtitles_path'] = list(subtitles[:4])
         if next_candidate is not None:
             data['_owned_next'] = deepcopy(next_candidate)
+            if (
+                next_candidate.get('resolver') == 'emby_same_season'
+                and isinstance(next_candidate.get('season_id'), str)
+            ):
+                import hashlib
+                data['mode'] = 'tv'
+                data['_emby_season_ref'] = hashlib.sha256(
+                    f"{meta.get('source_id', '')}:{next_candidate['season_id']}".encode('utf-8')
+                ).hexdigest()[:16]
         if start_over or not resume_offset or resume_offset <= 0:
             data['_bobbi_start_over'] = True
             data['_resume_offset_seconds'] = 0

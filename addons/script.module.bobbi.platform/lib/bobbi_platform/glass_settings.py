@@ -197,3 +197,138 @@ def show(dialog):
                 and xbmc.getCondVisibility('Window.IsActive(skinsettings)'))
     toggle(dialog, host, lambda: xbmc.getCondVisibility('Skin.HasSetting(' + SETTING + ')'),
            lambda on: xbmc.executebuiltin(('Skin.SetBool(' if on else 'Skin.Reset(') + SETTING + ')', True), current)
+
+
+HOME_RAILS = (
+    ('continue_watching', '继续观看'),
+    ('emby_resume', 'Emby 继续观看'),
+    ('emby_recent', 'Emby 最近新增'),
+    ('popular_tv', '热门剧集'),
+    ('popular_movies', '热门电影'),
+    ('current_anime', '当季新番'),
+    ('anime_movies', '动漫电影'),
+    ('personal_library', '我的片库'),
+)
+HOME_RAIL_KEYS = tuple(key for key, _ in HOME_RAILS)
+HOME_RAIL_TITLES = dict(HOME_RAILS)
+
+
+def normalize_rail_order(raw_slots: list[str] | tuple[str, ...]) -> list[str]:
+    """Normalize arbitrary/partial slot values into an exact permutation of HOME_RAIL_KEYS."""
+    seen: list[str] = []
+    for key in raw_slots:
+        if isinstance(key, str) and key in HOME_RAIL_TITLES and key not in seen:
+            seen.append(key)
+    for key in HOME_RAIL_KEYS:
+        if key not in seen:
+            seen.append(key)
+    return seen
+
+
+def read_home_rail_prefs(get_bool, get_string) -> tuple[list[str], set[str]]:
+    raw_slots = [get_string(f'BobbiRailSlot{slot}') for slot in range(1, len(HOME_RAIL_KEYS) + 1)]
+    order = normalize_rail_order(raw_slots)
+    hidden = {key for key in HOME_RAIL_KEYS if get_bool(f'BobbiHideRail_{key}')}
+    return order, hidden
+
+
+def apply_home_rail_prefs(order: list[str], hidden: set[str], set_bool, set_string, reset_setting) -> None:
+    """Persist validated slot order and hide flags to Skin settings only (zero XML writes)."""
+    clean_order = normalize_rail_order(order)
+    is_default_order = tuple(clean_order) == HOME_RAIL_KEYS
+    for idx, key in enumerate(clean_order, start=1):
+        slot_name = f'BobbiRailSlot{idx}'
+        if is_default_order:
+            reset_setting(slot_name)
+        else:
+            set_string(slot_name, key)
+    for key in HOME_RAIL_KEYS:
+        hide_name = f'BobbiHideRail_{key}'
+        if key in hidden:
+            set_bool(hide_name, True)
+        else:
+            reset_setting(hide_name)
+
+
+def manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_setting, is_current=lambda: True) -> bool:
+    if not is_current():
+        return False
+    order, hidden = read_home_rail_prefs(get_bool, get_string)
+    dirty = False
+    while is_current():
+        rows = []
+        for idx, key in enumerate(order, start=1):
+            state_lbl = '已隐藏' if key in hidden else '显示中'
+            rows.append(f'{idx}. {HOME_RAIL_TITLES[key]}  ·  {state_lbl}')
+        rows.append('恢复默认顺序与全部显示')
+        rows.append('完成并保存')
+        pick = dialog.select('首页栏目显隐与顺序', rows)
+        if pick < 0:
+            break
+        if pick == len(order):
+            order = list(HOME_RAIL_KEYS)
+            hidden = set()
+            dirty = True
+            continue
+        if pick == len(order) + 1:
+            break
+        if 0 <= pick < len(order):
+            chosen_key = order[pick]
+            chosen_title = HOME_RAIL_TITLES[chosen_key]
+            vis_action = '设为显示' if chosen_key in hidden else '设为隐藏'
+            ops = [(vis_action, 'toggle')]
+            if pick > 0:
+                ops.append(('上移一位', 'up'))
+            if pick + 1 < len(order):
+                ops.append(('下移一位', 'down'))
+            ops.append(('返回栏目列表', 'back'))
+            sub = dialog.select(chosen_title, [lbl for lbl, _ in ops])
+            if 0 <= sub < len(ops):
+                op = ops[sub][1]
+                if op == 'toggle':
+                    if chosen_key in hidden:
+                        hidden.discard(chosen_key)
+                    else:
+                        hidden.add(chosen_key)
+                    dirty = True
+                elif op == 'up':
+                    order[pick - 1], order[pick] = order[pick], order[pick - 1]
+                    dirty = True
+                elif op == 'down':
+                    order[pick + 1], order[pick] = order[pick], order[pick + 1]
+                    dirty = True
+    if dirty and is_current():
+        apply_home_rail_prefs(order, hidden, set_bool, set_string, reset_setting)
+        return True
+    return False
+
+
+def _kodi_skin_accessors():
+    import xbmc
+    return (
+        lambda name: bool(xbmc.getCondVisibility(f'Skin.HasSetting({name})')),
+        lambda name: xbmc.getInfoLabel(f'Skin.String({name})') or '',
+        lambda name, on: xbmc.executebuiltin(('Skin.SetBool(' if on else 'Skin.Reset(') + name + ')', True),
+        lambda name, val: xbmc.executebuiltin(f'Skin.SetString({name},{val})', True),
+        lambda name: xbmc.executebuiltin(f'Skin.Reset({name})', True),
+    )
+
+
+def show_home_rails(dialog):
+    import xbmc
+    binding = ProfileBinding()
+    get_bool, get_string, set_bool, set_string, reset_setting = _kodi_skin_accessors()
+    is_current = lambda: binding.is_current() and xbmc.getSkinDir() == 'skin.bobbi.cinema'
+    manage_home_rails(dialog, get_bool, get_string, set_bool, set_string, reset_setting, is_current)
+
+
+def reset_home_rails(dialog=None):
+    import xbmc
+    binding = ProfileBinding()
+    if not binding.is_current() or xbmc.getSkinDir() != 'skin.bobbi.cinema':
+        return False
+    _, _, set_bool, set_string, reset_setting = _kodi_skin_accessors()
+    apply_home_rail_prefs(list(HOME_RAIL_KEYS), set(), set_bool, set_string, reset_setting)
+    if dialog is not None and hasattr(dialog, 'notification'):
+        dialog.notification('波比 TV', '已恢复首页默认栏目')
+    return True

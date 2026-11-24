@@ -185,6 +185,7 @@
   <variable name="SkinSettingHint">
     <value condition="Control.HasFocus(9105)">默认为左侧可收起液态玻璃侧栏，浏览内容时收起为左上角胶囊。开启后改为顶部居中的玻璃胶囊导航；切换后界面会重新载入。</value>
     <value condition="Control.HasFocus(9106)">默认使用经典外观。开启时会说明本机支持实时折射，还是仅支持玻璃材质。关闭后立即恢复经典外观。</value>
+    <value condition="Control.HasFocus(9107)">自定义首页各栏目的显示、隐藏与上下顺序。设置保存在当前皮肤配置中，不修改安装目录文件；全部隐藏时仍保留“打开我的”与“恢复默认栏目”入口。</value>
     <value condition="Control.HasFocus(9101)">关闭焦点放大、面板滑入和页面淡入。焦点胶囊、已选状态标记和正在播放标记保持不变。</value>
     <value condition="Control.HasFocus(9102)">播放时控制栏5秒无操作后自动收起；字幕、音轨面板和设置打开时不会收起。</value>
     <value condition="Control.HasFocus(9103)">电视不支持 HDR 时，自动对 HDR、HLG 和杜比视界片源执行 VS10 → SDR 转换。</value>

@@ -35,7 +35,9 @@ def spec():
 
 def baseline_spec():
     value = spec()
-    value['rails'] = [row for row in value['rails'] if row['control_id'] != 9820]
+    baseline_ids = {row[0] for row in BASELINE_ROWS}
+    value['rails'] = [row for row in value['rails'] if row['control_id'] in baseline_ids]
+    value.pop('slot_preferences', None)
     return value
 
 

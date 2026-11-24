@@ -90,6 +90,8 @@ class HomeRailLifecycle:
             self.window.setProperty('Bobbi.Rail.Account.' + provider, '')
         bump(self.window, 'personal_library')
         bump(self.window, 'continue_watching')
+        bump(self.window, 'emby_resume')
+        bump(self.window, 'emby_recent')
 
     def changed(self, previous, current):
         self.dirty = True
@@ -149,6 +151,8 @@ class HomeRailLifecycle:
             self.window.setProperty('Bobbi.Rail.Account.' + provider, '')
         bump(self.window, 'personal_library')
         bump(self.window, 'continue_watching')
+        bump(self.window, 'emby_resume')
+        bump(self.window, 'emby_recent')
 
     def close(self):
         self.unsubscribe()

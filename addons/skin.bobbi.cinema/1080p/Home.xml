@@ -43,7 +43,7 @@
       <left>-2000</left><top>0</top><width>800</width><height>1</height>
       <label>$VAR[NextRailTitle]</label>
     </control>
-    <!-- offline / all catalogue rails empty -->
+    <!-- offline / all catalogue rails empty or hidden -->
     <control type="group">
       <visible>!$EXP[BobbiHomeUpdating] + !$EXP[BobbiHomeHasItems]</visible>
       <include content="StateBlock">
@@ -59,9 +59,24 @@
         <align>center</align><aligny>center</aligny>
         <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
         <texturenofocus colordiffuse="2EFFFFFF" border="36,0,36,0">bobbi/glass/capsule-72.png</texturenofocus>
-        <onup>9701</onup><onleft>9701</onleft><onright>noop</onright><ondown>noop</ondown>
+        <onup>9701</onup><onleft>9701</onleft>
+        <onright condition="$EXP[BobbiHomeAnyRailHidden]">9871</onright>
+        <onright condition="!$EXP[BobbiHomeAnyRailHidden]">noop</onright>
+        <ondown>noop</ondown>
         <onback>SetFocus(9701)</onback>
         <onclick>ActivateWindow(1197)</onclick>
+      </control>
+      <control type="button" id="9871">
+        <left>356</left><top>830</top><width>280</width><height>72</height>
+        <label>恢复默认栏目</label>
+        <font>Button28</font><textcolor>text</textcolor><focusedcolor>on_focus</focusedcolor>
+        <align>center</align><aligny>center</aligny>
+        <texturefocus colordiffuse="focus" border="36,0,36,0">bobbi/glass/capsule-72.png</texturefocus>
+        <texturenofocus colordiffuse="2EFFFFFF" border="36,0,36,0">bobbi/glass/capsule-72.png</texturenofocus>
+        <visible>$EXP[BobbiHomeAnyRailHidden]</visible>
+        <onup>9701</onup><onleft>9870</onleft><onright>noop</onright><ondown>noop</ondown>
+        <onback>SetFocus(9701)</onback>
+        <onclick>RunScript(script.bobbi.setup,home_rails_reset)</onclick>
       </control>
     </control>
     <include content="TopBar">

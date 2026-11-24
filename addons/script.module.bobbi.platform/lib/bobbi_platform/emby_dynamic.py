@@ -443,3 +443,167 @@ def execute(handle, params, store, item):
         finish()
         if outcome is not None:
             observe(binding.root(), 'emby_play' if play else ('emby_mark' if mark else 'emby_browse'), outcome, started)
+
+
+def execute_home_rail(handle: int, params: dict, *, registry_factory=None) -> None:
+    """Populate Home Emby rails (`emby_resume` / `emby_recent`) with zero network calls when unconfigured."""
+    import xbmc
+    import xbmcgui
+    import xbmcplugin
+    from .emby_artwork import poster_factory
+    from .libraries import Registry
+    from .optimization import observe
+
+    started = time.monotonic()
+    outcome = 'ok'
+    section = params.get('section', '')
+    if section not in ('resume', 'recent'):
+        if handle >= 0:
+            xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
+        return
+
+    binding = ProfileBinding()
+    try:
+        root = binding.root()
+    except (OSError, ValueError, RuntimeError):
+        if handle >= 0:
+            xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
+        return
+
+    reg_path = root / 'libraries.sqlite3'
+    if not reg_path.is_file() and registry_factory is None:
+        if handle >= 0:
+            xbmcplugin.addDirectoryItems(handle, [], 0)
+            xbmcplugin.endOfDirectory(handle, succeeded=True, cacheToDisc=False)
+        return
+
+    store = None
+    rows = []
+    media_types = []
+    had_emby_source = False
+    try:
+        store = registry_factory() if registry_factory is not None else Registry(reg_path, read_only=True, timeout=0.05)
+        emby_sources = []
+        for src in store.sources():
+            if src.kind == 'media_server' and src.metadata.get('provider') == 'emby' and src.password:
+                try:
+                    snap_src, rev = store.source_snapshot(src.id)
+                    emby_sources.append((snap_src, rev))
+                except LibraryError:
+                    continue
+        if not emby_sources:
+            if handle >= 0:
+                xbmcplugin.addDirectoryItems(handle, [], 0)
+                xbmcplugin.endOfDirectory(handle, succeeded=True, cacheToDisc=False)
+            return
+
+        had_emby_source = True
+        multi_source = len(emby_sources) > 1
+        query = 'view:resume' if section == 'resume' else 'view:recent'
+        per_source_limit = min(PAGE, max(4, PAGE // len(emby_sources)))
+
+        for source, rev in emby_sources:
+            if len(rows) >= PAGE or xbmc.Monitor().abortRequested() or not binding.is_current():
+                break
+            saved = {
+                'provider': 'emby',
+                'location': source.location,
+                'token': source.password,
+                'server_id': source.metadata['server_id'],
+                'user_id': source.metadata['user_id'],
+            }
+            client = Client('emby', saved)
+            try:
+                with client.session.budget(8):
+                    client._identity(user_scoped_read=True)
+                    page_rows, _ = client.page_rows(query, 1, PAGE, display=True)
+            except (PanError, LibraryError, ValueError, OSError):
+                outcome = 'unavailable'
+                continue
+
+            if xbmc.Monitor().abortRequested() or not binding.is_current():
+                rows = []
+                break
+            try:
+                if store.source_snapshot(source.id) != (source, rev):
+                    continue
+            except LibraryError:
+                continue
+
+            poster = poster_factory(root, source.id, rev, store)
+            added_for_source = 0
+            for record in page_rows:
+                if len(rows) >= PAGE or added_for_source >= per_source_limit:
+                    break
+                data = projection(record)
+                if data is None:
+                    continue
+                ident, title, folder, info, tag = data
+                media_types.append(info.get('mediatype', 'video'))
+                resume_sec, played_flag, fav_flag, _ = _user_state(record)
+                duration = int(info.get('duration') or 0)
+                pct = 0
+                if resume_sec > 0:
+                    pct = max(1, min(99, int(round(resume_sec * 100.0 / duration)))) if duration > 0 else 1
+
+                target = (
+                    link(action='emby_page', source=source.id, revision=rev, parent='folder:' + ident)
+                    if folder
+                    else link(
+                        action='emby_play',
+                        source=source.id,
+                        revision=rev,
+                        id=ident,
+                        **({'resume_mode': 'resume'} if section == 'resume' and resume_sec > 0 else {}),
+                    )
+                )
+                li = xbmcgui.ListItem(label=title)
+                sub_parts = []
+                if multi_source:
+                    sub_parts.append(source.name)
+                if resume_sec > 0:
+                    sub_parts.append('继续 ' + _fmt_clock(resume_sec))
+                elif played_flag and not folder:
+                    sub_parts.append('已看')
+                if sub_parts:
+                    li.setLabel2(' · '.join(sub_parts))
+                props = {
+                    'Bobbi.Emby.Authority': 'emby_server',
+                    'Bobbi.Emby.SourceId': source.id,
+                    'Bobbi.Emby.SourceName': source.name,
+                }
+                if pct > 0:
+                    props['PercentPlayed'] = str(pct)
+                    props['ResumeTime'] = str(int(resume_sec))
+                    if duration > 0:
+                        props['TotalTime'] = str(duration)
+                if fav_flag:
+                    props['Bobbi.Emby.Favorite'] = 'true'
+                for k, v in props.items():
+                    li.setProperty(k, v)
+                if not folder:
+                    li.setProperty('IsPlayable', 'true')
+                    li.setInfo('video', dict({'size': -1}, **info))
+                else:
+                    li.setInfo('video', info)
+                li.setContentLookup(False)
+                art = poster(ident, tag) if tag else ''
+                if art:
+                    art_map = {'poster': art, 'thumb': art}
+                    if section == 'resume':
+                        art_map['landscape'] = art
+                    li.setArt(art_map)
+                else:
+                    li.setArt({'icon': 'DefaultFolder.png' if folder else 'DefaultVideo.png'})
+                rows.append((target, li, folder))
+                added_for_source += 1
+    finally:
+        if store is not None and registry_factory is None:
+            store.close()
+        if handle >= 0:
+            if media_types:
+                xbmcplugin.setContent(handle, _content_type(media_types))
+            xbmcplugin.addDirectoryItems(handle, rows, len(rows))
+            xbmcplugin.endOfDirectory(handle, succeeded=True, cacheToDisc=False)
+        if had_emby_source:
+            observe(root, 'emby_browse', outcome, started)

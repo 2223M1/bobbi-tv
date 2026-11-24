@@ -31,6 +31,25 @@
     byId('status').textContent = text;
     byId('status').classList.toggle('error', error);
   }
+  function updateJobCapsule(rows) {
+    const capsule = byId('jobCapsule');
+    if (!capsule) return;
+    if (!Array.isArray(rows)) {
+      capsule.replaceChildren(node('strong', '后台任务 · '), node('span', String(rows || '只读摘要待刷新（点击「后台任务」查看实时扫描进度）')));
+      return;
+    }
+    const active = rows.filter(r => r && ['queued', 'running'].includes(r.state));
+    if (active.length) {
+      const first = active[0], counts = first.counts || {};
+      const detail = (labels[first.state] || first.state) + '（已扫描 ' + (counts.scanned || 0) + ' 项 / 发现 ' + (counts.discovered || 0) + ' 个视频）';
+      capsule.replaceChildren(node('strong', '后台任务 · '), node('span', '进行中 ' + active.length + ' 项 · ' + detail));
+    } else if (rows.length) {
+      const latest = rows[0];
+      capsule.replaceChildren(node('strong', '后台任务 · '), node('span', '当前无运行中任务 · 最近状态：' + (labels[latest.state] || latest.state)));
+    } else {
+      capsule.replaceChildren(node('strong', '后台任务 · '), node('span', '当前无排队或扫描中任务'));
+    }
+  }
   function id() {
     return Array.from(crypto.getRandomValues(new Uint8Array(16)), n => n.toString(16).padStart(2,'0')).join('');
   }
@@ -794,7 +813,7 @@
     if (!rows.length) byId('rows').append(node('p','此页暂无记录。扫描未完成时仅显示已提交部分。'));
     byId('previous').disabled=offset===0;byId('next').disabled=nextOffset==null;
     status('已读取当前状态 · 第 '+(pageIndex+1)+' 页。关闭浏览器不会取消后台任务。');
-    if(currentTab==='jobs') {jobsActive=rows.some(row=>['queued','running'].includes(row.state));pollDelay=5000;scheduleJobs(!automatic);}
+    if(currentTab==='jobs') {updateJobCapsule(rows);jobsActive=rows.some(row=>['queued','running'].includes(row.state));pollDelay=5000;scheduleJobs(!automatic);}
   }
   ['items','sources','jobs','history','playback','stremio','sourceImport'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
   byId('refresh').addEventListener('click',()=>guarded(load));
@@ -1005,6 +1024,8 @@
     grantedScopes=session.scopes||[];
     const hasCatalog=!session.scopes||grantedScopes.includes('catalog_read');
     for(const item of ['itemsTab','sourcesTab','jobsTab'])byId(item).classList.toggle('hidden',!hasCatalog);
+    byId('jobCapsule').classList.toggle('hidden',!hasCatalog);
+    if(hasCatalog)updateJobCapsule();
     byId('batch').classList.toggle('hidden',!hasCatalog);
     byId('playbackTab').classList.toggle('hidden',!grantedScopes.includes('playback_read'));
     byId('stremioTab').classList.toggle('hidden',!grantedScopes.includes('stremio_addons'));

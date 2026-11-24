@@ -22,6 +22,20 @@
         <left>0</left><top>0</top><width>1920</width><height>180</height>
         <texture>bobbi/glass/scrim-top.png</texture>
       </control>
+      <!-- Top-left read-only owner-admitted Next Episode Liquid Glass capsule @ left=80, y=46 -->
+      <control type="group" id="9650">
+        <visible>Player.HasVideo + !String.IsEmpty(Window(Home).Property(Bobbi.Next.Label)) + [String.IsEqual(Window(Home).Property(Bobbi.Next.State),ready) | String.IsEqual(Window(Home).Property(Bobbi.Next.State),preparing) | String.IsEqual(Window(Home).Property(Bobbi.Next.State),needs_selection)]</visible>
+        <include content="GlassCapsule">
+          <param name="x">80</param><param name="y">46</param><param name="w">520</param><param name="h">52</param>
+        </include>
+        <control type="label" id="9651">
+          <left>104</left><top>46</top><width>472</width><height>52</height>
+          <label>$INFO[Window(Home).Property(Bobbi.Next.Label)]</label>
+          <font>NavClock20</font><textcolor>F2F5F5F7</textcolor><align>left</align><aligny>center</aligny>
+          <scroll>false</scroll>
+        </control>
+      </control>
+
       <include content="GlassCapsule">
         <param name="x">1684</param><param name="y">46</param><param name="w">156</param><param name="h">52</param>
       </include>

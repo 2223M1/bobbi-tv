@@ -349,6 +349,10 @@ def addon_router(*, prepare_catalog=None):
             from lib.utils.views.continue_watching import show_continue_watching
             return show_continue_watching(params)
 
+        if action == 'emby_rail':
+            from bobbi_platform.emby_dynamic import execute_home_rail
+            return execute_home_rail(int(sys.argv[1]), params)
+
         if action == 'bobbi_retry_rail':
             from lib.cinema.focus_anchor import bump
             import xbmcgui

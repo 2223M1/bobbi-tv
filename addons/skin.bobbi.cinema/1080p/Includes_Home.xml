@@ -114,6 +114,7 @@
     <definition>
       <control type="group">
         <width>1920</width><height>500</height>
+        <visible>!Skin.HasSetting(BobbiHideRail_$PARAM[key])</visible>
         <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id])">Conditional</animation>
         <!-- Keep the provider owner alive: Kodi evaluates node.visible one
              tick after DONE. Hiding this group on zero items prevents that
@@ -213,6 +214,7 @@
     <definition>
       <control type="group">
         <width>1920</width><height>480</height>
+        <visible>!Skin.HasSetting(BobbiHideRail_$PARAM[key])</visible>
         <animation effect="slide" start="0,0" end="0,2160" time="0" condition="!String.IsEqual(Control.GetLabel(9791),$PARAM[id])">Conditional</animation>
         <!-- Same provider-lifetime rule as HomeRail; do not gate its parent
              processing on the result of the provider itself. -->

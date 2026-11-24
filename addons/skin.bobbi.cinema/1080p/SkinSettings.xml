@@ -78,6 +78,23 @@
         <param name="label">液态玻璃</param>
         <param name="hint">默认关闭；开启前会说明此设备支持的效果</param>
       </include>
+      <control type="group" id="9193">
+        <width>780</width><height>66</height>
+        <control type="label">
+          <left>35</left><top>34</top><width>710</width><height>28</height>
+          <label>首页栏目</label>
+          <font>SettingsSubhead25</font><textcolor>FF80848D</textcolor><aligny>center</aligny>
+        </control>
+      </control>
+      <control type="button" id="9107">
+        <left>0</left><top>0</top><width>780</width><height>66</height>
+        <label>首页栏目显隐与顺序</label>
+        <font>Label28</font><textcolor>FFF5F5F7</textcolor><focusedcolor>FF1D1D1F</focusedcolor>
+        <textoffsetx>32</textoffsetx><aligny>center</aligny>
+        <texturefocus colordiffuse="FFFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturefocus>
+        <texturenofocus colordiffuse="1CFFFFFF" border="33,0,33,0">bobbi/glass/capsule-66.png</texturenofocus>
+        <onclick>RunScript(script.bobbi.setup,home_rails)</onclick>
+      </control>
       <control type="group" id="9191">
         <width>780</width><height>66</height>
         <control type="label">
