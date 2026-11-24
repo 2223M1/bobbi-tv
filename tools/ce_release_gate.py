@@ -198,7 +198,35 @@ def _mirrors(receipt):
     return mirrors
 
 
-def readback(receipt, channel, report, transfer=_transfer, *, staged=False):
+def gitcode_catalog(track, files):
+    """Kodi's native ZIP/index mirror is GitHub. Verify GitCode's repository
+    copies as Git objects, not via its file-preview service (403 for ZIPs).
+    The CE discovery pointer and all Release assets must still pass live HTTPS.
+    """
+    if track not in ('stable', 'preview'):
+        raise ValueError('Invalid track')
+    env = dict(os.environ, GIT_TERMINAL_PROMPT='0', GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+    rows = {}
+    with tempfile.TemporaryDirectory(prefix='bobbi-public-mirror-') as tmp:
+        def git(*args):
+            return subprocess.check_output(['git', '-c', 'credential.helper=', '-C', tmp, *args],
+                                           env=env, timeout=60)
+        git('clone', '--bare', '--quiet', '--depth=1', '--single-branch', '--branch', 'main',
+            'https://gitcode.com/BobbiZerri/bobbi-tv-updates.git', '.')
+        commit = git('rev-parse', 'HEAD').decode().strip()
+        for name, expected in files.items():
+            relative = Path(name)
+            if (relative.is_absolute() or '..' in relative.parts or ':' in name or '\\' in name
+                    or not 0 < expected['bytes'] <= 10 * 1024 * 1024):
+                raise ValueError('Invalid feed path or size')
+            oid = commit + ':repository/' + track + '/' + name
+            if git('cat-file', '-t', oid).strip() != b'blob' or int(git('cat-file', '-s', oid)) != expected['bytes']:
+                raise ValueError('Remote catalog object differs')
+            rows[name] = git('cat-file', 'blob', oid)
+    return commit, rows
+
+
+def readback(receipt, channel, report, transfer=_transfer, *, staged=False, read_catalog=gitcode_catalog):
     """Before a feed commit check assets + old pointer; after push check every live byte."""
     recheck_local(receipt)
     mirrors = _mirrors(receipt)
@@ -244,15 +272,23 @@ def readback(receipt, channel, report, transfer=_transfer, *, staged=False):
                     raise ValueError('Invalid feed path')
                 targets.append((mirror, 'feed', base + name, name, expected))
         deadline = time.monotonic() + 1200
+        catalog = None
         for mirror, kind, url, name, expected in targets:
             digest, count = hashlib.sha256(), 0
             def consume(block):
                 nonlocal count
                 count += len(block)
                 digest.update(block)
-            transfer(url, expected['bytes'], consume, lambda: False, lambda _: None,
-                     expected=expected['bytes'], deadline=deadline)
-            row = dict(mirror=mirror, kind=kind, file=name, bytes=count, matched=count == expected['bytes'] and digest.hexdigest() == expected['sha256'])
+            catalog_member = receipt['schema'] == 3 and mirror == 'gitcode' and kind == 'feed' and name != 'current.json'
+            if catalog_member:
+                if catalog is None:
+                    files = {k:v for k,v in receipt['feeds']['gitcode'].items() if k != 'current.json'}
+                    result['gitcode_catalog_commit'], catalog = read_catalog(receipt['track'], files)
+                consume(catalog[name])
+            else:
+                transfer(url, expected['bytes'], consume, lambda: False, lambda _: None,
+                         expected=expected['bytes'], deadline=deadline)
+            row = dict(mirror=mirror, kind=kind, file=name, bytes=count, transport='git-blob' if catalog_member else 'https', matched=count == expected['bytes'] and digest.hexdigest() == expected['sha256'])
             result['files'].append(row)
             if not row['matched']:
                 raise ValueError('Remote release asset differs')

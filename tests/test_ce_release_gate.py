@@ -210,12 +210,23 @@ def test_stage_with_old_live_pointer_then_verify_actual_published_feed(publicati
         base = gate.feed_url('preview', mirror).rsplit('/', 1)[0] + '/'
         for name, row in r['feeds'][mirror].items():
             if name != 'current.json': remote[base+name] = Path(row['path']).read_bytes()
+    def catalog(track, files):
+        assert track == 'preview' and 'current.json' not in files
+        return 'a'*40, {name: Path(row['path']).read_bytes() for name, row in files.items()}
     with pytest.raises(ValueError, match='differs'):
-        gate.readback(r, 'github', report, transfer)
+        gate.readback(r, 'github', report, transfer, read_catalog=catalog)
     assert not json.loads(report.read_text())['passed']
     for mirror in gate.MIRRORS[policy]:
         remote[gate.feed_url('preview', mirror)] = Path(r['feeds'][mirror]['current.json']['path']).read_bytes()
-    after = gate.readback(r, 'github', report, transfer)
+    after = gate.readback(r, 'github', report, transfer, read_catalog=catalog)
+    assert all(row['transport']=='https' for row in after['files'] if row['kind']=='asset' or row['file']=='current.json')
+    if policy == 'dual':
+        def bad(track, files):
+            ident, blobs = catalog(track, files)
+            blobs['addons.xml'] += b'!'
+            return ident, blobs
+        with pytest.raises(ValueError, match='differs'):
+            gate.readback(r, 'github', report, transfer, read_catalog=bad)
     assert after['phase'] == 'live-feed-readback' and after['passed']
     assert len(after['files']) == sum(len(r['assets'])+len(items) for items in r['feeds'].values())
     if policy == 'github-only': assert not any('gitcode' in url for url in calls)
