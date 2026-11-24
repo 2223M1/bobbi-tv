@@ -824,19 +824,39 @@ def test_owned_playback_native_adapter_handle_uses_resolved_url_route():
         fake_host_call,
     )
     resolved_items = []
-    with reserve_playback('t4://aaa/item1', scope, transport=transport) as res:
-        out = res.submit(
-            17,
-            'http://127.0.0.1:38000/stream/' + 'c' * 32 + '/video.mkv',
-            title='Native Route Check',
-            source_meta={'provider': 't4', 'source_id': 'a' * 32, 'source_generation': 'b' * 64, 'item_id': 'p1'},
-            start_over=True,
-            resolve_fn=lambda h, ok, item: resolved_items.append((h, ok, item)),
-            play_fn=lambda *_a, **_k: None,
-            item_factory=lambda url, data: SimpleNamespace(path=url, data=data),
-        )
+    full_url = 'http://127.0.0.1:38000/stream/' + 'c' * 32 + '/video.mkv|redirect-limit=0&!X-Emby-Token=secret'
+    props = {}
+    fake_li = SimpleNamespace(
+        setProperty=lambda k, v: props.__setitem__(k, v),
+        getVideoInfoTag=lambda: SimpleNamespace(),
+    )
+    monkeypatch_xbmcgui = SimpleNamespace(ListItem=lambda label='', path='': fake_li)
+    import sys as _sys
+    from bobbi_platform.kodi import make_item as real_make_item
+    old_xbmcgui = _sys.modules.get('xbmcgui')
+    _sys.modules['xbmcgui'] = monkeypatch_xbmcgui
+    try:
+        with reserve_playback('t4://aaa/item1', scope, transport=transport) as res:
+            out = res.submit(
+                17,
+                full_url,
+                title='Native Route Check',
+                source_meta={'provider': 't4', 'source_id': 'a' * 32, 'source_generation': 'b' * 64, 'item_id': 'p1'},
+                start_over=True,
+                resolve_fn=lambda h, ok, item: resolved_items.append((h, ok, item)),
+                play_fn=lambda *_a, **_k: None,
+                item_factory=real_make_item,
+            )
+    finally:
+        if old_xbmcgui is None:
+            _sys.modules.pop('xbmcgui', None)
+        else:
+            _sys.modules['xbmcgui'] = old_xbmcgui
     assert out['opened'] is True
     assert authority.owner.desired['start_claimed'] is True
     assert authority.owner.desired['route'] == 'resolved_url'
+    assert authority.bound_url == hashlib.sha256(full_url.encode('utf-8')).hexdigest()
+    assert props['bobitv.request_id'] == out['request_id']
+    assert props['bobitv.file_identity'] == authority.owner.desired['file_identity']
     assert len(resolved_items) == 1 and resolved_items[0][:2] == (17, True)
 

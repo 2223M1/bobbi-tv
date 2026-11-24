@@ -47,6 +47,12 @@ def make_item(url, data):
         item.setProperty('bobbi.standard.request', request)
         if hasattr(tag, 'setUniqueID'):
             tag.setUniqueID(request, 'bobbi_request')
+    owner_claim = data.get('_owner_claim')
+    if isinstance(owner_claim, dict):
+        if isinstance(owner_claim.get('request_id'), str) and owner_claim['request_id']:
+            item.setProperty('bobitv.request_id', owner_claim['request_id'])
+        if isinstance(owner_claim.get('file_identity'), str) and owner_claim['file_identity']:
+            item.setProperty('bobitv.file_identity', owner_claim['file_identity'])
     resume_pos = data.get('_resume_offset_seconds')
     if data.get('_pan_file') and resume_pos is None:
         resume_pos = data.get('_file_resume_position', 0)

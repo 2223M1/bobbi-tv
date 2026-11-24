@@ -283,10 +283,11 @@ class OwnedPlaybackReservation:
         if self.adapter == 'native':
             route = 'resolved_url' if handle >= 0 else 'player_play'
             file_identity = f'{self.selection_identity}|{_sha256(raw_url)}'
+            # Native C++ VideoPlayer hashes file.GetDynPath() (full url including pipe options).
             claim = bind_and_claim(
                 self.request_id,
                 file_identity,
-                raw_url,
+                url,
                 lambda: self.cancelled or (ready is not None and not ready()),
                 route,
                 file_evidence=data['file_evidence'],

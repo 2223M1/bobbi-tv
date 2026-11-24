@@ -475,10 +475,22 @@ class PlaybackControlServer:
         host = getattr(self, 'host', None)
         if host is None or not getattr(host, 'owned_tracks', None):
             return
+        pending_summaries = getattr(self, '_owned_next_summaries', None)
+        if pending_summaries is not None:
+            while True:
+                try:
+                    msg = pending_summaries.get_nowait()
+                except Empty:
+                    break
+                try:
+                    self.authority.dispatch(msg)
+                except Exception:
+                    pass
+
         observed = getattr(self.authority.owner, 'observed', None)
         obs_req = observed.get('request_id') if isinstance(observed, dict) else None
         obs_inst = observed.get('native_instance') if isinstance(observed, dict) else None
-        obs_phase = observed.get('phase') if isinstance(observed, dict) else None
+        obs_started = bool(observed.get('av_started')) if isinstance(observed, dict) else False
 
         prev = self._owned_state
         if prev is not None:
@@ -486,13 +498,16 @@ class PlaybackControlServer:
                 prev_track = host.owned_tracks.get(prev['request_id'])
             prev_cancelled = prev_track is None or bool(prev_track.get('cancelled'))
             same_instance = obs_req == prev['request_id'] and obs_inst == prev['native_instance']
-            if prev_cancelled or not same_instance or obs_phase == 'TERMINAL':
-                reason = 'SUPERSEDED'
+            if prev_cancelled or not same_instance:
+                reason = 'SUPERSEDED' if (obs_inst and obs_inst != prev['native_instance']) else 'STOP'
                 pos, dur = prev['position'], prev['duration']
                 obs_clock = prev['observed_clock']
-                if same_instance and obs_phase == 'TERMINAL':
-                    reason = str(observed.get('reason') or 'STOP')
-                    comp = observed.get('completion_observation')
+                term = getattr(self.authority.owner, 'terminal', None)
+                if isinstance(term, dict) and term.get('native_instance') == prev['native_instance']:
+                    reason = str(term.get('reason') or 'STOP')
+                last_nat = getattr(self.authority, 'last_native', None)
+                if isinstance(last_nat, dict) and last_nat.get('native_instance') == prev['native_instance']:
+                    comp = last_nat.get('completion_observation')
                     if isinstance(comp, dict):
                         cpos, cdur = comp.get('position'), comp.get('duration')
                         if isinstance(cpos, (int, float)) and isinstance(cdur, (int, float)) and cdur > 0:
@@ -512,7 +527,7 @@ class PlaybackControlServer:
                 if reason == 'NATURAL_EOF' and isinstance(prev['data'].get('_owned_next'), dict):
                     self._launch_owned_next(prev['data'])
 
-        if not obs_req or not obs_inst or obs_phase != 'AV_STARTED':
+        if not obs_req or not obs_inst or not obs_started:
             return
         with host.lock:
             tracked = host.owned_tracks.get(obs_req)
@@ -561,6 +576,15 @@ class PlaybackControlServer:
                 'observed_clock': obs_clock,
                 'data': dict(tracked['data']),
             })
+            if isinstance(tracked['data'].get('_owned_next'), dict):
+                self._prepare_owned_next_summary(
+                    self.authority.owner.boot_id,
+                    self.authority.owner.epoch,
+                    obs_req,
+                    obs_inst,
+                    dict(tracked['account']),
+                    dict(tracked['data']),
+                )
             return
 
         st = self._owned_state
@@ -596,6 +620,38 @@ class PlaybackControlServer:
                 'observed_clock': st['observed_clock'],
                 'data': dict(st['data']),
             })
+
+    def _prepare_owned_next_summary(self, boot_id, epoch, request_id, native_instance, account_scope, current_data):
+        host = getattr(self, 'host', None)
+        if host is None:
+            return
+        if getattr(self, '_owned_next_summaries', None) is None:
+            self._owned_next_summaries = Queue(maxsize=8)
+        from threading import Thread
+        def _resolve():
+            try:
+                from bobbi_core.next_episode_summary import project
+                from bobbi_platform.owned_playback import resolve_owned_next
+                cancelled = lambda: host.stopping.is_set() or not host.check_profile()
+                nxt = resolve_owned_next(current_data, dict(current_data['_owned_next']), cancelled)
+                if cancelled():
+                    return
+                summary = project(current_data, nxt)
+                if nxt is None and summary.get('state') == 'unavailable':
+                    summary['state'] = 'complete'
+                    summary['reason_code'] = 'SEQUENCE_COMPLETE'
+                self._owned_next_summaries.put_nowait({
+                    'operation': 'next_summary',
+                    'boot_id': boot_id,
+                    'epoch': epoch,
+                    'request_id': request_id,
+                    'native_instance': native_instance,
+                    'account_scope': account_scope,
+                    'summary': summary,
+                })
+            except Exception:
+                pass
+        Thread(target=_resolve, name='bobbi-native-next-summary', daemon=True).start()
 
     def _launch_owned_next(self, current_data):
         host = getattr(self, 'host', None)

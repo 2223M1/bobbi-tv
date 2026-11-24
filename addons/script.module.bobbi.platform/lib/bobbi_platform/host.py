@@ -650,7 +650,8 @@ class Host:
 
     def notify_playback_event(self, payload):
         if isinstance(payload, dict) and payload.get('event') == 'AV_START':
-            meta = payload.get('source_meta')
+            data_obj = payload.get('data')
+            meta = payload.get('source_meta') or (data_obj.get('_owned_source') if isinstance(data_obj, dict) else None)
             req_id = payload.get('request_id')
             if isinstance(meta, dict) and meta.get('provider') == 'emby' and isinstance(req_id, str) and req_id:
                 record_now = False
