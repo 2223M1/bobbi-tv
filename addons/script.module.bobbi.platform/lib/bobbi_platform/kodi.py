@@ -60,8 +60,24 @@ def make_item(url, data):
         # Mounted stat is not a strong resume identity. Do not inherit Kodi's
         # old same-path offset after remount/replacement.
         item.setProperty('StartOffset', '0')
+        if hasattr(tag, 'setResumePoint'):
+            try:
+                tag.setResumePoint(0.0, 0.0)
+            except TypeError:
+                tag.setResumePoint(0.0)
     elif type(resume_pos) in (int, float) and 0 < resume_pos <= 864000:
         item.setProperty('StartOffset', str(resume_pos))
+        if hasattr(tag, 'setResumePoint'):
+            raw_dur = video_info.get('duration')
+            total_dur = (
+                float(raw_dur)
+                if isinstance(raw_dur, (int, float)) and raw_dur > resume_pos
+                else float(resume_pos) + 60.0
+            )
+            try:
+                tag.setResumePoint(float(resume_pos), total_dur)
+            except TypeError:
+                tag.setResumePoint(float(resume_pos))
     # Do not override global audio/HDR/codec/refresh-rate/OSD settings. Original
     # language and Chinese preference are a first-run user-confirmed setting.
     _ = raw_url

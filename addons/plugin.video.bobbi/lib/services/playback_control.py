@@ -321,6 +321,7 @@ class PlaybackControlServer:
         self._owned_state = None
         self._owned_poll_due = 0.0
         self._owned_next_worker = None
+        self._owned_resume_seek = None
         if path is None:
             # The authenticated portable IPC queues to this same actor on the
             # Kodi thread. No second authority or fabricated native receipts.
@@ -554,6 +555,73 @@ class PlaybackControlServer:
             pass
         cur_paused = bool(observed.get('paused', False))
         if first:
+            resume_req = tracked['data'].get('_resume_offset_seconds')
+            want_resume = (
+                isinstance(resume_req, (int, float))
+                and 5.0 <= float(resume_req) <= 864000.0
+                and not tracked['data'].get('_bobbi_start_over')
+                and not tracked['data'].get('_mounted_path')
+            )
+            if want_resume:
+                seek_state = getattr(self, '_owned_resume_seek', None)
+                if not isinstance(seek_state, dict) or seek_state.get('native_instance') != obs_inst:
+                    seek_state = {
+                        'native_instance': obs_inst,
+                        'first_seen_at': now,
+                        'attempted_at': None,
+                        'seek_queued': False,
+                    }
+                    self._owned_resume_seek = seek_state
+                if not obs_clock:
+                    if (now - seek_state['first_seen_at']) < 1.5:
+                        self._owned_poll_due = now + 0.15
+                        return
+                else:
+                    target_sec = float(resume_req)
+                    if target_sec < dur - 2.0 and pos < max(5.0, target_sec - 15.0):
+                        if seek_state['attempted_at'] is None:
+                            seek_queued = False
+                            can_attempt_now = False
+                            try:
+                                from uuid import uuid4
+                                pres = self.authority.dispatch({
+                                    'operation': 'playback_presentation',
+                                    'include_owner': True,
+                                })
+                                can_attempt_now = (
+                                    isinstance(pres, dict)
+                                    and bool(pres.get('available'))
+                                    and bool(pres.get('can_seek'))
+                                    and int(round(target_sec * 1000)) < int(pres.get('duration_ms') or 0)
+                                )
+                                if can_attempt_now:
+                                    cmd_res = self.authority.dispatch({
+                                        'operation': 'playback_command',
+                                        'command': {
+                                            'expected': pres['expected'],
+                                            'command_id': uuid4().hex,
+                                            'action': 'seek',
+                                            'params': {'position_ms': int(round(target_sec * 1000))},
+                                        },
+                                    })
+                                    seek_queued = isinstance(cmd_res, dict) and cmd_res.get('status') in (
+                                        'queued',
+                                        'applied',
+                                    )
+                            except Exception:
+                                seek_queued = False
+                            if not can_attempt_now and (now - seek_state['first_seen_at']) < 0.8:
+                                self._owned_poll_due = now + 0.15
+                                return
+                            seek_state['attempted_at'] = now
+                            seek_state['seek_queued'] = seek_queued
+                            if seek_queued:
+                                self._owned_poll_due = now + 0.2
+                                return
+                        elif seek_state['seek_queued'] and (now - seek_state['attempted_at']) < 2.5:
+                            self._owned_poll_due = now + 0.2
+                            return
+
             self._owned_state = {
                 'request_id': obs_req,
                 'native_instance': obs_inst,

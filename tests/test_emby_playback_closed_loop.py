@@ -860,3 +860,138 @@ def test_owned_playback_native_adapter_handle_uses_resolved_url_route():
     assert props['bobitv.file_identity'] == authority.owner.desired['file_identity']
     assert len(resolved_items) == 1 and resolved_items[0][:2] == (17, True)
 
+
+def test_native_owned_resume_seek_waits_for_observed_clock_and_never_fabricates_position():
+    """Real-device regression (Kodi 21 setResolvedUrl + REV-09 #8):
+    1. make_item stamps VideoInfoTag.setResumePoint alongside StartOffset.
+    2. When setResolvedUrl opens at 0s despite _resume_offset_seconds=900, _observe_owned_tracks
+       dispatches one scoped seek and only emits AV_START once observed player clock reaches ~900s.
+    3. If seeking fails (player clock stays near 1.2s), AV_START honestly reports 1.2s, never 900s.
+    """
+    import importlib.util as _importlib_util
+    from pathlib import Path as _Path
+    import sys as _sys
+    import threading as _threading
+    from bobbi_platform.kodi import make_item as real_make_item
+
+    _pc_path = _Path(__file__).resolve().parents[1] / 'addons/plugin.video.bobbi/lib/services/playback_control.py'
+    _spec = _importlib_util.spec_from_file_location('_test_bobbi_playback_control', _pc_path)
+    _mod = _importlib_util.module_from_spec(_spec)
+    assert _spec.loader is not None
+    _spec.loader.exec_module(_mod)
+    PlaybackControlServer = _mod.PlaybackControlServer
+
+    resume_calls = []
+    props = {}
+    fake_tag = SimpleNamespace(setResumePoint=lambda *a: resume_calls.append(a))
+    fake_li = SimpleNamespace(
+        setProperty=lambda k, v: props.__setitem__(k, v),
+        getVideoInfoTag=lambda: fake_tag,
+    )
+    old_xbmcgui = _sys.modules.get('xbmcgui')
+    old_xbmc = _sys.modules.get('xbmc')
+    _sys.modules['xbmcgui'] = SimpleNamespace(ListItem=lambda label='', path='': fake_li)
+    try:
+        real_make_item('http://127.0.0.1/v.mkv', {
+            'title': 'Resume Item',
+            '_resume_offset_seconds': 900.0,
+            'video_info': {'duration': 1920},
+        })
+        assert props['StartOffset'] == '900.0'
+        assert resume_calls[-1] == (900.0, 1920.0)
+    finally:
+        if old_xbmcgui is None:
+            _sys.modules.pop('xbmcgui', None)
+        else:
+            _sys.modules['xbmcgui'] = old_xbmcgui
+
+    player_state = {'pos': 0.3, 'dur': 1920.0}
+    dispatched = []
+    emitted = []
+
+    class _FakeAuthority:
+        def __init__(self, inst):
+            self.owner = SimpleNamespace(
+                boot_id='b' * 32,
+                epoch=1,
+                observed={'request_id': 'a' * 32, 'native_instance': inst, 'av_started': True, 'paused': False},
+                terminal=None,
+            )
+            self.last_native = None
+
+        def dispatch(self, msg):
+            dispatched.append(msg)
+            if msg['operation'] == 'playback_presentation':
+                return {
+                    'available': True,
+                    'can_seek': True,
+                    'duration_ms': 1920000,
+                    'expected': {'boot_id': 'b' * 32, 'epoch': 1, 'request_id': 'a' * 32},
+                }
+            if msg['operation'] == 'playback_command':
+                return {'status': 'queued'}
+            return {'accepted': True}
+
+    fake_host = SimpleNamespace(
+        lock=_threading.Lock(),
+        owned_tracks={
+            'a' * 32: {
+                'cancelled': False,
+                'account': {'provider': 'emby'},
+                'data': {'_resume_offset_seconds': 900.0},
+            }
+        },
+        notify_playback_event=lambda ev: emitted.append(ev),
+    )
+
+    _sys.modules['xbmc'] = SimpleNamespace(
+        Player=lambda: SimpleNamespace(
+            isPlayingVideo=lambda: True,
+            getTime=lambda: player_state['pos'],
+            getTotalTime=lambda: player_state['dur'],
+        )
+    )
+    try:
+        # Case A: Seek succeeds -> AV_START reports observed 900.4s
+        srv = PlaybackControlServer.__new__(PlaybackControlServer)
+        srv.host = fake_host
+        srv.authority = _FakeAuthority('11111111-1111-4111-8111-111111111111')
+        srv._owned_state = None
+        srv._owned_poll_due = 0.0
+        srv._owned_resume_seek = None
+
+        srv._observe_owned_tracks(10.0)
+        assert emitted == []
+        assert any(m.get('operation') == 'playback_command' and m['command']['action'] == 'seek' for m in dispatched)
+
+        player_state['pos'] = 900.4
+        srv._observe_owned_tracks(10.5)
+        assert len(emitted) == 1
+        assert emitted[0]['event'] == 'AV_START'
+        assert emitted[0]['position'] == 900.4
+
+        # Case B: Seek fails to move stream -> after bounded wait, AV_START reports honest 1.2s (never 900s!)
+        emitted.clear()
+        dispatched.clear()
+        player_state['pos'] = 0.2
+        srv2 = PlaybackControlServer.__new__(PlaybackControlServer)
+        srv2.host = fake_host
+        srv2.authority = _FakeAuthority('22222222-2222-4222-8222-222222222222')
+        srv2._owned_state = None
+        srv2._owned_poll_due = 0.0
+        srv2._owned_resume_seek = None
+
+        srv2._observe_owned_tracks(20.0)
+        assert emitted == []
+        player_state['pos'] = 1.2
+        srv2._observe_owned_tracks(22.6)
+        assert len(emitted) == 1
+        assert emitted[0]['event'] == 'AV_START'
+        assert emitted[0]['position'] == 1.2
+    finally:
+        if old_xbmc is None:
+            _sys.modules.pop('xbmc', None)
+        else:
+            _sys.modules['xbmc'] = old_xbmc
+
+
