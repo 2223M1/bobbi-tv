@@ -1,19 +1,20 @@
 """
-Local web server for managing Stremio addon sources from a phone/browser.
+Local web server for paired phone management (/manage).
 
-Serves a web UI and exposes small JSON endpoints for CRUD operations
-on the Stremio custom addons stored in the Kodi addon cache.
+Exposes bounded HTTP transport for PhoneManagement and internal Stremio
+custom-addon helpers invoked strictly through paired PhoneManagement scopes.
 """
 
 import ipaddress
 import json
 import os
+import re
 import socket
 import threading
 import time
 from datetime import timedelta
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 import requests
 
@@ -43,11 +44,6 @@ _WEB_DIR = os.path.join(
 )
 
 
-# ---------------------------------------------------------------------------
-# Sync helpers (no xbmcgui imports — safe for HTTP thread)
-# ---------------------------------------------------------------------------
-
-
 def _get_user_addons():
     """Return list of custom addon dicts from cache."""
     return [a for a in (cache.get(STREMIO_USER_ADDONS) or []) if a.get("transportName") == "custom"]
@@ -72,9 +68,9 @@ def _addon_capabilities(manifest):
         normalized = {str(prefix).rstrip(":") for prefix in (prefixes or []) if prefix}
         return not normalized or bool(normalized.intersection({"tt", "tmdb"}))
 
-    resources = manifest.get("resources", [])
-    types = manifest.get("types", [])
-    manifest_prefixes = manifest.get("idPrefixes", [])
+    resources = manifest.get("resources", []) if isinstance(manifest, dict) else []
+    types = manifest.get("types", []) if isinstance(manifest, dict) else []
+    manifest_prefixes = manifest.get("idPrefixes", []) if isinstance(manifest, dict) else []
     is_stream = False
     is_catalog = False
     is_tv = False
@@ -86,15 +82,12 @@ def _addon_capabilities(manifest):
             res_prefixes = res.get("idPrefixes", manifest_prefixes)
 
             if res_name == "stream":
-                # Stremio addon providing streams
                 if any(
                     t in res_types for t in ("movie", "series", "anime")
                 ) and supports_searchable_stream(res_prefixes):
                     is_stream = True
-
                 if any(t in res_types for t in ("tv", "channel")):
                     is_tv = True
-
             if res_name == "catalog":
                 is_catalog = True
 
@@ -178,6 +171,69 @@ def _allowed_manifest_url(url):
     return is_safe_http_url(url) or _is_local_or_private_host(url)
 
 
+def stremio_logo_status(raw_logo, transport_url=""):
+    """Validate manifest logo URL protocol without exposing credentials or executing scripts."""
+    if raw_logo is None or raw_logo == "":
+        return "", False
+    if type(raw_logo) is not str or len(raw_logo) > 1024 or re.search(r'[\x00-\x20\x7f"\'<>\\]', raw_logo):
+        return "", True
+    raw_parts = urlsplit(raw_logo)
+    scheme = raw_parts.scheme.lower()
+    if scheme and scheme not in ("http", "https"):
+        return "", True
+    if not scheme:
+        if raw_logo.startswith("//") or not transport_url:
+            return "", True
+        candidate = urljoin(transport_url, raw_logo)
+    else:
+        candidate = raw_logo
+    parts = urlsplit(candidate)
+    if (
+        parts.scheme.lower() not in ("http", "https")
+        or not parts.hostname
+        or parts.username
+        or parts.password
+        or parts.fragment
+    ):
+        return "", True
+    if (
+        parts.scheme.lower() == "https"
+        and parts.hostname.lower() == "image.tmdb.org"
+        and re.fullmatch(r"/[A-Za-z0-9/_.-]{1,240}\.(?:jpg|jpeg|png|webp)", parts.path, re.IGNORECASE)
+        and not parts.query
+    ):
+        return urlunsplit(("https", "image.tmdb.org", parts.path, "", "")), False
+    return "", False
+
+
+def format_stremio_addon(addon, selected=None):
+    """Project minimal browser-safe addon metadata without transportUrl secrets."""
+    manifest = addon.get("manifest") if isinstance(addon.get("manifest"), dict) else {}
+    transport_url = str(addon.get("transportUrl") or "")
+    addon_key = str(build_addon_instance_key(addon))
+    caps = _addon_capabilities(manifest)
+    safe_logo, logo_rejected = stremio_logo_status(manifest.get("logo"), transport_url)
+    host = (urlsplit(transport_url).hostname or "")[:255]
+    raw_types = manifest.get("types") if isinstance(manifest.get("types"), list) else []
+    types = [t for t in raw_types if type(t) is str and len(t) <= 32 and not re.search(r"[\x00-\x1f\x7f]", t)][:8]
+    if selected is None:
+        sel = dict(caps)
+    else:
+        sel = {cat: addon_key in selected.get(cat, []) for cat in ("stream", "catalog", "tv")}
+    return {
+        "id": addon_key[:512],
+        "name": str(manifest.get("name") or manifest.get("id") or "Unknown")[:240],
+        "description": str(manifest.get("description") or "")[:600],
+        "version": str(manifest.get("version") or "")[:64],
+        "host": host,
+        "logo": safe_logo,
+        "logo_rejected": logo_rejected,
+        "types": types,
+        "capabilities": caps,
+        "selected": sel,
+    }
+
+
 def _fetch_manifest(url, initial_url):
     def try_fetch(target_url):
         try:
@@ -201,10 +257,10 @@ def _fetch_manifest(url, initial_url):
                 if len(content) > MAX_RESOURCE_JSON_BYTES:
                     raise ValueError("manifest too large")
             manifest = json.loads(content.decode("utf-8"))
+            if not isinstance(manifest, dict):
+                raise ValueError("manifest invalid")
             return resp, manifest, None
         except ValueError as ex:
-            # ValueError here comes from our own validation or JSON decoding;
-            # the message is static and safe to surface to the UI.
             return None, None, str(ex) or type(ex).__name__
         except Exception as ex:
             return None, None, type(ex).__name__
@@ -227,69 +283,81 @@ def _fetch_manifest(url, initial_url):
     return resp, manifest, error
 
 
-def _sync_add_addon(url):
-    """Fetch manifest from URL, validate, store in cache.  Returns (addon_dict, error)."""
+def prepare_stremio_addon(url):
+    """Fetch and validate a manifest URL without mutating cache."""
     url = (url or "").strip()
     if not url:
-        return None, "Empty URL provided."
-
+        return None, None, "STREMIO_URL_REQUIRED"
     initial_url = url
-    url = _normalize_manifest_url(url)
+    normalized = _normalize_manifest_url(url)
+    resp, manifest, error = _fetch_manifest(normalized, initial_url)
+    if error or not resp or not isinstance(manifest, dict):
+        kodilog(f"[WebServer] Manifest fetch failed: {error}")
+        return None, None, "STREMIO_MANIFEST_UNAVAILABLE"
+    if not manifest.get("id") and not manifest.get("name"):
+        return None, None, "STREMIO_MANIFEST_INVALID"
+    _, logo_rejected = stremio_logo_status(manifest.get("logo"), resp.url)
+    if logo_rejected:
+        return None, None, "STREMIO_LOGO_REJECTED"
+    return resp.url, manifest, None
 
-    resp, manifest, error = _fetch_manifest(url, initial_url)
 
-    if error or not resp or not manifest:
-        kodilog(f"[WebServer] Failed to add addon: {error}")
-        return None, f"Failed to fetch manifest: {error or 'unknown error'}"
-
-    addon_key = build_addon_instance_key({"manifest": manifest, "transportUrl": resp.url})
-
-    # Check duplicate
+def commit_stremio_addon(resolved_url, manifest):
+    """Persist an already-validated Stremio manifest into current profile cache."""
+    addon_key = build_addon_instance_key({"manifest": manifest, "transportUrl": resolved_url})
     user_addons = list(cache.get(STREMIO_USER_ADDONS) or [])
     if any(build_addon_instance_key(a) == addon_key for a in user_addons):
-        return None, "This addon is already added."
-
+        return None, "STREMIO_ADDON_EXISTS"
     caps = _addon_capabilities(manifest)
-
-    # Auto-select into categories
     if caps["stream"]:
         _add_to_selection(STREMIO_ADDONS_KEY, addon_key)
     if caps["catalog"]:
         _add_to_selection(STREMIO_ADDONS_CATALOGS_KEY, addon_key)
     if caps["tv"]:
         _add_to_selection(STREMIO_TV_ADDONS_KEY, addon_key)
-
     custom_addon = {
         "manifest": manifest,
-        "transportUrl": resp.url,
+        "transportUrl": resolved_url,
         "transportName": "custom",
     }
     user_addons.append(custom_addon)
     cache.set(STREMIO_USER_ADDONS, user_addons, _CACHE_EXPIRY)
-
     return custom_addon, None
 
 
-def _sync_remove_addon(addon_id):
-    """Remove addon by manifest ID from all caches."""
-    user_addons = list(cache.get(STREMIO_USER_ADDONS) or [])
-    new_addons = [a for a in user_addons if build_addon_instance_key(a) != addon_id]
-    cache.set(STREMIO_USER_ADDONS, new_addons, _CACHE_EXPIRY)
+def list_stremio_addons():
+    selected = _get_selected_ids()
+    return [format_stremio_addon(a, selected=selected) for a in _get_user_addons()[:64]]
 
-    for cache_key in [
+
+def remove_stremio_addon(addon_id):
+    """Remove custom addon by instance key from caches; returns True if removed."""
+    user_addons = list(cache.get(STREMIO_USER_ADDONS) or [])
+    new_addons = [
+        a for a in user_addons
+        if not (a.get("transportName") == "custom" and build_addon_instance_key(a) == addon_id)
+    ]
+    if len(new_addons) == len(user_addons):
+        return False
+    cache.set(STREMIO_USER_ADDONS, new_addons, _CACHE_EXPIRY)
+    for cache_key in (
         STREMIO_ADDONS_KEY,
         STREMIO_ADDONS_CATALOGS_KEY,
         STREMIO_TV_ADDONS_KEY,
-    ]:
+    ):
         selected = cache.get(cache_key)
         if selected:
             keys = decode_selected_ids(selected)
-            keys = [k for k in keys if k != addon_id]
-            cache.set(cache_key, encode_selected_ids(keys), _CACHE_EXPIRY)
+            filtered = [k for k in keys if k != addon_id]
+            if len(filtered) != len(keys):
+                cache.set(cache_key, encode_selected_ids(filtered), _CACHE_EXPIRY)
+    return True
 
 
-def _sync_toggle_addon(addon_id, category, enabled):
-    """Add or remove addon_id from a selection category."""
+def toggle_stremio_addon(addon_id, category, enabled):
+    """Toggle category selection for an existing custom addon."""
+    if not any(build_addon_instance_key(a) == addon_id for a in _get_user_addons()):
+        return False
     key_map = {
         "stream": STREMIO_ADDONS_KEY,
         "catalog": STREMIO_ADDONS_CATALOGS_KEY,
@@ -297,16 +365,14 @@ def _sync_toggle_addon(addon_id, category, enabled):
     }
     cache_key = key_map.get(category)
     if not cache_key:
-        return
-
+        return False
     keys = list(decode_selected_ids(cache.get(cache_key)))
-
     if enabled and addon_id not in keys:
         keys.append(addon_id)
     elif not enabled and addon_id in keys:
         keys.remove(addon_id)
-
     cache.set(cache_key, encode_selected_ids(keys), _CACHE_EXPIRY)
+    return True
 
 
 def _add_to_selection(cache_key, addon_id):
@@ -316,38 +382,11 @@ def _add_to_selection(cache_key, addon_id):
         cache.set(cache_key, encode_selected_ids(keys), _CACHE_EXPIRY)
 
 
-def _validate_manifest(url):
-    """Fetch and validate a manifest URL.  Returns (manifest_dict, error)."""
-    url = (url or "").strip()
-    if not url:
-        return None, "Empty URL"
-
-    initial_url = url
-    url = _normalize_manifest_url(url)
-
-    kodilog(f"[WebServer] Validating Stremio manifest: {_safe_url_description(url)}")
-    _, manifest, error = _fetch_manifest(url, initial_url)
-    if error or not manifest:
-        kodilog(f"[WebServer] Manifest validation failed: {error}")
-        return None, str(error or "unknown error")
-
-    if not manifest.get("id") and not manifest.get("name"):
-        return None, "Manifest missing 'id' and 'name'."
-    return manifest, None
-
-
-# ---------------------------------------------------------------------------
-# HTTP request handler
-# ---------------------------------------------------------------------------
-
-
 class StremioRequestHandler(BaseHTTPRequestHandler):
-    """Handles web UI + JSON API requests."""
+    """Serves paired PhoneManagement routes only; legacy anonymous CRUD is retired."""
 
     def log_message(self, format, *args):
-        if self.path.startswith('/manage'):
-            return
-        kodilog(f"[WebServer] {format % args}")
+        return
 
     def setup(self):
         super().setup()
@@ -360,8 +399,8 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
 
     def _management_body_length(self):
         from lib.services.phone_management import MAX_BODY
-        lengths = self.headers.get_all('Content-Length', [])
-        if self.headers.get('Transfer-Encoding') is not None or len(lengths) != 1:
+        lengths = self.headers.get_all("Content-Length", [])
+        if self.headers.get("Transfer-Encoding") is not None or len(lengths) != 1:
             return None
         length = lengths[0]
         if not length.isascii() or not length.isdecimal() or len(length) > 10:
@@ -370,9 +409,6 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
         return length if 0 < length <= MAX_BODY else None
 
     def _management_read_body(self, length):
-        # A rejected small request must not leave bytes unread when closing the
-        # socket: Windows may otherwise reset it before delivering the reply.
-        # Never make a second read after EOF, timeout, or a partially read POST.
         self._management_body_attempted = True
         chunks = []
         remaining = length
@@ -381,14 +417,14 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
             while remaining:
                 timeout = self._management_body_deadline - time.monotonic()
                 if timeout <= 0:
-                    raise TimeoutError('management request deadline')
+                    raise TimeoutError("management request deadline")
                 self.connection.settimeout(timeout)
                 chunk = self.rfile.read1(remaining)
                 if not chunk:
                     break
                 chunks.append(chunk)
                 remaining -= len(chunk)
-            return b''.join(chunks)
+            return b"".join(chunks)
         finally:
             self.connection.settimeout(previous_timeout)
 
@@ -400,276 +436,96 @@ class StremioRequestHandler(BaseHTTPRequestHandler):
             try:
                 self._management_read_body(length)
             except OSError:
-                pass  # Preserve the already chosen rejection, without retrying.
+                pass
 
     def send_error(self, code, message=None, explain=None):
-        if (getattr(self.server, 'phone_management', None) is not None and
-                hasattr(self, 'headers')):
+        if hasattr(self, "headers"):
             self._management_discard_body()
         return super().send_error(code, message, explain)
 
-    def _management_reply(self, value, status=200, cookie=None, content_type='application/json; charset=utf-8'):
+    def _management_reply(self, value, status=200, cookie=None, content_type="application/json; charset=utf-8"):
         from lib.services.phone_management import encode
         body = value if type(value) is bytes else encode(value)
         self._management_discard_body()
         self.send_response(status)
-        self.send_header('Content-Type', content_type)
-        self.send_header('Content-Length', str(len(body)))
-        self.send_header('Cache-Control', 'no-store')
-        self.send_header('Referrer-Policy', 'no-referrer')
-        self.send_header('X-Content-Type-Options', 'nosniff')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://image.tmdb.org; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://image.tmdb.org; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+        )
         if cookie:
-            self.send_header('Set-Cookie', cookie)
+            self.send_header("Set-Cookie", cookie)
         self.end_headers()
         self.wfile.write(body)
 
     def _management(self, post=False):
         from lib.services.phone_management import PhoneError
-        manager = getattr(self.server, 'phone_management', None)
+        manager = getattr(self.server, "phone_management", None)
         if manager is None:
-            self.send_error(404)
+            self._management_reply(dict(error="PAIRING_REQUIRED"), 401)
             return
         try:
             manager.check_origin(self.headers, write=post)
             if not post:
-                resource = {'/manage': ('manage.html', 'text/html; charset=utf-8'),
-                            '/manage.js': ('manage.js', 'application/javascript; charset=utf-8')}.get(self.path)
+                resource = {
+                    "/manage": ("manage.html", "text/html; charset=utf-8"),
+                    "/manage.js": ("manage.js", "application/javascript; charset=utf-8"),
+                }.get(self.path)
                 if resource is None:
-                    raise PhoneError('NOT_FOUND', 404)
-                with open(os.path.join(_WEB_DIR, resource[0]), 'rb') as stream:
+                    raise PhoneError("NOT_FOUND", 404)
+                with open(os.path.join(_WEB_DIR, resource[0]), "rb") as stream:
                     self._management_reply(stream.read(131072), content_type=resource[1])
                 return
-            if (self.headers.get('Transfer-Encoding') is not None or
-                    self.headers.get('Content-Type', '').split(';')[0] != 'application/json'):
-                raise PhoneError('INVALID_REQUEST', 400)
+            if (
+                self.headers.get("Transfer-Encoding") is not None
+                or self.headers.get("Content-Type", "").split(";")[0] != "application/json"
+            ):
+                raise PhoneError("INVALID_REQUEST", 400)
             length = self._management_body_length()
             if length is None:
-                raise PhoneError('REQUEST_TOO_LARGE', 413)
+                raise PhoneError("REQUEST_TOO_LARGE", 413)
             raw = self._management_read_body(length)
             if len(raw) != length:
-                raise PhoneError('INVALID_REQUEST', 400)
+                raise PhoneError("INVALID_REQUEST", 400)
             result, cookie = manager.handle(self.path, self.headers, raw)
             self._management_reply(result, cookie=cookie)
         except PhoneError as error:
             self._management_reply(dict(error=str(error)), error.status)
         except (OSError, ValueError, KeyError, TypeError):
-            self._management_reply(dict(error='MANAGEMENT_UNAVAILABLE'), 503)
-
-    def _send_json(self, data, status=200):
-        body = json.dumps(data).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.end_headers()
-        self.wfile.write(body)
-
-    def _send_html(self, html_content):
-        body = html_content.encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
-
-    def _read_body(self):
-        length = int(self.headers.get("Content-Length", 0))
-        return json.loads(self.rfile.read(length)) if length else {}
-
-    # --- Routes ---
+            self._management_reply(dict(error="MANAGEMENT_UNAVAILABLE"), 503)
 
     def do_GET(self):
-        if self.path.startswith('/manage'):
+        if self.path.startswith("/manage"):
             self._management()
-        elif getattr(self.server, 'phone_management', None) is not None:
-            self.send_error(404)
-        elif self.path == "/" or self.path == "":
-            self._serve_index()
-        elif self.path == "/api/addons":
-            self._api_get_addons()
         else:
             self.send_error(404)
 
     def do_POST(self):
-        if self.path.startswith('/manage'):
+        if self.path.startswith("/manage"):
             self._management(post=True)
-        elif getattr(self.server, 'phone_management', None) is not None:
-            self.send_error(404)
-        elif self.path == "/api/addons":
-            self._api_add_addon()
-        elif self.path == "/api/addons/validate":
-            self._api_validate()
         else:
             self.send_error(404)
 
     def do_DELETE(self):
-        if getattr(self.server, 'phone_management', None) is not None:
-            self.send_error(404)
-            return
-        if self.path.startswith("/api/addons/"):
-            addon_id = self.path[len("/api/addons/") :]
-            self._api_remove_addon(addon_id)
-        else:
-            self.send_error(404)
+        self.send_error(404)
 
     def do_PUT(self):
-        if getattr(self.server, 'phone_management', None) is not None:
-            self.send_error(404)
-            return
-        if self.path.startswith("/api/addons/") and self.path.endswith("/toggle"):
-            addon_id = self.path[len("/api/addons/") : -len("/toggle")]
-            self._api_toggle_addon(addon_id)
-        else:
-            self.send_error(404)
+        self.send_error(404)
 
     def do_OPTIONS(self):
-        if self.path.startswith('/manage'):
-            self._management_reply(dict(error='ORIGIN_FORBIDDEN'), 403)
-            return
-        self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.end_headers()
-
-    # --- Handlers ---
-
-    def _serve_index(self):
-        index_path = os.path.join(_WEB_DIR, "index.html")
-        try:
-            with open(index_path, encoding="utf-8") as f:
-                self._send_html(f.read())
-        except FileNotFoundError:
-            self.send_error(500, "Web UI not found")
-
-    def _api_get_addons(self):
-        addons = _get_user_addons()
-        selected = _get_selected_ids()
-        result = []
-        for a in addons:
-            manifest = a.get("manifest", {})
-            transport_url = a.get("transportUrl", "")
-            addon_key = build_addon_instance_key(a)
-            caps = _addon_capabilities(manifest)
-
-            logo = manifest.get("logo", "")
-            if logo and transport_url and not logo.startswith(("http://", "https://")):
-                from urllib.parse import urljoin
-
-                logo = urljoin(transport_url, logo)
-
-            result.append(
-                {
-                    "id": addon_key,
-                    "name": manifest.get("name", "Unknown"),
-                    "description": manifest.get("description", ""),
-                    "logo": logo,
-                    "version": manifest.get("version", ""),
-                    "types": manifest.get("types", []),
-                    "transportUrl": transport_url,
-                    "capabilities": caps,
-                    "selected": {
-                        "stream": addon_key in selected.get("stream", []),
-                        "catalog": addon_key in selected.get("catalog", []),
-                        "tv": addon_key in selected.get("tv", []),
-                    },
-                }
-            )
-        self._send_json({"addons": result})
-
-    def _api_add_addon(self):
-        try:
-            data = self._read_body()
-        except Exception:
-            self._send_json({"error": "Invalid JSON"}, 400)
-            return
-        url = data.get("url", "").strip()
-        if not url:
-            self._send_json({"error": "URL is required"}, 400)
-            return
-        addon, error = _sync_add_addon(url)
-        if error or not addon:
-            self._send_json({"error": error}, 400)
-            return
-        manifest = addon.get("manifest", {})
-        transport_url = addon.get("transportUrl", "")
-        addon_key = build_addon_instance_key(addon)
-        caps = _addon_capabilities(manifest)
-
-        logo = manifest.get("logo", "")
-        if logo and transport_url and not logo.startswith(("http://", "https://")):
-            from urllib.parse import urljoin
-
-            logo = urljoin(transport_url, logo)
-
-        self._send_json(
-            {
-                "success": True,
-                "addon": {
-                    "id": addon_key,
-                    "name": manifest.get("name", "Unknown"),
-                    "description": manifest.get("description", ""),
-                    "logo": logo,
-                    "version": manifest.get("version", ""),
-                    "types": manifest.get("types", []),
-                    "transportUrl": addon.get("transportUrl", ""),
-                    "capabilities": caps,
-                    "selected": caps,
-                },
-            }
-        )
-
-    def _api_remove_addon(self, addon_id):
-        from urllib.parse import unquote
-
-        addon_id = unquote(addon_id)
-        _sync_remove_addon(addon_id)
-        self._send_json({"success": True})
-
-    def _api_toggle_addon(self, addon_id):
-        from urllib.parse import unquote
-
-        addon_id = unquote(addon_id)
-        try:
-            data = self._read_body()
-        except Exception:
-            self._send_json({"error": "Invalid JSON"}, 400)
-            return
-        category = data.get("category")
-        enabled = data.get("enabled", False)
-        if category not in ("stream", "catalog", "tv"):
-            self._send_json({"error": "Invalid category"}, 400)
-            return
-        _sync_toggle_addon(addon_id, category, enabled)
-        self._send_json({"success": True})
-
-    def _api_validate(self):
-        try:
-            data = self._read_body()
-        except Exception:
-            self._send_json({"error": "Invalid JSON"}, 400)
-            return
-        url = data.get("url", "").strip()
-        if not url:
-            self._send_json({"error": "URL is required"}, 400)
-            return
-        manifest, error = _validate_manifest(url)
-        if error:
-            self._send_json({"error": error}, 400)
-            return
-        self._send_json({"valid": True, "manifest": manifest})
-
-
-# ---------------------------------------------------------------------------
-# Server lifecycle
-# ---------------------------------------------------------------------------
+        self._management_reply(dict(error="ORIGIN_FORBIDDEN"), 403)
 
 
 class StremioWebServer:
-    """Threaded HTTP server that starts/stops on demand."""
+    """Threaded HTTP server requiring an explicit PhoneManagement grant."""
 
     def __init__(self, port=8081, phone_management=None):
+        if phone_management is None:
+            raise ValueError("PHONE_MANAGEMENT_REQUIRED")
         self.port = port
         self._server = None
         self._thread = None
@@ -683,7 +539,7 @@ class StremioWebServer:
             self._server.phone_management = self.phone_management
             self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
             self._thread.start()
-            kodilog(f"[WebServer] Started on port {self.port}")
+            kodilog(f"[WebServer] Started paired management server on port {self.port}")
         except Exception as e:
             kodilog(f"[WebServer] Failed to start: {e}")
             self._server = None

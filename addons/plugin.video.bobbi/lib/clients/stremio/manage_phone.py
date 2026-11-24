@@ -52,35 +52,41 @@ def catalog_manage_phone(expected):
 
 
 def stremio_manage_phone(params):
-    local_ip = get_local_ip()
-    url = f"http://{local_ip}:{_SERVER_PORT}/"
+    import xbmcgui
+    from lib.services.phone_management import PhoneManagement, STREMIO_SCOPES
+    from lib.utils.kodi.utils import notification
 
-    server = StremioWebServer(port=_SERVER_PORT)
+    dialog = xbmcgui.Dialog()
+    if not dialog.yesno(
+        '允许手机管理 Stremio 插件源？',
+        '仅在可信局域网使用。扫码者可在当前配置下查看、添加、启用/停用或移除自定义 Stremio 插件源，不会回显已保存 URL 中的完整凭据。'
+        '授权最多 15 分钟，关闭此二维码窗口立即撤销。',
+    ):
+        return False
+
+    origin = 'http://%s:%d' % (get_local_ip(), _SERVER_PORT)
+    manager = PhoneManagement({'local_scope': 'stremio_addons'}, origin, scopes=STREMIO_SCOPES)
+    server = StremioWebServer(port=_SERVER_PORT, phone_management=manager)
     server.start()
 
     if not server.is_running:
-        from lib.utils.kodi.utils import notification
-
+        manager.revoke()
         notification(translation(90560))
-        return
+        return False
 
     try:
-        kodilog(f"Server started at {url}")
-
-        # Generate QR code image
-        qr_path = make_qrcode(url)
-
-        # Show blocking QR dialog
-        dialog = QRProgressDialog("qr_dialog.xml", ADDON_PATH)
-        dialog.setup(
+        qr_path = make_qrcode(manager.pairing_url)
+        qr = QRProgressDialog('qr_dialog.xml', ADDON_PATH)
+        qr.setup(
             title=translation(90162),
-            qr_code=qr_path or "",
-            url=url,
-            user_code="",
+            qr_code=qr_path or '',
+            url=manager.pairing_url,
+            user_code='',
             is_debrid=False,
             url_label_id=90670,
         )
-        dialog.doModal()
+        qr.doModal()
+        return True
     finally:
         server.stop()
-        kodilog("Server stopped")
+        kodilog('Paired Stremio phone management stopped')

@@ -564,6 +564,69 @@
     });}
     card.append(commandStatus,receiptsPanel);status('已读取当前实例；播放或轨道变化后请刷新。');
   }
+  function isHttpOrHttpsLogo(value) {
+    return typeof value==='string'&&/^https?:\/\/[A-Za-z0-9.-]+(?::\d{1,5})?(?:\/[^\s"'<>\\]*)?$/i.test(value);
+  }
+  function isAllowedRenderedLogo(value) {
+    return typeof value==='string'&&/^https:\/\/image\.tmdb\.org\/[A-Za-z0-9/_.-]{1,240}\.(?:jpg|jpeg|png|webp)$/i.test(value);
+  }
+  function stremioCard(addon) {
+    const addonId=String(addon.id||''), card=node('article',undefined,'card');
+    card.append(node('h3',(addon.name||'未命名插件')+(addon.version?' v'+addon.version:'')));
+    card.append(node('small','标识：'+addonId+(addon.host?' · 来源主机：'+addon.host:'')));
+    if(addon.logo_rejected===true||(addon.logo&&!isHttpOrHttpsLogo(addon.logo))) {
+      card.append(node('small','已拒绝非 HTTP(S) 图标地址','error'));
+    } else if(addon.logo&&isAllowedRenderedLogo(addon.logo)) {
+      const img=node('img');img.src=addon.logo;img.alt=addon.name||'';img.loading='lazy';img.referrerPolicy='no-referrer';img.width=48;card.append(img);
+    }
+    if(addon.description)card.append(node('p',addon.description,'muted'));
+    const caps=addon.capabilities||{}, selected=addon.selected||{}, row=node('div',undefined,'row');
+    [['stream','视频源'],['catalog','目录'],['tv','直播']].forEach(([catKey,catLabel])=>{
+      if(!caps[catKey])return;
+      const enabled=Boolean(selected[catKey]);
+      row.append(button((enabled?'✓ 已启用 · ':'未启用 · ')+catLabel,async()=>{
+        await rpc('stremio_toggle',{id:addonId,category:catKey,enabled:!enabled});
+        await loadStremio();
+      }));
+    });
+    row.append(button('移除此插件源',async()=>{
+      if(!confirm('确认移除此自定义插件源？'))return;
+      await rpc('stremio_remove',{id:addonId});
+      await loadStremio();
+    }));
+    card.append(row);
+    return card;
+  }
+  async function loadStremio() {
+    const page=viewGeneration, value=await rpc('stremio_list',{});
+    if(page!==viewGeneration)return;
+    byId('previous').disabled=true;byId('next').disabled=true;
+    const addCard=node('section',undefined,'card');
+    addCard.append(node('h2','添加自定义 Stremio 插件源'),
+      node('p','仅向当前配置添加自定义 Manifest，页面不回显已保存地址中的凭据参数。','muted'));
+    const urlInput=field(addCard,'Manifest 地址（https:// 或 stremio://）','url','');urlInput.maxLength=2048;
+    const previewBox=node('div'), actions=node('div',undefined,'row');
+    actions.append(button('校验 Manifest',async()=>{
+      const rawUrl=urlInput.value.trim();
+      if(!rawUrl)throw new Error('请输入 Manifest 地址。');
+      const checked=await rpc('stremio_validate',{url:rawUrl});
+      if(page!==viewGeneration)return;
+      const info=checked.manifest||{};
+      previewBox.replaceChildren(node('p','校验通过：'+(info.name||info.id||'未知名称')+(info.version?' v'+info.version:'')));
+      status('Manifest 校验通过，可点击添加。');
+    }),button('添加插件源',async()=>{
+      const rawUrl=urlInput.value.trim();
+      if(!rawUrl)throw new Error('请输入 Manifest 地址。');
+      await rpc('stremio_add',{url:rawUrl});
+      urlInput.value='';
+      await loadStremio();
+      status('已添加自定义插件源。');
+    }));
+    addCard.append(actions,previewBox);
+    const items=value.items||[];
+    byId('rows').replaceChildren(addCard,...(items.length?items.map(stremioCard):[node('p','当前暂无自定义 Stremio 插件源。')]));
+    status('已读取 Stremio 插件源（共 '+items.length+' 项）。');
+  }
   function scheduleJobs(reset=false,failed=false) {
     clearTimeout(pollTimer);pollTimer=null;
     if(reset){pollUntil=Date.now()+120000;pollDelay=5000;}
@@ -584,6 +647,7 @@
     byId('editorRows').classList.add('hidden');byId('rows').classList.remove('hidden');editing=null;
     byId('back').disabled=tab!=='items'||!trail.length;
     if(tab==='playback'){await loadPlayback();return;}
+    if(tab==='stremio'){await loadStremio();return;}
     if(tab==='items') {
       const filters={...query,text:byId('keyword').value.trim(),review_state:byId('state').value||null,
         media_kind:byId('mediaKind').value||null,availability:byId('availability').value||null,
@@ -619,7 +683,7 @@
     status('已读取当前状态 · 第 '+(pageIndex+1)+' 页。关闭浏览器不会取消后台任务。');
     if(currentTab==='jobs') {jobsActive=rows.some(row=>['queued','running'].includes(row.state));pollDelay=5000;scheduleJobs(!automatic);}
   }
-  ['items','sources','jobs','history','playback'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
+  ['items','sources','jobs','history','playback','stremio'].forEach(name=>byId(name+'Tab').addEventListener('click',()=>guarded(async()=>{tab=name;resetPage();await load();})));
   byId('refresh').addEventListener('click',()=>guarded(load));
   for(const control of ['state','mediaKind'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQuery();await load();}));
   for(const control of ['availability','sort'])byId(control).addEventListener('change',()=>guarded(async()=>{resetQueryPage();await load();}));
@@ -825,9 +889,15 @@
     const session=await post(code?'/manage/api/pair':'/manage/api/session',code?{code}:{});
     csrf=session.csrf;mountedSource=session.source_id||null;
     recoverPlayback(session);
-    grantedScopes=session.scopes||[];byId('playbackTab').classList.toggle('hidden',!grantedScopes.includes('playback_read'));
+    grantedScopes=session.scopes||[];
+    const hasCatalog=!session.scopes||grantedScopes.includes('catalog_read');
+    for(const item of ['itemsTab','sourcesTab','jobsTab'])byId(item).classList.toggle('hidden',!hasCatalog);
+    byId('batch').classList.toggle('hidden',!hasCatalog);
+    byId('playbackTab').classList.toggle('hidden',!grantedScopes.includes('playback_read'));
+    byId('stremioTab').classList.toggle('hidden',!grantedScopes.includes('stremio_addons'));
+    if(!hasCatalog&&grantedScopes.includes('stremio_addons'))tab='stremio';
     if(mountedSource){byId('clearSource').disabled=true;byId('clearSource').textContent='当前授权已固定来源';}
-    byId('historyTab').classList.toggle('hidden',['mounted','local','network'].includes(session.catalog_kind));
+    byId('historyTab').classList.toggle('hidden',!hasCatalog||['mounted','local','network','stremio'].includes(session.catalog_kind));
     byId('workspace').classList.remove('hidden');await load();
   });
 })();

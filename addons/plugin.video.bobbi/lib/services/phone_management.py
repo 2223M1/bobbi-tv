@@ -21,6 +21,8 @@ SESSION_SECONDS = 900
 COOKIE = 'bobbi_management'
 SCOPES = frozenset(('catalog_read', 'catalog_review', 'catalog_tasks'))
 PLAYBACK_SCOPES = frozenset(('playback_read', 'playback_control'))
+STREMIO_SCOPES = frozenset(('stremio_addons',))
+LOCAL_SCOPES = frozenset(('stremio_addons',))
 ACTION_SCOPE = {
     'catalog_sources': 'catalog_read', 'catalog_items': 'catalog_read', 'catalog_jobs': 'catalog_read',
     'catalog_history': 'catalog_read',
@@ -31,6 +33,11 @@ ACTION_SCOPE = {
     'playback_presentation': 'playback_read', 'playback_receipt': 'playback_read',
     'playback_command': 'playback_control',
     'playback_forget': 'playback_read',
+    'stremio_list': 'stremio_addons',
+    'stremio_validate': 'stremio_addons',
+    'stremio_add': 'stremio_addons',
+    'stremio_toggle': 'stremio_addons',
+    'stremio_remove': 'stremio_addons',
 }
 PLAYBACK_INSTANCE = ('boot_id', 'epoch', 'request_id', 'native_instance', 'file_sha256', 'selection_epoch')
 
@@ -65,6 +72,28 @@ def _page(args):
 def parameters(action, args):
     if type(args) is not dict or len(encode(args)) > MAX_BODY:
         raise PhoneError('INVALID_REQUEST', 400)
+    if action in ('stremio_list', 'stremio_validate', 'stremio_add', 'stremio_toggle', 'stremio_remove'):
+        if action == 'stremio_list':
+            if args:
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {}
+        if action in ('stremio_validate', 'stremio_add'):
+            url = args.get('url')
+            if (set(args) != {'url'} or type(url) is not str or not 0 < len(url.strip()) <= 2048
+                    or re.search(r'[\x00-\x1f\x7f]', url)):
+                raise PhoneError('INVALID_REQUEST', 400)
+            return {'url': url.strip()}
+        if action == 'stremio_toggle':
+            addon_id, category, enabled = args.get('id'), args.get('category'), args.get('enabled')
+            if (set(args) != {'id', 'category', 'enabled'} or type(addon_id) is not str
+                    or not 0 < len(addon_id) <= 512 or '\x00' in addon_id
+                    or category not in ('stream', 'catalog', 'tv') or type(enabled) is not bool):
+                raise PhoneError('INVALID_REQUEST', 400)
+            return dict(id=addon_id, category=category, enabled=enabled)
+        addon_id = args.get('id')
+        if set(args) != {'id'} or type(addon_id) is not str or not 0 < len(addon_id) <= 512 or '\x00' in addon_id:
+            raise PhoneError('INVALID_REQUEST', 400)
+        return dict(id=addon_id)
     if action in ('playback_presentation', 'playback_receipt', 'playback_command', 'playback_forget'):
         from bobbi_core.playback_presentation import command, expected
         try:
@@ -168,6 +197,34 @@ PLAYBACK_FIELDS = frozenset(('available', 'reason', 'expected', 'boot_id', 'epoc
     'stream_key', 'selected', 'audio_truncated', 'subtitles_truncated', 'chapters_truncated', 'command_id', 'status'))
 
 
+STREMIO_FIELDS = frozenset(('items', 'addon', 'manifest', 'valid', 'success', 'id', 'name',
+    'description', 'version', 'host', 'logo', 'logo_rejected', 'types', 'capabilities',
+    'selected', 'stream', 'catalog', 'tv'))
+
+
+def public_stremio(value, depth=0, key=None):
+    if depth > 6:
+        raise PhoneError('INVALID_REPLY', 502)
+    if type(value) is dict:
+        return {k: public_stremio(v, depth + 1, k) for k, v in value.items() if k in STREMIO_FIELDS}
+    if type(value) is list:
+        limit = 64 if key == 'items' else 8
+        if len(value) > limit:
+            raise PhoneError('INVALID_REPLY', 502)
+        return [public_stremio(v, depth + 1, key) for v in value]
+    if value is None or type(value) in (bool, int, float):
+        return value
+    if type(value) is str and len(value) <= 1024 and '\x00' not in value:
+        if key == 'logo':
+            if value == '' or re.fullmatch(r'https://image\.tmdb\.org/[A-Za-z0-9/_.-]{1,240}\.(?:jpg|jpeg|png|webp)', value, re.IGNORECASE):
+                return value
+            raise PhoneError('INVALID_REPLY', 502)
+        if key in ('host', 'version') and '://' in value:
+            raise PhoneError('INVALID_REPLY', 502)
+        return value
+    raise PhoneError('INVALID_REPLY', 502)
+
+
 def public(value, depth=0, fields=PUBLIC_FIELDS, max_items=5):
     if depth > 6:
         raise PhoneError('INVALID_REPLY', 502)
@@ -189,27 +246,43 @@ class PhoneManagement:
         from bobbi_platform.pan_accounts import scope
         from bobbi_platform.paths import ProfileBinding
         from bobbi_platform.runtime import bind_call
-        # An injected transport may supply its own binding in fixtures. The
-        # production path always captures both Kodi roots and this exact Host.
-        self.profile_binding = profile_binding or (ProfileBinding() if rpc is None else None)
-        if rpc is None:
-            rpc = bind_call(self.profile_binding.root('script.module.bobbi.platform') / 'runtime.json')
-            self.profile_binding.require_current()
-        self.reference_kind = expected.get('reference_kind') if type(expected) is dict else None
-        from bobbi_core.typed_ref import KINDS, action_prefix
-        self.path_source = self.reference_kind in KINDS
-        self.catalog_prefix = action_prefix(self.reference_kind) if self.path_source else None
-        if self.path_source and set(scopes) & PLAYBACK_SCOPES:
-            raise PhoneError('ACTION_FORBIDDEN')
-        if self.path_source:
-            if set(expected) - {'reference_kind', 'source_id', 'namespace', 'generation'}:
-                raise PhoneError('INVALID_REQUEST', 400)
-            self.expected = dict(reference_kind=self.reference_kind, source_id=_id(expected.get('source_id')),
-                                 namespace=_id(expected.get('namespace'), 64), generation='')
-            if self.reference_kind == 'network_path':
-                self.expected['generation'] = _id(expected.get('generation'), 64)
+        self.local_scope = (
+            expected.get('local_scope')
+            if type(expected) is dict and set(expected) == {'local_scope'}
+            else None
+        )
+        if self.local_scope is not None:
+            if self.local_scope not in LOCAL_SCOPES or not set(scopes) <= STREMIO_SCOPES:
+                raise PhoneError('ACTION_FORBIDDEN')
+            self.profile_binding = profile_binding or (ProfileBinding() if rpc is None else None)
+            if self.profile_binding is not None:
+                self.profile_binding.require_current()
+            self.reference_kind = None
+            self.path_source = False
+            self.catalog_prefix = None
+            self.expected = dict(local_scope=self.local_scope)
         else:
-            self.expected = scope(expected, authenticated=True)
+            # An injected transport may supply its own binding in fixtures. The
+            # production path always captures both Kodi roots and this exact Host.
+            self.profile_binding = profile_binding or (ProfileBinding() if rpc is None else None)
+            if rpc is None:
+                rpc = bind_call(self.profile_binding.root('script.module.bobbi.platform') / 'runtime.json')
+                self.profile_binding.require_current()
+            self.reference_kind = expected.get('reference_kind') if type(expected) is dict else None
+            from bobbi_core.typed_ref import KINDS, action_prefix
+            self.path_source = self.reference_kind in KINDS
+            self.catalog_prefix = action_prefix(self.reference_kind) if self.path_source else None
+            if self.path_source and set(scopes) & PLAYBACK_SCOPES:
+                raise PhoneError('ACTION_FORBIDDEN')
+            if self.path_source:
+                if set(expected) - {'reference_kind', 'source_id', 'namespace', 'generation'}:
+                    raise PhoneError('INVALID_REQUEST', 400)
+                self.expected = dict(reference_kind=self.reference_kind, source_id=_id(expected.get('source_id')),
+                                     namespace=_id(expected.get('namespace'), 64), generation='')
+                if self.reference_kind == 'network_path':
+                    self.expected['generation'] = _id(expected.get('generation'), 64)
+            else:
+                self.expected = scope(expected, authenticated=True)
         parts = urlsplit(origin)
         try:
             address = ipaddress.ip_address(parts.hostname)
@@ -217,7 +290,8 @@ class PhoneManagement:
             raise PhoneError('ORIGIN_FORBIDDEN') from None
         if (parts.scheme != 'http' or not (address.is_private or address.is_loopback)
                 or parts.path or parts.query or parts.fragment or parts.username or parts.password
-                or not parts.port or not 1 <= parts.port <= 65535 or not set(scopes) <= SCOPES | PLAYBACK_SCOPES
+                or not parts.port or not 1 <= parts.port <= 65535
+                or not set(scopes) <= SCOPES | PLAYBACK_SCOPES | STREMIO_SCOPES
                 or ('playback_control' in scopes and 'playback_read' not in scopes)):
             raise PhoneError('ORIGIN_FORBIDDEN')
         self.origin, self.host, self.rpc, self.clock = origin, parts.netloc, rpc, clock
@@ -267,6 +341,9 @@ class PhoneManagement:
         return result
 
     def _account(self):
+        if self.local_scope is not None:
+            self._profile()
+            return
         try:
             if self.path_source:
                 current = self._rpc(self.catalog_prefix + 'scope', {'source_id': self.expected['source_id']}, timeout=2)
@@ -318,7 +395,8 @@ class PhoneManagement:
         return dict(csrf=self._csrf, expires_in=int(self.expires - self.clock()),
                     scopes=sorted(self.scopes),
                     playback_operations=deepcopy(list(self.playback_operations.values())),
-                    catalog_kind=('local' if self.reference_kind == 'local_path' else
+                    catalog_kind=('stremio' if self.local_scope == 'stremio_addons' else
+                                  'local' if self.reference_kind == 'local_path' else
                                   'network' if self.reference_kind == 'network_path' else
                                   'mounted' if self.path_source else 'native'),
                     source_id=self.expected['source_id'] if self.path_source else None)
@@ -422,6 +500,8 @@ class PhoneManagement:
             if type(action) is not str or ACTION_SCOPE.get(action) not in self.scopes:
                 raise PhoneError('ACTION_FORBIDDEN')
             args = parameters(action, body['params'])
+            if action.startswith('stremio_'):
+                return self._handle_stremio(action, args)
             if action == 'playback_forget':
                 return self._forget_playback(args), None
             if action == 'playback_command' and not self._remember_playback(args):
@@ -479,6 +559,53 @@ class PhoneManagement:
                 while len(self.previews) > 8:
                     del self.previews[next(iter(self.previews))]
             return result, None
+
+    def _handle_stremio(self, action, args):
+        from lib.services.webserver import (
+            commit_stremio_addon,
+            format_stremio_addon,
+            list_stremio_addons,
+            prepare_stremio_addon,
+            remove_stremio_addon,
+            toggle_stremio_addon,
+        )
+        self._live()
+        self._account()
+        if action == 'stremio_list':
+            result = dict(items=list_stremio_addons())
+        elif action in ('stremio_validate', 'stremio_add'):
+            self.lock.release()
+            try:
+                resolved_url, manifest, error = prepare_stremio_addon(args['url'])
+            finally:
+                self.lock.acquire()
+            self._account()
+            self._live()
+            if error is not None:
+                raise PhoneError(error, 409 if error == 'STREMIO_ADDON_EXISTS' else 400)
+            if action == 'stremio_validate':
+                summary = format_stremio_addon(dict(manifest=manifest, transportUrl=resolved_url))
+                result = dict(valid=True, manifest=summary)
+            else:
+                addon, commit_error = commit_stremio_addon(resolved_url, manifest)
+                if commit_error is not None or addon is None:
+                    raise PhoneError(commit_error or 'STREMIO_ADDON_UNAVAILABLE',
+                                     409 if commit_error == 'STREMIO_ADDON_EXISTS' else 400)
+                result = dict(success=True, addon=format_stremio_addon(addon))
+        elif action == 'stremio_toggle':
+            if not toggle_stremio_addon(args['id'], args['category'], args['enabled']):
+                raise PhoneError('STREMIO_ADDON_NOT_FOUND', 404)
+            result = dict(success=True)
+        else:
+            if not remove_stremio_addon(args['id']):
+                raise PhoneError('STREMIO_ADDON_NOT_FOUND', 404)
+            result = dict(success=True)
+        self._account()
+        self._live()
+        projected = public_stremio(result)
+        if len(encode(projected)) > MAX_REPLY:
+            raise PhoneError('REPLY_TOO_LARGE', 502)
+        return projected, None
 
     def revoke(self):
         # Immediate logical revocation, even while an already-admitted domain
