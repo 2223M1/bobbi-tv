@@ -157,7 +157,7 @@ class Client:
         elif not root:
             query['ParentId'] = _id(parent[7:])
         if display and not root:
-            query.update(Fields='Overview,Genres,ProductionYear,RunTimeTicks', EnableImageTypes='Primary', ImageTypeLimit=1)
+            query.update(Fields='Overview,Genres,ProductionYear,RunTimeTicks,UserData', EnableImageTypes='Primary', ImageTypeLimit=1)
         value = self.session.request('/Users/' + self.saved['user_id'] + route,
                                      query=None if root else query)
         rows, total = _rows(value, 'Items'), number(value.get('TotalRecordCount'))
@@ -222,22 +222,26 @@ class Client:
             result['catalog_descriptions'] = {row['file_id']: description for row in items}
         return result
 
-    def _playback_source(self, entry, mid):
+    def _playback_source(self, entry, mid, *, is_playback=False):
         # The actual PlaybackInfo response for this exact version must permit
         # a finite static file. Default support booleans are not mode selection.
         request = dict(
             UserId=self.saved['user_id'], MediaSourceId=mid, EnableDirectPlay=True,
             EnableDirectStream=False, EnableTranscoding=False, AutoOpenLiveStream=False)
         if self.provider == 'emby':
-            request['IsPlayback'] = False  # Capability inquiry, never an Emby playback report.
+            request['IsPlayback'] = bool(is_playback)
         value = self.session.request('/Items/' + entry + '/PlaybackInfo', data=request)
         matching = [media for media in _rows(value, 'MediaSources') if media.get('Id') == mid]
         if len(matching) != 1 or matching[0].get('SupportsDirectPlay') is not True:
             raise PanError('PAN_MEDIA_UNSUPPORTED')
+        if is_playback:
+            psid = value.get('PlaySessionId')
+            if psid is not None and (type(psid) is not str or len(psid) > 128 or any(ord(c) < 32 for c in psid)):
+                raise PanError('PAN_REPLY_INVALID')
+            return matching[0], (psid or '')
         return matching[0]
 
-    def direct_original(self, item_id, media_id, *, authenticated=False):
-        """One selection and probe. No streaming proxy or credentials in the returned URL."""
+    def _probe_direct_media(self, item_id, media_id, *, authenticated=False, is_playback=False):
         if self.provider != 'emby':
             raise PanError('PAN_PROVIDER_INVALID')
         if type(authenticated) is not bool:
@@ -247,7 +251,12 @@ class Client:
         matching = [m for m in _rows(self._item(entry), 'MediaSources') if m.get('Id') == mid]
         if len(matching) != 1:
             raise PanError('PAN_FILE_CHANGED')
-        chosen, current = matching[0], self._playback_source(entry, mid)
+        chosen = matching[0]
+        play_session_id = ''
+        if is_playback:
+            current, play_session_id = self._playback_source(entry, mid, is_playback=True)
+        else:
+            current = self._playback_source(entry, mid)
         for media in (chosen, current):
             if (media.get('Protocol') not in ('Http', 'File') or media.get('IsInfiniteStream')
                     or media.get('RequiresOpening') or media.get('RequiredHttpHeaders')
@@ -279,7 +288,50 @@ class Client:
         for declared in (chosen.get('Size'), current.get('Size')):
             if declared is not None and number(declared, 1) != size:
                 raise PanError('PAN_FILE_CHANGED')
+        return url, mime, play_session_id
+
+    def direct_original(self, item_id, media_id, *, authenticated=False):
+        """One selection and probe. No streaming proxy or credentials in the returned URL."""
+        url, mime, _ = self._probe_direct_media(item_id, media_id, authenticated=authenticated, is_playback=False)
         return dict(url=url, mime=mime)
+
+    def open_playback_session(self, item_id, media_id, *, authenticated=False):
+        """Explicit playback session inquiry (IsPlayback=True) + finite direct probe."""
+        url, mime, play_session_id = self._probe_direct_media(
+            item_id, media_id, authenticated=authenticated, is_playback=True)
+        return dict(url=url, mime=mime, play_session_id=play_session_id)
+
+    def set_played(self, item_id, played):
+        """Explicit manual/EOF played toggle on server UserData."""
+        if self.provider != 'emby':
+            raise PanError('PAN_PROVIDER_INVALID')
+        if type(played) is not bool:
+            raise PanError('PAN_ROUTE_REJECTED')
+        entry = _id(item_id)
+        self._identity()
+        self.session.request(
+            '/Users/' + self.saved['user_id'] + '/PlayedItems/' + entry,
+            method='POST' if played else 'DELETE',
+            success_statuses=(200, 204),
+            empty_response=True,
+        )
+        return dict(ok=True, item_id=entry, played=played)
+
+    def set_favorite(self, item_id, favorite):
+        """Explicit manual favorite toggle on server UserData."""
+        if self.provider != 'emby':
+            raise PanError('PAN_PROVIDER_INVALID')
+        if type(favorite) is not bool:
+            raise PanError('PAN_ROUTE_REJECTED')
+        entry = _id(item_id)
+        self._identity()
+        self.session.request(
+            '/Users/' + self.saved['user_id'] + '/FavoriteItems/' + entry,
+            method='POST' if favorite else 'DELETE',
+            success_statuses=(200, 204),
+            empty_response=True,
+        )
+        return dict(ok=True, item_id=entry, favorite=favorite)
 
     def resolve_original(self, selected):
         self._identity()

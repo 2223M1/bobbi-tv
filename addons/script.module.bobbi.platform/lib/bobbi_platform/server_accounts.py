@@ -94,7 +94,10 @@ class Accounts:
     def snapshot(self, provider):
         if provider not in dict(SERVER_PROVIDERS):
             raise PanError('PAN_PROVIDER_INVALID')
-        store = self._registry()
+        try:
+            store = self._registry()
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
         try:
             value = self._snapshot(store, provider)
         finally:
@@ -102,10 +105,10 @@ class Accounts:
         return self._notify(value)
 
     def _snapshot(self, store, provider):
-        source, revision = self._source(store, provider)
-        if source is None:
-            return empty_scope(provider)
         try:
+            source, revision = self._source(store, provider)
+            if source is None:
+                return empty_scope(provider)
             self._credentials(source)
             return self._scope(source, revision)
         except (PanError, LibraryError):

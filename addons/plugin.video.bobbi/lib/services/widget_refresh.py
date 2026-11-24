@@ -17,6 +17,9 @@ class WidgetRefreshService:
         self.pending = None
         self.history_stamp = self.history_database = None
         self.catalog_views_revision = ''
+        self._emby_seen_revisions = {}
+        self._emby_sources_cache = (0.0, ())
+        self._pending_container_source = None
 
     def start(self):
         if self.worker is None and not self.stop.is_set():
@@ -60,6 +63,16 @@ class WidgetRefreshService:
                 bump(self.window, key)
                 self.revisions[key] = value
         self.pending = None  # Failed writes stay pending for the next owner tick.
+        refresh_src = self._pending_container_source
+        if refresh_src is not None:
+            self._pending_container_source = None
+            try:
+                folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
+                modal = xbmc.getCondVisibility('System.HasModalDialog') if hasattr(xbmc, 'getCondVisibility') else False
+                if refresh_src in folder and 'plugin.video.bobbi.library' in folder and not modal:
+                    xbmc.executebuiltin('Container.Refresh')
+            except Exception:
+                pass
 
     def refresh_dependencies(self):
         """Worker only: local reads may be slow; never run on the playback owner."""
@@ -108,8 +121,61 @@ class WidgetRefreshService:
         except (OSError, ValueError, RuntimeError):
             return False
 
-    def _wait(self, monitor):
-        deadline = monotonic() + self.interval
+    def refresh_emby_realtime(self):
+        """Worker only: bounded Emby WS invalidation check (<=5s) + 25s poll fallback (<=30s)."""
+        if not self._profile_current():
+            return
+        root = getattr(self.host, 'root', None)
+        emby_rt = getattr(self.host, '_emby_runtime', None)
+        if root is None or not callable(emby_rt):
+            return
+        reg_path = root / 'libraries.sqlite3'
+        if not reg_path.is_file():
+            return
+        now = monotonic()
+        cached_at, emby_sources = self._emby_sources_cache
+        if now - cached_at >= 5.0:
+            try:
+                from bobbi_platform.libraries import Registry
+                store = Registry(reg_path, read_only=True, timeout=0.05)
+                try:
+                    found = []
+                    for src in store.sources():
+                        if src.kind == 'media_server' and src.metadata.get('provider') == 'emby' and src.password:
+                            _, rev = store.source_snapshot(src.id)
+                            found.append((src.id, rev))
+                    emby_sources = tuple(found)
+                finally:
+                    store.close()
+                self._emby_sources_cache = (now, emby_sources)
+            except Exception:
+                return
+        if not emby_sources:
+            return
+        on_home = xbmc.getCondVisibility('Window.IsActive(home)') if hasattr(xbmc, 'getCondVisibility') else False
+        folder = xbmc.getInfoLabel('Container.FolderPath') if hasattr(xbmc, 'getInfoLabel') else ''
+        in_lib = 'plugin.video.bobbi.library' in folder
+        if not on_home and not in_lib:
+            return
+        hub, _ = emby_rt()
+        revs = []
+        for sid, gen in emby_sources:
+            if self.stop.is_set():
+                return
+            hub.ensure_ws_listener(sid, gen)
+            snap = hub.poll_server_digest(sid, gen)
+            revs.append(f"{sid[:8]}:{snap['revision']}")
+            prev_rev = self._emby_seen_revisions.get((sid, gen))
+            self._emby_seen_revisions[(sid, gen)] = snap['revision']
+            if prev_rev is not None and snap['revision'] != prev_rev:
+                if in_lib and sid in folder:
+                    self._pending_container_source = sid
+                    hub.mark_confirmed(sid, gen, offline=False)
+        if revs:
+            self._offer({'emby_server': ','.join(revs)})
+
+    def _wait(self, monitor, seconds=None):
+        deadline = monotonic() + (self.interval if seconds is None else seconds)
         while not self.stop.is_set() and not monitor.abortRequested():
             remaining = deadline - monotonic()
             if remaining <= 0:
@@ -124,13 +190,17 @@ class WidgetRefreshService:
         monitor = self.monitor or xbmc.Monitor()
         player = xbmc.Player()
         self.set_next_refresh(time())
+        next_local_due = 0.0
         while not self.stop.is_set() and not monitor.abortRequested():
             try:
                 if xbmc.getSkinDir() == 'skin.bobbi.cinema':
-                    if (xbmc.getCondVisibility('Window.IsActive(home)')
-                            and not player.isPlayingVideo()
+                    if (not player.isPlayingVideo()
                             and get_property('bobbi.pause_services') != 'true'):
-                        self.refresh_dependencies()
+                        now_m = monotonic()
+                        if xbmc.getCondVisibility('Window.IsActive(home)') and now_m >= next_local_due:
+                            self.refresh_dependencies()
+                            next_local_due = now_m + self.interval
+                        self.refresh_emby_realtime()
                 else:
                     offset = int(get_setting('widget_refresh_timer', 60))
                     if offset != self.offset:
@@ -140,7 +210,7 @@ class WidgetRefreshService:
                         self.set_next_refresh(time())
             except Exception as error:
                 kodilog('WidgetRefresh error: ' + type(error).__name__, level=xbmc.LOGERROR)
-            if self._wait(monitor):
+            if self._wait(monitor, seconds=1.0 if xbmc.getSkinDir() == 'skin.bobbi.cinema' else None):
                 return
 
     def condition_check(self, player):

@@ -34,9 +34,10 @@ def detail_actions(identifier):
     return actions
 
 
-def selected_actions(identifier, *, videos, folder=True, bobbi=True):
+def selected_actions(identifier, *, videos, folder=True, bobbi=True, library=False):
     values = {'true': True, 'Window.IsVisible(videos)': videos, 'ListItem.IsFolder': folder,
-              'String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)': bobbi}
+              'String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi/)': bobbi,
+              'String.StartsWith(ListItem.FilenameAndPath,plugin://plugin.video.bobbi.library/)': library}
     def matches(condition):
         return all(not values[part[1:]] if part.startswith('!') else values[part]
                    for part in condition.split(' + '))

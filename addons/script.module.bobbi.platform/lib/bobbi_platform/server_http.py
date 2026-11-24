@@ -139,7 +139,9 @@ class Session:
                 raise PanError('PAN_REDIRECT_REJECTED') from None
             raise PanError('PAN_EMBY_DIRECT_AUTH_REQUIRED' if error.code in (401, 403)
                            else 'PAN_MEDIA_UNSUPPORTED') from None
-        except LibraryError:
+        except LibraryError as exc:
+            if not str(exc).startswith('MEDIA_'):
+                raise PanError('PAN_ACCOUNT_CHANGED') from None
             raise PanError('PAN_MEDIA_UNSUPPORTED') from None
         except (OSError, URLError):
             self._check_budget()

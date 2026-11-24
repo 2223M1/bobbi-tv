@@ -312,7 +312,8 @@ class StandardPlayback:
                 window.clearProperty(key)
 
     def next_with_subtitle(self, current, cancelled):
-        guard = lambda: cancelled() or not self.host.accounts.is_current(current['_account'])
+        accounts = getattr(self.host, 'playback_accounts', None) or self.host.accounts
+        guard = lambda: cancelled() or not accounts.is_current(current['_account'])
         prepared = self.prepared_session if self.prepared_request == current.get('request_id') else None
         data = next_data(current, guard, session=prepared)
         if current.get('_continuation_final') or (data and (data.get('_next_transport') == 'bt'
@@ -363,7 +364,8 @@ class StandardPlayback:
         self.subtitle_job = job
         def work():
             try:
-                cancelled = lambda: job['cancel'].is_set() or not self.host.accounts.is_current(job['data']['_account'])
+                accounts = getattr(self.host, 'playback_accounts', None) or self.host.accounts
+                cancelled = lambda: job['cancel'].is_set() or not accounts.is_current(job['data']['_account'])
                 job['result'] = discover(job['data'], self.host, job['deadline'], cancelled)
                 if cancelled():
                     job['result'] = None

@@ -104,7 +104,7 @@ def execute(handle, params):
             rows.append(item('影视海报库', 'plugin://plugin.video.bobbi/?action=personal_catalog',
                 label2='已刮削电影、剧集与多版本片源',
                 properties={'Bobbi.Library.Kind': 'personal_catalog'}))
-        elif action in ('browse', 'play', 'play_pointer', 'emby_page', 'emby_play', 'emby_search'):
+        elif action in ('browse', 'play', 'play_pointer', 'emby_page', 'emby_play', 'emby_search', 'emby_mark'):
             source = store.get(params.get('source', ''))
             if action.startswith('emby_') or (action == 'browse' and source.kind == 'media_server'
                                               and source.metadata.get('provider') == 'emby'):
@@ -277,5 +277,5 @@ if __name__ == '__main__':
         xbmc.log('[bobbi] library operation failed: ' + type(error).__name__, xbmc.LOGWARNING)
         xbmcgui.Dialog().ok('片库暂时不可用', message(error))
         # No alternate source or playback retry after an uncertain submission.
-        if handle >= 0 and query.get('action') not in ('play', 'play_pointer', 'emby_play'):
+        if handle >= 0 and query.get('action') not in ('play', 'play_pointer', 'emby_play', 'emby_mark'):
             xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)

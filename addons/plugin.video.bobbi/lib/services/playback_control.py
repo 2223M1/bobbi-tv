@@ -317,6 +317,10 @@ class KodiNative:
 
 class PlaybackControlServer:
     def __init__(self, native=None, path=SOCKET_PATH, events=None, *, host=None):
+        self.host = host
+        self._owned_state = None
+        self._owned_poll_due = 0.0
+        self._owned_next_worker = None
         if path is None:
             # The authenticated portable IPC queues to this same actor on the
             # Kodi thread. No second authority or fabricated native receipts.
@@ -465,6 +469,167 @@ class PlaybackControlServer:
             self.next_display = Display('native')
             self.next_display.clear()
         self.next_display.publish(None if self.refresh_pending else self.authority.next_summary_snapshot())
+        self._observe_owned_tracks(now)
+
+    def _observe_owned_tracks(self, now):
+        host = getattr(self, 'host', None)
+        if host is None or not getattr(host, 'owned_tracks', None):
+            return
+        observed = getattr(self.authority.owner, 'observed', None)
+        obs_req = observed.get('request_id') if isinstance(observed, dict) else None
+        obs_inst = observed.get('native_instance') if isinstance(observed, dict) else None
+        obs_phase = observed.get('phase') if isinstance(observed, dict) else None
+
+        prev = self._owned_state
+        if prev is not None:
+            with host.lock:
+                prev_track = host.owned_tracks.get(prev['request_id'])
+            prev_cancelled = prev_track is None or bool(prev_track.get('cancelled'))
+            same_instance = obs_req == prev['request_id'] and obs_inst == prev['native_instance']
+            if prev_cancelled or not same_instance or obs_phase == 'TERMINAL':
+                reason = 'SUPERSEDED'
+                pos, dur = prev['position'], prev['duration']
+                obs_clock = prev['observed_clock']
+                if same_instance and obs_phase == 'TERMINAL':
+                    reason = str(observed.get('reason') or 'STOP')
+                    comp = observed.get('completion_observation')
+                    if isinstance(comp, dict):
+                        cpos, cdur = comp.get('position'), comp.get('duration')
+                        if isinstance(cpos, (int, float)) and isinstance(cdur, (int, float)) and cdur > 0:
+                            pos, dur, obs_clock = float(cpos), float(cdur), True
+                host.notify_playback_event({
+                    'event': 'TERMINAL',
+                    'request_id': prev['request_id'],
+                    'account': dict(prev['account']),
+                    'position': pos,
+                    'duration': dur,
+                    'paused': False,
+                    'reason': reason,
+                    'observed_clock': obs_clock,
+                    'data': dict(prev['data']),
+                })
+                self._owned_state = None
+                if reason == 'NATURAL_EOF' and isinstance(prev['data'].get('_owned_next'), dict):
+                    self._launch_owned_next(prev['data'])
+
+        if not obs_req or not obs_inst or obs_phase != 'AV_STARTED':
+            return
+        with host.lock:
+            tracked = host.owned_tracks.get(obs_req)
+        if not tracked or tracked.get('cancelled') or not isinstance(tracked.get('data'), dict):
+            return
+        first = self._owned_state is None or self._owned_state['native_instance'] != obs_inst
+        if not first and now < self._owned_poll_due:
+            return
+        self._owned_poll_due = now + 1.0
+        pos, dur, obs_clock = 0.0, 0.0, False
+        try:
+            import xbmc
+            player = xbmc.Player()
+            if player.isPlayingVideo():
+                p_val, d_val = player.getTime(), player.getTotalTime()
+                if (
+                    isinstance(p_val, (int, float))
+                    and isinstance(d_val, (int, float))
+                    and 0 <= p_val <= d_val
+                    and 0 < d_val < 864000
+                ):
+                    pos, dur, obs_clock = float(p_val), float(d_val), True
+        except Exception:
+            pass
+        cur_paused = bool(observed.get('paused', False))
+        if first:
+            self._owned_state = {
+                'request_id': obs_req,
+                'native_instance': obs_inst,
+                'account': dict(tracked['account']),
+                'data': dict(tracked['data']),
+                'position': pos,
+                'duration': dur,
+                'observed_clock': obs_clock,
+                'paused': cur_paused,
+                'last_obs_at': now,
+                'last_emit_at': now,
+            }
+            host.notify_playback_event({
+                'event': 'AV_START',
+                'request_id': obs_req,
+                'account': dict(tracked['account']),
+                'position': pos,
+                'duration': dur,
+                'paused': cur_paused,
+                'observed_clock': obs_clock,
+                'data': dict(tracked['data']),
+            })
+            return
+
+        st = self._owned_state
+        prev_paused = st['paused']
+        prev_pos = st['position']
+        prev_obs = st['last_obs_at']
+        if obs_clock:
+            st['position'] = pos
+            st['duration'] = dur
+            st['observed_clock'] = True
+        st['paused'] = cur_paused
+        st['last_obs_at'] = now
+
+        trigger = None
+        if cur_paused != prev_paused:
+            trigger = 'Pause' if cur_paused else 'Unpause'
+        elif obs_clock:
+            expected_adv = 0.0 if prev_paused else max(0.0, now - prev_obs)
+            if abs(pos - (prev_pos + expected_adv)) >= 4.0:
+                trigger = 'TimeUpdate'
+        if trigger is None and obs_clock and (now - st['last_emit_at']) >= 10.0:
+            trigger = 'TimeUpdate'
+        if trigger is not None:
+            st['last_emit_at'] = now
+            host.notify_playback_event({
+                'event': 'PROGRESS',
+                'request_id': obs_req,
+                'account': dict(st['account']),
+                'position': st['position'],
+                'duration': st['duration'],
+                'paused': cur_paused,
+                'trigger': trigger,
+                'observed_clock': st['observed_clock'],
+                'data': dict(st['data']),
+            })
+
+    def _launch_owned_next(self, current_data):
+        host = getattr(self, 'host', None)
+        if host is None or (self._owned_next_worker is not None and self._owned_next_worker.is_alive()):
+            return
+        from threading import Thread
+        def _work():
+            try:
+                import xbmc
+                from bobbi_platform.owned_playback import reserve_playback, resolve_owned_next
+                cancelled = lambda: host.stopping.is_set() or not host.check_profile()
+                spec = dict(current_data['_owned_next'])
+                nxt = resolve_owned_next(current_data, spec, cancelled)
+                if not nxt or cancelled() or xbmc.Player().isPlaying():
+                    return
+                with reserve_playback(
+                    f"emby-next://{nxt['_owned_source']['source_id']}/{nxt['_owned_source']['item_id']}",
+                    nxt['_account'],
+                ) as res:
+                    res.submit(
+                        -1,
+                        nxt['url'],
+                        title=nxt['title'],
+                        source_meta=nxt['_owned_source'],
+                        info=nxt.get('video_info'),
+                        mime=nxt.get('mime'),
+                        start_over=True,
+                        next_candidate=nxt.get('_owned_next'),
+                        ready=lambda: not cancelled() and not xbmc.Player().isPlaying(),
+                    )
+            except Exception:
+                pass
+        self._owned_next_worker = Thread(target=_work, name='bobbi-native-owned-next', daemon=True)
+        self._owned_next_worker.start()
 
     def close(self):
         if hasattr(self, 'next_display'):

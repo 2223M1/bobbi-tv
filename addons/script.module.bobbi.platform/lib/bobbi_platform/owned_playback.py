@@ -101,6 +101,8 @@ def validate_owned_source_meta(meta: dict | None) -> dict:
         'media_source_id',
         'play_session_id',
         'identity_mode',
+        'initial_ticks',
+        'initial_played',
     }
     if set(meta) - allowed:
         raise ValueError('OWNED_SOURCE_META_INVALID')

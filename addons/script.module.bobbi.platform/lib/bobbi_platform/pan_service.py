@@ -611,14 +611,28 @@ class PanService:
             return self.status()
         if action == 'pan_server_activate_emby' and fields == {'source_id', 'generation', 'expected'}:
             return self.servers.activate_emby(**body, publish=self._server_publish)
-        if action == 'pan_emby_direct' and fields - {'authenticated'} == {'expected', 'item_id', 'media_id'}:
+        if action == 'pan_emby_direct' and fields - {'authenticated', 'open_session'} in (
+                {'expected', 'item_id', 'media_id'}, {'source_scope', 'item_id', 'media_id'}):
             authenticated = body.get('authenticated', False)
-            if type(authenticated) is not bool:
+            open_session = body.get('open_session', False)
+            if type(authenticated) is not bool or type(open_session) is not bool:
                 raise PanError('PAN_ROUTE_REJECTED')
+            if 'source_scope' in body:
+                return self._direct_emby_source(
+                    body['source_scope'],
+                    body['item_id'],
+                    body['media_id'],
+                    authenticated=authenticated,
+                    open_session=open_session,
+                )
             expected = scope(body['expected'], 'emby', authenticated=True)
             with self.scan_operation(expected, kind='metadata', max_requests=7, seconds=24) as operation:
                 with self._using_client(expected, operation) as client:
-                    result = client.direct_original(body['item_id'], body['media_id'], authenticated=authenticated)
+                    result = (
+                        client.open_playback_session(body['item_id'], body['media_id'], authenticated=authenticated)
+                        if open_session
+                        else client.direct_original(body['item_id'], body['media_id'], authenticated=authenticated)
+                    )
             return self.accounts.run_if_current(expected, lambda: result)
         if (action == 'pan_server_register' and {'provider', 'name', 'expected_source'} <= fields
                 and fields - {'provider', 'name', 'expected_source'} in (
@@ -663,6 +677,59 @@ class PanService:
             return self.list_files(body['expected'], body['parent'], body['page'],
                 body.get('cursor'), body.get('refresh', False), body.get('continuation'), body.get('operation_id'))
         raise PanError('PAN_ACTION_INVALID')
+
+    def _direct_emby_source(self, source_scope, item_id, media_id, *, authenticated=False, open_session=False):
+        from bobbi_core.library_contract import LibraryError
+        if (
+            not isinstance(source_scope, dict)
+            or source_scope.get('kind') != 'emby_source'
+            or source_scope.get('provider') != 'emby'
+            or not isinstance(source_scope.get('source_id'), str)
+            or not re.fullmatch(r'[0-9a-f]{32}', source_scope['source_id'])
+            or not isinstance(source_scope.get('generation'), str)
+            or not re.fullmatch(r'[0-9a-f]{64}', source_scope['generation'])
+            or not isinstance(source_scope.get('server_id'), str)
+            or not source_scope['server_id']
+            or not isinstance(source_scope.get('user_id'), str)
+            or not source_scope['user_id']
+        ):
+            raise PanError('PAN_SCOPE_INVALID')
+        sid = source_scope['source_id']
+        gen = source_scope['generation']
+        store = self.servers._registry()
+        try:
+            src, rev = store.source_snapshot(sid)
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
+        finally:
+            store.close()
+        if (
+            rev != gen
+            or src.kind != 'media_server'
+            or src.metadata.get('provider') != 'emby'
+            or src.metadata.get('server_id') != source_scope['server_id']
+            or src.metadata.get('user_id') != source_scope['user_id']
+            or not src.password
+        ):
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        saved = self.servers._credentials(src)
+        client = self.client_factory('emby', saved)
+        with _budget(client, 24):
+            result = (
+                client.open_playback_session(item_id, media_id, authenticated=authenticated)
+                if open_session
+                else client.direct_original(item_id, media_id, authenticated=authenticated)
+            )
+        store = self.servers._registry()
+        try:
+            current_src, current_rev = store.source_snapshot(sid)
+            if current_src != src or current_rev != gen or not self.servers.current():
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            return store.run_if_current(src, gen, lambda: result)
+        except LibraryError:
+            raise PanError('PAN_ACCOUNT_CHANGED') from None
+        finally:
+            store.close()
 
     def close(self):
         with self.lock:

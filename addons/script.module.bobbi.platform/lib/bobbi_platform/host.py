@@ -54,6 +54,8 @@ class Host:
         self.owner_account_changed = None
         self.playback_observers = []
         self.owned_tracks = {}
+        self.emby_invalidation = None
+        self.emby_sessions = None
         self._registry_mtime_ns = None
         self.lock = Lock()
         self.engine_check = 0
@@ -186,6 +188,23 @@ class Host:
                 self.catalog = CatalogService(self.root, pans, playing=lambda: self.playing,
                     file_facts=getattr(self.file_history, 'media_facts', None), profile_current=self.check_profile)
             return self.catalog
+
+    def _emby_runtime(self):
+        with self.lock:
+            if self.stopping.is_set():
+                raise ValueError('RUNTIME_NOT_READY')
+            if self.emby_invalidation is None:
+                from .emby_session import EmbyInvalidationHub, EmbySessionReporter
+                self.emby_invalidation = EmbyInvalidationHub(self.root)
+                self.emby_sessions = EmbySessionReporter(self.root, self.emby_invalidation)
+                self.playback_observers.append(self.emby_sessions.on_playback_event)
+            return self.emby_invalidation, self.emby_sessions
+
+    def _maybe_attach_emby_observer(self, data):
+        if isinstance(data, dict):
+            meta = data.get('_owned_source')
+            if isinstance(meta, dict) and meta.get('provider') == 'emby':
+                self._emby_runtime()
 
     def bind_owner(self, dispatch, account_changed=None):
         self.owner = dispatch  # Called on the native owner thread, never via IPC.
@@ -479,6 +498,7 @@ class Host:
                 raise ValueError('OWNED_TRACK_INVALID')
             if self.playback_accounts is not None:
                 self.playback_accounts.require_current(body['account'])
+            self._maybe_attach_emby_observer(body['data'])
             with self.lock:
                 entry = self.owned_tracks.get(req_id)
                 if entry is not None and (entry.get('cancelled') or getattr(self, '_active_owned_request', req_id) != req_id):
@@ -487,7 +507,63 @@ class Host:
                 while len(self.owned_tracks) > 32:
                     self.owned_tracks.pop(next(iter(self.owned_tracks)))
             return {'tracked': True}
+        if action == 'emby_user_state' and set(body) == {'source_scope', 'item_id', 'operation'}:
+            from .emby_session import _load_emby_client
+            from .pan_accounts import PanError
+            scope_val = body['source_scope']
+            op = body['operation']
+            if (
+                not isinstance(scope_val, dict)
+                or scope_val.get('kind') != 'emby_source'
+                or op not in ('played', 'unplayed', 'favorite', 'unfavorite')
+                or not isinstance(body.get('item_id'), str)
+            ):
+                raise ValueError('EMBY_USER_STATE_INVALID')
+            if self.playback_accounts is not None and not self.playback_accounts.is_current(scope_val):
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            hub, _ = self._emby_runtime()
+            sid, gen = scope_val['source_id'], scope_val['generation']
+            client, _ = _load_emby_client(self.root, sid, gen)
+            try:
+                with client.session.budget(8):
+                    if op in ('played', 'unplayed'):
+                        res = client.set_played(body['item_id'], op == 'played')
+                    else:
+                        res = client.set_favorite(body['item_id'], op == 'favorite')
+            except PanError as exc:
+                if str(exc) == 'PAN_SERVER_UNAUTHORIZED':
+                    hub.mark_auth_state(sid, gen, 'AUTH_REQUIRED')
+                elif str(exc) == 'PAN_SERVER_FORBIDDEN':
+                    hub.mark_auth_state(sid, gen, 'FORBIDDEN')
+                raise
+            if self.playback_accounts is not None and not self.playback_accounts.is_current(scope_val):
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            hub.notify_event(sid, gen, item_ids=[body['item_id']], kind='ManualUserState')
+            return res
+        if action == 'emby_invalidation_status' and {'source_id', 'generation'} <= set(body) <= {
+            'source_id', 'generation', 'confirm', 'enable_ws', 'poll_fallback'
+        }:
+            import re
+            sid = body.get('source_id')
+            gen = body.get('generation')
+            if (
+                not isinstance(sid, str)
+                or not re.fullmatch(r'[0-9a-f]{32}', sid)
+                or not isinstance(gen, str)
+                or not re.fullmatch(r'[0-9a-f]{64}', gen)
+            ):
+                raise ValueError('EMBY_INVALIDATION_INVALID')
+            hub, _ = self._emby_runtime()
+            if body.get('enable_ws') is True:
+                hub.ensure_ws_listener(sid, gen)
+            if body.get('poll_fallback') is True:
+                hub.poll_server_digest(sid, gen)
+            if body.get('confirm') is True:
+                return hub.mark_confirmed(sid, gen, offline=False)
+            return hub.snapshot(sid, gen)
         if action in ('playback', 'standard_playback'):
+            if body.get('operation') == 'register' and isinstance(body.get('data'), dict):
+                self._maybe_attach_emby_observer(body['data'])
             if '_verified_transport' in body:
                 raise ValueError('PRIVATE_TRANSPORT_PROOF_REQUIRED')
             if (body.get('operation') == 'playback_presentation' and body.get('include_owner') is True
@@ -799,7 +875,9 @@ class Host:
         playback = getattr(self, 'playback', None)
         if playback is not None:
             drain(playback.close, 'PLAYBACK')
-        for label, component in (('IMAGES', self.images), ('PREPARATION', self.preparation), ('STREAMS', self.streams),
+        for label, component in (('EMBY_SESSIONS', getattr(self, 'emby_sessions', None)),
+                                 ('EMBY_INVALIDATION', getattr(self, 'emby_invalidation', None)),
+                                 ('IMAGES', self.images), ('PREPARATION', self.preparation), ('STREAMS', self.streams),
                                  ('SOURCE_STREAMS', getattr(self, 'source_streams', None))):
             if component is not None:
                 drain(component.close, label)

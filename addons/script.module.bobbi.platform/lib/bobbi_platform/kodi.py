@@ -31,14 +31,14 @@ def make_item(url, data):
     tv = data.get('tv_data') or {}
     for key, setter in (('season', 'setSeason'), ('episode', 'setEpisode')):
         value = tv.get(key)
-        if type(value) is int and value >= 0:
+        if type(value) is int and value >= 0 and hasattr(tag, setter):
             getattr(tag, setter)(value)
     art = {key: data[key] for key in ('poster', 'fanart', 'thumb')
            if isinstance(data.get(key), str) and data[key]}
     if art:
         item.setArt(art)
     subtitles = data.get('subtitles_path') or []
-    if isinstance(subtitles, list) and subtitles:
+    if isinstance(subtitles, list) and subtitles and hasattr(item, 'setSubtitles'):
         item.setSubtitles(subtitles)
     request = data.get('request_id')
     if request:
