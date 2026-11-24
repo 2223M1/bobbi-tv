@@ -546,7 +546,7 @@ class MediaIndex:
             if active:
                 raise ValueError('CATALOG_SCAN_BUSY')
             prior = self.db.execute(
-                'SELECT id,state FROM scans WHERE provider=? AND account=? AND source=? ORDER BY updated DESC,id DESC LIMIT 1',
+                'SELECT id,state,reason FROM scans WHERE provider=? AND account=? AND source=? ORDER BY updated DESC,id DESC LIMIT 1',
                 (provider, account, source),
             ).fetchone()
             fstate = self.frontier_db.execute('SELECT * FROM scan_state WHERE source=?', (source,)).fetchone()
@@ -567,6 +567,13 @@ class MediaIndex:
             self.db.execute('INSERT INTO scans VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 (task, source, encode(expected), provider, account,
                  'queued', 0, 0, 0, 0, '{}', '', now))
+            resumable_reasons = {
+                'PAN_BUDGET_EXHAUSTED',
+                'PAN_OPERATION_TIMEOUT',
+                'PAN_RATE_LIMITED',
+                'CANCEL_CONFIRMED',
+                'INTERRUPTED_BY_RESTART',
+            }
             can_resume = False
             if (
                 resumable
@@ -575,6 +582,7 @@ class MediaIndex:
                 and prior is not None
                 and prior['id'] == fstate['last_task']
                 and prior['state'] in ('interrupted', 'canceled', 'failed')
+                and prior['reason'] in resumable_reasons
                 and fstate['last_batch'] == expected_batch
                 and (fstate['provider'], fstate['account'], fstate['scope_digest'], fstate['root_parent'])
                 == (provider, account, scope_digest, root_parent)

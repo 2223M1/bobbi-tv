@@ -146,7 +146,13 @@ def test_rb05_release_gate_freezes_recursive_license_skin_and_generated_evidence
         gate.recheck_local(fake_receipt)
 
 
-def test_r16_emby_play_ok_requires_actual_av_start_and_deduplicates_per_request(tmp_path):
+def test_r16_emby_play_ok_requires_actual_av_start_and_deduplicates_per_request(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setitem(
+        sys.modules,
+        'xbmcaddon',
+        SimpleNamespace(Addon=lambda _cid: SimpleNamespace(getAddonInfo=lambda _k: '0.1.35')),
+    )
     host = Host(tmp_path)
     try:
         def read_outcomes():

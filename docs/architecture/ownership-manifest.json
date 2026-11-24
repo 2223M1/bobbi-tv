@@ -541,7 +541,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/media_library_index.py",
-        "line": 722,
+        "line": 730,
         "anchor": "def batch(self, task, refs, checkpoint, scanned, descriptions=None):"
       },
       "note": "Optional sidecar uses the same scan page transaction and checkpoint, existing candidates storage, no additional writer or schema table. Selected/FileRef stay unchanged."
@@ -613,7 +613,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 857,
+        "line": 860,
         "anchor": "def close(self):"
       },
       "note": "Reviewed responsibility declaration: Profile-bound Host startup, service admission, draining and close. Not a runtime test result."
@@ -745,7 +745,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.core/lib/bobbi_core/media_library_index.py",
-        "line": 1141,
+        "line": 1149,
         "anchor": "def apply(self, expected, request_id, commands):"
       },
       "note": "Reviewed responsibility declaration: Preview -> transactional revalidation -> idempotent receipt -> undo. Not a runtime test result."
@@ -901,7 +901,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 848,
+        "line": 851,
         "anchor": "session_factory = partial(Session, lock_factory=InstanceLock,"
       },
       "note": "Platform composition injects lock, pairing, font decoder and actual resident Host owner_call into Session. Dispatch and lease checks bracket owner reads; core cannot discover a later runtime. Resource/lock ordering stays with PreparationHost/Session. Post-55b4f9b documentation supplement, absent from that frozen manifest/graph; not execution evidence."
@@ -1009,7 +1009,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_accounts.py",
-        "line": 193,
+        "line": 197,
         "anchor": "def register(self, provider, name, location='', secret='', expected_source=None, client_factory=None,"
       },
       "note": "Server registration uses the existing Registry and expected snapshot CAS after bounded identity verification; no second credential inventory or catalog database is added. Reviewed static responsibility, not device execution evidence."

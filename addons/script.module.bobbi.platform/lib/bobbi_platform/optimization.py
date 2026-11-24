@@ -65,28 +65,11 @@ def record(root, build, stage, outcome, seconds):
         db.execute('DELETE FROM pending WHERE rowid NOT IN (SELECT rowid FROM pending ORDER BY rowid DESC LIMIT ?)', (LIMIT,))
 
 
-def _component_version(component: str) -> str:
-    try:
-        from xbmcaddon import Addon
-        return Addon(component).getAddonInfo('version')
-    except Exception:
-        import xml.etree.ElementTree as ET
-        here = Path(__file__).resolve()
-        # Fallback for headless Host/CI where xbmcaddon C++ bridge is absent
-        for parent in here.parents:
-            candidate = parent / 'addon.xml'
-            if candidate.is_file() and parent.name == component:
-                return ET.parse(candidate).getroot().get('version') or '0.0.0'
-            sibling = parent / component / 'addon.xml'
-            if sibling.is_file():
-                return ET.parse(sibling).getroot().get('version') or '0.0.0'
-        raise
-
-
 def observe(root, stage, outcome, started):
     try:
+        from xbmcaddon import Addon
         component = 'script.bobbi.start' if stage in ('install','update','rollback') else 'script.module.bobbi.platform'
-        record(root, _component_version(component),
+        record(root, Addon(component).getAddonInfo('version'),
                stage, outcome, max(0.0, time.monotonic()-started))
     except Exception:
         pass  # Diagnostics never affect installation, directory results or native handoff.

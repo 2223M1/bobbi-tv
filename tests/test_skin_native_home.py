@@ -1,4 +1,5 @@
 """Kodi 21 home navigation contracts inspired by native available-widget routing."""
+from functools import lru_cache
 from itertools import product
 from pathlib import Path
 import re
@@ -9,22 +10,38 @@ import pytest
 
 SKIN = Path(__file__).resolve().parents[1] / 'addons/skin.bobbi.cinema/1080p'
 RAILS = (9810, 9830, 9840, 9850, 9860)
-EXPANDED_RAILS = (9810, 9830, 9840, 9850, 9860, 9820)
+EXPANDED_RAILS = (9810, 9815, 9825, 9830, 9840, 9850, 9860, 9820)
 
 
+@lru_cache(maxsize=None)
 def document(name):
     return ET.parse(SKIN / name).getroot()
 
 
-def matches(expression, populated=(), focus=0, remembered=0, updating=()):
+@lru_cache(maxsize=None)
+def _expressions():
+    return {
+        node.get('name'): node.text
+        for name in ('Includes_HomeRails.generated.xml', 'Includes_HomeHero.generated.xml')
+        for node in document(name).findall('expression')
+    }
+
+
+def matches(expression, populated=(), focus=0, remembered=0, updating=(), hidden=(), slots=None):
     """Evaluate only the skin's navigation predicates, not Kodi presentation state."""
     if expression is None:
         return True
-    expression = re.sub(
-        r'\$EXP\[([^]]+)\]',
-        lambda m: str(matches(document('Includes_HomeRails.generated.xml').find(
-            f"expression[@name='{m[1]}']").text, populated, focus, remembered, updating)),
-        expression)
+    exprs = _expressions()
+    slots = slots or {}
+    while '$EXP[' in expression:
+        expression = re.sub(
+            r'\$EXP\[([^]]+)\]',
+            lambda m: '[' + exprs[m[1]] + ']',
+            expression)
+    expression = re.sub(r'Skin\.HasSetting\((\w+)\)',
+                        lambda m: str(m[1] in hidden), expression)
+    expression = re.sub(r'String\.IsEqual\(Skin\.String\((\w+)\),([\w_]+)\)',
+                        lambda m: str(slots.get(m[1], '') == m[2]), expression)
     expression = re.sub(r'Integer.IsGreater\(Container\((\d+)\).NumItems,0\)',
                         lambda m: str(int(m[1]) in populated), expression)
     expression = re.sub(r'Container\((\d+)\).IsUpdating',
@@ -172,9 +189,11 @@ def test_stage_falls_back_when_the_remembered_row_becomes_empty(name):
         if '.Property(BobbiRail)' in condition:
             rail = re.search(r'Property\(BobbiRail\),(\d+)\)', condition)[1]
             assert f'Integer.IsGreater(Container({rail}).NumItems,0)' in condition
-    fallbacks = [v for v in variable if '.Property(BobbiRail)' not in v.get('condition', '')]
+    fallbacks = [v for v in variable if '.Property(BobbiRail)' not in v.get('condition', '')
+                 and 'String.IsEmpty(' not in v.get('condition', '')]
     for rail in RAILS:
-        assert any(v.get('condition') == f'Integer.IsGreater(Container({rail}).NumItems,0)'
+        other = 9830 if rail == 9810 else 9810
+        assert any(str(rail) in (v.text or '') and matches(v.get('condition'), populated=(rail,), remembered=other)
                    for v in fallbacks)
 
 
@@ -183,9 +202,9 @@ def test_home_does_not_add_refresh_polling_new_addons_or_duplicate_content_reque
     assert root.findtext(".//control[@id='9000']/include") == 'HomeRails'
     rails = [node for node in document('Includes_HomeRails.generated.xml').iter('include')
              if node.get('content') in {'HomeRail', 'HomeRailWide'}]
-    assert len(rails) == 6
+    assert len(rails) == 8
     assert [node.find("param[@name='id']").get('value') for node in rails] == [
-        '9810', '9830', '9840', '9850', '9860', '9820']
+        '9810', '9815', '9825', '9830', '9840', '9850', '9860', '9820']
     assert root.find('defaultcontrol').get('always') == 'false'
     assert not any('Refresh' in (node.text or '') or 'AlarmClock' in (node.text or '')
                    for node in root.iter())

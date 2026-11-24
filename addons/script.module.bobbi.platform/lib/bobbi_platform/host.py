@@ -678,17 +678,20 @@ class Host:
     def tick(self):
         if not self.check_profile() or self.stopping.is_set():
             return
-        if time.monotonic() >= self.server_poll_due:
+        if (getattr(self.pans, 'servers', None) is not None or getattr(self, 'root', None) is not None) and time.monotonic() >= getattr(self, 'server_poll_due', float('inf')):
             self.server_poll_due = time.monotonic() + 1
-            reg_path = self.root / 'libraries.sqlite3'
-            try:
-                mtime_ns = reg_path.stat().st_mtime_ns if reg_path.is_file() else None
-            except OSError:
-                mtime_ns = None
-            if mtime_ns != self._registry_mtime_ns:
-                if self._registry_mtime_ns is not None:
-                    self.account_changes.set()
-                self._registry_mtime_ns = mtime_ns
+            root = getattr(self, 'root', None)
+            if root is not None:
+                reg_path = root / 'libraries.sqlite3'
+                try:
+                    mtime_ns = reg_path.stat().st_mtime_ns if reg_path.is_file() else None
+                except OSError:
+                    mtime_ns = None
+                prev_mtime = getattr(self, '_registry_mtime_ns', None)
+                if mtime_ns != prev_mtime:
+                    if prev_mtime is not None:
+                        self.account_changes.set()
+                    self._registry_mtime_ns = mtime_ns
             if getattr(self.pans, 'servers', None) is not None:
                 try:
                     self.pans.servers.poll()  # Local Registry changes; never network IO.
