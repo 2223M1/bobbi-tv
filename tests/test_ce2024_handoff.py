@@ -1,4 +1,4 @@
-"""Maintenance-only archive guards; not additional device certification."""
+"""Maintenance-only archive guards over delivery_policy; not additional device certification."""
 from pathlib import Path
 import sys
 import zipfile
@@ -6,7 +6,7 @@ import zipfile
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
-import package_ce2024_handoff as handoff
+import delivery_policy as handoff
 
 
 def test_source_paths_keep_runtime_and_public_ca():
@@ -31,13 +31,13 @@ def test_case_duplicate_rejected():
 
 
 def test_junit_does_not_count_skips_as_passes(tmp_path):
-    path = tmp_path/'tests.xml'
+    path = tmp_path / 'tests.xml'
     path.write_text('<testsuites><testsuite tests="8" errors="1" failures="2" skipped="1"/></testsuites>')
     assert handoff.junit_counts(path) == dict(tests=8, errors=1, failures=2, skipped=1, passed=4)
 
 
 def test_archive_requires_complete_git_tree(tmp_path):
-    path = tmp_path/'source.zip'
+    path = tmp_path / 'source.zip'
     with zipfile.ZipFile(path, 'w') as archive:
         archive.writestr('addons/a.py', 'pass')
     with pytest.raises(ValueError, match='TREE_MISMATCH'):
@@ -45,7 +45,7 @@ def test_archive_requires_complete_git_tree(tmp_path):
 
 
 def test_evidence_index_does_not_promote_failures(tmp_path):
-    path = tmp_path/'source.zip'
+    path = tmp_path / 'source.zip'
     with zipfile.ZipFile(path, 'w') as archive:
         archive.writestr('review-evidence/failed.json', '{"passed":false}')
     row, = handoff.inspect_source_archive(path, ['review-evidence/failed.json'])
