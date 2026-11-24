@@ -281,7 +281,7 @@ class OwnedPlaybackReservation:
         handoff_id = selected_identity(f'{self.request_id}\n{raw_url}')
 
         if self.adapter == 'native':
-            route = 'set_resolved_url' if handle >= 0 else 'player_play'
+            route = 'resolved_url' if handle >= 0 else 'player_play'
             file_identity = f'{self.selection_identity}|{_sha256(raw_url)}'
             claim = bind_and_claim(
                 self.request_id,

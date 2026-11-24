@@ -775,3 +775,68 @@ def test_natural_eof_same_season_next_episode_and_dialog_video_info_routing(plug
     assert len(folder_acts) == 4 and folder_acts[1] == 'Dialog.Close(movieinformation,true)'
     leaf_acts = selected_actions('981', videos=True, folder=False, bobbi=False, library=True)
     assert leaf_acts == ['SendClick(8)']
+
+
+def test_owned_playback_native_adapter_handle_uses_resolved_url_route():
+    """Real-device regression: native PlaybackAuthority.claim_start requires route=='resolved_url' when handle >= 0."""
+    from bobbi_core.playback_authority import PlaybackAuthority
+    from bobbi_core.playback_request import Client as PlaybackClient
+    from bobbi_platform.owned_playback import library_source_scope, reserve_playback
+
+    class _IdleNative:
+        def __init__(self):
+            self.epoch = 0
+
+        def state(self):
+            return {
+                'protocol': 1,
+                'selection_epoch': self.epoch,
+                'playback': None,
+                'gui_generation': 1,
+                'gui_user_intent': 1,
+                'fullscreen_instance': '',
+            }
+
+        def intent(self, body):
+            assert body['expected_epoch'] == self.epoch
+            self.epoch += 1
+            return {'reserved': True, 'selection_epoch': self.epoch}
+
+    authority = PlaybackAuthority(_IdleNative())
+    authority.configure_accounts(SimpleNamespace(
+        is_current=lambda _s: True,
+        run_if_current=lambda _s, fn, authenticated=True: fn(),
+    ))
+    scope = library_source_scope('a' * 32, 'b' * 64)
+    tracked_calls = []
+
+    def fake_host_call(action, body, timeout=3):
+        if action == 'status':
+            return {'playback_adapter': 'native'}
+        if action == 'owned_playback_track':
+            tracked_calls.append(body)
+            return {'tracked': True}
+        raise AssertionError(action)
+
+    transport = (
+        SimpleNamespace(is_current=lambda: True, require_current=lambda: None),
+        PlaybackClient(lambda msg, timeout=0.3: authority.dispatch(msg)),
+        fake_host_call,
+    )
+    resolved_items = []
+    with reserve_playback('t4://aaa/item1', scope, transport=transport) as res:
+        out = res.submit(
+            17,
+            'http://127.0.0.1:38000/stream/' + 'c' * 32 + '/video.mkv',
+            title='Native Route Check',
+            source_meta={'provider': 't4', 'source_id': 'a' * 32, 'source_generation': 'b' * 64, 'item_id': 'p1'},
+            start_over=True,
+            resolve_fn=lambda h, ok, item: resolved_items.append((h, ok, item)),
+            play_fn=lambda *_a, **_k: None,
+            item_factory=lambda url, data: SimpleNamespace(path=url, data=data),
+        )
+    assert out['opened'] is True
+    assert authority.owner.desired['start_claimed'] is True
+    assert authority.owner.desired['route'] == 'resolved_url'
+    assert len(resolved_items) == 1 and resolved_items[0][:2] == (17, True)
+
