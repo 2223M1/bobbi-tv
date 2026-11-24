@@ -206,8 +206,10 @@ class Client:
                 or type(files.get('folderList')) is not list):
             raise PanError('PAN_REPLY_INVALID')
         rows = [(r, True) for r in files['folderList']] + [(r, False) for r in files['fileList']]
-        total = files['count'] if 'count' in files else (page - 1) * size + len(rows) + (1 if len(rows) == size else 0)
-        result = listing(rows, total, page, size, lambda r: entry(*r))
+        has_total = 'count' in files
+        total = files['count'] if has_total else (page - 1) * size + len(rows) + (1 if len(rows) == size else 0)
+        result = listing(rows, total, page, size, lambda r: entry(*r),
+                         has_total=has_total, session=self.session, parent=parent)
         for item in result['items']:
             if not item['directory']:
                 item['listing'] = dict(parent=parent, page=page, size=size)

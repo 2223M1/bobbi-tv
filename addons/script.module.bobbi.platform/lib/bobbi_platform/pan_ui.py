@@ -123,6 +123,8 @@ def _failure(error):
         return '本次选择已失效，请回到目录重新选择文件。'
     if code == 'PAN_PAGE_EXPIRED':
         return '此目录分页已失效，请刷新目录后重试。'
+    if code == 'PAN_INCOMPLETE_PAGE':
+        return '网盘返回的分页条数不完整，请刷新目录后重试。'
     if code == 'PAN_ITEM_TOO_LARGE':
         return '此文件信息超出本地消息上限，无法安全显示；文件未被删除。'
     if code == 'PAN_RATE_LIMITED':
@@ -392,7 +394,7 @@ def browse(row, dialog):
             if monitor.abortRequested():
                 return
             code = str(error) if isinstance(error, PanError) else ''
-            if code == 'PAN_PAGE_EXPIRED':
+            if code in ('PAN_PAGE_EXPIRED', 'PAN_INCOMPLETE_PAGE'):
                 if dialog.select('目录分页已失效 · ' + title, ['刷新目录', '返回网盘管理']) == 0:
                     current.update(page=1, positions={1: dict(page=1, cursor='')}, refresh=True, focus=0)
                     continue

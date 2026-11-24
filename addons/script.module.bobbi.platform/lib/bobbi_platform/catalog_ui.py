@@ -16,6 +16,10 @@ SCAN_REASONS = {
     'PROFILE_CHANGED': '用户配置已切换，旧任务已停止；原片库的已提交记录保留。',
     'CATALOG_NETWORK_INCOMPLETE': '网络目录未提供完整直接子项列表，未推断删除。原文件浏览仍可用。',
     'CATALOG_NETWORK_METADATA_REQUIRED': '网络目录缺少文件大小或精确修改时间，未推断删除。原文件浏览仍可用。',
+    'PAN_INCOMPLETE_PAGE': '网盘分页返回条数不完整，未推断删除；原已收录文件与整理记录保留。',
+    'PAN_PAGE_EXPIRED': '扫描期间目录分页或总数发生变化，未推断删除；可重新扫描。',
+    'SCAN_PAGE_CYCLE': '扫描期间目录出现重复分页或条目，未推断删除；可重新扫描。',
+    'SCAN_INCOMPLETE_PAGE': '目录分页未完整闭合，未推断删除；原已收录文件与整理记录保留。',
 }
 
 

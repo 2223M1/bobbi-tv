@@ -40,8 +40,9 @@ class Client(RenewableClient):
             raise PanError('PAN_REPLY_INVALID')
         # Older personal-directory replies have no total. Keep page-local
         # reads, allowing at most one empty trailing page instead of a scan.
-        total = value.get('total', (page - 1) * size + len(rows) + int(len(rows) == size))
-        result = listing(rows, total, page, size, entry)
+        has_total = 'total' in value
+        total = value['total'] if has_total else (page - 1) * size + len(rows) + int(len(rows) == size)
+        result = listing(rows, total, page, size, entry, has_total=has_total, session=self.session, parent=parent)
         for item in result['items']:
             if not item['directory']:
                 item['listing'] = dict(parent=parent, page=page, size=size)

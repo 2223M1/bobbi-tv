@@ -54,16 +54,52 @@ def page_number(page, size):
         raise PanError('PAN_PAGE_INVALID')
 
 
-def listing(rows, total, page, size, convert):
+def scan_page_proof(session, parent, items, *, page, size, total=None, has_more=False):
+    operation = getattr(session, 'operation', None) if session is not None else None
+    if operation is None or getattr(operation, 'kind', None) != 'scan' or parent is None:
+        return
+    progress = getattr(operation, '_directory_pages', None)
+    if progress is None:
+        progress = operation._directory_pages = {}
+    offset = (page - 1) * size
+    ids = {item['file_id'] for item in items}
+    previous = progress.get(parent)
+    if page == 1:
+        if previous is not None:
+            raise PanError('PAN_PAGE_EXPIRED')
+        count = len(items)
+    else:
+        if previous is None:
+            raise PanError('PAN_PAGE_EXPIRED')
+        prev_total, following, seen = previous
+        if total != prev_total or (total is not None and offset != following) or seen.intersection(ids):
+            raise PanError('PAN_PAGE_EXPIRED')
+        ids = seen | ids
+        count = following + len(items)
+    if (len(progress) >= 1024 and parent not in progress) or len(ids) > 12000:
+        raise PanError('PAN_BUDGET_EXHAUSTED')
+    if total is not None and not has_more and (count != total or len(ids) != total):
+        raise PanError('PAN_INCOMPLETE_PAGE')
+    progress[parent] = (total, count, ids)
+
+
+def listing(rows, total, page, size, convert, *, has_total=True, session=None, parent=None):
     if type(rows) is not list or len(rows) > size:
         raise PanError('PAN_REPLY_INVALID')
     number(total)
+    offset = (page - 1) * size
+    if has_total and offset > total:
+        raise PanError('PAN_REPLY_INVALID')
     items = [convert(row) for row in rows]
     if len({r['file_id'] for r in items}) != len(items):
         raise PanError('PAN_REPLY_INVALID')
     more = page * size < total
     if more and not rows:
         raise PanError('PAN_REPLY_INVALID')
+    if has_total and len(items) != min(size, total - offset):
+        raise PanError('PAN_INCOMPLETE_PAGE')
+    scan_page_proof(session, parent, items, page=page, size=size,
+                    total=total if has_total else None, has_more=more)
     return dict(items=items, page=page, has_more=more)
 
 

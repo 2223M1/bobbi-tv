@@ -10,6 +10,7 @@ from uuid import uuid4
 
 from .pan_accounts import PanError
 from .pan_http import API, WEB, QUARK_USER_AGENT, UC_USER_AGENT, Session
+from .pan_tokens import scan_page_proof
 
 
 def _text(value, limit=256):
@@ -48,18 +49,25 @@ class Client:
             raise PanError('PAN_API_REJECTED')
         return value
 
-    def _page(self, value, page, size):
+    def _page(self, value, page, size, parent=None):
         data, meta = value.get('data'), value.get('metadata')
         if (type(data) is not dict or type(data.get('list')) is not list
                 or len(data['list']) > size or type(meta) is not dict
                 or type(meta.get('_total')) is not int or not 0 <= meta['_total'] < 2**31):
             raise PanError('PAN_REPLY_INVALID')
+        total = meta['_total']
+        offset = (page - 1) * size
+        if offset > total:
+            raise PanError('PAN_REPLY_INVALID')
         rows = [file_entry(row) for row in data['list']]
         if len({row['file_id'] for row in rows}) != len(rows):
             raise PanError('PAN_REPLY_INVALID')
-        more = page * size < meta['_total']
+        more = page * size < total
         if more and not rows:
             raise PanError('PAN_REPLY_INVALID')
+        if len(rows) != min(size, total - offset):
+            raise PanError('PAN_INCOMPLETE_PAGE')
+        scan_page_proof(self.session, parent, rows, page=page, size=size, total=total, has_more=more)
         return dict(items=rows, page=page, has_more=more)
 
     @staticmethod
@@ -69,10 +77,11 @@ class Client:
 
     def list_files(self, parent='0', page=1, size=10):
         self._pagination(page, size)
-        value = self._call('/file/sort', dict(pdir_fid=file_id(parent), _page=page, _size=size,
+        parent_id = file_id(parent)
+        value = self._call('/file/sort', dict(pdir_fid=parent_id, _page=page, _size=size,
             _fetch_total=1, _fetch_sub_dirs=0, fetch_all_file=1, fetch_risk_file_name=1,
             _sort='file_type:asc,file_name:asc'))
-        return self._page(value, page, size)
+        return self._page(value, page, size, parent=parent_id)
 
     def share_token(self, share_id, password=''):
         if type(password) is not str or not re.fullmatch(r'[A-Za-z0-9]{0,16}', password):

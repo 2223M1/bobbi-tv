@@ -66,8 +66,9 @@ class Client:
         rows = value.get('InfoList')
         if type(rows) is not list:
             raise PanError('PAN_REPLY_INVALID')
-        total = value['Total'] if 'Total' in value else (page - 1) * size + len(rows) + (1 if len(rows) == size else 0)
-        result = listing(rows, total, page, size, entry)
+        has_total = 'Total' in value
+        total = value['Total'] if has_total else (page - 1) * size + len(rows) + (1 if len(rows) == size else 0)
+        result = listing(rows, total, page, size, entry, has_total=has_total, session=self.session, parent=parent)
         for item in result['items']:
             if not item['directory']:
                 item['listing'] = dict(parent=parent, page=page, size=size)

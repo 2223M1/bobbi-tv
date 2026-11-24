@@ -360,7 +360,8 @@ class Client:
             rows, next_cursor = data.get('items'), data.get('nextPageCursor')
             if type(next_cursor) is not str or len(next_cursor) > 2048 or next_cursor and next_cursor == cursor:
                 raise PanError('PAN_REPLY_INVALID')
-            result = listing(rows, page * size + (1 if next_cursor else 0), page, size, lambda r: entry(r, True))
+            result = listing(rows, page * size + (1 if next_cursor else 0), page, size,
+                             lambda r: entry(r, True), has_total=False, session=self.session, parent=parent)
             result['next_cursor'] = next_cursor
         else:
             if cursor:
@@ -374,7 +375,8 @@ class Client:
             # This API has no required count field. Probe the following page
             # only for a full page, keeping all work inside the scan budget.
             total = (page - 1) * size + len(rows) + (1 if len(rows) == size else 0)
-            result = listing(rows, total, page, size, lambda r: entry(r[0], False, r[1]))
+            result = listing(rows, total, page, size, lambda r: entry(r[0], False, r[1]),
+                             has_total=False, session=self.session, parent=parent)
         for item in result['items']:
             if not item['directory']:
                 item['listing'] = dict(parent=parent, page=page, size=size, cursor=cursor)

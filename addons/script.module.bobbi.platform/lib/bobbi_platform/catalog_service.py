@@ -288,7 +288,7 @@ class CatalogService:
                 while pending:
                     safe(local=True)
                     parent, depth = pending.popleft()
-                    page, cursor, seen_cursors, seen_pages = 1, None, set(), set()
+                    page, cursor, seen_cursors, seen_pages, seen_entries = 1, None, set(), set(), set()
                     while True:
                         if self.stop.is_set() or self.cancel_event.is_set():
                             operation.cancelled.set()
@@ -305,10 +305,14 @@ class CatalogService:
                         if type(rows) is not list or len(rows) > SCAN_WINDOW:
                             raise ValueError('SCAN_INVALID_PAGE')
                         signature = result['signature']
-                        if signature and signature in seen_pages:
-                            raise ValueError('SCAN_PAGE_CYCLE')
-                        if signature:
-                            seen_pages.add(signature)
+                        if signature is not None:
+                            if signature and signature in seen_pages:
+                                raise ValueError('SCAN_PAGE_CYCLE')
+                            if seen_entries.intersection(signature):
+                                raise ValueError('SCAN_PAGE_CYCLE')
+                            if signature:
+                                seen_pages.add(signature)
+                                seen_entries.update(signature)
                         refs, descriptions = [], {}
                         for row in rows:
                             if row['directory'] is not None:
@@ -361,11 +365,14 @@ class CatalogService:
                 state, reason = 'interrupted', 'ACCOUNT_REVOKED'
             else:
                 code = str(error)
-                reason = code if code in {'SCAN_INVALID_PAGE', 'SCAN_PAGE_CYCLE', 'SCAN_DIRECTORY_LIMIT',
-                    'SCAN_CURSOR_CYCLE', 'SCAN_INCOMPLETE_PAGE', 'PAN_BUDGET_EXHAUSTED',
-                    'PAN_OPERATION_TIMEOUT', 'PAN_RATE_LIMITED', 'CATALOG_SOURCE_UNAVAILABLE',
-                    'CATALOG_AUTHORITY_CHANGED', 'CATALOG_RECHECK_INCOMPLETE', 'CATALOG_SOURCE_UNSUPPORTED',
-                    'CATALOG_NETWORK_INCOMPLETE', 'CATALOG_NETWORK_METADATA_REQUIRED'} else 'SCAN_UNAVAILABLE'
+                if code in {'PAN_INCOMPLETE_PAGE', 'PAN_PAGE_EXPIRED', 'SCAN_TOTAL_CHANGED'}:
+                    state, reason = 'interrupted', code
+                else:
+                    reason = code if code in {'SCAN_INVALID_PAGE', 'SCAN_PAGE_CYCLE', 'SCAN_DIRECTORY_LIMIT',
+                        'SCAN_CURSOR_CYCLE', 'SCAN_INCOMPLETE_PAGE', 'PAN_BUDGET_EXHAUSTED',
+                        'PAN_OPERATION_TIMEOUT', 'PAN_RATE_LIMITED', 'CATALOG_SOURCE_UNAVAILABLE',
+                        'CATALOG_AUTHORITY_CHANGED', 'CATALOG_RECHECK_INCOMPLETE', 'CATALOG_SOURCE_UNSUPPORTED',
+                        'CATALOG_NETWORK_INCOMPLETE', 'CATALOG_NETWORK_METADATA_REQUIRED'} else 'SCAN_UNAVAILABLE'
             self.index.finish(task, state, reason)
         finally:
             with self.lock:
