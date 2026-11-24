@@ -192,20 +192,8 @@ class MountedCatalog:
             # Match a bounded, freshly enumerated original directory, then
             # check stat again. No by-ID/stat-only shortcut to a selection.
             with port.open_scan(authority, cancelled, seconds=24, max_pages=8, max_items=160) as session:
-                selected = None
-                while selected is None:
-                    self.live()
-                    page = session.list_page(reference['parent'])
-                    for row in page['items']:
-                        current = row.get('reference')
-                        if current and current['id'] == object_id:
-                            if intent == 'play' and not typed_ref.same_observation(reference, current):
-                                raise ValueError('CATALOG_FILE_CHANGED')
-                            selected = current
-                            break
-                    if selected is None and not page['has_more']:
-                        raise ValueError('CATALOG_FILE_CHANGED')
-                port.stat_by_reference(authority, selected, session.check)
+                selected = port.select_reference(authority, reference, session, self.live,
+                                                 allow_changed=intent == 'play_from_start')
                 session.check()
                 with self.owner.lock:
                     self.live()

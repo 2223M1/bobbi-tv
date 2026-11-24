@@ -106,6 +106,12 @@ def call(action, body, timeout=3, *, path=None, expected_token=None):
         raise ValueError('Local reply too large')
     result = json.loads(reply)
     if result.get('ok') is not True:
+        if action == 'source_stream_open' and result.get('error') == 'source_media':
+            from .source_media_http import MESSAGES
+            from bobbi_core.library_contract import LibraryError
+            code = result.get('code')
+            if type(code) is str and code in MESSAGES:
+                raise LibraryError(code)
         if result.get('error') == 'pan':
             from .pan_accounts import PanError, PUBLIC_ERRORS
             if (isinstance(action, str) and action.startswith(('pan_', 'catalog_'))
@@ -182,6 +188,11 @@ class Handler(BaseHTTPRequestHandler):
             response = {'ok': False, 'error': 'unavailable'}
         except Exception as error:
             response = {'ok': False}
+            if type(request) is dict and request.get('action') == 'source_stream_open':
+                from .source_media_http import MESSAGES
+                code = getattr(error, 'code', None)
+                if type(code) is str and code in MESSAGES:
+                    response.update(error='source_media', code=code)
             from .pan_accounts import PanError, PUBLIC_ERRORS
             if (isinstance(error, PanError) and str(error) in PUBLIC_ERRORS
                     and type(request) is dict and isinstance(request.get('action'), str)

@@ -1,0 +1,8 @@
+{
+  "parse": 1,
+  "jx": 1,
+  "url": "https://player.example.invalid/watch/series-001-ep-01",
+  "header": {
+    "User-Agent": "Bobbi-TV-Contract-Fixture/1.0"
+  }
+}

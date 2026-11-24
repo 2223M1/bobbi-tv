@@ -1,4 +1,4 @@
-"""TMDb artwork only: asynchronous Kodi image URLs + bounded local success cache.
+"""Asynchronous Kodi artwork listener, with a bounded disk cache for public TMDb art only.
 
 No API key, cloud credential, arbitrary URL relay, or GUI-thread download.
 The read-only image server is separate from authenticated player control.
@@ -363,12 +363,27 @@ class _Handler(BaseHTTPRequestHandler):
     def _respond(self, head):
         prefix = '/art/' + self.server.token + '/'
         if (self.headers.get('Host') != '127.0.0.1:' + str(self.server.server_port)
-                or len(self.path) > 512 or not hmac.compare_digest(self.path[:len(prefix)], prefix)):
+                or len(self.path) > 512 or not self.path.isascii()):
             self.send_error(403)
             return
-        path = '/t/p/' + self.path[len(prefix):]
+        private = self.path.startswith('/emby-art/')
+        if not private and not hmac.compare_digest(self.path[:len(prefix)], prefix):
+            self.send_error(403)
+            return
         try:
-            raw, kind = self.server.cache.get(path, time.monotonic()+10)
+            if private:
+                if self.server.private_art is None:
+                    self.send_error(404)
+                    return
+                if not self.server.cache.downloads.acquire(False):
+                    raise RuntimeError('IMAGE_BUSY')
+                try:
+                    raw, kind = self.server.private_art(self.path, time.monotonic()+8)
+                finally:
+                    self.server.cache.downloads.release()
+            else:
+                path = '/t/p/' + self.path[len(prefix):]
+                raw, kind = self.server.cache.get(path, time.monotonic()+10)
         except (OSError, ValueError, RuntimeError):
             self.send_response(503)
             self.send_header('Content-Length', '0')
@@ -379,7 +394,7 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', kind)
         self.send_header('Content-Length', str(len(raw)))
-        self.send_header('Cache-Control', 'private, max-age=86400')
+        self.send_header('Cache-Control', 'private, no-store' if private else 'private, max-age=86400')
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Connection', 'close')
         self.end_headers()
@@ -388,7 +403,7 @@ class _Handler(BaseHTTPRequestHandler):
 
 
 class ImageService:
-    def __init__(self, root, report=lambda code:None, transport=fetch):
+    def __init__(self, root, report=lambda code:None, transport=fetch, *, private_art=None):
         self.root, self.stop = Path(root), Event()
         self.path = self.root / 'image-runtime.json'
         self.endpoint = self.root / 'image-endpoint.json'
@@ -405,6 +420,7 @@ class ImageService:
             report('IMAGE_ENDPOINT_RELOCATED')
         self.server.token = config['token'] if config else secrets.token_hex(32)
         self.server.cache, self.server.slots = self.cache, BoundedSemaphore(32)
+        self.server.private_art = private_art
         self.thread = Thread(target=self.server.serve_forever, kwargs={'poll_interval':.1}, daemon=True)
         self.started, self.closed = False, False
         with _services_lock:

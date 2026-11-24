@@ -34,7 +34,7 @@ class FencedCall:
         host.report = lambda code: None
         host._tick_catalog = lambda: None
         host._tick_preparation = lambda: None
-        host.engine_check = float('inf')
+        host.engine_check = host.diagnostic_due = float('inf')  # No optional IO in this owner-only harness.
         self.entered, self.release = Event(), Event()
         self.owner_calls, self.quiesce_calls = [], []
         self.replies, self.caller_errors, self.tick_errors = [], [], []

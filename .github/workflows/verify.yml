@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          # Frozen transport negative controls execute real historical sources.
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -27,6 +24,8 @@ jobs:
           printf 'event=%s ref=%s\n' "$VERIFY_EVENT" "$VERIFY_REF"
           git show -s --format='commit=%H%ntree=%T%nparents=%P'
       - run: python -m pip install -r requirements-test.txt
+      - name: Check diagnostic receiver with SQLite
+        run: node --test infra/diagnostics/intake.test.mjs
       - name: Verify pinned third-party notices offline (not distribution clearance)
         run: python tools/vendor_licenses.py
       - name: Check generated Home rails without rewriting sources

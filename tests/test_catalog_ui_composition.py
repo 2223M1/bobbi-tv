@@ -1,4 +1,5 @@
 """Real catalog composition; replace Kodi/transport, not candidate or review logic."""
+from frozen_history import source_bytes
 import ast
 import builtins
 from copy import deepcopy
@@ -33,7 +34,7 @@ SCOPES = [
 
 
 def frozen_source(path):
-    return subprocess.check_output(['git', 'show', BASELINE + ':' + path], cwd=ROOT, timeout=20)
+    return source_bytes(BASELINE, path)
 
 
 @pytest.fixture(scope='module')

@@ -64,8 +64,8 @@ def wire():
                 if not state.omitted:
                     item.update(viewOffset=state.position, viewCount=1 if state.played else 0)
                 value = dict(MediaContainer=dict(Metadata=[item]))
-            elif path == '/System/Info': value = {'Id': 'server1'}
-            elif path == '/Users/Me': value = {'Id': 'user1'}
+            elif path in ('/System/Info', '/System/Info/Public'): value = {'Id': 'server1'}
+            elif path in ('/Users/Me', '/Users/user1'): value = {'Id': 'user1'}
             elif path == '/Users/user1/Views':
                 value = dict(Items=[dict(Id='library1', Name='Movies', IsFolder=True)], TotalRecordCount=1)
             elif path == '/Users/user1/Items':

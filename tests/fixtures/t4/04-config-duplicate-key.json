@@ -1,0 +1,16 @@
+{
+  "sites": [
+    {
+      "key": "same_key",
+      "name": "来源甲",
+      "type": 4,
+      "api": "https://a.example.invalid/vod"
+    },
+    {
+      "key": "same_key",
+      "name": "来源乙",
+      "type": 4,
+      "api": "https://b.example.invalid/vod"
+    }
+  ]
+}

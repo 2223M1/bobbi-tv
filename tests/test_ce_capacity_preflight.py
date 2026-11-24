@@ -1,4 +1,5 @@
 """Offline capacity admission through real layouts/engines/controller/driver."""
+from frozen_history import source_bytes
 from contextlib import redirect_stdout
 import base64
 import hashlib
@@ -8,7 +9,6 @@ import json
 from pathlib import Path
 import re
 import sqlite3
-import subprocess
 import sys
 import zipfile
 from types import SimpleNamespace
@@ -63,8 +63,7 @@ def test_engine_refuses_before_transaction_and_download(tmp_path, volume, fault)
 
 
 def test_baseline_negative_control_really_lacked_engine_admission(tmp_path, monkeypatch, volume):
-    raw = subprocess.run(['git','show',BASELINE+':addons/script.module.bobbi.platform/lib/bobbi_platform/updates.py'],
-                         cwd=ROOT, check=True, capture_output=True).stdout
+    raw = source_bytes(BASELINE, 'addons/script.module.bobbi.platform/lib/bobbi_platform/updates.py')
     module = SimpleNamespace(__name__='bobbi_platform.old_capacity_engine', __package__='bobbi_platform')
     exec(compile(raw, '<frozen-baseline-updates>', 'exec'), module.__dict__)
     h = Harness(tmp_path)
@@ -215,8 +214,11 @@ def test_exact_byte_and_inode_thresholds_are_inclusive(tmp_path, volume, field, 
 
 
 def test_different_filesystems_never_pool_free_space_or_inodes(tmp_path, monkeypatch):
+    # Both volumes live below a CI path containing "run"; that is not a mount identity.
+    tmp_path = tmp_path/'runner-workspace'
+    tmp_path.mkdir()
     def directory(path):
-        device = 2 if 'run' in str(path) else 1
+        device = 2 if Path(path).is_relative_to(tmp_path/'run') else 1
         return SimpleNamespace(device=device, stat=lambda: SimpleNamespace(st_dev=device))
     monkeypatch.setattr(storage, '_existing_directory', directory)
     def observe(path):
@@ -277,8 +279,7 @@ def test_rename_crash_recovery_does_not_demand_copy_or_upload_budget(tmp_path, v
 
 def test_old_kodi_installer_negative_control_admitted_only_reserve_after_dependencies(environment, signing, volume, monkeypatch):
     env = environment
-    raw = subprocess.run(['git','show',BASELINE+':addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py'],
-                         cwd=ROOT, check=True, capture_output=True).stdout
+    raw = source_bytes(BASELINE, 'addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py')
     module = SimpleNamespace(__name__='bobbi_platform.old_capacity_installer', __package__='bobbi_platform')
     exec(compile(raw, '<frozen-baseline-installer>', 'exec'), module.__dict__)
     def dependencies(stage):

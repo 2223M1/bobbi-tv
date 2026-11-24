@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.bobbi.library" version="0.1.10" name="bobbi 我的片库" provider-name="bobbi TV contributors">
+<addon id="plugin.video.bobbi.library" version="0.1.11" name="bobbi 我的片库" provider-name="bobbi TV contributors">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
-        <import addon="script.module.bobbi.platform" version="0.1.75"/>
+        <import addon="script.module.bobbi.platform" version="0.1.98"/>
         <import addon="script.bobbi.setup" version="0.1.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py"><provides>video</provides></extension>

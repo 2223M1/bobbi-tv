@@ -20,13 +20,21 @@ def test_local_not_misrepresented_as_network():
     assert source_presentation(vfs_source('Disk','/storage/media')) == ('local', '本机目录')
 
 
-def test_local_metadata_does_not_require_remote_api_permission(tmp_path):
+def test_local_metadata_does_not_require_remote_api_permission(tmp_path, monkeypatch):
     (tmp_path/'film.mkv').write_bytes(b'video fixture')
     (tmp_path/'nested').mkdir()
-    (tmp_path/'ignored.strm').write_text('never execute')
+    (tmp_path/'pointer.strm').write_bytes(b'never execute')
+    (tmp_path/'ignored.nfo').write_bytes(b'not media')
+    # Directory enumeration exposes the document, not its target. It must
+    # neither open the pointer nor need the remote-files API to show its size.
+    def unexpected_read(*args, **kwargs):
+        pytest.fail('local listing opened a file instead of reading directory metadata')
+    monkeypatch.setattr('builtins.open', unexpected_read)
+    monkeypatch.setattr('io.open', unexpected_read)
     listing,metadata=local_listing(tmp_path)
-    assert listing==((True,'nested'),(False,'film.mkv'))
+    assert listing==((True,'nested'),(False,'film.mkv'),(False,'pointer.strm'))
     assert metadata['film.mkv']['size']==13
+    assert metadata['pointer.strm']['size']==13
     assert len(metadata['film.mkv']['date'])==10
 
 

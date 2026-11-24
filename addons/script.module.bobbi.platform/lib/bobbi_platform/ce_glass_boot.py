@@ -34,7 +34,8 @@ ZIP_OPT_IN = 2026102180
 ZIP_STABLE = 2026102181
 ZIP_UPDATE_FEED = 2026102182
 ZIP_GITCODE = 2026102183
-OPT_IN_SEQUENCES = (ZIP_OPT_IN, ZIP_STABLE, ZIP_UPDATE_FEED, ZIP_GITCODE)
+ZIP_DYNAMIC_LIBRARY = 2026102184
+OPT_IN_SEQUENCES = (ZIP_OPT_IN, ZIP_STABLE, ZIP_UPDATE_FEED, ZIP_GITCODE, ZIP_DYNAMIC_LIBRARY)
 STOCK_SEQUENCES = (ZIP_TEXTURE_KEYS, *OPT_IN_SEQUENCES)
 PACKAGED_SEQUENCES = (PACKAGED_GLASS, ZIP_UPDATE, ZIP_CRYPTO, *STOCK_SEQUENCES)
 PACKAGED_FILE = Path('script.module.bobbi.platform/resources/renderer/ce-armhf/libbobbi_liquid_glass.so')
@@ -115,6 +116,8 @@ def material_checks(sequence):
     return BRANDED_FILES if sequence in BRANDED_SEQUENCES else REFINED_FILES
 
 PRODUCTS = {
+    ZIP_DYNAMIC_LIBRARY: {'skin.bobbi.cinema': '0.1.39', 'plugin.video.bobbi': '0.1.97',
+                          'script.module.bobbi.core': '0.1.88', 'script.module.bobbi.platform': '0.1.98'},
     ZIP_GITCODE: {'skin.bobbi.cinema': '0.1.39', 'plugin.video.bobbi': '0.1.97',
                   'script.module.bobbi.core': '0.1.87', 'script.module.bobbi.platform': '0.1.97'},
     ZIP_UPDATE_FEED: {'skin.bobbi.cinema': '0.1.39', 'plugin.video.bobbi': '0.1.97',

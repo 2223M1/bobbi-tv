@@ -533,12 +533,18 @@ def catalog_program_schemas(root, expected_digest=None):
 
 def catalog_rollback_preflight(engine, receipt, phase):
     """Read-only before stop and again immediately before any program restore."""
+    from bobbi_platform.catalog_compatibility import registry_requirements, check_registry_program, REGISTRY_PROGRAM
     observed = catalog_schemas()
-    if not observed:
+    try:
+        required = registry_requirements(KODI / 'userdata', PROFILES)
+    except ValueError as error:
+        raise CatalogCompatibilityError(str(error)) from None
+    if not observed and not required:
         return
     component, relative = 'script.module.bobbi.core', 'lib/bobbi_core/media_library_index.py'
     if phase in ('not_applied', 'restored'):
-        supported = catalog_program_schemas(KODI / 'addons' / component)
+        root, registry_digest = KODI / 'addons' / component, None
+        supported = catalog_program_schemas(root) if observed else set()
     else:
         from ce_state_migration import plain
         from bobbi_platform.updates import MAX_BACKUP_RECEIPT
@@ -548,17 +554,27 @@ def catalog_rollback_preflight(engine, receipt, phase):
                 raise ValueError('receipt budget')
             previous = json.loads(path.read_text(encoding='utf-8'))
             transaction = previous['transaction']
-            digest = previous['digests'][component][relative]
+            digest = previous['digests'][component][relative] if observed else None
+            registry_digest = previous['digests'][component].get(REGISTRY_PROGRAM)
             if (not isinstance(transaction, str) or not re.fullmatch('[0-9a-f]{32}', transaction)
                     or previous['current_sequence'] != receipt['program_expected']['sequence']
                     or owned_generation(engine, previous['state']) != owned_generation(engine, receipt['program_before'])
                     or component not in receipt['program_before']['versions']
                     or previous['entries'][component] is not True
-                    or type(digest) is not str or not re.fullmatch('[0-9a-f]{64}', digest)):
+                    or observed and (type(digest) is not str or not re.fullmatch('[0-9a-f]{64}', digest))):
                 raise ValueError('wrong retained generation')
+            if required and (not isinstance(registry_digest, str) or not re.fullmatch('[0-9a-f]{64}', registry_digest)):
+                raise CatalogCompatibilityError('CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE')
+        except CatalogCompatibilityError:
+            raise
         except (OSError, ValueError, KeyError, TypeError):
             raise CatalogCompatibilityError('CE_CATALOG_ROLLBACK_SCHEMA_UNPROVEN') from None
-        supported = catalog_program_schemas(WORK / transaction / 'backup' / component, digest)
+        root = WORK / transaction / 'backup' / component
+        supported = catalog_program_schemas(root, digest) if observed else set()
+    try:
+        check_registry_program(required, root, registry_digest)
+    except ValueError as error:
+        raise CatalogCompatibilityError(str(error)) from None
     if any(schema not in supported for schema in observed.values()):
         raise CatalogCompatibilityError('CE_CATALOG_SCHEMA_INCOMPATIBLE_REQUIRES_EXPLICIT_OFFLINE_RESTORE')
 

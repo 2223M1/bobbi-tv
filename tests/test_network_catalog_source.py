@@ -10,6 +10,7 @@ from uuid import uuid4
 import pytest
 
 from bobbi_core import network_ref, typed_ref
+from bobbi_core.library_contract import MAX_DIRECTORY_ITEMS
 from bobbi_platform.catalog_service import CatalogService
 from bobbi_platform.libraries import Registry, vfs_source
 from bobbi_platform.network_sources import NetworkPort, network_listing
@@ -266,7 +267,33 @@ def test_private_transport_error_is_sanitized_and_recheck_is_bounded(network):
     network[2].tree[''] = [('Movie.mkv', False, 1024, '2026-01-02T03:04:05Z')] * 161
     with pytest.raises(ValueError, match='NETWORK_INCOMPLETE'):
         prepare(network)
-    assert network[2].calls[-1][1] == 160
+    assert network[2].calls[-1][1] == MAX_DIRECTORY_ITEMS
+
+
+@pytest.mark.parametrize('network', ['dav', 'davs'], indirect=True)
+def test_large_directory_last_file_scan_prepare_claim_verify(network):
+    upstream = network[2]
+    target = upstream.tree[''][0]
+    upstream.tree[''] = [('Z-%03d.mkv' % i, *target[1:]) for i in range(160)] + [target]
+    assert scan(network)['state'] == 'completed'
+    selected = movie(network)['entity_id']
+    upstream.calls.clear()
+    ticket = prepare(network)
+    assert network[0].dispatch('catalog_network_claim', dict(ticket=ticket))['object_id'] == selected
+    assert dispatch(network, 'verify', object_id=selected, request_id=ticket)['valid']
+    assert [maximum for _, maximum in upstream.calls] == [MAX_DIRECTORY_ITEMS] * 3
+
+
+def test_network_selection_rejects_truncated_or_over_budget_sibling_evidence(network):
+    scan(network)
+    upstream = network[2]
+    upstream.mutate = lambda result: result['limits'].update(total=MAX_DIRECTORY_ITEMS + 1)
+    with pytest.raises(ValueError, match='NETWORK_INCOMPLETE'):
+        prepare(network)
+    upstream.mutate = None
+    upstream.tree[''] += [('note-%d.txt' % i, False, None, None) for i in range(MAX_DIRECTORY_ITEMS)]
+    with pytest.raises(ValueError, match='NETWORK_INCOMPLETE'):
+        prepare(network)
 
 
 def test_network_tv_handoff_uses_same_owner_start_zero_and_never_native_history(network, mounted_ui):

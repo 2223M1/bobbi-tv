@@ -38,6 +38,20 @@ def test_known_small_unread_body_does_not_reset_chosen_response(http_server, met
     assert phone.calls == []
 
 
+def test_paired_phone_cannot_mint_media_or_emby_poster_authority(http_server):
+    import json
+    request, phone = http_server
+    code = phone.manager.pairing_url.split('#')[1]
+    status, headers, raw = request('/manage/api/pair',{'code':code})
+    assert status == 200
+    auth = {'Cookie':headers['Set-Cookie'].split(';')[0],'X-Bobbi-CSRF':json.loads(raw)['csrf']}
+    status, _, raw = request('/manage/api',{'action':'source_stream_open','params':{
+        'selection':{'kind':'t4'},'url':'https://private.invalid/?token=do-not-reflect'}},auth)
+    assert 400 <= status < 500 and b'private.invalid' not in raw
+    assert request('/emby-art/fake',headers=auth,method='GET')[0] == 404
+    assert not any(a=='source_stream_open' for a,_ in phone.calls)
+
+
 @pytest.mark.parametrize('headers,status', [
     (['Content-Length: 8193'], 413),
     (['Content-Length: -1'], 413),

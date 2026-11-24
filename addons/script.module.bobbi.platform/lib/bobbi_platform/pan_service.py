@@ -609,8 +609,20 @@ class PanService:
         fields = set(body)
         if action == 'pan_status' and not body:
             return self.status()
+        if action == 'pan_server_activate_emby' and fields == {'source_id', 'generation', 'expected'}:
+            return self.servers.activate_emby(**body, publish=self._server_publish)
+        if action == 'pan_emby_direct' and fields - {'authenticated'} == {'expected', 'item_id', 'media_id'}:
+            authenticated = body.get('authenticated', False)
+            if type(authenticated) is not bool:
+                raise PanError('PAN_ROUTE_REJECTED')
+            expected = scope(body['expected'], 'emby', authenticated=True)
+            with self.scan_operation(expected, kind='metadata', max_requests=7, seconds=24) as operation:
+                with self._using_client(expected, operation) as client:
+                    result = client.direct_original(body['item_id'], body['media_id'], authenticated=authenticated)
+            return self.accounts.run_if_current(expected, lambda: result)
         if (action == 'pan_server_register' and {'provider', 'name', 'expected_source'} <= fields
-                and fields <= {'provider', 'name', 'expected_source', 'location', 'secret'}):
+                and fields - {'provider', 'name', 'expected_source'} in (
+                    set(), {'location', 'secret'}, {'location', 'username', 'password'})):
             return self.servers.register(**body, current=lambda: not self.closed, publish=self._server_publish)
         if action == 'pan_login_begin' and fields == {'provider', 'attempt', 'expected'}:
             return self.begin(body['provider'], body['attempt'], body['expected'])

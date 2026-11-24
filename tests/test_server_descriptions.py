@@ -3,6 +3,7 @@
 Server claims never establish mappings, playback identities or resume evidence.
 The legacy test executes frozen baseline reader/writer source, not a facsimile.
 """
+from frozen_history import source_bytes
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
@@ -12,7 +13,6 @@ from unittest.mock import MagicMock
 from uuid import uuid4
 import json
 import sqlite3
-import subprocess
 
 import pytest
 
@@ -129,6 +129,7 @@ def test_scan_descriptions_are_nested_read_only_and_selected_stream_identity_is_
     # Exactly the existing identity checks + item detail; no metadata request added.
     paths = [path for path, _ in scene.wire.calls[before_calls:]]
     assert paths == (['/identity', '/library/metadata/9'] if scene.provider == 'plex'
+        else ['/System/Info/Public', '/Users/user1', '/Users/user1/Items/item1'] if scene.provider == 'emby'
         else ['/System/Info', '/Users/Me', '/Users/user1/Items/item1'])
     assert scene.index.trusted_file(scene.expected, file['id']) == file
     review = scene.index.item(scene.expected, file['id'])
@@ -319,8 +320,7 @@ def test_source_only_frontend_description_never_enqueues_tmdb(catalog, monkeypat
 def legacy():
     result = {}
     for name in ('catalog_review', 'catalog_query', 'catalog_transfer', 'media_library_index'):
-        source = subprocess.check_output(['git', 'show', BASELINE + ':' +
-            'addons/script.module.bobbi.core/lib/bobbi_core/' + name + '.py'], cwd=ROOT)
+        source = source_bytes(BASELINE, 'addons/script.module.bobbi.core/lib/bobbi_core/' + name + '.py')
         module = ModuleType('legacy_server_description_' + name)
         module.__package__ = 'bobbi_core'
         exec(compile(source, '<frozen-' + BASELINE[:7] + '-' + name + '>', 'exec'), module.__dict__)
@@ -540,6 +540,7 @@ def test_real_local_http_scan_contract_uses_existing_get_routes_and_secret_heade
         assert set(result['items'][0]) == {'file_id', 'server_id', 'name', 'size', 'directory'}
         assert [(method, path) for method, path, _ in requests] == [('GET', path) for path in
             (['/identity', '/library/metadata/9'] if scene.provider == 'plex' else
+             ['/System/Info/Public', '/Users/user1', '/Users/user1/Items/item1'] if scene.provider == 'emby' else
              ['/System/Info', '/Users/Me', '/Users/user1/Items/item1'])]
         key, credential = {'plex': ('X-Plex-Token', 'fixture-http-secret'),
             'emby': ('X-Emby-Token', 'fixture-http-secret'),

@@ -41,6 +41,7 @@ class Host:
         self.stream_factory, self.native_rpc = stream_factory, native_rpc
         self.accounts = self.streams = self.engine = self.images = None
         self.pans = None  # Optional native providers; never replaces the 115 owner.
+        self.source_streams = None  # Optional STRM/T4; no listener or IO at startup.
         self.catalog = None  # Opt-in personal directory index; no startup IO.
         self.playback_accounts = None
         self.pan_unsubscribe = lambda: None
@@ -53,6 +54,7 @@ class Host:
         self.owner_account_changed = None
         self.lock = Lock()
         self.engine_check = 0
+        self.diagnostic_due, self.diagnostic_worker = time.monotonic() + 30, None
         self.engine_worker, self.engine_lock = None, Lock()
         self.refresh = self.refresh_worker = self.refresh_result = None
         self.idle_probe = lambda: False
@@ -74,7 +76,9 @@ class Host:
         self.runtime.start(prepare=prepare)
         try:
             from bobbi_core.image_cache import ImageService
-            self.images = ImageService(self.root, report=self.report)
+            from .emby_artwork import reader
+            self.images = ImageService(self.root, report=self.report,
+                private_art=reader(self.root, lambda: not self.stopping.is_set() and self.check_profile()))
             self.images.start()
         except (ImportError, OSError, ValueError, RuntimeError):
             if self.images is not None:
@@ -270,6 +274,16 @@ class Host:
             raise ValueError('RUNTIME_NOT_READY')
         if not isinstance(body, dict):
             raise ValueError('RUNTIME_FIELDS')
+        if action == 'source_stream_open':
+            with self.lock:
+                if self.stopping.is_set():
+                    raise ValueError('RUNTIME_NOT_READY')
+                if self.source_streams is None:
+                    from .source_streams import SourceStreams
+                    self.source_streams = SourceStreams(self.root,
+                        lambda: not self.stopping.is_set() and self.check_profile())
+                streams = self.source_streams
+            return streams.open(body)
         if action == 'pan_prepare_history_play' and set(body) in (
                 {'history_id', 'request_id'}, {'history_id', 'request_id', 'start_only'}):
             from .pan_history import prepare_history_play
@@ -565,6 +579,14 @@ class Host:
         # Import/start the optional native BT engine only after explicit local
         # installation. Empty config never imports subprocess, ctypes or CD2.
         now = time.monotonic()
+        if now >= self.diagnostic_due:
+            self.diagnostic_due = now + 30
+            from .optimization import FILE, flush_one
+            if ((self.root / FILE).is_file() and
+                    (self.diagnostic_worker is None or not self.diagnostic_worker.is_alive())):
+                self.diagnostic_worker = Thread(target=flush_one, args=(self.root,
+                    lambda: not self.stopping.is_set() and self.check_profile()), name='bobbi-diagnostics', daemon=True)
+                self.diagnostic_worker.start()
         if now < self.engine_check:
             return
         self.engine_check = now + 1
@@ -700,7 +722,8 @@ class Host:
         playback = getattr(self, 'playback', None)
         if playback is not None:
             drain(playback.close, 'PLAYBACK')
-        for label, component in (('IMAGES', self.images), ('PREPARATION', self.preparation), ('STREAMS', self.streams)):
+        for label, component in (('IMAGES', self.images), ('PREPARATION', self.preparation), ('STREAMS', self.streams),
+                                 ('SOURCE_STREAMS', getattr(self, 'source_streams', None))):
             if component is not None:
                 drain(component.close, label)
         drain(self.unsubscribe, 'ACCOUNT_SUBSCRIPTION')
@@ -709,7 +732,8 @@ class Host:
             engine = self.engine
         if engine is not None:
             drain(engine.close, 'ENGINE')
-        for label, worker in (('ENGINE_WORKER', self.engine_worker), ('CATALOG_WORKER', self.refresh_worker)):
+        for label, worker in (('ENGINE_WORKER', self.engine_worker), ('CATALOG_WORKER', self.refresh_worker),
+                              ('DIAGNOSTIC_WORKER', self.diagnostic_worker)):
             if worker is not None:
                 drain(worker.join, label)
         self.shutdown_errors = tuple(type(error).__name__ for error in errors)

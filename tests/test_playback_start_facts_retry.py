@@ -1,9 +1,9 @@
 """Bounded start reads through real history; simulated RPC is not device proof."""
+from frozen_history import source_bytes
 import ast
 from copy import deepcopy
 import json
 from pathlib import Path
-import subprocess
 import sys
 from types import ModuleType, SimpleNamespace
 from urllib.error import URLError
@@ -395,10 +395,10 @@ def test_real_native_hook_retries_read_but_submits_started_once(scene, monkeypat
 
 @pytest.fixture(scope='module')
 def frozen_start_boundary():
-    source = subprocess.check_output(['git', 'show', FROZEN + ':' + SUBMISSION], cwd=ROOT)
+    source = source_bytes(FROZEN, SUBMISSION)
     legacy = ModuleType('frozen_start_facts_before_retry')
     exec(compile(source, '<frozen-start-facts-before-retry>', 'exec'), legacy.__dict__)
-    player_source = subprocess.check_output(['git', 'show', FROZEN + ':' + PLAYER], cwd=ROOT)
+    player_source = source_bytes(FROZEN, PLAYER)
     return legacy, hook_from(player_source)
 
 

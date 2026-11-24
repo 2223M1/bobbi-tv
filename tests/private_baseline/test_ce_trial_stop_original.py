@@ -1,4 +1,5 @@
 """Real tool IPC/authority chain with synthetic native; not Kodi/device evidence."""
+from frozen_history import source_bytes
 import ast
 from copy import deepcopy
 import hashlib
@@ -7,7 +8,6 @@ import io
 import json
 import os
 from pathlib import Path
-import subprocess
 from types import SimpleNamespace
 import urllib.request
 from uuid import uuid4
@@ -29,8 +29,7 @@ spec.loader.exec_module(driver)
 
 @pytest.fixture(scope='module')
 def frozen_stop_code():
-    source = subprocess.check_output(['git', 'show', FROZEN_REMOTE + ':tools/ce_trial_remote.py'],
-                                     cwd=ROOT, timeout=20)
+    source = source_bytes(FROZEN_REMOTE, 'tools/ce_trial_remote.py')
     assert hashlib.sha1(b'blob ' + str(len(source)).encode() + b'\0' + source).hexdigest() == (
         '65c422330511225f33ba1822187395dc13183bc6')
     names = {'call', 'stop_trial_identity', 'read_stop_original', 'persist_stop_original',

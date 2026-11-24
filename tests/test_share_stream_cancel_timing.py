@@ -1,6 +1,6 @@
 """Nested cancellation diagnostics preserve live authorization and socket policy."""
+from frozen_history import source_bytes
 from pathlib import Path
-import subprocess
 import sys
 from threading import Event, Thread
 from types import ModuleType, SimpleNamespace
@@ -22,9 +22,7 @@ def counters():
 
 @pytest.fixture(scope='module')
 def frozen():
-    source = subprocess.check_output(['git', 'show', '629597c7c6655a992438f1903e3066dfa72cf61a:'
-        'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py'],
-        cwd=Path(__file__).resolve().parents[1])
+    source = source_bytes('629597c7c6655a992438f1903e3066dfa72cf61a', 'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py')
     name = '_frozen_cancel_timing_baseline'
     module = ModuleType(name)
     sys.modules[name] = module

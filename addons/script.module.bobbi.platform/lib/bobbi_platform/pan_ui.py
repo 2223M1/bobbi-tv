@@ -73,6 +73,12 @@ def _save_navigation(expected, stack):
 
 def _failure(error):
     code = str(error) if isinstance(error, PanError) else ''
+    if code == 'PAN_EMBY_DIRECT_AUTH_REQUIRED':
+        return '此原片需要私密凭据，或没有可直接交给 Kodi 的同源原片地址。未转码、未公开分享。'
+    if code in ('PAN_SERVER_UNAUTHORIZED', 'PAN_SERVER_FORBIDDEN', 'PAN_SERVER_NOT_FOUND'):
+        return {'PAN_SERVER_UNAUTHORIZED': '服务器拒绝登录，请检查用户名、密码或令牌。',
+                'PAN_SERVER_FORBIDDEN': '用户没有此项目的访问权限。',
+                'PAN_SERVER_NOT_FOUND': '服务器接口不存在，请核对地址及服务前缀。'}[code]
     if code == 'PAN_SERVER_RESUME_UNAVAILABLE':
         return '服务器观看记录仅供查看，尚不能核验文件内容是否被替换；请明确选择从头播放，不继承旧进度。'
     if code == 'PAN_MULTIPART_RESUME_UNAVAILABLE':
@@ -296,7 +302,9 @@ def browse(row, dialog):
     def frame(parent, title):
         return dict(parent=parent, title=title, page=1,
                     positions={1: dict(page=1, cursor='')}, refresh=False, focus=0)
-    stack = _load_navigation(expected) or [frame(row.get('root', layout.root), ALL_NAMES[row['provider']])]
+    explicit = 'entry_parent' in row
+    stack = ([frame(row['entry_parent'], row['entry_title'])] if explicit else
+             _load_navigation(expected) or [frame(row.get('root', layout.root), ALL_NAMES[row['provider']])])
     while stack and not monitor.abortRequested():
         current = stack[-1]
         parent, title, page = current['parent'], current['title'], current['page']
@@ -324,16 +332,21 @@ def browse(row, dialog):
                 actions.append('previous')
             labels.append('刷新当前目录')
             actions.append('refresh')
-            labels.append('将此目录加入片库')
-            actions.append('catalog')
-            choice = dialog.select(title + (' · 目录为空' if not items else ' · 第 %d 页' % page),
+            if not parent.startswith('view:') or row['provider'] != 'emby':
+                labels.append('将此目录加入片库')
+                actions.append('catalog')
+            excluded = result.get('excluded_versions', {})
+            details = ''.join(' · %d 个%s' % (excluded[key], reason) for key, reason in
+                              (('unsupported', '版本暂不支持'), ('unverified', '版本资料不完整')) if key in excluded)
+            choice = dialog.select(title + (' · 目录为空' if not items else ' · 第 %d 页' % page) + details,
                                    labels, preselect=current['focus'])
             if choice >= 0:
                 current['focus'] = choice
-            _save_navigation(expected, stack)
+            if not explicit:
+                _save_navigation(expected, stack)
             if choice < 0 or choice >= len(labels):
                 stack.pop()
-                if stack:
+                if stack and not explicit:
                     _save_navigation(expected, stack)
             elif choice < len(items):
                 item = items[choice]

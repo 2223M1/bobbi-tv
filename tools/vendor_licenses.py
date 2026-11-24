@@ -186,8 +186,9 @@ def fetch(root=ROOT, fetcher=download):
     return summary(data, len(pending))
 
 
-def summary(data, fetched=0):
-    unresolved = [c['id'] for c in data['components'] if c['status'].startswith('unresolved-')]
+def summary(data, fetched=0, *, unresolved_assets=()):
+    unresolved = [c['id'] for c in data['components']
+                  if c['status'].startswith('unresolved-') or c['id'] in unresolved_assets]
     return {'status': 'PINNED_NOTICES_VERIFIED_NOT_RELEASE_CLEARANCE',
             'documents': len(data['documents']), 'fetched': fetched,
             'unresolved_components': unresolved, 'release_gates': data['release_gates']}
@@ -195,12 +196,14 @@ def summary(data, fetched=0):
 
 def verify(root=ROOT):
     data = load_manifest(root)
+    unresolved_assets = set()
     for component in data['components']:
         evidence = component.get('asset_evidence')
         if evidence:
             if evidence != 'licenses/skin-reference-evidence.json' or component['id'] != 'skin.bobbi.cinema':
                 raise ValueError('Unknown asset evidence')
-            verify_skin_evidence(root, evidence)
+            if not verify_skin_evidence(root, evidence)['distribution_clearance']:
+                unresolved_assets.add(component['id'])
     actual = {path.parent.name for path in (Path(root) / 'third_party/addons').glob('*/addon.xml')}
     if not actual <= {row['id'] for row in data['components']}:
         raise ValueError('Unlisted third-party component')
@@ -228,7 +231,7 @@ def verify(root=ROOT):
         if len(roots) != 1:
             raise ValueError('Unknown notice component')
         verify_bytes(docs[delivery['document']], _destination(roots[0], delivery['path']).read_bytes())
-    return summary(data)
+    return summary(data, unresolved_assets=unresolved_assets)
 
 
 def verify_skin_evidence(root, name='licenses/skin-reference-evidence.json'):
@@ -263,10 +266,11 @@ def verify_skin_evidence(root, name='licenses/skin-reference-evidence.json'):
                 if not any(hashlib.sha256(delivered).hexdigest() == manifest[d]['sha256']
                            for d in row.get('license_documents', [])):
                     raise ValueError('Shipped font notice differs from pinned document: ' + row['path'])
-    if cleared and data.get('inherited_assets', {}).get('status') not in (
+    artwork = data.get('inherited_assets', {}).get('status')
+    if cleared and artwork not in (
             'project-owned-original-artwork', 'unresolved-source'):
         raise ValueError('Unsupported asset claim')
-    return {'fonts': len(rows), 'distribution_clearance': cleared}
+    return {'fonts': len(rows), 'distribution_clearance': cleared and artwork != 'unresolved-source'}
 
 
 def require_distribution(root=ROOT, components=None):

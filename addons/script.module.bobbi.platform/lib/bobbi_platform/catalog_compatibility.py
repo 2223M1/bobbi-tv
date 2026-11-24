@@ -6,6 +6,7 @@ every registered Kodi profile, including a committed schema still in a WAL.
 import ast
 from contextlib import closing
 import hashlib
+import json
 from io import BytesIO
 from pathlib import Path
 import sqlite3
@@ -17,6 +18,8 @@ from .updates import UpdateError, _safe_path
 CORE = 'script.module.bobbi.core'
 PROGRAM = 'lib/bobbi_core/media_library_index.py'
 CATALOG = 'script.module.bobbi.platform/media-index.sqlite3'
+REGISTRY = 'script.module.bobbi.platform/libraries.sqlite3'
+REGISTRY_PROGRAM = 'lib/bobbi_core/library_contract.py'
 
 
 class CatalogCompatibilityError(UpdateError, ValueError):
@@ -102,6 +105,73 @@ def schemas(userdata, master_addon_data=None):
     return result
 
 
+def registry_requirements(userdata, master_addon_data=None):
+    """Content can require a newer reader even while PRAGMA user_version remains 1."""
+    required = set()
+    for root in profile_roots(userdata):
+        data = Path(master_addon_data) if root == _plain(userdata) and master_addon_data is not None else root / 'addon_data'
+        path = _plain(data / REGISTRY)
+        if read_schema(path) is None:
+            continue
+        try:
+            with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, timeout=.15)) as db:
+                if db.execute('PRAGMA user_version').fetchone() != (1,):
+                    raise ValueError()
+                db.execute('BEGIN')
+                defs = db.execute("SELECT type FROM sqlite_master WHERE name='sources'").fetchone()
+                if defs != ('table',):
+                    raise ValueError()
+                # Avoid loading an unbounded malformed BLOB or evaluating a view.
+                sizes = db.execute('SELECT length(CAST(record AS BLOB)) FROM sources LIMIT 33').fetchall()
+                if len(sizes) > 32 or any(type(n) is not int or not 0 < n <= 4 * 1024**2 for n, in sizes):
+                    raise ValueError()
+                emby = 0
+                for raw, in db.execute('SELECT record FROM sources LIMIT 32'):
+                    record = json.loads(raw)
+                    kind = record['kind']
+                    if kind == 't4':
+                        required.add('t4')
+                    elif kind == 'media_server':
+                        provider = record['metadata']['provider']
+                        if provider == 'emby':
+                            emby += 1
+                    elif kind not in ('catalog', 'vfs'):
+                        raise ValueError()
+                if emby > 1:
+                    required.add('multi_emby')
+        except (OSError, TypeError, ValueError, KeyError, RecursionError, sqlite3.Error):
+            raise CatalogCompatibilityError('CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE') from None
+    return required
+
+
+def registry_support(raw, required, digest=None):
+    """Capability is part of the retained, digested component; never infer it from its version."""
+    try:
+        if len(raw) > 256 * 1024 or (digest is not None and hashlib.sha256(raw).hexdigest() != digest):
+            raise ValueError()
+        tree = ast.parse(raw.decode('utf-8-sig'))
+        values = [n.value for n in tree.body if isinstance(n, ast.Assign) and
+                  any(isinstance(target, ast.Name) and target.id == 'REGISTRY_READ_FEATURES' for target in n.targets)]
+        if len(values) != 1 or not isinstance(values[0], ast.Tuple):
+            raise ValueError()
+        features = ast.literal_eval(values[0])
+        if any(type(s) is not str for s in features) or not required.issubset(features):
+            raise ValueError()
+    except (TypeError, SyntaxError, UnicodeError, ValueError):
+        raise CatalogCompatibilityError('CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE') from None
+
+
+def check_registry_program(required, root, digest=None):
+    if required:
+        try:
+            path = _plain(Path(root) / REGISTRY_PROGRAM, file=True)
+            if path.stat().st_size > 256 * 1024:
+                raise ValueError()
+            registry_support(path.read_bytes(), required, digest)
+        except (OSError, ValueError, UpdateError):
+            raise CatalogCompatibilityError('CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE') from None
+
+
 def supported_schemas(raw, expected_digest=None):
     """The one parser for on-disk and signed-archive constructor contracts."""
     try:
@@ -142,13 +212,15 @@ def require_supported(observed, supported):
 
 def check_program(userdata, root, expected_digest=None, master_addon_data=None):
     observed = schemas(userdata, master_addon_data)
+    check_registry_program(registry_requirements(userdata, master_addon_data), root)
     if observed:
         require_supported(observed, program_schemas(root, expected_digest))
 
 
 def check_bundle(userdata, signed):
     observed = schemas(userdata)
-    if not observed:
+    required = registry_requirements(userdata)
+    if not observed and not required:
         return
     try:
         rows = [row for row in signed.manifest['components'] if row['id'] == CORE]
@@ -156,11 +228,17 @@ def check_bundle(userdata, signed):
             raise ValueError('catalog owner missing')
         row = rows[0]
         with zipfile.ZipFile(BytesIO(signed.read(row['file'], row['size']))) as archive:
-            name = CORE + '/' + PROGRAM
-            matches = [item for item in archive.infolist() if item.filename == name]
-            if len(matches) != 1 or matches[0].file_size > 256 * 1024:
-                raise ValueError('program input unknown')
-            supported = supported_schemas(archive.read(name))
+            def source(relative):
+                name = CORE + '/' + relative
+                matches = [item for item in archive.infolist() if item.filename == name]
+                if len(matches) != 1 or matches[0].file_size > 256 * 1024:
+                    raise ValueError('program input unknown')
+                return archive.read(name)
+            if required:
+                registry_support(source(REGISTRY_PROGRAM), required)
+            supported = supported_schemas(source(PROGRAM)) if observed else set()
+    except CatalogCompatibilityError:
+        raise
     except (OSError, ValueError, KeyError, zipfile.BadZipFile, UpdateError):
         raise CatalogCompatibilityError('CE_CATALOG_PROGRAM_SCHEMA_UNPROVEN') from None
     require_supported(observed, supported)

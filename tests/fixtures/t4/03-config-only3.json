@@ -1,0 +1,15 @@
+{
+  "spider": "https://plugins.example.invalid/never-fetch.jar",
+  "sites": [
+    {
+      "key": "legacy_xiaoya",
+      "name": "仅 Spider 契约示例",
+      "type": 3,
+      "api": "csp_XiaoYa",
+      "ext": "https://legacy.example.invalid/ext.json",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    }
+  ]
+}

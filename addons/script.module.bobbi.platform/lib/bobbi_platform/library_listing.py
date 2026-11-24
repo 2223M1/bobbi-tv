@@ -7,6 +7,10 @@ from .libraries import LibraryError, MAX_DIRECTORY_ITEMS, directory_items
 
 
 def source_presentation(source):
+    if source.kind == 'media_server' and source.metadata.get('provider') == 'emby':
+        return 'media_server', 'Emby 动态片库 · 在线浏览，无需同步到本机'
+    if source.kind == 't4':
+        return 't4', '小雅 / TVBox · %d 个站点' % len(source.metadata['sites'])
     if source.kind == 'media_server':
         return 'media_server', source.metadata['provider'] + ' · 媒体服务器 · 实验接入'
     if source.kind == 'catalog':
@@ -65,7 +69,7 @@ def native_listing(response, path):
         (dirs if folder else files).append(name)
         if not folder:
             metadata[name] = file_info(row.get('size'), row.get('lastmodified'))
-    return directory_items(dirs, files), metadata
+    return directory_items(dirs, files, pointers=True), metadata
 
 
 def local_listing(path):
@@ -94,4 +98,4 @@ def local_listing(path):
                     metadata[name] = file_info(stat.st_size, datetime.fromtimestamp(stat.st_mtime).isoformat())
                 except OSError:
                     pass
-    return directory_items(dirs, files), metadata
+    return directory_items(dirs, files, pointers=True), metadata

@@ -1,0 +1,22 @@
+{
+  "page": 1,
+  "pagecount": 2,
+  "limit": 2,
+  "total": 3,
+  "list": [
+    {
+      "vod_id": "xy:series:001",
+      "vod_name": "岛上来信（合成测试）",
+      "vod_pic": "https://media.example.invalid/posters/series-001.jpg",
+      "vod_remarks": "2 集",
+      "vod_year": "2026"
+    },
+    {
+      "vod_id": "xy:series:002",
+      "vod_name": "回声小镇（合成测试）",
+      "vod_pic": "https://media.example.invalid/posters/series-002.jpg",
+      "vod_remarks": "3 集",
+      "vod_year": "2026"
+    }
+  ]
+}

@@ -25,8 +25,29 @@ def test_new_panels_have_shared_palette_focus_motion_and_real_textures():
     for path in paths:
         root = ET.parse(path).getroot()
         assert root.find('defaultcontrol').get('always') == 'true'
-        assert any(node.get('colordiffuse') == 'FF15171C' for node in root.iter('texture'))
-        assert all('BobbiReduceMotion' in node.get('condition', '') for node in root.iter('animation'))
+        panels = [node for node in root.iter('texture') if (node.text or '').endswith('glass/modal-glass.png')]
+        assert panels and all(node.get('border') == '46' for node in panels)
+        if path.name == 'terminal-actions.xml':
+            # The plugin XML cannot assume a named color in every external skin.
+            # Compare its fallback by mode against the owning skin's actual palette.
+            palette = ET.parse(SKIN/'colors/defaults.xml')
+            variable = ET.parse(SKIN/'1080p/Variables.xml').find(".//variable[@name='BobbiMattePanelColor']")
+            live = next(v.text for v in variable.findall('value') if 'condition' not in v.attrib)
+            classic = variable.find("value[@condition='!Skin.HasSetting(BobbiLiquidGlassEnabled)']").text
+            expected = {'Skin.HasSetting(BobbiLiquidGlassEnabled)': live,
+                        '!Skin.HasSetting(BobbiLiquidGlassEnabled)': palette.findtext(f"color[@name='{classic}']")}
+            assert {ctrl.findtext('visible'): ctrl.find('texture').get('colordiffuse')
+                    for ctrl in root.iter('control') if ctrl.find('texture') in panels} == expected
+        else:
+            assert {node.get('colordiffuse') for node in panels} == {'FF15171C'}
+        focus = list(root.iter('texturefocus'))
+        assert focus and all(node.get('colordiffuse') == 'FFFFFFFF' for node in focus)
+        for animation in root.iter('animation'):
+            if animation.get('time') == '0' and animation.text == 'Conditional':
+                # Instant material selection still applies with reduced motion.
+                assert 'BobbiLiquidGlassEnabled' in animation.get('condition', '')
+            else:
+                assert '!Skin.HasSetting(BobbiReduceMotion)' in animation.get('condition', '')
         for tag in ('texture', 'texturefocus', 'texturenofocus'):
             for node in root.iter(tag):
                 text = node.text or ''

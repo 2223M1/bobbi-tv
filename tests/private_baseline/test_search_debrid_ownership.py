@@ -2,6 +2,7 @@
 
 This slice deliberately retains legacy authentication, not account isolation.
 """
+from frozen_history import source_bytes
 import ast
 import base64
 from concurrent.futures import ThreadPoolExecutor
@@ -9,7 +10,6 @@ from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
 import sqlite3
-import subprocess
 from threading import Event, Lock, Thread, current_thread
 from time import monotonic
 from types import SimpleNamespace
@@ -52,8 +52,7 @@ def call(rows, scope=None, fn=None):
 
 @lru_cache(None)
 def old_check_code():
-    source = subprocess.check_output(['git', '-C', str(ROOT), 'show',
-        BASE+':addons/plugin.video.bobbi/lib/utils/debrid/debrid_utils.py']).decode('utf-8')
+    source = source_bytes(BASE, 'addons/plugin.video.bobbi/lib/utils/debrid/debrid_utils.py').decode('utf-8')
     function = next(node for node in ast.parse(source).body
                     if isinstance(node, ast.FunctionDef) and node.name == 'check_debrid_cached')
     return compile(ast.Module(body=[function], type_ignores=[]), '<629597c-original-debrid>', 'exec')

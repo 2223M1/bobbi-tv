@@ -1,0 +1,27 @@
+{
+  "spider": "https://plugins.example.invalid/never-fetch.jar",
+  "sites": [
+    {
+      "key": "csp_XiaoYa",
+      "name": "小雅 T4 契约示例",
+      "type": 4,
+      "api": "../t4/fixture-token-not-secret/v/XiaoYa?profile=fixture",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
+      "key": "legacy_xiaoya",
+      "name": "传统 Spider 契约示例",
+      "type": 3,
+      "api": "csp_XiaoYa",
+      "ext": {
+        "api": "https://legacy.example.invalid",
+        "token": "fixture-only-not-a-credential"
+      },
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    }
+  ]
+}

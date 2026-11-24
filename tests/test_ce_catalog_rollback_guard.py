@@ -160,6 +160,18 @@ def test_uninitialized_sqlite_is_not_assumed_to_be_supported_schema_zero(tmp_pat
     assert not item.calls
 
 
+def test_registry_content_rejects_legacy_controller_restore_before_any_stop(tmp_path, monkeypatch):
+    item = harness(tmp_path, monkeypatch, 2)
+    with sqlite3.connect(controller.PROFILES/'script.module.bobbi.platform/libraries.sqlite3') as db:
+        db.execute('PRAGMA user_version=1')
+        db.execute('CREATE TABLE sources(id TEXT PRIMARY KEY,record TEXT NOT NULL)')
+        db.execute('INSERT INTO sources VALUES(?,?)', ('a'*32, json.dumps({'kind':'t4'})))
+    before = (item.run/'deployment.json').read_bytes()
+    with pytest.raises(controller.CatalogCompatibilityError, match='REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE'):
+        controller.main(item.run, 'rollback')
+    assert not item.calls and before == (item.run/'deployment.json').read_bytes()
+
+
 @pytest.mark.parametrize('placement', ['main', 'wal', 'other_profile'])
 def test_schema4_refuses_schema3_retained_code_without_data_or_service_changes(tmp_path, monkeypatch, placement):
     item = harness(tmp_path, monkeypatch, 3)

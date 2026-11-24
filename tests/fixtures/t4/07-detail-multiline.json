@@ -1,0 +1,14 @@
+{
+  "list": [
+    {
+      "vod_id": "xy:series:001",
+      "vod_name": "岛上来信（合成测试）",
+      "vod_pic": "https://media.example.invalid/posters/series-001.jpg",
+      "type_name": "剧集",
+      "vod_year": "2026",
+      "vod_content": "完全由本次审查编写的测试资料，不对应真实资源。",
+      "vod_play_from": "主线路$$$备用线路",
+      "vod_play_url": "第 1 集$xy:series:001:ep:01:line:A#第 2 集$xy:series:001:ep:02:line:A$$$第 1 集$xy:series:001:ep:01:line:B#第 2 集$xy:series:001:ep:02:line:B"
+    }
+  ]
+}

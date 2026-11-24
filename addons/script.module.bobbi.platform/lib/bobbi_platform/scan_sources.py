@@ -87,7 +87,8 @@ class NativePort:
                     entry['description'] = descriptions[row['file_id']]
                 entries.append(entry)
         return dict(items=entries, signature=tuple((r.get('file_id'), r.get('directory')) for r in rows),
-                    has_more=result.get('has_more') is True, next_cursor=result.get('next_cursor'))
+                    has_more=result.get('has_more') is True, next_cursor=result.get('next_cursor'),
+                    excluded_versions=bool(result.get('excluded_versions')))
 
 
 class MountedPort:
@@ -208,6 +209,21 @@ class MountedPort:
             yield session
         finally:
             session.close()
+
+    def select_reference(self, authority, reference, session, live, allow_changed=False):
+        """Select a live sibling, then re-stat it before issuing a ticket."""
+        while True:
+            live()
+            page = session.list_page(reference['parent'])
+            for row in page['items']:
+                current = row.get('reference')
+                if current and current['id'] == reference['id']:
+                    if not allow_changed and not typed_ref.same_observation(reference, current):
+                        raise ValueError('CATALOG_FILE_CHANGED')
+                    self.stat_by_reference(authority, current, session.check)
+                    return current
+            if not page['has_more']:
+                raise ValueError('CATALOG_FILE_CHANGED')
 
     def stat_by_reference(self, authority, reference, check=lambda: None):
         reference = typed_ref.validate(reference)

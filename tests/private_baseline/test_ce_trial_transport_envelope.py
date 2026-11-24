@@ -1,10 +1,10 @@
 """Full local CLI with the real STOP authority chain; no SSH/device access."""
+from frozen_history import source_bytes
 from copy import deepcopy
 import hashlib
 import importlib.util
 import json
 from pathlib import Path
-import subprocess
 from types import ModuleType, SimpleNamespace
 
 import pytest
@@ -163,7 +163,7 @@ def test_non_stop_transport_failure_keeps_exit_one_and_retains_observation(cli_c
 
 @pytest.mark.parametrize('phase', ['connect', 'close'])
 def test_actual_frozen_cli_loses_envelope_for_the_same_failure_injection(cli_chain, phase):
-    raw = subprocess.check_output(['git', 'show', BASELINE + ':tools/ce_playback_trial.py'], cwd=ROOT, timeout=20)
+    raw = source_bytes(BASELINE, 'tools/ce_playback_trial.py')
     frozen = ModuleType('frozen_stop_cli')
     frozen.__file__ = str(CLI_PATH)
     exec(compile(raw, BASELINE + ':tools/ce_playback_trial.py', 'exec'), frozen.__dict__)

@@ -1,6 +1,6 @@
 """Binding uses a validated guard without caching per-call authorization."""
+from frozen_history import source_bytes
 from pathlib import Path
-import subprocess
 import sys
 from threading import Event, Thread
 from types import ModuleType, SimpleNamespace
@@ -207,9 +207,7 @@ def frozen_binding():
     # Pre-change integrated source: the negative control must exercise the
     # actual old Binding, not emulate its repeated validation with a stub.
     revision = 'ff0422cff75b58b72053898057d8b87356eea85c'
-    source = subprocess.check_output(['git', 'show', revision + ':' +
-        'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py'],
-        cwd=Path(__file__).resolve().parents[1])
+    source = source_bytes(revision, 'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py')
     name = '_frozen_binding_current_guard_baseline'
     module = ModuleType(name)
     sys.modules[name] = module

@@ -48,8 +48,22 @@ def test_repinned_summary_cannot_bypass_separate_offline_binding(candidate):
 
 
 @pytest.mark.parametrize('damage',['offline_profile_sha256','verification_proof_sha256'])
-def test_user_transport_offline_binding_hashes_fail_closed(candidate,damage):
+def test_user_transport_offline_binding_hashes_fail_closed(candidate,damage,monkeypatch,tmp_path):
     path,_,_=candidate
-    profile=deepcopy(tool.PROFILES['usertransport2128']);profile[damage]='0'*64
-    # Direct helper isolates the offline gate without a fake build repin.
-    with pytest.raises(AssertionError):tool.checked_user_transport_build(path,{},profile)
+    profile=deepcopy(tool.PROFILES['usertransport2128'])
+    # This negative control reaches the real verifier without a maintainer's /opt tree.
+    # The synthetic verification record is not a candidate build attestation.
+    offline=json.loads((tool.ROOT/'native/tests/user_transport_profile.json').read_text())
+    proof=tmp_path/'verification.json'
+    proof.write_text(json.dumps(dict(state='VERIFIED_OFFLINE_NOT_DEVICE_CERTIFIED',
+        deployment_authority=False, candidate_sha256=profile['candidate'],
+        build_proof_sha256=profile['build_proof_sha256'], profile_sha256=profile['offline_profile_sha256'],
+        verifier_sha256=tool.sha_file(tool.ROOT/'native/tests/verify_ce_user_transport_candidate.py'),
+        actor_cases=len(offline['required_actor_cases']), negative_controls=len(offline['required_negative_controls'])+1,
+        real_translation_units=6)))
+    monkeypatch.setattr(tool, 'local_artifact_path', lambda reference: {profile['verification_proof']:proof}[reference])
+    profile['verification_proof_sha256']=tool.sha_file(proof)
+    profile[damage]='0'*64
+    expected={'offline_profile_sha256':'TRANSPORT_PROFILE_CHANGED',
+              'verification_proof_sha256':'TRANSPORT_VERIFICATION_CHANGED'}
+    with pytest.raises(AssertionError,match=expected[damage]):tool.checked_user_transport_build(path,{},profile)

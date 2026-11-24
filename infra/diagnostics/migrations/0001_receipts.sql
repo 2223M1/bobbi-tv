@@ -1,0 +1,10 @@
+CREATE TABLE receipts(
+  id TEXT PRIMARY KEY,
+  build TEXT NOT NULL, stage TEXT NOT NULL, outcome TEXT NOT NULL, elapsed INTEGER NOT NULL,
+  day INTEGER NOT NULL DEFAULT (unixepoch()/86400)
+) WITHOUT ROWID;
+CREATE INDEX receipts_day ON receipts(day);
+CREATE TABLE daily(day INTEGER PRIMARY KEY, total INTEGER NOT NULL);
+CREATE TRIGGER tally AFTER INSERT ON receipts BEGIN
+  INSERT INTO daily(day,total) VALUES(NEW.day,1) ON CONFLICT(day) DO UPDATE SET total=total+1;
+END;

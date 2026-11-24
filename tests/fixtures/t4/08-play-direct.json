@@ -1,0 +1,16 @@
+{
+  "parse": 0,
+  "url": "https://media.example.invalid/video/series-001-ep-01.mp4?fixture=1",
+  "header": {
+    "User-Agent": "Bobbi-TV-Contract-Fixture/1.0",
+    "Referer": "https://t4.example.invalid/"
+  },
+  "subs": [
+    {
+      "name": "简体中文（合成）",
+      "lang": "zh",
+      "format": "application/x-subrip",
+      "url": "https://media.example.invalid/subtitles/series-001-ep-01.zh.srt"
+    }
+  ]
+}

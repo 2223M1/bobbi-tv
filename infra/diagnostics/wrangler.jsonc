@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "bobbi-tv-diagnostics",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-24",
+  "workers_dev": false,
+  "routes": [{"pattern":"bobbi-diagnostics.feixingwawa.cn", "custom_domain":true}],
+  "preview_urls": false,
+  "observability": {
+    "enabled": true,
+    "logs": {"enabled": true, "invocation_logs": false},
+    "traces": {"enabled": true, "head_sampling_rate": 0.01}
+  },
+  "triggers": {"crons": ["27 3 * * *"]},
+  "d1_databases": [{
+    "binding": "DB", "database_name": "bobbi-tv-diagnostics",
+    "database_id": "2974cf09-cbb1-4e42-b2f2-680c1b6dfce3"
+  }],
+  "ratelimits": [{
+    "name": "INTAKE", "namespace_id": "218401",
+    "simple": {"limit": 12, "period": 60}
+  }]
+}

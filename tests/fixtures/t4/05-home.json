@@ -1,0 +1,44 @@
+{
+  "class": [
+    {
+      "type_id": "movie",
+      "type_name": "电影"
+    },
+    {
+      "type_id": "series",
+      "type_name": "剧集"
+    }
+  ],
+  "filters": {
+    "series": [
+      {
+        "key": "year",
+        "name": "年份",
+        "value": [
+          {
+            "n": "全部",
+            "v": ""
+          },
+          {
+            "n": "2026",
+            "v": "2026"
+          }
+        ]
+      }
+    ]
+  },
+  "list": [
+    {
+      "vod_id": "xy:movie:001",
+      "vod_name": "星港见闻（合成测试）",
+      "vod_pic": "https://media.example.invalid/posters/movie-001.jpg",
+      "vod_remarks": "合成测试条目"
+    },
+    {
+      "vod_id": "xy:series:001",
+      "vod_name": "岛上来信（合成测试）",
+      "vod_pic": "https://media.example.invalid/posters/series-001.jpg",
+      "vod_remarks": "2 集"
+    }
+  ]
+}

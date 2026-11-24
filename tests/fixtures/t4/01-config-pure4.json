@@ -1,0 +1,13 @@
+{
+  "sites": [
+    {
+      "key": "csp_XiaoYa",
+      "name": "小雅契约示例",
+      "type": 4,
+      "api": "https://t4.example.invalid/t4/fixture-token-not-secret/v/XiaoYa?profile=fixture",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    }
+  ]
+}

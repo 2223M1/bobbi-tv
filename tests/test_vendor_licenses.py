@@ -17,6 +17,33 @@ notices = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(notices)
 
 
+@pytest.mark.parametrize('status,artwork,blocked', [
+    ('evidence-not-distribution-clearance', 'project-owned-original-artwork', True),
+    ('evidence-and-distribution-cleared', 'unresolved-source', True),
+    ('evidence-and-distribution-cleared', 'project-owned-original-artwork', False),
+])
+def test_component_release_respects_nested_skin_and_inherited_art_status(tmp_path, status, artwork, blocked):
+    directory = tmp_path/'licenses'
+    directory.mkdir()
+    (tmp_path/'addons/skin.bobbi.cinema/fonts').mkdir(parents=True)
+    skin = 'skin.bobbi.cinema'
+    evidence = 'licenses/skin-reference-evidence.json'
+    base = dict(documents=[], status='cleared-for-public-distribution', reason='synthetic control')
+    manifest = dict(schema=1, baseline='a'*40, documents=[], release_gates=[],
+                    components=[dict(base, id=skin, asset_evidence=evidence), dict(base, id='other')])
+    (directory/'THIRD-PARTY.json').write_text(json.dumps(manifest), encoding='utf-8')
+    (tmp_path/evidence).write_text(json.dumps(dict(schema=1, status=status, fonts=[],
+        inherited_assets=dict(status=artwork))), encoding='utf-8')
+    report = notices.verify(tmp_path)
+    assert (skin in report['unresolved_components']) == blocked
+    notices.require_distribution(tmp_path, ['other'])
+    if blocked:
+        with pytest.raises(ValueError, match=skin):
+            notices.require_distribution(tmp_path, [skin])
+    else:
+        notices.require_distribution(tmp_path, [skin])
+
+
 def minimal_manifest(raw=b'Official full notice\n'):
     commit = 'a' * 40
     blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()

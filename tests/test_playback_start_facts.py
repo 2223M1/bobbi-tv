@@ -2,12 +2,12 @@
 
 Native replies are simulated; these checks are not device acceptance.
 """
+from frozen_history import source_bytes
 import ast
 from copy import deepcopy
 import json
 from pathlib import Path
 import pickle
-import subprocess
 import sys
 from types import SimpleNamespace, ModuleType
 from uuid import uuid4
@@ -399,8 +399,7 @@ def legacy():
     """Actual frozen pre-slice code, not an approximation of a legacy writer."""
     modules = []
     for name in ('pickle_db', 'file_history'):
-        source = subprocess.check_output(['git', 'show', '319e3987f3a196ac9d5e214a82fcdf1ceed2a9c2:'
-            'addons/plugin.video.bobbi/lib/db/' + name + '.py'], cwd=ROOT)
+        source = source_bytes('319e3987f3a196ac9d5e214a82fcdf1ceed2a9c2', 'addons/plugin.video.bobbi/lib/db/' + name + '.py')
         subject = ModuleType('legacy_start_facts_' + name)
         exec(compile(source, '<frozen-v1-' + name + '>', 'exec'), subject.__dict__)
         modules.append(subject)

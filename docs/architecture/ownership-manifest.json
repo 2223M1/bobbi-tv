@@ -137,6 +137,11 @@
       "label": "Registered provider + server/user identity + source revision; credentials remain private"
     },
     {
+      "id": "responsibility:emby-dynamic",
+      "kind": "responsibility",
+      "label": "Current-page Emby metadata and exact-version direct handoff to Kodi, without a local video index"
+    },
+    {
       "id": "protocol:server-provider",
       "kind": "protocol",
       "label": "Plex/Jellyfin/Emby adapters reuse native PanService/FileRef/CatalogService; originals only, no exact resume claim"
@@ -193,6 +198,30 @@
     }
   ],
   "edges": [
+    {
+      "source": "file:addons/script.module.bobbi.platform/lib/bobbi_platform/emby_dynamic.py",
+      "target": "responsibility:emby-dynamic",
+      "kind": "implements",
+      "status": "confirmed",
+      "evidence": {
+        "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/emby_dynamic.py",
+        "line": 1,
+        "anchor": "\"\"\"Emby as an online Kodi directory. No scanner, history writer or player owner.\"\"\""
+      },
+      "note": "Native Kodi directory backed by user-scoped server requests. No scanner or server progress writer on this route."
+    },
+    {
+      "source": "responsibility:emby-dynamic",
+      "target": "file:tests/test_emby_dynamic_directory.py",
+      "kind": "covered_by",
+      "status": "candidate",
+      "evidence": {
+        "path": "tests/test_emby_dynamic_directory.py",
+        "line": 1,
+        "anchor": "\"\"\"Kodi directory callbacks against a real HTTP Emby fixture and production Host.\"\"\""
+      },
+      "note": "Static coverage map for dynamic navigation, pagination, metadata refresh, version selection, revocation and single direct handoff."
+    },
     {
       "source": "file:addons/plugin.video.bobbi/lib/db/deferred_history.py",
       "target": "lifecycle:native-history-lane",
@@ -584,7 +613,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 663,
+        "line": 685,
         "anchor": "def close(self):"
       },
       "note": "Reviewed responsibility declaration: Profile-bound Host startup, service admission, draining and close. Not a runtime test result."
@@ -728,7 +757,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_compatibility.py",
-        "line": 143,
+        "line": 213,
         "anchor": "def check_program(userdata, root, expected_digest=None, master_addon_data=None):"
       },
       "note": "Reviewed responsibility declaration: All registered profile schemas versus retained or incoming code, before mutation. Not a runtime test result."
@@ -872,7 +901,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 654,
+        "line": 676,
         "anchor": "session_factory = partial(Session, lock_factory=InstanceLock,"
       },
       "note": "Platform composition injects lock, pairing, font decoder and actual resident Host owner_call into Session. Dispatch and lease checks bracket owner reads; core cannot discover a later runtime. Resource/lock ordering stays with PreparationHost/Session. Post-55b4f9b documentation supplement, absent from that frozen manifest/graph; not execution evidence."
@@ -956,7 +985,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/host.py",
-        "line": 175,
+        "line": 179,
         "anchor": "file_facts=getattr(self.file_history, 'media_facts', None), profile_current=self.check_profile)"
       },
       "note": "The same captured Host profile fence is injected into the common CatalogService for every source port. Reviewed static responsibility, not device execution evidence."
@@ -980,7 +1009,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_accounts.py",
-        "line": 187,
+        "line": 190,
         "anchor": "def register(self, provider, name, location='', secret='', expected_source=None, client_factory=None,"
       },
       "note": "Server registration uses the existing Registry and expected snapshot CAS after bounded identity verification; no second credential inventory or catalog database is added. Reviewed static responsibility, not device execution evidence."
@@ -1016,7 +1045,7 @@
       "status": "confirmed",
       "evidence": {
         "path": "addons/script.module.bobbi.platform/lib/bobbi_platform/server_emby.py",
-        "line": 30,
+        "line": 52,
         "anchor": "class Client:"
       },
       "note": "Shared Jellyfin/Emby adapter enumerates exact MediaSource identities and resolves original/static responses. Segments, transcode and live server certification remain outside this evidence. Reviewed static responsibility, not device execution evidence."

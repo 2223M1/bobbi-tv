@@ -147,10 +147,21 @@ def test_existing_backend_has_one_status_and_no_pairing_or_install_menu(setup_ui
     assert '现有' in str(setup_ui.dialogs) or '已有' in str(setup_ui.dialogs)
 
 
-@pytest.mark.parametrize('choice', [0, 2, 3])
+def select_bt_action(setup_ui, monkeypatch, action, *, ce):
+    from bobbi_platform import ce_update_notice
+    monkeypatch.setattr(ce_update_notice, 'coreelec', lambda: ce)
+    def select(title, labels):
+        assert ('安装 CoreELEC BT 后台' in labels) == ce
+        return labels.index(action)
+    setup_ui.dialog.select = select
+
+
+@pytest.mark.parametrize('action,ce', [
+    ('Android 助手配对', False), ('导入助手配对文件', False),
+    ('Android 助手配对', True), ('导入助手配对文件', True), ('安装 CoreELEC BT 后台', True)])
 def test_adapter_configured_while_selector_open_blocks_second_pairing_or_engine(setup_ui, monkeypatch,
-                                                                              tmp_path, choice):
-    setup_ui.choice = choice
+                                                                              tmp_path, action, ce):
+    select_bt_action(setup_ui, monkeypatch, action, ce=ce)
     states = iter((None, 'adapter_ready'))
     monkeypatch.setattr(setup_ui.module, 'existing_backend_state', lambda: next(states))
     setup_ui.module.pair_helper(setup_ui.dialog, tmp_path/'pairing.json')
@@ -169,16 +180,18 @@ def test_legacy_helper_still_works_when_no_adapter_is_configured(setup_ui, monke
     assert setup_ui.module.helper_status(tmp_path/'missing.json') == 'not_paired'
 
 
-@pytest.mark.parametrize('choice,appear_at', [(0, 'input'), (2, 'yesno'), (2, 'progress'),
-                                           (3, 'browse'), (0, 'ready'), (3, 'ready')])
+@pytest.mark.parametrize('action,appear_at,ce', [
+    ('Android 助手配对','input',False), ('安装 CoreELEC BT 后台','yesno',True),
+    ('安装 CoreELEC BT 后台','progress',True), ('导入助手配对文件','browse',False),
+    ('Android 助手配对','ready',True), ('导入助手配对文件','ready',True)])
 def test_adapter_appearing_during_final_dialog_or_probe_preserves_previous_pairing(
-        setup_ui, monkeypatch, tmp_path, choice, appear_at):
+        setup_ui, monkeypatch, tmp_path, action, appear_at, ce):
     from bobbi_platform.pairing import from_export, save
     path = tmp_path/'pairing.json'
     save(path, from_export(json.dumps(dict(setup_ui.value, password='9' * 48))))
     before = path.read_bytes()
     state = SimpleNamespace(present=False, effects=[], progress_closed=False)
-    setup_ui.choice = choice
+    select_bt_action(setup_ui, monkeypatch, action, ce=ce)
     def step(name, value):
         if name == appear_at:
             state.present = True
@@ -205,7 +218,7 @@ def test_adapter_appearing_during_final_dialog_or_probe_preserves_previous_pairi
     setup_ui.module.pair_helper(setup_ui.dialog, path)
     assert state.present and path.read_bytes() == before
     assert 'install' not in state.effects and 'save' not in state.effects
-    assert state.effects == (['exchange'] if choice == 0 and appear_at == 'ready' else [])
+    assert state.effects == (['exchange'] if action == 'Android 助手配对' and appear_at == 'ready' else [])
     assert '现有 BT 后台' in str(setup_ui.dialogs)
-    if choice == 2:
+    if action == '安装 CoreELEC BT 后台':
         assert state.progress_closed

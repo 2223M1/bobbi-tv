@@ -1,6 +1,6 @@
 """One body-window clock, with the actual frozen pre-change transport as control."""
+from frozen_history import source_bytes
 from pathlib import Path
-import subprocess
 import sys
 from types import ModuleType, SimpleNamespace
 
@@ -16,9 +16,7 @@ DATA = bytes(range(256)) * 4096
 
 @pytest.fixture(scope='module')
 def frozen():
-    source = subprocess.check_output(['git', 'show', BASE + ':' +
-        'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py'],
-        cwd=Path(__file__).resolve().parents[1])
+    source = source_bytes(BASE, 'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py')
     name = '_frozen_share_body_window'
     module = ModuleType(name)
     sys.modules[name] = module

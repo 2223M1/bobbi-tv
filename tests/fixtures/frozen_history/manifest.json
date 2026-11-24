@@ -1,0 +1,195 @@
+{
+  "commits": {
+    "18161f7355082637c280dd8fc4e0ced0d3a5c862": {
+      "files": {
+        "addons/plugin.video.bobbi/lib/search.py": {
+          "git_blob": "e3f11daf46f1e82738f6bde2dd4abb24ea6656fb",
+          "sha256": "ffdf1a344653e1b0fb709ee6257a72fdce3d2f8a4357ed62a43113a100926d0d"
+        }
+      },
+      "tree": "94f6e5504de2550062c5cd0f8f757149bc18d661"
+    },
+    "1eb2e58b668916b950d332337486109184c48a18": {
+      "files": {
+        "addons/plugin.video.bobbi/lib/db/cached.py": {
+          "git_blob": "e438a4c2a430783e0ef6bc0e53eca7ec0b381e2d",
+          "sha256": "2522949366ac214d795b51c99e2d737e86d003c3ae3cdbf888520e9d3664b1fe"
+        },
+        "addons/plugin.video.bobbi/lib/utils/clients/utils.py": {
+          "git_blob": "c858c215b9165b6238a67f17504c38d81f8e9d55",
+          "sha256": "6e82cd2d5640ed50dbf6140b43db224825f945821ee52544a7e0aa4e9258b498"
+        },
+        "addons/plugin.video.bobbi/lib/utils/source_manager.py": {
+          "git_blob": "1a92b3549ef9aa7987f3b076cfb7e5dba4891a2b",
+          "sha256": "d2e9d5b10ddc0fbf6afbc86dac4e0a0796cc6aaaa17e5c7920ee68480280d71b"
+        },
+        "addons/plugin.video.bobbi/lib/utils/views/personal_catalog.py": {
+          "git_blob": "d77b2fef73f2faaa4a412fff727e0bedea4b9b7f",
+          "sha256": "e6484cda60ad0f9eac4cb005cd2c557d1d3910f227d420828c690d174235bdff"
+        },
+        "addons/script.module.bobbi.core/lib/bobbi_core/runtime_paths.py": {
+          "git_blob": "bc1f6a2bc3bf9b854b41452e694a5c691ca9ec77",
+          "sha256": "96ec50c7b0cea3dc8e045cdf136be78f793fcbe8097c32656780feddf4d8e4ec"
+        },
+        "addons/script.module.bobbi.core/lib/bobbi_core/subtitle_candidates.py": {
+          "git_blob": "817cd768ddc53165d0d858885a849a2da43ca7de",
+          "sha256": "99dd5bdd9c4de9be85c1afc8f604418011ddc1b75a8ace700a92c244ada5e138"
+        },
+        "addons/script.module.bobbi.platform/lib/bobbi_platform/catalog_ui.py": {
+          "git_blob": "3affd35c1eea60d7235999f7c09bf9828a907a46",
+          "sha256": "37749fd4f9fbbb6c60a019fc62cb5e011c81d3eeb6218ef266b6367c3ccefc96"
+        }
+      },
+      "tree": "4245e79c3c3087f0aa60ec6a20fe83cd236300bf"
+    },
+    "319e3987f3a196ac9d5e214a82fcdf1ceed2a9c2": {
+      "files": {
+        "addons/plugin.video.bobbi/lib/db/file_history.py": {
+          "git_blob": "2183ab2ccd81350551f3d01b901b2a7e4823912d",
+          "sha256": "9f1e901253648f620b30d9d44b294287bc8d63599f04e38b7a821629a9c5c94f"
+        },
+        "addons/plugin.video.bobbi/lib/db/pickle_db.py": {
+          "git_blob": "ca0a18469aef1d541d4e81325caab5337ffba2cd",
+          "sha256": "f1e61bd7dc9dee9bdba839466e4e32572cf5676814728040aab2f22644fca25b"
+        }
+      },
+      "tree": "9a1814f2e0bf66f643f83e27e38c7bf669e9b9de"
+    },
+    "35b9d61ebb9429f5b15e3b882efbfc9c022bd6ad": {
+      "files": {
+        "addons/plugin.video.bobbi/lib/native_player.py": {
+          "git_blob": "181a0c84c096d06e4078f78e896aeedd70f707fb",
+          "sha256": "b7cd707bf80f0f9ee74c8a0bca92afca9b75b7ad3ad7c8a2a8ab12c1e4849c4c"
+        },
+        "addons/plugin.video.bobbi/lib/services/playback_history.py": {
+          "git_blob": "391731b3a0027bcdcf3341034d9e5f6752d0d97f",
+          "sha256": "88f0c41bbd597b7bb623528616d3a2888d09a1b9c71535f84e1340bebe01acd9"
+        }
+      },
+      "tree": "1bb4ba7c7a683a177bba9821035ed534ebc169b4"
+    },
+    "36767e6c30dd835a73c6eada397ed8e6cf8dcbb4": {
+      "files": {
+        "addons/script.module.bobbi.platform/lib/bobbi_platform/ce_installer.py": {
+          "git_blob": "6fb5384ce23cb93eededade43730e24e19eb86e8",
+          "sha256": "10cf2d43640f8d011a0128795c3ddf305e5eaf9dff4f08c1be172a4c78e06476"
+        },
+        "addons/script.module.bobbi.platform/lib/bobbi_platform/updates.py": {
+          "git_blob": "a66c2d0c9fa0ea9402569ba1c8184b10fac0fcc7",
+          "sha256": "baa39cbba4ed770e656dd30183311d2daaff35941735e34e53782d33b57ca1ed"
+        }
+      },
+      "tree": "6be20e3de973c8779a29e28f3d418dcefc771f4b"
+    },
+    "51317effaef2f84953eeb48eea486f0239da693f": {
+      "files": {
+        "addons/script.module.bobbi.core/lib/bobbi_core/catalog_query.py": {
+          "git_blob": "f0dc9fc6b64c07ec01ea1af4e594bf394daf693d",
+          "sha256": "733aaae9df15e51beb65b6cd2d53f8babaaa895444fd277bc8539827c2a0e5fb"
+        },
+        "addons/script.module.bobbi.core/lib/bobbi_core/catalog_review.py": {
+          "git_blob": "ae7cbda59bf45a6d68e8eb82e8e60fdaef55a0f1",
+          "sha256": "ffd8e0537638a871db063ef0f8f0cef22e2604aee41396b58db6828604c52069"
+        },
+        "addons/script.module.bobbi.core/lib/bobbi_core/catalog_transfer.py": {
+          "git_blob": "f7b598a4a339f0a6c3ce338ac4e3f745fada8f37",
+          "sha256": "37e3c510f6b58c5277c4be375469021b632818fea2ca5011b0af846bc48c6820"
+        },
+        "addons/script.module.bobbi.core/lib/bobbi_core/media_library_index.py": {
+          "git_blob": "19619ed6da097f72152e2f867dadeb0f1a059aa8",
+          "sha256": "b5e79aa71b22a3b47bdd6a9382ff757f0a2291fc71d564e4590e04aa978df8dd"
+        }
+      },
+      "tree": "bb3805891baf2b29e6fc9eefb1d70ed94f298a3d"
+    },
+    "6130cfc845b363e0d206a92960479222413aa6d6": {
+      "files": {
+        "tools/ce_playback_trial.py": {
+          "git_blob": "263aea84f600c5b17c4afdbe82a00ada8f83316d",
+          "sha256": "0a872ec1f5b8ba202e03fa28be76188b4a7bb41476eee6ace41c819ad0b32278"
+        },
+        "tools/ce_trial_remote.py": {
+          "git_blob": "65c422330511225f33ba1822187395dc13183bc6",
+          "sha256": "d4342a1d66bd2c1a84b94b794d4a46e64caa74261b7b9df7e2f0fdae55369be8"
+        }
+      },
+      "tree": "56309855c3c3f89d800ae5a311d4e65cf7fe5e9c"
+    },
+    "629597c7c6655a992438f1903e3066dfa72cf61a": {
+      "files": {
+        "addons/plugin.video.bobbi/lib/utils/debrid/debrid_utils.py": {
+          "git_blob": "e6b94e2c9b226f5b4756bdb9da2319a0bbaf0476",
+          "sha256": "46a1b055de45d4019d4fa7171ba54f26855d211a5420338ebeaf90d287aa4310"
+        },
+        "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py": {
+          "git_blob": "bdbae67bf2e48c857f62418a957d15032fca5b86",
+          "sha256": "c0c8dc1a859a66c550b35ae3cdf5a0f51d5f7f71199672600d1ddef9a8b76d92"
+        }
+      },
+      "tree": "bd0bff705783c7440ed4ea64952270d9ca3c817c"
+    },
+    "7220670f1ac3dda3bfd8e8e182c778311b14be48": {
+      "files": {
+        "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py": {
+          "git_blob": "1ce10e4bbcfde88c6f35161925e0147805287249",
+          "sha256": "105e14588b9a6d13d30999f9307140d17c85da564ea6c543faa16f7fb5df2866"
+        }
+      },
+      "tree": "1395f9df9df28e8454d1a0084b2a89d0cc2e3041"
+    },
+    "c58cd3ede800ef401d203838bdc0c5e59c0a1686": {
+      "files": {
+        "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py": {
+          "git_blob": "449c47e049fd831e74ffbda2dee32d82710799e6",
+          "sha256": "b2f89bc8895edc60fee66d9f3c886b238c71f7c33bcf47ddf4a3cd96bd6f1043"
+        }
+      },
+      "tree": "0aae3c085323d9d311a20c0a6cee3e02ede884ab"
+    },
+    "e58718b783adb0803b0812db03bfd5d7f21d0b73": {
+      "files": {
+        "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py": {
+          "git_blob": "3bda5c0cfa0cf8d9a576547f60386de2e7cfc535",
+          "sha256": "d3f26a65ffee3d773fbb4559206e7c2e2ccc856261c84b8b84b38df3e050f8e9"
+        }
+      },
+      "tree": "a4878a097ae19d8881c7da0326fb89af4065764d"
+    },
+    "ed645eece1dc340e52f1377731d5f1ff9d0804c8": {
+      "files": {
+        "addons/script.module.bobbi.core/lib/bobbi_core/playback_start_facts.py": {
+          "git_blob": "b20beba46400ba469e27510a7404bdbcd3f05fbf",
+          "sha256": "63cca0af8b0810de6fca67cd075600989092ccb5ef0082b88ab8baf8f2260a5f"
+        }
+      },
+      "tree": "edda8c37d4176bed7d74eaeab5024cf738c7b1d5"
+    },
+    "f3c2e7771529a916c154c5beee1f101c5cd2d857": {
+      "files": {
+        "addons/plugin.video.bobbi/lib/search.py": {
+          "git_blob": "e8bb47eb35319d0756ba2ff4251c5217043b3f8a",
+          "sha256": "8f52f854ac47638a03efd8e9ad0b919136be60693bf79d59f7ba02229a7e6132"
+        },
+        "addons/plugin.video.bobbi/lib/utils/general/processors.py": {
+          "git_blob": "37a579229cee6c343896e0e4f0cc6fe8b4c3d1b0",
+          "sha256": "e242c049d180fabd8db1c3e51d62613931bd23cace4cc50bdd04f65590bfe70c"
+        },
+        "addons/plugin.video.bobbi/lib/utils/general/utils.py": {
+          "git_blob": "34d4b85ecfbea7eeef88ed5dea63a393c8c545f1",
+          "sha256": "02ccbed1440d8dc2d47d435a1c1941a2ce9884e8fb7665ad10aa13504270cf81"
+        }
+      },
+      "tree": "829f1ddbed323cc82ddb16f7ffd8fe812d23dcbc"
+    },
+    "ff0422cff75b58b72053898057d8b87356eea85c": {
+      "files": {
+        "addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py": {
+          "git_blob": "3ccaedde0335e972f573f2518866210a1e4ebd4f",
+          "sha256": "34a832aa1a4f557e94900b14eda31ea306e037c49f558853880809c351df3639"
+        }
+      },
+      "tree": "ad8a4f130fe5be709049c16011fb2af321908ee8"
+    }
+  },
+  "schema": 1
+}

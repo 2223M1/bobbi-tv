@@ -54,3 +54,28 @@ def test_http_operation_budget_bounds_multiple_hops_and_restores():
         with pytest.raises(PanError, match='NETWORK_ERROR'):
             session.request(url, body={})
     assert waits == [8, 1] and session.deadline is None
+
+
+@pytest.mark.parametrize('action,reason,visible', [
+    ('source_stream_open','T4_MEDIA_ORIGIN',True), ('source_stream_open','MEDIA_AUTH',True),
+    ('source_stream_open','SOURCE_HTTP_URL',True), ('account_status','MEDIA_AUTH',False),
+    ('source_stream_open','MEDIA_AUTH https://private.invalid/secret?token=sample',False)])
+def test_scoped_source_error_survives_ipc_without_echoing_provider_data(tmp_path, monkeypatch, action, reason, visible):
+    from bobbi_core.library_contract import LibraryError
+    from bobbi_platform.library_ui import message
+    path = tmp_path/'runtime.json'
+    monkeypatch.setattr(runtime, 'profile', lambda **kwargs:path)
+    def dispatch(*_): raise LibraryError(reason)
+    server = runtime.Runtime(dispatch,path)
+    server.start()
+    try:
+        with pytest.raises(ValueError) as caught:
+            runtime.call(action,{})
+        if visible:
+            assert isinstance(caught.value, LibraryError) and caught.value.code == reason
+            assert any('\u3400' <= c <= '\u9fff' for c in message(caught.value))
+        else:
+            assert str(caught.value) == 'Local service rejected request'
+        assert 'private.invalid' not in str(caught.value)
+    finally:
+        server.close()

@@ -42,7 +42,7 @@ def owner_host(accounts):
     host.owner = lambda value: dict(accepted=value['operation'] == 'snapshot')
     host.report = lambda code: None
     host._tick_catalog = host._tick_preparation = lambda: None
-    host.engine_check = float('inf')
+    host.engine_check = host.diagnostic_due = float('inf')  # Registry-poll fixture; no background IO.
     return host
 
 

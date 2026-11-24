@@ -41,6 +41,9 @@ def plugin(monkeypatch, tmp_path):
         def setContentLookup(self, value):
             self.lookup = value
 
+        def setMimeType(self, value):
+            self.mime = value
+
         def setArt(self, value):
             self.art = value
 
@@ -111,7 +114,9 @@ def test_root_lists_sources_without_network_or_credentials(plugin):
 def test_browse_filters_files_and_routes_only_local_ids(plugin):
     plugin.files += ['execute.py', 'remote.strm']
     plugin.module.execute(17, {'action': 'browse', 'source': plugin.source.id})
-    assert len(plugin.rows) == 2
+    assert len(plugin.rows) == 3
+    assert dict(parse_qsl(urlsplit(plugin.rows[2][0]).query)) == {
+        'action': 'play_pointer', 'source': plugin.source.id, 'relative': 'remote.strm'}
     assert plugin.rows[0][1].label == 'Season 1' and plugin.rows[0][2]
     target, row, folder = plugin.rows[1]
     assert not folder and row.properties['IsPlayable'] == 'true'
@@ -262,8 +267,8 @@ def test_native_metadata_is_one_listing_not_per_file_stat(plugin, monkeypatch):
     monkeypatch.setattr(plugin.module.xbmc, 'executeJSONRPC', rpc, raising=False)
     plugin.module.execute(17, {'action': 'browse', 'source': plugin.source.id})
     assert len(requests) == 1 and not plugin.calls
-    assert len(plugin.rows) == 2
-    assert plugin.rows[1][1].info == {'size': 2000000000, 'date': '21.10.2026'}
+    assert len(plugin.rows) == 3 and 'action=play_pointer' in plugin.rows[1][0]
+    assert plugin.rows[2][1].info == {'size': 2000000000, 'date': '21.10.2026'}
 
 
 def test_catalog_metadata_no_media_probe(plugin):

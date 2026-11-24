@@ -336,8 +336,8 @@ class EmbyWire:
         self.calls.append((path,kw))
         if self.operation:
             self.operation.consume_request()
-        if path == '/System/Info': return {'Id':'server1'}
-        if path == '/Users/Me': return {'Id':'user1'}
+        if path == ('/System/Info/Public' if self.provider == 'emby' else '/System/Info'): return {'Id':'server1'}
+        if path == '/Users/Me' or self.provider == 'emby' and path == '/Users/user1': return {'Id':'user1'}
         if path == '/Users/user1/Views': return dict(Items=[dict(Id='library1',Name='Movies',IsFolder=True)],TotalRecordCount=1)
         if path == '/Users/user1/Items': return dict(Items=[dict(Id='item1',Name='Film',IsFolder=False)],TotalRecordCount=1)
         if path == '/Users/user1/Items/item1': return dict(Id='item1',PartCount=1,MediaSources=deepcopy(self.media))

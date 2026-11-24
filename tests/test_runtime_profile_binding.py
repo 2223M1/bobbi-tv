@@ -1,4 +1,5 @@
 """Captured runtime paths: real I/O, old-source controls, no Kodi/device needed."""
+from frozen_history import source_bytes
 from functools import partial
 import hashlib
 import importlib.util
@@ -40,9 +41,7 @@ def profiles(tmp_path):
 
 
 def original(path):
-    result = subprocess.run(['git', 'show', BASE + ':' + path], cwd=ROOT,
-                            capture_output=True, text=True, encoding='utf-8', check=True)
-    return result.stdout
+    return source_bytes(BASE, path).decode('utf-8')
 
 
 def isolated(script, *args):

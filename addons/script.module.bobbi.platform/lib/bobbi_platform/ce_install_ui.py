@@ -484,6 +484,7 @@ def failure_message(error, stage=None):
         'ONLINE_REDIRECT_REJECTED': '此下载地址不受支持，请从项目下载页获取完整包。',
         'GENERATION_NOT_NEWER': '所选安装包版本较旧或相同，请通过版本恢复入口使用旧版。',
         'NO_PREVIOUS_PROGRAM_GENERATION': '本机没有上一版本备份，账号与观看记录保留。',
+        'CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE': '目标版本无法确认能读取当前片库来源。已保留程序和资料；如需回退，请显式选择与旧版本配套的数据备份。',
         'RECOVERY_POINT_INVALID': '恢复包不完整或已变化，未恢复。请改用上一版本备份或重新下载完整包。',
         'RECOVERY_STORE_LIMIT': '恢复目录需要检查，请保留文件并联系维护者。仍可尝试“恢复上一版本”。',
     }
@@ -514,7 +515,8 @@ def diagnosis(stage, error):
              'GENERATION_NOT_NEWER', 'PREVIOUS_PROGRAM_INCOMPLETE', 'PREVIOUS_PROGRAM_SPECIAL_FILE',
              'PREVIOUS_PROGRAM_RECEIPT_REQUIRED', 'CE_CATALOG_SCHEMA_UNREADABLE', 'CE_CATALOG_SCHEMA_UNINITIALIZED_OR_UNKNOWN',
              'CE_CATALOG_PROGRAM_SCHEMA_UNPROVEN', 'CE_CATALOG_OTHER_PROFILES_REQUIRE_EXPLICIT_REVIEW',
-             'CE_CATALOG_SCHEMA_INCOMPATIBLE_REQUIRES_EXPLICIT_OFFLINE_RESTORE', 'HOST_RESTORE_NOT_CONFIRMED'}
+             'CE_CATALOG_SCHEMA_INCOMPATIBLE_REQUIRES_EXPLICIT_OFFLINE_RESTORE',
+             'CE_REGISTRY_FORMAT_REQUIRES_EXPLICIT_OFFLINE_RESTORE', 'HOST_RESTORE_NOT_CONFIRMED'}
     if reason in known:
         code = reason
     elif isinstance(error, BadZipFile):
@@ -571,8 +573,15 @@ def main(payload=None, online=False, storage=False):
     import xbmcvfs
     dialog = xbmcgui.Dialog()
     host = None
+    from .optimization import observe
+    from .paths import profile_root
+    diagnostic_root = None
+    started = time.monotonic()
     stage = 'init'
     def report(step, error):
+        if diagnostic_root is not None:
+            observe(diagnostic_root, {'online':'update','rollback':'rollback'}.get(step,'install'),
+                    'space' if str(error).partition(':')[0] == 'INSTALLATION_SPACE_REQUIRED' else 'failed', started)
         line = diagnosis(step, error)
         try:
             import xbmcaddon
@@ -591,6 +600,10 @@ def main(payload=None, online=False, storage=False):
             dialog.ok('无法恢复旧版' if old else '操作未完成', message + '\n诊断（可拍照） ' + line)
     try:
         host = KodiHost()
+        try:
+            diagnostic_root = profile_root()
+        except (ValueError, OSError, RuntimeError, AttributeError, ImportError):
+            pass
         installer = Installer(xbmcvfs.translatePath('special://home/addons'),
                               profile('script.bobbi.start'), host)
         stage = 'font'
@@ -631,6 +644,8 @@ def main(payload=None, online=False, storage=False):
             stage = 'online'
             if not install_online(installer, host, dialog):
                 return
+            if diagnostic_root is not None:
+                observe(diagnostic_root, 'update', 'ok', started)
             dialog.ok('安装完成', '账号与观看记录保留。即将进入设置，观看前请重启 Kodi。')
             choice = 0
         if choice == 1:
@@ -651,6 +666,8 @@ def main(payload=None, online=False, storage=False):
                 return
             stage = 'apply'
             installer.apply(selected)
+            if diagnostic_root is not None:
+                observe(diagnostic_root, 'install', 'ok', started)
             dialog.ok('安装完成', '账号、片库与观看记录保留。即将进入设置，观看前请重启 Kodi。')
             choice = 0
         elif choice == 2:

@@ -123,7 +123,39 @@ class Registry:
                 return source
         raise LibraryError('SOURCE_NOT_FOUND')
 
-    def save(self, source, expected_snapshot=None):
+    def emby_binding(self):
+        """The only implicit binding allowed is a single legacy connection.
+
+        Keep a removed selection as an inactive marker: never log in to the
+        remaining user just because somebody removed the foreground one.
+        """
+        marker = self.db.execute("SELECT value FROM metadata WHERE key='emby_active_source'").fetchone()
+        rows = [row for row in self.sources() if row.kind == 'media_server' and row.metadata['provider'] == 'emby']
+        active = (next((row for row in rows if row.id == marker[0]), None) if marker else
+                  rows[0] if len(rows) == 1 else None)
+        rev = self.db.execute('SELECT value FROM metadata WHERE key=?',
+                              ('source_revision:' + active.id,)).fetchone() if active else None
+        return active, (marker[0] if marker else None, active.id if active else None, rev[0] if rev else None)
+
+    def emby_art_key(self):
+        """Profile-private signing key. Only the first page with artwork creates it."""
+        key = 'emby_art_signing_v1'
+        try:
+            def read():
+                return self.db.execute('SELECT value FROM metadata WHERE key=?', (key,)).fetchone()
+            row = read()
+            if row is None and not self.read_only:
+                with self.db:
+                    self.db.execute('BEGIN IMMEDIATE')
+                    self.db.execute('INSERT OR IGNORE INTO metadata VALUES (?,?)', (key, secrets.token_hex(32)))
+                    row = read()
+            if row is None or type(row[0]) is not str or not re.fullmatch('[a-f0-9]{64}', row[0]):
+                raise LibraryError('STORAGE_UNAVAILABLE')
+            return row[0]
+        except sqlite3.Error:
+            raise LibraryError('STORAGE_UNAVAILABLE') from None
+
+    def save(self, source, expected_snapshot=None, *, activate_emby=None):
         source = validate_source(source)
         record = dict(source.__dict__, items=[item.__dict__ for item in source.items])
         raw = json.dumps(record, ensure_ascii=False)
@@ -142,10 +174,25 @@ class Registry:
                     actual = (self._read(previous[0]) if previous else None, revision[0] if revision else None)
                     if actual != expected_snapshot:
                         raise LibraryError('CATALOG_AUTHORITY_CHANGED')
-                if source.kind == 'media_server' and any(row.id != source.id and row.kind == 'media_server'
-                        and row.metadata['provider'] == source.metadata['provider'] for row in self.sources()):
-                    raise LibraryError('INVALID_SOURCE')
-                if previous is None or self._read(previous[0]) != source:
+                switched = False
+                if source.kind == 'media_server':
+                    provider = source.metadata['provider']
+                    siblings = [row for row in self.sources() if row.id != source.id and row.kind == 'media_server'
+                                and row.metadata['provider'] == provider]
+                    if siblings and (provider != 'emby' or any(
+                            all(row.metadata[k] == source.metadata[k] for k in ('server_id', 'user_id'))
+                            for row in siblings) or not previous and activate_emby is None):
+                        raise LibraryError('INVALID_SOURCE')
+                if activate_emby is not None:
+                    active, binding = self.emby_binding()
+                    if source.kind != 'media_server' or source.metadata['provider'] != 'emby' or binding != activate_emby:
+                        raise LibraryError('CATALOG_AUTHORITY_CHANGED')
+                    switched = active is None or active.id != source.id
+                    if active and switched:
+                        self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
+                                        ('source_revision:' + active.id, secrets.token_hex(32)))
+                    self.db.execute("INSERT OR REPLACE INTO metadata VALUES ('emby_active_source',?)", (source.id,))
+                if previous is None or self._read(previous[0]) != source or switched:
                     self.db.execute('INSERT OR REPLACE INTO metadata VALUES (?,?)',
                         ('source_revision:' + source.id, secrets.token_hex(32)))
                 self.db.execute('INSERT OR REPLACE INTO sources(id, record) VALUES (?,?)', (source.id, raw))

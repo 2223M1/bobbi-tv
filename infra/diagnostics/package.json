@@ -1,0 +1,7 @@
+{
+  "name": "bobbi-tv-diagnostics",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test", "dev": "wrangler dev"},
+  "devDependencies": {"wrangler": "4.167.0"}
+}

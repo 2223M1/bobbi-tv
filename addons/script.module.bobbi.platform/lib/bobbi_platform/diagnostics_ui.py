@@ -1,6 +1,7 @@
-"""On-demand, local-only reports using the active skin's native dialogs."""
+"""Local search reports and a separate, user-controlled optimization outbox."""
 import json
 import shutil
+import sqlite3
 import time
 from uuid import uuid4
 
@@ -107,23 +108,28 @@ def show(dialog):
     import xbmc
     import xbmcvfs
     from bobbi_core import search_trace
-    from .paths import profile
+    from .paths import profile, ProfileBinding
+    from . import optimization
+    binding = ProfileBinding()
     directory = profile('script.module.bobbi.core')
-    while not xbmc.Monitor().abortRequested():
+    while binding.is_current() and not xbmc.Monitor().abortRequested():
         try:
             active = search_trace.enabled(directory)
             count = len(search_trace.reports(directory))
             state = ('记录已满' if count >= search_trace.MAX_REPORTS else
                      '已开启，15 分钟内自动结束' if active else '未开启')
+            enabled, pending = optimization.status(binding.root())
             choice = dialog.select('检查与诊断', [
                 '检查本机状态',
                 '关闭搜索记录' if active else '开启搜索记录（15 分钟）',
                 '查看搜索记录 · {} 份 · {}'.format(count, state),
                 '导出搜索记录',
                 '清除搜索记录',
+                '系统优化 · 自动回传诊断：' + ('开' if enabled else '关'),
             ])
             if choice < 0:
                 return
+            binding.require_current()
             if choice == 0:
                 from .capabilities import probe
                 from .kodi import rpc
@@ -155,5 +161,18 @@ def show(dialog):
                     '将关闭记录并删除最多 8 份搜索诊断，无法撤销，需要的请先导出。\n'
                     '影片、缓存、账号与观看进度保留。'):
                 search_trace.clear(directory)
-        except (ValueError, OSError, RuntimeError):
+            elif choice == 5:
+                index = dialog.select('系统优化 · 诊断日志', [
+                    '关闭并清空待发记录' if enabled else '开启自动回传',
+                    '查看收集范围 · 待发 {} 条'.format(pending)])
+                if index == 0:
+                    binding.require_current()
+                    optimization.set_enabled(binding.root(), not enabled)
+                elif index == 1:
+                    dialog.textviewer('诊断日志 · 默认开启',
+                        '安装和 Emby 浏览、交接播放时，只回传组件版本、步骤、结果类别和粗略耗时。'
+                        '不读取 Kodi 日志、账号、片名、搜索词或地址。每条记录独立编号，不标识设备。\n'
+                        '本机最多保留 100 条、7 天，联网后后台重试。关闭即清空待发记录；已经发出的请求不能撤回。'
+                        '维护者的 Bobbi 专用服务保留约 14 天。搜索记录仍只在本机。')
+        except (ValueError, OSError, RuntimeError, sqlite3.Error):
             dialog.ok('诊断未完成', '请返回后重试，不影响当前播放。')

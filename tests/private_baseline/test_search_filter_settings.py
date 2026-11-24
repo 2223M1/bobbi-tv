@@ -1,9 +1,9 @@
 """Entry-owned filter settings; debrid is stubbed at this filter-only boundary."""
+from frozen_history import source_bytes
 import ast
 from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
-import subprocess
 from time import monotonic
 from types import SimpleNamespace
 from xml.etree import ElementTree as ET
@@ -264,7 +264,7 @@ def test_omitted_getter_preserves_legacy_entry_behavior(pipeline, monkeypatch):
 
 @lru_cache(maxsize=None)
 def original_tree(path, revision=BASE):
-    source = subprocess.check_output(['git', '-C', str(ROOT), 'show', revision + ':' + path], encoding='utf-8')
+    source = source_bytes(revision, path).decode('utf-8')
     return ast.parse(source)
 
 

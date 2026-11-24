@@ -63,7 +63,7 @@ def listing_with_metadata(path):
     except LibraryError:
         raise
     except (AttributeError, TypeError, ValueError, RuntimeError):
-        return directory_items(*xbmcvfs.listdir(path)), {}
+        return directory_items(*xbmcvfs.listdir(path), pointers=True), {}
 
 
 def execute(handle, params):
@@ -95,7 +95,8 @@ def execute(handle, params):
             for source in store.sources():
                 kind, label2 = source_presentation(source)
                 rows.append(item(source.name, route(action='browse', source=source.id),
-                                 folder=source.kind != 'media_server', playable=False,
+                                 folder=(source.kind not in ('media_server', 't4') or
+                                         source.metadata.get('provider') == 'emby'), playable=False,
                                  label2=label2, properties={'Bobbi.Library.Kind': kind}))
             rows.append(item('个人云盘', route(action='native_files'), False, playable=False,
                 label2='浏览已连接的网盘，或使用已有 CD2 挂载',
@@ -103,8 +104,24 @@ def execute(handle, params):
             rows.append(item('影视海报库', 'plugin://plugin.video.bobbi/?action=personal_catalog',
                 label2='已刮削电影、剧集与多版本片源',
                 properties={'Bobbi.Library.Kind': 'personal_catalog'}))
-        elif action in ('browse', 'play'):
+        elif action in ('browse', 'play', 'play_pointer', 'emby_page', 'emby_play', 'emby_search'):
             source = store.get(params.get('source', ''))
+            if action.startswith('emby_') or (action == 'browse' and source.kind == 'media_server'
+                                              and source.metadata.get('provider') == 'emby'):
+                from bobbi_platform.emby_dynamic import execute as online
+                return online(handle, params, store, item)
+            if source.kind == 't4':
+                if action != 'browse' or set(params) != {'action', 'source'}:
+                    raise LibraryError('INVALID_VALUE')
+                from bobbi_platform.t4_ui import browse as browse_t4
+                try:
+                    browse_t4(xbmcgui.Dialog(), store, source)
+                except LibraryError as error:
+                    if error.code != 'T4_CANCELLED':
+                        raise
+                if handle >= 0:
+                    xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)
+                return
             if source.kind == 'media_server':
                 if action != 'browse' or set(params) - {'action', 'source'}:
                     raise LibraryError('INVALID_VALUE')
@@ -115,10 +132,33 @@ def execute(handle, params):
                 return
             relative = relative_path(params.get('relative', ''))
             category = source.name + (' / ' + relative if relative else '')
-            if action == 'play':
+            if action in ('play', 'play_pointer'):
                 request = uuid4().hex
                 xbmcgui.Window(10000).setProperty(SELECTION, request)
-                if source.kind == 'catalog':
+                revision = None
+                if action == 'play_pointer':
+                    from bobbi_platform.source_pointers import read
+                    from bobbi_platform.source_streams import local_media_url
+                    from bobbi_platform.runtime import bind_call
+                    from bobbi_platform.paths import ProfileBinding
+                    binding = ProfileBinding()
+                    call = bind_call(binding.root() / 'runtime.json')
+                    current, revision = store.source_snapshot(source.id)
+                    if current != source:
+                        raise LibraryError('SOURCE_STREAM_CHANGED')
+                    target, observation = read(source, relative)
+                    origin = urlsplit(target)
+                    if not xbmcgui.Dialog().yesno('播放 STRM 指向的媒体？',
+                            '将连接 ' + origin.scheme + '://' + origin.netloc + '，不会发送片库账号密码。'):
+                        xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
+                        return
+                    if not binding.is_current() or store.source_snapshot(source.id) != (source, revision):
+                        raise LibraryError('SOURCE_STREAM_CHANGED')
+                    result = call('source_stream_open', dict(source_id=source.id, generation=revision,
+                        request_id=request, selection=dict(kind='strm', relative=relative, observation=observation)),
+                        timeout=18)
+                    url, title = local_media_url(result), relative.rsplit('/', 1)[-1][:-5]
+                elif source.kind == 'catalog':
                     chosen = next((entry for entry in source.items if entry.id == params.get('entry')), None)
                     if chosen is None:
                         raise LibraryError('SOURCE_NOT_FOUND')
@@ -133,9 +173,13 @@ def execute(handle, params):
                 def ready():
                     return (not xbmc.Monitor().abortRequested()
                             and xbmcgui.Window(10000).getProperty(SELECTION) == request
-                            and store.get(source.id) == source)
+                            and (store.get(source.id) == source if revision is None else
+                                 binding.is_current() and store.source_snapshot(source.id) == (source, revision)))
                 handoff = standard_handoff(identity, handle, ready=ready)
-                result = handoff.submit(identity, {'url': url, 'title': title})
+                value = {'url': url, 'title': title}
+                if action == 'play_pointer':
+                    value['_bobbi_start_over'] = True
+                result = handoff.submit(identity, value)
                 if not result['opened']:
                     xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
                 return
@@ -162,7 +206,8 @@ def execute(handle, params):
                 listing, metadata = listing_with_metadata(path)
                 for folder, name in listing[offset:offset + PAGE_SIZE]:
                     child = relative + '/' + name if relative else name
-                    rows.append(item(name, route(action='browse' if folder else 'play',
+                    play_action = 'play_pointer' if name.lower().endswith('.strm') else 'play'
+                    rows.append(item(name, route(action='browse' if folder else play_action,
                         source=source.id, relative=child), folder, info=metadata.get(name) if not folder else None))
             if len(listing) > offset + PAGE_SIZE:
                 rows.append(item('下一页', route(action='browse', source=source.id, relative=relative,
@@ -179,7 +224,7 @@ def execute(handle, params):
         xbmcplugin.addDirectoryItems(handle, rows, len(rows))
         xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
     except (LibraryError, OSError, RuntimeError, ValueError):
-        if action == 'play' and (handoff is None or handoff.state in ('selected', 'cancelled')):
+        if action in ('play', 'play_pointer', 'emby_play') and (handoff is None or handoff.state in ('selected', 'cancelled')):
             xbmcplugin.setResolvedUrl(handle, False, xbmcgui.ListItem())
         raise
     finally:
@@ -197,5 +242,5 @@ if __name__ == '__main__':
         xbmc.log('[bobbi] library operation failed: ' + type(error).__name__, xbmc.LOGWARNING)
         xbmcgui.Dialog().ok('片库暂时不可用', message(error))
         # No alternate source or playback retry after an uncertain submission.
-        if handle >= 0 and query.get('action') != 'play':
+        if handle >= 0 and query.get('action') not in ('play', 'play_pointer', 'emby_play'):
             xbmcplugin.endOfDirectory(handle, succeeded=False, cacheToDisc=False)

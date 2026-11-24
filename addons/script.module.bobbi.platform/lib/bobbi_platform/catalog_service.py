@@ -283,6 +283,7 @@ class CatalogService:
                     self._profile()
                     return result
                 pending = deque([(root_parent, 0)])
+                excluded_versions = False
                 visited = {root_parent}
                 while pending:
                     safe(local=True)
@@ -298,6 +299,7 @@ class CatalogService:
                             operation.cancelled.set()
                         safe(local=True)
                         result = port.page(operation, expected, parent, page, cursor)
+                        excluded_versions |= result.get('excluded_versions') is True
                         safe()
                         rows = result['items']
                         if type(rows) is not list or len(rows) > SCAN_WINDOW:
@@ -341,7 +343,12 @@ class CatalogService:
                         page += 1
                 safe()
                 # Account CAS also encloses the absence inference boundary.
-                commit(lambda: self.index.finish(task, 'completed'))
+                if excluded_versions:
+                    # Admitted siblings have already committed. No negative
+                    # membership inference from an incomplete version listing.
+                    commit(lambda: self.index.finish(task, 'interrupted', 'SERVER_VERSIONS_EXCLUDED'))
+                else:
+                    commit(lambda: self.index.finish(task, 'completed'))
                 return
         except Exception as error:
             if self.profile_revoked.is_set():

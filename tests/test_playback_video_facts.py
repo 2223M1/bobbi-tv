@@ -1,9 +1,9 @@
 """Real owner/history/display seams with simulated native IO, not device proof."""
+from frozen_history import source_bytes
 import ast
 from copy import deepcopy
 import json
 from pathlib import Path
-import subprocess
 import sys
 from threading import Event, Thread
 from types import ModuleType, SimpleNamespace
@@ -314,8 +314,7 @@ def test_old_audio_only_facts_and_frozen_ed645ee_reader_fallback(scene, chain, m
     assert capture(scene) and scene.files.save(scene.data)
     path = Path(scene.db._database_path)
     before = path.read_bytes()
-    source = subprocess.check_output(['git', 'show', 'ed645ee:addons/script.module.bobbi.core/lib/'
-                                      'bobbi_core/playback_start_facts.py'], cwd=ROOT)
+    source = source_bytes('ed645eece1dc340e52f1377731d5f1ff9d0804c8', 'addons/script.module.bobbi.core/lib/bobbi_core/playback_start_facts.py')
     legacy = ModuleType('bobbi_core.playback_start_facts')
     legacy.__package__ = 'bobbi_core'
     exec(compile(source, '<frozen-ed645ee-start-facts>', 'exec'), legacy.__dict__)

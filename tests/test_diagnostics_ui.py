@@ -30,7 +30,8 @@ def screen(tmp_path, monkeypatch):
             return self.stream.write(raw) if state.written is True else state.written
         def close(self): self.stream.close()
     monkeypatch.setitem(sys.modules, 'xbmcvfs', SimpleNamespace(
-        exists=lambda path: Path(path).exists(), File=File))
+        exists=lambda path: Path(path).exists(), File=File,
+        translatePath=lambda path: str(tmp_path / path.rsplit('/',1)[-1])))
     state.dialog = SimpleNamespace(
         select=lambda title, choices: state.choices.pop(0),
         ok=lambda *args: state.dialogs.append(args),
@@ -39,6 +40,21 @@ def screen(tmp_path, monkeypatch):
         browse=lambda *args: state.choose_folder)
     state.root = tmp_path
     return state
+
+
+def test_optimization_toggle_persists_and_remains_separate_from_search(screen):
+    from bobbi_platform import optimization
+    root = screen.root / 'script.module.bobbi.platform'
+    assert optimization.status(root) == (True, 0)
+    optimization.record(root, '0.1.98', 'emby_play', 'handoff', 1.1)
+    screen.choices = [5, 1, 5, 0, -1]
+    diagnostics_ui.show(screen.dialog)
+    assert '默认开启' in screen.previews[0][0]
+    assert optimization.status(root) == (False, 0)
+    assert not search_trace.enabled(screen.root)
+    screen.choices = [5, 0, -1]
+    diagnostics_ui.show(screen.dialog)
+    assert optimization.status(root) == (True, 0)
 
 
 def record(root):

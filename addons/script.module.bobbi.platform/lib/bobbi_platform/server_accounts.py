@@ -44,6 +44,9 @@ class Accounts:
         return Registry(self.path, timeout=0)
 
     def _source(self, store, provider):
+        if provider == 'emby':
+            active, _ = store.emby_binding()
+            return store.source_snapshot(active.id) if active else (None, None)
         rows = [source for source in store.sources() if source.kind == 'media_server'
                 and source.metadata['provider'] == provider]
         if len(rows) > 1:
@@ -185,22 +188,43 @@ class Accounts:
         return True
 
     def register(self, provider, name, location='', secret='', expected_source=None, client_factory=None,
-                 current=lambda: True, publish=lambda write: write()):
+                 current=lambda: True, publish=lambda write: write(), username=None, password=None):
         if not self.current() or not current():
             raise PanError('PAN_ACCOUNT_CHANGED')
         if provider not in dict(SERVER_PROVIDERS):
             raise PanError('PAN_PROVIDER_INVALID')
         store = self._registry()
         try:
-            previous, revision = self._source(store, provider)
+            activate_emby = None
+            if provider == 'emby':
+                _, activate_emby = store.emby_binding()
+                previous, revision = store.source_snapshot(expected_source) if expected_source else (None, None)
+                if previous and (previous.kind != 'media_server' or previous.metadata['provider'] != provider):
+                    raise PanError('PAN_ACCOUNT_CHANGED')
+            else:
+                previous, revision = self._source(store, provider)
             if (previous.id if previous else None) != expected_source:
                 raise PanError('PAN_ACCOUNT_CHANGED')
+            device = None
+            if username is not None or password is not None:
+                if provider != 'emby' or secret or not username or not isinstance(password, str):
+                    raise PanError('PAN_CREDENTIALS_INVALID')
+                with store.db:
+                    store.db.execute('INSERT OR IGNORE INTO metadata(key,value) VALUES (?,?)',
+                                     ('emby_install_device', uuid4().hex))
+                    device = store.db.execute('SELECT value FROM metadata WHERE key=?',
+                                              ('emby_install_device',)).fetchone()[0]
         finally:
             store.close()
         if provider == 'plex':
             if self.plex is None or not self.plex.current() or location or secret:
                 raise PanError('PAN_CREDENTIALS_INVALID')
             saved = dict(self.plex.saved, provider=provider)
+        elif device:
+            from .server_emby import authenticate
+            sid, uid, secret = authenticate(server_location(location), username, password, device)
+            saved = dict(provider=provider, location=server_location(location), token=secret,
+                         server_id=sid, user_id=uid)
         else:
             saved = dict(provider=provider, location=server_location(location), token=secret)
         if client_factory is None:
@@ -209,6 +233,8 @@ class Accounts:
         client = client_factory(provider, saved)
         with client.session.budget(24):
             sid, uid = client.verify()
+        if device and (sid, uid) != (saved['server_id'], saved['user_id']):
+            raise PanError('PAN_ACCOUNT_ID_INVALID')
         if previous is not None and (sid, uid) != (previous.metadata['server_id'], previous.metadata['user_id']):
             raise PanError('PAN_ACCOUNT_ID_INVALID')  # Explicit removal before a different account replaces it.
         source = validate_source(Source(previous.id if previous else uuid4().hex, name, 'media_server',
@@ -220,10 +246,30 @@ class Accounts:
         try:
             if not self.current() or not current():
                 raise PanError('PAN_ACCOUNT_CHANGED')
-            publish(lambda: store.save(source, expected_snapshot=(previous, revision)))
+            publish(lambda: store.save(source, expected_snapshot=(previous, revision), activate_emby=activate_emby))
         finally:
             store.close()
         return self.snapshot(provider)
+
+    def activate_emby(self, source_id, generation, expected, *, publish=lambda fn: fn()):
+        """Explicit account switch with CAS on both selection and destination."""
+        if not self.current():
+            raise PanError('PAN_ACCOUNT_CHANGED')
+        expected = scope(expected, 'emby', authenticated=False)
+        store = self._registry()
+        try:
+            _, binding = store.emby_binding()
+            if self._snapshot(store, 'emby') != expected:
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            target, revision = store.source_snapshot(source_id)
+            if (revision != generation or target.kind != 'media_server' or target.metadata['provider'] != 'emby'
+                    or not self.current()):
+                raise PanError('PAN_ACCOUNT_CHANGED')
+            self._credentials(target)
+            publish(lambda: store.save(target, expected_snapshot=(target, revision), activate_emby=binding))
+        finally:
+            store.close()
+        return self.snapshot('emby')
 
     def logout(self, expected):
         self.require_current(expected)

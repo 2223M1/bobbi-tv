@@ -1,8 +1,8 @@
 """External cancellation never owns queue progress; no TV throughput claim."""
+from frozen_history import source_bytes
 from pathlib import Path
 from threading import Event, Thread
 from types import ModuleType
-import subprocess
 import sys
 
 import pytest
@@ -16,8 +16,7 @@ BASELINE = 'c58cd3ede800ef401d203838bdc0c5e59c0a1686'
 @pytest.fixture(scope='module')
 def baseline():
     """Execute the actual pre-fix class, not a handwritten locking imitation."""
-    source = subprocess.check_output(['git', 'show', BASELINE + ':' +
-        'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py'], cwd=ROOT)
+    source = source_bytes(BASELINE, 'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py')
     name = '_frozen_share_queue_lock_baseline'
     module = ModuleType(name)
     sys.modules[name] = module

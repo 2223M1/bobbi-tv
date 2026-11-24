@@ -48,10 +48,15 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 class Session:
-    def __init__(self, provider, base, secret, opener=None, clock=time.monotonic):
+    def __init__(self, provider, base, secret, opener=None, clock=time.monotonic, *, device_id=None):
         if provider not in ('plex', 'jellyfin', 'emby'):
             raise PanError('PAN_PROVIDER_INVALID')
-        self.provider, self.base, self.secret = provider, server_location(base), token(secret)
+        if device_id is not None and (provider != 'emby' or type(device_id) is not str
+                                      or not re.fullmatch(r'[a-f0-9]{32}', device_id)):
+            raise PanError('PAN_CREDENTIALS_INVALID')
+        self.device_id = device_id
+        self.provider, self.base = provider, server_location(base)
+        self.secret = None if device_id and secret is None else token(secret)
         self.opener = opener or build_opener(ProxyHandler({}), NoRedirect())
         self.clock, self.deadline, self.operation = clock, None, None
 
@@ -59,6 +64,9 @@ class Session:
         return '<Server HTTP: credentials hidden>'
 
     def headers(self):
+        if self.secret is None:
+            return {'User-Agent': USER_AGENT, 'X-Emby-Authorization':
+                'MediaBrowser Client="BobbiTV", Device="Kodi", DeviceId="' + self.device_id + '", Version="1"'}
         if self.provider == 'jellyfin':
             # Modern Jellyfin does not accept the legacy X-Emby-Token by
             # default. Token was validated at construction and is never put in
@@ -66,6 +74,50 @@ class Session:
             return {'User-Agent': USER_AGENT, 'Authorization': 'MediaBrowser Token="' + self.secret + '"'}
         key = 'X-Plex-Token' if self.provider == 'plex' else 'X-Emby-Token'
         return {'User-Agent': USER_AGENT, key: self.secret}
+
+    def probe_media(self, url, *, authenticated=False):
+        """One byte from a finite original; authentication is allowed only for the static API."""
+        from bobbi_core.library_contract import LibraryError
+        from .source_media_http import Response, probe_evidence
+        if self.provider != 'emby' or not at_origin(self.base, url):
+            raise PanError('PAN_DOWNLOAD_ORIGIN_REJECTED')
+        if type(authenticated) is not bool or (authenticated and (self.secret is None or
+                not re.fullmatch(r'/Videos/[a-zA-Z0-9_-]{1,128}/stream\?Static=true&MediaSourceId=[a-zA-Z0-9_-]{1,128}',
+                                 url[len(self.base):]))):
+            raise PanError('PAN_ROUTE_REJECTED')
+        timeout = 5
+        if self.operation:
+            self.operation.consume_request()
+            timeout = min(timeout, self.operation.deadline - self.operation.clock())
+        if self.deadline:
+            timeout = min(timeout, self.deadline - self.clock())
+        if timeout <= 0:
+            raise PanError('PAN_BUDGET_EXHAUSTED')
+        headers = self.headers() if authenticated else {}
+        headers.update({'Range': 'bytes=0-0', 'Accept-Encoding': 'identity', 'Connection': 'close'})
+        request = Request(url, headers=headers)
+        try:
+            with self.opener.open(request, timeout=timeout) as raw:
+                if raw.geturl() != url:
+                    raise PanError('PAN_REDIRECT_REJECTED')
+                reply = Response(raw)
+                size, _ = probe_evidence(reply, require_etag=False)
+                mime = reply.headers.get('Content-Type', '').partition(';')[0].strip().lower()
+                if mime in ('video/vnd.mpeg.dash.mpd', 'audio/mpegurl', 'audio/x-mpegurl'):
+                    raise PanError('PAN_MEDIA_UNSUPPORTED')
+                return size, mime
+        except HTTPError as error:
+            error.close()
+            if authenticated and error.code in (401, 403):
+                raise PanError('PAN_SERVER_UNAUTHORIZED' if error.code == 401 else 'PAN_SERVER_FORBIDDEN') from None
+            if 300 <= error.code < 400:
+                raise PanError('PAN_REDIRECT_REJECTED') from None
+            raise PanError('PAN_EMBY_DIRECT_AUTH_REQUIRED' if error.code in (401, 403)
+                           else 'PAN_MEDIA_UNSUPPORTED') from None
+        except LibraryError:
+            raise PanError('PAN_MEDIA_UNSUPPORTED') from None
+        except (OSError, URLError):
+            raise PanError('PAN_NETWORK_ERROR') from None
 
     @contextmanager
     def budget(self, seconds):
@@ -83,6 +135,9 @@ class Session:
         semantics or an invitation to replay an uncertain write.
         """
         method = ('GET' if data is None else 'POST') if method is None else method
+        if self.secret is None and not (path == '/Users/AuthenticateByName' and method == 'POST'
+                                       and query is None):
+            raise PanError('PAN_ROUTE_REJECTED')
         if (type(method) is not str or method not in ('GET', 'POST', 'PUT', 'PATCH', 'DELETE')
                 or method == 'GET' and data is not None
                 or type(success_statuses) is not tuple or not 1 <= len(success_statuses) <= 4
@@ -147,8 +202,11 @@ class Session:
                 elif type(node) is list:
                     pending.extend((child, depth + 1) for child in node)
             return value
-        except HTTPError:
-            raise PanError('PAN_HTTP_REJECTED') from None
+        except HTTPError as error:
+            error.close()
+            code = {401: 'PAN_SERVER_UNAUTHORIZED', 403: 'PAN_SERVER_FORBIDDEN',
+                    404: 'PAN_SERVER_NOT_FOUND', 429: 'PAN_RATE_LIMITED'}.get(error.code)
+            raise PanError(code if code and self.provider == 'emby' else 'PAN_HTTP_REJECTED') from None
         except (URLError, OSError):
             raise PanError('PAN_NETWORK_ERROR') from None
         except (ValueError, UnicodeError, RecursionError) as error:

@@ -686,13 +686,15 @@ class ShareStream:
     def __init__(self, validate, resolve, validate_url, report=lambda phase: None,
                  session_factory=None, segment_bytes=MAX_SEGMENT_BYTES, observer=observation_json,
                  account=None, progressive=False, queue_bytes=PROGRESSIVE_QUEUE_BYTES,
-                 body_check=None, header_check=None, origin_factory=None):
+                 body_check=None, header_check=None, origin_factory=None,
+                 binding_check=None, response_check=None):
         if type(segment_bytes) is not int or not 0 < segment_bytes <= MAX_SEGMENT_BYTES:
             raise ValueError('SHARE_SEGMENT_BUDGET')
         self.validate, self.resolve, self.validate_url = validate, resolve, validate_url
         # Explicit adapter injection. The existing 115 admission and its
         # User-Agent-only policy remain the defaults, never widened globally.
         self.body_check, self.header_check = body_check or checked, header_check
+        self.binding_check, self.response_check = binding_check, response_check
         self._report, self.observer = report, observer
         self.observation_run = uuid4().hex[:16]
         self.http_sequence = self.gate_sequence = 0
@@ -1097,6 +1099,9 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if self.cancelled():
                 raise OSError('SHARE_STOPPED')
+            binding_check = getattr(owner, 'binding_check', None)
+            if binding_check is not None:
+                binding_check(entry.body)
             size = entry.body['size']
             try:
                 start, end, status = byte_range(self.headers.get('Range'), size)
@@ -1447,11 +1452,19 @@ class Handler(BaseHTTPRequestHandler):
             possible_close_race = False
             try:
                 self.observation_stage = 'connect'
+                binding_check = getattr(owner, 'binding_check', None)
+                if binding_check is not None:
+                    binding_check(entry.body)
                 range_end = '' if open_tail and end == entry.body['size'] - 1 else str(end)
                 with self.diagnostic_call('connect_us', session.get, base, headers=dict(upstream_headers, **{
                     'Range': 'bytes={}-{}'.format(offset, range_end), 'Accept-Encoding': 'identity',
                     'Connection': 'close'}), stream=True, allow_redirects=False, timeout=(3.05, 10)) as response:
                     self.observation_stage = 'response_check'
+                    response_check = getattr(owner, 'response_check', None)
+                    if response_check is not None:
+                        response_check(entry.body, response)
+                        if binding_check is not None:
+                            binding_check(entry.body)
                     if response.status_code != 206:
                         self.observe('upstream_status', status=response.status_code,
                                      upstream_start=offset, block_end=end)

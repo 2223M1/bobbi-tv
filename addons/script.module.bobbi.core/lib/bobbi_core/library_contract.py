@@ -13,6 +13,8 @@ from uuid import uuid4
 MAX_CATALOG_BYTES = 2 * 1024 * 1024
 MAX_ITEMS = 2000
 MAX_SOURCES = 32
+# Installer reads this literal from the signed target, never imports target code.
+REGISTRY_READ_FEATURES = ('t4', 'multi_emby')
 MAX_DIRECTORY_ITEMS = 10000
 SCHEMES = frozenset(('smb', 'nfs', 'dav', 'davs'))
 VIDEO_EXTENSIONS = frozenset(('.mkv', '.mp4', '.m4v', '.mov', '.avi', '.webm', '.ts',
@@ -123,7 +125,7 @@ class Source:
     username: str = field(default='', repr=False)
     password: str = field(default='', repr=False)
     items: tuple = field(default=(), repr=False)
-    metadata: dict = field(default_factory=dict)
+    metadata: dict = field(default_factory=dict, repr=False)
 
 
 def server_location(value):
@@ -176,7 +178,7 @@ def validate_source(source):
             or not re.fullmatch('[0-9a-f]{32}', source.id) or not isinstance(source.items, tuple)):
         raise LibraryError('INVALID_SOURCE')
     _text(source.name, 80)
-    if type(source.metadata) is not dict or source.kind != 'media_server' and source.metadata:
+    if type(source.metadata) is not dict or source.kind not in ('media_server', 't4') and source.metadata:
         raise LibraryError('INVALID_SOURCE')
     if source.kind == 'vfs':
         root, user, password = split_location(source.location)
@@ -202,6 +204,9 @@ def validate_source(source):
             if type(item.year) is not int or item.year != 0 and not 1880 <= item.year <= 2200:
                 raise LibraryError('INVALID_SOURCE')
             seen.add(item.id)
+    elif source.kind == 't4':
+        from .t4 import validate_saved
+        validate_saved(source)
     elif source.kind == 'media_server':
         from .server_ref import identifier, PROVIDERS
         data = source.metadata
@@ -246,7 +251,7 @@ def joined_path(source, relative=''):
     return source.location + relative.replace('/', '\\') if '\\' in source.location else source.location + relative
 
 
-def directory_items(directories, files):
+def directory_items(directories, files, *, pointers=False):
     """Only single-level listing, with no .strm/plugin execution or recursion."""
     result = []
     if (not isinstance(directories, (list, tuple)) or not isinstance(files, (list, tuple))
@@ -258,6 +263,6 @@ def directory_items(directories, files):
                     or ':' in name or '|' in name or len(name) > 4096
                     or name in ('.', '..') or any(ord(c) < 32 or ord(c) == 127 for c in name)):
                 continue
-            if folder or any(name.lower().endswith(ext) for ext in VIDEO_EXTENSIONS):
+            if folder or name.lower().endswith(tuple(VIDEO_EXTENSIONS)) or pointers and name.lower().endswith('.strm'):
                 result.append((folder, name))
     return tuple(sorted(set(result), key=lambda row: (not row[0], row[1].casefold())))

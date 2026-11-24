@@ -22,6 +22,9 @@ ERRORS = {
 
 
 def message(error):
+    from .source_media_http import MESSAGES
+    if getattr(error, 'code', '') in MESSAGES:
+        return MESSAGES[error.code]
     return ERRORS.get(getattr(error, 'code', ''), '这一步未完成，请检查地址、权限或文件格式后重试。')
 
 
@@ -181,6 +184,7 @@ def add_source(dialog, vfs, store, *, source_store=None):
         kinds.append('已有 CD2 网盘（无需扫码）')
     kinds.append('源库网址')
     kinds.append('媒体服务器 · Plex / Jellyfin / Emby')
+    kinds.append('小雅 / TVBox（T4）')
     choice = dialog.select('添加来源', kinds)
     if choice < 0 or choice >= len(kinds):
         return False
@@ -190,6 +194,9 @@ def add_source(dialog, vfs, store, *, source_store=None):
     if kinds[choice] == '媒体服务器 · Plex / Jellyfin / Emby':
         from .server_ui import add
         return add(dialog, store)
+    if kinds[choice] == '小雅 / TVBox（T4）':
+        from .t4_ui import add
+        return add(dialog, vfs, store)
     if choice == 5:
         return _cd2_source(dialog, store) is not None
     if choice < 3:
@@ -251,7 +258,8 @@ def manage(legacy_root=''):
             sources = store.sources()
             choice = dialog.select('我的片库', ['＋ 添加来源', '打开我的片库']
                 + [source.name + (' · NAS / 目录' if source.kind == 'vfs' else
-                    ' · 媒体服务器' if source.kind == 'media_server' else ' · 直链片库') for source in sources]
+                    ' · 媒体服务器' if source.kind == 'media_server' else
+                    ' · T4 站点' if source.kind == 't4' else ' · 直链片库') for source in sources]
                 + (['源库 · ' + online.name] if online else []) + ['片库索引与任务'])
             if choice < 0:
                 return
@@ -272,6 +280,10 @@ def manage(legacy_root=''):
                         return True
                 else:
                     source = sources[choice - 2]
+                    if source.kind == 't4':
+                        from .t4_ui import manage as manage_t4
+                        changed = manage_t4(dialog, xbmcvfs, store, source) or changed
+                        continue
                     if source.kind == 'media_server':
                         from .server_ui import manage as manage_server
                         changed = manage_server(dialog, store, source) or changed

@@ -13,7 +13,7 @@ def add(dialog, store, previous=None):
         provider, label = SERVER_PROVIDERS[choice]
         existing = [source for source in store.sources() if source.kind == 'media_server'
                     and source.metadata['provider'] == provider]
-        if existing:
+        if existing and provider != 'emby':
             if len(existing) != 1 or not dialog.yesno('此类型已有连接', '首期每类支持一个连接。要明确更新当前连接吗？'):
                 return False
             previous = existing[0]
@@ -34,25 +34,48 @@ def add(dialog, store, previous=None):
                                 defaultt=previous.location if previous else 'http://')
         if not location:
             return False
-        secret = dialog.input('当前用户访问令牌（不是管理员全局 API key）', option=xbmcgui.ALPHANUM_HIDE_INPUT)
-        if not secret:
+        mode = dialog.select('Emby 登录方式', ['用户名和密码', '高级：导入用户令牌']) if provider == 'emby' else 1
+        if mode == 0:
+            username = dialog.input('Emby 用户名')
+            if not username:
+                return False
+            password = dialog.input('Emby 密码（无密码账户可留空）', option=xbmcgui.ALPHANUM_HIDE_INPUT)
+            body.update(location=location, username=username, password=password)
+        elif mode == 1:
+            secret = dialog.input('当前用户访问令牌（不是管理员全局 API key）', option=xbmcgui.ALPHANUM_HIDE_INPUT)
+            if not secret:
+                return False
+            body.update(location=location, secret=secret)
+        else:
             return False
-        body.update(location=location, secret=secret)
-        if not dialog.yesno('核验并保存服务器？', '仅向填写的服务器发送令牌，保存在本机私有来源中。媒体文件不会改变。'):
+        warn = '\nHTTP 没有加密，请只在可信局域网使用。' if location.lower().startswith('http://') else ''
+        switch = ('\n保存后切换到此连接。私服原片由 Kodi 自动使用当前账号播放，'
+                  '可信遥控器和 Kodi 调试日志可能读到令牌，请勿分享原始日志。') if provider == 'emby' else ''
+        if not dialog.yesno('核验并保存服务器？', '仅向填写的服务器验证；本机保存用户令牌，不保存密码。' + warn + switch):
             return False
     try:
         # Bounded request, no background registration continuing after a
         # purported cancellation. The Host verifies IDs before its CAS save.
         call('pan_server_register', body, timeout=28)
     except (OSError, ValueError, RuntimeError) as error:
-        dialog.ok('服务器未保存', _failure(error) + '\n原连接保留。不同服务器或用户请先明确移除旧连接。')
+        note = ('原连接保留。要连接另一个服务器或用户，请选择“添加服务器”。' if provider == 'emby'
+                else '原连接保留。不同服务器或用户请先明确移除旧连接。')
+        dialog.ok('服务器未保存', _failure(error) + '\n' + note)
         return False
-    dialog.ok('服务器已登记 · 待实机验证', '打开服务器目录，选择“将此目录加入片库”后扫描。'
+    if provider == 'emby':
+        dialog.ok('Emby 已连接', '打开“我的片库”即可浏览在线海报、电影和季集，无需扫描。可用的原片直链由 Kodi 播放。')
+        return True
+    dialog.ok('服务器已登记 · 待实机验证', '可立即浏览服务器并播放；需要本地整理时再选择“将此目录加入片库”。'
               '\n仅原文件从头直放，历史进度仅供查看，不自动续播；HLS、转码与分卷串联尚未开放。')
     return True
 
 
 def browse(dialog, source):
+    if source.metadata['provider'] == 'emby':
+        from .emby_dynamic import link
+        import xbmc
+        xbmc.executebuiltin('ActivateWindow(Videos,' + link(action='browse', source=source.id) + ',return)')
+        return True
     from .pan_ui import _status, browse as open_directory
     rows = [row for row in _status(servers=True) if row['provider'] == source.metadata['provider']]
     if len(rows) != 1 or rows[0]['account'].get('source_id') != source.id:
@@ -63,7 +86,8 @@ def browse(dialog, source):
 
 def manage(dialog, store, source):
     choice = dialog.select(source.name + ' · 媒体服务器',
-        ['浏览与选择扫描目录', '重新核验 / 更新连接', '移除服务器连接'])
+        ['浏览在线片库' if source.metadata['provider'] == 'emby' else '浏览与选择扫描目录',
+         '重新核验 / 更新连接', '移除服务器连接'])
     if choice == 0:
         return browse(dialog, source)
     if choice == 1:

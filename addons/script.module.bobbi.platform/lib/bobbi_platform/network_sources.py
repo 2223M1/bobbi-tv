@@ -128,14 +128,25 @@ class NetworkPort(MountedPort):
         finally:
             session.close()
 
+    def select_reference(self, authority, reference, session, live, allow_changed=False):
+        def check():
+            live()
+            session.check()
+        return self._lookup(authority, reference, check, allow_changed)
+
     def stat_by_reference(self, authority, reference, check=lambda: None):
+        return self._lookup(authority, reference, check, allow_changed=False)
+
+    def _lookup(self, authority, reference, check, allow_changed):
         reference = network_ref.validate(reference)
         if (reference['source_id'], reference['namespace']) != (authority['source_id'], authority['namespace']):
             raise ValueError('CATALOG_REFERENCE_INVALID')
-        for row in self.listing(authority, reference['parent'], 160, check):
+        # Kodi supplies sibling metadata in the directory response. Validate
+        # completeness/uniqueness for the entire bounded response before matching.
+        for row in self.listing(authority, reference['parent'], MAX_DIRECTORY_ITEMS, check):
             if row['name'] == reference['name'] and row['metadata'] is not None:
                 current = network_ref.observed(authority, reference['relative'], row['metadata'])
-                if network_ref.same_observation(reference, current):
+                if allow_changed or network_ref.same_observation(reference, current):
                     return current
                 break
         raise ValueError('CATALOG_FILE_CHANGED')

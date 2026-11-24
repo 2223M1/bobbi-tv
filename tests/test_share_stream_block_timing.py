@@ -1,10 +1,10 @@
 """Explicit ordinary-block timing: policy parity, not a device speed claim."""
+from frozen_history import source_bytes
 from contextlib import nullcontext
 from http.client import HTTPConnection, IncompleteRead
 import json
 from pathlib import Path
 import socket
-import subprocess
 import sys
 from threading import Event
 import time
@@ -25,11 +25,9 @@ TIMINGS = {'grant_us', 'connect_us', 'read_wait_us', 'socket_send_us',
 @pytest.fixture(scope='module')
 def baseline():
     # Mainline integration of 288b2c; its share_stream blob is byte-identical.
-    # Use reachable mainline history, not an unpushed implementation branch.
+    # Run the retained original mainline blob, even in a shallow clean checkout.
     revision = '7220670f1ac3dda3bfd8e8e182c778311b14be48'
-    source = subprocess.check_output(['git', 'show', revision + ':' +
-        'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py'],
-        cwd=Path(__file__).resolve().parents[1])
+    source = source_bytes(revision, 'addons/script.module.bobbi.core/lib/bobbi_core/share_stream.py')
     name = '_frozen_block_timing_baseline'
     module = ModuleType(name)
     sys.modules[name] = module
