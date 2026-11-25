@@ -20,7 +20,7 @@ import pytest
 import requests
 from requests.exceptions import ReadTimeout
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 for rel in (
     'addons/script.module.bobbi.core/lib',
     'addons/script.module.bobbi.platform/lib',
@@ -30,9 +30,6 @@ for rel in (
     if p not in sys.path:
         sys.path.insert(0, p)
 
-# Bootstrap isolated Kodi doubles if not already initialized
-if 'xbmc' not in sys.modules or not hasattr(sys.modules['xbmc'], 'Monitor'):
-    runpy.run_path(str(ROOT / 'tests/private_baseline/conftest.py'))
 
 from bobbi_core.progressive_search import ProgressiveSearch
 from bobbi_core.search_completion import (

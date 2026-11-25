@@ -21,8 +21,9 @@ from lib.gui.qr_progress_dialog import QRProgressDialog
 from lib.gui.resolver_window import ResolverWindow
 from lib.gui.resume_window import ResumeDialog
 
-# For web subtitle upload
-from lib.services.webserver import StremioWebServer, get_local_ip
+# Lazy placeholders so importing source_select never eagerly imports requests/webserver
+StremioWebServer = None
+get_local_ip = None
 from lib.utils.debrid.debrid_utils import (
     add_source_to_debrid,
     get_source_status,
@@ -1194,6 +1195,13 @@ class SourceSelect(BaseWindow):
 
     def _upload_subtitle_from_web(self, selected_source) -> None:
         """Start paired PhoneManagement session (SUBTITLE_UPLOAD_SCOPES) for scoped subtitle upload (U10)."""
+        global StremioWebServer, get_local_ip
+        if StremioWebServer is None or get_local_ip is None:
+            from lib.services.webserver import StremioWebServer as _SWS, get_local_ip as _gli
+            if StremioWebServer is None:
+                StremioWebServer = _SWS
+            if get_local_ip is None:
+                get_local_ip = _gli
         from bobbi_core.playback_request import source_identity
         from bobbi_platform.paths import ProfileBinding
         from lib.services.phone_management import PhoneManagement, SUBTITLE_UPLOAD_SCOPES

@@ -77,11 +77,9 @@ class WidgetRefreshService:
     def close(self):
         self.stop.set()
         worker = self.worker
-        if worker is not None:
+        if worker is not None and worker.is_alive():
             # The Host lease is released only after local IO actually returns.
-            if worker.is_alive():
-                worker.join()
-            self.worker = None
+            worker.join()
 
     def _offer(self, values):
         if self.stop.is_set() or not values or not self._profile_current():

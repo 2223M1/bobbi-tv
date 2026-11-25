@@ -198,7 +198,7 @@ def test_u17_debrid_single_make_request_contract_and_nuvio_stremio_scope_isolati
     assert "nuvio" in nuvio_src.lower() and "stremio_addons" not in nuvio_src
 
 
-def test_u17_capabilities_docs_and_deterministic_architecture_graph(tmp_path):
+def test_u17_capabilities_docs_and_deterministic_architecture_graph(tmp_path, monkeypatch):
     tvbox_doc = (ROOT / "docs" / "tvbox-t4-bridge.md").read_text(encoding="utf-8")
     assert "完整的Dolby Vision" not in tvbox_doc
     assert "双端同步体验" not in tvbox_doc
@@ -221,7 +221,7 @@ def test_u17_capabilities_docs_and_deterministic_architecture_graph(tmp_path):
     tool_path = ROOT / "tools" / "architecture_graph.py"
     spec = importlib.util.spec_from_file_location("u17_arch_graph", tool_path)
     arch = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = arch
+    monkeypatch.setitem(sys.modules, spec.name, arch)
     spec.loader.exec_module(arch)
 
     out1 = tmp_path / "graph1"
